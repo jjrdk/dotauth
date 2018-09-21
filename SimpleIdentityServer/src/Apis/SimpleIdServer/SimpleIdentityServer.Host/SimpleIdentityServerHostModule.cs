@@ -21,6 +21,7 @@ namespace SimpleIdentityServer.Host
         {
             AspPipelineContext.Instance().ConfigureServiceContext.Initialized += HandleServiceContextInitialized;
             AspPipelineContext.Instance().ConfigureServiceContext.AuthorizationAdded += HandleAuthorizationAdded;
+            AspPipelineContext.Instance().ApplicationBuilderContext.Initialized += HandleApplicationBuilderInitialized;
         }
 
         private void HandleAuthorizationAdded(object sender, System.EventArgs e)
@@ -31,6 +32,11 @@ namespace SimpleIdentityServer.Host
         private void HandleServiceContextInitialized(object sender, System.EventArgs e)
         {
             AspPipelineContext.Instance().ConfigureServiceContext.Services.AddOpenIdApi(o => { });
+        }
+
+        private void HandleApplicationBuilderInitialized(object sender, System.EventArgs e)
+        {
+            AspPipelineContext.Instance().ApplicationBuilderContext.App.UseOpenIdApi(new IdentityServerOptions());
         }
 
         public void Configure(IApplicationBuilder applicationBuilder)
