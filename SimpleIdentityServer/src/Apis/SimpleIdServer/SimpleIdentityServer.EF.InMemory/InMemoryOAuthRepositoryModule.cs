@@ -12,7 +12,17 @@ namespace SimpleIdentityServer.EF.InMemory
 {
     public class InMemoryOAuthRepositoryModule : IModule
     {
-        private const string _oauthConnectionString = "OAuthConnectionString";
+        // private const string _oauthConnectionString = "OAuthConnectionString";
+
+        public void Init()
+        {
+            AspPipelineContext.Instance().ConfigureServiceContext.Initialized += HandleServiceContextInitialized;
+        }
+
+        private void HandleServiceContextInitialized(object sender, System.EventArgs e)
+        {
+            AspPipelineContext.Instance().ConfigureServiceContext.Services.AddOAuthInMemoryEF();
+        }
 
         public void Configure(IApplicationBuilder applicationBuilder)
         {
@@ -32,12 +42,14 @@ namespace SimpleIdentityServer.EF.InMemory
 
         public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null,  IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
         {
+            /*
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
             services.AddOAuthInMemoryEF();
+            */
         }
 
         public ModuleUIDescriptor GetModuleUI()
