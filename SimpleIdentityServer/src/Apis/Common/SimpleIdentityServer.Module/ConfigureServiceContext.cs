@@ -12,20 +12,22 @@ namespace SimpleIdentityServer.Module
         private IServiceCollection _services;
         private IMvcBuilder _mvcBuilder;
         private AuthorizationOptions _authorizationOptions;
+
+        internal ConfigureServiceContext()
+        {
+            _authenticationBuilders = new Dictionary<string, AuthenticationBuilder>();
+        }
+
+        #region Events
+
         public event EventHandler Initialized;
         public event EventHandler AuthenticationCookieAdded;
         public event EventHandler AuthorizationAdded;
         public event EventHandler MvcAdded;
 
-        internal ConfigureServiceContext(IServiceCollection services)
-        {
-            _authenticationBuilders = new Dictionary<string, AuthenticationBuilder>();
-            _services = services;
-            if (Initialized != null)
-            {
-                Initialized(this, EventArgs.Empty);
-            }
-        }
+        #endregion
+
+        #region Properties
 
         public Dictionary<string, AuthenticationBuilder> AuthenticationBuilders
         {
@@ -48,6 +50,27 @@ namespace SimpleIdentityServer.Module
             get
             {
                 return _authorizationOptions;
+            }
+        }
+
+        public IMvcBuilder MvcBuilder
+        {
+            get
+            {
+                return _mvcBuilder;
+            }
+        }
+
+        #endregion
+
+        #region Methods
+
+        public void Init(IServiceCollection services)
+        {
+            _services = services;
+            if (Initialized != null)
+            {
+                Initialized(this, EventArgs.Empty);
             }
         }
 
@@ -76,7 +99,18 @@ namespace SimpleIdentityServer.Module
 
         public void AddMvc(IMvcBuilder mvcBuilder)
         {
+            if (mvcBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(mvcBuilder));
+            }
+
             _mvcBuilder = mvcBuilder;
+            if(MvcAdded != null)
+            {
+                MvcAdded(this, EventArgs.Empty);
+            }
         }
+
+        #endregion
     }
 }
