@@ -35,9 +35,7 @@ namespace SimpleIdentityServer.Host
 {
     public static class ServiceCollectionExtensions 
     {
-        public static IServiceCollection AddOpenIdApi(
-            this IServiceCollection serviceCollection,
-            Action<IdentityServerOptions> optionsCallback)
+        public static IServiceCollection AddOpenIdApi(this IServiceCollection serviceCollection, Action<IdentityServerOptions> optionsCallback)
         {
             if (serviceCollection == null)
             {
@@ -51,8 +49,7 @@ namespace SimpleIdentityServer.Host
             
             var options = new IdentityServerOptions();
             optionsCallback(options);
-            serviceCollection.AddOpenIdApi(
-                options);
+            serviceCollection.AddOpenIdApi(options);
             return serviceCollection;
         }
         
@@ -62,9 +59,7 @@ namespace SimpleIdentityServer.Host
         /// <param name="serviceCollection"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection AddOpenIdApi(
-            this IServiceCollection serviceCollection,
-            IdentityServerOptions options)
+        public static IServiceCollection AddOpenIdApi(this IServiceCollection serviceCollection, IdentityServerOptions options)
         {
             if (serviceCollection == null)
             {
