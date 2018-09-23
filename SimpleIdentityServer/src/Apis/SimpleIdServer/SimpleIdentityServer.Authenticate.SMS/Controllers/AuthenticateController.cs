@@ -10,7 +10,6 @@ using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Authenticate.SMS.ViewModels;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Profile;
-using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Exceptions;
@@ -21,7 +20,6 @@ using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Core.WebSite.User;
-using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.OpenId.Logging;
 using System;
@@ -58,11 +56,10 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             ISmsAuthenticationOperation smsAuthenticationOperation,
             IGenerateAndSendSmsCodeOperation generateAndSendSmsCodeOperation,
-            SmsAuthenticationOptions basicAuthenticateOptions,
-            AuthenticateOptions authenticateOptions) : base(authenticateActions, profileActions, dataProtectionProvider, encoder,
+            SmsAuthenticationOptions basicAuthenticateOptions) : base(authenticateActions, profileActions, dataProtectionProvider, encoder,
                 translationManager, simpleIdentityServerEventSource, urlHelperFactory, actionContextAccessor, eventPublisher,
                 authenticationService, authenticationSchemeProvider, userActions, payloadSerializer, configurationService,
-                authenticateHelper, twoFactorAuthenticationHandler, basicAuthenticateOptions, authenticateOptions)
+                authenticateHelper, twoFactorAuthenticationHandler, basicAuthenticateOptions)
         {
             _smsAuthenticationOperation = smsAuthenticationOperation;
             _generateAndSendSmsCodeOperation = generateAndSendSmsCodeOperation;
@@ -150,7 +147,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 return RedirectToAction("Index", "User", new { area = "UserManagement" });
             }
 
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.COOKIE_NAME);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.CookieNames.PasswordLessCookieName);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, "SMS authentication cannot be performed");
@@ -180,7 +177,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 return RedirectToAction("Index", "User", new { area = "UserManagement" });
             }
 
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.COOKIE_NAME);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.CookieNames.PasswordLessCookieName);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, "SMS authentication cannot be performed");
@@ -202,7 +199,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 return View("ConfirmCode", confirmCodeViewModel);
             }
 
-            await _authenticationService.SignOutAsync(HttpContext, Constants.COOKIE_NAME, new AuthenticationProperties());
+            await _authenticationService.SignOutAsync(HttpContext, Host.Constants.CookieNames.PasswordLessCookieName, new AuthenticationProperties());
             var resourceOwner = await _userActions.GetUser(authenticatedUser);
             if (!string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication)) // Execute TWO Factor authentication
             {
@@ -300,9 +297,9 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 
         private async Task SetPasswordLessCookie(IEnumerable<Claim> claims)
         {
-            var identity = new ClaimsIdentity(claims, Constants.COOKIE_NAME);
+            var identity = new ClaimsIdentity(claims, Host.Constants.CookieNames.PasswordLessCookieName);
             var principal = new ClaimsPrincipal(identity);
-            await _authenticationService.SignInAsync(HttpContext, Constants.COOKIE_NAME, principal, new AuthenticationProperties
+            await _authenticationService.SignInAsync(HttpContext, Host.Constants.CookieNames.PasswordLessCookieName, principal, new AuthenticationProperties
             {
                 ExpiresUtc = DateTime.UtcNow.AddMinutes(20),
                 IsPersistent = false

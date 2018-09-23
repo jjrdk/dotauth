@@ -14,17 +14,10 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authentication.Cookies;
 using System;
 
 namespace SimpleIdentityServer.Host
 {
-    public class AuthenticateOptions
-    {
-        public string CookieName = CookieAuthenticationDefaults.AuthenticationScheme;
-        public string ExternalCookieName = "SimpleIdServer-OpenId-External";
-    }
-
     public class ScimOptions
     {
         public string EndPoint { get; set; }
@@ -35,14 +28,9 @@ namespace SimpleIdentityServer.Host
     {
         public IdentityServerOptions()
         {
-            Authenticate = new AuthenticateOptions();
             Scim = new ScimOptions();
         }
 
-        /// <summary>
-        /// Configure authentication.
-        /// </summary>
-        public AuthenticateOptions Authenticate { get; set; }
         /// <summary>
         /// Scim options.
         /// </summary>

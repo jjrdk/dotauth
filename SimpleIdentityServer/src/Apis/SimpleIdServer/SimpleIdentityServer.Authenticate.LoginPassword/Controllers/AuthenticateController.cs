@@ -10,7 +10,6 @@ using SimpleIdentityServer.Authenticate.Basic.ViewModels;
 using SimpleIdentityServer.Authenticate.LoginPassword.ViewModels;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Profile;
-using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -22,7 +21,6 @@ using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Core.WebSite.User;
-using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.OpenId.Logging;
 using System;
@@ -56,11 +54,10 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
             IAuthenticateHelper authenticateHelper,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
-            BasicAuthenticateOptions basicAuthenticateOptions,
-            AuthenticateOptions authenticateOptions) : base(authenticateActions, profileActions, dataProtectionProvider, encoder,
+            BasicAuthenticateOptions basicAuthenticateOptions) : base(authenticateActions, profileActions, dataProtectionProvider, encoder,
                 translationManager, simpleIdentityServerEventSource, urlHelperFactory, actionContextAccessor, eventPublisher,
                 authenticationService, authenticationSchemeProvider, userActions, payloadSerializer, configurationService,
-                authenticateHelper, twoFactorAuthenticationHandler, basicAuthenticateOptions, authenticateOptions)
+                authenticateHelper, twoFactorAuthenticationHandler, basicAuthenticateOptions)
         {
             _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
         }
