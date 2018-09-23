@@ -21,7 +21,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
-using SimpleBus.Core;
 using SimpleBus.InMemory;
 using SimpleIdentityServer.AccessToken.Store.InMemory;
 using SimpleIdentityServer.AccountFilter.Basic;
@@ -36,13 +35,11 @@ using SimpleIdentityServer.Host;
 using SimpleIdentityServer.OAuth2Introspection;
 using SimpleIdentityServer.Shell;
 using SimpleIdentityServer.Startup.Extensions;
-using SimpleIdentityServer.Startup.Services;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.TwoFactorAuthentication.Twilio;
 using SimpleIdentityServer.UserInfoIntrospection;
 using SimpleIdentityServer.UserManagement;
 using System;
-using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Startup
 {
@@ -61,11 +58,6 @@ namespace SimpleIdentityServer.Startup
             Configuration = builder.Build();
             _options = new IdentityServerOptions
             {
-                Authenticate = new AuthenticateOptions
-                {
-                    CookieName = Constants.CookieName,
-                    ExternalCookieName = Constants.ExternalCookieName
-                },
                 Scim = new ScimOptions
                 {
                     IsEnabled = true,
@@ -100,10 +92,10 @@ namespace SimpleIdentityServer.Startup
                     opts.Scope.Add("public_profile");
                     opts.Scope.Add("email");
                 });
-            services.AddAuthentication(Host.Constants.TwoFactorCookieName)
-                .AddCookie(Host.Constants.TwoFactorCookieName);
-            services.AddAuthentication("SimpleIdentityServer-PasswordLess")
-                .AddCookie("SimpleIdentityServer-PasswordLess");
+            services.AddAuthentication(Host.Constants.CookieNames.TwoFactorCookieName)
+                .AddCookie(Host.Constants.CookieNames.TwoFactorCookieName);
+            services.AddAuthentication(Host.Constants.CookieNames.PasswordLessCookieName)
+                .AddCookie(Host.Constants.CookieNames.PasswordLessCookieName);
             services.AddAuthentication(Constants.CookieName)
                 .AddCookie(Constants.CookieName, opts =>
                 {
@@ -134,7 +126,7 @@ namespace SimpleIdentityServer.Startup
                 TwilioMessage = "The activation code is {0}"
             }); // SMS TWO FACTOR AUTHENTICATION.
             services.AddOpenIdApi(_options); // API
-            services.AddBasicShell(mvcBuilder, _env);  // SHELL
+            services.AddBasicShell(mvcBuilder);  // SHELL
             services.AddLoginPasswordAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions
             {
                 IsScimResourceAutomaticallyCreated = true,

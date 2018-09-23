@@ -187,7 +187,6 @@ namespace SimpleIdentityServer.Host
             }
                         
             serviceCollection
-                .AddSingleton(options.Authenticate)
                 .AddSingleton(options.Scim)
                 .AddTransient<IRedirectInstructionParser, RedirectInstructionParser>()
                 .AddTransient<IActionResultParser, ActionResultParser>()

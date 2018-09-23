@@ -40,8 +40,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
 
         public UserController(IUserActions userActions, IProfileActions profileActions, ITranslationManager translationManager, 
             IAuthenticationService authenticationService, IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor, ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler, UserManagementOptions userManagementOptions, 
-            AuthenticateOptions options) : base(authenticationService, options)
+            IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor, ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler, UserManagementOptions userManagementOptions) : base(authenticationService)
         {
             _userActions = userActions;
             _profileActions = profileActions;
@@ -202,9 +201,9 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             try
             {
                 var authenticatedUser = await SetUser();
-                var externalClaims = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.ExternalCookieName);                
+                var externalClaims = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.CookieNames.ExternalCookieName);                
                 var resourceOwner = await _profileActions.Link(authenticatedUser.GetSubject(), externalClaims.GetSubject(), externalClaims.Identity.AuthenticationType, false);
-                await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.ExternalCookieName, new AuthenticationProperties());
+                await _authenticationService.SignOutAsync(HttpContext, Host.Constants.CookieNames.ExternalCookieName, new AuthenticationProperties());
                 return RedirectToAction("Profile", "User", new { area = "UserManagement" });
             }
             catch (ProfileAssignedAnotherAccountException)
@@ -213,7 +212,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             }
             catch (Exception)
             {
-                await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.ExternalCookieName, new AuthenticationProperties());
+                await _authenticationService.SignOutAsync(HttpContext, Host.Constants.CookieNames.ExternalCookieName, new AuthenticationProperties());
                 throw;
             }
         }
@@ -225,7 +224,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> LinkProfileConfirmation()
         {
-            var externalClaims = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.ExternalCookieName);
+            var externalClaims = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.CookieNames.ExternalCookieName);
             if (externalClaims == null ||
                 externalClaims.Identity == null ||
                 !externalClaims.Identity.IsAuthenticated ||
@@ -247,7 +246,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> ConfirmProfileLinking()
         {
-            var externalClaims = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.ExternalCookieName);
+            var externalClaims = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.CookieNames.ExternalCookieName);
             if (externalClaims == null ||
                 externalClaims.Identity == null ||
                 !externalClaims.Identity.IsAuthenticated ||
@@ -264,7 +263,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             }
             finally
             {
-                await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.ExternalCookieName, new AuthenticationProperties());
+                await _authenticationService.SignOutAsync(HttpContext, Host.Constants.CookieNames.ExternalCookieName, new AuthenticationProperties());
             }
         }
         

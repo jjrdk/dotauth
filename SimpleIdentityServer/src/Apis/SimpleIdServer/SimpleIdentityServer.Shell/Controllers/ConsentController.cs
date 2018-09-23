@@ -54,8 +54,7 @@ namespace SimpleIdentityServer.Shell.Controllers
             IEventPublisher eventPublisher,
             IAuthenticationService authenticationService,
             IUserActions usersAction,
-            IPayloadSerializer payloadSerializer,
-            AuthenticateOptions authenticateOptions) : base(authenticationService, authenticateOptions)
+            IPayloadSerializer payloadSerializer) : base(authenticationService)
         {
             _consentActions = consentActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
@@ -96,7 +95,7 @@ namespace SimpleIdentityServer.Shell.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.CookieNames.CookieName);
             var actionResult = await _consentActions.ConfirmConsent(parameter,
                 authenticatedUser);
             await LogConsentAccepted(actionResult, parameter.ProcessId);
