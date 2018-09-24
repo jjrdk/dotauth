@@ -18,7 +18,6 @@ using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Scim.Db.EF.Mappings;
 using SimpleIdentityServer.Scim.Db.EF.Models;
 using System;
-using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Db.EF
 {

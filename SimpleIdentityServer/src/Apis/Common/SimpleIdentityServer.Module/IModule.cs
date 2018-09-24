@@ -1,7 +1,9 @@
-﻿namespace SimpleIdentityServer.Module
+﻿using System.Collections.Generic;
+
+namespace SimpleIdentityServer.Module
 {
     public interface IModule
     {
-        void Init();
+        void Init(IDictionary<string, string> options);
     }
 }

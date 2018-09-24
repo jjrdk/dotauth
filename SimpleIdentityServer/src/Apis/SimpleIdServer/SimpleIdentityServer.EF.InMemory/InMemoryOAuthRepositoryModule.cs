@@ -1,10 +1,11 @@
 ﻿using SimpleIdentityServer.Module;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.EF.InMemory
 {
     public class InMemoryOAuthRepositoryModule : IModule
     {
-        public void Init()
+        public void Init(IDictionary<string, string> options)
         {
             AspPipelineContext.Instance().ConfigureServiceContext.Initialized += HandleServiceContextInitialized;
         }

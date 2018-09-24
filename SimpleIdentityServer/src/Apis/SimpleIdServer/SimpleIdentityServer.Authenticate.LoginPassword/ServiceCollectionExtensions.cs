@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Razor;
+﻿using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using SimpleIdentityServer.Authenticate.Basic;
@@ -12,8 +11,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddLoginPasswordAuthentication(this IServiceCollection services, 
-            IMvcBuilder mvcBuilder, IHostingEnvironment hosting, BasicAuthenticateOptions basicAuthenticateOptions)
+        public static IServiceCollection AddLoginPasswordAuthentication(this IServiceCollection services, IMvcBuilder mvcBuilder, BasicAuthenticateOptions basicAuthenticateOptions)
         {
             if (services == null)
             {
