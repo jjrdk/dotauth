@@ -127,7 +127,7 @@ namespace SimpleIdentityServer.Startup
             }); // SMS TWO FACTOR AUTHENTICATION.
             services.AddOpenIdApi(_options); // API
             services.AddBasicShell(mvcBuilder);  // SHELL
-            services.AddLoginPasswordAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions
+            services.AddLoginPasswordAuthentication(mvcBuilder, new BasicAuthenticateOptions
             {
                 IsScimResourceAutomaticallyCreated = true,
                 AuthenticationOptions = new BasicAuthenticationOptions
@@ -142,7 +142,7 @@ namespace SimpleIdentityServer.Startup
                     "sub"
                 }
             });  // LOGIN & PASSWORD
-            services.AddSmsAuthentication(mvcBuilder, _env, new SmsAuthenticationOptions
+            services.AddSmsAuthentication(mvcBuilder, new SmsAuthenticationOptions
             {
                 Message = "The activation code is {0}",
                 TwilioSmsCredentials = new Twilio.Client.TwilioSmsCredentials
@@ -164,17 +164,7 @@ namespace SimpleIdentityServer.Startup
                     "sub"
                 }
             }); // SMS AUTHENTICATION.
-            services.AddUserManagement(mvcBuilder, _env, new UserManagementOptions
-            {
-                CreateScimResourceWhenAccountIsAdded = true,
-                AuthenticationOptions = new UserManagementAuthenticationOptions
-                {
-                    AuthorizationWellKnownConfiguration = "http://localhost:60004/.well-known/uma2-configuration",
-                    ClientId = "OpenId",
-                    ClientSecret = "z4Bp!:B@rFw4Xs+]"
-                },
-                ScimBaseUrl = "http://localhost:60001"
-            });  // USER MANAGEMENT
+            services.AddUserManagement(mvcBuilder);  // USER MANAGEMENT
         }
 
         private void ConfigureAccountFilters(IServiceCollection services, IMvcBuilder mvcBuilder)

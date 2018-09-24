@@ -20,9 +20,7 @@ namespace SimpleIdentityServer.EF.Postgre
             }
 
             serviceCollection.AddOAuthRepositories();
-            serviceCollection.AddEntityFrameworkNpgsql()
-                .AddDbContext<SimpleIdentityServerContext>(options =>
-                    options.UseNpgsql(connectionString, callback));
+            serviceCollection.AddEntityFrameworkNpgsql().AddDbContext<SimpleIdentityServerContext>(options => options.UseNpgsql(connectionString, callback));
             return serviceCollection;
         }
     }

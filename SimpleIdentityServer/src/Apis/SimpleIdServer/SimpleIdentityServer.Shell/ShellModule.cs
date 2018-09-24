@@ -1,11 +1,12 @@
 ﻿using SimpleIdentityServer.Module;
 using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Shell
 {
     public class ShellModule : IModule
     {
-        public void Init()
+        public void Init(IDictionary<string, string> options)
         {
             AspPipelineContext.Instance().ConfigureServiceContext.MvcAdded += HandleMvcAdded;
             AspPipelineContext.Instance().ApplicationBuilderContext.Initialized += HandleApplicationBuilderInitialized;

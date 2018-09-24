@@ -4,14 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using SimpleIdentityServer.Core.Api.Profile;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.User;
-using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.UserManagement.ViewModels;
@@ -34,22 +32,19 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
         private readonly IUrlHelper _urlHelper;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
-        private readonly UserManagementOptions _userManagementOptions;
 
         #region Constructor
 
         public UserController(IUserActions userActions, IProfileActions profileActions, ITranslationManager translationManager, 
             IAuthenticationService authenticationService, IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor, ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler, UserManagementOptions userManagementOptions) : base(authenticationService)
+            IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor, ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler) : base(authenticationService)
         {
             _userActions = userActions;
             _profileActions = profileActions;
             _translationManager = translationManager;
             _authenticationSchemeProvider = authenticationSchemeProvider;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
-            _userManagementOptions = userManagementOptions;
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
-            Check();
         }
 
         #endregion
@@ -398,21 +393,6 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             result.SelectedTwoFactorAuthType = twoFactorAuthType;
             result.TwoFactorAuthTypes = _twoFactorAuthenticationHandler.GetAll().Select(s => s.Name).ToList();
             return result;
-        }
-
-        /// <summary>
-        /// Check the parameters.
-        /// </summary>
-        private void Check()
-        {
-            if (_userManagementOptions.CreateScimResourceWhenAccountIsAdded && (_userManagementOptions.AuthenticationOptions == null ||
-                string.IsNullOrWhiteSpace(_userManagementOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration) ||
-                string.IsNullOrWhiteSpace(_userManagementOptions.AuthenticationOptions.ClientId) ||
-                string.IsNullOrWhiteSpace(_userManagementOptions.AuthenticationOptions.ClientSecret) ||
-                string.IsNullOrWhiteSpace(_userManagementOptions.ScimBaseUrl)))
-            {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.InternalError, Core.Errors.ErrorDescriptions.TheScimConfigurationMustBeSpecified);
-            }
         }
 
         #endregion

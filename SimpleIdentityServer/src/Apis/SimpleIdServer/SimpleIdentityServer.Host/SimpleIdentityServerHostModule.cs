@@ -5,20 +5,24 @@ using Microsoft.Extensions.FileProviders;
 using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Module;
 using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Host
 {
     public class SimpleIdentityServerHostModule : IModule
     {
-        public void Init()
+        private IDictionary<string, string> _properties;
+
+        public void Init(IDictionary<string, string> properties)
         {
+            _properties = properties;
             AspPipelineContext.Instance().ConfigureServiceContext.Initialized += HandleServiceContextInitialized;
             AspPipelineContext.Instance().ConfigureServiceContext.MvcAdded += HandleMvcAdded;
             AspPipelineContext.Instance().ConfigureServiceContext.AuthorizationAdded += HandleAuthorizationAdded;
             AspPipelineContext.Instance().ApplicationBuilderContext.Initialized += HandleApplicationBuilderInitialized;
         }
 
-        private void HandleServiceContextInitialized(object sender, System.EventArgs e)
+        private void HandleServiceContextInitialized(object sender, EventArgs e)
         {
             var services = AspPipelineContext.Instance().ConfigureServiceContext.Services;
             services.AddOpenIdApi(o => { });
@@ -38,12 +42,12 @@ namespace SimpleIdentityServer.Host
             mvcBuilder.AddApplicationPart(assembly);
         }
 
-        private void HandleAuthorizationAdded(object sender, System.EventArgs e)
+        private void HandleAuthorizationAdded(object sender, EventArgs e)
         {
             AspPipelineContext.Instance().ConfigureServiceContext.AuthorizationOptions.AddOpenIdSecurityPolicy(CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
-        private void HandleApplicationBuilderInitialized(object sender, System.EventArgs e)
+        private void HandleApplicationBuilderInitialized(object sender, EventArgs e)
         {
             AspPipelineContext.Instance().ApplicationBuilderContext.App.UseOpenIdApi(new IdentityServerOptions());
         }
