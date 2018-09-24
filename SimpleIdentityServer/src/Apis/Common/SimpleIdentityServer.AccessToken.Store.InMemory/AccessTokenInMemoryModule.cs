@@ -1,4 +1,5 @@
 ﻿using SimpleIdentityServer.Module;
+using System;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.AccessToken.Store.InMemory
@@ -7,7 +8,12 @@ namespace SimpleIdentityServer.AccessToken.Store.InMemory
     {
         public void Init(IDictionary<string, string> properties)
         {
+            AspPipelineContext.Instance().ConfigureServiceContext.Initialized += HandleInitialized;
+        }
 
+        private void HandleInitialized(object sender, EventArgs e)
+        {
+            AspPipelineContext.Instance().ConfigureServiceContext.Services.AddInMemoryAccessTokenStore();
         }
     }
 }
