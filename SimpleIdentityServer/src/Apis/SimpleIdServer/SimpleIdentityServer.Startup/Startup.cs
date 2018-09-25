@@ -82,13 +82,13 @@ namespace SimpleIdentityServer.Startup
             services.AddInMemoryAccessTokenStore(); // Add the access token into the memory.
             // 4. Enable logging
             services.AddLogging();
-            services.AddAuthentication(Constants.ExternalCookieName)
-                .AddCookie(Constants.ExternalCookieName)
+            services.AddAuthentication(Host.Constants.CookieNames.ExternalCookieName)
+                .AddCookie(Host.Constants.CookieNames.ExternalCookieName)
                 .AddFacebook(opts =>
                 {
                     opts.ClientId = "569242033233529";
                     opts.ClientSecret = "12e0f33817634c0a650c0121d05e53eb";
-                    opts.SignInScheme = Constants.ExternalCookieName;
+                    opts.SignInScheme = Host.Constants.CookieNames.ExternalCookieName;
                     opts.Scope.Add("public_profile");
                     opts.Scope.Add("email");
                 });
@@ -96,8 +96,8 @@ namespace SimpleIdentityServer.Startup
                 .AddCookie(Host.Constants.CookieNames.TwoFactorCookieName);
             services.AddAuthentication(Host.Constants.CookieNames.PasswordLessCookieName)
                 .AddCookie(Host.Constants.CookieNames.PasswordLessCookieName);
-            services.AddAuthentication(Constants.CookieName)
-                .AddCookie(Constants.CookieName, opts =>
+            services.AddAuthentication(Host.Constants.CookieNames.CookieName)
+                .AddCookie(Host.Constants.CookieNames.CookieName, opts =>
                 {
                     opts.LoginPath = "/Authenticate";
                 })
@@ -113,7 +113,7 @@ namespace SimpleIdentityServer.Startup
                 });
             services.AddAuthorization(opts =>
             {
-                opts.AddOpenIdSecurityPolicy(Constants.CookieName);
+                opts.AddOpenIdSecurityPolicy(Host.Constants.CookieNames.CookieName);
             });
             // 5. Configure MVC
             var mvcBuilder = services.AddMvc();
