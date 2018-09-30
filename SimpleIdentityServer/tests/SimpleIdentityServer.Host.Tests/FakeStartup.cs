@@ -70,10 +70,6 @@ namespace SimpleIdentityServer.Host.Tests
         {
             _options = new IdentityServerOptions
             {
-                Authenticate = new AuthenticateOptions
-                {
-                    CookieName = DefaultSchema
-                },
                 Scim = new ScimOptions
                 {
                     IsEnabled = true,

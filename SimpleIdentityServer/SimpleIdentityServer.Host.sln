@@ -189,6 +189,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.UserMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.UserManagement.Client", "src\Apis\SimpleIdServer\SimpleIdentityServer.UserManagement.Client\SimpleIdentityServer.UserManagement.Client.csproj", "{A1615F2E-5A5C-4DE6-8BBD-4312B8A7E522}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.AccessToken.Store.Redis.Integration.Tests", "tests\SimpleIdentityServer.AccessToken.Store.Redis.Integration.Tests\SimpleIdentityServer.AccessToken.Store.Redis.Integration.Tests.csproj", "{791B8048-B16C-4BB6-9BF7-603C4D4F95E3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.AccessToken.Store.Tests", "tests\SimpleIdentityServer.AccessToken.Store.Tests\SimpleIdentityServer.AccessToken.Store.Tests.csproj", "{0027F061-1D67-4013-A2CC-9D87E07A3B52}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.TwoFactorAuthentication.Email.Integration.Tests", "tests\SimpleIdentityServer.TwoFactorAuthentication.Email.Integration.Tests\SimpleIdentityServer.TwoFactorAuthentication.Email.Integration.Tests.csproj", "{3C8D8022-B3AB-4636-9803-646818CF109D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -598,6 +604,24 @@ Global
 		{A1615F2E-5A5C-4DE6-8BBD-4312B8A7E522}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{A1615F2E-5A5C-4DE6-8BBD-4312B8A7E522}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1615F2E-5A5C-4DE6-8BBD-4312B8A7E522}.Release|Any CPU.Build.0 = Release|Any CPU
+		{791B8048-B16C-4BB6-9BF7-603C4D4F95E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{791B8048-B16C-4BB6-9BF7-603C4D4F95E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{791B8048-B16C-4BB6-9BF7-603C4D4F95E3}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{791B8048-B16C-4BB6-9BF7-603C4D4F95E3}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{791B8048-B16C-4BB6-9BF7-603C4D4F95E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{791B8048-B16C-4BB6-9BF7-603C4D4F95E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0027F061-1D67-4013-A2CC-9D87E07A3B52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0027F061-1D67-4013-A2CC-9D87E07A3B52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0027F061-1D67-4013-A2CC-9D87E07A3B52}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{0027F061-1D67-4013-A2CC-9D87E07A3B52}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{0027F061-1D67-4013-A2CC-9D87E07A3B52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0027F061-1D67-4013-A2CC-9D87E07A3B52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C8D8022-B3AB-4636-9803-646818CF109D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C8D8022-B3AB-4636-9803-646818CF109D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C8D8022-B3AB-4636-9803-646818CF109D}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C8D8022-B3AB-4636-9803-646818CF109D}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{3C8D8022-B3AB-4636-9803-646818CF109D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C8D8022-B3AB-4636-9803-646818CF109D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -691,6 +715,9 @@ Global
 		{9F7CA8BC-D978-4CDF-9867-0DAF86E02215} = {B089FF38-263F-4168-904D-3DE600B8E900}
 		{9B798C0D-D70F-49EA-B99A-05A4AD08DDC9} = {23A3451A-FBA1-4ACD-BA64-923B791AA606}
 		{A1615F2E-5A5C-4DE6-8BBD-4312B8A7E522} = {23A3451A-FBA1-4ACD-BA64-923B791AA606}
+		{791B8048-B16C-4BB6-9BF7-603C4D4F95E3} = {17B98C75-B2C6-4B33-8865-A3832E3AB0CC}
+		{0027F061-1D67-4013-A2CC-9D87E07A3B52} = {CAE43B3B-7250-43E3-B4FE-DC28D81805D0}
+		{3C8D8022-B3AB-4636-9803-646818CF109D} = {17B98C75-B2C6-4B33-8865-A3832E3AB0CC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}

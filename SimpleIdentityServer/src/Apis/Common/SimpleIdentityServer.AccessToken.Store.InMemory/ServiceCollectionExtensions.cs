@@ -13,8 +13,7 @@ namespace SimpleIdentityServer.AccessToken.Store.InMemory
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
 
-            serviceCollection.AddTransient<IAccessTokenStore, InMemoryTokenStore>();
-            serviceCollection.AddIdServerClient();
+            serviceCollection.AddSingleton<IAccessTokenStore>(new InMemoryTokenStore(new IdentityServerClientFactory()));
             return serviceCollection;
         }
     }
