@@ -1,83 +1,43 @@
 ﻿using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.AccessToken.Store.InMemory
 {
-    public sealed class InMemoryTokenStore : IAccessTokenStore
+    public sealed class InMemoryTokenStore : BaseAccessTokenStore
     {
-        private class StoredToken
-        {
-            public StoredToken()
-            {
-                Scopes = new List<string>();
-            }
-
-            public string Url { get; set; }
-            public IEnumerable<string> Scopes { get; set; }
-            public GrantedTokenResponse GrantedToken { get; set; }
-            public DateTime ExpirationDateTime { get; set; }
-        }
-
         private readonly List<StoredToken> _tokens;
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
 
-        public InMemoryTokenStore(IIdentityServerClientFactory identityServerClientFactory)
+        public InMemoryTokenStore(IIdentityServerClientFactory identityServerClientFactory) : base(identityServerClientFactory)
         {
             _tokens = new List<StoredToken>();
             _identityServerClientFactory = identityServerClientFactory;
         }
 
-        public async Task<GrantedTokenResponse> GetToken(string url, string clientId, string clientSecret, IEnumerable<string> scopes)
+        public List<StoredToken> Tokens
         {
-            if (string.IsNullOrWhiteSpace(url))
+            get
             {
-                throw new ArgumentNullException(nameof(url));
+                return _tokens;
             }
+        }
+               
+        protected override Task AddToken(StoredToken storedToken)
+        {
+            _tokens.Add(storedToken);
+            return Task.FromResult(0);
+        }
 
-            if (string.IsNullOrWhiteSpace(clientId))
-            {
-                throw new ArgumentNullException(nameof(clientId));
-            }
+        protected override Task<StoredToken> GetToken(string url, IEnumerable<string> scopes)
+        {
+            return Task.FromResult(_tokens.FirstOrDefault(t => t.Url == url && scopes.All(s => t.Scopes.Contains(s))));
+        }
 
-            if (string.IsNullOrWhiteSpace(clientSecret))
-            {
-                throw new ArgumentNullException(nameof(clientId));
-            }
-
-            if (scopes == null)
-            {
-                throw new ArgumentNullException(nameof(scopes));
-            }
-
-            var token = _tokens.FirstOrDefault(t => t.Url == url && scopes.Count() == t.Scopes.Count() && scopes.All(s => t.Scopes.Contains(s)));
-            if (token != null)
-            {
-                if (DateTime.UtcNow < token.ExpirationDateTime)
-                {
-                    return token.GrantedToken;
-                }
-
-                _tokens.Remove(token);
-            }
-
-            var grantedToken = await _identityServerClientFactory.CreateAuthSelector()
-                .UseClientSecretPostAuth(clientId, clientSecret)
-                .UseClientCredentials(scopes.ToArray())
-                .ResolveAsync(url)
-                .ConfigureAwait(false);
-            _tokens.Add(new StoredToken
-            {
-                GrantedToken = grantedToken.Content,
-                ExpirationDateTime = DateTime.UtcNow.AddSeconds(grantedToken.Content.ExpiresIn),
-                Scopes = scopes,
-                Url = url
-            });
-
-            return grantedToken.Content;
+        protected override void RemoveToken(StoredToken token)
+        {
+            _tokens.Remove(token);
         }
     }
 }
