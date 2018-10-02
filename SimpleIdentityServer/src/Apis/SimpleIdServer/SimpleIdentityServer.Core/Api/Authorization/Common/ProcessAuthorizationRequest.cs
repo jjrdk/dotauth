@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
 {
     public interface IProcessAuthorizationRequest
     {
-        Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Core.Common.Models.Client client);
+        Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Core.Common.Models.Client client, string issuerName);
     }
 
     public class ProcessAuthorizationRequest : IProcessAuthorizationRequest
@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             _oauthEventSource = oauthEventSource;
         }
 
-        public async Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Core.Common.Models.Client client)
+        public async Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Core.Common.Models.Client client, string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -188,7 +188,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 await ProcessIdTokenHint(result,
                     authorizationParameter,
                     prompts,
-                    claimsPrincipal);
+                    claimsPrincipal,
+                    issuerName);
             }
 
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
@@ -207,7 +208,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             ActionResult actionResult,
             AuthorizationParameter authorizationParameter,
             ICollection<PromptParameter> prompts,
-            ClaimsPrincipal claimsPrincipal)
+            ClaimsPrincipal claimsPrincipal,
+            string issuerName)
         {
             if (!string.IsNullOrWhiteSpace(authorizationParameter.IdTokenHint) &&
                 prompts.Contains(PromptParameter.none) &&
@@ -249,7 +251,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                         authorizationParameter.State);
                 }
 
-                var issuerName = await _configurationService.GetIssuerNameAsync();
                 if (jwsPayload.Audiences == null ||
                     !jwsPayload.Audiences.Any() ||
                     !jwsPayload.Audiences.Contains(issuerName))

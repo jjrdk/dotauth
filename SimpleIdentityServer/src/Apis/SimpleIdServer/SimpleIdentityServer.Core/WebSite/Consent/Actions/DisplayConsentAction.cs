@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// <returns>Action result.</returns>
         Task<DisplayContentResult> Execute(
             AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal);
+            ClaimsPrincipal claimsPrincipal, string issuerName);
     }
 
     public class DisplayContentResult
@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// <returns>Action result.</returns>
         public async Task<DisplayContentResult> Execute(
             AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal)
+            ClaimsPrincipal claimsPrincipal, string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -121,7 +121,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             if (assignedConsent != null)
             {
                 actionResult = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-                await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, client);
+                await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, client, issuerName);
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {

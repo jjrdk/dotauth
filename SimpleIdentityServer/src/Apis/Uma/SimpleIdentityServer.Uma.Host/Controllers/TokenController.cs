@@ -65,27 +65,28 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 }
             }
 
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             switch (tokenRequest.GrantType)
             {
                 case GrantTypes.password:
                     var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authenticationHeaderValue, certificate);
+                    result = await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authenticationHeaderValue, certificate, issuerName);
                     break;
                 case GrantTypes.authorization_code:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(authCodeParameter, authenticationHeaderValue, certificate);
+                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(authCodeParameter, authenticationHeaderValue, certificate, issuerName);
                     break;
                 case GrantTypes.refresh_token:
                     var refreshTokenParameter = tokenRequest.ToRefreshTokenGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter, authenticationHeaderValue, certificate);
+                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter, authenticationHeaderValue, certificate, issuerName);
                     break;
                 case GrantTypes.client_credentials:
                     var clientCredentialsParameter = tokenRequest.ToClientCredentialsGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue, certificate);
+                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue, certificate, issuerName);
                     break;
                 case GrantTypes.uma_ticket:
                     var tokenIdParameter = tokenRequest.ToTokenIdGrantTypeParameter();
-                    result = await _umaTokenActions.GetTokenByTicketId(tokenIdParameter, authenticationHeaderValue, certificate);
+                    result = await _umaTokenActions.GetTokenByTicketId(tokenIdParameter, authenticationHeaderValue, certificate, issuerName);
                     break;
             }
 
@@ -118,7 +119,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             // 2. Revoke the token
-            await _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue);
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
+            await _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue, GetCertificate(), issuerName);
             return new OkResult();
         }
 

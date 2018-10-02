@@ -31,11 +31,11 @@ namespace SimpleIdentityServer.Core.Api.Token
 {
     public interface ITokenActions
     {
-        Task<GrantedToken> GetTokenByResourceOwnerCredentialsGrantType(ResourceOwnerGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
-        Task<GrantedToken> GetTokenByAuthorizationCodeGrantType(AuthorizationCodeGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
-        Task<GrantedToken> GetTokenByRefreshTokenGrantType(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
-        Task<GrantedToken> GetTokenByClientCredentialsGrantType(ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
-        Task<bool> RevokeToken(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
+        Task<GrantedToken> GetTokenByResourceOwnerCredentialsGrantType(ResourceOwnerGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
+        Task<GrantedToken> GetTokenByAuthorizationCodeGrantType(AuthorizationCodeGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
+        Task<GrantedToken> GetTokenByRefreshTokenGrantType(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
+        Task<GrantedToken> GetTokenByClientCredentialsGrantType(ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
+        Task<bool> RevokeToken(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
     }
 
     public class TokenActions : ITokenActions
@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             _payloadSerializer = payloadSerializer;
         }
 
-        public async Task<GrantedToken> GetTokenByResourceOwnerCredentialsGrantType(ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null)
+        public async Task<GrantedToken> GetTokenByResourceOwnerCredentialsGrantType(ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
         {
             if (resourceOwnerGrantTypeParameter == null)
             {
@@ -100,7 +100,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                     resourceOwnerGrantTypeParameter.Password);
                 _resourceOwnerGrantTypeParameterValidator.Validate(resourceOwnerGrantTypeParameter);
                 var result = await _getTokenByResourceOwnerCredentialsGrantType.Execute(resourceOwnerGrantTypeParameter,
-                    authenticationHeaderValue, certificate);
+                    authenticationHeaderValue, certificate, issuerName);
                 var accessToken = result != null ? result.AccessToken : string.Empty;
                 var identityToken = result != null ? result.IdToken : string.Empty;
                 _oauthEventSource.EndGetTokenByResourceOwnerCredentials(accessToken, identityToken);
@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Core.Api.Token
 
         public async Task<GrantedToken> GetTokenByAuthorizationCodeGrantType(AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate = null)
+            X509Certificate2 certificate, string issuerName)
         {
             if (authorizationCodeGrantTypeParameter == null)
             {
@@ -131,7 +131,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                     authorizationCodeGrantTypeParameter.ClientId,
                     authorizationCodeGrantTypeParameter.Code);
                 _authorizationCodeGrantTypeParameterTokenEdpValidator.Validate(authorizationCodeGrantTypeParameter);
-                var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate);
+                var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate, issuerName);
                 _oauthEventSource.EndGetTokenByAuthorizationCode(
                     result.AccessToken,
                     result.IdToken);
@@ -145,7 +145,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             }
         }
 
-        public async Task<GrantedToken> GetTokenByRefreshTokenGrantType(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null)
+        public async Task<GrantedToken> GetTokenByRefreshTokenGrantType(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
         {
             if (refreshTokenGrantTypeParameter == null)
             {
@@ -158,7 +158,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                 _eventPublisher.Publish(new GrantTokenViaRefreshTokenReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(refreshTokenGrantTypeParameter), 0));
                 _oauthEventSource.StartGetTokenByRefreshToken(refreshTokenGrantTypeParameter.RefreshToken);
                 _refreshTokenGrantTypeParameterValidator.Validate(refreshTokenGrantTypeParameter);
-                var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(refreshTokenGrantTypeParameter, authenticationHeaderValue, certificate);
+                var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(refreshTokenGrantTypeParameter, authenticationHeaderValue, certificate, issuerName);
                 _oauthEventSource.EndGetTokenByRefreshToken(result.AccessToken, result.IdToken);
                 _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
                 return result;
@@ -173,7 +173,7 @@ namespace SimpleIdentityServer.Core.Api.Token
         public async Task<GrantedToken> GetTokenByClientCredentialsGrantType(
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate = null)
+            X509Certificate2 certificate, string issuerName)
         {
             if (clientCredentialsGrantTypeParameter == null)
             {
@@ -186,7 +186,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                 _eventPublisher.Publish(new GrantTokenViaClientCredentialsReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(clientCredentialsGrantTypeParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
                 _oauthEventSource.StartGetTokenByClientCredentials(clientCredentialsGrantTypeParameter.Scope);
                 _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
-                var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, authenticationHeaderValue, certificate);
+                var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, authenticationHeaderValue, certificate, issuerName);
                 _oauthEventSource.EndGetTokenByClientCredentials(
                     result.ClientId,
                     clientCredentialsGrantTypeParameter.Scope);
@@ -203,7 +203,7 @@ namespace SimpleIdentityServer.Core.Api.Token
         public Task<bool> RevokeToken(
             RevokeTokenParameter revokeTokenParameter, 
             AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate = null)
+            X509Certificate2 certificate, string issuerName)
         {
             if (revokeTokenParameter == null)
             {
@@ -216,7 +216,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                 _eventPublisher.Publish(new RevokeTokenReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(revokeTokenParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
                 _oauthEventSource.StartRevokeToken(revokeTokenParameter.Token);
                 _revokeTokenParameterValidator.Validate(revokeTokenParameter);
-                var result = _revokeTokenAction.Execute(revokeTokenParameter, authenticationHeaderValue, certificate);
+                var result = _revokeTokenAction.Execute(revokeTokenParameter, authenticationHeaderValue, certificate, issuerName);
                 _oauthEventSource.EndRevokeToken(revokeTokenParameter.Token);
                 _eventPublisher.Publish(new TokenRevoked(Guid.NewGuid().ToString(), processId, 1));
                 return result;

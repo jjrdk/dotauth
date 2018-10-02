@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IRevokeTokenAction
     {
-        Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
+        Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
     }
 
     internal class RevokeTokenAction : IRevokeTokenAction
@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         #region Public methods
 
-        public async Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null)
+        public async Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
         {
             if (revokeTokenParameter == null)
             {
@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             // 1. Check the client credentials
             var errorMessage = string.Empty;
             var instruction = CreateAuthenticateInstruction(revokeTokenParameter, authenticationHeaderValue, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
             var client = authResult.Client;
             if (client == null)
             {

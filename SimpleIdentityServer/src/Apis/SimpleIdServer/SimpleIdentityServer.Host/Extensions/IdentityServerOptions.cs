@@ -14,7 +14,9 @@
 // limitations under the License.
 #endregion
 
-using System;
+using SimpleIdentityServer.Core;
+using SimpleIdentityServer.Core.Common.Models;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Host
 {
@@ -22,6 +24,13 @@ namespace SimpleIdentityServer.Host
     {
         public string EndPoint { get; set; }
         public bool IsEnabled { get; set; }
+    }
+
+    public class OpenIdServerConfiguration
+    {
+        public List<ResourceOwner> Users { get; set; }
+        public List<Core.Common.Models.Client> Clients { get; set; }
+        public List<Translation> Translations { get; set; }
     }
 
     public class IdentityServerOptions
@@ -36,12 +45,12 @@ namespace SimpleIdentityServer.Host
         /// </summary>
         public ScimOptions Scim { get; set; }
         /// <summary>
-        /// Service used to retrieve configurations (expiration date time etc ...)
+        /// Gets or sets the configuration.
         /// </summary>
-        public Type ConfigurationService { get; set; }
+        public OpenIdServerConfiguration Configuration { get; set; }
         /// <summary>
-        /// Service used to encrypt the password
+        /// Gets or sets the OAUTH configuration options.
         /// </summary>
-        public Type PasswordService { get; set; }
+        public OAuthConfigurationOptions OAuthConfigurationOptions { get; set; }
     }
 }

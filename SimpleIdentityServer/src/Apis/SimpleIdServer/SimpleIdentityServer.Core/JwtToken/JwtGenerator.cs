@@ -44,8 +44,8 @@ namespace SimpleIdentityServer.Core.JwtToken
     {
         Task<JwsPayload> UpdatePayloadDate(JwsPayload jwsPayload);
         Task<JwsPayload> GenerateAccessToken(Core.Common.Models.Client client, IEnumerable<string> scopes);
-        Task<JwsPayload> GenerateIdTokenPayloadForScopesAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
-        Task<JwsPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters);
+        Task<JwsPayload> GenerateIdTokenPayloadForScopesAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, string issuerName);
+        Task<JwsPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters, string issuerName);
         Task<JwsPayload> GenerateUserInfoPayloadForScopeAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
         JwsPayload GenerateFilteredUserInfoPayload(List<ClaimParameter> claimParameters, ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
         void FillInOtherClaimsIdentityTokenPayload(JwsPayload jwsPayload, string authorizationCode, string accessToken, AuthorizationParameter authorizationParameter, Core.Common.Models.Client client);
@@ -183,7 +183,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             return jwsPayload;
         }
 
-        public async Task<JwsPayload> GenerateIdTokenPayloadForScopesAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
+        public async Task<JwsPayload> GenerateIdTokenPayloadForScopesAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -198,12 +198,12 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             var result = new JwsPayload();
-            await FillInIdentityTokenClaims(result, authorizationParameter, new List<ClaimParameter>(), claimsPrincipal);
+            await FillInIdentityTokenClaims(result, authorizationParameter, new List<ClaimParameter>(), claimsPrincipal, issuerName);
             await FillInResourceOwnerClaimsFromScopes(result, authorizationParameter, claimsPrincipal);
             return result;
         }
 
-        public async Task<JwsPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters)
+        public async Task<JwsPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters, string issuerName)
         {
             if (claimsPrincipal == null ||
                 claimsPrincipal.Identity == null ||
@@ -218,7 +218,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             var result = new JwsPayload();
-            await FillInIdentityTokenClaims(result, authorizationParameter, claimParameters, claimsPrincipal);
+            await FillInIdentityTokenClaims(result, authorizationParameter, claimParameters, claimsPrincipal, issuerName);
             FillInResourceOwnerClaimsByClaimsParameter(result, claimParameters, claimsPrincipal, authorizationParameter);
             return result;
         }
@@ -425,7 +425,8 @@ namespace SimpleIdentityServer.Core.JwtToken
             JwsPayload jwsPayload,
             AuthorizationParameter authorizationParameter,
             List<ClaimParameter> claimParameters,
-            ClaimsPrincipal claimsPrincipal)
+            ClaimsPrincipal claimsPrincipal,
+            string issuerName)
         {
             var nonce = authorizationParameter.Nonce;
             var state = authorizationParameter.State;
@@ -444,7 +445,6 @@ namespace SimpleIdentityServer.Core.JwtToken
             var azpParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Azp);
 
             var timeKeyValuePair = await GetExpirationAndIssuedTime();
-            var issuerName = await _configurationService.GetIssuerNameAsync();
             var audiences = new List<string>();
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;

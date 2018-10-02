@@ -19,33 +19,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Serilog;
-using Serilog.Events;
-using SimpleBus.Core;
-using SimpleIdentityServer.EF;
-using SimpleIdentityServer.EF.Postgre;
 using SimpleIdentityServer.OAuth2Introspection;
-using SimpleIdentityServer.Store.InMemory;
-using SimpleIdentityServer.Uma.EF;
-using SimpleIdentityServer.Uma.EF.InMemory;
-using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using SimpleIdentityServer.Uma.Host.Middlewares;
 using SimpleIdentityServer.Uma.Logging;
-using SimpleIdentityServer.Uma.Startup.Extensions;
-using SimpleIdentityServer.Uma.Startup.Services;
-using SimpleIdentityServer.Uma.Store.InMemory;
 using SimpleIdentityServer.UserInfoIntrospection;
-using System;
-using WebApiContrib.Core.Concurrency;
-using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Uma.Startup
 {
     public class Startup
     {
-        private UmaHostConfiguration _umaHostConfiguration;
-
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -54,20 +37,13 @@ namespace SimpleIdentityServer.Uma.Startup
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
-            _umaHostConfiguration = new UmaHostConfiguration();
         }
 
         public IConfigurationRoot Configuration { get; set; }
         
         public void ConfigureServices(IServiceCollection services)
         {
-            ConfigureBus(services);
-            ConfigureOauthRepositorySqlServer(services);
-            ConfigureUmaInMemoryEF(services);
-            ConfigureUmaInMemoryStore(services);
-            ConfigureStorageInMemory(services);
-            ConfigureLogging(services);
-            ConfigureCaching(services);
+            // OPENID
             services.AddAuthentication(OAuth2IntrospectionOptions.AuthenticationScheme)
                 .AddOAuth2Introspection(opts =>
                 {
@@ -87,75 +63,12 @@ namespace SimpleIdentityServer.Uma.Startup
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
-            services.AddUmaHost(_umaHostConfiguration);
+            services.AddUmaHost(new Host.AuthorizationServerOptions());
 	        services.AddMvc();
-        }
-
-        private void ConfigureBus(IServiceCollection services)
-        {
-            services.AddTransient<IEventPublisher, DefaultEventPublisher>();
-            // Uncomment the following line to use in-memory bus.
-            /*
-            services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions
-            {
-                ServerName = "auth"
-            });
-            */
-        }
-
-        private void ConfigureOauthRepositorySqlServer(IServiceCollection services)
-        {
-            var connectionString = "User ID=rocheidserver;Password=password;Host=localhost;Port=5432;Database=uma;Pooling=true;";
-            services.AddOAuthPostgresqlEF(connectionString, null);
-        }
-
-        private void ConfigureUmaInMemoryEF(IServiceCollection services)
-        {
-            // var connectionString = "Data Source=.;Initial Catalog=SimpleIdServerUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-            services.AddUmaInMemoryEF();
-        }
-
-        private void ConfigureUmaInMemoryStore(IServiceCollection services)
-        {
-            services.AddUmaInMemoryStore();
-        }
-
-        private void ConfigureStorageInMemory(IServiceCollection services)
-        {
-            services.AddInMemoryStorage();
-        }
-
-        private void ConfigureCaching(IServiceCollection services)
-        {
-            services.AddConcurrency(opt => opt.UseInMemory());
-        }
-
-        private void ConfigureLogging(IServiceCollection services)
-        {
-            Func<LogEvent, bool> serilogFilter = (e) =>
-            {
-                var ctx = e.Properties["SourceContext"];
-                var contextValue = ctx.ToString()
-                    .TrimStart('"')
-                    .TrimEnd('"');
-                return contextValue.StartsWith("SimpleIdentityServer") ||
-                    e.Level == LogEventLevel.Error ||
-                    e.Level == LogEventLevel.Fatal;
-            };
-            var logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .Enrich.FromLogContext()
-                .WriteTo.ColoredConsole();
-            var log = logger.Filter.ByIncludingOnly(serilogFilter)
-                .CreateLogger();
-            Log.Logger = log;
-            services.AddLogging();
-            services.AddSingleton<Serilog.ILogger>(log);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            UseSerilogLogging(loggerFactory);
             app.UseAuthentication();
             app.UseCors("AllowAll");
             app.UseUmaExceptionHandler(new ExceptionHandlerMiddlewareOptions
@@ -168,25 +81,6 @@ namespace SimpleIdentityServer.Uma.Startup
                     name: "default",
                     template: "{controller}/{action}/{id?}");
             });
-            // Insert the data.
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var simpleIdServerUmaContext = serviceScope.ServiceProvider.GetService<SimpleIdServerUmaContext>();
-                simpleIdServerUmaContext.Database.EnsureCreated();
-                simpleIdServerUmaContext.EnsureSeedData();
-            }
-
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
-                simpleIdentityServerContext.Database.EnsureCreated();
-                simpleIdentityServerContext.EnsureSeedData();
-            }
-        }
-
-        private void UseSerilogLogging(ILoggerFactory logger)
-        {
-            logger.AddSerilog();
         }
     }
 }

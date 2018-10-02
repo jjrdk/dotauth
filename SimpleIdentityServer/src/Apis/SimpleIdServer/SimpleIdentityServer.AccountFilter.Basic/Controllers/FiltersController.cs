@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Controllers
             {
                 return errorResult;
             }
-
+            
             var id = await _filterRepository.Add(addFilterRequest.ToParameter());
             return new OkObjectResult(new AddFilterResponse
             {

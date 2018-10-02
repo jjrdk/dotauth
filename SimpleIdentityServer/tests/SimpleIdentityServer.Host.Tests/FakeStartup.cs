@@ -20,9 +20,11 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using SimpleBus.Core;
-using SimpleIdentityServer.AccessToken.Store.InMemory;
+using SimpleIdentityServer.AccessToken.Store;
+using SimpleIdentityServer.AccountFilter;
+using SimpleIdentityServer.AccountFilter.Basic;
 using SimpleIdentityServer.AccountFilter.Basic.Controllers;
-using SimpleIdentityServer.AccountFilter.Basic.EF.InMemory;
+using SimpleIdentityServer.AccountFilter.Basic.Repositories;
 using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Authenticate.SMS;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
@@ -36,16 +38,13 @@ using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.EF;
-using SimpleIdentityServer.EF.InMemory;
-using SimpleIdentityServer.Host.Tests.Extensions;
 using SimpleIdentityServer.Host.Tests.MiddleWares;
 using SimpleIdentityServer.Host.Tests.Services;
+using SimpleIdentityServer.Host.Tests.Stores;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.OpenId.Logging;
 using SimpleIdentityServer.Store;
-using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.Twilio.Client;
 using SimpleIdentityServer.UserManagement.Controllers;
 using System;
@@ -53,8 +52,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using WebApiContrib.Core.Storage;
-using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Host.Tests
 {
@@ -82,13 +79,11 @@ namespace SimpleIdentityServer.Host.Tests
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            // 1. Configure the caching
-            services.AddStorage(opt => opt.UseInMemory());
-            // 2. Add the dependencies needed to enable CORS
+            // 1. Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
-            // 3. Configure Simple identity server
+            // 2. Configure Simple identity server
             ConfigureIdServer(services);
             services.AddAuthentication(opts =>
             {
@@ -108,7 +103,7 @@ namespace SimpleIdentityServer.Host.Tests
             {
                 opt.AddOpenIdSecurityPolicy(DefaultSchema);
             });
-            // 4. Configure MVC
+            // 3. Configure MVC
             var mvc = services.AddMvc();
             var parts = mvc.PartManager.ApplicationParts;
             parts.Clear();
@@ -121,11 +116,6 @@ namespace SimpleIdentityServer.Host.Tests
 
         public void Configure(IApplicationBuilder app)
         {
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
-                context.EnsureSeedData(_context);
-            }
 
             //1 . Enable CORS.
             app.UseCors("AllowAll");
@@ -165,24 +155,23 @@ namespace SimpleIdentityServer.Host.Tests
         {
             services.AddSingleton(new SmsAuthenticationOptions());
             services.AddTransient<IEventPublisher, DefaultEventPublisher>();
-            services.AddSingleton<IConfirmationCodeStore>(_context.ConfirmationCodeStore.Object);
             services.AddSingleton<ITwilioClient>(_context.TwilioClient.Object);
             services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
             services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();
             services.AddTransient<IAuthenticateResourceOwnerService, CustomAuthenticateResourceOwnerService>();
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
-            services.AddSingleton<IAuthorizationCodeStore>(new InMemoryAuthorizationCodeStore());
-            services.AddSingleton<ITokenStore>(new Store.InMemory.InMemoryTokenStore());
             services.AddHostIdentityServer(_options)
-                .AddSimpleIdentityServerCore(_context.HttpClientFactory)
+                .AddSimpleIdentityServerCore(null, _context.HttpClientFactory, null, DefaultStores.Clients(_context), DefaultStores.Consents(), DefaultStores.JsonWebKeys(_context), null, DefaultStores.Users())
+                .AddDefaultTokenStore()
                 .AddSimpleIdentityServerJwt()
                 .AddTechnicalLogging()
                 .AddOpenidLogging()
                 .AddOAuthLogging()
                 .AddLogging()
-                .AddOAuthInMemoryEF()
-                .AddInMemoryAccessTokenStore()
-                .AddBasicAccountFilterInMemoryEF();
+                .AddDefaultAccessTokenStore()
+                .AddTransient<IAccountFilter, SimpleIdentityServer.AccountFilter.Basic.AccountFilter>()
+                .AddSingleton<IFilterRepository>(new DefaultFilterRepository(null));
+            services.AddSingleton<IConfirmationCodeStore>(_context.ConfirmationCodeStore.Object);
         }
 
         private List<Dictionary<string, object>> ExtractPublicKeysForSignature(IEnumerable<JsonWebKey> jsonWebKeys)

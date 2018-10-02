@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Apis\Common\SimpleIdentityServer.AccessToken.Store.InMemory\SimpleIdentityServer.AccessToken.Store.InMemory.csproj" />
+    <ProjectReference Include="..\..\src\Apis\Common\SimpleIdentityServer.AccessToken.Store\SimpleIdentityServer.AccessToken.Store.csproj" />
   </ItemGroup>
 
   <ItemGroup>

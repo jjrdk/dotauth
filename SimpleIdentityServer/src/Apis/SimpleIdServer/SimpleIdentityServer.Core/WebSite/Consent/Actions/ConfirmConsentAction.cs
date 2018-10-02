@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
     public interface IConfirmConsentAction
     {
-        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal);
+        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName);
     }
 
     public class ConfirmConsentAction : IConfirmConsentAction
@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// <returns>Redirects the authorization code to the callback.</returns>
         public async Task<ActionResult> Execute(
             AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal)
+            ClaimsPrincipal claimsPrincipal, string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -118,6 +118,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     // A consent can be given to a set of claims
                     assignedConsent = new Common.Models.Consent
                     {
+                        Id = Guid.NewGuid().ToString(),
                         Client = client,
                         ResourceOwner = await _resourceOwnerRepository.GetAsync(subject),
                         Claims = claimsParameter.GetClaimNames()
@@ -128,6 +129,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     // A consent can be given to a set of scopes
                     assignedConsent = new Common.Models.Consent
                     {
+                        Id = Guid.NewGuid().ToString(),
                         Client = client,
                         GrantedScopes = (await GetScopes(authorizationParameter.Scope)).ToList(),
                         ResourceOwner = await _resourceOwnerRepository.GetAsync(subject),
@@ -143,7 +145,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
 
             var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-            await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client);
+            await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName);
 
             // If redirect to the callback and the responde mode has not been set.
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)

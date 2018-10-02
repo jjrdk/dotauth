@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
         private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IClientRepository> _clientRepositoryFake;
         private Mock<IGenerateClientFromRegistrationRequest> _generateClientFromRegistrationRequest;
-        private Mock<IPasswordService> _encryptedPasswordFactoryStub;
+        private Mock<IClientPasswordService> _encryptedPasswordFactoryStub;
         private IRegisterClientAction _registerClientAction;
 
         #region Exceptions
@@ -182,7 +182,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             _oauthEventSource = new Mock<IOAuthEventSource>();
             _clientRepositoryFake = new Mock<IClientRepository>();
             _generateClientFromRegistrationRequest = new Mock<IGenerateClientFromRegistrationRequest>();
-            _encryptedPasswordFactoryStub = new Mock<IPasswordService>();
+            _encryptedPasswordFactoryStub = new Mock<IClientPasswordService>();
             _registerClientAction = new RegisterClientAction(
                 _oauthEventSource.Object,
                 _clientRepositoryFake.Object,

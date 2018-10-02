@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _introspectionActions.PostIntrospection(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _introspectionActions.PostIntrospection(null, null, null));
         }
 
         #endregion
@@ -58,11 +58,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
             var parameter = new IntrospectionParameter();
 
             // ACT
-            _introspectionActions.PostIntrospection(parameter, null);
+            _introspectionActions.PostIntrospection(parameter, null, null);
 
             // ASSERT
             _postIntrospectionActionStub.Verify(p => p.Execute(It.IsAny<IntrospectionParameter>(),
-                It.IsAny<AuthenticationHeaderValue>()));
+                It.IsAny<AuthenticationHeaderValue>(), null));
         }
 
         #endregion

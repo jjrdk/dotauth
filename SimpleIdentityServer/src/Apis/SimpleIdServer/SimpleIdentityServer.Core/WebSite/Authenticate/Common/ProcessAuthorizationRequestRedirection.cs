@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
             AuthorizationParameter authorizationParameter,
             string code,
             string subject,
-            List<Claim> claims);
+            List<Claim> claims, string issuerName);
     }
 
     public sealed class AuthenticateHelper : IAuthenticateHelper
@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
             AuthorizationParameter authorizationParameter,
             string code,
             string subject,
-            List<Claim> claims)
+            List<Claim> claims, string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
                 result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
                 var claimsIdentity = new ClaimsIdentity(claims, "simpleIdentityServer");
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client);
+                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName);
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {

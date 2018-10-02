@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
 {
     public interface IAuthorizationActions
     {
-        Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal);
+        Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal, string issuerName);
     }
 
     public class AuthorizationActions : IAuthorizationActions
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
         }
 
-        public async Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal)
+        public async Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal, string issuerName)
         {
             var processId = Guid.NewGuid().ToString();
             _eventPublisher.Publish(new AuthorizationRequestReceived(Guid.NewGuid().ToString(), processId,  _payloadSerializer.GetPayload(parameter), 0));
@@ -100,13 +100,13 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                 switch (authorizationFlow)
                 {
                     case AuthorizationFlow.AuthorizationCodeFlow:
-                        actionResult = await _getAuthorizationCodeOperation.Execute(parameter, claimsPrincipal, client);
+                        actionResult = await _getAuthorizationCodeOperation.Execute(parameter, claimsPrincipal, client, issuerName);
                         break;
                     case AuthorizationFlow.ImplicitFlow:
-                        actionResult = await _getTokenViaImplicitWorkflowOperation.Execute(parameter, claimsPrincipal, client);
+                        actionResult = await _getTokenViaImplicitWorkflowOperation.Execute(parameter, claimsPrincipal, client, issuerName);
                         break;
                     case AuthorizationFlow.HybridFlow:
-                        actionResult = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(parameter, claimsPrincipal, client);
+                        actionResult = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(parameter, claimsPrincipal, client, issuerName);
                         break;
                 }
 

@@ -34,11 +34,14 @@ using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Protector;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.Validators;
@@ -51,12 +54,15 @@ using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using SimpleIdentityServer.Scim.Client;
 using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core
 {
     public static class SimpleIdentityServerCoreExtensions
     {
-        public static IServiceCollection AddSimpleIdentityServerCore(this IServiceCollection serviceCollection, IHttpClientFactory factory = null)
+        public static IServiceCollection AddSimpleIdentityServerCore(this IServiceCollection serviceCollection, OAuthConfigurationOptions configurationOptions = null, IHttpClientFactory factory = null, 
+            List<ClaimAggregate> claims = null, List<Common.Models.Client> clients = null, List<Consent> consents = null, List<JsonWebKey> jsonWebKeys = null,
+            List<ResourceOwnerProfile> profiles = null, List<ResourceOwner> resourceOwners = null, List<Scope> scopes = null, List<Common.Models.Translation> translations = null)
         {
             if (serviceCollection == null)
             {
@@ -156,6 +162,16 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IResourceOwnerAuthenticateHelper, ResourceOwnerAuthenticateHelper>();
             serviceCollection.AddTransient<IAmrHelper, AmrHelper>();
             serviceCollection.AddTransient<IRevokeTokenParameterValidator, RevokeTokenParameterValidator>();
+            serviceCollection.AddSingleton<IClientPasswordService, DefaultClientPasswordService>();
+            serviceCollection.AddSingleton<IConfigurationService>(new DefaultConfigurationService(configurationOptions));
+            serviceCollection.AddSingleton<IClaimRepository>(new DefaultClaimRepository(claims));
+            serviceCollection.AddSingleton<IClientRepository>(new DefaultClientRepository(clients));
+            serviceCollection.AddSingleton<IConsentRepository>(new DefaultConsentRepository(consents));
+            serviceCollection.AddSingleton<IJsonWebKeyRepository>(new DefaultJsonWebKeyRepository(jsonWebKeys));
+            serviceCollection.AddSingleton<IProfileRepository>(new DefaultProfileRepository(profiles));
+            serviceCollection.AddSingleton<IResourceOwnerRepository>(new DefaultResourceOwnerRepository(resourceOwners));
+            serviceCollection.AddSingleton<IScopeRepository>(new DefaultScopeRepository(scopes));
+            serviceCollection.AddSingleton<ITranslationRepository>(new DefaultTranslationRepository(translations));
             return serviceCollection;
         }
     }

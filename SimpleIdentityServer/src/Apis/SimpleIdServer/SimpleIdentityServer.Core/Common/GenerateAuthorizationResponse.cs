@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Core.Common
 {
     public interface IGenerateAuthorizationResponse
     {
-        Task ExecuteAsync(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Core.Common.Models.Client client);
+        Task ExecuteAsync(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Core.Common.Models.Client client, string issuerName);
     }
 
     public class GenerateAuthorizationResponse : IGenerateAuthorizationResponse
@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Core.Common
             _grantedTokenHelper = grantedTokenHelper;
         }
 
-        public async Task ExecuteAsync(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Core.Common.Models.Client client)
+        public async Task ExecuteAsync(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Core.Common.Models.Client client, string issuerName)
         {
             if (actionResult == null || actionResult.RedirectInstruction == null)
             {
@@ -106,7 +106,7 @@ namespace SimpleIdentityServer.Core.Common
             _oauthEventSource.StartGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
                 authorizationParameter.ResponseType);
             var responses = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
-            var idTokenPayload = await GenerateIdTokenPayload(claimsPrincipal, authorizationParameter);
+            var idTokenPayload = await GenerateIdTokenPayload(claimsPrincipal, authorizationParameter, issuerName);
             var userInformationPayload = await GenerateUserInformationPayload(claimsPrincipal, authorizationParameter);
             if (responses.Contains(ResponseType.token)) // 1. Generate an access token.
             {
@@ -288,17 +288,18 @@ namespace SimpleIdentityServer.Core.Common
 
         private async Task<JwsPayload> GenerateIdTokenPayload(
             ClaimsPrincipal claimsPrincipal,
-            AuthorizationParameter authorizationParameter)
+            AuthorizationParameter authorizationParameter,
+            string issuerName)
         {
             JwsPayload jwsPayload;
             if (authorizationParameter.Claims != null && 
                 authorizationParameter.Claims.IsAnyIdentityTokenClaimParameter())
             {
-                jwsPayload = await _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(claimsPrincipal, authorizationParameter, Clone(authorizationParameter.Claims.IdToken));
+                jwsPayload = await _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(claimsPrincipal, authorizationParameter, Clone(authorizationParameter.Claims.IdToken), issuerName);
             }
             else
             {
-                jwsPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopesAsync(claimsPrincipal, authorizationParameter);
+                jwsPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopesAsync(claimsPrincipal, authorizationParameter, issuerName);
             }
 
             return jwsPayload;

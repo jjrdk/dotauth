@@ -38,8 +38,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             InitializeMockingObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(new AuthorizationParameter(), null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(new AuthorizationParameter(), null, null, null));
         }
         
         [Fact]
@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.ProcessAsync(authorizationParameter, null, new Core.Common.Models.Client()));
+                    () => _processAuthorizationRequest.ProcessAsync(authorizationParameter, null, new Core.Common.Models.Client(), null));
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
             Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectUrl)));
             Assert.True(exception.State.Equals(state));

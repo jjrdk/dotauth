@@ -1,5 +1,5 @@
 ﻿using Moq;
-using SimpleIdentityServer.AccessToken.Store.InMemory;
+using SimpleIdentityServer.AccessToken.Store;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Results;
 using SimpleIdentityServer.Client.Selectors;
