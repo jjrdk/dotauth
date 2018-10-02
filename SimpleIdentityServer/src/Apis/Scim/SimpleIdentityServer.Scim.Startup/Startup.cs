@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Scim.Startup
 
         private void ConfigureScimRepository(IServiceCollection services)
         {
-            services.AddScimPostgresqlEF("User ID=rocheidserver;Password=password;Host=localhost;Port=5432;Database=scim;Pooling=true;");
+            services.AddScimPostgresqlEF("User ID=postgres;Password=password;Host=localhost;Port=5432;Database=scim;Pooling=true;");
         }
 
         private void ConfigureCachingInMemory(IServiceCollection services)

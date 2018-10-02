@@ -203,7 +203,7 @@ namespace SimpleIdentityServer.Startup
 
         private void ConfigureOauthRepositorySqlServer(IServiceCollection services)
         {
-            var connectionString = "User ID=rocheidserver;Password=password;Host=localhost;Port=5432;Database=idserver;Pooling=true;";
+            var connectionString = "User ID=postgres;Password=password;Host=localhost;Port=5432;Database=idserver;Pooling=true;";
             services.AddOAuthPostgresqlEF(connectionString, null);
         }
 
