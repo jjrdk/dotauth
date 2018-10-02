@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Core.Authenticate
 {
     public interface IAuthenticateClient
     {
-        Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction);
+        Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction, string issuerName);
     }
 
     public class AuthenticateClient : IAuthenticateClient
@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             _oauthEventSource = oAuthEventSource;
         }
 
-        public async Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction)
+        public async Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction, string issuerName)
         {
             if (instruction == null)
             {
@@ -103,9 +103,9 @@ namespace SimpleIdentityServer.Core.Authenticate
                         errorMessage = string.Format(ErrorDescriptions.TheClientDoesntContainASharedSecret, client.ClientId);
                         break;
                     }
-                    return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, client.Secrets.First(s => s.Type == ClientSecretTypes.SharedSecret).Value);
+                    return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, client.Secrets.First(s => s.Type == ClientSecretTypes.SharedSecret).Value, issuerName);
                 case TokenEndPointAuthenticationMethods.private_key_jwt:
-                   return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+                   return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, issuerName);
                 case TokenEndPointAuthenticationMethods.tls_client_auth:
                     client = _clientTlsAuthentication.AuthenticateClient(instruction, client);
                     if (client == null)

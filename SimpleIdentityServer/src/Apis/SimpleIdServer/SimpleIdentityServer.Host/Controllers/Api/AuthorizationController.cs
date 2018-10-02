@@ -82,7 +82,8 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             authorizationRequest.SessionId = sessionId;
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.CookieName);
             var parameter = authorizationRequest.ToParameter();
-            var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser);
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
+            var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser, issuerName);
             if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var redirectUrl = new Uri(authorizationRequest.RedirectUri);

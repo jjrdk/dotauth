@@ -9,21 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Lib\Bus\SimpleBus.InMemory\SimpleBus.InMemory.csproj" />
-    <ProjectReference Include="..\..\Common\SimpleIdentityServer.AccessToken.Store.InMemory\SimpleIdentityServer.AccessToken.Store.InMemory.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.AccountFilter.Basic.EF.InMemory\SimpleIdentityServer.AccountFilter.Basic.EF.InMemory.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.AccountFilter.Basic.EF\SimpleIdentityServer.AccountFilter.Basic.EF.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.AccountFilter.Basic\SimpleIdentityServer.AccountFilter.Basic.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Authenticate.Basic\SimpleIdentityServer.Authenticate.Basic.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Authenticate.LoginPassword\SimpleIdentityServer.Authenticate.LoginPassword.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Authenticate.SMS\SimpleIdentityServer.Authenticate.SMS.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.EF.Postgre\SimpleIdentityServer.EF.Postgre.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.OAuth2Introspection\SimpleIdentityServer.OAuth2Introspection.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Shell\SimpleIdentityServer.Shell.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Store.InMemory\SimpleIdentityServer.Store.InMemory.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.TwoFactorAuthentication.Twilio\SimpleIdentityServer.TwoFactorAuthentication.Twilio.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.UserInfoIntrospection\SimpleIdentityServer.UserInfoIntrospection.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.UserManagement\SimpleIdentityServer.UserManagement.csproj" />
   </ItemGroup>
@@ -33,12 +22,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="2.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.2" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="1.0.0" />
-    <PackageReference Include="Serilog.Sinks.ColoredConsole" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="2.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.3" />
   </ItemGroup>
 
   <ItemGroup>

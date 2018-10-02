@@ -23,42 +23,34 @@ using SimpleBus.Core;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.EF;
-using SimpleIdentityServer.EF.InMemory;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.OAuth.Logging;
-using SimpleIdentityServer.Store.InMemory;
+using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Providers;
-using SimpleIdentityServer.Uma.EF;
-using SimpleIdentityServer.Uma.EF.InMemory;
 using SimpleIdentityServer.Uma.Host.Configuration;
-using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Controllers;
 using SimpleIdentityServer.Uma.Host.Middlewares;
-using SimpleIdentityServer.Uma.Host.Tests.Extensions;
 using SimpleIdentityServer.Uma.Host.Tests.MiddleWares;
 using SimpleIdentityServer.Uma.Host.Tests.Services;
+using SimpleIdentityServer.Uma.Host.Tests.Stores;
 using SimpleIdentityServer.Uma.Logging;
-using SimpleIdentityServer.Uma.Store.InMemory;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Security.Claims;
 using WebApiContrib.Core.Concurrency;
-using WebApiContrib.Core.Storage.InMemory;
+using WebApiContrib.Core.Storage;
 
 namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
 {
     public class FakeUmaStartup : IStartup
     {
         public const string DefaultSchema = "OAuth2Introspection";
-        private UmaHostConfiguration _configuration;
         private SharedContext _context;
 
         public FakeUmaStartup(SharedContext context)
         {
-            _configuration = new UmaHostConfiguration();
             _context = context;
         }
 
@@ -70,7 +62,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
             }
 
             // 1. Add the dependencies.
-            RegisterServices(services, _configuration);
+            RegisterServices(services);
             // 2. Add authorization policies.
             services.AddAuthentication(opts =>
             {
@@ -106,26 +98,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
             {
                 throw new ArgumentNullException(nameof(app));
             }
-            
-            // 1. Insert seed data
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var simpleIdServerUmaContext = serviceScope.ServiceProvider.GetService<SimpleIdServerUmaContext>();
-                try
-                {
-                    simpleIdServerUmaContext.Database.EnsureCreated();
-                }
-                catch (Exception) { }
-
-                simpleIdServerUmaContext.EnsureSeedData();
-            }
-
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
-                simpleIdentityServerContext.Database.EnsureCreated();
-                simpleIdentityServerContext.EnsureSeedData(_context);
-            }
 
             app.Use(async (context, next) =>
             {
@@ -153,23 +125,16 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
             });
         }
 
-        private static void RegisterServices(IServiceCollection services, UmaHostConfiguration configuration)
+        private void RegisterServices(IServiceCollection services)
         {
             // 1. Add CORE.
-            services.AddSimpleIdServerUmaCore()
-                .AddSimpleIdentityServerCore()
-                .AddSimpleIdentityServerJwt();
-
-            // 2. Register DB & stores.
-            services.AddUmaInMemoryEF();
-            services.AddOAuthInMemoryEF();
-            services.AddUmaInMemoryStore();
-            services.AddInMemoryStorage();
-
-            services.AddTransient<IEventPublisher, DefaultEventPublisher>();
-            // services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions());
-
-            services.AddConcurrency(opt => opt.UseInMemory());
+            services.AddSimpleIdServerUmaCore(null, UmaStores.GetResources())
+                .AddSimpleIdentityServerCore(clients: OAuthStores.GetClients(), jsonWebKeys: OAuthStores.GetJsonWebKeys(_context), scopes: OAuthStores.GetScopes())
+                .AddSimpleIdentityServerJwt()
+                .AddIdServerClient()
+                .AddDefaultSimpleBus()
+                .AddDefaultTokenStore()
+                .AddConcurrency(opt => opt.UseInMemory());
 
             // 3. Enable logging.
             services.AddLogging();

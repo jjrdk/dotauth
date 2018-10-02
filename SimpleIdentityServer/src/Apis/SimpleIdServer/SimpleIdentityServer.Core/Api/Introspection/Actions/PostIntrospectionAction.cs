@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 {
     public interface IPostIntrospectionAction
     {
-        Task<IntrospectionResult> Execute(IntrospectionParameter introspectionParameter, AuthenticationHeaderValue authenticationHeaderValue);
+        Task<IntrospectionResult> Execute(IntrospectionParameter introspectionParameter, AuthenticationHeaderValue authenticationHeaderValue, string issuerName);
     }
 
     public class PostIntrospectionAction : IPostIntrospectionAction
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 
         public async Task<IntrospectionResult> Execute(
             IntrospectionParameter introspectionParameter,
-            AuthenticationHeaderValue authenticationHeaderValue)
+            AuthenticationHeaderValue authenticationHeaderValue, string issuerName)
         {            
             // 1. Validate the parameters
             if (introspectionParameter == null)
@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 
             // 2. Authenticate the client
             var instruction = CreateAuthenticateInstruction(introspectionParameter, authenticationHeaderValue);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
             if (authResult.Client == null)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);

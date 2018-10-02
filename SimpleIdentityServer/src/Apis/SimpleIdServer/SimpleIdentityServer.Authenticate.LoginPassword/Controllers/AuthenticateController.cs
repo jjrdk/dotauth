@@ -178,13 +178,14 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
                 }
 
                 // 4. Local authentication
+                var issuerName = Request.GetAbsoluteUriWithVirtualPath();
                 var actionResult = await _authenticateActions.LocalOpenIdUserAuthentication(new LocalAuthenticationParameter
                     {
                         UserName = viewModel.Login,
                         Password = viewModel.Password
                     },
                     request.ToParameter(),
-                    viewModel.Code);
+                    viewModel.Code, issuerName);
                 var subject = actionResult.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
 
                 // 5. Two factor authentication.

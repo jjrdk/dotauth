@@ -226,7 +226,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             {
                 var request = _dataProtector.Unprotect<AuthorizationRequest>(confirmCodeViewModel.Code);
                 await SetLocalCookie(authenticatedUser.Claims, request.SessionId);
-                var actionResult = await _authenticateHelper.ProcessRedirection(request.ToParameter(), confirmCodeViewModel.Code, subject, authenticatedUser.Claims.ToList());
+                var issuerName = Request.GetAbsoluteUriWithVirtualPath();
+                var actionResult = await _authenticateHelper.ProcessRedirection(request.ToParameter(), confirmCodeViewModel.Code, subject, authenticatedUser.Claims.ToList(), issuerName);
                 var result = this.CreateRedirectionFromActionResult(actionResult, request);
                 if (result != null)
                 {

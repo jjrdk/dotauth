@@ -18,16 +18,23 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Services
 {
-    public class DefaultConfigurationService : IConfigurationService
+    public class DefaultUmaConfigurationService : IUmaConfigurationService
     {
+        private UmaConfigurationOptions _opts;
+
+        public DefaultUmaConfigurationService(UmaConfigurationOptions opts)
+        {
+            _opts = opts == null ? new UmaConfigurationOptions() : opts;
+        }
+
         public Task<int> GetRptLifeTime()
         {
-            return Task.FromResult(3000);
+            return Task.FromResult(_opts.RptLifeTime);
         }
 
         public Task<int> GetTicketLifeTime()
         {
-            return Task.FromResult(3000);
+            return Task.FromResult(_opts.TicketLifeTime);
         }
     }
 }

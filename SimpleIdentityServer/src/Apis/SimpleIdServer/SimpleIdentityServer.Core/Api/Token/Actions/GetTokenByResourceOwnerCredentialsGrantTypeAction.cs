@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IGetTokenByResourceOwnerCredentialsGrantTypeAction
     {
-        Task<GrantedToken> Execute(ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
+        Task<GrantedToken> Execute(ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
     }
 
     public class GetTokenByResourceOwnerCredentialsGrantTypeAction : IGetTokenByResourceOwnerCredentialsGrantTypeAction
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _grantedTokenHelper = grantedTokenHelper;
         }
 
-        public async Task<GrantedToken> Execute(ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null)
+        public async Task<GrantedToken> Execute(ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
         {
             if (resourceOwnerGrantTypeParameter == null)
             {
@@ -87,7 +87,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             // 1. Try to authenticate the client
             var instruction = CreateAuthenticateInstruction(resourceOwnerGrantTypeParameter, authenticationHeaderValue, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
             var client = authResult.Client;
             if (authResult.Client == null)
             {                

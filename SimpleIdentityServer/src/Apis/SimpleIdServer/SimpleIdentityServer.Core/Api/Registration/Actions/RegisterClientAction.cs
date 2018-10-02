@@ -40,13 +40,13 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
         private readonly IOAuthEventSource _oauthEventSource;
         private readonly IClientRepository _clientRepository;
         private readonly IGenerateClientFromRegistrationRequest _generateClientFromRegistrationRequest;
-        private readonly IPasswordService _encryptedPasswordFactory;
+        private readonly IClientPasswordService _encryptedPasswordFactory;
 
         public RegisterClientAction(
             IOAuthEventSource oauthEventSource,
             IClientRepository clientRepository,
             IGenerateClientFromRegistrationRequest generateClientFromRegistrationRequest,
-            IPasswordService encryptedPasswordFactory)
+            IClientPasswordService encryptedPasswordFactory)
         {
             _oauthEventSource = oauthEventSource;
             _clientRepository = clientRepository;

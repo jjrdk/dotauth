@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\SimpleIdentityServer.Common.Dtos\SimpleIdentityServer.Common.Dtos.csproj" />
+    <ProjectReference Include="..\..\Common\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Mapping.Ad.Common\SimpleIdentityServer.Scim.Mapping.Ad.Common.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Mapping\SimpleIdentityServer.Scim.Mapping.csproj" />
   </ItemGroup>

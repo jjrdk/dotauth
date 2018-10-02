@@ -289,7 +289,8 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             {
                 var request = _dataProtector.Unprotect<AuthorizationRequest>(codeViewModel.AuthRequestCode);
                 await SetLocalCookie(authenticatedUser.Claims, request.SessionId);
-                var actionResult = await _authenticateHelper.ProcessRedirection(request.ToParameter(), codeViewModel.AuthRequestCode, authenticatedUser.GetSubject(), authenticatedUser.Claims.ToList());
+                var issuerName = Request.GetAbsoluteUriWithVirtualPath();
+                var actionResult = await _authenticateHelper.ProcessRedirection(request.ToParameter(), codeViewModel.AuthRequestCode, authenticatedUser.GetSubject(), authenticatedUser.Claims.ToList(), issuerName);
                 LogAuthenticateUser(actionResult, request.ProcessId);
                 var result = this.CreateRedirectionFromActionResult(actionResult, request);
                 return result;
@@ -317,10 +318,11 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
             var authenticatedUser = await SetUser();
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _authenticateActions.AuthenticateResourceOwnerOpenId(
                 request.ToParameter(),
                 authenticatedUser,
-                code);
+                code, issuerName);
             var result = this.CreateRedirectionFromActionResult(actionResult,
                 request);
             if (result != null)
@@ -438,7 +440,8 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
             // 6. Try to authenticate the resource owner & returns the claims.
             var authorizationRequest = _dataProtector.Unprotect<AuthorizationRequest>(request);
-            var actionResult = await _authenticateHelper.ProcessRedirection(authorizationRequest.ToParameter(), request, subject, claims);
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
+            var actionResult = await _authenticateHelper.ProcessRedirection(authorizationRequest.ToParameter(), request, subject, claims, issuerName);
 
             // 7. Store claims into new cookie
             if (actionResult != null)

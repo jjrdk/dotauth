@@ -94,7 +94,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(null, null, null, null, null));
         }
 
         [Fact]
@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             };
             
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, null, null, null, null));
         }
 
         [Fact]
@@ -122,7 +122,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             };
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), null, null, null));
         }
 
         [Fact]
@@ -137,7 +137,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), claimsPrincipal, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), claimsPrincipal, null, null));
         }
 
         [Fact]
@@ -159,7 +159,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                     ResponseType.id_token  
                 });
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>(), null))
                 .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
@@ -171,7 +171,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(Task.FromResult(idToken));
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client(), null);
 
             // ASSERT
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Constants.StandardAuthorizationResponseNames.IdTokenName));
@@ -207,7 +207,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                     ResponseType.token  
                 });
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>(), null))
                 .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
@@ -228,7 +228,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client(), null);
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AccessTokenName));
@@ -266,7 +266,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                     ResponseType.token  
                 });
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>(), null))
                 .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
@@ -282,7 +282,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(() => Task.FromResult(grantedToken));
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client(), null);
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AccessTokenName));
@@ -315,7 +315,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                     ResponseType.code  
                 });
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>(), null))
                 .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
@@ -327,7 +327,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(Task.FromResult(consent));
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client(), null);
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
@@ -368,7 +368,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                     ResponseType.id_token  
                 });
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>(), null))
                 .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
@@ -377,7 +377,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(Task.FromResult(idToken));
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client(), null);
 
             // ASSERT
             _oauthEventSource.Verify(s => s.StartGeneratingAuthorizationResponseToClient(clientId, responseType));
@@ -419,7 +419,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                     ResponseType.id_token  
                 });
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>(), null))
                 .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
@@ -431,7 +431,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(AuthorizationFlow.ImplicitFlow);
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client(), null);
 
             // ASSERT
             Assert.True(actionResult.RedirectInstruction.ResponseMode == ResponseMode.fragment);

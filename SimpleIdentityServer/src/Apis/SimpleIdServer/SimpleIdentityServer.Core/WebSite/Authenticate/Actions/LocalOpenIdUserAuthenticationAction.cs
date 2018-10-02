@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         Task<LocalOpenIdAuthenticationResult> Execute(
             LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter authorizationParameter,
-            string code);
+            string code, string issuerName);
     }
 
     public class LocalOpenIdAuthenticationResult
@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         public async Task<LocalOpenIdAuthenticationResult> Execute(
             LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter authorizationParameter,
-            string code)
+            string code, string issuerName)
         {
             if (localAuthenticationParameter == null)
             {
@@ -111,7 +111,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 ActionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
                                 code,
                                 resourceOwner.Id,
-                                claims),
+                                claims, issuerName),
                 Claims = claims,
                 TwoFactor = resourceOwner.TwoFactorAuthentication
             };

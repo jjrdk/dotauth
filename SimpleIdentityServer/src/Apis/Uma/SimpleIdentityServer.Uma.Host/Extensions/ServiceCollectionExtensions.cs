@@ -17,39 +17,52 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleBus.Core;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.OAuth.Logging;
+using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.Host.Configuration;
-using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Services;
 using SimpleIdentityServer.Uma.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using WebApiContrib.Core.Concurrency;
+using WebApiContrib.Core.Storage;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddUmaHost(this IServiceCollection services, UmaHostConfiguration configuration)
+        private static List<Scope> DEFAULT_SCOPES = new List<Scope>
+        {
+            new Scope
+            {
+                Name = "uma_protection",
+                Description = "Access to UMA permission, resource set",
+                IsOpenIdScope = false,
+                IsDisplayedInConsent = false,
+                Type = ScopeType.ProtectedApi,
+                UpdateDateTime = DateTime.UtcNow,
+                CreateDateTime = DateTime.UtcNow
+            }
+        };
+
+        public static IServiceCollection AddUmaHost(this IServiceCollection services, AuthorizationServerOptions authorizationServerOptions)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
             // 1. Add the dependencies.
-            RegisterServices(services, configuration);
+            RegisterServices(services, authorizationServerOptions);
             return services;
         }
 
@@ -83,35 +96,26 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             return authorizationOptions;
         }
 
-        private static void RegisterServices(IServiceCollection services, UmaHostConfiguration configuration)
+        private static void RegisterServices(IServiceCollection services, AuthorizationServerOptions authorizationServerOptions)
         {
-            services.AddSimpleIdServerUmaCore()
-                .AddSimpleIdentityServerCore()
+            services.AddSimpleIdServerUmaCore(authorizationServerOptions.UmaConfigurationOptions, 
+                authorizationServerOptions.Configuration == null ? null : authorizationServerOptions.Configuration.Resources,
+                authorizationServerOptions.Configuration == null ? null : authorizationServerOptions.Configuration.Policies)
+                .AddSimpleIdentityServerCore(authorizationServerOptions.OAuthConfigurationOptions, null, 
+                    clients: authorizationServerOptions.Configuration == null ? null : authorizationServerOptions.Configuration.Clients,
+                    scopes: authorizationServerOptions.Configuration == null ? DEFAULT_SCOPES : authorizationServerOptions.Configuration.Scopes,
+                    claims: new List<ClaimAggregate>())
                 .AddSimpleIdentityServerJwt()
-                .AddIdServerClient();
+                .AddIdServerClient()
+                .AddDefaultTokenStore()
+                .AddDefaultSimpleBus()
+                .AddConcurrency(opt => opt.UseInMemory());
             services.AddTechnicalLogging();
             services.AddOAuthLogging();
             services.AddUmaLogging();
             services.AddTransient<IHostingProvider, HostingProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();
-            if (configuration.ConfigurationService == null)
-            {
-                services.AddTransient<IConfigurationService, DefaultConfigurationService>();
-            }
-            else
-            {
-                services.AddTransient(typeof(IConfigurationService), configuration.ConfigurationService);
-            }
-
-            if (configuration.PasswordService == null)
-            {
-                services.AddTransient<IPasswordService, DefaultPasswordService>();
-            }
-            else
-            {
-                services.AddTransient(typeof(IPasswordService), configuration.PasswordService);
-            }
         }
     }
 }

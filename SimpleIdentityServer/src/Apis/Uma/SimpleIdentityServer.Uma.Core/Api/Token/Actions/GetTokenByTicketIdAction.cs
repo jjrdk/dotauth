@@ -26,13 +26,13 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
 {
     public interface IGetTokenByTicketIdAction
     {
-        Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
+        Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
     }
 
     internal sealed class GetTokenByTicketIdAction : IGetTokenByTicketIdAction
     {
         private readonly ITicketStore _ticketStore;
-        private readonly IConfigurationService _configurationService;
+        private readonly IUmaConfigurationService _configurationService;
         private readonly IUmaServerEventSource _umaServerEventSource;
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
         private readonly IAuthorizationPolicyValidator _authorizationPolicyValidator;
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
         private readonly IClientHelper _clientHelper;
         private readonly ITokenStore _tokenStore;
 
-        public GetTokenByTicketIdAction(ITicketStore ticketStore, IConfigurationService configurationService,
+        public GetTokenByTicketIdAction(ITicketStore ticketStore, IUmaConfigurationService configurationService,
             IUmaServerEventSource umaServerEventSource, IIdentityServerClientFactory identityServerClientFactory,
             IAuthorizationPolicyValidator authorizationPolicyValidator, IAuthenticateInstructionGenerator authenticateInstructionGenerator,
             IAuthenticateClient authenticateClient, IJwtGenerator jwtGenerator, IClientHelper clientHelper, ITokenStore tokenStore)
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             _tokenStore = tokenStore;
         }
 
-        public async Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null)
+        public async Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
         {
             // 1. Check parameters.
             if (parameter == null)
@@ -79,7 +79,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
 
             // 2. Try to authenticate the client.
             var instruction = CreateAuthenticateInstruction(parameter, authenticationHeaderValue, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
             var client = authResult.Client;
             if (client == null)
             {

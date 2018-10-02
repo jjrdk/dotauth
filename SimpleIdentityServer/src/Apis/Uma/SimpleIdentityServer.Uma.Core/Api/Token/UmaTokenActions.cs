@@ -9,7 +9,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
 {
     public interface IUmaTokenActions
     {
-        Task<GrantedToken> GetTokenByTicketId(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
+        Task<GrantedToken> GetTokenByTicketId(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
     }
 
     internal sealed class UmaTokenActions : IUmaTokenActions
@@ -21,9 +21,9 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
             _getTokenByTicketIdAction = getTokenByTicketIdAction;
         }
 
-        public Task<GrantedToken> GetTokenByTicketId(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null)
+        public Task<GrantedToken> GetTokenByTicketId(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
         {
-            return _getTokenByTicketIdAction.Execute(parameter, authenticationHeaderValue, certificate);
+            return _getTokenByTicketIdAction.Execute(parameter, authenticationHeaderValue, certificate, issuerName);
         }
     }
 }

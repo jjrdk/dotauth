@@ -916,8 +916,8 @@ namespace SimpleIdentityServer.Host.Tests
                     StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddHours(1).ConvertToUnixTimestamp()
                 }
             };
-            var jws = _jwsGenerator.Generate(payload, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
-            var jwe = _jweGenerator.GenerateJweByUsingSymmetricPassword(jws, JweAlg.RSA1_5, JweEnc.A128CBC_HS256, _server.SharedCtx.EncryptionKey, "jwt_client");
+            var jws = _jwsGenerator.Generate(payload, JwsAlg.RS256, _server.SharedCtx.ModelSignatureKey);
+            var jwe = _jweGenerator.GenerateJweByUsingSymmetricPassword(jws, JweAlg.RSA1_5, JweEnc.A128CBC_HS256, _server.SharedCtx.ModelEncryptionKey, "jwt_client");
 
             // ACT
             var token = await _clientAuthSelector.UseClientSecretJwtAuth(jwe, "jwt_client")

@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IGetTokenByAuthorizationCodeGrantTypeAction
     {
-        Task<GrantedToken> Execute(AuthorizationCodeGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
+        Task<GrantedToken> Execute(AuthorizationCodeGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
     }
 
     public class GetTokenByAuthorizationCodeGrantTypeAction : IGetTokenByAuthorizationCodeGrantTypeAction
@@ -90,14 +90,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         #region Public methods
 
-        public async Task<GrantedToken> Execute(AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null)
+        public async Task<GrantedToken> Execute(AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
         {
             if (authorizationCodeGrantTypeParameter == null)
             {
                 throw new ArgumentNullException(nameof(authorizationCodeGrantTypeParameter));
             }
 
-            var result = await ValidateParameter(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate);
+            var result = await ValidateParameter(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate, issuerName);
             await _authorizationCodeStore.RemoveAuthorizationCode(result.AuthCode.Code); // 1. Invalidate the authorization code by removing it !
             var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(
                 result.AuthCode.Scopes,
@@ -137,11 +137,12 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         private async Task<ValidationResult> ValidateParameter(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate)
+            X509Certificate2 certificate,
+            string issuerName)
         {
             // 1. Authenticate the client
             var instruction = CreateAuthenticateInstruction(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
             var client = authResult.Client;
             if (client == null)
             {

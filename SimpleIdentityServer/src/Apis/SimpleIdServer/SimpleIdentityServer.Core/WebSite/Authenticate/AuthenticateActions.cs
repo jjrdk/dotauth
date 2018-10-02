@@ -27,8 +27,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 {
     public interface IAuthenticateActions
     {
-        Task<ActionResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code);
-        Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter, AuthorizationParameter authorizationParameter, string code);
+        Task<ActionResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code, string issuerName);
+        Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter, AuthorizationParameter authorizationParameter, string code, string issuerName);
         Task<string> GenerateAndSendCode(string subject);
         Task<bool> ValidateCode(string code);
         Task<bool> RemoveCode(string code);
@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             _removeConfirmationCodeAction = removeConfirmationCodeAction;
         }
 
-        public async Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter, AuthorizationParameter authorizationParameter, string code)
+        public async Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter, AuthorizationParameter authorizationParameter, string code, string issuerName)
         {
             if (localAuthenticationParameter == null)
             {
@@ -72,10 +72,10 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             return await _localOpenIdUserAuthenticationAction.Execute(
                 localAuthenticationParameter,
                 authorizationParameter,
-                code);
+                code, issuerName);
         }
 
-        public async Task<ActionResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code)
+        public async Task<ActionResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code, string issuerName)
         {
             if (parameter == null)
             {
@@ -89,7 +89,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 
             return await _authenticateResourceOwnerOpenIdAction.Execute(parameter, 
                 claimsPrincipal, 
-                code);
+                code, issuerName);
         }
 
         public async Task<string> GenerateAndSendCode(string subject)

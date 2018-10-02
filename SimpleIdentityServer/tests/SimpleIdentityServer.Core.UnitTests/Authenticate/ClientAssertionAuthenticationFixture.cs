@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(null, null));
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(false);
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(() => null);
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -94,7 +94,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(() => Task.FromResult((JwsPayload)null));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -127,7 +127,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -168,11 +168,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(Task.FromResult(jwsPayload));
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetIssuerNameAsync())
-                .Returns(Task.FromResult("invalid_issuer"));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, "invalid_issuer");
 
             // ASSERT
             Assert.Null(result.Client);
@@ -216,11 +214,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(Task.FromResult(jwsPayload));
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetIssuerNameAsync())
-                .Returns(Task.FromResult("audience"));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, "audience");
 
             // ASSERT
             Assert.Null(result.Client);
@@ -264,11 +260,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(Task.FromResult(jwsPayload));
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetIssuerNameAsync())
-                .Returns(Task.FromResult("audience"));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, "audience");
 
             // ASSERT
             Assert.NotNull(result.Client);
@@ -285,7 +279,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(null, string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(null, string.Empty, null));
         }
 
         [Fact]
@@ -301,7 +295,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(false);
             
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -325,7 +319,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(Task.FromResult(string.Empty));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -351,7 +345,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(false);
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -379,7 +373,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(() => Task.FromResult((JwsPayload)null));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -426,11 +420,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(Task.FromResult(jwsPayload));
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetIssuerNameAsync())
-                .Returns(Task.FromResult("audience"));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, "audience");
 
             // ASSERT
             Assert.NotNull(result);

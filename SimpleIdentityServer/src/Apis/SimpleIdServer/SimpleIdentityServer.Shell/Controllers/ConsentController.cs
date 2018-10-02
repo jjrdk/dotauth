@@ -68,8 +68,9 @@ namespace SimpleIdentityServer.Shell.Controllers
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var client = new Core.Common.Models.Client();
             var authenticatedUser = await SetUser();
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _consentActions.DisplayConsent(request.ToParameter(),
-                authenticatedUser);
+                authenticatedUser, issuerName);
 
             var result = this.CreateRedirectionFromActionResult(actionResult.ActionResult, request);
             if (result != null)
@@ -96,8 +97,9 @@ namespace SimpleIdentityServer.Shell.Controllers
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.CookieNames.CookieName);
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _consentActions.ConfirmConsent(parameter,
-                authenticatedUser);
+                authenticatedUser, issuerName);
             await LogConsentAccepted(actionResult, parameter.ProcessId);
             return this.CreateRedirectionFromActionResult(actionResult,
                 request);

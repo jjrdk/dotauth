@@ -113,6 +113,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Client.Integration.Tests", "tests\SimpleIdentityServer.Scim.Client.Integration.Tests\SimpleIdentityServer.Scim.Client.Integration.Tests.csproj", "{099B0A49-9EC0-4714-A2F5-C86C851385A0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Mapping.Ad.Postgre", "src\Apis\Scim\SimpleIdentityServer.Scim.Mapping.Ad.Postgre\SimpleIdentityServer.Scim.Mapping.Ad.Postgre.csproj", "{80200996-8B3E-4C5F-A594-F29821A4752F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Mapping.Ad.Sqlite", "src\Apis\Scim\SimpleIdentityServer.Scim.Mapping.Ad.Sqlite\SimpleIdentityServer.Scim.Mapping.Ad.Sqlite.csproj", "{119F03DB-C07C-4893-B2F8-873AC030C7FF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Mapping.Ad.SqlServer", "src\Apis\Scim\SimpleIdentityServer.Scim.Mapping.Ad.SqlServer\SimpleIdentityServer.Scim.Mapping.Ad.SqlServer.csproj", "{98D23049-8E94-4D77-8607-93FAD74C87DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -299,6 +305,18 @@ Global
 		{099B0A49-9EC0-4714-A2F5-C86C851385A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{099B0A49-9EC0-4714-A2F5-C86C851385A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{099B0A49-9EC0-4714-A2F5-C86C851385A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80200996-8B3E-4C5F-A594-F29821A4752F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80200996-8B3E-4C5F-A594-F29821A4752F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80200996-8B3E-4C5F-A594-F29821A4752F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80200996-8B3E-4C5F-A594-F29821A4752F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{119F03DB-C07C-4893-B2F8-873AC030C7FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{119F03DB-C07C-4893-B2F8-873AC030C7FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{119F03DB-C07C-4893-B2F8-873AC030C7FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{119F03DB-C07C-4893-B2F8-873AC030C7FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98D23049-8E94-4D77-8607-93FAD74C87DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98D23049-8E94-4D77-8607-93FAD74C87DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98D23049-8E94-4D77-8607-93FAD74C87DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98D23049-8E94-4D77-8607-93FAD74C87DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -354,6 +372,9 @@ Global
 		{76E5CAF1-C6C3-412F-A3A5-ADDA8F91DF2F} = {28615E63-2AF5-4326-ACD3-6F3FB6B92338}
 		{1BEA3E01-B004-465C-B4C2-2CA04AA8B21C} = {A2E898A8-D676-4552-A03A-03CC27C0ECDC}
 		{099B0A49-9EC0-4714-A2F5-C86C851385A0} = {A2E898A8-D676-4552-A03A-03CC27C0ECDC}
+		{80200996-8B3E-4C5F-A594-F29821A4752F} = {28615E63-2AF5-4326-ACD3-6F3FB6B92338}
+		{119F03DB-C07C-4893-B2F8-873AC030C7FF} = {28615E63-2AF5-4326-ACD3-6F3FB6B92338}
+		{98D23049-8E94-4D77-8607-93FAD74C87DA} = {28615E63-2AF5-4326-ACD3-6F3FB6B92338}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D95F7CB4-F4B5-45C1-9004-B60F8C5673FA}
