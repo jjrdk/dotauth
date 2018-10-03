@@ -21,7 +21,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.OAuth2Introspection;
 using SimpleIdentityServer.Scim.Host.Extensions;
-using SimpleIdentityServer.Scim.Mapping.Ad;
 using SimpleIdentityServer.UserInfoIntrospection;
 
 namespace SimpleIdentityServer.Scim.Startup
@@ -63,7 +62,6 @@ namespace SimpleIdentityServer.Scim.Startup
                 .AllowAnyHeader()));
             services.AddMvc();
             services.AddScimHost(new Host.ScimServerOptions());
-            services.AddScimMapping();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

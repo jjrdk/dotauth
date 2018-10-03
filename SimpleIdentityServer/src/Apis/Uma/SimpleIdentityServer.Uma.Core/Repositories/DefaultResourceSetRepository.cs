@@ -1,4 +1,5 @@
-﻿using SimpleIdentityServer.Uma.Core.Models;
+﻿using SimpleIdentityServer.Uma.Core.Extensions;
+using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,13 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return Task.FromResult(_resources.FirstOrDefault(p => p.Id == id));
+            var rec = _resources.FirstOrDefault(p => p.Id == id);
+            if (rec == null)
+            {
+                return Task.FromResult((ResourceSet)null);
+            }
+
+            return Task.FromResult(rec.Copy());
         }
 
         public Task<IEnumerable<ResourceSet>> Get(IEnumerable<string> ids)
@@ -50,13 +57,16 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            IEnumerable<ResourceSet> result = _resources.Where(r => ids.Contains(r.Id)).ToList();
+            IEnumerable<ResourceSet> result = _resources.Where(r => ids.Contains(r.Id))
+                .Select(r => r.Copy())
+                .ToList();
             return Task.FromResult(result);
         }
 
         public Task<ICollection<ResourceSet>> GetAll()
         {
-            return Task.FromResult(_resources);
+            ICollection<ResourceSet> result = _resources.Select(r => r.Copy()).ToList();
+            return Task.FromResult(result);
         }
 
         public Task<bool> Insert(ResourceSet resourceSet)
@@ -66,7 +76,7 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
                 throw new ArgumentNullException(nameof(resourceSet));
             }
 
-            _resources.Add(resourceSet);
+            _resources.Add(resourceSet.Copy());
             return Task.FromResult(true);
         }
 
@@ -102,7 +112,7 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
 
             return Task.FromResult(new SearchResourceSetResult
             {
-                Content = result,
+                Content = result.Select(r => r.Copy()),
                 StartIndex = parameter.StartIndex,
                 TotalResults = nbResult
             });

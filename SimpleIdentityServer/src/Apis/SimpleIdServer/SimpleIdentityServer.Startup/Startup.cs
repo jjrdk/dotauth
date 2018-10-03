@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Startup
                     IsEnabled = true,
                     EndPoint = "http://localhost:5555/"
                 },
-                Configuration = new Configuration
+                Configuration = new OpenIdServerConfiguration
                 {
                     Users = DefaultConfiguration.GetUsers()
                 }

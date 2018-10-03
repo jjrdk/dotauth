@@ -1,4 +1,5 @@
-﻿using SimpleIdentityServer.Uma.Core.Models;
+﻿using SimpleIdentityServer.Uma.Core.Extensions;
+using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
                 throw new ArgumentNullException(nameof(policy));
             }
 
-            _policies.Add(policy);
+            _policies.Add(policy.Copy());
             return Task.FromResult(true);
         }
 
@@ -51,12 +52,19 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return Task.FromResult(_policies.FirstOrDefault(p => p.Id == id));
+            var r = _policies.FirstOrDefault(p => p.Id == id);
+            if (r == null)
+            {
+                return Task.FromResult((Policy)null);
+            }
+
+            return Task.FromResult(r.Copy());
         }
 
         public Task<ICollection<Policy>> GetAll()
         {
-            return Task.FromResult(_policies);
+            ICollection<Policy> result = _policies.Select(p => p.Copy()).ToList();
+            return Task.FromResult(result);
         }
 
         public Task<SearchAuthPoliciesResult> Search(SearchAuthPoliciesParameter parameter)
@@ -86,7 +94,7 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
 
             return Task.FromResult(new SearchAuthPoliciesResult
             {
-                Content = result,
+                Content = result.Select(r => r.Copy()),
                 StartIndex = parameter.StartIndex,
                 TotalResults = nbResult
             });
@@ -99,7 +107,9 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
                 throw new ArgumentNullException(nameof(resourceSetId));
             }
 
-            ICollection<Policy> result = _policies.Where(p => p.ResourceSetIds.Contains(resourceSetId)).ToList();
+            ICollection<Policy> result = _policies.Where(p => p.ResourceSetIds.Contains(resourceSetId))
+                .Select(r => r.Copy())
+                .ToList();
             return Task.FromResult(result);
         }
 
