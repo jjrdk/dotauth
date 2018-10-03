@@ -23,7 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Scim.Core.EF.Stores
+namespace SimpleIdentityServer.Scim.Db.EF.Stores
 {
     public class SchemaStore : ISchemaStore
     {
@@ -99,7 +99,7 @@ namespace SimpleIdentityServer.Scim.Core.EF.Stores
             }
         }
 
-        private SchemaResponse GetSchemaResponse(Models.Schema schema)
+        private SchemaResponse GetSchemaResponse(Core.EF.Models.Schema schema)
         {
             if (schema == null)
             {
@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Scim.Core.EF.Stores
             return result;
         }
 
-        private IEnumerable<SchemaAttributeResponse> GetAttributes(Models.Schema schema)
+        private IEnumerable<SchemaAttributeResponse> GetAttributes(Core.EF.Models.Schema schema)
         {
             if (schema.Attributes == null)
             {

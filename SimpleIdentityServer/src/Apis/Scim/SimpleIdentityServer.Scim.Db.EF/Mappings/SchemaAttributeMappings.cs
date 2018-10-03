@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2018 Habart Thierry
+// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,20 +18,28 @@ using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Scim.Core.EF.Models;
 using System;
 
-namespace SimpleIdentityServer.Scim.Core.EF.Mappings
+namespace SimpleIdentityServer.Scim.Db.EF.Mappings
 {
-    internal static class RepresentationAttributeValueMapping
+    internal static class SchemaAttributeMappings
     {
-        public static ModelBuilder AddRepresentationAttributeValueMappings(this ModelBuilder builder)
+        public static ModelBuilder AddSchemaAttributeMappings(this ModelBuilder builder)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            builder.Entity<RepresentationAttributeValue>()
-                .ToTable("representationAttributeValues")
+            builder.Entity<SchemaAttribute>()
+                .ToTable("schemaAttributes")
                 .HasKey(a => a.Id);
+            builder.Entity<SchemaAttribute>()
+                .HasMany(a => a.Children)
+                .WithOne(a => a.Parent)
+                .HasForeignKey(a => a.SchemaAttributeIdParent);
+            builder.Entity<SchemaAttribute>()
+                .HasMany(a => a.RepresentationAttributes)
+                .WithOne(a => a.SchemaAttribute)
+                .HasForeignKey(a => a.SchemaAttributeId);
             return builder;
         }
     }

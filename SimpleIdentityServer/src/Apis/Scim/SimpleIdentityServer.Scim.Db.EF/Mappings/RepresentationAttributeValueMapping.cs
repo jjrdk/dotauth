@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2016 Habart Thierry
+// Copyright 2018 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,29 +15,23 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using SimpleIdentityServer.Scim.Core.EF.Models;
 using System;
 
-namespace SimpleIdentityServer.Scim.Core.EF.Mappings
+namespace SimpleIdentityServer.Scim.Db.EF.Mappings
 {
-    internal static class RepresentationMappings
+    internal static class RepresentationAttributeValueMapping
     {
-        public static ModelBuilder AddRepresentationMappings(this ModelBuilder builder)
+        public static ModelBuilder AddRepresentationAttributeValueMappings(this ModelBuilder builder)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
-            
-            builder.Entity<Representation>()
-                .ToTable("representations")
+
+            builder.Entity<RepresentationAttributeValue>()
+                .ToTable("representationAttributeValues")
                 .HasKey(a => a.Id);
-            builder.Entity<Representation>()
-                .HasMany(r => r.Attributes)
-                .WithOne(r => r.Representation)
-                .HasForeignKey(r => r.RepresentationId)
-                .OnDelete(DeleteBehavior.Cascade);
             return builder;
         }
     }

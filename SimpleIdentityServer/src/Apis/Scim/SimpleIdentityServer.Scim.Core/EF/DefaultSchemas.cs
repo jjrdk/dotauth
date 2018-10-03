@@ -14,43 +14,33 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Scim.Db.EF;
-using SimpleIdentityServer.Scim.Db.EF.Models;
+using SimpleIdentityServer.Scim.Core.EF.Extensions;
+using SimpleIdentityServer.Scim.Core.EF.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace SimpleIdentityServer.Scim.Client.Tests.Extensions
+namespace SimpleIdentityServer.Scim.Core.EF
 {
-    public static class ScimDbContextExtensions
+    public static class DefaultSchemas
     {
-        private const char _separator = ',';
-        public static void EnsureSeedData(this ScimDbContext context)
+        private static List<SchemaAttribute> UserMetaDataAttributes = new List<SchemaAttribute>
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.ResourceType, "Name of the resource type of the resource", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, caseExact: true),
+            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.Created, "The 'DateTime' that the resource was added to the service provider", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, type: Common.Constants.SchemaAttributeTypes.DateTime),
+            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.LastModified, "The most recent DateTime than the details of this resource were updated at the service provider", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, type: Common.Constants.SchemaAttributeTypes.DateTime),
+            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.Location, "URI of the resource being returned", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly),
+            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.Version, "Version of the resource being returned", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, caseExact: true),
+        };
 
-            InsertSchemas(context);
-        }
 
-        private static void InsertSchemas(ScimDbContext context)
+        private static List<SchemaAttribute> GroupMetaDataAttributes = new List<SchemaAttribute>
         {
-            if (!context.Schemas.Any())
-            {
-                context.Schemas.Add(UserSchema);
-                context.Schemas.Add(GroupSchema);
-                try
-                {
-                    context.SaveChanges();
-                }
-                catch
-                {
-                    // Trace.WriteLine("duplicated keys");
-                }
-            }
-        }
+            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.ResourceType, "Name of the resource type of the resource", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, caseExact: true),
+            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.Created, "The 'DateTime' that the resource was added to the service provider", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, type: Common.Constants.SchemaAttributeTypes.DateTime),
+            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.LastModified, "The most recent DateTime than the details of this resource were updated at the service provider", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, type: Common.Constants.SchemaAttributeTypes.DateTime),
+            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.Location, "URI of the resource being returned", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly),
+            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.Version, "Version of the resource being returned", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, caseExact: true),
+        };
 
         private static class SchemaAttributeFactory
         {
@@ -80,8 +70,8 @@ namespace SimpleIdentityServer.Scim.Client.Tests.Extensions
                     Mutability = mutability,
                     Returned = returned,
                     Uniqueness = uniqueness,
-                    ReferenceTypes = ConcatList(referenceTypes),
-                    CanonicalValues = ConcatList(canonicalValues),
+                    ReferenceTypes = MappingExtensions.ConcatList(referenceTypes),
+                    CanonicalValues = MappingExtensions.ConcatList(canonicalValues),
                     IsCommon = isCommon
                 };
             }
@@ -112,8 +102,8 @@ namespace SimpleIdentityServer.Scim.Client.Tests.Extensions
                     Mutability = mutability,
                     Returned = returned,
                     Uniqueness = uniqueness,
-                    ReferenceTypes = ConcatList(referenceTypes),
-                    CanonicalValues = ConcatList(canonicalValues),
+                    ReferenceTypes = MappingExtensions.ConcatList(referenceTypes),
+                    CanonicalValues = MappingExtensions.ConcatList(canonicalValues),
                     Children = subAttributes,
                     IsCommon = isCommon,
                     Type = Common.Constants.SchemaAttributeTypes.Complex
@@ -180,25 +170,6 @@ namespace SimpleIdentityServer.Scim.Client.Tests.Extensions
                     mutability: mutability);
             }
         }
-
-        private static List<SchemaAttribute> UserMetaDataAttributes = new List<SchemaAttribute>
-        {
-            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.ResourceType, "Name of the resource type of the resource", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, caseExact: true),
-            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.Created, "The 'DateTime' that the resource was added to the service provider", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, type: Common.Constants.SchemaAttributeTypes.DateTime),
-            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.LastModified, "The most recent DateTime than the details of this resource were updated at the service provider", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, type: Common.Constants.SchemaAttributeTypes.DateTime),
-            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.Location, "URI of the resource being returned", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly),
-            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.Version, "Version of the resource being returned", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, caseExact: true),
-        };
-
-
-        private static List<SchemaAttribute> GroupMetaDataAttributes = new List<SchemaAttribute>
-        {
-            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.ResourceType, "Name of the resource type of the resource", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, caseExact: true),
-            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.Created, "The 'DateTime' that the resource was added to the service provider", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, type: Common.Constants.SchemaAttributeTypes.DateTime),
-            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.LastModified, "The most recent DateTime than the details of this resource were updated at the service provider", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, type: Common.Constants.SchemaAttributeTypes.DateTime),
-            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.Location, "URI of the resource being returned", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly),
-            SchemaAttributeFactory.CreateAttribute(Common.Constants.MetaResponseNames.Version, "Version of the resource being returned", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, caseExact: true),
-        };
 
         #region User
 
@@ -278,11 +249,6 @@ namespace SimpleIdentityServer.Scim.Client.Tests.Extensions
              SchemaAttributeFactory.CreateAttribute(Common.Constants.NameResponseNames.HonorificSuffix, "The honorific suffix(es) of the User, or suffix in most Western languages (e.g., 'III' given the full name 'Ms. Barbara J Jensen, III').")
         };
 
-        private static List<SchemaAttribute> ComplexAttributeNamesSub = new List<SchemaAttribute>
-        {
-            SchemaAttributeFactory.CreateAttribute("test", ""),
-        };
-
         private static List<SchemaAttribute> UserAddressAttributes = new List<SchemaAttribute>
         {
              SchemaAttributeFactory.CreateAttribute(Common.Constants.AddressResponseNames.Formatted, "The full mailing address, formatted for display or use with a mailing label.  This attribute MAY contain newlines."),
@@ -296,7 +262,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests.Extensions
 
         #endregion
 
-        private static Schema UserSchema = new Schema
+        public static Schema UserSchema = new Schema
         {
             Id = Common.Constants.SchemaUrns.User,
             Name = Common.Constants.ResourceTypes.User,
@@ -313,32 +279,6 @@ namespace SimpleIdentityServer.Scim.Client.Tests.Extensions
                                     "REQUIRED.",
                     uniqueness: Common.Constants.SchemaAttributeUniqueness.Server,
                     required : false),
-                // TST : arr
-                SchemaAttributeFactory.CreateAttribute(
-                    "arr",
-                    "",
-                    multiValued: true,
-                    required : false),
-                // TST : date                
-                SchemaAttributeFactory.CreateAttribute(
-                    "date",
-                    "",
-                    type: Common.Constants.SchemaAttributeTypes.DateTime,
-                    multiValued: false,
-                    required : false),
-                // TST : age
-                SchemaAttributeFactory.CreateAttribute(
-                    "age",
-                    "",
-                    type: Common.Constants.SchemaAttributeTypes.Integer,
-                    multiValued: false,
-                    required : false),
-                // TST : complexarr
-                SchemaAttributeFactory.CreateComplexAttribute(
-                    "complexarr",
-                    "",
-                    ComplexAttributeNamesSub,
-                    multiValued: true),
                 // name
                 SchemaAttributeFactory.CreateComplexAttribute(
                     Common.Constants.UserResourceResponseNames.Name,
@@ -496,7 +436,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests.Extensions
             SchemaAttributeFactory.CreateTypeAttribute("A label indicating the type of resource, e.g., 'User' or 'Group'.", new string[] { "User", "Group" }, Common.Constants.SchemaAttributeMutability.Immutable)
         };
 
-        private static Schema GroupSchema = new Schema
+        public static Schema GroupSchema = new Schema
         {
             Id = Common.Constants.SchemaUrns.Group,
             Name = Common.Constants.ResourceTypes.Group,
@@ -518,15 +458,5 @@ namespace SimpleIdentityServer.Scim.Client.Tests.Extensions
         };
 
         #endregion
-
-        public static string ConcatList(IEnumerable<string> lst)
-        {
-            if (lst == null)
-            {
-                return string.Empty;
-            }
-
-            return string.Join(_separator.ToString(), lst);
-        }
     }
 }

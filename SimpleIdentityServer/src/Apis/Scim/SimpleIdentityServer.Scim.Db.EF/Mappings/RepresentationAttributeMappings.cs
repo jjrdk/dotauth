@@ -18,7 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Scim.Core.EF.Models;
 using System;
 
-namespace SimpleIdentityServer.Scim.Core.EF.Mappings
+namespace SimpleIdentityServer.Scim.Db.EF.Mappings
 {
     internal static class RepresentationAttributeMappings
     {

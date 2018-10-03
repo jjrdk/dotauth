@@ -22,7 +22,7 @@ using Model = SimpleIdentityServer.Scim.Core.EF.Models;
 
 namespace SimpleIdentityServer.Scim.Core.EF.Extensions
 {
-    internal static class MappingExtensions
+    public static class MappingExtensions
     {
         private const char _separator = ',';
 

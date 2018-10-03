@@ -19,29 +19,24 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using SimpleIdentityServer.Scim.Core.EF.Models;
 using System;
 
-namespace SimpleIdentityServer.Scim.Core.EF.Mappings
+namespace SimpleIdentityServer.Scim.Db.EF.Mappings
 {
-    internal static class SchemaMappings
+    internal static class RepresentationMappings
     {
-        public static ModelBuilder AddSchemaMappings(this ModelBuilder builder)
+        public static ModelBuilder AddRepresentationMappings(this ModelBuilder builder)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
-
-            builder.Entity<Schema>()
-                .ToTable("schemas")
-                .HasKey(s => s.Id);
-            builder.Entity<Schema>()
-                .HasMany(s => s.Attributes)
-                .WithOne(s => s.Schema)
-                .HasForeignKey(s => s.SchemaId)
-                .OnDelete(DeleteBehavior.Cascade);
-            builder.Entity<Schema>()
-                .HasOne(s => s.Meta)
-                .WithOne(s => s.Schema)
-                .HasForeignKey<MetaData>(s => s.SchemaId)
+            
+            builder.Entity<Representation>()
+                .ToTable("representations")
+                .HasKey(a => a.Id);
+            builder.Entity<Representation>()
+                .HasMany(r => r.Attributes)
+                .WithOne(r => r.Representation)
+                .HasForeignKey(r => r.RepresentationId)
                 .OnDelete(DeleteBehavior.Cascade);
             return builder;
         }

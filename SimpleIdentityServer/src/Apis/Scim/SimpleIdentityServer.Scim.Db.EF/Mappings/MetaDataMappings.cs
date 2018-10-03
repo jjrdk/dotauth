@@ -18,28 +18,20 @@ using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Scim.Core.EF.Models;
 using System;
 
-namespace SimpleIdentityServer.Scim.Core.EF.Mappings
+namespace SimpleIdentityServer.Scim.Db.EF.Mappings
 {
-    internal static class SchemaAttributeMappings
+    internal static class MetaDataMappings
     {
-        public static ModelBuilder AddSchemaAttributeMappings(this ModelBuilder builder)
+        public static ModelBuilder AddMetaDataMappings(this ModelBuilder builder)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            builder.Entity<SchemaAttribute>()
-                .ToTable("schemaAttributes")
+            builder.Entity<MetaData>()
+                .ToTable("metaData")
                 .HasKey(a => a.Id);
-            builder.Entity<SchemaAttribute>()
-                .HasMany(a => a.Children)
-                .WithOne(a => a.Parent)
-                .HasForeignKey(a => a.SchemaAttributeIdParent);
-            builder.Entity<SchemaAttribute>()
-                .HasMany(a => a.RepresentationAttributes)
-                .WithOne(a => a.SchemaAttribute)
-                .HasForeignKey(a => a.SchemaAttributeId);
             return builder;
         }
     }

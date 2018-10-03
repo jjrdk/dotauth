@@ -15,23 +15,34 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using SimpleIdentityServer.Scim.Core.EF.Models;
 using System;
 
-namespace SimpleIdentityServer.Scim.Core.EF.Mappings
+namespace SimpleIdentityServer.Scim.Db.EF.Mappings
 {
-    internal static class MetaDataMappings
+    internal static class SchemaMappings
     {
-        public static ModelBuilder AddMetaDataMappings(this ModelBuilder builder)
+        public static ModelBuilder AddSchemaMappings(this ModelBuilder builder)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            builder.Entity<MetaData>()
-                .ToTable("metaData")
-                .HasKey(a => a.Id);
+            builder.Entity<Schema>()
+                .ToTable("schemas")
+                .HasKey(s => s.Id);
+            builder.Entity<Schema>()
+                .HasMany(s => s.Attributes)
+                .WithOne(s => s.Schema)
+                .HasForeignKey(s => s.SchemaId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Schema>()
+                .HasOne(s => s.Meta)
+                .WithOne(s => s.Schema)
+                .HasForeignKey<MetaData>(s => s.SchemaId)
+                .OnDelete(DeleteBehavior.Cascade);
             return builder;
         }
     }
