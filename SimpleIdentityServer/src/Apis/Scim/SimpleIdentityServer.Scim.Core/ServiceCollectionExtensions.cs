@@ -14,8 +14,13 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Scim.Core.Apis;
+using SimpleIdentityServer.Scim.Core.EF;
+using SimpleIdentityServer.Scim.Core.EF.Helpers;
+using SimpleIdentityServer.Scim.Core.EF.Stores;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Stores;
@@ -53,6 +58,11 @@ namespace SimpleIdentityServer.Scim.Core
             services.AddTransient<IErrorResponseFactory, ErrorResponseFactory>();
             services.AddTransient<ICommonAttributesFactory, CommonAttributesFactory>();
             services.AddTransient<IParametersValidator, ParametersValidator>();
+            services.AddTransient<ITransformers, Transformers>();
+            services.AddTransient<IRepresentationStore, RepresentationStore>();
+            services.AddTransient<ISchemaStore, SchemaStore>();
+            services.AddEntityFrameworkInMemoryDatabase()
+                .AddDbContext<ScimDbContext>(options => options.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
             return services;
         }
     }

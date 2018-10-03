@@ -15,11 +15,11 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Scim.Db.EF.Mappings;
-using SimpleIdentityServer.Scim.Db.EF.Models;
+using SimpleIdentityServer.Scim.Core.EF.Mappings;
+using SimpleIdentityServer.Scim.Core.EF.Models;
 using System;
 
-namespace SimpleIdentityServer.Scim.Db.EF
+namespace SimpleIdentityServer.Scim.Core.EF
 {
     public class ScimDbContext : DbContext
     {

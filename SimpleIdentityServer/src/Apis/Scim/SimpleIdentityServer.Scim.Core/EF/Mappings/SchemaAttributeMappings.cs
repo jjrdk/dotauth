@@ -15,35 +15,31 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Scim.Db.EF.Models;
+using SimpleIdentityServer.Scim.Core.EF.Models;
 using System;
 
-namespace SimpleIdentityServer.Scim.Db.EF.Mappings
+namespace SimpleIdentityServer.Scim.Core.EF.Mappings
 {
-    internal static class RepresentationAttributeMappings
+    internal static class SchemaAttributeMappings
     {
-        public static ModelBuilder AddRepresentationAttributeMappings(this ModelBuilder builder)
+        public static ModelBuilder AddSchemaAttributeMappings(this ModelBuilder builder)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
-            
-            builder.Entity<RepresentationAttribute>()
-                .ToTable("representationAttributes")
+
+            builder.Entity<SchemaAttribute>()
+                .ToTable("schemaAttributes")
                 .HasKey(a => a.Id);
-            builder.Entity<RepresentationAttribute>()
+            builder.Entity<SchemaAttribute>()
                 .HasMany(a => a.Children)
                 .WithOne(a => a.Parent)
-                .HasForeignKey(a => a.RepresentationAttributeIdParent);
-            builder.Entity<RepresentationAttribute>()
-                .HasOne(a => a.SchemaAttribute)
-                .WithMany(a => a.RepresentationAttributes)
+                .HasForeignKey(a => a.SchemaAttributeIdParent);
+            builder.Entity<SchemaAttribute>()
+                .HasMany(a => a.RepresentationAttributes)
+                .WithOne(a => a.SchemaAttribute)
                 .HasForeignKey(a => a.SchemaAttributeId);
-            builder.Entity<RepresentationAttribute>()
-                .HasMany(a => a.Values)
-                .WithOne(a => a.RepresentationAttribute)
-                .HasForeignKey(a => a.RepresentationAttributeId);
             return builder;
         }
     }

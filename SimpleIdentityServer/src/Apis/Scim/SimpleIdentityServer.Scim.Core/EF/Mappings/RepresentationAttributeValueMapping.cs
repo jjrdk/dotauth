@@ -15,10 +15,10 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Scim.Db.EF.Models;
+using SimpleIdentityServer.Scim.Core.EF.Models;
 using System;
 
-namespace SimpleIdentityServer.Scim.Db.EF.Mappings
+namespace SimpleIdentityServer.Scim.Core.EF.Mappings
 {
     internal static class RepresentationAttributeValueMapping
     {

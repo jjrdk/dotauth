@@ -18,9 +18,9 @@ using SimpleIdentityServer.Scim.Common.DTOs;
 using System;
 using System.Collections.Generic;
 using Domain = SimpleIdentityServer.Scim.Common.Models;
-using Model = SimpleIdentityServer.Scim.Db.EF.Models;
+using Model = SimpleIdentityServer.Scim.Core.EF.Models;
 
-namespace SimpleIdentityServer.Scim.Db.EF.Extensions
+namespace SimpleIdentityServer.Scim.Core.EF.Extensions
 {
     internal static class MappingExtensions
     {

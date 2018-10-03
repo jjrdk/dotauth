@@ -19,10 +19,10 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Scim.Core.Stores;
-using SimpleIdentityServer.Scim.Db.EF;
-using SimpleIdentityServer.Scim.Db.EF.Extensions;
-using SimpleIdentityServer.Scim.Db.EF.Helpers;
-using SimpleIdentityServer.Scim.Db.EF.Stores;
+using SimpleIdentityServer.Scim.Core.EF;
+using SimpleIdentityServer.Scim.Core.EF.Extensions;
+using SimpleIdentityServer.Scim.Core.EF.Helpers;
+using SimpleIdentityServer.Scim.Core.EF.Stores;
 using System;
 
 namespace SimpleIdentityServer.Scim.Core.Tests.Fixture

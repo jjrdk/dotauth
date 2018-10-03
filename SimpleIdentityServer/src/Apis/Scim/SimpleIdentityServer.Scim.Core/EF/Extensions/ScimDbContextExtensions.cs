@@ -14,12 +14,12 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Scim.Db.EF.Models;
+using SimpleIdentityServer.Scim.Core.EF.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SimpleIdentityServer.Scim.Db.EF.Extensions
+namespace SimpleIdentityServer.Scim.Core.EF.Extensions
 {
     public static class ScimDbContextExtensions
     {
