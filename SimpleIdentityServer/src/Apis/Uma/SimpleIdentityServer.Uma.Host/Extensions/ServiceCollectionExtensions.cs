@@ -28,7 +28,6 @@ using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.Host.Configuration;
-using SimpleIdentityServer.Uma.Host.Services;
 using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
