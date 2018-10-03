@@ -18,17 +18,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleBus.Core;
-using SimpleIdentityServer.Scim.Client.Tests.Extensions;
 using SimpleIdentityServer.Scim.Client.Tests.MiddleWares;
-using SimpleIdentityServer.Scim.Client.Tests.Services;
-using SimpleIdentityServer.Scim.Db.EF;
-using SimpleIdentityServer.Scim.Db.EF.InMemory;
 using SimpleIdentityServer.Scim.Host.Controllers;
 using SimpleIdentityServer.Scim.Host.Extensions;
 using System.Reflection;
-using WebApiContrib.Core.Concurrency;
-using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Scim.Client.Tests
 {
@@ -38,16 +31,13 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddConcurrency(opt => opt.UseInMemory());
-            services.AddScimInMemoryEF();
-            services.AddTransient<IEventPublisher, DefaultEventPublisher>();
-            /*
-            services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions
+            services.AddScimHost(new Host.ScimServerOptions
             {
-                ServerName = "scim"
+                ServerConfiguration = new Host.ScimServerConfiguration
+                {
+
+                }
             });
-            */
-            services.AddScimHost();
             services.AddAuthentication(opts =>
             {
                 opts.DefaultAuthenticateScheme = DefaultSchema;
@@ -75,24 +65,12 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            InitializeDatabase(app);
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-        }
-
-        private void InitializeDatabase(IApplicationBuilder app)
-        {
-            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                // scope.ServiceProvider.GetRequiredService<ScimDbContext>().Database.Migrate();
-                var context = scope.ServiceProvider.GetRequiredService<ScimDbContext>();
-                // context.Database.Migrate();
-                context.EnsureSeedData();
-            }
         }
     }
 }

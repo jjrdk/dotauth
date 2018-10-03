@@ -1,21 +1,24 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleBus.Core;
 using SimpleIdentityServer.Scim.Core;
 using System;
 using System.Linq;
+using WebApiContrib.Core.Concurrency;
+using WebApiContrib.Core.Storage;
 
 namespace SimpleIdentityServer.Scim.Host.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddScimHost(this IServiceCollection services)
+        public static IServiceCollection AddScimHost(this IServiceCollection services, ScimServerOptions scimServerOptions)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            RegisterServices(services);
+            RegisterServices(services, scimServerOptions);
             return services;
         }
 
@@ -74,9 +77,12 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
             return options;
         }
 
-        private static void RegisterServices(IServiceCollection services)
+        private static void RegisterServices(IServiceCollection services, ScimServerOptions scimServerOptions)
         {
-            services.AddScimCore();
+            services.AddScimCore(scimServerOptions.ServerConfiguration == null ? null : scimServerOptions.ServerConfiguration.Representations,
+                scimServerOptions.ServerConfiguration == null ? null : scimServerOptions.ServerConfiguration.Schemas)
+                .AddDefaultSimpleBus()
+                .AddConcurrency(opt => opt.UseInMemory());
         }
     }
 }

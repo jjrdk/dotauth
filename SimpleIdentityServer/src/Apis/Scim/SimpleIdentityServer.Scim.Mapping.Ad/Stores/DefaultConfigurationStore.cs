@@ -5,15 +5,17 @@ using System.IO;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad.Stores
 {
-    public interface IConfigurationStore
-    {
-        bool UpdateConfiguration(AdConfiguration adConfiguration);
-        AdConfiguration GetConfiguration();
-    }
-
-    internal sealed class ConfigurationStore : IConfigurationStore
+    internal sealed class DefaultConfigurationStore : IConfigurationStore
     {
         private static string _fileName = "AdConfiguration.json";
+
+        public DefaultConfigurationStore(AdConfiguration adConfiguration)
+        {
+            if (adConfiguration != null)
+            {
+                UpdateConfiguration(adConfiguration);
+            }
+        }
 
         public bool UpdateConfiguration(AdConfiguration adConfiguration)
         {

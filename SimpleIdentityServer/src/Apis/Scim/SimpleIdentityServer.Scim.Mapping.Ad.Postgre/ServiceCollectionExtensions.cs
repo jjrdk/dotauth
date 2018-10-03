@@ -18,8 +18,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Postgre
             {
                 throw new ArgumentNullException(nameof(connectionString));
             }
-
-            serviceCollection.AddScimMapping();
+            
             serviceCollection.AddEntityFrameworkNpgsql()
                 .AddDbContext<MappingDbContext>(options =>
                     options.UseNpgsql(connectionString, callback));

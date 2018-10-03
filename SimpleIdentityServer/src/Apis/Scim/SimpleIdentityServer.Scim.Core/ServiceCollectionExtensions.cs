@@ -14,24 +14,24 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Scim.Core.Apis;
 using SimpleIdentityServer.Scim.Core.EF;
 using SimpleIdentityServer.Scim.Core.EF.Helpers;
+using SimpleIdentityServer.Scim.Core.EF.Models;
 using SimpleIdentityServer.Scim.Core.EF.Stores;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Stores;
 using SimpleIdentityServer.Scim.Core.Validators;
 using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Scim.Core
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddScimCore(this IServiceCollection services)
+        public static IServiceCollection AddScimCore(this IServiceCollection services, List<Representation> representations = null, List<Schema> schemas = null)
         {
             if (services == null)
             {
@@ -59,10 +59,9 @@ namespace SimpleIdentityServer.Scim.Core
             services.AddTransient<ICommonAttributesFactory, CommonAttributesFactory>();
             services.AddTransient<IParametersValidator, ParametersValidator>();
             services.AddTransient<ITransformers, Transformers>();
-            services.AddTransient<IRepresentationStore, RepresentationStore>();
-            services.AddTransient<ISchemaStore, SchemaStore>();
-            services.AddEntityFrameworkInMemoryDatabase()
-                .AddDbContext<ScimDbContext>(options => options.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
+            var schemaStore = new DefaultSchemaStore(schemas);
+            services.AddSingleton<IRepresentationStore>(new DefaultRepresentationStore(representations, schemaStore));
+            services.AddSingleton<ISchemaStore>(schemaStore);
             return services;
         }
     }

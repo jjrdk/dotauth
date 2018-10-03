@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Scim.Core.EF;
 using System;
 
 namespace SimpleIdentityServer.Scim.Db.EF.SqlServer
@@ -19,7 +18,8 @@ namespace SimpleIdentityServer.Scim.Db.EF.SqlServer
             {
                 throw new ArgumentNullException(nameof(connectionString));
             }
-
+            
+            serviceCollection.AddScimRepository();
             serviceCollection.AddEntityFrameworkSqlServer()
                 .AddDbContext<ScimDbContext>(options =>
                     options.UseSqlServer(connectionString, callback));

@@ -19,18 +19,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleBus.Core;
 using SimpleIdentityServer.OAuth2Introspection;
-using SimpleIdentityServer.Scim.Db.EF;
-using SimpleIdentityServer.Scim.Db.EF.Postgre;
 using SimpleIdentityServer.Scim.Host.Extensions;
 using SimpleIdentityServer.Scim.Mapping.Ad;
-using SimpleIdentityServer.Scim.Mapping.Ad.InMemory;
-using SimpleIdentityServer.Scim.Startup.Extensions;
-using SimpleIdentityServer.Scim.Startup.Services;
 using SimpleIdentityServer.UserInfoIntrospection;
-using WebApiContrib.Core.Concurrency;
-using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Scim.Startup
 {
@@ -66,42 +58,12 @@ namespace SimpleIdentityServer.Scim.Startup
             {
                 opts.AddScimAuthPolicy();
             });
-            ConfigureBus(services);
-            ConfigureScimRepository(services);
-            ConfigureCachingInMemory(services);
-            ConfigureScimAdMappingRepository(services);
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
             services.AddMvc();
-            services.AddScimHost();
+            services.AddScimHost(new Host.ScimServerOptions());
             services.AddScimMapping();
-        }
-
-        private void ConfigureBus(IServiceCollection services)
-        {
-            services.AddTransient<IEventPublisher, DefaultEventPublisher>();
-            /*
-            services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions
-            {
-                ServerName = "scim"
-            });
-            */
-        }
-
-        private void ConfigureScimRepository(IServiceCollection services)
-        {
-            services.AddScimPostgresqlEF("User ID=rocheidserver;Password=password;Host=localhost;Port=5432;Database=scim;Pooling=true;");
-        }
-
-        private void ConfigureCachingInMemory(IServiceCollection services)
-        {
-            services.AddConcurrency(opt => opt.UseInMemory());
-        }
-
-        private void ConfigureScimAdMappingRepository(IServiceCollection services)
-        {
-            services.AddScimMappingInMemoryEF();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -116,12 +78,6 @@ namespace SimpleIdentityServer.Scim.Startup
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var scimDbContext = serviceScope.ServiceProvider.GetService<ScimDbContext>();
-                scimDbContext.Database.EnsureCreated();
-                scimDbContext.EnsureSeedData();
-            }
         }
     }
 }

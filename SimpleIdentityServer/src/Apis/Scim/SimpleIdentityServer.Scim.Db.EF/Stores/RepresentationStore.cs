@@ -26,8 +26,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Model = SimpleIdentityServer.Scim.Core.EF.Models;
+using SimpleIdentityServer.Scim.Core.EF;
 
-namespace SimpleIdentityServer.Scim.Core.EF.Stores
+namespace SimpleIdentityServer.Scim.Db.EF.Stores
 {
     internal class RepresentationStore : IRepresentationStore
     {
@@ -52,20 +53,12 @@ namespace SimpleIdentityServer.Scim.Core.EF.Stores
                 throw new ArgumentNullException(nameof(searchParameter));
             }
 
-            IQueryable<Models.Representation> representations = _context.Representations
+            IQueryable<Model.Representation> representations = _context.Representations
                 .Include(r => r.Attributes).ThenInclude(a => a.Children).ThenInclude(a => a.Children)
                 .Include(r => r.Attributes).ThenInclude(a => a.SchemaAttribute).ThenInclude(s => s.Children)
-                .Include(r => r.Attributes).ThenInclude(a => a.Values)
-                .Where(r => r.ResourceType == resourceType);
-            if (searchParameter.Filter != null)
-            {
-                var lambdaExpression = searchParameter.Filter.EvaluateFilter(representations);
-                representations = (IQueryable<Models.Representation>)lambdaExpression.Compile().DynamicInvoke(representations);
-            }
-
-            var totalResults = representations.Count();
-            representations = representations.Skip(searchParameter.StartIndex);
-            representations = representations.Take(searchParameter.Count);
+                .Include(r => r.Attributes).ThenInclude(a => a.Values);
+            int totalResults;
+            representations = QueryHelper.SearchRepresentations(representations, resourceType, searchParameter, out totalResults);
             var result = await representations.ToListAsync().ConfigureAwait(false);
             var content = result.Select(r =>
             {
@@ -93,10 +86,7 @@ namespace SimpleIdentityServer.Scim.Core.EF.Stores
                 throw new ArgumentNullException(nameof(filter));
             }
 
-            IQueryable<Model.Representation> representations = _context.Representations.Where(r => r.ResourceType == resourceType);
-            IQueryable<Model.RepresentationAttribute> representationAttributes = _context.RepresentationAttributes;
-            var lambdaExpression = filter.EvaluateSelection(representations, representationAttributes);
-            var res = (IQueryable<Models.RepresentationAttribute>)lambdaExpression.Compile().DynamicInvoke(representations);
+            var res = QueryHelper.SearchValues(_context.Representations, _context.RepresentationAttributes, resourceType, filter);
             var result = await res.ToListAsync().ConfigureAwait(false);
             return GetRepresentationAttributes(result);
         }
@@ -239,7 +229,7 @@ namespace SimpleIdentityServer.Scim.Core.EF.Stores
             {
                 throw new ArgumentNullException(nameof(attributes));
             }
-            
+
             var result = new List<RepresentationAttribute>();
             foreach (var attribute in attributes)
             {
