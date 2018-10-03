@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SimpleIdentityServer.Scim.Db.EF.Extensions
+namespace SimpleIdentityServer.Scim.Core.EF.Extensions
 {
     public static class DateTimeExtensions
     {

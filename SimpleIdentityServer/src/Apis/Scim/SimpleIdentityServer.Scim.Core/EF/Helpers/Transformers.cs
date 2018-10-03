@@ -17,17 +17,17 @@
 using Newtonsoft.Json;
 using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Common.Models;
-using SimpleIdentityServer.Scim.Db.EF.Extensions;
+using SimpleIdentityServer.Scim.Core.EF.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Model = SimpleIdentityServer.Scim.Db.EF.Models;
+using Model = SimpleIdentityServer.Scim.Core.EF.Models;
 
-namespace SimpleIdentityServer.Scim.Db.EF.Helpers
+namespace SimpleIdentityServer.Scim.Core.EF.Helpers
 {
     public interface ITransformers
     {
-        SchemaAttributeResponse Transform(Models.SchemaAttribute attr);
+        SchemaAttributeResponse Transform(Model.SchemaAttribute attr);
         RepresentationAttribute Transform(Model.RepresentationAttribute attr);
         Model.RepresentationAttribute Transform(RepresentationAttribute attr);
     }

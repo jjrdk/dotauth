@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.Scim.Core.EF;
 using System;
 
 namespace SimpleIdentityServer.Scim.Db.EF.Postgre
@@ -18,8 +19,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Postgre
             {
                 throw new ArgumentNullException(nameof(connectionString));
             }
-
-            serviceCollection.AddScimRepositories();
+            
             serviceCollection.AddEntityFrameworkNpgsql()
                 .AddDbContext<ScimDbContext>(options =>
                     options.UseNpgsql(connectionString, callback));

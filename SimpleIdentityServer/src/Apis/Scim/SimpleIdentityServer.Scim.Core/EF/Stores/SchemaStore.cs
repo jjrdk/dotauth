@@ -17,13 +17,13 @@
 using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Stores;
-using SimpleIdentityServer.Scim.Db.EF.Extensions;
-using SimpleIdentityServer.Scim.Db.EF.Helpers;
+using SimpleIdentityServer.Scim.Core.EF.Extensions;
+using SimpleIdentityServer.Scim.Core.EF.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Scim.Db.EF.Stores
+namespace SimpleIdentityServer.Scim.Core.EF.Stores
 {
     public class SchemaStore : ISchemaStore
     {

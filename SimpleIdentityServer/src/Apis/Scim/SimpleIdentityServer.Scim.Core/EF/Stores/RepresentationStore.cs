@@ -19,15 +19,15 @@ using SimpleIdentityServer.Scim.Common.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Stores;
-using SimpleIdentityServer.Scim.Db.EF.Extensions;
-using SimpleIdentityServer.Scim.Db.EF.Helpers;
+using SimpleIdentityServer.Scim.Core.EF.Extensions;
+using SimpleIdentityServer.Scim.Core.EF.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Model = SimpleIdentityServer.Scim.Db.EF.Models;
+using Model = SimpleIdentityServer.Scim.Core.EF.Models;
 
-namespace SimpleIdentityServer.Scim.Db.EF.Stores
+namespace SimpleIdentityServer.Scim.Core.EF.Stores
 {
     internal class RepresentationStore : IRepresentationStore
     {

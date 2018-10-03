@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Scim.Db.EF.Models
+﻿namespace SimpleIdentityServer.Scim.Core.EF.Models
 {
     public class RepresentationAttributeValue
     {

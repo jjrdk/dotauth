@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.Scim.Core.EF;
 using System;
 
 namespace SimpleIdentityServer.Scim.Db.EF.Sqlite
@@ -19,7 +20,6 @@ namespace SimpleIdentityServer.Scim.Db.EF.Sqlite
                 throw new ArgumentNullException(nameof(connectionString));
             }
 
-            serviceCollection.AddScimRepositories();
             serviceCollection.AddEntityFrameworkSqlite()
                 .AddDbContext<ScimDbContext>(options =>
                     options.UseSqlite(connectionString, callback));
