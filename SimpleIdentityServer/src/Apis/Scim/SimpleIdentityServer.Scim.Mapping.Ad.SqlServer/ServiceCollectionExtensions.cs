@@ -18,7 +18,8 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.SqlServer
             {
                 throw new ArgumentNullException(nameof(connectionString));
             }
-            
+
+            serviceCollection.AddMappingStoreEF();
             serviceCollection.AddEntityFrameworkSqlServer()
                 .AddDbContext<MappingDbContext>(options =>
                     options.UseSqlServer(connectionString, callback));

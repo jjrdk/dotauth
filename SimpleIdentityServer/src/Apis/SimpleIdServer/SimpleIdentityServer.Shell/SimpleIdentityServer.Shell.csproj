@@ -7,7 +7,7 @@
     <ProjectReference Include="..\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />  
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.0" />
   </ItemGroup>
   <ItemGroup>  
     <EmbeddedResource Include="Areas\**\*.cshtml" />  

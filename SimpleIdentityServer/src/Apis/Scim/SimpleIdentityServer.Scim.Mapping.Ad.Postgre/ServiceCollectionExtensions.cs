@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using System;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad.Postgre
@@ -18,7 +18,8 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Postgre
             {
                 throw new ArgumentNullException(nameof(connectionString));
             }
-            
+
+            serviceCollection.AddMappingStoreEF();
             serviceCollection.AddEntityFrameworkNpgsql()
                 .AddDbContext<MappingDbContext>(options =>
                     options.UseNpgsql(connectionString, callback));
