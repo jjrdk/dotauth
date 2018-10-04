@@ -18,7 +18,8 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Sqlite
             {
                 throw new ArgumentNullException(nameof(connectionString));
             }
-            
+
+            serviceCollection.AddMappingStoreEF();
             serviceCollection.AddEntityFrameworkSqlite()
                 .AddDbContext<MappingDbContext>(options =>
                     options.UseSqlite(connectionString, callback));

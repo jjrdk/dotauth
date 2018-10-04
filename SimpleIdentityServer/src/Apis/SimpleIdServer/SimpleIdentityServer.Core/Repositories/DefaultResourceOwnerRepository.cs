@@ -192,6 +192,7 @@ namespace SimpleIdentityServer.Core.Repositories
             user.Password = resourceOwner.Password;
             user.TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication;
             user.UpdateDateTime = DateTime.UtcNow;
+            user.Claims = resourceOwner.Claims;
             return Task.FromResult(true);
         }
     }

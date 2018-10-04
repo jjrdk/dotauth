@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.EF.Repositories
             return resourceOwnerClaim.ResourceOwner.Consents == null ? new Core.Common.Models.Consent[0] : resourceOwnerClaim.ResourceOwner.Consents.Select(c => c.ToDomain());
         }
 
-        public async Task<Core.Common.Models.Consent> InsertAsync(Core.Common.Models.Consent record)
+        public async Task<bool> InsertAsync(Core.Common.Models.Consent record)
         {
             Core.Common.Models.Consent result = null;
             using (var transaction = _context.Database.BeginTransaction())
@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.EF.Repositories
 
                     var newConsent = new Consent
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        Id = record.Id,
                         Client = client,
                         ResourceOwner = resourceOwner,
                         ConsentClaims = assignedClaims,
@@ -115,7 +115,7 @@ namespace SimpleIdentityServer.EF.Repositories
                 }
             }
 
-            return result;
+            return true;
         }
 
         public async Task<bool> DeleteAsync(Core.Common.Models.Consent record)
