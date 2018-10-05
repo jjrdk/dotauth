@@ -1,8 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using SimpleIdentityServer.Module;
-using SimpleIdentityServer.Scim.Mapping.Ad.Models;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using SimpleIdentityServer.Scim.Mapping.Ad.Models;
+using SimpleIdentityServer.Scim.Mapping.Ad.Controllers;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad
 {
@@ -14,11 +18,26 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
         {
             _properties = properties;
             AspPipelineContext.Instance().ConfigureServiceContext.Initialized += HandleServiceContextInitialized;
+            AspPipelineContext.Instance().ConfigureServiceContext.MvcAdded += HandleMvcAdded;
         }
 
         private void HandleServiceContextInitialized(object sender, EventArgs e)
         {
             AspPipelineContext.Instance().ConfigureServiceContext.Services.AddScimMapping(adConfiguration: GetConfiguration());
+        }
+		
+        private void HandleMvcAdded(object sender, EventArgs e)
+        {
+            var services = AspPipelineContext.Instance().ConfigureServiceContext.Services;
+            var mvcBuilder = AspPipelineContext.Instance().ConfigureServiceContext.MvcBuilder;
+            var assembly = typeof(AdConfigurationController).Assembly;
+            var embeddedFileProvider = new EmbeddedFileProvider(assembly);
+            services.Configure<RazorViewEngineOptions>(options =>
+            {
+                options.FileProviders.Add(embeddedFileProvider);
+            });
+
+            mvcBuilder.AddApplicationPart(assembly);
         }
 
         private AdConfiguration GetConfiguration()

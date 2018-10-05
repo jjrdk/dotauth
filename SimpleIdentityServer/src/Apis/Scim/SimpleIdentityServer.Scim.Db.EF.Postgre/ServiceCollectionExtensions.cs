@@ -20,6 +20,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Postgre
                 throw new ArgumentNullException(nameof(connectionString));
             }
 
+			serviceCollection.AddScimRepository();
             serviceCollection.AddEntityFrameworkNpgsql()
                 .AddDbContext<ScimDbContext>(options =>
                     options.UseNpgsql(connectionString, callback));

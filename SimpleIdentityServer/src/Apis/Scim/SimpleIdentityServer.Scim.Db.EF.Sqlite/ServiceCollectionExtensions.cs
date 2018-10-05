@@ -19,6 +19,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Sqlite
                 throw new ArgumentNullException(nameof(connectionString));
             }
 
+			serviceCollection.AddScimRepository();
             serviceCollection.AddEntityFrameworkSqlite()
                 .AddDbContext<ScimDbContext>(options =>
                     options.UseSqlite(connectionString, callback));
