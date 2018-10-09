@@ -30,8 +30,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var localAuthenticationParameter = new LocalAuthenticationParameter();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _localUserAuthenticationAction.Execute(null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _localUserAuthenticationAction.Execute(localAuthenticationParameter, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _localUserAuthenticationAction.Execute(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _localUserAuthenticationAction.Execute(localAuthenticationParameter, null, null, null));
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _resourceOwnerAuthenticateHelperStub.Setup(r => r.Authenticate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<IdentityServerAuthenticationException>(() => _localUserAuthenticationAction.Execute(localAuthenticationParameter, authorizationParameter, null));
+            await Assert.ThrowsAsync<IdentityServerAuthenticationException>(() => _localUserAuthenticationAction.Execute(localAuthenticationParameter, authorizationParameter, null, null));
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             // ACT
             var result = await _localUserAuthenticationAction.Execute(localAuthenticationParameter,
                 authorizationParameter, 
-                null);
+                null, null);
 
             // Specify the resource owner authentication date
             Assert.NotNull(result);

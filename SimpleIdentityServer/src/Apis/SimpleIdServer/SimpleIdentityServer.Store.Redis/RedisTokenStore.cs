@@ -175,6 +175,11 @@ namespace SimpleIdentityServer.Store.Redis
             return true;
         }
 
+        public Task<bool> Clean()
+        {
+            return _storage.RemoveAll();
+        }
+
         private static string GetSearchKey(GrantedToken token)
         {
             return token.Scope + "_" + token.ClientId;

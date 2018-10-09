@@ -2,7 +2,7 @@
 using SimpleIdentityServer.TwoFactorAuthentication.Email;
 using System;
 
-namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
+namespace SimpleIdentityServer.TwoFactorAuthentication.Email
 {
     public static class ServiceCollectionExtensions
     {

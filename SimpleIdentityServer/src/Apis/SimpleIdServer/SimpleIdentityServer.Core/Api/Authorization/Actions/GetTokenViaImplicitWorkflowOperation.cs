@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
     public interface IGetTokenViaImplicitWorkflowOperation
     {
-        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Core.Common.Models.Client client);
+        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Core.Common.Models.Client client, string issuerName);
     }
 
     public class GetTokenViaImplicitWorkflowOperation : IGetTokenViaImplicitWorkflowOperation
@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             _clientValidator = clientValidator;
         }
 
-        public async Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Core.Common.Models.Client client)
+        public async Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Core.Common.Models.Client client, string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -89,11 +89,11 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                     authorizationParameter.State);
             }
 
-            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, principal as ClaimsPrincipal, client);
+            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, principal as ClaimsPrincipal, client, issuerName);
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var claimsPrincipal = principal as ClaimsPrincipal;
-                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client);
+                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName);
             }
             
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);

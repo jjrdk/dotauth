@@ -10,17 +10,15 @@ namespace SimpleIdentityServer.Host.Controllers.Website
     public class BaseController : Controller
     {
         protected readonly IAuthenticationService _authenticationService;
-        protected readonly AuthenticateOptions _authenticateOptions;
 
-        public BaseController(IAuthenticationService authenticationService, AuthenticateOptions authenticateOptions)
+        public BaseController(IAuthenticationService authenticationService)
         {
             _authenticationService = authenticationService;
-            _authenticateOptions = authenticateOptions;
         }
 
         public async Task<ClaimsPrincipal> SetUser()
         {
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.CookieName);
             var isAuthenticed = authenticatedUser != null && authenticatedUser.Identity != null && authenticatedUser.Identity.IsAuthenticated;
             ViewBag.IsAuthenticated = isAuthenticed;
             if (isAuthenticed)

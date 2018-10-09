@@ -31,14 +31,36 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Email
         public string EmailBody { get; set; }
         public string EmailSmtpHost { get; set; }
         public int EmailSmtpPort { get; set; }
-        public bool EmailSmtpUseSsl { get; set; }
+        public AuthenticationTypes AuthenticationType { get; set; }
         public string EmailUserName { get; set; }
         public string EmailPassword { get; set; }
+    }
+
+    public enum AuthenticationTypes
+    {
+        None = 0,
+        TLS= 1,
+        SSL = 2
     }
 
     public class DefaultEmailService : ITwoFactorAuthenticationService
     {
         private readonly TwoFactorEmailOptions _options;
+        
+        private MailKit.Security.SecureSocketOptions GetSecureSocketOption(AuthenticationTypes authenticationType)
+        {
+            if (authenticationType == AuthenticationTypes.SSL)
+            {
+                return MailKit.Security.SecureSocketOptions.SslOnConnect;
+            }
+
+            if (authenticationType == AuthenticationTypes.TLS)
+            {
+                return MailKit.Security.SecureSocketOptions.StartTlsWhenAvailable;
+            }
+
+            return MailKit.Security.SecureSocketOptions.Auto;
+        }
 
         public DefaultEmailService(TwoFactorEmailOptions options)
         {
@@ -101,12 +123,13 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Email
 
             using (var client = new SmtpClient())
             {
-                client.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => {
-                    return true;
-                };
-                await client.ConnectAsync(_options.EmailSmtpHost, _options.EmailSmtpPort, _options.EmailSmtpUseSsl);
+                await client.ConnectAsync(_options.EmailSmtpHost, _options.EmailSmtpPort, GetSecureSocketOption(_options.AuthenticationType));
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
-                await client.AuthenticateAsync(_options.EmailUserName, _options.EmailPassword);
+                if (!string.IsNullOrWhiteSpace(_options.EmailUserName) && !string.IsNullOrWhiteSpace(_options.EmailPassword))
+                {
+                    await client.AuthenticateAsync(_options.EmailUserName, _options.EmailPassword);
+                }
+
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
             }

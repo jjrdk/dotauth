@@ -2,15 +2,27 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests.Extensions;
 using SimpleIdentityServer.Scim.Mapping.Ad.Controllers;
-using SimpleIdentityServer.Scim.Mapping.Ad.InMemory;
+using SimpleIdentityServer.Scim.Mapping.Ad.Models;
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
 {
     public class FakeStartup
     {
+        private List<AdMapping> DEFAULT_MAPPINGS = new List<AdMapping>
+        {
+            new AdMapping
+            {
+                AdPropertyName = "property",
+                AttributeId = "attributeid",
+                CreateDateTime = DateTime.UtcNow,
+                UpdateDateTime = DateTime.UtcNow
+            }
+        };
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAuthorization(options =>
@@ -19,8 +31,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
                     return true;
                 }));
             });
-            services.AddScimMapping();
-            services.AddScimMappingInMemoryEF();
+            services.AddScimMapping(adMappings: DEFAULT_MAPPINGS);
             var mvc = services.AddMvc();
             var parts = mvc.PartManager.ApplicationParts;
             parts.Clear();
@@ -29,22 +40,12 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            InitializeDatabase(app);
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-        }
-
-        private void InitializeDatabase(IApplicationBuilder app)
-        {
-            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<MappingDbContext>();
-                context.EnsureSeedData();
-            }
         }
     }
 }

@@ -1,101 +1,95 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Module;
-using System;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.TwoFactorAuthentication.Email
 {
     public class TwoFactorAuthEmailModule : IModule
     {
-        private const string EmailFromName = "EmailFromName";
-        private const string EmailFromAddress = "EmailFromAddress";
-        private const string EmailSubject = "EmailSubject";
-        private const string EmailBody = "EmailBody";
-        private const string EmailSmtpHost = "EmailSmtpHost";
-        private const string EmailSmtpPort = "EmailSmtpPort";
-        private const string EmailSmtpUseSsl = "EmailSmtpUseSsl";
-        private const string EmailUserName = "EmailUserName";
-        private const string EmailPassword = "EmailPassword";
+        private IDictionary<string, string> _properties;
 
-        public void Configure(IApplicationBuilder applicationBuilder)
+        public void Init(IDictionary<string, string> properties)
         {
+            _properties = properties;
+            AspPipelineContext.Instance().ConfigureServiceContext.Initialized += HandleServiceContextInitialized;
         }
 
-        public void Configure(IRouteBuilder routeBuilder)
+        private void HandleServiceContextInitialized(object sender, System.EventArgs e)
         {
+            AspPipelineContext.Instance().ConfigureServiceContext.Services.AddEmailTwoFactorAuthentication(GetOptions());
         }
 
-        public void ConfigureAuthentication(Microsoft.AspNetCore.Authentication.AuthenticationBuilder authBuilder, IDictionary<string, string> options = null)
+        private TwoFactorEmailOptions GetOptions()
         {
-        }
-
-        public void ConfigureAuthorization(AuthorizationOptions authorizationOptions, IDictionary<string, string> options = null)
-        {
-        }
-
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
-        {
-            if (options == null)
+            var result = new TwoFactorEmailOptions();
+            if(_properties != null)
             {
-                throw new ArgumentNullException(nameof(options));
+                string emailFromName;
+                string emailFromAddress;
+                string emailSubject;
+                string emailBody;
+                string emailSmtpHost;
+                int emailSmtpPort;
+                string authenticationType;
+                string emailUserName;
+                string emailPassword;
+                if (_properties.TryGetValue("EmailFromName", out emailFromName))
+                {
+                    result.EmailFromName = emailFromName;
+                }
+
+                if (_properties.TryGetValue("EmailFromAddress", out emailFromAddress))
+                {
+                    result.EmailFromAddress = emailFromAddress;
+                }
+
+                if (_properties.TryGetValue("EmailSubject", out emailSubject))
+                {
+                    result.EmailSubject = emailSubject;
+                }
+
+                if (_properties.TryGetValue("EmailBody", out emailBody))
+                {
+                    result.EmailBody = emailBody;
+                }
+
+                if (_properties.TryGetValue("EmailSmtpHost", out emailSmtpHost))
+                {
+                    result.EmailSmtpHost = emailSmtpHost;
+                }
+
+                if (_properties.TryGetValue("EmailSmtpPort", out emailSmtpPort))
+                {
+                    result.EmailSmtpPort = emailSmtpPort;
+                }
+
+                if (_properties.TryGetValue("AuthenticationType", out authenticationType))
+                {
+                    if (authenticationType == "ssl")
+                    {
+                        result.AuthenticationType = AuthenticationTypes.SSL;
+                    }
+                    else if (authenticationType == "tls")
+                    {
+                        result.AuthenticationType = AuthenticationTypes.TLS;    
+                    }
+                    else
+                    {
+                        result.AuthenticationType = AuthenticationTypes.None;
+                    }
+                }
+
+                if (_properties.TryGetValue("EmailUserName", out emailUserName))
+                {
+                    result.EmailUserName = emailUserName;
+                }
+
+                if (_properties.TryGetValue("EmailPassword", out emailPassword))
+                {
+                    result.EmailPassword = emailPassword;
+                }
             }
 
-            var opts = GetOptions(options);
-            // TODO : IMPLEMENT.
-        }
-
-        public ModuleUIDescriptor GetModuleUI()
-        {
-            return null;
-        }
-
-        public IEnumerable<string> GetOptionKeys()
-        {
-            return new[]
-            {
-                EmailFromName,
-                EmailFromAddress,
-                EmailSubject,
-                EmailBody,
-                EmailSmtpHost,
-                EmailSmtpPort,
-                EmailSmtpUseSsl,
-                EmailUserName,
-                EmailPassword
-            };
-        }
-
-        private static TwoFactorEmailOptions GetOptions(IDictionary<string, string> options)
-        {
-            var emailServiceOptions = new TwoFactorEmailOptions
-            {
-                EmailBody = options.TryGetValue(EmailBody),
-                EmailFromAddress = options.TryGetValue(EmailFromAddress),
-                EmailFromName = options.TryGetValue(EmailFromName),
-                EmailPassword = options.TryGetValue(EmailPassword),
-                EmailSmtpHost = options.TryGetValue(EmailSmtpHost),
-                EmailSubject = options.TryGetValue(EmailSubject),
-                EmailUserName = options.TryGetValue(EmailUserName)
-            };
-
-            int port;
-            bool useSsl = false;
-            if (options.TryGetValue(EmailSmtpPort, out port))
-            {
-                emailServiceOptions.EmailSmtpPort = port;
-
-            }
-
-            if (options.TryGetValue(EmailSmtpUseSsl, out useSsl))
-            {
-                emailServiceOptions.EmailSmtpUseSsl = useSsl;
-            }
-            
-            return emailServiceOptions;
+            return result;
         }
     }
 }

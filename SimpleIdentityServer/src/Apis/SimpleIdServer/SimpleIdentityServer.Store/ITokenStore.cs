@@ -20,5 +20,6 @@ namespace SimpleIdentityServer.Store
         Task<bool> AddToken(GrantedToken grantedToken);
         Task<bool> RemoveRefreshToken(string refreshToken);
         Task<bool> RemoveAccessToken(string accessToken);
+        Task<bool> Clean();
     }
 }

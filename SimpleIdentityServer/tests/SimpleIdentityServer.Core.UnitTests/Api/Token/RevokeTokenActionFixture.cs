@@ -47,8 +47,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(new RevokeTokenParameter(), null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(new RevokeTokenParameter(), null, null, null));
         }
 
         [Fact]
@@ -62,13 +62,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null, null, null));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
         }
@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(new Core.Common.Models.Client(), null)));
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
@@ -92,7 +92,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT
-            var result = await Assert.ThrowsAsync<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null));
+            var result = await Assert.ThrowsAsync<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null, null, null));
 
             // ASSERT
             Assert.NotNull(result);
@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(new Core.Common.Models.Client(), null)));
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
@@ -133,7 +133,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(true));
 
             // ACT
-            await _revokeTokenAction.Execute(parameter, null);
+            await _revokeTokenAction.Execute(parameter, null, null, null);
 
             // ASSERTS
             _grantedTokenRepositoryStub.Verify(g => g.RemoveRefreshToken(parent.RefreshToken));
@@ -154,7 +154,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(new Core.Common.Models.Client(), null)));
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
@@ -164,7 +164,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(true));
 
             // ACT
-            await _revokeTokenAction.Execute(parameter, null);
+            await _revokeTokenAction.Execute(parameter, null, null, null);
 
             // ASSERTS
             _grantedTokenRepositoryStub.Verify(g => g.RemoveAccessToken(grantedToken.AccessToken));

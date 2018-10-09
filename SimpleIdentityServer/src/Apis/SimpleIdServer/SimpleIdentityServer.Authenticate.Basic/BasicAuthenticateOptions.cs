@@ -15,6 +15,7 @@ namespace SimpleIdentityServer.Authenticate.Basic
         {
             IsScimResourceAutomaticallyCreated = false;
             ClaimsIncludedInUserCreation = new List<string>();
+            AuthenticationOptions = new BasicAuthenticationOptions();
         }
 
         /// <summary>

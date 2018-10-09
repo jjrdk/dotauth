@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Scim.Common.Models
             SchemaAttribute = schemaAttribute;
         }
 
-        public SchemaAttributeResponse SchemaAttribute { get; private set; }
+        public SchemaAttributeResponse SchemaAttribute { get; set; }
 
         public RepresentationAttribute Parent { get; set; }
 

@@ -18,16 +18,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleBus.Core;
+using SimpleIdentityServer.AccessToken.Store;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Parsers;
-using SimpleIdentityServer.Host.Services;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.OpenId.Logging;
+using SimpleIdentityServer.Store;
 using System;
 using System.Linq;
 
@@ -35,9 +35,7 @@ namespace SimpleIdentityServer.Host
 {
     public static class ServiceCollectionExtensions 
     {
-        public static IServiceCollection AddOpenIdApi(
-            this IServiceCollection serviceCollection,
-            Action<IdentityServerOptions> optionsCallback)
+        public static IServiceCollection AddOpenIdApi(this IServiceCollection serviceCollection, Action<IdentityServerOptions> optionsCallback)
         {
             if (serviceCollection == null)
             {
@@ -51,8 +49,7 @@ namespace SimpleIdentityServer.Host
             
             var options = new IdentityServerOptions();
             optionsCallback(options);
-            serviceCollection.AddOpenIdApi(
-                options);
+            serviceCollection.AddOpenIdApi(options);
             return serviceCollection;
         }
         
@@ -62,9 +59,7 @@ namespace SimpleIdentityServer.Host
         /// <param name="serviceCollection"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection AddOpenIdApi(
-            this IServiceCollection serviceCollection,
-            IdentityServerOptions options)
+        public static IServiceCollection AddOpenIdApi(this IServiceCollection serviceCollection, IdentityServerOptions options)
         {
             if (serviceCollection == null)
             {
@@ -151,10 +146,17 @@ namespace SimpleIdentityServer.Host
             IServiceCollection services,
             IdentityServerOptions options)
         {
-            services.AddSimpleIdentityServerCore()
+            services.AddSimpleIdentityServerCore(options.OAuthConfigurationOptions, 
+                clients: options.Configuration == null ? null : options.Configuration.Clients,
+                resourceOwners: options.Configuration == null ? null : options.Configuration.Users,
+                translations:options.Configuration == null ? null : options.Configuration.Translations,
+                jsonWebKeys: options.Configuration == null ? null : options.Configuration.JsonWebKeys)
                 .AddSimpleIdentityServerJwt()
                 .AddHostIdentityServer(options)
                 .AddIdServerClient()
+                .AddDefaultTokenStore()
+                .AddDefaultAccessTokenStore()
+                .AddDefaultSimpleBus()
                 .AddTechnicalLogging()
                 .AddOpenidLogging()
                 .AddOAuthLogging()
@@ -173,26 +175,7 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (options.ConfigurationService == null)
-            {
-                serviceCollection.AddTransient<IConfigurationService, DefaultConfigurationService>();
-            }
-            else
-            {
-                serviceCollection.AddTransient(typeof(IConfigurationService), options.ConfigurationService);
-            }
-
-            if (options.PasswordService == null)
-            {
-                serviceCollection.AddTransient<IPasswordService, DefaultPasswordService>();
-            }
-            else
-            {
-                serviceCollection.AddTransient(typeof(IPasswordService), options.PasswordService);
-            }
-                        
             serviceCollection
-                .AddSingleton(options.Authenticate)
                 .AddSingleton(options.Scim)
                 .AddTransient<IRedirectInstructionParser, RedirectInstructionParser>()
                 .AddTransient<IActionResultParser, ActionResultParser>()

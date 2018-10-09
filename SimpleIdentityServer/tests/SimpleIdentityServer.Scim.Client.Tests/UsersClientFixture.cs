@@ -19,7 +19,7 @@ using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Scim.Client.Builders;
 using SimpleIdentityServer.Scim.Client.Tests.MiddleWares;
-using SimpleIdentityServer.Scim.Db.EF.Extensions;
+using SimpleIdentityServer.Scim.Core.EF.Extensions;
 using System;
 using System.Linq;
 using System.Net;
@@ -309,7 +309,6 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             Assert.True(fourthResult.StatusCode == HttpStatusCode.OK);
             Assert.True(fourthResult.Content[Common.Constants.UserResourceResponseNames.Emails].Count() == 2);
 
-            /*
             // ACT : Remove emails of the user
             var fifthResult = await _usersClient.PartialUpdateUser(baseUrl, id)
                 .AddOperation(removeEmailOperation)
@@ -319,7 +318,6 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             Assert.NotNull(fifthResult);
             Assert.True(fifthResult.StatusCode == HttpStatusCode.OK);
             Assert.True(fifthResult.Content[Common.Constants.UserResourceResponseNames.Emails].Count() == 1);
-            */
 
             // ACT : Add 10 users
             for (int i = 0; i < 10; i++)

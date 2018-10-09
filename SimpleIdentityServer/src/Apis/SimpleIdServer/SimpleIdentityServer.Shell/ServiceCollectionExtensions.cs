@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Razor;
+﻿using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using SimpleIdentityServer.Shell.Controllers;
@@ -9,7 +8,7 @@ namespace SimpleIdentityServer.Shell
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddBasicShell(this IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment hosting)
+        public static IServiceCollection AddBasicShell(this IServiceCollection services, IMvcBuilder mvcBuilder)
         {
             if (services == null)
             {
@@ -21,17 +20,11 @@ namespace SimpleIdentityServer.Shell
                 throw new ArgumentNullException(nameof(mvcBuilder));
             }
 
-            if (hosting == null)
-            {
-                throw new ArgumentNullException(nameof(hosting));
-            }
-
             var assembly = typeof(HomeController).Assembly;
             var embeddedFileProvider = new EmbeddedFileProvider(assembly);
-            var compositeProvider = new CompositeFileProvider(hosting.ContentRootFileProvider, embeddedFileProvider);
             services.Configure<RazorViewEngineOptions>(options =>
             {
-                options.FileProviders.Add(compositeProvider);
+                options.FileProviders.Add(embeddedFileProvider);
             });
 
             mvcBuilder.AddApplicationPart(assembly);

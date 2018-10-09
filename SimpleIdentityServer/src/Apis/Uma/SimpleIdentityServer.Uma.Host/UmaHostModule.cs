@@ -1,15 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Module;
-using SimpleIdentityServer.Uma.Host.Configurations;
-using SimpleIdentityServer.Uma.Host.Controllers;
+using Microsoft.Extensions.FileProviders;
 using SimpleIdentityServer.Uma.Host.Extensions;
-using SimpleIdentityServer.Uma.Host.Middlewares;
-using SimpleIdentityServer.Uma.Logging;
+using SimpleIdentityServer.Uma.Host.Controllers;
+using SimpleIdentityServer.Module;
 using System;
 using System.Collections.Generic;
 
@@ -17,52 +12,36 @@ namespace SimpleIdentityServer.Uma.Host
 {
     public class UmaHostModule : IModule
     {
-        public void Configure(IApplicationBuilder applicationBuilder)
+        public void Init(IDictionary<string, string> properties)
         {
-            applicationBuilder.UseUmaExceptionHandler(new ExceptionHandlerMiddlewareOptions
+            AspPipelineContext.Instance().ConfigureServiceContext.Initialized += HandleServiceContextInitialized;
+            AspPipelineContext.Instance().ConfigureServiceContext.MvcAdded += HandleMvcAdded;
+            AspPipelineContext.Instance().ConfigureServiceContext.AuthorizationAdded += HandleAuthorizationAdded;
+        }
+
+        private void HandleServiceContextInitialized(object sender, EventArgs e)
+        {
+            var services = AspPipelineContext.Instance().ConfigureServiceContext.Services;
+            services.AddUmaHost(new AuthorizationServerOptions());
+        }
+		
+        private void HandleMvcAdded(object sender, EventArgs e)
+        {
+            var services = AspPipelineContext.Instance().ConfigureServiceContext.Services;
+            var mvcBuilder = AspPipelineContext.Instance().ConfigureServiceContext.MvcBuilder;
+            var assembly = typeof(JwksController).Assembly;
+            var embeddedFileProvider = new EmbeddedFileProvider(assembly);
+            services.Configure<RazorViewEngineOptions>(options =>
             {
-                UmaEventSource = applicationBuilder.ApplicationServices.GetService<IUmaServerEventSource>()
+                options.FileProviders.Add(embeddedFileProvider);
             });
-        }
 
-        public void Configure(IRouteBuilder routeBuilder)
-        {
-        }
-
-        public void ConfigureAuthentication(AuthenticationBuilder authBuilder, IDictionary<string, string> options = null)
-        {
-        }
-
-        public void ConfigureAuthorization(AuthorizationOptions authorizationOptions, IDictionary<string, string> options = null)
-        {
-            authorizationOptions.AddUmaSecurityPolicy();
-        }
-
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (mvcBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(mvcBuilder));
-            }
-
-            services.AddUmaHost(new UmaHostConfiguration());
-            var assembly = typeof(ConfigurationController).Assembly;
             mvcBuilder.AddApplicationPart(assembly);
         }
 
-        public ModuleUIDescriptor GetModuleUI()
+        private void HandleAuthorizationAdded(object sender, EventArgs e)
         {
-            return null;
-        }
-
-        public IEnumerable<string> GetOptionKeys()
-        {
-            return null;
+            AspPipelineContext.Instance().ConfigureServiceContext.AuthorizationOptions.AddUmaSecurityPolicy();
         }
     }
 }

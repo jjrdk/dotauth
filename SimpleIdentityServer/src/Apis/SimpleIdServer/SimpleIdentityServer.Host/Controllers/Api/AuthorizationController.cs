@@ -46,7 +46,6 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         private readonly IEncoder _encoder;
         private readonly IActionResultParser _actionResultParser;
         private readonly IJwtParser _jwtParser;
-        private readonly AuthenticateOptions _authenticateOptions;
         private readonly IAuthenticationService _authenticationService;
 
         public AuthorizationController(
@@ -55,7 +54,6 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             IEncoder encoder,
             IActionResultParser actionResultParser,
             IJwtParser jwtParser,
-            AuthenticateOptions authenticateOptions,
             IAuthenticationService authenticationService)
         {
             _authorizationActions = authorizationActions;
@@ -63,7 +61,6 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _encoder = encoder;
             _actionResultParser = actionResultParser;
             _jwtParser = jwtParser;
-            _authenticateOptions = authenticateOptions;
             _authenticationService = authenticationService;
         }
 
@@ -83,9 +80,10 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest);
             authorizationRequest.OriginUrl = originUrl;
             authorizationRequest.SessionId = sessionId;
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.CookieName);
             var parameter = authorizationRequest.ToParameter();
-            var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser);
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
+            var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser, issuerName);
             if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var redirectUrl = new Uri(authorizationRequest.RedirectUri);

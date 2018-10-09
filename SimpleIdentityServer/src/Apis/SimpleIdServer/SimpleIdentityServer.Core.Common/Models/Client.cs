@@ -21,43 +21,43 @@ namespace SimpleIdentityServer.Core.Common.Models
 {
     public enum ResponseType
     {
-        code,
-        token,
-        id_token
+        code = 0,
+        token = 1,
+        id_token = 2
     }
 
     public enum GrantType
     {
-        authorization_code,
-        @implicit,
-        refresh_token,
-        client_credentials,
-        password,
-        uma_ticket
+        authorization_code = 0,
+        @implicit = 1,
+        refresh_token = 2,
+        client_credentials = 3,
+        password = 4,
+        uma_ticket = 5
     }
 
     public enum TokenEndPointAuthenticationMethods
     {
         // Defaut value
-        client_secret_basic,
-        client_secret_post,
-        client_secret_jwt,
-        private_key_jwt,
-        tls_client_auth,
-        none
+        client_secret_basic = 0,
+        client_secret_post = 1,
+        client_secret_jwt = 2,
+        private_key_jwt = 3,
+        tls_client_auth = 4,
+        none = 5
     }
 
     public enum ApplicationTypes
     {
-        native,
-        web
+        native = 0,
+        web = 1
     }
 
     public enum ClientSecretTypes
     {
-        SharedSecret,
-        X509Thumbprint,
-        X509Name
+        SharedSecret= 0,
+        X509Thumbprint = 1,
+        X509Name = 2
     }
 
     public class ClientSecret

@@ -1,6 +1,7 @@
 ﻿using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.User;
 using System;
 using System.Collections.Generic;
@@ -20,12 +21,15 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IUserActions _userActions; 
         private readonly SmsAuthenticationOptions _smsAuthenticationOptions;
+        private readonly ISubjectBuilder _subjectBuilder;
 
-        public SmsAuthenticationOperation(IGenerateAndSendSmsCodeOperation generateAndSendSmsCodeOperation, IResourceOwnerRepository resourceOwnerRepository, IUserActions userActions, SmsAuthenticationOptions smsAuthenticationOptions)
+        public SmsAuthenticationOperation(IGenerateAndSendSmsCodeOperation generateAndSendSmsCodeOperation, IResourceOwnerRepository resourceOwnerRepository, IUserActions userActions, ISubjectBuilder subjectBuilder,
+            SmsAuthenticationOptions smsAuthenticationOptions)
         {
             _generateAndSendSmsCodeOperation = generateAndSendSmsCodeOperation;
             _resourceOwnerRepository = resourceOwnerRepository;
             _userActions = userActions;
+            _subjectBuilder = subjectBuilder;
             _smsAuthenticationOptions = smsAuthenticationOptions;
         }
 
@@ -46,7 +50,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
             }
 
             // 3. Create a new resource owner.
-            var id = Guid.NewGuid().ToString();
+            var id = _subjectBuilder.BuildSubject();
             var claims = new List<Claim>
             {
                 new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber),
