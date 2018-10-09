@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Core.JwtToken
     public interface IJwtGenerator
     {
         Task<JwsPayload> UpdatePayloadDate(JwsPayload jwsPayload);
-        Task<JwsPayload> GenerateAccessToken(Core.Common.Models.Client client, IEnumerable<string> scopes);
+        Task<JwsPayload> GenerateAccessToken(Core.Common.Models.Client client, IEnumerable<string> scopes, string issuerName);
         Task<JwsPayload> GenerateIdTokenPayloadForScopesAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, string issuerName);
         Task<JwsPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters, string issuerName);
         Task<JwsPayload> GenerateUserInfoPayloadForScopeAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
@@ -159,7 +159,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             return jwsPayload;
         }
 
-        public async Task<JwsPayload> GenerateAccessToken(Core.Common.Models.Client client, IEnumerable<string> scopes)
+        public async Task<JwsPayload> GenerateAccessToken(Common.Models.Client client, IEnumerable<string> scopes, string issuerName)
         {
             if (client == null)
             {
@@ -176,9 +176,13 @@ namespace SimpleIdentityServer.Core.JwtToken
             var issuedAtTime = timeKeyValuePair.Value;
 
             var jwsPayload = new JwsPayload();
+            jwsPayload.Add(StandardClaimNames.Audiences, new[]
+            {
+                client.ClientId
+            });
+            jwsPayload.Add(StandardClaimNames.Issuer, issuerName);
             jwsPayload.Add(StandardClaimNames.ExpirationTime, expirationInSeconds);
             jwsPayload.Add(StandardClaimNames.Iat, issuedAtTime);
-            jwsPayload.Add(StandardClaimNames.ClientId, client.ClientId);
             jwsPayload.Add(StandardClaimNames.Scopes, scopes);
             return jwsPayload;
         }

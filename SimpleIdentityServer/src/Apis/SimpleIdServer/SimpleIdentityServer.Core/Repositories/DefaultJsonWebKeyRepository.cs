@@ -147,6 +147,7 @@ namespace SimpleIdentityServer.Core.Repositories
             rec.X5t = jsonWebKey.X5t;
             rec.X5tS256 = jsonWebKey.X5tS256;
             rec.X5u = jsonWebKey.X5u;
+            rec.SerializedKey = jsonWebKey.SerializedKey;
             return Task.FromResult(true);
         }
     }

@@ -183,7 +183,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(grantedToken));
             _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(
                 It.IsAny<string>(),
-                It.IsAny<string>(), 
+                It.IsAny<string>(),
+                It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>())).Returns(Task.FromResult(grantedToken));
 

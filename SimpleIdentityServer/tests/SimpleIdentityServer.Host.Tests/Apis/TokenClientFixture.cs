@@ -48,10 +48,10 @@ namespace SimpleIdentityServer.Host.Tests
         private Mock<Authenticate.SMS.Client.Factories.IHttpClientFactory> _smsHttpClientFactoryStub;
         private IClientAuthSelector _clientAuthSelector;
         private IUserInfoClient _userInfoClient;
+        private IJwksClient _jwksClient;
         private ISidSmsAuthenticateClient _sidSmsAuthenticateClient;
         private IJwsGenerator _jwsGenerator;
         private IJweGenerator _jweGenerator;
-
         public TokenClientFixture(TestOauthServerFixture server)
         {
             _server = server;
@@ -851,6 +851,26 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.NotEmpty(result.Content.AccessToken);
         }
 
+        [Fact]
+        public async Task When_Get_Access_Token_With_Password_Grant_Type_Then_Access_Token_With_Valid_Signature_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            
+            // ACT
+            var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
+                .UsePassword("administrator", "password", "scim")
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var jwks = await _jwksClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.False(result.ContainsError);
+            Assert.NotEmpty(result.Content.AccessToken);
+
+        }
+
         #endregion
 
         #region Client authentications
@@ -984,6 +1004,7 @@ namespace SimpleIdentityServer.Host.Tests
             var introspectionOperation = new IntrospectOperation(_httpClientFactoryStub.Object);
             var revokeTokenOperation = new RevokeTokenOperation(_httpClientFactoryStub.Object);
             var sendSmsOperation = new SendSmsOperation(_smsHttpClientFactoryStub.Object);
+            var getJsonWebKeysOperation = new GetJsonWebKeysOperation(_httpClientFactoryStub.Object);
             _clientAuthSelector = new ClientAuthSelector(
                 new TokenClientFactory(postTokenOperation, getDiscoveryOperation), 
                 new IntrospectClientFactory(introspectionOperation, getDiscoveryOperation),
@@ -991,6 +1012,7 @@ namespace SimpleIdentityServer.Host.Tests
             var getUserInfoOperation = new GetUserInfoOperation(_httpClientFactoryStub.Object);
             _sidSmsAuthenticateClient = new SidSmsAuthenticateClient(sendSmsOperation);
             _userInfoClient = new UserInfoClient(getUserInfoOperation, getDiscoveryOperation);
+            _jwksClient = new JwksClient(getJsonWebKeysOperation, getDiscoveryOperation);
         }
     }
 }

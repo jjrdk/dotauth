@@ -106,7 +106,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 result.AuthCode.UserInfoPayLoad);
             if (grantedToken == null)
             {
-                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(result.Client, result.AuthCode.Scopes, result.AuthCode.UserInfoPayLoad, result.AuthCode.IdTokenPayload);
+                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(result.Client, result.AuthCode.Scopes, issuerName, result.AuthCode.UserInfoPayLoad, result.AuthCode.IdTokenPayload);
                 _oauthEventSource.GrantAccessToClient(
                     result.AuthCode.ClientId,
                     grantedToken.AccessToken,

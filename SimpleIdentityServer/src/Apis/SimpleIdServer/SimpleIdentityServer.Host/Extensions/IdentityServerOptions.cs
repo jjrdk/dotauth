@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Models;
 using System.Collections.Generic;
 
@@ -31,6 +32,7 @@ namespace SimpleIdentityServer.Host
         public List<ResourceOwner> Users { get; set; }
         public List<Core.Common.Models.Client> Clients { get; set; }
         public List<Translation> Translations { get; set; }
+        public List<JsonWebKey> JsonWebKeys { get; set; }
     }
 
     public class IdentityServerOptions

@@ -151,6 +151,14 @@ namespace SimpleIdentityServer.Store
             return Task.FromResult(true);
         }
 
+        public Task<bool> Clean()
+        {
+            _tokens.Clear();
+            _mappingStrToAccessTokens.Clear();
+            _mappingStrToRefreshTokens.Clear();
+            return Task.FromResult(true);
+        }
+
         private static bool CompareJwsPayload(JwsPayload firstJwsPayload, JwsPayload secondJwsPayload)
         {
             foreach (var record in firstJwsPayload)

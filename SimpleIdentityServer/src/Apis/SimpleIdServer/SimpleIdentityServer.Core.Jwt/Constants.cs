@@ -420,34 +420,23 @@ namespace SimpleIdentityServer.Core.Jwt
         public static class JsonWebKeyParameterNames
         {
             public static string KeyTypeName = "kty";
-
             public static string UseName = "use";
-
             public static string KeyOperationsName = "key_ops";
-
             public static string AlgorithmName = "alg";
-
             public static string KeyIdentifierName = "kid";
-
             public static string X5Url = "x5u";
-
             public static string X5CertificateChain = "x5c";
-
             public static string X5ThumbPrint = "x5t";
-
             public static string X5Sha256ThumbPrint = "x5t#S256";
-
             public static class RsaKey
             {
                 public static string ModulusName = "n";
-
                 public static string ExponentName = "e";
             }
 
             public static class EcKey
             {
                 public static string XCoordinateName = "x";
-
                 public static string YCoordinateName = "y";
             }
         }

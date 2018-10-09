@@ -121,7 +121,7 @@ namespace SimpleIdentityServer.Core.Common
                 if (grantedToken == null)
                 {
                     grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes,
-                        userInformationPayload, idTokenPayload);
+                        issuerName, userInformationPayload, idTokenPayload);
                     newAccessTokenGranted = true;
                 }
 

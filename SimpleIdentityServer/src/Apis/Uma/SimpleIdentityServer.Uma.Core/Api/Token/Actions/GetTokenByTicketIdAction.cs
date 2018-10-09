@@ -122,7 +122,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             }
 
             // 5. Generate a granted token.
-            var grantedToken = await GenerateTokenAsync(client, ticket.Lines, "openid");
+            var grantedToken = await GenerateTokenAsync(client, ticket.Lines, "openid", issuerName);
             await _tokenStore.AddToken(grantedToken);
             await _ticketStore.RemoveAsync(ticket.Id);
             return grantedToken;
@@ -139,7 +139,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             return result;
         }
 
-        public async Task<GrantedToken> GenerateTokenAsync(SimpleIdentityServer.Core.Common.Models.Client client, IEnumerable<TicketLine> ticketLines, string scope)
+        public async Task<GrantedToken> GenerateTokenAsync(SimpleIdentityServer.Core.Common.Models.Client client, IEnumerable<TicketLine> ticketLines, string scope, string issuerName)
         {
             if (client == null)
             {
@@ -157,7 +157,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             }
 
             var expiresIn = await _configurationService.GetRptLifeTime(); // 1. Retrieve the expiration time of the granted token.
-            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' ')); // 2. Construct the JWT token (client).
+            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName); // 2. Construct the JWT token (client).
             var jArr = new JArray();
             foreach (var ticketLine in ticketLines)
             {

@@ -60,8 +60,8 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             InitializeMockObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateAccessToken(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateAccessToken(new Core.Common.Models.Client(), null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateAccessToken(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateAccessToken(new Core.Common.Models.Client(), null, null));
         }
 
         [Fact]
@@ -78,11 +78,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             _simpleIdentityServerConfigurator.Setup(g => g.GetTokenValidityPeriodInSecondsAsync()).Returns(Task.FromResult((double)3600));
 
             // ACT
-            var result = await _jwtGenerator.GenerateAccessToken(client, scopes);
+            var result = await _jwtGenerator.GenerateAccessToken(client, scopes, null);
 
             // ASSERTS.
             Assert.NotNull(result);
-            Assert.True(result[StandardClaimNames.ClientId].ToString() == clientId);
         }
 
 

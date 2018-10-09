@@ -38,9 +38,7 @@ namespace SimpleIdentityServer.Client
 
         #region Constructor
 
-        public JwksClient(
-            IGetJsonWebKeysOperation getJsonWebKeysOperation,
-            IGetDiscoveryOperation getDiscoveryOperation)
+        public JwksClient(IGetJsonWebKeysOperation getJsonWebKeysOperation, IGetDiscoveryOperation getDiscoveryOperation)
         {
             _getJsonWebKeysOperation = getJsonWebKeysOperation;
             _getDiscoveryOperation = getDiscoveryOperation;
