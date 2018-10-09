@@ -10,10 +10,10 @@ namespace SimpleIdentityServer.AccountFilter.Basic.EF.Sqlite
         public void Init(IDictionary<string, string> properties)
         {
             _properties = properties;
-            AspPipelineContext.Instance().ConfigureServiceContext.Initialized += HandleServiceContextInitialized;
+            AspPipelineContext.Instance().ConfigureServiceContext.MvcAdded += HandleMvcAdded;
         }
 
-        private void HandleServiceContextInitialized(object sender, System.EventArgs e)
+        private void HandleMvcAdded(object sender, System.EventArgs e)
         {
             string connectionString;
             if (!_properties.TryGetValue("ConnectionString", out connectionString))

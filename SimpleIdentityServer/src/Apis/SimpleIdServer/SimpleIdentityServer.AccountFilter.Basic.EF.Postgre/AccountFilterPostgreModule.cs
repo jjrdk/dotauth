@@ -1,4 +1,5 @@
 ﻿using SimpleIdentityServer.Module;
+using System;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.AccountFilter.Basic.EF.Postgre
@@ -10,17 +11,17 @@ namespace SimpleIdentityServer.AccountFilter.Basic.EF.Postgre
         public void Init(IDictionary<string, string> properties)
         {
             _properties = properties;
-            AspPipelineContext.Instance().ConfigureServiceContext.Initialized += HandleServiceContextInitialized;
+            AspPipelineContext.Instance().ConfigureServiceContext.MvcAdded += HandleMvcAdded;
         }
 
-        private void HandleServiceContextInitialized(object sender, System.EventArgs e)
+        private void HandleMvcAdded(object sender, EventArgs eventArgs)
         {
             string connectionString;
             if (!_properties.TryGetValue("ConnectionString", out connectionString))
             {
                 throw new ModuleException("configuration", "the property 'ConnectionString' is missing");
             }
-
+            
             AspPipelineContext.Instance().ConfigureServiceContext.Services.AddBasicAccountFilterPostgresqlEF(connectionString);
         }
     }
