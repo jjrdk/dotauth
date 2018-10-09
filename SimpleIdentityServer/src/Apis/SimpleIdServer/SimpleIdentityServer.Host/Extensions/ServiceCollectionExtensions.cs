@@ -149,7 +149,8 @@ namespace SimpleIdentityServer.Host
             services.AddSimpleIdentityServerCore(options.OAuthConfigurationOptions, 
                 clients: options.Configuration == null ? null : options.Configuration.Clients,
                 resourceOwners: options.Configuration == null ? null : options.Configuration.Users,
-                translations:options.Configuration == null ? null : options.Configuration.Translations)
+                translations:options.Configuration == null ? null : options.Configuration.Translations,
+                jsonWebKeys: options.Configuration == null ? null : options.Configuration.JsonWebKeys)
                 .AddSimpleIdentityServerJwt()
                 .AddHostIdentityServer(options)
                 .AddIdServerClient()

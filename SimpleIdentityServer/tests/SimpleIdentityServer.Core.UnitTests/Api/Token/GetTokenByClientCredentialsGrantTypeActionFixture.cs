@@ -233,6 +233,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 });
             _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(It.IsAny<Core.Common.Models.Client>(),
                 It.IsAny<string>(),
+                It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult(grantedToken));
@@ -288,12 +289,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                     Scopes = scopes
                 });
             _jwtGeneratorStub.Setup(g => g.GenerateAccessToken(It.IsAny<Core.Common.Models.Client>(),
-                It.IsAny<IEnumerable<string>>()))
+                It.IsAny<IEnumerable<string>>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(jwsPayload));
             _clientHelperStub.Setup(g => g.GenerateIdTokenAsync(It.IsAny<Core.Common.Models.Client>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult(accessToken));
             _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(It.IsAny<Core.Common.Models.Client>(),
+                It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>())).Returns(Task.FromResult(grantedToken));

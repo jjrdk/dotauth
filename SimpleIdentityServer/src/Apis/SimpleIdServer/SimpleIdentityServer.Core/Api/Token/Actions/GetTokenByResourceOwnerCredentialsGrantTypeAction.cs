@@ -141,7 +141,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             var generatedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId, payload, payload);
             if (generatedToken == null)
             {
-                generatedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes, payload, payload);
+                generatedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes, issuerName, payload, payload);
                 if (generatedToken.IdTokenPayLoad != null)
                 {
                     await _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad);

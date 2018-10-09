@@ -98,6 +98,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             var generatedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(
                 grantedToken.ClientId,
                 grantedToken.Scope,
+                issuerName,
                 grantedToken.UserInfoPayLoad,
                 grantedToken.IdTokenPayLoad);
             generatedToken.ParentTokenId = grantedToken.Id;
