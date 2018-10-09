@@ -54,10 +54,11 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
             IAuthenticateHelper authenticateHelper,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
+            ISubjectBuilder subjectBuilder,
             BasicAuthenticateOptions basicAuthenticateOptions) : base(authenticateActions, profileActions, dataProtectionProvider, encoder,
                 translationManager, simpleIdentityServerEventSource, urlHelperFactory, actionContextAccessor, eventPublisher,
                 authenticationService, authenticationSchemeProvider, userActions, payloadSerializer, configurationService,
-                authenticateHelper, twoFactorAuthenticationHandler, basicAuthenticateOptions)
+                authenticateHelper, twoFactorAuthenticationHandler, subjectBuilder, basicAuthenticateOptions)
         {
             _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
         }
@@ -65,9 +66,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
         public async Task<IActionResult> Index()
         {
             var authenticatedUser = await SetUser();
-            if (authenticatedUser == null ||
-                authenticatedUser.Identity == null ||
-                !authenticatedUser.Identity.IsAuthenticated)
+            if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 await TranslateView(DefaultLanguage);
                 var viewModel = new AuthorizeViewModel();

@@ -172,6 +172,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddSingleton<IResourceOwnerRepository>(new DefaultResourceOwnerRepository(resourceOwners));
             serviceCollection.AddSingleton<IScopeRepository>(new DefaultScopeRepository(scopes));
             serviceCollection.AddSingleton<ITranslationRepository>(new DefaultTranslationRepository(translations));
+            serviceCollection.AddSingleton<ISubjectBuilder>(new DefaultSubjectBuilder());
             return serviceCollection;
         }
     }

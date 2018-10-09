@@ -68,6 +68,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         protected readonly IConfigurationService _configurationService;
         protected readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
         protected readonly BasicAuthenticateOptions _basicAuthenticateOptions;
+        private readonly ISubjectBuilder _subjectBuilder;
 
         public BaseAuthenticateController(
             IAuthenticateActions authenticateActions,
@@ -86,6 +87,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             IConfigurationService configurationService,
             IAuthenticateHelper authenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
+            ISubjectBuilder subjectBuilder,
             BasicAuthenticateOptions basicAuthenticateOptions) : base(authenticationService)
         {
             _authenticateActions = authenticateActions;
@@ -103,6 +105,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             _authenticateHelper = authenticateHelper;
             _basicAuthenticateOptions = basicAuthenticateOptions;
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
+            _subjectBuilder = subjectBuilder;
             Check();
         }
 
@@ -135,20 +138,20 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
-                throw new IdentityServerException(
-                    Core.Errors.ErrorCodes.UnhandledExceptionCode, string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
             // 1. Get the authenticated user.
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.CookieNames.ExternalCookieName);
             var resourceOwner = await _profileActions.GetResourceOwner(authenticatedUser.GetSubject());
+            string sub = null;
 
             // 2. Automatically create the resource owner.
             if (resourceOwner == null)
             {
                 try
                 {
-                    await AddExternalUser(authenticatedUser);
+                    sub = await AddExternalUser(authenticatedUser);
                 }
                 catch(IdentityServerException ex)
                 {
@@ -160,10 +163,16 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 }
             }
 
-            IEnumerable<Claim> claims = authenticatedUser.Claims;
+            List<Claim> claims = authenticatedUser.Claims.ToList();
             if (resourceOwner != null)
             {
-                claims = resourceOwner.Claims;
+                claims = resourceOwner.Claims.ToList();
+            }
+            else
+            {
+                var nameIdentifier = claims.First(c => c.Type == ClaimTypes.NameIdentifier);
+                claims.Remove(nameIdentifier);
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, sub));
             }
 
             await _authenticationService.SignOutAsync(HttpContext, Host.Constants.CookieNames.ExternalCookieName, new AuthenticationProperties());
@@ -407,11 +416,12 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             var claimsIdentity = authenticatedUser.Identity as ClaimsIdentity;
             var claims = authenticatedUser.Claims.ToList();
             var resourceOwner = await _profileActions.GetResourceOwner(authenticatedUser.GetSubject());
+            string sub = string.Empty;
             if (resourceOwner == null)
             {
                 try
                 {
-                    await AddExternalUser(authenticatedUser);
+                    sub = await AddExternalUser(authenticatedUser);
                 }
                 catch (IdentityServerException ex)
                 {
@@ -426,6 +436,12 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             if (resourceOwner != null)
             {
                 claims = resourceOwner.Claims.ToList();
+            }
+            else
+            {
+                var nameIdentifier = claims.First(c => c.Type == ClaimTypes.NameIdentifier);
+                claims.Remove(nameIdentifier);
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, sub));
             }
 
             var subject = claims.GetSubject();
@@ -520,7 +536,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         /// </summary>
         /// <param name="authenticatedUser"></param>
         /// <returns></returns>
-        protected async Task AddExternalUser(ClaimsPrincipal authenticatedUser)
+        protected async Task<string> AddExternalUser(ClaimsPrincipal authenticatedUser)
         {
             var openidClaims = authenticatedUser.Claims.ToOpenidClaims().ToList();
             if (_basicAuthenticateOptions.ClaimsIncludedInUserCreation != null && _basicAuthenticateOptions.ClaimsIncludedInUserCreation.Any())
@@ -534,7 +550,11 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 }
             }
 
-            var record = new AddUserParameter(authenticatedUser.GetSubject(), Guid.NewGuid().ToString(), openidClaims);
+            var subject = _subjectBuilder.BuildSubject();
+            var record = new AddUserParameter(subject, Guid.NewGuid().ToString(), openidClaims)
+            {
+                ExternalLogin = authenticatedUser.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value
+            };
             if (_basicAuthenticateOptions.IsScimResourceAutomaticallyCreated)
             {
                 await _userActions.AddUser(record, new AuthenticationParameter
@@ -548,6 +568,8 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             {
                 await _userActions.AddUser(record, null, null, false, authenticatedUser.Identity.AuthenticationType);
             }
+
+            return subject;
         }
 
         protected void Check()

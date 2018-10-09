@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
@@ -66,7 +67,8 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             IScimClientFactory scimClientFactory,        
             ILinkProfileAction linkProfileAction,
             IEnumerable<IAccountFilter> accountFilters,
-            IOpenIdEventSource openIdEventSource)
+            IOpenIdEventSource openIdEventSource,
+            ISubjectBuilder subjectBuilder)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _claimRepository = claimRepository;
@@ -159,10 +161,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                     throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheUserIsNotAuthorized);
                 }
             }
-
-            // CLAIMS + REQUEST
-            // CHECK THE USER CAN BE CREATED.
-
+            
             // 3. Add the scim resource.
             if (addScimResource)
             {
@@ -201,7 +200,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             // 5. Link to a profile.
             if (!string.IsNullOrWhiteSpace(issuer))
             {
-                await _linkProfileAction.Execute(addUserParameter.Login, addUserParameter.Login, issuer);
+                await _linkProfileAction.Execute(addUserParameter.Login, addUserParameter.ExternalLogin, issuer);
             }
 
             _openidEventSource.AddResourceOwner(newResourceOwner.Id);
