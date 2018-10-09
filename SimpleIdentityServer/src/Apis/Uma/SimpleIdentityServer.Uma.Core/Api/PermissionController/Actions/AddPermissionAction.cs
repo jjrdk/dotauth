@@ -42,14 +42,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly ITicketStore _ticketStore;
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
-        private readonly IConfigurationService _configurationService;
+        private readonly IUmaConfigurationService _configurationService;
         private readonly IUmaServerEventSource _umaServerEventSource;
 
         public AddPermissionAction(
             IResourceSetRepository resourceSetRepository,
             ITicketStore ticketStore,
             IRepositoryExceptionHelper repositoryExceptionHelper,
-            IConfigurationService configurationService,
+            IUmaConfigurationService configurationService,
             IUmaServerEventSource umaServerEventSource)
         {
             _resourceSetRepository = resourceSetRepository;

@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             // ACT & ASSERT
-            var result = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationActions.GetAuthorization(authorizationParameter, null));
+            var result = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationActions.GetAuthorization(authorizationParameter, null, null));
             Assert.True(result.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(result.Message == string.Format(ErrorDescriptions.TheClientRequiresPkce, clientId));
         }
@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     ResponseType.id_token
                 });
             _getTokenViaImplicitWorkflowOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<IPrincipal>(), It.IsAny<Core.Common.Models.Client>())).Returns(Task.FromResult(actionResult));
+                It.IsAny<IPrincipal>(), It.IsAny<Core.Common.Models.Client>(), null)).Returns(Task.FromResult(actionResult));
             _authorizationFlowHelperFake.Setup(a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(),
                 It.IsAny<string>()))
                 .Returns(AuthorizationFlow.ImplicitFlow);
@@ -124,7 +124,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var serializedParameter = actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
 
             // ACT
-            _authorizationActions.GetAuthorization(authorizationParameter, null);
+            _authorizationActions.GetAuthorization(authorizationParameter, null, null);
 
             // ASSERTS
             _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
@@ -156,7 +156,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     ResponseType.id_token
                 });
             _getAuthorizationCodeOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<IPrincipal>(), It.IsAny<Core.Common.Models.Client>())).Returns(Task.FromResult(actionResult));
+                It.IsAny<IPrincipal>(), It.IsAny<Core.Common.Models.Client>(), null)).Returns(Task.FromResult(actionResult));
             _authorizationFlowHelperFake.Setup(a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(),
                 It.IsAny<string>()))
                 .Returns(AuthorizationFlow.AuthorizationCodeFlow);
@@ -177,7 +177,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var serializedParameter = actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
 
             // ACT
-            _authorizationActions.GetAuthorization(authorizationParameter, null);
+            _authorizationActions.GetAuthorization(authorizationParameter, null, null);
 
             // ASSERTS
             _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
@@ -209,7 +209,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     ResponseType.id_token
                 });
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<IPrincipal>(), It.IsAny<Core.Common.Models.Client>())).Returns(Task.FromResult(actionResult));
+                It.IsAny<IPrincipal>(), It.IsAny<Core.Common.Models.Client>(), null)).Returns(Task.FromResult(actionResult));
             _authorizationFlowHelperFake.Setup(a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(),
                 It.IsAny<string>()))
                 .Returns(AuthorizationFlow.HybridFlow);
@@ -230,7 +230,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var serializedParameter = actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
 
             // ACT
-            _authorizationActions.GetAuthorization(authorizationParameter, null);
+            _authorizationActions.GetAuthorization(authorizationParameter, null, null);
 
             // ASSERTS
             _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));

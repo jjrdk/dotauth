@@ -14,46 +14,45 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authentication.Cookies;
-using System;
+using SimpleIdentityServer.Core;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Host
 {
-    public class AuthenticateOptions
-    {
-        public string CookieName = CookieAuthenticationDefaults.AuthenticationScheme;
-        public string ExternalCookieName = "SimpleIdServer-OpenId-External";
-    }
-
     public class ScimOptions
     {
         public string EndPoint { get; set; }
         public bool IsEnabled { get; set; }
     }
 
+    public class OpenIdServerConfiguration
+    {
+        public List<ResourceOwner> Users { get; set; }
+        public List<Core.Common.Models.Client> Clients { get; set; }
+        public List<Translation> Translations { get; set; }
+        public List<JsonWebKey> JsonWebKeys { get; set; }
+    }
+
     public class IdentityServerOptions
     {
         public IdentityServerOptions()
         {
-            Authenticate = new AuthenticateOptions();
             Scim = new ScimOptions();
         }
 
-        /// <summary>
-        /// Configure authentication.
-        /// </summary>
-        public AuthenticateOptions Authenticate { get; set; }
         /// <summary>
         /// Scim options.
         /// </summary>
         public ScimOptions Scim { get; set; }
         /// <summary>
-        /// Service used to retrieve configurations (expiration date time etc ...)
+        /// Gets or sets the configuration.
         /// </summary>
-        public Type ConfigurationService { get; set; }
+        public OpenIdServerConfiguration Configuration { get; set; }
         /// <summary>
-        /// Service used to encrypt the password
+        /// Gets or sets the OAUTH configuration options.
         /// </summary>
-        public Type PasswordService { get; set; }
+        public OAuthConfigurationOptions OAuthConfigurationOptions { get; set; }
     }
 }

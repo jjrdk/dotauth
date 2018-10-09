@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using StackExchange.Redis;
 using System;
 using System.Reflection;
 using System.Text;
@@ -17,6 +16,7 @@ namespace SimpleIdentityServer.Store.Redis
         private readonly int _port;
         private readonly RedisCacheOptions _options;
         private IDistributedCache _distributedCache;
+        private RedisCache _redisCache;
 
         public RedisStorage(RedisCacheOptions options, int port)
         {
@@ -27,7 +27,8 @@ namespace SimpleIdentityServer.Store.Redis
 
             _port = port;
             var builder = new ServiceCollection();
-            builder.AddSingleton<IDistributedCache>(serviceProvider => new RedisCache(Options.Create(options)));
+            _redisCache = new RedisCache(Options.Create(options));
+            builder.AddSingleton<IDistributedCache>(serviceProvider => _redisCache);
             var provider = builder.BuildServiceProvider();
             Initialize((IDistributedCache)provider.GetService(typeof(IDistributedCache)));
             _options = options;
@@ -88,6 +89,11 @@ namespace SimpleIdentityServer.Store.Redis
             }
 
             await _distributedCache.RemoveAsync(key);
+        }
+
+        public Task<bool> RemoveAll()
+        {
+            return Task.FromResult(true);
         }
 
         public void Set(string key, object value, int slidingExpirationTime)

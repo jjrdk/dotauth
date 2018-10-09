@@ -26,13 +26,13 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
 {
     public interface IGetTokenByTicketIdAction
     {
-        Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
+        Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
     }
 
     internal sealed class GetTokenByTicketIdAction : IGetTokenByTicketIdAction
     {
         private readonly ITicketStore _ticketStore;
-        private readonly IConfigurationService _configurationService;
+        private readonly IUmaConfigurationService _configurationService;
         private readonly IUmaServerEventSource _umaServerEventSource;
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
         private readonly IAuthorizationPolicyValidator _authorizationPolicyValidator;
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
         private readonly IClientHelper _clientHelper;
         private readonly ITokenStore _tokenStore;
 
-        public GetTokenByTicketIdAction(ITicketStore ticketStore, IConfigurationService configurationService,
+        public GetTokenByTicketIdAction(ITicketStore ticketStore, IUmaConfigurationService configurationService,
             IUmaServerEventSource umaServerEventSource, IIdentityServerClientFactory identityServerClientFactory,
             IAuthorizationPolicyValidator authorizationPolicyValidator, IAuthenticateInstructionGenerator authenticateInstructionGenerator,
             IAuthenticateClient authenticateClient, IJwtGenerator jwtGenerator, IClientHelper clientHelper, ITokenStore tokenStore)
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             _tokenStore = tokenStore;
         }
 
-        public async Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null)
+        public async Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
         {
             // 1. Check parameters.
             if (parameter == null)
@@ -79,7 +79,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
 
             // 2. Try to authenticate the client.
             var instruction = CreateAuthenticateInstruction(parameter, authenticationHeaderValue, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
             var client = authResult.Client;
             if (client == null)
             {
@@ -122,7 +122,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             }
 
             // 5. Generate a granted token.
-            var grantedToken = await GenerateTokenAsync(client, ticket.Lines, "openid");
+            var grantedToken = await GenerateTokenAsync(client, ticket.Lines, "openid", issuerName);
             await _tokenStore.AddToken(grantedToken);
             await _ticketStore.RemoveAsync(ticket.Id);
             return grantedToken;
@@ -139,7 +139,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             return result;
         }
 
-        public async Task<GrantedToken> GenerateTokenAsync(SimpleIdentityServer.Core.Common.Models.Client client, IEnumerable<TicketLine> ticketLines, string scope)
+        public async Task<GrantedToken> GenerateTokenAsync(SimpleIdentityServer.Core.Common.Models.Client client, IEnumerable<TicketLine> ticketLines, string scope, string issuerName)
         {
             if (client == null)
             {
@@ -157,7 +157,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             }
 
             var expiresIn = await _configurationService.GetRptLifeTime(); // 1. Retrieve the expiration time of the granted token.
-            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' ')); // 2. Construct the JWT token (client).
+            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName); // 2. Construct the JWT token (client).
             var jArr = new JArray();
             foreach (var ticketLine in ticketLines)
             {

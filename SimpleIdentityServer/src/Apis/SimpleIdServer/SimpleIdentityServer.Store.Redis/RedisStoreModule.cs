@@ -1,97 +1,48 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Caching.Redis;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Caching.Redis;
 using SimpleIdentityServer.Module;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SimpleIdentityServer.Store.Redis
 {
     public class RedisStoreModule : IModule
     {
-        private const string _redisStorageConfiguration = "OauthRedisStorageConfiguration";
-        private const string _redisStorageInstanceName = "OauthRedisStorageInstanceName";
-        private const string _redisStoragePort = "OauthRedisStoragePort";
+        private IDictionary<string, string> _properties;
 
-        private static readonly List<string> _configurationKeys = new List<string>
+        public void Init(IDictionary<string, string> properties)
         {
-            _redisStorageConfiguration,
-            _redisStorageInstanceName
-        };
-
-        public void Configure(IApplicationBuilder applicationBuilder)
-        {
+            _properties = properties;
+            AspPipelineContext.Instance().ConfigureServiceContext.Initialized += HandleInitialized;
         }
 
-        public void Configure(IRouteBuilder routeBuilder)
+        private void HandleInitialized(object sender, EventArgs e)
         {
+            var options = GetOptions();
+            AspPipelineContext.Instance().ConfigureServiceContext.Services.AddRedisStorage(options.Key, options.Value);
         }
 
-        public void ConfigureAuthentication(AuthenticationBuilder authBuilder, IDictionary<string, string> options = null)
+        private KeyValuePair<RedisCacheOptions, int> GetOptions()
         {
-        }
-
-        public void ConfigureAuthorization(AuthorizationOptions authorizationOptions, IDictionary<string, string> options = null)
-        {
-        }
-
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            var configuration = GetConfiguration(options);
-            services.AddRedisStorage(configuration.Key, configuration.Value);
-        }
-
-        public IEnumerable<string> GetOptionKeys()
-        {
-            return new []
-            {
-                _redisStorageConfiguration,
-                _redisStorageInstanceName,
-                _redisStoragePort
-            };
-        }
-
-        private static KeyValuePair<RedisCacheOptions, int> GetConfiguration(IDictionary<string, string> options)
-        {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            var missingMandatoryConfs = _configurationKeys.Where(c => !options.ContainsKey(c));
-            if (missingMandatoryConfs.Any())
-            {
-                throw new ModuleException("configuration", $"The {string.Join(",", missingMandatoryConfs)} configurations are missing");
-            }
-
             int port = 6379;
-            var b = options.ContainsKey(_redisStoragePort) && int.TryParse(options[_redisStoragePort], out port);
-            return new KeyValuePair<RedisCacheOptions, int>(new RedisCacheOptions
+            var redisCacheOptions = new RedisCacheOptions();
+            if (_properties != null)
             {
-                Configuration = options[_redisStorageConfiguration],
-                InstanceName = options[_redisStorageInstanceName]
-            },
-            port);
-        }
+                var configuration = string.Empty;
+                var instanceName = string.Empty;
+                if (_properties.TryGetValue("Configuration", out configuration))
+                {
+                    redisCacheOptions.Configuration = configuration;
+                }
 
-        public ModuleUIDescriptor GetModuleUI()
-        {
-            return null;
+                if (_properties.TryGetValue("InstanceName", out instanceName))
+                {
+                    redisCacheOptions.InstanceName = instanceName;
+                }
+
+                _properties.TryGetValue("Port", out port);
+            }
+
+            return new KeyValuePair<RedisCacheOptions, int>(redisCacheOptions, port);
         }
     }
 }

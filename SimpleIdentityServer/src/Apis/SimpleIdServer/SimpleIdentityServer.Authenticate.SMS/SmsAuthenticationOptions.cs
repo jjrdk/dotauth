@@ -8,6 +8,7 @@ namespace SimpleIdentityServer.Authenticate.SMS
         public SmsAuthenticationOptions()
         {
             Message = "The confirmation code is {0}";
+            TwilioSmsCredentials = new TwilioSmsCredentials();
         }
 
         public TwilioSmsCredentials TwilioSmsCredentials { get; set; }

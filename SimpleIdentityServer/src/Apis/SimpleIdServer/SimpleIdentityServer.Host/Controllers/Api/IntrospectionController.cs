@@ -82,7 +82,8 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                 }
             }
 
-            var result = await _introspectionActions.PostIntrospection(introspectionRequest.ToParameter(), authenticationHeaderValue);
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
+            var result = await _introspectionActions.PostIntrospection(introspectionRequest.ToParameter(), authenticationHeaderValue, issuerName);
             return new OkObjectResult(result.ToDto());
         }
 

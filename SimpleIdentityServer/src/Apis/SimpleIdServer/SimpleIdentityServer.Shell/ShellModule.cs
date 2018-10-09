@@ -1,10 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Module;
+﻿using SimpleIdentityServer.Module;
 using System;
 using System.Collections.Generic;
 
@@ -12,57 +6,28 @@ namespace SimpleIdentityServer.Shell
 {
     public class ShellModule : IModule
     {
-        public void Configure(IApplicationBuilder applicationBuilder)
+        public void Init(IDictionary<string, string> options)
         {
-            applicationBuilder.UseShellStaticFiles();
+            AspPipelineContext.Instance().ConfigureServiceContext.MvcAdded += HandleMvcAdded;
+            AspPipelineContext.Instance().ApplicationBuilderContext.Initialized += HandleApplicationBuilderInitialized;
+            AspPipelineContext.Instance().ApplicationBuilderContext.RouteConfigured += HandleRouteConfigured;
         }
 
-        public void Configure(IRouteBuilder routeBuilder)
+        private void HandleApplicationBuilderInitialized(object sender, EventArgs e)
         {
-            routeBuilder.UseShell();
+            var applicationBuilderContext = AspPipelineContext.Instance().ApplicationBuilderContext;
+            applicationBuilderContext.App.UseShellStaticFiles();
         }
 
-        public void ConfigureAuthentication(AuthenticationBuilder authBuilder, IDictionary<string, string> options = null)
+        private void HandleMvcAdded(object sender, EventArgs e)
         {
+            var configureServiceContext = AspPipelineContext.Instance().ConfigureServiceContext;
+            configureServiceContext.Services.AddBasicShell(configureServiceContext.MvcBuilder);
         }
 
-        public void ConfigureAuthorization(AuthorizationOptions authorizationOptions, IDictionary<string, string> options = null)
+        private void HandleRouteConfigured(object sender, EventArgs e)
         {
-        }
-
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if(mvcBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (env == null)
-            {
-                throw new ArgumentNullException(nameof(env));
-            }
-
-            if (moduleUiDescriptors == null)
-            {
-                throw new ArgumentNullException(nameof(moduleUiDescriptors));
-            }
-
-            services.AddBasicShell(mvcBuilder, env);
-        }
-
-        public ModuleUIDescriptor GetModuleUI()
-        {
-            return null;
-        }
-
-        public IEnumerable<string> GetOptionKeys()
-        {
-            return new string[0];
+            AspPipelineContext.Instance().ApplicationBuilderContext.RouteBuilder.UseShell();
         }
     }
 }

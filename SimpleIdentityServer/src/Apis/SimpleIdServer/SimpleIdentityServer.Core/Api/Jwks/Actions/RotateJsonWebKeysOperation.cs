@@ -1,5 +1,6 @@
 ﻿using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Common.Repositories;
+using SimpleIdentityServer.Store;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -15,12 +16,14 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
     public class RotateJsonWebKeysOperation : IRotateJsonWebKeysOperation
     {
         private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
+        private readonly ITokenStore _tokenStore;
 
         #region Constructor
 
-        public RotateJsonWebKeysOperation(IJsonWebKeyRepository jsonWebKeyRepository)
+        public RotateJsonWebKeysOperation(IJsonWebKeyRepository jsonWebKeyRepository, ITokenStore tokenStore)
         {
             _jsonWebKeyRepository = jsonWebKeyRepository;
+            _tokenStore = tokenStore;
         }
 
         #endregion
@@ -58,6 +61,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
                 await _jsonWebKeyRepository.UpdateAsync(jsonWebKey);
             }
 
+            await _tokenStore.Clean().ConfigureAwait(false);
             return true;
         }
 

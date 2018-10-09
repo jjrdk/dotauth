@@ -18,8 +18,8 @@ namespace SimpleIdentityServer.Scim.Db.EF.SqlServer
             {
                 throw new ArgumentNullException(nameof(connectionString));
             }
-
-            serviceCollection.AddScimRepositories();
+            
+			serviceCollection.AddScimRepository();
             serviceCollection.AddEntityFrameworkSqlServer()
                 .AddDbContext<ScimDbContext>(options =>
                     options.UseSqlServer(connectionString, callback));

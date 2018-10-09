@@ -26,15 +26,15 @@ namespace SimpleIdentityServer.Core.Common
         /// <summary>
         /// Ellipse Curve
         /// </summary>
-        EC,
+        EC = 0,
         /// <summary>
         /// RSA
         /// </summary>
-        RSA,
+        RSA = 1,
         /// <summary>
         /// Octet sequence (used to represent symmetric keys)
         /// </summary>
-        oct
+        oct = 2
     }
 
     /// <summary>
@@ -45,11 +45,11 @@ namespace SimpleIdentityServer.Core.Common
         /// <summary>
         /// Signature
         /// </summary>
-        Sig,
+        Sig = 0,
         /// <summary>
         /// Encryption
         /// </summary>
-        Enc
+        Enc = 1
     }
 
     /// <summary>
@@ -60,35 +60,35 @@ namespace SimpleIdentityServer.Core.Common
         /// <summary>
         /// Compute digital signature or MAC
         /// </summary>
-        Sign,
+        Sign = 0,
         /// <summary>
         /// Verify digital signature or MAC
         /// </summary>
-        Verify,
+        Verify = 1,
         /// <summary>
         /// Encrypt content
         /// </summary>
-        Encrypt,
+        Encrypt = 2,
         /// <summary>
         /// Decrypt content and validate decryption if applicable
         /// </summary>
-        Decrypt,
+        Decrypt = 3,
         /// <summary>
         /// Encrypt key
         /// </summary>
-        WrapKey,
+        WrapKey = 4,
         /// <summary>
         /// Decrypt key and validate encryption if applicable
         /// </summary>
-        UnWrapKey,
+        UnWrapKey = 5,
         /// <summary>
         /// Derive key
         /// </summary>
-        DeriveKey,
+        DeriveKey = 6,
         /// <summary>
         /// Derive bits not to be used as a key
         /// </summary>
-        DeriveBits
+        DeriveBits = 7
     }
 
     /// <summary>

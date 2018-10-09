@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Module;
+using Microsoft.Extensions.FileProviders;
 using SimpleIdentityServer.Scim.Host.Controllers;
 using SimpleIdentityServer.Scim.Host.Extensions;
+using SimpleIdentityServer.Module;
 using System;
 using System.Collections.Generic;
 
@@ -14,48 +12,35 @@ namespace SimpleIdentityServer.Scim.Host
 {
     public class ScimHostModule : IModule
     {
-        public void Configure(IApplicationBuilder applicationBuilder)
+        public void Init(IDictionary<string, string> properties)
         {
+            AspPipelineContext.Instance().ConfigureServiceContext.Initialized += HandleServiceContextInitialized;
+            AspPipelineContext.Instance().ConfigureServiceContext.MvcAdded += HandleMvcAdded;
+            AspPipelineContext.Instance().ConfigureServiceContext.AuthorizationAdded += HandleAuthorizationAdded;
         }
 
-        public void Configure(IRouteBuilder routeBuilder)
+        private void HandleServiceContextInitialized(object sender, EventArgs e)
         {
+            AspPipelineContext.Instance().ConfigureServiceContext.Services.AddScimHost(new ScimServerOptions());
         }
-
-        public void ConfigureAuthentication(AuthenticationBuilder authBuilder, IDictionary<string, string> options = null)
+		
+        private void HandleMvcAdded(object sender, EventArgs e)
         {
-        }
-
-        public void ConfigureAuthorization(AuthorizationOptions authorizationOptions, IDictionary<string, string> options = null)
-        {
-            authorizationOptions.AddScimAuthPolicy();
-        }
-
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (mvcBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(mvcBuilder));
-            }
-            
-            services.AddScimHost();
+            var services = AspPipelineContext.Instance().ConfigureServiceContext.Services;
+            var mvcBuilder = AspPipelineContext.Instance().ConfigureServiceContext.MvcBuilder;
             var assembly = typeof(SchemasController).Assembly;
+            var embeddedFileProvider = new EmbeddedFileProvider(assembly);
+            services.Configure<RazorViewEngineOptions>(options =>
+            {
+                options.FileProviders.Add(embeddedFileProvider);
+            });
+
             mvcBuilder.AddApplicationPart(assembly);
         }
 
-        public ModuleUIDescriptor GetModuleUI()
+        private void HandleAuthorizationAdded(object sender, EventArgs e)
         {
-            return null;
-        }
-
-        public IEnumerable<string> GetOptionKeys()
-        {
-            return null;
+            AspPipelineContext.Instance().ConfigureServiceContext.AuthorizationOptions.AddScimAuthPolicy();
         }
     }
 }

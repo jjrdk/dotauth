@@ -1,66 +1,27 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Module;
-using System;
+﻿using SimpleIdentityServer.Module;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.EF.Postgre
 {
     public class PostgreOAuthRepositoryModule : IModule
     {
-        private const string _oauthConnectionString = "OAuthConnectionString";
+        private IDictionary<string, string> _properties;
 
-        public void Configure(IApplicationBuilder applicationBuilder)
+        public void Init(IDictionary<string, string> properties)
         {
+            _properties = properties;
+            AspPipelineContext.Instance().ConfigureServiceContext.Initialized += HandleServiceContextInitialized;
         }
 
-        public void Configure(IRouteBuilder routeBuilder)
+        private void HandleServiceContextInitialized(object sender, System.EventArgs e)
         {
-        }
-
-        public void ConfigureAuthentication(AuthenticationBuilder authBuilder, IDictionary<string, string> options = null)
-        {
-        }
-
-        public void ConfigureAuthorization(AuthorizationOptions authorizationOptions, IDictionary<string, string> options = null)
-        {
-        }
-
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null,  IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
-        {
-            if (services == null)
+            string connectionString;
+            if (!_properties.TryGetValue("ConnectionString", out connectionString))
             {
-                throw new ArgumentNullException(nameof(services));
+                throw new ModuleException("configuration", "the property 'ConnectionString' is missing");
             }
 
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            if (!options.ContainsKey(_oauthConnectionString))
-            {
-                throw new ModuleException("configuration", $"The {_oauthConnectionString} configuration is missing");
-            }
-
-            services.AddOAuthPostgresqlEF(options["OAuthConnectionString"]);
-        }
-
-        public ModuleUIDescriptor GetModuleUI()
-        {
-            return null;
-        }
-
-        public IEnumerable<string> GetOptionKeys()
-        {
-            return new[]
-            {
-                _oauthConnectionString
-            };
+            AspPipelineContext.Instance().ConfigureServiceContext.Services.AddOAuthPostgresqlEF(connectionString);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection
     {
         Task<IntrospectionResult> PostIntrospection(
             IntrospectionParameter introspectionParameter,
-            AuthenticationHeaderValue authenticationHeaderValue);
+            AuthenticationHeaderValue authenticationHeaderValue, string issuerName);
     }
 
     public class IntrospectionActions : IIntrospectionActions
@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection
             _introspectionParameterValidator = introspectionParameterValidator;
         }
 
-        public async Task<IntrospectionResult> PostIntrospection(IntrospectionParameter introspectionParameter, AuthenticationHeaderValue authenticationHeaderValue)
+        public async Task<IntrospectionResult> PostIntrospection(IntrospectionParameter introspectionParameter, AuthenticationHeaderValue authenticationHeaderValue, string issuerName)
         {
             if (introspectionParameter == null)
             {
@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection
             {
                 _eventPublisher.Publish(new IntrospectionRequestReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(introspectionParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
                 _introspectionParameterValidator.Validate(introspectionParameter);
-                var result = await _postIntrospectionAction.Execute(introspectionParameter, authenticationHeaderValue);
+                var result = await _postIntrospectionAction.Execute(introspectionParameter, authenticationHeaderValue, issuerName);
                 _eventPublisher.Publish(new IntrospectionResultReturned(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
                 return result;
             }

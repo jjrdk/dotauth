@@ -3,6 +3,7 @@ using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.User;
 using System;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
         private Mock<IGenerateAndSendSmsCodeOperation> _generateAndSendSmsCodeOperationStub;
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
         private Mock<IUserActions> _userActionsStub;
+        private Mock<ISubjectBuilder> _subjectBuilderStub;
         private SmsAuthenticationOptions _smsAuthenticationOptions;
         private ISmsAuthenticationOperation _smsAuthenticationOperation;
 
@@ -104,11 +106,12 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
         {
             _generateAndSendSmsCodeOperationStub = new Mock<IGenerateAndSendSmsCodeOperation>();
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
+            _subjectBuilderStub = new Mock<ISubjectBuilder>();
             _userActionsStub = new Mock<IUserActions>();
             _smsAuthenticationOptions = new SmsAuthenticationOptions();
             _smsAuthenticationOperation = new SmsAuthenticationOperation(
                 _generateAndSendSmsCodeOperationStub.Object,
-                _resourceOwnerRepositoryStub.Object, _userActionsStub.Object, _smsAuthenticationOptions);
+                _resourceOwnerRepositoryStub.Object, _userActionsStub.Object, _subjectBuilderStub.Object, _smsAuthenticationOptions);
         }
     }
 }

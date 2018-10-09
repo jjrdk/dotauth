@@ -26,9 +26,7 @@ namespace SimpleIdentityServer.Host
 {
     public static class ApplicationBuilderExtensions 
     {        
-        public static void UseOpenIdApi(this IApplicationBuilder app,
-            Action<IdentityServerOptions> optionsCallback,
-            ILoggerFactory loggerFactory) 
+        public static void UseOpenIdApi(this IApplicationBuilder app, Action<IdentityServerOptions> optionsCallback, ILoggerFactory loggerFactory) 
         {
             if (optionsCallback == null) 
             {
@@ -41,17 +39,12 @@ namespace SimpleIdentityServer.Host
                 loggerFactory);
         }
 
-        public static void UseOpenIdApi(
-            this IApplicationBuilder app,
-            IdentityServerOptions options,
-            ILoggerFactory loggerFactory) 
+        public static void UseOpenIdApi(this IApplicationBuilder app, IdentityServerOptions options, ILoggerFactory loggerFactory) 
         {
             UseOpenIdApi(app, options);
         }
 
-        public static void UseOpenIdApi(
-            this IApplicationBuilder app,
-            IdentityServerOptions options)
+        public static void UseOpenIdApi(this IApplicationBuilder app, IdentityServerOptions options)
         {
             if (options == null)
             {

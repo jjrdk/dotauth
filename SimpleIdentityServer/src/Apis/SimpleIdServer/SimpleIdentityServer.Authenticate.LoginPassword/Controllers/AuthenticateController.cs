@@ -10,7 +10,6 @@ using SimpleIdentityServer.Authenticate.Basic.ViewModels;
 using SimpleIdentityServer.Authenticate.LoginPassword.ViewModels;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Profile;
-using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -22,7 +21,6 @@ using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Core.WebSite.User;
-using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.OpenId.Logging;
 using System;
@@ -56,11 +54,11 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
             IAuthenticateHelper authenticateHelper,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
-            BasicAuthenticateOptions basicAuthenticateOptions,
-            AuthenticateOptions authenticateOptions) : base(authenticateActions, profileActions, dataProtectionProvider, encoder,
+            ISubjectBuilder subjectBuilder,
+            BasicAuthenticateOptions basicAuthenticateOptions) : base(authenticateActions, profileActions, dataProtectionProvider, encoder,
                 translationManager, simpleIdentityServerEventSource, urlHelperFactory, actionContextAccessor, eventPublisher,
                 authenticationService, authenticationSchemeProvider, userActions, payloadSerializer, configurationService,
-                authenticateHelper, twoFactorAuthenticationHandler, basicAuthenticateOptions, authenticateOptions)
+                authenticateHelper, twoFactorAuthenticationHandler, subjectBuilder, basicAuthenticateOptions)
         {
             _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
         }
@@ -68,9 +66,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
         public async Task<IActionResult> Index()
         {
             var authenticatedUser = await SetUser();
-            if (authenticatedUser == null ||
-                authenticatedUser.Identity == null ||
-                !authenticatedUser.Identity.IsAuthenticated)
+            if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 await TranslateView(DefaultLanguage);
                 var viewModel = new AuthorizeViewModel();
@@ -181,13 +177,14 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
                 }
 
                 // 4. Local authentication
+                var issuerName = Request.GetAbsoluteUriWithVirtualPath();
                 var actionResult = await _authenticateActions.LocalOpenIdUserAuthentication(new LocalAuthenticationParameter
                     {
                         UserName = viewModel.Login,
                         Password = viewModel.Password
                     },
                     request.ToParameter(),
-                    viewModel.Code);
+                    viewModel.Code, issuerName);
                 var subject = actionResult.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
 
                 // 5. Two factor authentication.
