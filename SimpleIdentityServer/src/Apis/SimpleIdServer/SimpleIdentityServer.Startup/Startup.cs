@@ -49,7 +49,8 @@ namespace SimpleIdentityServer.Startup
                 },
                 Configuration = new OpenIdServerConfiguration
                 {
-                    Users = DefaultConfiguration.GetUsers()
+                    Users = DefaultConfiguration.GetUsers(),
+                    Clients = DefaultConfiguration.GetClients()
                 }
             };
             _env = env;

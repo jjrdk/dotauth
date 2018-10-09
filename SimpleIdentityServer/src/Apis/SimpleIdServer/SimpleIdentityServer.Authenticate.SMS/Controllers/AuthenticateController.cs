@@ -56,10 +56,11 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             ISmsAuthenticationOperation smsAuthenticationOperation,
             IGenerateAndSendSmsCodeOperation generateAndSendSmsCodeOperation,
+            ISubjectBuilder subjectBuilder,
             SmsAuthenticationOptions basicAuthenticateOptions) : base(authenticateActions, profileActions, dataProtectionProvider, encoder,
                 translationManager, simpleIdentityServerEventSource, urlHelperFactory, actionContextAccessor, eventPublisher,
                 authenticationService, authenticationSchemeProvider, userActions, payloadSerializer, configurationService,
-                authenticateHelper, twoFactorAuthenticationHandler, basicAuthenticateOptions)
+                authenticateHelper, twoFactorAuthenticationHandler,subjectBuilder, basicAuthenticateOptions)
         {
             _smsAuthenticationOperation = smsAuthenticationOperation;
             _generateAndSendSmsCodeOperation = generateAndSendSmsCodeOperation;

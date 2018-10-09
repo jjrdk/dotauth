@@ -1,5 +1,6 @@
 ﻿using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 
@@ -7,6 +8,61 @@ namespace SimpleIdentityServer.Startup
 {
     public static class DefaultConfiguration
     {
+        public static List<SimpleIdentityServer.Core.Common.Models.Client> GetClients()
+        {
+            return new List<SimpleIdentityServer.Core.Common.Models.Client>
+            {
+                new SimpleIdentityServer.Core.Common.Models.Client
+                {
+                        ClientId = "website",
+                        ClientName = "Website",
+                        Secrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Type = ClientSecretTypes.SharedSecret,
+                                Value = "website"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        AllowedScopes = new List<Scope>
+                        {
+                            new Scope
+                            {
+                                Name = "openid"
+                            },
+                            new Scope
+                            {
+                                Name = "role"
+                            },
+                            new Scope
+                            {
+                                Name = "profile"
+                            }
+                        },
+                        GrantTypes = new List<GrantType>
+                        {
+                            GrantType.@implicit
+                        },
+                        ResponseTypes = new List<ResponseType>
+                        {
+                            ResponseType.code,
+                            ResponseType.id_token,
+                            ResponseType.token
+                        },
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = new List<string> { "http://localhost:64950/callback" },
+                        PostLogoutRedirectUris = new List<string> { "http://localhost:64950/end_session" },
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
+                }
+            };
+        }
+
         public static List<ResourceOwner> GetUsers()
         {
             return new List<ResourceOwner>
