@@ -24,7 +24,6 @@
   
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.TwoFactorAuthentication\SimpleIdentityServer.TwoFactorAuthentication.csproj" />
     <ProjectReference Include="..\..\Common\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />
   </ItemGroup>
 </Project>
