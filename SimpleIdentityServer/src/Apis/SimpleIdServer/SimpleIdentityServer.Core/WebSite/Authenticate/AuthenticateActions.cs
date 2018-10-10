@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
         private readonly IGenerateAndSendCodeAction _generateAndSendCodeAction;
         private readonly IValidateConfirmationCodeAction _validateConfirmationCodeAction;
         private readonly IRemoveConfirmationCodeAction _removeConfirmationCodeAction;
-        private readonly IEventPublisher _eventPublisher;
+        //private readonly IEventPublisher _eventPublisher;
 
         public AuthenticateActions(
             IAuthenticateResourceOwnerOpenIdAction authenticateResourceOwnerOpenIdAction,

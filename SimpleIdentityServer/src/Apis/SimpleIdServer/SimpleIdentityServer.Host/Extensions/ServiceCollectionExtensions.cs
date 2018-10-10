@@ -147,15 +147,15 @@ namespace SimpleIdentityServer.Host
             IdentityServerOptions options)
         {
             services.AddSimpleIdentityServerCore(options.OAuthConfigurationOptions, 
-                clients: options.Configuration == null ? null : options.Configuration.Clients,
-                resourceOwners: options.Configuration == null ? null : options.Configuration.Users,
-                translations:options.Configuration == null ? null : options.Configuration.Translations,
-                jsonWebKeys: options.Configuration == null ? null : options.Configuration.JsonWebKeys)
+                clients: options.Configuration?.Clients,
+                resourceOwners: options.Configuration?.Users,
+                translations:options.Configuration?.Translations,
+                jsonWebKeys: options.Configuration?.JsonWebKeys)
                 .AddSimpleIdentityServerJwt()
                 .AddHostIdentityServer(options)
                 .AddIdServerClient()
                 .AddDefaultTokenStore()
-                .AddDefaultAccessTokenStore()
+                //.AddDefaultAccessTokenStore()
                 .AddDefaultSimpleBus()
                 .AddTechnicalLogging()
                 .AddOpenidLogging()

@@ -182,7 +182,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
             }
             catch (Exception ex)
             {
-                throw new Exception("invalid " + toDecrypt);
+                throw new Exception("invalid " + toDecrypt, ex);
             }
         }
 
