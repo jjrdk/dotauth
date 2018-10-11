@@ -14,10 +14,10 @@
 // limitations under the License.
 #endregion
 
-using SimpleBus.Core;
-
 namespace SimpleIdentityServer.OAuth.Events
 {
+    using SimpleBus.Core;
+
     public class AuthorizationGranted : Event
     {
         public AuthorizationGranted(string id, string processId, string payload, int order)

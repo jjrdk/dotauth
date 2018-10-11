@@ -8,7 +8,7 @@ namespace SimpleIdentityServer.Module
 {
     public class ConfigureServiceContext
     {
-        private Dictionary<string, AuthenticationBuilder> _authenticationBuilders;
+        private readonly Dictionary<string, AuthenticationBuilder> _authenticationBuilders;
         private IServiceCollection _services;
         private IMvcBuilder _mvcBuilder;
         private AuthorizationOptions _authorizationOptions;

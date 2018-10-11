@@ -37,13 +37,6 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             string serializedKeys,
             string input,
             byte[] signature);
-#if NET461
-        string SignWithEllipseCurve(string serializedKeys,
-           string combinedJwsNotSigned);
-         bool VerifyWithEllipticCurve(string serializedKeys,
-            string message,
-            byte[] signature);
-#endif
     }
 
     public class CreateJwsSignature : ICreateJwsSignature
@@ -79,15 +72,6 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 JwsAlg.RS512, HashAlgorithmName.SHA512
             }
         };
-
-#if NET461
-        private readonly ICngKeySerializer _cngKeySerializer;
-
-        public CreateJwsSignature(ICngKeySerializer cngKeySerializer)
-        {
-            _cngKeySerializer = cngKeySerializer;
-        }
-#endif
 
         public CreateJwsSignature()
         {

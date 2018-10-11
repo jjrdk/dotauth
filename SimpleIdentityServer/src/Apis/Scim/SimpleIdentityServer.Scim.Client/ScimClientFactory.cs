@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Scim.Client
             }
             else
             {
-                services.AddCommonClient();
+                //services.AddCommonClient();
             }
 
             services.AddTransient<IGroupsClient, GroupsClient>();

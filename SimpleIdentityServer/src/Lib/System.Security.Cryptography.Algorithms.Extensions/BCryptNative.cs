@@ -156,7 +156,7 @@ namespace System.Security.Cryptography
         {
             public const string ObjectLength = "ObjectLength";          // BCRYPT_OBJECT_LENGTH
         }
-        
+
         internal static class UnsafeNativeMethods
         {
             /// <summary>
@@ -255,9 +255,9 @@ namespace System.Security.Cryptography
                                                            ref int pcbResult,
                                                            int dwFlags) where T : SafeHandle;
 
-        private static volatile bool s_haveBcryptSupported;
-        private static volatile bool s_bcryptSupported;
-        
+        //private static volatile bool s_haveBcryptSupported;
+        //private static volatile bool s_bcryptSupported;
+
         /// <summary>
         ///     Get the value of a DWORD property of a BCrypt object
         /// </summary>
@@ -278,7 +278,7 @@ namespace System.Security.Cryptography
         internal static byte[] GetProperty<T>(T algorithm, string property) where T : SafeHandle
         {
             Contract.Requires(algorithm != null);
-            Contract.Requires(!String.IsNullOrEmpty(property));
+            Contract.Requires(!string.IsNullOrEmpty(property));
             Contract.Ensures(Contract.Result<byte[]>() != null);
 
             BCryptPropertyGetter<T> getter = null;
@@ -325,7 +325,7 @@ namespace System.Security.Cryptography
                                                    out KeyBlobMagicNumber algorithmMagic,
                                                    out int keySize)
         {
-            Contract.Requires(!String.IsNullOrEmpty(algorithm));
+            Contract.Requires(!string.IsNullOrEmpty(algorithm));
 
             switch (algorithm)
             {
@@ -370,14 +370,13 @@ namespace System.Security.Cryptography
         [System.Security.SecurityCritical]
         internal static SafeBCryptAlgorithmHandle OpenAlgorithm(string algorithm, string implementation)
         {
-            Contract.Requires(!String.IsNullOrEmpty(algorithm));
-            Contract.Requires(!String.IsNullOrEmpty(implementation));
+            Contract.Requires(!string.IsNullOrEmpty(algorithm));
+            Contract.Requires(!string.IsNullOrEmpty(implementation));
             Contract.Ensures(Contract.Result<SafeBCryptAlgorithmHandle>() != null &&
                              !Contract.Result<SafeBCryptAlgorithmHandle>().IsInvalid &&
                              !Contract.Result<SafeBCryptAlgorithmHandle>().IsClosed);
 
-            SafeBCryptAlgorithmHandle algorithmHandle = null;
-            ErrorCode error = UnsafeNativeMethods.BCryptOpenAlgorithmProvider(out algorithmHandle,
+            ErrorCode error = UnsafeNativeMethods.BCryptOpenAlgorithmProvider(out var algorithmHandle,
                                                                               algorithm,
                                                                               implementation,
                                                                               0);

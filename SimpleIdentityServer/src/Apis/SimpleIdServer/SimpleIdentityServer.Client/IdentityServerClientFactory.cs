@@ -132,7 +132,7 @@ namespace SimpleIdentityServer.Client
             }
             else
             {
-                serviceCollection.AddCommonClient();
+                //serviceCollection.AddCommonClient();
             }
 
             // Register clients

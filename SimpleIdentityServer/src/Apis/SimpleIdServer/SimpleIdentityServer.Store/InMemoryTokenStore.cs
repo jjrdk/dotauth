@@ -9,9 +9,9 @@ namespace SimpleIdentityServer.Store
 {
     internal sealed class InMemoryTokenStore : ITokenStore
     {
-        private Dictionary<string, GrantedToken> _tokens;
-        private Dictionary<string, string> _mappingStrToRefreshTokens;
-        private Dictionary<string, string> _mappingStrToAccessTokens;
+        private readonly Dictionary<string, GrantedToken> _tokens;
+        private readonly Dictionary<string, string> _mappingStrToRefreshTokens;
+        private readonly Dictionary<string, string> _mappingStrToAccessTokens;
 
         public InMemoryTokenStore()
         {

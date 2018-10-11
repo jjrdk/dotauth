@@ -25,8 +25,8 @@ namespace System.Security.Cryptography
     [JsonObject]
     sealed internal class SecurityDocumentElement : ISecurityElementFactory
     {
-        private int m_position;
-        private SecurityDocument m_document;
+        private readonly int m_position;
+        private readonly SecurityDocument m_document;
 
         internal SecurityDocumentElement(SecurityDocument document, int position)
         {

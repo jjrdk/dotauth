@@ -14,7 +14,7 @@ namespace SimpleIdentityServer.Core.Repositories
     {
         public ICollection<Scope> _scopes;
 
-        private List<Scope> DEFAULT_SCOPES = new List<Scope>
+        private readonly List<Scope> DEFAULT_SCOPES = new List<Scope>
         {
             new Scope
             {

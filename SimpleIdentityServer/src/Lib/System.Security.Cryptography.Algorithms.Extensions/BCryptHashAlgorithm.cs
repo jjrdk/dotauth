@@ -26,7 +26,7 @@ namespace System.Security.Cryptography
     internal sealed class BCryptAlgorithmHandleCache
     {
         [SecurityCritical]
-        private Dictionary<string, WeakReference> m_algorithmHandles;
+        private readonly Dictionary<string, WeakReference> m_algorithmHandles;
 
         [SecurityCritical]
         public BCryptAlgorithmHandleCache()

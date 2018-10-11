@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>SimpleIdentityServer.Scim.Client.Integration.Tests test project</Description>
     <Authors>thierry habart</Authors>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>SimpleIdentityServer.Scim.Client.Integration.Tests</AssemblyName>
     <PackageId>SimpleIdentityServer.Scim.Client.Integration.Tests</PackageId>
   </PropertyGroup>
@@ -22,21 +22,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.0.2" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <PackageReference Include="Moq" Version="4.8.1" />
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="2.0.1" />
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\Apis\Scim\SimpleIdentityServer.Scim.Client\SimpleIdentityServer.Scim.Client.csproj" />
     <ProjectReference Include="..\..\src\Apis\Scim\SimpleIdentityServer.Scim.Mapping.Ad.Client\SimpleIdentityServer.Scim.Mapping.Ad.Client.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Web" />
   </ItemGroup>
 
 </Project>

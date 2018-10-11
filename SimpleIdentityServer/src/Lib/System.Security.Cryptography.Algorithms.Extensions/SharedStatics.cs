@@ -26,12 +26,12 @@ namespace System.Security.Cryptography
         
         SharedStatics()
         {
-            _Remoting_Identity_IDGuid = null;
+            //_Remoting_Identity_IDGuid = null;
             _Remoting_Identity_IDSeqNum = 0x40; // Reserve initial numbers for well known objects.
             _maker = null; 
         }
 
-        private string _Remoting_Identity_IDGuid;
+        //private string _Remoting_Identity_IDGuid;
         
         private StringMaker _maker; 
         [System.Security.SecuritySafeCritical]  // auto-generated 

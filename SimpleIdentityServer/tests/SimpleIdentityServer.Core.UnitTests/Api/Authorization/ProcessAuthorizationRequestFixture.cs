@@ -635,7 +635,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var aesEncryptionHelper = new AesEncryptionHelper();
             var jweHelper = new JweHelper(aesEncryptionHelper);
             var jweParser = new JweParser(jweHelper);
-            var createJwsSignature = new CreateJwsSignature(new CngKeySerializer());
+            var createJwsSignature = new CreateJwsSignature();
             var jwsParser = new JwsParser(createJwsSignature);
             var jsonWebKeyConverter = new JsonWebKeyConverter();
             var httpClientFactory = new HttpClientFactory();

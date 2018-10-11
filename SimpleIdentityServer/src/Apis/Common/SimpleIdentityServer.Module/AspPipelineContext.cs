@@ -7,8 +7,8 @@ namespace SimpleIdentityServer.Module
 {
     public class AspPipelineContext
     {
-        private ConfigureServiceContext _configureServiceContext;
-        private ApplicationBuilderContext _applicationBuilderContext;
+        private readonly ConfigureServiceContext _configureServiceContext;
+        private readonly ApplicationBuilderContext _applicationBuilderContext;
         private static AspPipelineContext _instance;
 
         private AspPipelineContext()

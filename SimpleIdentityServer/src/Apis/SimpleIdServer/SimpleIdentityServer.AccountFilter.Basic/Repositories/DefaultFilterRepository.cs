@@ -1,19 +1,19 @@
-﻿using System;
+﻿using SimpleIdentityServer.AccountFilter.Basic.Aggregates;
+using SimpleIdentityServer.AccountFilter.Basic.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SimpleIdentityServer.AccountFilter.Basic.Aggregates;
-using SimpleIdentityServer.AccountFilter.Basic.Extensions;
 
 namespace SimpleIdentityServer.AccountFilter.Basic.Repositories
 {
     public sealed class DefaultFilterRepository : IFilterRepository
     {
-        private List<FilterAggregate> _filters;
+        private readonly List<FilterAggregate> _filters;
 
         public DefaultFilterRepository(List<FilterAggregate> filters)
         {
-            _filters = filters == null ? new List<FilterAggregate>() : filters;
+            _filters = filters ?? new List<FilterAggregate>();
         }
 
         public Task<string> Add(FilterAggregate filter)
@@ -75,10 +75,6 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Repositories
             }
 
             var record = _filters.FirstOrDefault(f => f.Id == filter.Id);
-            if (filter == null)
-            {
-                return Task.FromResult(false);
-            }
 
             record.Name = filter.Name;
             record.Rules = filter.Rules;
