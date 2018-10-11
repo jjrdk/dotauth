@@ -1057,7 +1057,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var clientValidator = new ClientValidator();
             var claimsMapping = new ClaimsMapping();
             var parameterParserHelper = new ParameterParserHelper(_scopeRepositoryStub.Object);
-            var createJwsSignature = new CreateJwsSignature(new CngKeySerializer());
+            var createJwsSignature = new CreateJwsSignature();
             var aesEncryptionHelper = new AesEncryptionHelper();
             var jweHelper = new JweHelper(aesEncryptionHelper);
             var jwsGenerator = new JwsGenerator(createJwsSignature);

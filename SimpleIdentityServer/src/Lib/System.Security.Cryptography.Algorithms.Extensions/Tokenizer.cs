@@ -79,9 +79,9 @@ namespace System.Security.Cryptography
         // these variables represent the input state of the of the tokenizer 
 
         private int _inProcessingTag;
-        private byte[] _inBytes;
-        private char[] _inChars;
-        private String _inString;
+        private readonly byte[] _inBytes;
+        private readonly char[] _inChars;
+        private readonly String _inString;
         private int _inIndex;
         private int _inSize;
         private int _inSavedCharacter;
@@ -92,8 +92,8 @@ namespace System.Security.Cryptography
 
         private StringMaker _maker = null;
 
-        private String[] _searchStrings;
-        private String[] _replaceStrings;
+        private readonly String[] _searchStrings;
+        private readonly String[] _replaceStrings;
 
         private int _inNestedIndex;
         private int _inNestedSize;
@@ -814,12 +814,12 @@ namespace System.Security.Cryptography
     {
         private int m_countTokens;
 
-        private TokenizerShortBlock m_headTokens;
+        private readonly TokenizerShortBlock m_headTokens;
         private TokenizerShortBlock m_lastTokens;
         private TokenizerShortBlock m_currentTokens;
         private int m_indexTokens;
 
-        private TokenizerStringBlock m_headStrings;
+        private readonly TokenizerStringBlock m_headStrings;
         private TokenizerStringBlock m_currentStrings;
         private int m_indexStrings;
 

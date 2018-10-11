@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.Scim.Client.Builders
     public class PatchRequestBuilder
     {
         private readonly Func<JObject, Task<ScimResponse>> _callback;
-        private IList<PatchOperation> _operations;
+        private readonly IList<PatchOperation> _operations;
         private JObject _obj;
 
         public PatchRequestBuilder(Func<JObject, Task<ScimResponse>> callback)

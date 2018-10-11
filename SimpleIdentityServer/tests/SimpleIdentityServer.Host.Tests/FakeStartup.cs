@@ -22,8 +22,6 @@ using Newtonsoft.Json;
 using SimpleBus.Core;
 using SimpleIdentityServer.AccessToken.Store;
 using SimpleIdentityServer.AccountFilter;
-using SimpleIdentityServer.AccountFilter.Basic;
-using SimpleIdentityServer.AccountFilter.Basic.Controllers;
 using SimpleIdentityServer.AccountFilter.Basic.Repositories;
 using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Authenticate.SMS;
@@ -59,7 +57,7 @@ namespace SimpleIdentityServer.Host.Tests
     {
         public const string ScimEndPoint = "http://localhost:5555/";
         public const string DefaultSchema = "Cookies";
-        private IdentityServerOptions _options;
+        private readonly IdentityServerOptions _options;
         private IJsonWebKeyEnricher _jsonWebKeyEnricher;
         private SharedContext _context;
 
@@ -110,7 +108,7 @@ namespace SimpleIdentityServer.Host.Tests
             parts.Add(new AssemblyPart(typeof(DiscoveryController).GetTypeInfo().Assembly));
             parts.Add(new AssemblyPart(typeof(CodeController).GetTypeInfo().Assembly));
             parts.Add(new AssemblyPart(typeof(ProfilesController).GetTypeInfo().Assembly));
-            parts.Add(new AssemblyPart(typeof(FiltersController).GetTypeInfo().Assembly));
+            //parts.Add(new AssemblyPart(typeof(FiltersController).GetTypeInfo().Assembly));
             return services.BuildServiceProvider();
         }
 
@@ -168,10 +166,10 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddOpenidLogging()
                 .AddOAuthLogging()
                 .AddLogging()
-                .AddDefaultAccessTokenStore()
+                //.AddDefaultAccessTokenStore()
                 .AddTransient<IAccountFilter, SimpleIdentityServer.AccountFilter.Basic.AccountFilter>()
                 .AddSingleton<IFilterRepository>(new DefaultFilterRepository(null));
-            services.AddSingleton<IConfirmationCodeStore>(_context.ConfirmationCodeStore.Object);
+            services.AddSingleton(_context.ConfirmationCodeStore.Object);
         }
 
         private List<Dictionary<string, object>> ExtractPublicKeysForSignature(IEnumerable<JsonWebKey> jsonWebKeys)

@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2017 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,13 +14,11 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Uma.EF.Models
+namespace SimpleBus.Core
 {
-    public class PolicyResource
+    public class Event
     {
-        public string PolicyId { get; set; }
-        public string ResourceSetId { get; set; }
-        public virtual Policy Policy { get; set; }
-        public virtual ResourceSet ResourceSet { get; set; }
+        public string Version { get; set; }
+        public string ServerName { get; set; }
     }
 }

@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
 
     public class AesEncryptionHelper : IAesEncryptionHelper
     {
-        private Dictionary<JweAlg, IAlgorithm> _mappingJweAlgToAlgorithms = new Dictionary<JweAlg, IAlgorithm>
+        private readonly Dictionary<JweAlg, IAlgorithm> _mappingJweAlgToAlgorithms = new Dictionary<JweAlg, IAlgorithm>
         {
             {
                 JweAlg.RSA1_5, new RsaAlgorithm(false)

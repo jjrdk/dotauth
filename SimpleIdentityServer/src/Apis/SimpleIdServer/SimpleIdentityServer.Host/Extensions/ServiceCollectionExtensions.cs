@@ -156,7 +156,7 @@ namespace SimpleIdentityServer.Host
                 .AddIdServerClient()
                 .AddDefaultTokenStore()
                 //.AddDefaultAccessTokenStore()
-                .AddDefaultSimpleBus()
+                //.AddDefaultSimpleBus()
                 .AddTechnicalLogging()
                 .AddOpenidLogging()
                 .AddOAuthLogging()

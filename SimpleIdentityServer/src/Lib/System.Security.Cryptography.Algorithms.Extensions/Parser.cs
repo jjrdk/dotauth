@@ -26,7 +26,7 @@ namespace System.Security.Cryptography
         private const short c_childrentag = (short)(SecurityDocument.c_children << 8 | c_flag);
         private const short c_wastedstringtag = (short)(0x1000 | c_flag);
         private SecurityDocument _doc;
-        private Tokenizer _t;
+        private readonly Tokenizer _t;
 
         #region Constructors
 

@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Core.Common.DTOs.Requests
     [DataContract]
     public class AuthorizationRequest
     {
-        private Dictionary<ResponseTypes, string> _mappingResponseTypesToNames = new Dictionary<ResponseTypes, string>
+        private readonly Dictionary<ResponseTypes, string> _mappingResponseTypesToNames = new Dictionary<ResponseTypes, string>
         {
             { ResponseTypes.Code, ResponseTypeNames.Code },
             { ResponseTypes.Token, ResponseTypeNames.Token },

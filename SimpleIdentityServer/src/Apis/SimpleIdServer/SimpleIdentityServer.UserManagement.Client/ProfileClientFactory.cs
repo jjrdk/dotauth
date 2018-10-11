@@ -15,12 +15,12 @@ namespace SimpleIdentityServer.UserManagement.Client
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public ProfileClientFactory()
-        {
-            var services = new ServiceCollection();
-            RegisterDependencies(services);
-            _serviceProvider = services.BuildServiceProvider();
-        }
+        //public ProfileClientFactory()
+        //{
+        //    var services = new ServiceCollection();
+        //    RegisterDependencies(services);
+        //    _serviceProvider = services.BuildServiceProvider();
+        //}
 
         public ProfileClientFactory(IHttpClientFactory httpClientFactory)
         {
@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.UserManagement.Client
             return result;
         }
 
-        private static void RegisterDependencies(IServiceCollection serviceCollection, IHttpClientFactory httpClientFactory = null)
+        private static void RegisterDependencies(IServiceCollection serviceCollection, IHttpClientFactory httpClientFactory)
         {
             if (httpClientFactory != null)
             {
@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.UserManagement.Client
             }
             else
             {
-                serviceCollection.AddCommonClient();
+                //serviceCollection.AddCommonClient();
             }
 
             serviceCollection.AddTransient<IUnlinkProfileOperation, UnlinkProfileOperation>();

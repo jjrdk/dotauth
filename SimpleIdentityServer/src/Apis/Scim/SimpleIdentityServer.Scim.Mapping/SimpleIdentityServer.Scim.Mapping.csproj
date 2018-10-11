@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>SimpleIdentityServer.Scim.Mapping Class Library</Description>
     <Authors>thierry habart</Authors>
-    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>SimpleIdentityServer.Scim.Mapping</AssemblyName>
     <PackageId>SimpleIdentityServer.Scim.Mapping</PackageId>
   </PropertyGroup>

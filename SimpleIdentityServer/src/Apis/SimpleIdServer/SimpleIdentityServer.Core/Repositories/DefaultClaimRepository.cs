@@ -14,7 +14,7 @@ namespace SimpleIdentityServer.Core.Repositories
     {
         public ICollection<ClaimAggregate> _claims;
 
-        private List<ClaimAggregate> DEFAULT_CLAIMS = new List<ClaimAggregate>
+        private readonly List<ClaimAggregate> DEFAULT_CLAIMS = new List<ClaimAggregate>
         {
             new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.Subject, IsIdentifier = true },
             new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.Name },

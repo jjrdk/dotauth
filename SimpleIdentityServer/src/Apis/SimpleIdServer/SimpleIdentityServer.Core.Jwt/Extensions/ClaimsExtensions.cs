@@ -6,7 +6,7 @@ namespace SimpleIdentityServer.Core.Jwt.Extensions
 {
     public static class ClaimsExtensions
     {
-        private static Dictionary<string, string> _mappingToOpenidClaims = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> _mappingToOpenidClaims = new Dictionary<string, string>
         {
             { ClaimTypes.NameIdentifier, Constants.StandardResourceOwnerClaimNames.Subject },
             { ClaimTypes.DateOfBirth, Constants.StandardResourceOwnerClaimNames.BirthDate },

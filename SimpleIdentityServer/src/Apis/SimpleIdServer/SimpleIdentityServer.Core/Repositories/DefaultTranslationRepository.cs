@@ -10,7 +10,7 @@ namespace SimpleIdentityServer.Core.Repositories
     {
         public ICollection<Common.Models.Translation> _translations;
 
-        private List<Common.Models.Translation> DEFAULT_TRANSLATIONS = new List<Common.Models.Translation>
+        private readonly List<Common.Models.Translation> DEFAULT_TRANSLATIONS = new List<Common.Models.Translation>
         {
             new Common.Models.Translation
             {
