@@ -25,7 +25,6 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using WebApiContrib.Core.Concurrency;
 
 namespace SimpleIdentityServer.Scim.Host.Controllers
 {
@@ -33,15 +32,13 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
     public class UsersController : Controller
     {
         private readonly IUsersAction _usersAction;
-        private readonly IRepresentationManager _representationManager;
+        //private readonly IRepresentationManager _representationManager;
         private readonly string UsersName = "Users_{0}";
 
         public UsersController(
-            IUsersAction usersAction,
-            IRepresentationManager representationManager)
+            IUsersAction usersAction)
         {
             _usersAction = usersAction;
-            _representationManager = representationManager;
         }
 
         [Authorize("scim_manage")]
@@ -207,29 +204,29 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
         private async Task<ActionResult> CreateUser(JObject jObj)
         {
             var result = await _usersAction.AddUser(jObj, GetLocationPattern());
-            if (result.IsSucceed())
-            {
-                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
-            }
+            //if (result.IsSucceed())
+            //{
+            //    await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
+            //}
 
             return this.GetActionResult(result);
         }
 
         private async Task<ActionResult> GetUser(string id)
         {
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, string.Format(UsersName, id)))
-            {
-                return new ContentResult
-                {
-                    StatusCode = 412
-                };
-            }
+            //if (!await _representationManager.CheckRepresentationExistsAsync(this, string.Format(UsersName, id)))
+            //{
+            //    return new ContentResult
+            //    {
+            //        StatusCode = 412
+            //    };
+            //}
 
             var result = await _usersAction.GetUser(id, GetLocationPattern());
-            if (result.IsSucceed())
-            {
-                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
-            }
+            //if (result.IsSucceed())
+            //{
+            //    await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
+            //}
 
             return this.GetActionResult(result);
         }
@@ -237,10 +234,10 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
         private async Task<ActionResult> PatchUser(string id, JObject jObj)
         {
             var result = await _usersAction.PatchUser(id, jObj, GetLocationPattern());
-            if (result.IsSucceed())
-            {
-                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
-            }
+            //if (result.IsSucceed())
+            //{
+            //    await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
+            //}
 
             return this.GetActionResult(result);
         }
@@ -248,10 +245,10 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
         private async Task<ActionResult> UpdateUser(string id, JObject jObj)
         {
             var result = await _usersAction.UpdateUser(id, jObj, GetLocationPattern());
-            if (result.IsSucceed())
-            {
-                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
-            }
+            //if (result.IsSucceed())
+            //{
+            //    await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
+            //}
 
             return this.GetActionResult(result);
         }
@@ -259,10 +256,10 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
         private async Task<ActionResult> DeleteUser(string id)
         {
             var result = await _usersAction.RemoveUser(id);
-            if (result.IsSucceed())
-            {
-                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, false);
-            }
+            //if (result.IsSucceed())
+            //{
+            //    await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, false);
+            //}
 
             return this.GetActionResult(result);
         }

@@ -86,8 +86,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             var result = new List<PatchOperation>();
             foreach(var operation in obj.Operations)
             {
-                PatchOperations op;
-                if (!Enum.TryParse(operation.Operation, out op))
+                if (!Enum.TryParse(operation.Operation, out PatchOperations op))
                 {
                     errorResponse = _errorResponseFactory.CreateError(
                         string.Format(ErrorMessages.ThePatchOperationIsNotSupported, operation.Operation),
