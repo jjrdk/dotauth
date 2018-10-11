@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>SimpleIdentityServer.Scim.Core Class Library</Description>
@@ -17,14 +17,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Lib\Bus\SimpleBus.Core\SimpleBus.Core.csproj" />
+    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Common\SimpleIdentityServer.Scim.Common.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Events\SimpleIdentityServer.Scim.Events.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Scim.Mapping\SimpleIdentityServer.Scim.Mapping.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
   </ItemGroup>

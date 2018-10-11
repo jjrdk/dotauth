@@ -16,7 +16,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Scim.Core.Apis;
-using SimpleIdentityServer.Scim.Core.EF;
 using SimpleIdentityServer.Scim.Core.EF.Helpers;
 using SimpleIdentityServer.Scim.Core.EF.Models;
 using SimpleIdentityServer.Scim.Core.EF.Stores;
