@@ -1,7 +1,9 @@
-﻿namespace SimpleIdentityServer.Core.Services
+﻿using System.Threading.Tasks;
+
+namespace SimpleIdentityServer.Core.Services
 {
     public interface ISubjectBuilder
     {
-        string BuildSubject();
+        Task<string> BuildSubject();
     }
 }

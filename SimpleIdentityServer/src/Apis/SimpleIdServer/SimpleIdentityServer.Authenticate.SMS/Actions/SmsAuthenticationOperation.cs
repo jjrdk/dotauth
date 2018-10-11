@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
             }
 
             // 3. Create a new resource owner.
-            var id = _subjectBuilder.BuildSubject();
+            var id = await _subjectBuilder.BuildSubject().ConfigureAwait(false);
             var claims = new List<Claim>
             {
                 new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber),
