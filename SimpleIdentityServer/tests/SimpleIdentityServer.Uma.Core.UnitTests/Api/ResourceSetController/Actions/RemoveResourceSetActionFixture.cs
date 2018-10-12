@@ -1,7 +1,4 @@
-﻿
-
-using Moq;
-using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
+﻿using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;

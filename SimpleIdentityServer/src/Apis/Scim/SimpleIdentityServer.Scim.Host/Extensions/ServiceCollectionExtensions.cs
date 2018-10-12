@@ -76,10 +76,8 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
 
         private static void RegisterServices(IServiceCollection services, ScimServerOptions scimServerOptions)
         {
-            services.AddScimCore(scimServerOptions.ServerConfiguration == null
-                    ? null
-                    : scimServerOptions.ServerConfiguration.Representations,
-                scimServerOptions.ServerConfiguration == null ? null : scimServerOptions.ServerConfiguration.Schemas);
+            services.AddScimCore(scimServerOptions.ServerConfiguration?.Representations,
+                scimServerOptions.ServerConfiguration?.Schemas);
             //.AddDefaultSimpleBus()
             //.AddConcurrency(opt => opt.UseInMemory());
         }

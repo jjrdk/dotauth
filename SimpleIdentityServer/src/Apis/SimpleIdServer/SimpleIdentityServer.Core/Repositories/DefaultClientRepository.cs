@@ -15,7 +15,7 @@ namespace SimpleIdentityServer.Core.Repositories
 
         public DefaultClientRepository(ICollection<Common.Models.Client> clients)
         {
-            _clients = clients == null ? new List<Common.Models.Client>() : clients;
+            _clients = clients ?? new List<Common.Models.Client>();
         }
 
         public Task<bool> DeleteAsync(Common.Models.Client newClient)

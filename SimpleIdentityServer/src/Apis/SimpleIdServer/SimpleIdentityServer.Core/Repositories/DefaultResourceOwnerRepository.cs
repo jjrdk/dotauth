@@ -17,7 +17,7 @@ namespace SimpleIdentityServer.Core.Repositories
 
         public DefaultResourceOwnerRepository(ICollection<ResourceOwner> users)
         {
-            _users = users == null ? new List<ResourceOwner>() : users;
+            _users = users ?? new List<ResourceOwner>();
         }
 
         public Task<bool> DeleteAsync(string subject)

@@ -1,5 +1,4 @@
 ﻿using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Uma.Host.Tests.Fakes;
 using System.Security.Cryptography;
 

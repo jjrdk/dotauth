@@ -23,19 +23,19 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
         /// <summary>
         /// A boolean value specifying whether or not the operation is supported.
         /// </summary>
-        [DataMember(Name = Constants.BulkResponseNames.Supported)]
+        [DataMember(Name = ScimConstants.BulkResponseNames.Supported)]
         public bool Supported { get; set; }
 
         /// <summary>
         /// Maximum number of operations.
         /// </summary>
-        [DataMember(Name = Constants.BulkResponseNames.MaxOperations)]
+        [DataMember(Name = ScimConstants.BulkResponseNames.MaxOperations)]
         public int MaxOperations { get; set; }
 
         /// <summary>
         /// Maximum payload size in bytes.
         /// </summary>
-        [DataMember(Name = Constants.BulkResponseNames.MaxPayloadSize)]
+        [DataMember(Name = ScimConstants.BulkResponseNames.MaxPayloadSize)]
         public int MaxPayloadSize { get; set; }
     }
 
@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
         /// <summary>
         /// A boolean value specifying whether or not the operation is supported.
         /// </summary>
-        [DataMember(Name = Constants.PatchResponseNames.Supported)]
+        [DataMember(Name = ScimConstants.PatchResponseNames.Supported)]
         public bool Supported { get; set; }
     }
 
@@ -55,13 +55,13 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
         /// <summary>
         /// A boolean value specifying whether or not the operation is supported.
         /// </summary>
-        [DataMember(Name = Constants.FilterResponseNames.Supported)]
+        [DataMember(Name = ScimConstants.FilterResponseNames.Supported)]
         public bool Supported { get; set; }
 
         /// <summary>
         /// Maximum number of resources returned in the response.
         /// </summary>
-        [DataMember(Name = Constants.FilterResponseNames.MaxResults)]
+        [DataMember(Name = ScimConstants.FilterResponseNames.MaxResults)]
         public int MaxResults { get; set; }
     }
 
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
         /// <summary>
         /// A boolean value specifying whether or not the operation is supported.
         /// </summary>
-        [DataMember(Name = Constants.ChangePasswordResponseNames.Supported)]
+        [DataMember(Name = ScimConstants.ChangePasswordResponseNames.Supported)]
         public bool Supported { get; set; }
     }
 
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
         /// <summary>
         /// A boolean value specifying whether or not the operation is supported.
         /// </summary>
-        [DataMember(Name = Constants.SortResponseNames.Supported)]
+        [DataMember(Name = ScimConstants.SortResponseNames.Supported)]
         public bool Supported { get; set; }
     }
 
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
         /// <summary>
         /// A boolean value specifying whether or not the operation is supported.
         /// </summary>
-        [DataMember(Name = Constants.EtagResponseNames.Supported)]
+        [DataMember(Name = ScimConstants.EtagResponseNames.Supported)]
         public bool Supported { get; set; }
     }
 
@@ -110,31 +110,31 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
         /// <summary>
         /// Authentication scheme.
         /// </summary>
-        [DataMember(Name = Constants.AuthenticationSchemeResponseNames.Type)]
+        [DataMember(Name = ScimConstants.AuthenticationSchemeResponseNames.Type)]
         public AuthenticationTypes AuthenticationType { get; set; }
 
         /// <summary>
         /// Common authentication scheme name.
         /// </summary>
-        [DataMember(Name = Constants.AuthenticationSchemeResponseNames.Name)]
+        [DataMember(Name = ScimConstants.AuthenticationSchemeResponseNames.Name)]
         public string Name { get; set; }
 
         /// <summary>
         /// A description of the authentication scheme.
         /// </summary>
-        [DataMember(Name = Constants.AuthenticationSchemeResponseNames.Description)]
+        [DataMember(Name = ScimConstants.AuthenticationSchemeResponseNames.Description)]
         public string Description { get; set; }
 
         /// <summary>
         /// An HTTP-Addressable URL pointing to the authentication schem's specification.
         /// </summary>
-        [DataMember(Name = Constants.AuthenticationSchemeResponseNames.SpecUri)]
+        [DataMember(Name = ScimConstants.AuthenticationSchemeResponseNames.SpecUri)]
         public string SpecUri { get; set; }
 
         /// <summary>
         /// An HTTP-Addressable URL pointing to the authentication scheme's usage documentation.
         /// </summary>
-        [DataMember(Name = Constants.AuthenticationSchemeResponseNames.DocumentationUri)]
+        [DataMember(Name = ScimConstants.AuthenticationSchemeResponseNames.DocumentationUri)]
         public string DocumentationUri { get; set; }
     }
 
@@ -144,49 +144,49 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
         /// <summary>
         /// An HTTP-addressable URL pointing to the service provider's human-consumable help documentation.
         /// </summary>
-        [DataMember(Name = Constants.ServiceProviderConfigResponseNames.DocumentationUri)]
+        [DataMember(Name = ScimConstants.ServiceProviderConfigResponseNames.DocumentationUri)]
         public string DocumentationUri { get; set; }
 
         /// <summary>
         /// Specifies PATCH configuration options.
         /// </summary>
-        [DataMember(Name = Constants.ServiceProviderConfigResponseNames.Patch)]
+        [DataMember(Name = ScimConstants.ServiceProviderConfigResponseNames.Patch)]
         public PatchResponse Patch { get; set; }
 
         /// <summary>
         /// Specifies bulk configuration options.
         /// </summary>
-        [DataMember(Name = Constants.ServiceProviderConfigResponseNames.Bulk)]
+        [DataMember(Name = ScimConstants.ServiceProviderConfigResponseNames.Bulk)]
         public BulkResponse Bulk { get; set; }
 
         /// <summary>
         /// Specifies FILTER options.
         /// </summary>
-        [DataMember(Name = Constants.ServiceProviderConfigResponseNames.Filter)]
+        [DataMember(Name = ScimConstants.ServiceProviderConfigResponseNames.Filter)]
         public FilterResponse Filter { get; set; }
 
         /// <summary>
         /// Configuration options related to changing a password.
         /// </summary>
-        [DataMember(Name = Constants.ServiceProviderConfigResponseNames.ChangePassword)]
+        [DataMember(Name = ScimConstants.ServiceProviderConfigResponseNames.ChangePassword)]
         public ChangePasswordResponse ChangePassword { get; set; }
 
         /// <summary>
         /// Sort configuration options.
         /// </summary>
-        [DataMember(Name = Constants.ServiceProviderConfigResponseNames.Sort)]
+        [DataMember(Name = ScimConstants.ServiceProviderConfigResponseNames.Sort)]
         public SortResponse Sort { get; set; }
 
         /// <summary>
         /// ETag configuration options.
         /// </summary>
-        [DataMember(Name = Constants.ServiceProviderConfigResponseNames.Etag)]
+        [DataMember(Name = ScimConstants.ServiceProviderConfigResponseNames.Etag)]
         public EtagResponse Etag { get; set; }
 
         /// <summary>
         /// Supported authentication scheme properties.
         /// </summary>
-        [DataMember(Name = Constants.ServiceProviderConfigResponseNames.AuthenticationSchemes)]
+        [DataMember(Name = ScimConstants.ServiceProviderConfigResponseNames.AuthenticationSchemes)]
         public IEnumerable<AuthenticationSchemeResponse> AuthenticationSchemes { get; set; }
     }
 }

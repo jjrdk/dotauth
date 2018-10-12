@@ -14,7 +14,7 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
 
         public DefaultResourceSetRepository(ICollection<ResourceSet> resources)
         {
-            _resources = resources == null ? new List<ResourceSet>() : resources;
+            _resources = resources ?? new List<ResourceSet>();
         }
 
         public Task<bool> Delete(string id)

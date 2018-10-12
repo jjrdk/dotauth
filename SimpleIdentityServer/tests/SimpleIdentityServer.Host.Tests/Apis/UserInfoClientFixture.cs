@@ -1,8 +1,6 @@
 ﻿using Moq;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Client.Selectors;
-using SimpleIdentityServer.Common.Client.Factories;
 using System.Threading.Tasks;
 using Xunit;
 

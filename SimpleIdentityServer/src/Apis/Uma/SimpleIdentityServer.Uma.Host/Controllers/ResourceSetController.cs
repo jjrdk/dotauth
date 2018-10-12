@@ -19,7 +19,6 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController;
 using SimpleIdentityServer.Uma.Host.Extensions;
-using System;
 using System.Net;
 using System.Threading.Tasks;
 using static SimpleIdentityServer.Uma.Host.Constants;

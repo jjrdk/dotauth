@@ -95,9 +95,9 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         {
             switch (attr.SchemaAttribute.Type)
             {
-                case Common.Constants.SchemaAttributeTypes.String:
+                case Common.ScimConstants.SchemaAttributeTypes.String:
                     return Equals(attr, op, value);
-                case Common.Constants.SchemaAttributeTypes.Boolean:
+                case Common.ScimConstants.SchemaAttributeTypes.Boolean:
                     var b = false;
                     if (!bool.TryParse(value, out b))
                     {
@@ -105,7 +105,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
 
                     return Equals(attr, op, b);
-                case Common.Constants.SchemaAttributeTypes.DateTime:
+                case Common.ScimConstants.SchemaAttributeTypes.DateTime:
                     DateTime d = default(DateTime);
                     if (!DateTime.TryParse(value, out d))
                     {
@@ -113,7 +113,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
 
                     return Equals(attr, op, d);
-                case Common.Constants.SchemaAttributeTypes.Decimal:
+                case Common.ScimConstants.SchemaAttributeTypes.Decimal:
                     decimal dec;
                     if (!decimal.TryParse(value, out dec))
                     {
@@ -121,7 +121,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
 
                     return Equals(attr, op, dec);
-                case Common.Constants.SchemaAttributeTypes.Integer:
+                case Common.ScimConstants.SchemaAttributeTypes.Integer:
                     int i;
                     if (!int.TryParse(value, out i))
                     {
@@ -129,7 +129,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
 
                     return Equals(attr, op, i);
-                case Common.Constants.SchemaAttributeTypes.Complex:
+                case Common.ScimConstants.SchemaAttributeTypes.Complex:
                     var complexAttr = attr as ComplexRepresentationAttribute;
                     if (complexAttr == null)
                     {

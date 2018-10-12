@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Uma.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -74,7 +74,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             try
             {
                 _eventPublisher.Publish(new AddUserReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
-                var result = await _addRepresentationAction.Execute(jObj, locationPattern, Constants.SchemaUrns.User, Constants.ResourceTypes.User).ConfigureAwait(false);
+                var result = await _addRepresentationAction.Execute(jObj, locationPattern, ScimConstants.SchemaUrns.User, ScimConstants.ResourceTypes.User).ConfigureAwait(false);
                 _eventPublisher.Publish(new AddUserFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
                 return result;
             }
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             try
             {
                 _eventPublisher.Publish(new UpdateUserReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
-                var result = await _updateRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.User, locationPattern, Constants.ResourceTypes.User).ConfigureAwait(false);
+                var result = await _updateRepresentationAction.Execute(id, jObj, ScimConstants.SchemaUrns.User, locationPattern, ScimConstants.ResourceTypes.User).ConfigureAwait(false);
                 _eventPublisher.Publish(new UpdateUserFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
                 return result;
             }
@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             try
             {
                 _eventPublisher.Publish(new PatchUserReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
-                var result = await _patchRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.User, locationPattern).ConfigureAwait(false);
+                var result = await _patchRepresentationAction.Execute(id, jObj, ScimConstants.SchemaUrns.User, locationPattern).ConfigureAwait(false);
                 _eventPublisher.Publish(new PatchUserFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
                 return result;
             }
@@ -140,19 +140,19 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
         public Task<ApiActionResult> GetUser(string id, string locationPattern)
         {
-            return _getRepresentationAction.Execute(id, locationPattern, Common.Constants.SchemaUrns.User);
+            return _getRepresentationAction.Execute(id, locationPattern, Common.ScimConstants.SchemaUrns.User);
         }
 
         public Task<ApiActionResult> SearchUsers(JObject jObj, string locationPattern)
         {
             var searchParam = _searchParameterParser.ParseJson(jObj);
-            return _getRepresentationsAction.Execute(Common.Constants.ResourceTypes.User, searchParam, locationPattern);
+            return _getRepresentationsAction.Execute(Common.ScimConstants.ResourceTypes.User, searchParam, locationPattern);
         }
 
         public Task<ApiActionResult> SearchUsers(IQueryCollection query, string locationPattern)
         {
             var searchParam = _searchParameterParser.ParseQuery(query);
-            return _getRepresentationsAction.Execute(Common.Constants.ResourceTypes.User, searchParam, locationPattern);
+            return _getRepresentationsAction.Execute(Common.ScimConstants.ResourceTypes.User, searchParam, locationPattern);
         }
     }
 }

@@ -74,7 +74,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             try
             {
                 _eventPublisher.Publish(new AddGroupReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
-                var result = await _addRepresentationAction.Execute(jObj, locationPattern, Constants.SchemaUrns.Group, Constants.ResourceTypes.Group).ConfigureAwait(false);
+                var result = await _addRepresentationAction.Execute(jObj, locationPattern, ScimConstants.SchemaUrns.Group, ScimConstants.ResourceTypes.Group).ConfigureAwait(false);
                 _eventPublisher.Publish(new AddGroupFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
                 return result;
             }
@@ -88,7 +88,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         public Task<ApiActionResult> GetGroup(string id, string locationPattern, IQueryCollection query)
         {
             var searchParameter = _searchParameterParser.ParseQuery(query);
-            return _getRepresentationAction.Execute(id, locationPattern, Common.Constants.SchemaUrns.Group);
+            return _getRepresentationAction.Execute(id, locationPattern, Common.ScimConstants.SchemaUrns.Group);
         }
 
         public async Task<ApiActionResult> RemoveGroup(string id)
@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             try
             {
                 _eventPublisher.Publish(new RemoveGroupReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
-                var result = await _updateRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.Group, locationPattern, Constants.ResourceTypes.Group).ConfigureAwait(false);
+                var result = await _updateRepresentationAction.Execute(id, jObj, ScimConstants.SchemaUrns.Group, locationPattern, ScimConstants.ResourceTypes.Group).ConfigureAwait(false);
                 _eventPublisher.Publish(new RemoveGroupFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
                 return result;
             }
@@ -133,7 +133,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             try
             {
                 _eventPublisher.Publish(new PatchGroupReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
-                var result = await _patchRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.Group, locationPattern).ConfigureAwait(false);
+                var result = await _patchRepresentationAction.Execute(id, jObj, ScimConstants.SchemaUrns.Group, locationPattern).ConfigureAwait(false);
                 _eventPublisher.Publish(new PatchGroupFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
                 return result;
             }
@@ -147,13 +147,13 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         public Task<ApiActionResult> SearchGroups(IQueryCollection query, string locationPattern)
         {
             var searchParam = _searchParameterParser.ParseQuery(query);
-            return _getRepresentationsAction.Execute(Common.Constants.ResourceTypes.Group, searchParam, locationPattern);
+            return _getRepresentationsAction.Execute(Common.ScimConstants.ResourceTypes.Group, searchParam, locationPattern);
         }
 
         public Task<ApiActionResult> SearchGroups(JObject jObj, string locationPattern)
         {
             var searchParam = _searchParameterParser.ParseJson(jObj);
-            return _getRepresentationsAction.Execute(Common.Constants.ResourceTypes.Group, searchParam, locationPattern);
+            return _getRepresentationsAction.Execute(Common.ScimConstants.ResourceTypes.Group, searchParam, locationPattern);
         }
     }
 }

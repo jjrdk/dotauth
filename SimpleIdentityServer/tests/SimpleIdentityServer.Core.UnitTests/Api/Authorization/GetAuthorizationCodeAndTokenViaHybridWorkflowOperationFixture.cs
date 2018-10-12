@@ -10,7 +10,6 @@ using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
 using Xunit;
 using System.Threading.Tasks;
 using SimpleIdentityServer.OAuth.Logging;

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Scim.Common;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Scim.Common.DTOs
@@ -20,19 +19,19 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
     [DataContract]
     public class MultiValueAttr
     {
-        [DataMember(Name = Constants.MultiValueAttributeNames.Type)]
+        [DataMember(Name = ScimConstants.MultiValueAttributeNames.Type)]
         public string Type { get; set; }
 
-        [DataMember(Name = Constants.MultiValueAttributeNames.Primary)]
+        [DataMember(Name = ScimConstants.MultiValueAttributeNames.Primary)]
         public bool Primary { get; set; }
 
-        [DataMember(Name = Constants.MultiValueAttributeNames.Display)]
+        [DataMember(Name = ScimConstants.MultiValueAttributeNames.Display)]
         public string Display { get; set; }
 
-        [DataMember(Name = Constants.MultiValueAttributeNames.Value)]
+        [DataMember(Name = ScimConstants.MultiValueAttributeNames.Value)]
         public string Value { get; set; }
 
-        [DataMember(Name = Constants.MultiValueAttributeNames.Ref)]
+        [DataMember(Name = ScimConstants.MultiValueAttributeNames.Ref)]
         public string Ref { get; set; }
     }
 }

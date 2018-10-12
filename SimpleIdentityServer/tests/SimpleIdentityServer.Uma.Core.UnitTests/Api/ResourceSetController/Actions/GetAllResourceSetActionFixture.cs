@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Linq;
-using Moq;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;

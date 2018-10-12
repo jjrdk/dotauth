@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Scim.Common\SimpleIdentityServer.Scim.Common.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Events\SimpleIdentityServer.Scim.Events.csproj" />
   </ItemGroup>
 

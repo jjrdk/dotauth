@@ -24,19 +24,19 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
     [DataContract]
     public class Meta
     {
-        [DataMember(Name = Constants.MetaResponseNames.ResourceType)]
+        [DataMember(Name = ScimConstants.MetaResponseNames.ResourceType)]
         public string ResourceType { get; set; }
 
-        [DataMember(Name = Constants.MetaResponseNames.Created)]
+        [DataMember(Name = ScimConstants.MetaResponseNames.Created)]
         public DateTime Created { get; set; }
         
-        [DataMember(Name = Constants.MetaResponseNames.LastModified)]
+        [DataMember(Name = ScimConstants.MetaResponseNames.LastModified)]
         public DateTime LastModified { get; set; }
 
-        [DataMember(Name = Constants.MetaResponseNames.Location)]
+        [DataMember(Name = ScimConstants.MetaResponseNames.Location)]
         public string Location { get; set; }
 
-        [DataMember(Name = Constants.MetaResponseNames.Version)]
+        [DataMember(Name = ScimConstants.MetaResponseNames.Version)]
         public string Version { get; set; }
     }
 
@@ -46,10 +46,10 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
     [DataContract]
     public class ScimResource
     {
-        [DataMember(Name = Constants.ScimResourceNames.Schemas)]
+        [DataMember(Name = ScimConstants.ScimResourceNames.Schemas)]
         public IEnumerable<string> Schemas { get; set; }
 
-        [DataMember(Name = Constants.ScimResourceNames.Meta)]
+        [DataMember(Name = ScimConstants.ScimResourceNames.Meta)]
         public Meta Meta { get; set; }
     }
 }

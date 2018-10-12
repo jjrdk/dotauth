@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Core.Extensions
             return new Consent
             {
                 Claims =  consent.Claims == null ? new List<string>() : consent.Claims.ToList(),
-                Client = consent.Client == null ? null : consent.Client.Copy(),
+                Client = consent.Client?.Copy(),
                 GrantedScopes = consent.GrantedScopes == null ? null : consent.GrantedScopes.Select(s => s.Copy()).ToList(),
                 Id =  consent.Id,
                 ResourceOwner = consent.ResourceOwner == null ? null : consent.ResourceOwner.Copy()

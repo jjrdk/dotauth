@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;

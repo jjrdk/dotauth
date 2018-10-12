@@ -18,12 +18,10 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using SimpleBus.Core;
 using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.WebSite.User;
-using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.OpenId.Events;
@@ -83,7 +81,7 @@ namespace SimpleIdentityServer.Shell.Controllers
             {
                 ClientDisplayName = client.ClientName,
                 AllowedScopeDescriptions = actionResult.Scopes == null ? new List<string>() : actionResult.Scopes.Select(s => s.Description).ToList(),
-                AllowedIndividualClaims = actionResult.AllowedClaims == null ? new List<string>() : actionResult.AllowedClaims,
+                AllowedIndividualClaims = actionResult.AllowedClaims ?? new List<string>(),
                 LogoUri = client.LogoUri,
                 PolicyUri = client.PolicyUri,
                 TosUri = client.TosUri,

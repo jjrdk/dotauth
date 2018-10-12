@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace SimpleIdentityServer.Authenticate.Basic.ViewModels
 {

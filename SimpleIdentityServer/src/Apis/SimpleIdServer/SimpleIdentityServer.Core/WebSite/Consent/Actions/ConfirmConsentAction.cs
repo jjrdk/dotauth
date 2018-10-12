@@ -23,7 +23,6 @@ using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;

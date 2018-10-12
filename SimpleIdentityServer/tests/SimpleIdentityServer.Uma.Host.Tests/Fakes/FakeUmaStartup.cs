@@ -17,13 +17,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleBus.Core;
-using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.OAuth.Logging;
-using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.Host.Configuration;
@@ -37,8 +34,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Security.Claims;
-using WebApiContrib.Core.Concurrency;
-using WebApiContrib.Core.Storage;
 
 namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
 {

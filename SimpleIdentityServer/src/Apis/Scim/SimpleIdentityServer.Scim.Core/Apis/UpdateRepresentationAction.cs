@@ -71,12 +71,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
             public void SetError(ErrorResponse errorResponse)
             {
-                if (errorResponse == null)
-                {
-                    throw new ArgumentNullException(nameof(errorResponse));
-                }
-
-                ErrorResponse = errorResponse;
+                ErrorResponse = errorResponse ?? throw new ArgumentNullException(nameof(errorResponse));
                 IsError = true;
             }
 
@@ -189,19 +184,19 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 if (schemaAttribute.MultiValued)
                 {
                     // Check mutability
-                    if (schemaAttribute.Mutability == Common.Constants.SchemaAttributeMutability.Immutable)
+                    if (schemaAttribute.Mutability == Common.ScimConstants.SchemaAttributeMutability.Immutable)
                     {
                         if (complexTarget.CompareTo(complexSource) != 0)
                         {
                             result.SetError(_errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, schemaAttribute.Name),
                                 HttpStatusCode.BadRequest,
-                                Common.Constants.ScimTypeValues.Mutability));
+                                Common.ScimConstants.ScimTypeValues.Mutability));
                             return result;
                         }
                     }
                     
                     // Check uniqueness
-                    if (schemaAttribute.Uniqueness == Common.Constants.SchemaAttributeUniqueness.Server)
+                    if (schemaAttribute.Uniqueness == Common.ScimConstants.SchemaAttributeUniqueness.Server)
                     {
                         var filter = _filterParser.Parse(complexTarget.FullPath);
                         var uniqueAttrs = await _representationStore.SearchValues(resourceType, filter).ConfigureAwait(false);
@@ -212,7 +207,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                                 result.SetError(_errorResponseFactory.CreateError(
                                     string.Format(ErrorMessages.TheAttributeMustBeUnique, complexTarget.SchemaAttribute.Name), 
                                     HttpStatusCode.BadRequest,
-                                    Common.Constants.ScimTypeValues.Uniqueness));
+                                    Common.ScimConstants.ScimTypeValues.Uniqueness));
                                 return result;
                             }
                         }
@@ -224,19 +219,19 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
             
             // Check mutability
-            if (target.SchemaAttribute.Mutability == Common.Constants.SchemaAttributeMutability.Immutable)
+            if (target.SchemaAttribute.Mutability == Common.ScimConstants.SchemaAttributeMutability.Immutable)
             {
                 if (source.CompareTo(target) != 0)
                 {
                     result.SetError(_errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, target.SchemaAttribute.Name),
                         HttpStatusCode.BadRequest,
-                        Common.Constants.ScimTypeValues.Mutability));
+                        Common.ScimConstants.ScimTypeValues.Mutability));
                     return result;
                 }
             }
 
             // Check uniqueness
-            if (target.SchemaAttribute.Uniqueness == Common.Constants.SchemaAttributeUniqueness.Server)
+            if (target.SchemaAttribute.Uniqueness == Common.ScimConstants.SchemaAttributeUniqueness.Server)
             {
                 var filter = _filterParser.Parse(target.FullPath);
                 var uniqueAttrs = await _representationStore.SearchValues(resourceType, filter).ConfigureAwait(false);
@@ -247,7 +242,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                         result.SetError(_errorResponseFactory.CreateError(
                             string.Format(ErrorMessages.TheAttributeMustBeUnique, target.SchemaAttribute.Name),
                             HttpStatusCode.BadRequest,
-                            Common.Constants.ScimTypeValues.Uniqueness));
+                            Common.ScimConstants.ScimTypeValues.Uniqueness));
                         return result;
                     }
                 }

@@ -63,12 +63,12 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             // 2. Parse the request.
             var obj = jObj.ToObject<PatchOperationsRequest>();
-            if (!obj.Schemas.Contains(Common.Constants.Messages.PatchOp))
+            if (!obj.Schemas.Contains(Common.ScimConstants.Messages.PatchOp))
             {
                 errorResponse = _errorResponseFactory.CreateError(
                     ErrorMessages.TheRequestIsNotAPatchOperation,
                     HttpStatusCode.BadRequest,
-                    Common.Constants.ScimTypeValues.InvalidSyntax);
+                    Common.ScimConstants.ScimTypeValues.InvalidSyntax);
                 return null;
             }
 
@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 errorResponse = _errorResponseFactory.CreateError(
                     ErrorMessages.TheOperationsParameterMustBeSpecified,
                     HttpStatusCode.BadRequest,
-                    Common.Constants.ScimTypeValues.InvalidSyntax);
+                    Common.ScimConstants.ScimTypeValues.InvalidSyntax);
                 return null;
             }
 
@@ -89,7 +89,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     errorResponse = _errorResponseFactory.CreateError(
                         string.Format(ErrorMessages.ThePatchOperationIsNotSupported, operation.Operation),
                         HttpStatusCode.BadRequest,
-                        Common.Constants.ScimTypeValues.InvalidSyntax);
+                        Common.ScimConstants.ScimTypeValues.InvalidSyntax);
                     return null;
                 }
 

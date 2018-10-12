@@ -1,8 +1,5 @@
 ﻿using Moq;
-using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Client.Selectors;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.UserManagement.Client;
 using SimpleIdentityServer.UserManagement.Client.Operations;
 using SimpleIdentityServer.UserManagement.Common.Requests;

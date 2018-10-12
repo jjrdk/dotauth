@@ -14,7 +14,7 @@
 
 namespace SimpleIdentityServer.Scim.Common
 {
-    public static class Constants
+    public static class ScimConstants
     {
         public static class MultiValueAttributeNames
         {

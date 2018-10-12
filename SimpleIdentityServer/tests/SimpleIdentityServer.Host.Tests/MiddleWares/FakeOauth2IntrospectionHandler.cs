@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core.Common;
 using System;
 using System.Collections.Generic;

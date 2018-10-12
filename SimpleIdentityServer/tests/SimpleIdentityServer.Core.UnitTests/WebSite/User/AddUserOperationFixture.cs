@@ -22,7 +22,6 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using SimpleIdentityServer.OpenId.Logging;
-using SimpleIdentityServer.Scim.Client;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;

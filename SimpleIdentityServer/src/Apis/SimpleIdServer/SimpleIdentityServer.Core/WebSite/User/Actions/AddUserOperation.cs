@@ -30,6 +30,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
+    using Scim.Client;
+
     public interface IAddUserOperation
     {
         Task<bool> Execute(AddUserParameter addUserParameter, AuthenticationParameter authenticationParameter, string scimBaseUrl = null, bool addScimResource = false, string issuer = null);
@@ -49,13 +51,14 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             public string Url { get; set; }
         }
 
-        private readonly IUsersClient x_usersClient;
+        private readonly IUsersClient _usersClient;
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IClaimRepository _claimRepository;
         private readonly IAccessTokenStore _tokenStore;
         private readonly IEnumerable<IAccountFilter> _accountFilters;
         private readonly ILinkProfileAction _linkProfileAction;
         private readonly IOpenIdEventSource _openidEventSource;
+        private readonly ISubjectBuilder _subjectBuilder;
 
         public AddUserOperation(
             IUsersClient usersClient,
@@ -74,6 +77,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             _accountFilters = accountFilters;
             _linkProfileAction = linkProfileAction;
             _openidEventSource = openIdEventSource;
+            _subjectBuilder = subjectBuilder;
         }
 
         public async Task<bool> Execute(AddUserParameter addUserParameter, AuthenticationParameter authenticationParameter, string scimBaseUrl = null, bool addScimResource = false, string issuer = null)
@@ -216,9 +220,9 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 "scim_manage"
             }).ConfigureAwait(false);
 
-            var scimResponse = await _usersClient.AddUser(scimBaseUrl, grantedToken.AccessToken)
+            var scimResponse = await _usersClient.AddUser(new Uri(scimBaseUrl), grantedToken.AccessToken)
                 .SetCommonAttributes(subject)
-                .Execute();
+                .Execute().ConfigureAwait(false);
             var scimId = scimResponse.Content["id"].ToString();
             return new ScimUser(scimId, $"{scimBaseUrl}/Users/{scimId}");
         }

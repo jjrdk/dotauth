@@ -14,7 +14,6 @@
 
 using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.Core.Responses;
-using SimpleIdentityServer.Uma.Core.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

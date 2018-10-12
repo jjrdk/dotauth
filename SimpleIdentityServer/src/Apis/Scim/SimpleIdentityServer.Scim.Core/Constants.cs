@@ -31,11 +31,11 @@ namespace SimpleIdentityServer.Scim.Core
         {
             {
                 RoutePaths.UsersController,
-                Common.Constants.ResourceTypes.User
+                Common.ScimConstants.ResourceTypes.User
             },
             {
                 RoutePaths.GroupsController,
-                Common.Constants.ResourceTypes.Group
+                Common.ScimConstants.ResourceTypes.Group
             }
         };
     }

@@ -19,8 +19,6 @@ using SimpleIdentityServer.Authenticate.SMS.Client;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Client.Selectors;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Extensions;

@@ -14,7 +14,6 @@
 
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Jwt.Serializer;
 using System;
 using System.Collections.Generic;
 using System.Linq;

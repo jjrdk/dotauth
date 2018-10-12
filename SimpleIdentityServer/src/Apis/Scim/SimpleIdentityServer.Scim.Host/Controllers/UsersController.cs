@@ -136,8 +136,8 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             }
 
             var jObj = new JObject();
-            jObj.Add(Common.Constants.ScimResourceNames.Schemas, new JArray(Common.Constants.SchemaUrns.User));
-            jObj.Add(Common.Constants.IdentifiedScimResourceNames.ExternalId, subject);
+            jObj.Add(Common.ScimConstants.ScimResourceNames.Schemas, new JArray(Common.ScimConstants.SchemaUrns.User));
+            jObj.Add(Common.ScimConstants.IdentifiedScimResourceNames.ExternalId, subject);
             return CreateUser(jObj);
         }
 
@@ -269,12 +269,8 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             }
 
             var claim = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "sub");
-            if (claim == null)
-            {
-                return null;
-            }
 
-            return claim.Value;
+            return claim?.Value;
         }
 
         private static string GetScimIdentifier(ClaimsPrincipal claimsPrincipal)
@@ -285,12 +281,8 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             }
 
             var claim = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "scim_id");
-            if (claim == null)
-            {
-                return null;
-            }
 
-            return claim.Value;
+            return claim?.Value;
         }
 
         private static ActionResult GetMissingSubjectError()
@@ -298,7 +290,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             var error = new ErrorResponse
             {
                 Detail = "the subject is missing",
-                Schemas = new[] { Common.Constants.Messages.Error },
+                Schemas = new[] { Common.ScimConstants.Messages.Error },
                 Status = (int)HttpStatusCode.BadRequest
             };
             return new JsonResult(error)
@@ -312,7 +304,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             var error = new ErrorResponse
             {
                 Detail = "the scim_id is missing",
-                Schemas = new[] { Common.Constants.Messages.Error },
+                Schemas = new[] { Common.ScimConstants.Messages.Error },
                 Status = (int)HttpStatusCode.BadRequest
             };
             return new JsonResult(error)

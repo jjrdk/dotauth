@@ -18,7 +18,6 @@ using SimpleIdentityServer.Scim.Common.Models;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Stores;
-using SimpleIdentityServer.Scim.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,13 +78,13 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
     {
         private readonly ISchemaStore _schemasStore;
         private readonly ICommonAttributesFactory _commonAttributesFactory;
-        private readonly IEnumerable<IAttributeMapper> _attributeMappers;
+        //private readonly IEnumerable<IAttributeMapper> _attributeMappers;
 
-        public RepresentationResponseParser(ISchemaStore schemaStore, ICommonAttributesFactory commonAttributeFactory, IEnumerable<IAttributeMapper> attributeMappers)
+        public RepresentationResponseParser(ISchemaStore schemaStore, ICommonAttributesFactory commonAttributeFactory)
         {
             _schemasStore = schemaStore;
             _commonAttributesFactory = commonAttributeFactory;
-            _attributeMappers = attributeMappers;
+           // _attributeMappers = attributeMappers;
         }
 
         /// <summary>
@@ -116,10 +115,10 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 throw new InvalidOperationException(string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId));
             }
 
-            if (_attributeMappers != null && _attributeMappers.Any())
-            {
-                await _attributeMappers.First().Map(representation, schemaId).ConfigureAwait(false);
-            }
+            //if (_attributeMappers != null && _attributeMappers.Any())
+            //{
+            //    await _attributeMappers.First().Map(representation, schemaId).ConfigureAwait(false);
+            //}
 
             JObject result = new JObject();
             if (representation.Attributes != null &&
@@ -128,7 +127,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 foreach (var attribute in schema.Attributes)
                 {
                     // Ignore the attributes.
-                    if ((attribute.Returned == Common.Constants.SchemaAttributeReturned.Never) || (operationType == OperationTypes.Query && attribute.Returned == Common.Constants.SchemaAttributeReturned.Request))
+                    if ((attribute.Returned == Common.ScimConstants.SchemaAttributeReturned.Never) || (operationType == OperationTypes.Query && attribute.Returned == Common.ScimConstants.SchemaAttributeReturned.Request))
                     {
                         continue;
                     }
@@ -172,11 +171,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             IEnumerable<string> commonAttrs = new[]
             {
-                Common.Constants.MetaResponseNames.ResourceType,
-                Common.Constants.MetaResponseNames.Created,
-                Common.Constants.MetaResponseNames.LastModified,
-                Common.Constants.MetaResponseNames.Version,
-                Common.Constants.MetaResponseNames.Location
+                Common.ScimConstants.MetaResponseNames.ResourceType,
+                Common.ScimConstants.MetaResponseNames.Created,
+                Common.ScimConstants.MetaResponseNames.LastModified,
+                Common.ScimConstants.MetaResponseNames.Version,
+                Common.ScimConstants.MetaResponseNames.Location
             };
                                    
             var result = new JArray();
@@ -286,10 +285,10 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         private void SetCommonAttributes(JObject jObj, string location, Representation representation, string schema)
         {
             jObj.Add(_commonAttributesFactory.CreateIdJson(representation));
-            jObj[Common.Constants.ScimResourceNames.Meta] = new JObject(_commonAttributesFactory.CreateMetaDataAttributeJson(representation, location));
+            jObj[Common.ScimConstants.ScimResourceNames.Meta] = new JObject(_commonAttributesFactory.CreateMetaDataAttributeJson(representation, location));
             var arr = new JArray();
             arr.Add(schema);
-            jObj[Common.Constants.ScimResourceNames.Schemas] = arr;
+            jObj[Common.ScimConstants.ScimResourceNames.Schemas] = arr;
         }
 
         private static JToken GetToken(RepresentationAttribute attr, SchemaAttributeResponse attribute)
@@ -371,16 +370,16 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             // 3. Create singular attribute
             switch(attribute.Type)
             {
-                case Common.Constants.SchemaAttributeTypes.String:
-                case Common.Constants.SchemaAttributeTypes.Reference:
+                case Common.ScimConstants.SchemaAttributeTypes.String:
+                case Common.ScimConstants.SchemaAttributeTypes.Reference:
                     return GetSingularToken<string>(attribute, attr, attribute.MultiValued);
-                case Common.Constants.SchemaAttributeTypes.Boolean:
+                case Common.ScimConstants.SchemaAttributeTypes.Boolean:
                     return GetSingularToken<bool>(attribute, attr, attribute.MultiValued);
-                case Common.Constants.SchemaAttributeTypes.Decimal:
+                case Common.ScimConstants.SchemaAttributeTypes.Decimal:
                     return GetSingularToken<decimal>(attribute, attr, attribute.MultiValued);
-                case Common.Constants.SchemaAttributeTypes.DateTime:
+                case Common.ScimConstants.SchemaAttributeTypes.DateTime:
                     return GetSingularToken<DateTime>(attribute, attr, attribute.MultiValued);
-                case Common.Constants.SchemaAttributeTypes.Integer:
+                case Common.ScimConstants.SchemaAttributeTypes.Integer:
                     return GetSingularToken<int>(attribute, attr, attribute.MultiValued);
                 default:
                     throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotSupported, attribute.Type));

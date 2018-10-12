@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("SimpleIdentityServer.Host.Tests")]
 [assembly: InternalsVisibleTo("SimpleIdentityServer.Authenticate.SMS.Tests")]

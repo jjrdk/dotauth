@@ -15,7 +15,6 @@
 using System;
 using System.Linq;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
 
 namespace SimpleIdentityServer.Core.Extensions
 {

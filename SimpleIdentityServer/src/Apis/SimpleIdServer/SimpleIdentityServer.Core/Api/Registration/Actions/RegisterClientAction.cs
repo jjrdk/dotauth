@@ -137,12 +137,12 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
 
         private static string GetDefaultValue(string value)
         {
-            return value == null ? string.Empty : value;
+            return value ?? string.Empty;
         }
 
         private static IEnumerable<string> GetDefaultValues(IEnumerable<string> value)
         {
-            return value == null ? new string[0] : value;
+            return value ?? new string[0];
         }
     }
 }

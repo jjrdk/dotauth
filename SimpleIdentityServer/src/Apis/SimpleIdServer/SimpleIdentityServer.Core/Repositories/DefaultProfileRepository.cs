@@ -15,7 +15,7 @@ namespace SimpleIdentityServer.Core.Repositories
 
         public DefaultProfileRepository(List<ResourceOwnerProfile> profiles)
         {
-            _profiles = profiles == null ? new List<ResourceOwnerProfile>() : profiles;
+            _profiles = profiles ?? new List<ResourceOwnerProfile>();
         }
 
         public Task<bool> Add(IEnumerable<ResourceOwnerProfile> profiles)

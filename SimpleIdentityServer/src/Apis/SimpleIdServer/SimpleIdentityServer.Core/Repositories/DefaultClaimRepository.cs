@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Core.Repositories
 
         public DefaultClaimRepository(ICollection<ClaimAggregate> claims)
         {
-            _claims = claims == null ? DEFAULT_CLAIMS : claims;
+            _claims = claims ?? DEFAULT_CLAIMS;
         }
 
         public Task<bool> Delete(string code)
