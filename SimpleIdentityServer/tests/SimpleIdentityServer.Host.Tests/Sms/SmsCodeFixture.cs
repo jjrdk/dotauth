@@ -1,17 +1,16 @@
-﻿using Moq;
-using SimpleIdentityServer.Authenticate.SMS.Client;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Store;
-using SimpleIdentityServer.Twilio.Client;
-using System;
-using System.Net;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Host.Tests
+﻿namespace SimpleIdentityServer.Host.Tests.Sms
 {
+    using System;
+    using System.Net;
+    using System.Threading.Tasks;
+    using Authenticate.SMS.Client;
     using Authenticate.SMS.Common.Requests;
+    using Core.Errors;
+    using Core.Exceptions;
+    using Moq;
+    using Store;
+    using Twilio.Client;
+    using Xunit;
 
     public class SmsCodeFixture : IClassFixture<TestOauthServerFixture>
     {

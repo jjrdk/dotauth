@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Common.DTOs;
-using SimpleIdentityServer.Scim.Common.Models;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Stores;
@@ -27,6 +25,10 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
+    using SimpleIdentityServer.Core.Common;
+    using SimpleIdentityServer.Core.Common.DTOs;
+    using SimpleIdentityServer.Core.Common.Models;
+
     public interface IBulkRequestParser
     {
         /// <summary>
@@ -43,7 +45,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
     public class BulkRequestResponse
     {
         public BulkResult BulkResult { get; set; }
-        public ErrorResponse ErrorResponse { get; set; }
+        public ScimErrorResponse ErrorResponse { get; set; }
         public bool IsParsed { get; set; }
     }
 
@@ -88,7 +90,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             // 2. Parse the request.
             var obj = jObj.ToObject<BulkRequest>();
-            if (!obj.Schemas.Contains(Common.ScimConstants.Messages.Bulk))
+            if (!obj.Schemas.Contains(ScimConstants.Messages.Bulk))
             {
                 return new BulkRequestResponse
                 {
@@ -96,7 +98,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     ErrorResponse = _errorResponseFactory.CreateError(
                         ErrorMessages.TheRequestIsNotABulkOperation,
                         HttpStatusCode.BadRequest,
-                        Common.ScimConstants.ScimTypeValues.InvalidSyntax)
+                        ScimConstants.ScimTypeValues.InvalidSyntax)
                 };
             }
 
@@ -108,23 +110,20 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     ErrorResponse = _errorResponseFactory.CreateError(
                         ErrorMessages.TheOperationsParameterMustBeSpecified,
                         HttpStatusCode.BadRequest,
-                        Common.ScimConstants.ScimTypeValues.InvalidSyntax)
+                        ScimConstants.ScimTypeValues.InvalidSyntax)
                 };
             }
 
             var response = new BulkResult
             {
-                FailOnErrors = obj.FailOnErrors               
+                FailOnErrors = obj.FailOnErrors
             };
 
-            Func<string, ErrorResponse> getBulkMethodNotSupported = (method) =>
-            {
-                return _errorResponseFactory.CreateError(
-                        string.Format(ErrorMessages.TheBulkMethodIsNotSupported, method),
-                        HttpStatusCode.BadRequest,
-                        Common.ScimConstants.ScimTypeValues.InvalidSyntax);
-            };
-            Func<string, IList<string>> splitPath = (path) =>
+            ScimErrorResponse GetBulkMethodNotSupported(string method) => _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheBulkMethodIsNotSupported, method),
+                HttpStatusCode.BadRequest,
+                ScimConstants.ScimTypeValues.InvalidSyntax);
+
+            IList<string> SplitPath(string path)
             {
                 if (string.IsNullOrWhiteSpace(path))
                 {
@@ -139,8 +138,9 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 }
 
                 return subPaths;
-            };
-            Func<IList<string>, string> extractRootPath = (subPaths) =>
+            }
+
+            string ExtractRootPath(IList<string> subPaths)
             {
                 if (subPaths == null)
                 {
@@ -148,8 +148,9 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 }
 
                 return subPaths[0];
-            };
-            Func<IList<string>, string> extractId = (subPaths) =>
+            }
+
+            string ExtractId(IList<string> subPaths)
             {
                 if (subPaths == null || subPaths.Count() < 2)
                 {
@@ -157,8 +158,9 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 }
 
                 return subPaths[1];
-            };
-            Func<string, string> getResourceType = (subPath) =>
+            }
+
+            string GetResourceType(string subPath)
             {
                 if (subPath == null)
                 {
@@ -171,7 +173,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 }
 
                 return Constants.MappingRoutePathsToResourceTypes[subPath];
-            };
+            }
 
             var schemas = await _schemaStore.GetSchemas().ConfigureAwait(false);
             var resourceTypes = schemas.Select(s => s.Name);
@@ -182,9 +184,8 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             {
                 try
                 {
-                    JObject data = operation.Data as JObject;
                     // 3.1. Check data
-                    if (data == null)
+                    if (!(operation.Data is JObject data))
                     {
                         return new BulkRequestResponse
                         {
@@ -192,18 +193,18 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                             ErrorResponse = _errorResponseFactory.CreateError(
                                 ErrorMessages.TheBulkDataParameterMustBeSpecified,
                                 HttpStatusCode.BadRequest,
-                                Common.ScimConstants.ScimTypeValues.InvalidSyntax)
+                                ScimConstants.ScimTypeValues.InvalidSyntax)
                         };
                     }
 
                     // 3.2. Check method
                     var httpMethod = new HttpMethod(operation.Method);
-                    if (!new [] { HttpMethod.Post, HttpMethod.Put, HttpMethod.Delete, new HttpMethod("PATCH") }.Contains(httpMethod))
+                    if (!new[] { HttpMethod.Post, HttpMethod.Put, HttpMethod.Delete, new HttpMethod("PATCH") }.Contains(httpMethod))
                     {
                         return new BulkRequestResponse
                         {
                             IsParsed = false,
-                            ErrorResponse = getBulkMethodNotSupported(operation.Method)
+                            ErrorResponse = GetBulkMethodNotSupported(operation.Method)
                         };
                     }
 
@@ -216,14 +217,14 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                             ErrorResponse = _errorResponseFactory.CreateError(
                                 ErrorMessages.TheBulkOperationPathIsRequired,
                                 HttpStatusCode.BadRequest,
-                                Common.ScimConstants.ScimTypeValues.InvalidSyntax)
+                                ScimConstants.ScimTypeValues.InvalidSyntax)
                         };
                     }
 
-                    var subPaths = splitPath(operation.Path);
-                    var rootPath = extractRootPath(subPaths);
-                    var resourceId = extractId(subPaths);
-                    var resourceType = getResourceType(rootPath);
+                    var subPaths = SplitPath(operation.Path);
+                    var rootPath = ExtractRootPath(subPaths);
+                    var resourceId = ExtractId(subPaths);
+                    var resourceType = GetResourceType(rootPath);
                     if (string.IsNullOrWhiteSpace(resourceType) ||
                         !resourceTypes.Contains(resourceType) ||
                         (httpMethod != HttpMethod.Post && string.IsNullOrWhiteSpace(resourceId)))
@@ -234,7 +235,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                             ErrorResponse = _errorResponseFactory.CreateError(
                                 string.Format(ErrorMessages.TheBulkOperationPathIsNotSupported, operation.Path),
                                 HttpStatusCode.BadRequest,
-                                Common.ScimConstants.ScimTypeValues.InvalidSyntax)
+                                ScimConstants.ScimTypeValues.InvalidSyntax)
                         };
                     }
 
@@ -247,7 +248,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                             ErrorResponse = _errorResponseFactory.CreateError(
                                 ErrorMessages.TheBulkIdParameterMustBeSpecified,
                                 HttpStatusCode.BadRequest,
-                                Common.ScimConstants.ScimTypeValues.InvalidSyntax)
+                                ScimConstants.ScimTypeValues.InvalidSyntax)
                         };
                     }
 
@@ -266,12 +267,12 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                         Path = operation.Path
                     });
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     return new BulkRequestResponse
                     {
                         IsParsed = false,
-                        ErrorResponse = getBulkMethodNotSupported(operation.Method)
+                        ErrorResponse = GetBulkMethodNotSupported(operation.Method)
                     };
                 }
             }

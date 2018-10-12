@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleBus.Core;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Results;
@@ -22,6 +21,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo
 {
+    using Common;
+
     public interface IUserInfoActions
     {
         Task<UserInfoResult> GetUserInformation(string accessToken);

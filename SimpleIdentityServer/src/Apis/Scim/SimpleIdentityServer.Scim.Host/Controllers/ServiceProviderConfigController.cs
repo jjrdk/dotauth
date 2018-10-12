@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Scim.Common.DTOs;
-using SimpleIdentityServer.Scim.Core;
-using SimpleIdentityServer.Scim.Host.Extensions;
-using System;
-
-namespace SimpleIdentityServer.Scim.Startup.Controllers
+namespace SimpleIdentityServer.Scim.Host.Controllers
 {
+    using System;
+    using Core;
+    using Extensions;
+    using Microsoft.AspNetCore.Mvc;
+    using SimpleIdentityServer.Core.Common;
+    using SimpleIdentityServer.Core.Common.DTOs;
+
     [Route(Constants.RoutePaths.ServiceProviderConfigController)]
     public class ServiceProviderConfigController : Controller
     {
@@ -28,7 +29,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
         {
             var result = new ServiceProviderConfigResponse
             {
-                Schemas = new[] { Common.ScimConstants.SchemaUrns.ServiceProvider },
+                Schemas = new[] { ScimConstants.SchemaUrns.ServiceProvider },
                 DocumentationUri = "http://www.simplecloud.info/",
                 Patch = new PatchResponse
                 {

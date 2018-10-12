@@ -24,6 +24,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
 {
+    using Moq;
+
     public class GetAllResourceSetActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;

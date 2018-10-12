@@ -1,8 +1,9 @@
 ﻿using System.Runtime.Serialization;
-using SimpleIdentityServer.Common.Dtos.Responses;
 
 namespace SimpleIdentityServer.Core.Common.DTOs.Responses
 {
+    using SimpleIdentityServer.Common.Dtos.Responses;
+
     [DataContract]
     public class ErrorResponseWithState : ErrorResponse
     {

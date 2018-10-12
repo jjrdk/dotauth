@@ -12,12 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Api.Discovery.Actions;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Discovery
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Authorization;
+    using Common.Models;
+    using Common.Repositories;
+
     public interface IDiscoveryActions
     {
         Task<DiscoveryInformation> CreateDiscoveryInformation();
@@ -25,16 +31,87 @@ namespace SimpleIdentityServer.Core.Api.Discovery
 
     public class DiscoveryActions : IDiscoveryActions
     {
-        private readonly ICreateDiscoveryDocumentationAction _createDiscoveryDocumentationAction;
+        private readonly IScopeRepository _scopeRepository;
+        private readonly IClaimRepository _claimRepository;
 
-        public DiscoveryActions(ICreateDiscoveryDocumentationAction createDiscoveryDocumentationAction)
+        public DiscoveryActions(IScopeRepository scopeRepository, IClaimRepository claimRepository)
         {
-            _createDiscoveryDocumentationAction = createDiscoveryDocumentationAction;
+            _scopeRepository = scopeRepository;
+            _claimRepository = claimRepository;
         }
 
         public async Task<DiscoveryInformation> CreateDiscoveryInformation()
         {
-            return await _createDiscoveryDocumentationAction.Execute().ConfigureAwait(false);
+            var result = new DiscoveryInformation();
+
+            // Returns only the exposed scopes
+            var scopes = await _scopeRepository.GetAllAsync().ConfigureAwait(false);
+            var scopeSupportedNames = new string[0];
+            if (scopes != null ||
+                scopes.Any())
+            {
+                scopeSupportedNames = scopes.Where(s => s.IsExposed).Select(s => s.Name).ToArray();
+            }
+
+            var responseTypesSupported = GetSupportedResponseTypes(Constants.Supported.SupportedAuthorizationFlows);
+
+            var grantTypesSupported = GetSupportedGrantTypes();
+            var tokenAuthMethodSupported = GetSupportedTokenEndPointAuthMethods();
+
+            result.ClaimsParameterSupported = true;
+            result.RequestParameterSupported = true;
+            result.RequestUriParameterSupported = true;
+            result.RequireRequestUriRegistration = true;
+            result.ClaimsSupported = (await _claimRepository.GetAllAsync().ConfigureAwait(false)).Select(c => c.Code).ToArray();
+            result.ScopesSupported = scopeSupportedNames;
+            result.ResponseTypesSupported = responseTypesSupported;
+            result.ResponseModesSupported = Constants.Supported.SupportedResponseModes.ToArray();
+            result.GrantTypesSupported = grantTypesSupported;
+            result.SubjectTypesSupported = Constants.Supported.SupportedSubjectTypes.ToArray();
+            result.TokenEndpointAuthMethodSupported = tokenAuthMethodSupported;
+            result.IdTokenSigningAlgValuesSupported = Constants.Supported.SupportedJwsAlgs.ToArray();
+
+            return result;
         }
+
+        private static string[] GetSupportedResponseTypes(ICollection<AuthorizationFlow> authorizationFlows)
+        {
+            var result = new List<string>();
+            foreach (var mapping in Constants.MappingResponseTypesToAuthorizationFlows)
+            {
+                if (authorizationFlows.Contains(mapping.Value))
+                {
+                    var record = string.Join(" ", mapping.Key.Select(k => Enum.GetName(typeof(ResponseType), k)));
+                    result.Add(record);
+                }
+            }
+
+            return result.ToArray();
+        }
+
+        private static string[] GetSupportedGrantTypes()
+        {
+            var result = new List<string>();
+            foreach (var supportedGrantType in Constants.Supported.SupportedGrantTypes)
+            {
+                var record = Enum.GetName(typeof(GrantType), supportedGrantType);
+                result.Add(record);
+            }
+
+            return result.ToArray();
+        }
+
+        private static string[] GetSupportedTokenEndPointAuthMethods()
+        {
+            var result = new List<string>();
+            foreach (var supportedAuthMethod in Constants.Supported.SupportedTokenEndPointAuthenticationMethods)
+            {
+                var record = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), supportedAuthMethod);
+                result.Add(record);
+            }
+
+            return result.ToArray();
+        }
+
     }
 }

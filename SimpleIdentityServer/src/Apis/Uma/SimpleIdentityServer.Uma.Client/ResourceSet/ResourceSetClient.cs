@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Configuration;
-using SimpleIdentityServer.Client.Extensions;
-using SimpleIdentityServer.Common.Client;
-using SimpleIdentityServer.Uma.Client.ResourceSet;
-using SimpleIdentityServer.Uma.Client.Results;
-using SimpleIdentityServer.Uma.Common.DTOs;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Client.ResourceSet
+namespace SimpleIdentityServer.Uma.Client.ResourceSet
 {
+    using System.Threading.Tasks;
+    using Common.DTOs;
+    using Configuration;
+    using Core.Common;
+    using Helpers;
+    using Results;
+
     public interface IResourceSetClient
     {
         Task<UpdateResourceSetResult> Update(PutResourceSet request, string url, string token);

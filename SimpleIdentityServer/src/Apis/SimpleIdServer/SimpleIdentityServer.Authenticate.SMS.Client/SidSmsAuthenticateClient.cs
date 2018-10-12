@@ -1,5 +1,4 @@
 ﻿using SimpleIdentityServer.Authenticate.SMS.Common.Requests;
-using SimpleIdentityServer.Common.Client;
 using System;
 using System.Threading.Tasks;
 
@@ -7,6 +6,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Client
 {
     using System.Net.Http;
     using System.Net.Http.Headers;
+    using Core.Common;
     using Newtonsoft.Json;
     using SimpleIdentityServer.Common.Dtos.Responses;
 

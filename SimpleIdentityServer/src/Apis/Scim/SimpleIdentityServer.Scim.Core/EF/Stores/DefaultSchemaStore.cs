@@ -1,5 +1,4 @@
-﻿using SimpleIdentityServer.Scim.Common.DTOs;
-using SimpleIdentityServer.Scim.Core.EF.Extensions;
+﻿using SimpleIdentityServer.Scim.Core.EF.Extensions;
 using SimpleIdentityServer.Scim.Core.EF.Helpers;
 using SimpleIdentityServer.Scim.Core.Stores;
 using System.Collections.Generic;
@@ -8,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.EF.Stores
 {
+    using SimpleIdentityServer.Core.Common.DTOs;
+
     internal sealed class DefaultSchemaStore : ISchemaStore
     {
         private List<Core.EF.Models.Schema> _schemas;

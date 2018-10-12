@@ -13,6 +13,9 @@
 // limitations under the License.
 
 using Moq;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -22,9 +25,7 @@ using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.UnitTests.Fake;
 using SimpleIdentityServer.Core.Validators;
@@ -35,15 +36,16 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Xunit;
-using SimpleIdentityServer.Core.Common.Models;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
+    using System.Security.Cryptography.Algorithms.Extensions;
+
     public class JwtGeneratorFixture
     {
         private IJwtGenerator _jwtGenerator;
         private Mock<IConfigurationService> _simpleIdentityServerConfigurator;
-        private Mock<IClientRepository> _clientRepositoryStub;                
+        private Mock<IClientRepository> _clientRepositoryStub;
         private Mock<IJsonWebKeyRepository> _jsonWebKeyRepositoryStub;
         private Mock<IScopeRepository> _scopeRepositoryStub;
 
@@ -193,7 +195,6 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             // ARRANGE
             InitializeMockObjects();
-            const string issuerName = "IssuerName";
             const string subject = "habarthierry@hotmail.fr";
             var authorizationParameter = new AuthorizationParameter();
             var claims = new List<Claim>
@@ -564,7 +565,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ARRANGE
             InitializeMockObjects();
             var authorizationParameter = new AuthorizationParameter();
-            
+
             // ACT & ASSERT
             Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateFilteredUserInfoPayload(null, null, null));
             Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateFilteredUserInfoPayload(null, null, authorizationParameter));
@@ -667,7 +668,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
             Assert.True(exception.State == state);
         }
-        
+
         [Fact]
         public void When_Requesting_UserInformation_But_The_Essential_Claim_Name_Is_Empty_Then_Exception_Is_Thrown()
         {
@@ -912,7 +913,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             Assert.True(jwsPayload.ContainsKey(StandardClaimNames.AtHash));
             Assert.True(jwsPayload.ContainsKey(StandardClaimNames.CHash));
         }
-        
+
         [Fact]
         public void When_JwsAlg_Is_RS512_And_AuthorizationCode_And_AccessToken_Are_Not_Empty_Then_OtherClaims_Are_FilledIn()
         {
@@ -942,7 +943,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var serializedRsa = string.Empty;
             using (var provider = new RSACryptoServiceProvider())
             {
-                serializedRsa = provider.ToXmlString(true);
+                serializedRsa = RsaExtensions.ToXmlString(provider, true); //.ToXmlString(true);
             };
 
             var jsonWebKey = new JsonWebKey
@@ -983,7 +984,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var serializedRsa = string.Empty;
             using (var provider = new RSACryptoServiceProvider())
             {
-                serializedRsa = provider.ToXmlString(true);
+                serializedRsa = RsaExtensions.ToXmlString(provider, true);
             };
             var jsonWebKey = new JsonWebKey
             {

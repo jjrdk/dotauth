@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Linq;
-using System.Net.Http.Headers;
-using SimpleIdentityServer.Core.Api.UserInfo;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using System.Collections.Generic;
-using SimpleIdentityServer.Host;
-using Microsoft.Extensions.Primitives;
-using SimpleIdentityServer.Host.Extensions;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Api.Controllers.Api
+namespace SimpleIdentityServer.Host.Controllers.Api
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
+    using Core.Api.UserInfo;
+    using Core.Errors;
+    using Core.Exceptions;
+    using Extensions;
+    using Host;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Primitives;
+
     [Route(Constants.EndPoints.UserInfo)]
     public class UserInfoController : Controller
     {

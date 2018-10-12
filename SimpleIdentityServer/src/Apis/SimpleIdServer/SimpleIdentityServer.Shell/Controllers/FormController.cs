@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Shell.ViewModels;
-
-namespace SimpleIdentityServer.Host.Controllers.Website
+namespace SimpleIdentityServer.Shell.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+    using ViewModels;
+
     [Area("Shell")]
     public class FormController : Controller
     {

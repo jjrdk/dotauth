@@ -15,7 +15,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Apis;
 using SimpleIdentityServer.Scim.Host.Extensions;
 using System;
@@ -26,6 +25,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Host.Controllers
 {
+    using SimpleIdentityServer.Core.Common;
+    using SimpleIdentityServer.Core.Common.DTOs;
+
     [Route(Core.Constants.RoutePaths.UsersController)]
     public class UsersController : Controller
     {
@@ -136,8 +138,8 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             }
 
             var jObj = new JObject();
-            jObj.Add(Common.ScimConstants.ScimResourceNames.Schemas, new JArray(Common.ScimConstants.SchemaUrns.User));
-            jObj.Add(Common.ScimConstants.IdentifiedScimResourceNames.ExternalId, subject);
+            jObj.Add(ScimConstants.ScimResourceNames.Schemas, new JArray(ScimConstants.SchemaUrns.User));
+            jObj.Add(ScimConstants.IdentifiedScimResourceNames.ExternalId, subject);
             return CreateUser(jObj);
         }
 
@@ -287,10 +289,10 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
         private static ActionResult GetMissingSubjectError()
         {
-            var error = new ErrorResponse
+            var error = new ScimErrorResponse
             {
                 Detail = "the subject is missing",
-                Schemas = new[] { Common.ScimConstants.Messages.Error },
+                Schemas = new[] { ScimConstants.Messages.Error },
                 Status = (int)HttpStatusCode.BadRequest
             };
             return new JsonResult(error)
@@ -301,10 +303,10 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
         private static ActionResult GetMissingScimIdentifierError()
         {
-            var error = new ErrorResponse
+            var error = new ScimErrorResponse
             {
                 Detail = "the scim_id is missing",
-                Schemas = new[] { Common.ScimConstants.Messages.Error },
+                Schemas = new[] { ScimConstants.Messages.Error },
                 Status = (int)HttpStatusCode.BadRequest
             };
             return new JsonResult(error)

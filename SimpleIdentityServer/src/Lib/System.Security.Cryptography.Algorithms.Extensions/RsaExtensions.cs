@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.Contracts;
-using System.Text;
-
-namespace System.Security.Cryptography
+namespace System.Security.Cryptography.Algorithms.Extensions
 {
+    using Diagnostics.Contracts;
+    using Text;
+
     public static class RsaExtensions
     {
         public static string ToXmlString(this RSA rsa, bool includePrivateParameters)

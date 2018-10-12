@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleBus.Core;
-
 namespace SimpleIdentityServer.OpenId.Events
 {
+    using Common.Dtos;
+
     public class ConsentAccepted : Event
     {
         public ConsentAccepted(string id, string processId, string payload, int order)

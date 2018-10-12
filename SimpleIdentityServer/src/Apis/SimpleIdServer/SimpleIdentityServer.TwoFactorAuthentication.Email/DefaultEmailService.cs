@@ -21,6 +21,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.TwoFactorAuthentication.Email
 {
+    using Core.Common;
+
     public class TwoFactorEmailOptions
     {
         public string EmailFromName { get; set; }

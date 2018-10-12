@@ -12,25 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
-using Newtonsoft.Json;
-using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Client.Builders;
-using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Jwt.Encrypt;
-using SimpleIdentityServer.Core.Jwt.Signature;
-using SimpleIdentityServer.Host.Tests.MiddleWares;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Host.Tests
+namespace SimpleIdentityServer.Host.Tests.Apis
 {
+    using System;
+    using System.Threading.Tasks;
+    using Client;
+    using Client.Builders;
+    using Client.Operations;
+    using Core.Common;
+    using Core.Common.DTOs.Requests;
+    using Core.Common.DTOs.Responses;
+    using Core.Jwt;
+    using Core.Jwt.Encrypt;
+    using Core.Jwt.Signature;
+    using Microsoft.Extensions.DependencyInjection;
+    using MiddleWares;
+    using Moq;
+    using Newtonsoft.Json;
+    using Xunit;
+
     public class AuthorizationClientFixture : IClassFixture<TestOauthServerFixture>
     {
         const string baseUrl = "http://localhost:5000";
@@ -59,8 +59,8 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal("invalid_request", error.Error);
-            Assert.Equal("the parameter scope is missing", error.ErrorDescription);
+            Assert.Equal((string) "invalid_request", (string) error.Error);
+            Assert.Equal((string) "the parameter scope is missing", (string) error.ErrorDescription);
         }
 
         [Fact]
@@ -76,8 +76,8 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal("invalid_request", error.Error);
-            Assert.Equal("the parameter client_id is missing", error.ErrorDescription);
+            Assert.Equal((string) "invalid_request", (string) error.Error);
+            Assert.Equal((string) "the parameter client_id is missing", (string) error.ErrorDescription);
         }
 
         [Fact]
@@ -93,8 +93,8 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal("invalid_request", error.Error);
-            Assert.Equal("the parameter redirect_uri is missing", error.ErrorDescription);
+            Assert.Equal((string) "invalid_request", (string) error.Error);
+            Assert.Equal((string) "the parameter redirect_uri is missing", (string) error.ErrorDescription);
         }
 
         [Fact]
@@ -110,8 +110,8 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal("invalid_request", error.Error);
-            Assert.Equal("the parameter response_type is missing", error.ErrorDescription);
+            Assert.Equal((string) "invalid_request", (string) error.Error);
+            Assert.Equal((string) "the parameter response_type is missing", (string) error.ErrorDescription);
         }
 
         [Fact]
@@ -127,8 +127,8 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal("invalid_request", error.Error);
-            Assert.Equal("at least one response_type parameter is not supported", error.ErrorDescription);
+            Assert.Equal((string) "invalid_request", (string) error.Error);
+            Assert.Equal((string) "at least one response_type parameter is not supported", (string) error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -145,8 +145,8 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal("invalid_request", error.Error);
-            Assert.Equal("at least one prompt parameter is not supported", error.ErrorDescription);
+            Assert.Equal((string) "invalid_request", (string) error.Error);
+            Assert.Equal((string) "at least one prompt parameter is not supported", (string) error.ErrorDescription);
             Assert.Equal("state", error.State);
 
         }
@@ -164,8 +164,8 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal("invalid_request", error.Error);
-            Assert.Equal("Based on the RFC-3986 the redirection-uri is not well formed", error.ErrorDescription);
+            Assert.Equal((string) "invalid_request", (string) error.Error);
+            Assert.Equal((string) "Based on the RFC-3986 the redirection-uri is not well formed", (string) error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -183,8 +183,8 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal("invalid_request", error.Error);
-            Assert.Equal("the client id parameter bad_client doesn't exist or is not valid", error.ErrorDescription);
+            Assert.Equal((string) "invalid_request", (string) error.Error);
+            Assert.Equal((string) "the client id parameter bad_client doesn't exist or is not valid", (string) error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -202,8 +202,8 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal("invalid_request", error.Error);
-            Assert.Equal("the redirect url http://localhost:5000 doesn't exist or is not valid", error.ErrorDescription);
+            Assert.Equal((string) "invalid_request", (string) error.Error);
+            Assert.Equal((string) "the redirect url http://localhost:5000 doesn't exist or is not valid", (string) error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -220,8 +220,8 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal("invalid_request", error.Error);
-            Assert.Equal("the client pkce_client requires PKCE", error.ErrorDescription);
+            Assert.Equal((string) "invalid_request", (string) error.Error);
+            Assert.Equal((string) "the client pkce_client requires PKCE", (string) error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -238,8 +238,8 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal("invalid_request", error.Error);
-            Assert.Equal("the parameter nonce is missing", error.ErrorDescription);
+            Assert.Equal((string) "invalid_request", (string) error.Error);
+            Assert.Equal((string) "the parameter nonce is missing", (string) error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -256,8 +256,8 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal("invalid_scope", error.Error);
-            Assert.Equal("the scopes scope are not allowed or invalid", error.ErrorDescription);
+            Assert.Equal((string) "invalid_scope", (string) error.Error);
+            Assert.Equal((string) "the scopes scope are not allowed or invalid", (string) error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -274,8 +274,8 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal("invalid_request", error.Error);
-            Assert.Equal("the client 'incomplete_authcode_client' doesn't support the response type: 'id_token,code,token'", error.ErrorDescription);
+            Assert.Equal((string) "invalid_request", (string) error.Error);
+            Assert.Equal((string) "the client 'incomplete_authcode_client' doesn't support the response type: 'id_token,code,token'", (string) error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -315,8 +315,8 @@ namespace SimpleIdentityServer.Host.Tests
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal("login_required", result.Error.Error);
-            Assert.Equal("the user needs to be authenticated", result.Error.ErrorDescription);
+            Assert.Equal((string) "login_required", (string) result.Error.Error);
+            Assert.Equal((string) "the user needs to be authenticated", (string) result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -339,8 +339,8 @@ namespace SimpleIdentityServer.Host.Tests
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal("interaction_required", result.Error.Error);
-            Assert.Equal("the user needs to give his consent", result.Error.ErrorDescription);
+            Assert.Equal((string) "interaction_required", (string) result.Error.Error);
+            Assert.Equal((string) "the user needs to give his consent", (string) result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -361,8 +361,8 @@ namespace SimpleIdentityServer.Host.Tests
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal("invalid_request", result.Error.Error);
-            Assert.Equal("the id_token_hint parameter is not a valid token", result.Error.ErrorDescription);
+            Assert.Equal((string) "invalid_request", (string) result.Error.Error);
+            Assert.Equal((string) "the id_token_hint parameter is not a valid token", (string) result.Error.ErrorDescription);
         }
         
         [Fact]
@@ -390,8 +390,8 @@ namespace SimpleIdentityServer.Host.Tests
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal("invalid_request", result.Error.Error);
-            Assert.Equal("the identity token doesnt contain simple identity server in the audience", result.Error.ErrorDescription);
+            Assert.Equal((string) "invalid_request", (string) result.Error.Error);
+            Assert.Equal((string) "the identity token doesnt contain simple identity server in the audience", (string) result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -420,8 +420,8 @@ namespace SimpleIdentityServer.Host.Tests
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal("invalid_request", result.Error.Error);
-            Assert.Equal("the current authenticated user doesn't match with the identity token", result.Error.ErrorDescription);
+            Assert.Equal((string) "invalid_request", (string) result.Error.Error);
+            Assert.Equal((string) "the current authenticated user doesn't match with the identity token", (string) result.Error.ErrorDescription);
         }
 
         [Fact]

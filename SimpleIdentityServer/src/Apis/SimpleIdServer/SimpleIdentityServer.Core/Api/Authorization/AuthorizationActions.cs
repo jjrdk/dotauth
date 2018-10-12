@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleBus.Core;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
@@ -29,6 +28,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Authorization
 {
+    using Core.Common;
+
     public interface IAuthorizationActions
     {
         Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal, string issuerName);

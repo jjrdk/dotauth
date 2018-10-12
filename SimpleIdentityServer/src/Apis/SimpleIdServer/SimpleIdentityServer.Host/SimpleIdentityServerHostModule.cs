@@ -2,13 +2,15 @@
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Module;
 using System;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Host
 {
+    using Controllers.Api;
+    using Extensions;
+
     public class SimpleIdentityServerHostModule : IModule
     {
         private IDictionary<string, string> _properties;

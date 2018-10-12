@@ -13,10 +13,10 @@
 // limitations under the License.
 
 
-using SimpleBus.Core;
-
 namespace SimpleIdentityServer.OAuth.Events
 {
+    using Common.Dtos;
+
     public class RegistrationReceived : Event
     {
         public RegistrationReceived(string id, string processId, string payload, int order)

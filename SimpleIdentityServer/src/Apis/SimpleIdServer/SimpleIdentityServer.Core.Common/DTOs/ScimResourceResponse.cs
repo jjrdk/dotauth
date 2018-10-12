@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Scim.Common.DTOs
+namespace SimpleIdentityServer.Core.Common.DTOs
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+
     /// <summary>
     /// Parameters are listed here : https://tools.ietf.org/html/rfc7643#section-3.1
     /// </summary>

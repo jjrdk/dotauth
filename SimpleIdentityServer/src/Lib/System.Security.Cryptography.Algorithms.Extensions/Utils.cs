@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace System.Security.Cryptography
+namespace System.Security.Cryptography.Algorithms.Extensions
 {
     internal static class Utils
     {

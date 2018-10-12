@@ -14,7 +14,7 @@
 
 namespace SimpleIdentityServer.OAuth.Events
 {
-    using SimpleBus.Core;
+    using Common.Dtos;
 
     public class AuthorizationGranted : Event
     {

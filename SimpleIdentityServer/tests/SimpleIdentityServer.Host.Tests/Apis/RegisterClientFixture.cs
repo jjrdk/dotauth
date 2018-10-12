@@ -12,21 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
-using Newtonsoft.Json;
-using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Host.Tests
+namespace SimpleIdentityServer.Host.Tests.Apis
 {
+    using System;
+    using System.Net;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
+    using Client;
+    using Client.Operations;
     using Core.Common.DTOs.Requests;
+    using Core.Common.DTOs.Responses;
+    using Moq;
+    using Newtonsoft.Json;
+    using Xunit;
 
     public class RegisterClientFixture : IClassFixture<TestOauthServerFixture>
     {
@@ -72,8 +71,8 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_redirect_uri", error.Error);
-            Assert.Equal("the parameter request_uris is missing", error.ErrorDescription);
+            Assert.Equal((string) "invalid_redirect_uri", (string) error.Error);
+            Assert.Equal((string) "the parameter request_uris is missing", (string) error.ErrorDescription);
         }
 
         [Fact]
@@ -106,8 +105,8 @@ namespace SimpleIdentityServer.Host.Tests
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
             // ASSERT
-            Assert.Equal("invalid_redirect_uri", error.Error);
-            Assert.Equal("the redirect_uri invalid_redirect_uris is not well formed", error.ErrorDescription);
+            Assert.Equal((string) "invalid_redirect_uri", (string) error.Error);
+            Assert.Equal((string) "the redirect_uri invalid_redirect_uris is not well formed", (string) error.ErrorDescription);
         }
 
         [Fact]
@@ -140,8 +139,8 @@ namespace SimpleIdentityServer.Host.Tests
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
             // ASSERT
-            Assert.Equal("invalid_redirect_uri", error.Error);
-            Assert.Equal("the redirect_uri http://localhost#fg=fg cannot contains fragment", error.ErrorDescription);
+            Assert.Equal((string) "invalid_redirect_uri", (string) error.Error);
+            Assert.Equal((string) "the redirect_uri http://localhost#fg=fg cannot contains fragment", (string) error.ErrorDescription);
         }
 
         [Fact]
@@ -174,8 +173,8 @@ namespace SimpleIdentityServer.Host.Tests
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
             // ASSERT
-            Assert.Equal("invalid_client_metadata", error.Error);
-            Assert.Equal("the parameter logo_uri is not correct", error.ErrorDescription);
+            Assert.Equal((string) "invalid_client_metadata", (string) error.Error);
+            Assert.Equal((string) "the parameter logo_uri is not correct", (string) error.ErrorDescription);
         }
 
         [Fact]
@@ -208,8 +207,8 @@ namespace SimpleIdentityServer.Host.Tests
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
             // ASSERT
-            Assert.Equal("invalid_client_metadata", error.Error);
-            Assert.Equal("the parameter client_uri is not correct", error.ErrorDescription);
+            Assert.Equal((string) "invalid_client_metadata", (string) error.Error);
+            Assert.Equal((string) "the parameter client_uri is not correct", (string) error.ErrorDescription);
         }
 
         [Fact]
@@ -242,8 +241,8 @@ namespace SimpleIdentityServer.Host.Tests
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
             // ASSERT
-            Assert.Equal("invalid_client_metadata", error.Error);
-            Assert.Equal("the parameter tos_uri is not correct", error.ErrorDescription);
+            Assert.Equal((string) "invalid_client_metadata", (string) error.Error);
+            Assert.Equal((string) "the parameter tos_uri is not correct", (string) error.ErrorDescription);
         }
 
         [Fact]
@@ -276,8 +275,8 @@ namespace SimpleIdentityServer.Host.Tests
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
             // ASSERT
-            Assert.Equal("invalid_client_metadata", error.Error);
-            Assert.Equal("the parameter jwks_uri is not correct", error.ErrorDescription);
+            Assert.Equal((string) "invalid_client_metadata", (string) error.Error);
+            Assert.Equal((string) "the parameter jwks_uri is not correct", (string) error.ErrorDescription);
         }
 
         [Fact]

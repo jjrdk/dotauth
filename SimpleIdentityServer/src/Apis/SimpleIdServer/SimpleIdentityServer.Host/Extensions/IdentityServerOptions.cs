@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Host
+namespace SimpleIdentityServer.Host.Extensions
 {
+    using System.Collections.Generic;
+    using Core;
+    using Core.Common;
+    using Core.Common.Models;
+
     public class ScimOptions
     {
         public string EndPoint { get; set; }

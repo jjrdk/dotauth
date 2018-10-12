@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
-using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Client.Operations;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Host.Tests
+namespace SimpleIdentityServer.Host.Tests.Apis
 {
+    using System.Threading.Tasks;
+    using Client;
+    using Client.Operations;
+    using Moq;
+    using Xunit;
+
     public class DiscoveryClientFixture : IClassFixture<TestOauthServerFixture>
     {
         private readonly TestOauthServerFixture _server;

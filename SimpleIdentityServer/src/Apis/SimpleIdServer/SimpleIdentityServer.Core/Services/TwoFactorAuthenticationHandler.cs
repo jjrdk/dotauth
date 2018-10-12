@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.TwoFactorAuthentication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +20,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Services
 {
+    using Common;
+
     public interface ITwoFactorAuthenticationHandler
     {
         IEnumerable<ITwoFactorAuthenticationService> GetAll();

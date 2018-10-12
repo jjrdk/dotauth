@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.AccountFilter.Basic
 {
+    using Core.Common;
+
     public class AccountFilter : IAccountFilter
     {
         private readonly IFilterRepository _filterRepository;

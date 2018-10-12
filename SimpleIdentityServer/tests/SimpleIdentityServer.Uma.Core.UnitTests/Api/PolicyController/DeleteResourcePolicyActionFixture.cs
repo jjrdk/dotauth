@@ -26,6 +26,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
 {
+    using Moq;
+
     public class DeleteResourcePolicyActionFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;

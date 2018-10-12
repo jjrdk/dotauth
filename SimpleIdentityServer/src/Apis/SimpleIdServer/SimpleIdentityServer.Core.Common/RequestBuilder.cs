@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Scim.Client.Builders
+namespace SimpleIdentityServer.Core.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Newtonsoft.Json.Linq;
+
     public class RequestBuilder
     {
         private readonly Func<JObject, Task<ScimResponse>> _callback;

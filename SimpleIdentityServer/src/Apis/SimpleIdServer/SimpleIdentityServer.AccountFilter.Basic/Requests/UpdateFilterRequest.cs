@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.AccountFilter.Basic.Common.Requests
+﻿namespace SimpleIdentityServer.AccountFilter.Basic.Requests
 {
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
+
     [DataContract]
     public class UpdateFilterRuleRequest
     {

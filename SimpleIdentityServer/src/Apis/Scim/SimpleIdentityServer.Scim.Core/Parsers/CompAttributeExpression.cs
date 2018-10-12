@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Scim.Common.DTOs;
-using SimpleIdentityServer.Scim.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
+    using SimpleIdentityServer.Core.Common;
+    using SimpleIdentityServer.Core.Common.DTOs;
+    using SimpleIdentityServer.Core.Common.Models;
+
     public enum ComparisonOperators
     {
         // Equal
@@ -95,9 +97,9 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         {
             switch (attr.SchemaAttribute.Type)
             {
-                case Common.ScimConstants.SchemaAttributeTypes.String:
+                case ScimConstants.SchemaAttributeTypes.String:
                     return Equals(attr, op, value);
-                case Common.ScimConstants.SchemaAttributeTypes.Boolean:
+                case ScimConstants.SchemaAttributeTypes.Boolean:
                     var b = false;
                     if (!bool.TryParse(value, out b))
                     {
@@ -105,7 +107,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
 
                     return Equals(attr, op, b);
-                case Common.ScimConstants.SchemaAttributeTypes.DateTime:
+                case ScimConstants.SchemaAttributeTypes.DateTime:
                     DateTime d = default(DateTime);
                     if (!DateTime.TryParse(value, out d))
                     {
@@ -113,7 +115,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
 
                     return Equals(attr, op, d);
-                case Common.ScimConstants.SchemaAttributeTypes.Decimal:
+                case ScimConstants.SchemaAttributeTypes.Decimal:
                     decimal dec;
                     if (!decimal.TryParse(value, out dec))
                     {
@@ -121,7 +123,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
 
                     return Equals(attr, op, dec);
-                case Common.ScimConstants.SchemaAttributeTypes.Integer:
+                case ScimConstants.SchemaAttributeTypes.Integer:
                     int i;
                     if (!int.TryParse(value, out i))
                     {
@@ -129,7 +131,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
 
                     return Equals(attr, op, i);
-                case Common.ScimConstants.SchemaAttributeTypes.Complex:
+                case ScimConstants.SchemaAttributeTypes.Complex:
                     var complexAttr = attr as ComplexRepresentationAttribute;
                     if (complexAttr == null)
                     {

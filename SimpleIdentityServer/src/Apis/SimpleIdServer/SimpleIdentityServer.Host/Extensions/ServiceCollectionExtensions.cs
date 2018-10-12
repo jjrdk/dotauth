@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Host.Parsers;
-using SimpleIdentityServer.Logging;
-using SimpleIdentityServer.OAuth.Logging;
-using SimpleIdentityServer.OpenId.Logging;
-using SimpleIdentityServer.Store;
-using System;
-using System.Linq;
-
-namespace SimpleIdentityServer.Host
+namespace SimpleIdentityServer.Host.Extensions
 {
+    using System;
+    using System.Linq;
+    using Core;
+    using Core.Jwt;
+    using Logging;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.Extensions.DependencyInjection;
+    using OAuth.Logging;
+    using OpenId.Logging;
+    using Parsers;
+    using Store;
+
     public static class ServiceCollectionExtensions 
     {
         public static IServiceCollection AddOpenIdApi(this IServiceCollection serviceCollection, Action<IdentityServerOptions> optionsCallback)

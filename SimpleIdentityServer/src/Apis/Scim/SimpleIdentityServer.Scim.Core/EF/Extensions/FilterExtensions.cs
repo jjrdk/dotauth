@@ -7,6 +7,8 @@ using LinqExpression = System.Linq.Expressions.Expression;
 
 namespace SimpleIdentityServer.Scim.Core.EF.Extensions
 {
+    using SimpleIdentityServer.Core.Common;
+
     public static class FilterExtensions
     {
         private static int _scI = 0;
@@ -354,8 +356,8 @@ namespace SimpleIdentityServer.Scim.Core.EF.Extensions
 
             var isMultiValued = LinqExpression.Equal(schemaMultiValuedProperty, LinqExpression.Constant(true)); // true
             var isNotMultiValued = LinqExpression.Equal(schemaMultiValuedProperty, LinqExpression.Constant(false));
-            var isTypeComplex = LinqExpression.Equal(schemaTypeProperty, LinqExpression.Constant(Common.ScimConstants.SchemaAttributeTypes.Complex));
-            var isNotTypeComplex = LinqExpression.NotEqual(schemaTypeProperty, LinqExpression.Constant(Common.ScimConstants.SchemaAttributeTypes.Complex));
+            var isTypeComplex = LinqExpression.Equal(schemaTypeProperty, LinqExpression.Constant(ScimConstants.SchemaAttributeTypes.Complex));
+            var isNotTypeComplex = LinqExpression.NotEqual(schemaTypeProperty, LinqExpression.Constant(ScimConstants.SchemaAttributeTypes.Complex));
             var isComplexMultiValued = LinqExpression.AndAlso(isMultiValued, isTypeComplex);
             var isNotComplexMultiValued = LinqExpression.OrElse(isNotTypeComplex, isNotMultiValued);
 
@@ -515,12 +517,12 @@ namespace SimpleIdentityServer.Scim.Core.EF.Extensions
             var isMultiValued = LinqExpression.Equal(propertyMultiValued, LinqExpression.Constant(true));
             var isNotMultiValued = LinqExpression.Equal(propertyMultiValued, LinqExpression.Constant(false));
 
-            var equalBoolean = LinqExpression.Equal(propertySchemaType, LinqExpression.Constant(Common.ScimConstants.SchemaAttributeTypes.Boolean));
-            var equalBinary = LinqExpression.Equal(propertySchemaType, LinqExpression.Constant(Common.ScimConstants.SchemaAttributeTypes.Binary));
-            var equalString = LinqExpression.Equal(propertySchemaType, LinqExpression.Constant(Common.ScimConstants.SchemaAttributeTypes.String));
-            var equalDatetime = LinqExpression.Equal(propertySchemaType, LinqExpression.Constant(Common.ScimConstants.SchemaAttributeTypes.DateTime));
-            var equalDecimal = LinqExpression.Equal(propertySchemaType, LinqExpression.Constant(Common.ScimConstants.SchemaAttributeTypes.Decimal));
-            var equalInteger = LinqExpression.Equal(propertySchemaType, LinqExpression.Constant(Common.ScimConstants.SchemaAttributeTypes.Integer));
+            var equalBoolean = LinqExpression.Equal(propertySchemaType, LinqExpression.Constant(ScimConstants.SchemaAttributeTypes.Boolean));
+            var equalBinary = LinqExpression.Equal(propertySchemaType, LinqExpression.Constant(ScimConstants.SchemaAttributeTypes.Binary));
+            var equalString = LinqExpression.Equal(propertySchemaType, LinqExpression.Constant(ScimConstants.SchemaAttributeTypes.String));
+            var equalDatetime = LinqExpression.Equal(propertySchemaType, LinqExpression.Constant(ScimConstants.SchemaAttributeTypes.DateTime));
+            var equalDecimal = LinqExpression.Equal(propertySchemaType, LinqExpression.Constant(ScimConstants.SchemaAttributeTypes.Decimal));
+            var equalInteger = LinqExpression.Equal(propertySchemaType, LinqExpression.Constant(ScimConstants.SchemaAttributeTypes.Integer));
             var firstEqualityStr = LinqExpression.OrElse(equalBoolean, equalBinary);
             var secondEqualityStr = LinqExpression.OrElse(firstEqualityStr, equalString);
             var firstEqualityFloat = LinqExpression.OrElse(equalDatetime, equalDecimal);

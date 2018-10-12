@@ -1,7 +1,7 @@
-﻿using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.AccountFilter.Basic.Common.Responses
+﻿namespace SimpleIdentityServer.AccountFilter.Basic.Responses
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class AddFilterResponse
     {

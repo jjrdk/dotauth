@@ -16,6 +16,8 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Scim.Core
 {
+    using SimpleIdentityServer.Core.Common;
+
     public static class Constants
     {
         public static class RoutePaths
@@ -31,11 +33,11 @@ namespace SimpleIdentityServer.Scim.Core
         {
             {
                 RoutePaths.UsersController,
-                Common.ScimConstants.ResourceTypes.User
+                ScimConstants.ResourceTypes.User
             },
             {
                 RoutePaths.GroupsController,
-                Common.ScimConstants.ResourceTypes.Group
+                ScimConstants.ResourceTypes.Group
             }
         };
     }

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Common.Models;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Parsers;
@@ -25,6 +24,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
+    using SimpleIdentityServer.Core.Common;
+    using SimpleIdentityServer.Core.Common.Models;
+
     public interface IBulkAction
     {
         Task<ApiActionResult> Execute(JObject jObj, string baseUrl);
@@ -108,7 +110,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                             _errorResponseFactory.CreateError(
                                 string.Format(ErrorMessages.TheMaximumNumberOfErrorHasBeenReached, bulk.BulkResult.FailOnErrors),
                                 HttpStatusCode.InternalServerError,
-                                Common.ScimConstants.ScimTypeValues.TooMany));
+                                ScimConstants.ScimTypeValues.TooMany));
                     }
                 }
 
@@ -121,11 +123,11 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
         private JObject CreateResponse(JArray operationsResult)
         {
-            var schemas = new JArray { Common.ScimConstants.Messages.BulkResponse };
+            var schemas = new JArray { ScimConstants.Messages.BulkResponse };
             var result = new JObject
             {
-                {Common.ScimConstants.ScimResourceNames.Schemas, schemas},
-                {Common.ScimConstants.PatchOperationsRequestNames.Operations, operationsResult}
+                {ScimConstants.ScimResourceNames.Schemas, schemas},
+                {ScimConstants.PatchOperationsRequestNames.Operations, operationsResult}
             };
             return result;
         }
@@ -134,32 +136,32 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         {
             var result = new JObject
             {
-                [Common.ScimConstants.BulkOperationRequestNames.Method] = bulkOperation.Method.Method,
-                [Common.ScimConstants.BulkOperationResponseNames.Status] = apiActionResult.StatusCode
+                [ScimConstants.BulkOperationRequestNames.Method] = bulkOperation.Method.Method,
+                [ScimConstants.BulkOperationResponseNames.Status] = apiActionResult.StatusCode
             };
             if (!string.IsNullOrWhiteSpace(bulkOperation.BulkId))
             {
-                result[Common.ScimConstants.BulkOperationRequestNames.BulkId] = bulkOperation.BulkId;
+                result[ScimConstants.BulkOperationRequestNames.BulkId] = bulkOperation.BulkId;
             }
 
             if (!string.IsNullOrWhiteSpace(bulkOperation.Version))
             {
-                result[Common.ScimConstants.BulkOperationRequestNames.Version] = bulkOperation.Version;
+                result[ScimConstants.BulkOperationRequestNames.Version] = bulkOperation.Version;
             }
 
             if (!string.IsNullOrWhiteSpace(bulkOperation.Path))
             {
-                result[Common.ScimConstants.BulkOperationRequestNames.Path] = bulkOperation.Path;
+                result[ScimConstants.BulkOperationRequestNames.Path] = bulkOperation.Path;
             }
 
             if (!string.IsNullOrWhiteSpace(apiActionResult.Location))
             {
-                result[Common.ScimConstants.BulkOperationResponseNames.Location] = apiActionResult.Location;
+                result[ScimConstants.BulkOperationResponseNames.Location] = apiActionResult.Location;
             }
 
             if (apiActionResult.Content != null)
             {
-                result.Add(new JProperty(Common.ScimConstants.BulkOperationResponseNames.Response, JObject.FromObject(apiActionResult.Content)));
+                result.Add(new JProperty(ScimConstants.BulkOperationResponseNames.Response, JObject.FromObject(apiActionResult.Content)));
             }
 
             return result;

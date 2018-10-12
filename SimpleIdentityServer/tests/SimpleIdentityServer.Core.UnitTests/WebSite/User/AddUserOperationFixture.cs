@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.AccessToken.Store;
 using SimpleIdentityServer.Core.Api.Profile.Actions;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
@@ -30,12 +29,14 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
+    using Core.Common;
+
     public class AddUserOperationFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
         private Mock<IClaimRepository> _claimsRepositoryStub;
         private Mock<IAccessTokenStore> _tokenStoreStub;
-        private Mock<IScimClientFactory> _scimClientFactoryStub;
+        //private Mock<IScimClientFactory> _scimClientFactoryStub;
         private Mock<ILinkProfileAction> _linkProfileActionStub;
         private Mock<IOpenIdEventSource> _openidEventSourceStub;
         private Mock<ISubjectBuilder> _subjectBuilderStub;
@@ -114,15 +115,16 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             _claimsRepositoryStub = new Mock<IClaimRepository>();
             _tokenStoreStub = new Mock<IAccessTokenStore>();
-            _scimClientFactoryStub = new Mock<IScimClientFactory>();
+           // _scimClientFactoryStub = new Mock<IScimClientFactory>();
             _linkProfileActionStub = new Mock<ILinkProfileAction>();
             _openidEventSourceStub = new Mock<IOpenIdEventSource>();
             _subjectBuilderStub = new Mock<ISubjectBuilder>();
             _addResourceOwnerAction = new AddUserOperation(
+                new Mock<IUsersClient>().Object,
                 _resourceOwnerRepositoryStub.Object,
                 _claimsRepositoryStub.Object,
                 _tokenStoreStub.Object,
-                _scimClientFactoryStub.Object,
+                //_scimClientFactoryStub.Object,
                 _linkProfileActionStub.Object,
                 null,
                 _openidEventSourceStub.Object,

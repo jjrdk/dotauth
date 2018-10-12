@@ -29,6 +29,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actions
 {
+    using Moq;
+
     public class AddPermissionActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;

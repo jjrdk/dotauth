@@ -27,6 +27,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
 {
+    using Moq;
+
     public class AddResourceSetToPolicyActionFixture
     {        
         private Mock<IPolicyRepository> _policyRepositoryStub;

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Client;
 using System;
 
 namespace SimpleIdentityServer.Uma.Client

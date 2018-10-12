@@ -1,7 +1,7 @@
-﻿using SimpleBus.Core;
-
-namespace SimpleIdentityServer.Scim.Events
+﻿namespace SimpleIdentityServer.Scim.Events
 {
+    using Common.Dtos;
+
     public class UpdateGroupReceived : Event
     {
         public UpdateGroupReceived(string id, string processId, string payload, int order)

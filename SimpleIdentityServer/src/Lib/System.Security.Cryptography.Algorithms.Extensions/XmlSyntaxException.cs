@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
-
-namespace System.Security.Cryptography
+namespace System.Security.Cryptography.Algorithms.Extensions
 {
+    using Newtonsoft.Json;
+
     [JsonObject]
     public sealed class XmlSyntaxException : Exception
     {

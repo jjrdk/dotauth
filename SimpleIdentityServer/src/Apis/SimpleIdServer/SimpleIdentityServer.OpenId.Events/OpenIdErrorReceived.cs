@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleBus.Core;
-
 namespace SimpleIdentityServer.OpenId.Events
 {
+    using Common.Dtos;
+
     public class OpenIdErrorReceived : Event
     {
         public OpenIdErrorReceived(string id, string processId, string code, string message, int order, string state = null)

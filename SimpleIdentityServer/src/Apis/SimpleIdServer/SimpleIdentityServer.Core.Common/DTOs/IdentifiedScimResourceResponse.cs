@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Scim.Common.DTOs
+namespace SimpleIdentityServer.Core.Common.DTOs
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class IdentifiedScimResource : ScimResource
     {

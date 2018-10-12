@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.AccountFilter
+﻿namespace SimpleIdentityServer.Core.Common
 {
     public enum TokenType
     {

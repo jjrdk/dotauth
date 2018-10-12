@@ -12,28 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
-using SimpleIdentityServer.Common.Dtos.Responses;
-using SimpleIdentityServer.Core.Api.Token;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Serializers;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Host;
-using SimpleIdentityServer.Host.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Api.Controllers.Api
+namespace SimpleIdentityServer.Host.Controllers.Api
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
+    using Common.Dtos.Responses;
+    using Core.Api.Token;
+    using Core.Common;
+    using Core.Common.DTOs.Requests;
+    using Core.Common.Models;
+    using Core.Common.Serializers;
+    using Core.Errors;
+    using Extensions;
+    using Host;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Primitives;
+
     [Route(Constants.EndPoints.Token)]
     public class TokenController : Controller
     {

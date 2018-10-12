@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace SimpleIdentityServer.AccountFilter
+﻿namespace SimpleIdentityServer.Core.Common
 {
+    using System.Collections.Generic;
+
     public class AccountFilterRuleResult
     {
         public AccountFilterRuleResult(string ruleName)

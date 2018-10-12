@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Host.MiddleWare
                 context.Response.Clear();
                 if (identityServerExceptionWithState != null)
                 {
-                    var errorResponseWithState = new ErrorResponseWithState
+                    ErrorResponse errorResponseWithState = new ErrorResponseWithState
                     {
                         State = identityServerExceptionWithState.State
                     };

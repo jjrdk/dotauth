@@ -10,6 +10,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.AccountFilter.Basic.Tests
 {
+    using Core.Common;
+
     public class AccountFilterFixture
     {
         private Mock<IFilterRepository> _filterRepositoryStub;

@@ -21,7 +21,6 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using SimpleIdentityServer.Store;
-using SimpleIdentityServer.TwoFactorAuthentication;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -30,6 +29,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
+    using Core.Common;
+
     public class GenerateAndSendCodeActionFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;

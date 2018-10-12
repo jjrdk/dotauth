@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Core.Jwt;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Host.Tests
+namespace SimpleIdentityServer.Host.Tests.Apis
 {
+    using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using Client;
+    using Client.Operations;
+    using Core.Jwt;
+    using Xunit;
+
     public class JwksClientFixture : IClassFixture<TestOauthServerFixture>
     {
         private const string baseUrl = "http://localhost:5000";

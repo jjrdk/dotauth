@@ -1,6 +1,4 @@
-﻿using SimpleIdentityServer.Scim.Common.DTOs;
-using SimpleIdentityServer.Scim.Common.Models;
-using SimpleIdentityServer.Scim.Core.EF.Extensions;
+﻿using SimpleIdentityServer.Scim.Core.EF.Extensions;
 using SimpleIdentityServer.Scim.Core.EF.Helpers;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
@@ -13,6 +11,11 @@ using Model = SimpleIdentityServer.Scim.Core.EF.Models;
 
 namespace SimpleIdentityServer.Scim.Core.EF.Stores
 {
+    using SimpleIdentityServer.Core.Common;
+    using SimpleIdentityServer.Core.Common.DTOs;
+    using SimpleIdentityServer.Core.Common.Models;
+    using SearchParameter = Parsers.SearchParameter;
+
     public class DefaultRepresentationStore : IRepresentationStore
     {
         private List<Model.Representation> _representations;
@@ -274,12 +277,12 @@ namespace SimpleIdentityServer.Scim.Core.EF.Stores
 
         private static string GetResourceSchemaType(string type)
         {
-            if (type == Scim.Common.ScimConstants.ResourceTypes.User)
+            if (type == ScimConstants.ResourceTypes.User)
             {
-                return Scim.Common.ScimConstants.SchemaUrns.User;
+                return ScimConstants.SchemaUrns.User;
             }
 
-            return Scim.Common.ScimConstants.SchemaUrns.Group;
+            return ScimConstants.SchemaUrns.Group;
         }
     }
 }

@@ -24,6 +24,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
+    using SimpleIdentityServer.Core.Common;
+    using SearchParameter = Parsers.SearchParameter;
+
     public interface IGetRepresentationsAction
     {
         Task<ApiActionResult> Execute(string resourceType, SearchParameter searchParameter, string locationPattern);
@@ -90,20 +93,20 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         {
             var result = new JObject();
             var schemas = new JArray();
-            schemas.Add(Common.ScimConstants.Messages.ListResponse);
-            result.Add(Common.ScimConstants.ScimResourceNames.Schemas, schemas);
-            result[Common.ScimConstants.SearchParameterResponseNames.Resources] = filter.Values;
+            schemas.Add(ScimConstants.Messages.ListResponse);
+            result.Add(ScimConstants.ScimResourceNames.Schemas, schemas);
+            result[ScimConstants.SearchParameterResponseNames.Resources] = filter.Values;
             if (filter.ItemsPerPage.HasValue)
             {
-                result.Add(Common.ScimConstants.SearchParameterResponseNames.ItemsPerPage, filter.ItemsPerPage);
+                result.Add(ScimConstants.SearchParameterResponseNames.ItemsPerPage, filter.ItemsPerPage);
             }
 
             if (filter.StartIndex.HasValue)
             {
-                result.Add(Common.ScimConstants.SearchParameterResponseNames.StartIndex, filter.StartIndex);
+                result.Add(ScimConstants.SearchParameterResponseNames.StartIndex, filter.StartIndex);
             }
 
-            result.Add(Common.ScimConstants.SearchParameterResponseNames.TotalResults, filter.TotalNumbers);
+            result.Add(ScimConstants.SearchParameterResponseNames.TotalResults, filter.TotalNumbers);
             return result;
         }
     }

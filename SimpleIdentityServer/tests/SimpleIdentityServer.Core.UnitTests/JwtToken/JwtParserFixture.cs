@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
     {
         private Mock<IJweParser> _jweParserMock;
         private Mock<IJwsParser> _jwsParserMock;
-        private Mock<IHttpClientFactory> _httpClientFactoryMock;
+        private HttpClient _httpClientFactoryMock;
         private Mock<IClientRepository> _clientRepositoryStub;
         private Mock<IJsonWebKeyConverter> _jsonWebKeyConverterMock;
         private Mock<IJsonWebKeyRepository> _jsonWebKeyRepositoryMock;
@@ -313,7 +313,6 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ARRANGE
             InitializeFakeObjects();
             const string jws = "jws";
-            const string clientId = "client_id";
             const string kid = "1";
             var jsonWebKey = new JsonWebKey
             {
@@ -415,7 +414,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ASSERT
             Assert.Null(result);
         }
-        
+
         [Fact]
         public async Task When_Requesting_Uri_Returned_Error_And_Algorithm_Is_PS256_And_Unsign_Then_Null_Is_Returned()
         {
@@ -442,8 +441,9 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(Task.FromResult(client));
             var handler = new FakeHttpMessageHandler(httpResponseMessage);
             var httpClientFake = new HttpClient(handler);
-            _httpClientFactoryMock.Setup(h => h.GetHttpClient())
-                .Returns(httpClientFake);
+            _jwtParser = BuildParser(httpClientFake);
+            //.Setup(h => h.GetHttpClient())
+            //.Returns(httpClientFake);
 
             // ACT
             var result = await _jwtParser.UnSignAsync("jws", clientId).ConfigureAwait(false);
@@ -480,8 +480,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(Task.FromResult(client));
             var handler = new FakeHttpMessageHandler(httpResponseMessage);
             var httpClientFake = new HttpClient(handler);
-            _httpClientFactoryMock.Setup(h => h.GetHttpClient())
-                .Returns(httpClientFake);
+            _httpClientFactoryMock = httpClientFake;
+            _jwtParser = BuildParser(httpClientFake);
+            //.Setup(h => h.GetHttpClient())
+            //.Returns(httpClientFake);
             _jsonWebKeyConverterMock.Setup(j => j.ExtractSerializedKeys(It.IsAny<JsonWebKeySet>()))
                 .Returns(jsonWebKeys);
 
@@ -579,7 +581,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
         [Fact]
         public async Task When_Passing_Jws_With_Algorithm_Other_Than_None_To_Unsign_And_Retrieve_Json_Web_Key_From_Uri_Then_Jwis_Is_Unsigned_And_Payload_Is_Returned()
-        {            
+        {
             // ARRANGE
             InitializeFakeObjects();
             const string jws = "jws";
@@ -620,8 +622,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(Task.FromResult(client));
             _jwsParserMock.Setup(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()))
                 .Returns(payLoad);
-            _httpClientFactoryMock.Setup(h => h.GetHttpClient())
-                .Returns(httpClientFake);
+
+            _jwtParser = BuildParser(httpClientFake);
+            //.Setup(h => h.GetHttpClient())
+            //.Returns(httpClientFake);
             _jsonWebKeyConverterMock.Setup(j => j.ExtractSerializedKeys(It.IsAny<JsonWebKeySet>()))
                 .Returns(jsonWebKeys);
 
@@ -632,7 +636,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             Assert.NotNull(result);
             _jwsParserMock.Verify(j => j.ValidateSignature(jws, jsonWebKey));
         }
-        
+
         [Fact]
         public async Task When_Passing_Jws_With_Algorithm_Other_Than_None_To_Unsign_And_Retrieve_Json_Web_Key_From_Parameter_Then_Jws_Is_Unsigned_And_Payload_Is_Returned()
         {
@@ -680,14 +684,19 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             _jweParserMock = new Mock<IJweParser>();
             _jwsParserMock = new Mock<IJwsParser>();
-            _httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            _httpClientFactoryMock = new HttpClient();// new Mock<IHttpClientFactory>();
             _clientRepositoryStub = new Mock<IClientRepository>();
             _jsonWebKeyConverterMock = new Mock<IJsonWebKeyConverter>();
             _jsonWebKeyRepositoryMock = new Mock<IJsonWebKeyRepository>();
-            _jwtParser = new JwtParser(
+            _jwtParser = BuildParser();
+        }
+
+        private JwtParser BuildParser(HttpClient client = null)
+        {
+            return new JwtParser(
                 _jweParserMock.Object,
                 _jwsParserMock.Object,
-                _httpClientFactoryMock.Object,
+              client ?? _httpClientFactoryMock,
                 _clientRepositoryStub.Object,
                 _jsonWebKeyConverterMock.Object,
                 _jsonWebKeyRepositoryMock.Object);

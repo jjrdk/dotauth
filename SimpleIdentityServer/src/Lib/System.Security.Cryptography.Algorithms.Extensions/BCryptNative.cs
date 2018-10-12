@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
-using System.Runtime.InteropServices;
-
-namespace System.Security.Cryptography
+namespace System.Security.Cryptography.Algorithms.Extensions
 {
+    using Diagnostics;
+    using Diagnostics.Contracts;
+    using Runtime.InteropServices;
 
     internal static class BCryptNative
     {

@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
-using System.Collections;
-using System.Diagnostics.Contracts;
-using System.Text;
-using StringMaker = System.Security.Cryptography.Tokenizer.StringMaker;
+using StringMaker = System.Security.Cryptography.Algorithms.Extensions.Tokenizer.StringMaker;
 
-namespace System.Security.Cryptography
+namespace System.Security.Cryptography.Algorithms.Extensions
 {
+    using Collections;
+    using Diagnostics.Contracts;
+    using Newtonsoft.Json;
+    using Text;
+
     [JsonObject]
     sealed internal class SecurityDocumentElement : ISecurityElementFactory
     {

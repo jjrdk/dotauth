@@ -12,35 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Scim.Common.DTOs;
 using System.Net;
 
 namespace SimpleIdentityServer.Scim.Core.Factories
 {
+    using SimpleIdentityServer.Core.Common;
+    using SimpleIdentityServer.Core.Common.DTOs;
+
     public interface IErrorResponseFactory
     {
-        ErrorResponse CreateError(string detail, HttpStatusCode status);
-        ErrorResponse CreateError(string detail, HttpStatusCode status, string scimType);
+        ScimErrorResponse CreateError(string detail, HttpStatusCode status);
+        ScimErrorResponse CreateError(string detail, HttpStatusCode status, string scimType);
     }
 
     internal class ErrorResponseFactory : IErrorResponseFactory
     {
-        public ErrorResponse CreateError(string detail, HttpStatusCode status)
+        public ScimErrorResponse CreateError(string detail, HttpStatusCode status)
         {
-            return new ErrorResponse
+            return new ScimErrorResponse
             {
                 Detail = detail,
-                Schemas = new [] { Common.ScimConstants.Messages.Error },
+                Schemas = new [] { ScimConstants.Messages.Error },
                 Status = (int)status
             };
         }
 
-        public ErrorResponse CreateError(string detail, HttpStatusCode status, string scimType)
+        public ScimErrorResponse CreateError(string detail, HttpStatusCode status, string scimType)
         {
             return new EnrichedErrorResponse
             {
                 Detail = detail,
-                Schemas = new[] { Common.ScimConstants.Messages.Error },
+                Schemas = new[] { ScimConstants.Messages.Error },
                 Status = (int)status,
                 ScimType = scimType
             };

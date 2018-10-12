@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
-using System.Net.Http;
-
-namespace SimpleIdentityServer.Scim.Common.Models
+namespace SimpleIdentityServer.Core.Common.Models
 {
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using Newtonsoft.Json.Linq;
+
     public class BulkOperationResult
     {
         /// <summary>

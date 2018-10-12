@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Scim.Common.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace SimpleIdentityServer.Scim.Common.Models
+namespace SimpleIdentityServer.Core.Common.Models
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using DTOs;
+
     public class RepresentationAttribute : ICloneable, IComparable
     {
         public RepresentationAttribute() { }

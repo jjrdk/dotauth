@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Dtos.Responses;
-using SimpleIdentityServer.Uma.Client.Results;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Client.ResourceSet
+namespace SimpleIdentityServer.Uma.Client.ResourceSet
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using Newtonsoft.Json;
+    using Results;
+    using SimpleIdentityServer.Common.Dtos.Responses;
+
     public interface IGetResourcesOperation
     {
         Task<GetResourcesResult> ExecuteAsync(string resourceSetUrl, string authorizationHeaderValue);

@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json.Linq;
-
-namespace SimpleIdentityServer.Scim.Common.Models
+namespace SimpleIdentityServer.Core.Common.Models
 {
+    using Newtonsoft.Json.Linq;
+
     public enum PatchOperations
     {
         add,

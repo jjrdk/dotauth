@@ -1,5 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Api.Discovery.Actions;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using System.Collections.Generic;
@@ -9,11 +8,13 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
 {
+    using Core.Api.Discovery;
+
     public class CreateDiscoveryDocumentationActionFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
         private Mock<IClaimRepository> _claimRepositoryStub;
-        private ICreateDiscoveryDocumentationAction _createDiscoveryDocumentationAction;
+        private IDiscoveryActions _createDiscoveryDocumentationAction;
 
         [Fact]
         public async Task When_Expose_Two_Scopes_Then_DiscoveryDocument_Is_Correct()
@@ -54,7 +55,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
                 .Returns(() => Task.FromResult(claims));
 
             // ACT
-            var discoveryInformation = await _createDiscoveryDocumentationAction.Execute().ConfigureAwait(false);
+            var discoveryInformation = await _createDiscoveryDocumentationAction.CreateDiscoveryInformation().ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(discoveryInformation);
@@ -68,7 +69,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
         {
             _scopeRepositoryStub = new Mock<IScopeRepository>();
             _claimRepositoryStub = new Mock<IClaimRepository>();
-            _createDiscoveryDocumentationAction = new CreateDiscoveryDocumentationAction(
+            _createDiscoveryDocumentationAction = new DiscoveryActions(
                 _scopeRepositoryStub.Object,
                 _claimRepositoryStub.Object);
         }

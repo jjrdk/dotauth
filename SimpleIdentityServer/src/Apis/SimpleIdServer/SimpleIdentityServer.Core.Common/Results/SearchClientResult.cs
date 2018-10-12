@@ -1,8 +1,8 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Core.Results
+﻿namespace SimpleIdentityServer.Core.Common.Results
 {
+    using System.Collections.Generic;
+    using Models;
+
     public class SearchClientResult
     {
         public IEnumerable<Client> Content { get; set; }

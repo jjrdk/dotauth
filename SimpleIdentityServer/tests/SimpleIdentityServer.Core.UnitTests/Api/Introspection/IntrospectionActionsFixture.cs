@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleBus.Core;
 using SimpleIdentityServer.Core.Api.Introspection;
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
 using SimpleIdentityServer.Core.Parameters;
@@ -25,6 +24,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
 {
+    using Core.Common;
+
     public class IntrospectionActionsFixture
     {
         private Mock<IPostIntrospectionAction> _postIntrospectionActionStub;

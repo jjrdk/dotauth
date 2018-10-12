@@ -21,6 +21,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
+    using System.Net.Http;
     using Core.Common.Models;
 
     public sealed class ProcessAuthorizationRequestFixture
@@ -636,7 +637,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var createJwsSignature = new CreateJwsSignature();
             var jwsParser = new JwsParser(createJwsSignature);
             var jsonWebKeyConverter = new JsonWebKeyConverter();
-            var httpClientFactory = new HttpClientFactory();
+            var httpClientFactory = new HttpClient(); //HttpClientFactory();
             var jwtParser = new JwtParser(
                 jweParser, 
                 jwsParser, 

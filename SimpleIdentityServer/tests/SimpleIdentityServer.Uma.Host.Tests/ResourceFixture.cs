@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Client.Configuration;
-using SimpleIdentityServer.Client.ResourceSet;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Uma.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Common.DTOs;
@@ -25,10 +23,11 @@ using Xunit;
 
 namespace SimpleIdentityServer.Uma.Host.Tests
 {
+    using Client.Configuration;
+
     public class ResourceFixture : IClassFixture<TestUmaServerFixture>
     {
         const string baseUrl = "http://localhost:5000";
-        private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private IResourceSetClient _resourceSetClient;
         private readonly TestUmaServerFixture _server;
 
@@ -42,7 +41,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
@@ -63,7 +61,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
@@ -84,7 +81,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            
 
             // ACT
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
@@ -110,7 +107,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            
 
             // ACT
             var resource = await _resourceSetClient.GetByResolution("unknown",
@@ -128,7 +125,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            
 
             // ACT
             var resource = await _resourceSetClient.DeleteByResolution("unknown",
@@ -146,7 +143,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            
 
             // ACT
             var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet(), baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
@@ -163,7 +160,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            
 
             // ACT
             var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
@@ -185,7 +182,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            
 
             // ACT
             var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
@@ -207,7 +204,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            
 
             // ACT
             var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
@@ -234,7 +231,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            
 
             // ACT
             var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
@@ -260,7 +257,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            
 
             // ACT
             var resources = await _resourceSetClient.GetAllByResolution(
@@ -276,7 +273,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            
 
             // ACT
             var resources = await _resourceSetClient.GetAllByResolution(
@@ -293,7 +290,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            
 
             // ACT
             var resources = await _resourceSetClient.GetAllByResolution(
@@ -314,7 +311,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            
 
             // ACT
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
@@ -336,7 +333,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            
 
             // ACT
             var resource = await _resourceSetClient.ResolveSearch(baseUrl + "/.well-known/uma2-configuration", new SearchResourceSet
@@ -357,7 +354,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
                 {
                     Name = "name",
@@ -393,14 +390,13 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             var services = new ServiceCollection();
             services.AddSimpleIdentityServerJwt();
             var provider = services.BuildServiceProvider();
-            _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_httpClientFactoryStub.Object),
-                new DeleteResourceSetOperation(_httpClientFactoryStub.Object),
-                new GetResourcesOperation(_httpClientFactoryStub.Object),
-                new GetResourceOperation(_httpClientFactoryStub.Object),
-                new UpdateResourceOperation(_httpClientFactoryStub.Object),
-                new GetConfigurationOperation(_httpClientFactoryStub.Object),
-				new SearchResourcesOperation(_httpClientFactoryStub.Object));
+            _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_server.Client),
+                new DeleteResourceSetOperation(_server.Client),
+                new GetResourcesOperation(_server.Client),
+                new GetResourceOperation(_server.Client),
+                new UpdateResourceOperation(_server.Client),
+                new GetConfigurationOperation(_server.Client),
+				new SearchResourcesOperation(_server.Client));
         }
     }
 }
