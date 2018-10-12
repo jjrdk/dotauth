@@ -1,9 +1,9 @@
-﻿using SimpleIdentityServer.Core.Common.DTOs.Responses;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.AccessToken.Store
+﻿namespace SimpleIdentityServer.Core.Common
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using DTOs.Responses;
+
     public interface IAccessTokenStore
     {
         /// <summary>

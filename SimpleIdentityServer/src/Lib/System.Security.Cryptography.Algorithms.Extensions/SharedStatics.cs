@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.Contracts;
-using System.Threading;
-using StringMaker = System.Security.Cryptography.Tokenizer.StringMaker;
+using StringMaker = System.Security.Cryptography.Algorithms.Extensions.Tokenizer.StringMaker;
 
-namespace System.Security.Cryptography
+namespace System.Security.Cryptography.Algorithms.Extensions
 {
+    using Diagnostics.Contracts;
+    using Threading;
+
     internal sealed class SharedStatics
     {
         internal static SharedStatics _sharedStatics = new SharedStatics();

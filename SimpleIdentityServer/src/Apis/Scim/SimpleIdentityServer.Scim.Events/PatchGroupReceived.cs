@@ -1,7 +1,7 @@
-﻿using SimpleBus.Core;
-
-namespace SimpleIdentityServer.Scim.Events
+﻿namespace SimpleIdentityServer.Scim.Events
 {
+    using Common.Dtos;
+
     public class PatchGroupReceived : Event
     {
         public PatchGroupReceived(string id, string processId, string payload, int order)

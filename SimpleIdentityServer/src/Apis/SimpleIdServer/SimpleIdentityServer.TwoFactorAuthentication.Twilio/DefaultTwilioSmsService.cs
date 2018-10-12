@@ -20,6 +20,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
 {
+    using Core.Common;
+
     public class TwoFactorTwilioOptions
     {
         public string TwilioAccountSid { get; set; }

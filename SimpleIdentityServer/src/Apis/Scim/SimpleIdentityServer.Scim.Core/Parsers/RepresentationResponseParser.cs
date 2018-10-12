@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Common.DTOs;
-using SimpleIdentityServer.Scim.Common.Models;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Stores;
@@ -25,6 +23,10 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
+    using SimpleIdentityServer.Core.Common;
+    using SimpleIdentityServer.Core.Common.DTOs;
+    using SimpleIdentityServer.Core.Common.Models;
+
     public interface IRepresentationResponseParser
     {
         /// <summary>
@@ -127,7 +129,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 foreach (var attribute in schema.Attributes)
                 {
                     // Ignore the attributes.
-                    if ((attribute.Returned == Common.ScimConstants.SchemaAttributeReturned.Never) || (operationType == OperationTypes.Query && attribute.Returned == Common.ScimConstants.SchemaAttributeReturned.Request))
+                    if ((attribute.Returned == ScimConstants.SchemaAttributeReturned.Never) || (operationType == OperationTypes.Query && attribute.Returned == ScimConstants.SchemaAttributeReturned.Request))
                     {
                         continue;
                     }
@@ -171,11 +173,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             IEnumerable<string> commonAttrs = new[]
             {
-                Common.ScimConstants.MetaResponseNames.ResourceType,
-                Common.ScimConstants.MetaResponseNames.Created,
-                Common.ScimConstants.MetaResponseNames.LastModified,
-                Common.ScimConstants.MetaResponseNames.Version,
-                Common.ScimConstants.MetaResponseNames.Location
+                ScimConstants.MetaResponseNames.ResourceType,
+                ScimConstants.MetaResponseNames.Created,
+                ScimConstants.MetaResponseNames.LastModified,
+                ScimConstants.MetaResponseNames.Version,
+                ScimConstants.MetaResponseNames.Location
             };
                                    
             var result = new JArray();
@@ -285,10 +287,10 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         private void SetCommonAttributes(JObject jObj, string location, Representation representation, string schema)
         {
             jObj.Add(_commonAttributesFactory.CreateIdJson(representation));
-            jObj[Common.ScimConstants.ScimResourceNames.Meta] = new JObject(_commonAttributesFactory.CreateMetaDataAttributeJson(representation, location));
+            jObj[ScimConstants.ScimResourceNames.Meta] = new JObject(_commonAttributesFactory.CreateMetaDataAttributeJson(representation, location));
             var arr = new JArray();
             arr.Add(schema);
-            jObj[Common.ScimConstants.ScimResourceNames.Schemas] = arr;
+            jObj[ScimConstants.ScimResourceNames.Schemas] = arr;
         }
 
         private static JToken GetToken(RepresentationAttribute attr, SchemaAttributeResponse attribute)
@@ -370,16 +372,16 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             // 3. Create singular attribute
             switch(attribute.Type)
             {
-                case Common.ScimConstants.SchemaAttributeTypes.String:
-                case Common.ScimConstants.SchemaAttributeTypes.Reference:
+                case ScimConstants.SchemaAttributeTypes.String:
+                case ScimConstants.SchemaAttributeTypes.Reference:
                     return GetSingularToken<string>(attribute, attr, attribute.MultiValued);
-                case Common.ScimConstants.SchemaAttributeTypes.Boolean:
+                case ScimConstants.SchemaAttributeTypes.Boolean:
                     return GetSingularToken<bool>(attribute, attr, attribute.MultiValued);
-                case Common.ScimConstants.SchemaAttributeTypes.Decimal:
+                case ScimConstants.SchemaAttributeTypes.Decimal:
                     return GetSingularToken<decimal>(attribute, attr, attribute.MultiValued);
-                case Common.ScimConstants.SchemaAttributeTypes.DateTime:
+                case ScimConstants.SchemaAttributeTypes.DateTime:
                     return GetSingularToken<DateTime>(attribute, attr, attribute.MultiValued);
-                case Common.ScimConstants.SchemaAttributeTypes.Integer:
+                case ScimConstants.SchemaAttributeTypes.Integer:
                     return GetSingularToken<int>(attribute, attr, attribute.MultiValued);
                 default:
                     throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotSupported, attribute.Type));

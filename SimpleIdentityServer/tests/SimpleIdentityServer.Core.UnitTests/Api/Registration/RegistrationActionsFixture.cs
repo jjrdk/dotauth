@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleBus.Core;
 using SimpleIdentityServer.Core.Api.Registration;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Parameters;
@@ -23,6 +22,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 {
+    using Core.Common;
+
     public sealed class RegistrationActionsFixture
     {
         private Mock<IRegisterClientAction> _registerClientActionFake;

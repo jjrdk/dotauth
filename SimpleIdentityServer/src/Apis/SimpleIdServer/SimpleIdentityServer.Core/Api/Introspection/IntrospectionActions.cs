@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleBus.Core;
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
@@ -25,6 +24,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Introspection
 {
+    using Common;
+
     public interface IIntrospectionActions
     {
         Task<IntrospectionResult> PostIntrospection(

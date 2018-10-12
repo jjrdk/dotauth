@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Core.Api.Discovery;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
-using SimpleIdentityServer.Host;
-using SimpleIdentityServer.Host.Extensions;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Api.Controllers.Api
+namespace SimpleIdentityServer.Host.Controllers.Api
 {
+    using System.Threading.Tasks;
+    using Core.Api.Discovery;
+    using Core.Common.DTOs.Responses;
+    using Extensions;
+    using Host;
+    using Microsoft.AspNetCore.Mvc;
+
     [Route(Constants.EndPoints.DiscoveryAction)]
     public class DiscoveryController : Controller
     {

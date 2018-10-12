@@ -1,8 +1,8 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.TwoFactorAuthentication
+﻿namespace SimpleIdentityServer.Core.Common
 {
+    using System.Threading.Tasks;
+    using Models;
+
     public interface ITwoFactorAuthenticationService
     {
         Task SendAsync(string code, ResourceOwner user);

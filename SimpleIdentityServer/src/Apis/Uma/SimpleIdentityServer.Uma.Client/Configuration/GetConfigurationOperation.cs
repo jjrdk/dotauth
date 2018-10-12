@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
-using SimpleIdentityServer.Uma.Common.DTOs;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Client.Configuration
+namespace SimpleIdentityServer.Uma.Client.Configuration
 {
+    using System;
     using System.Net.Http;
+    using System.Threading.Tasks;
+    using Common.DTOs;
+    using Newtonsoft.Json;
 
     public interface IGetConfigurationOperation
     {

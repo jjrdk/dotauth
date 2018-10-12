@@ -10,6 +10,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
 {
+    using Moq;
+
     public class RemoveResourceSetActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;

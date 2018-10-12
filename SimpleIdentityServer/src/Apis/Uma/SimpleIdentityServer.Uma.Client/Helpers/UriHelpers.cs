@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Errors;
-using System;
-
-namespace SimpleIdentityServer.Client.Extensions
+namespace SimpleIdentityServer.Uma.Client.Helpers
 {
+    using System;
+    using Errors;
+
     public static class UriHelpers
     {
         public static Uri GetUri(string value)

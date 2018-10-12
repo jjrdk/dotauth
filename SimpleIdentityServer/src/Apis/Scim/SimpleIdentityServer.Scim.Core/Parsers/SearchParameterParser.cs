@@ -21,6 +21,8 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
+    using SimpleIdentityServer.Core.Common;
+
     internal interface ISearchParameterParser
     {
         /// <summary>
@@ -109,13 +111,13 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             foreach(var key in query.Keys)
             {
-                TrySetEnum((r) => result.Attributes = r.Select(a => GetFilter(a)), key, Common.ScimConstants.SearchParameterNames.Attributes, query);
-                TrySetEnum((r) => result.ExcludedAttributes = r.Select(a => GetFilter(a)), key, Common.ScimConstants.SearchParameterNames.ExcludedAttributes, query);
-                TrySetStr((r) => result.Filter = GetFilter(r), key, Common.ScimConstants.SearchParameterNames.Filter, query);
-                TrySetStr((r) => result.SortBy = GetFilter(r), key, Common.ScimConstants.SearchParameterNames.SortBy, query);
-                TrySetStr((r) => result.SortOrder = GetSortOrder(r), key, Common.ScimConstants.SearchParameterNames.SortOrder, query);
-                TrySetInt((r) => result.StartIndex = r <= 0 ? result.StartIndex : r, key, Common.ScimConstants.SearchParameterNames.StartIndex, query);
-                TrySetInt((r) => result.Count = r <= 0 ? result.Count : r, key, Common.ScimConstants.SearchParameterNames.Count, query);
+                TrySetEnum((r) => result.Attributes = r.Select(a => GetFilter(a)), key, ScimConstants.SearchParameterNames.Attributes, query);
+                TrySetEnum((r) => result.ExcludedAttributes = r.Select(a => GetFilter(a)), key, ScimConstants.SearchParameterNames.ExcludedAttributes, query);
+                TrySetStr((r) => result.Filter = GetFilter(r), key, ScimConstants.SearchParameterNames.Filter, query);
+                TrySetStr((r) => result.SortBy = GetFilter(r), key, ScimConstants.SearchParameterNames.SortBy, query);
+                TrySetStr((r) => result.SortOrder = GetSortOrder(r), key, ScimConstants.SearchParameterNames.SortOrder, query);
+                TrySetInt((r) => result.StartIndex = r <= 0 ? result.StartIndex : r, key, ScimConstants.SearchParameterNames.StartIndex, query);
+                TrySetInt((r) => result.Count = r <= 0 ? result.Count : r, key, ScimConstants.SearchParameterNames.Count, query);
             }
 
             return result;
@@ -137,40 +139,40 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             JArray jArr;
             JValue jVal;
-            if (TryGetToken(json, Common.ScimConstants.SearchParameterNames.Attributes, out jArr))
+            if (TryGetToken(json, ScimConstants.SearchParameterNames.Attributes, out jArr))
             {
                 result.Attributes = (jArr.Values<string>()).Select(a => GetFilter(a));
             }
 
-            if (TryGetToken(json, Common.ScimConstants.SearchParameterNames.ExcludedAttributes, out jArr))
+            if (TryGetToken(json, ScimConstants.SearchParameterNames.ExcludedAttributes, out jArr))
             {
                 result.ExcludedAttributes = (jArr.Values<string>()).Select(a => GetFilter(a));
             }
 
-            if (TryGetToken(json, Common.ScimConstants.SearchParameterNames.Filter, out jVal))
+            if (TryGetToken(json, ScimConstants.SearchParameterNames.Filter, out jVal))
             {
                 result.Filter = GetFilter(jVal.Value<string>());
             }
 
-            if (TryGetToken(json, Common.ScimConstants.SearchParameterNames.SortBy, out jVal))
+            if (TryGetToken(json, ScimConstants.SearchParameterNames.SortBy, out jVal))
             {
                 result.SortBy = GetFilter(jVal.Value<string>());
             }
 
-            if (TryGetToken(json, Common.ScimConstants.SearchParameterNames.SortOrder, out jVal))
+            if (TryGetToken(json, ScimConstants.SearchParameterNames.SortOrder, out jVal))
             {
                 result.SortOrder = GetSortOrder(jVal.Value<string>());
             }
 
-            if (TryGetToken(json, Common.ScimConstants.SearchParameterNames.StartIndex, out jVal))
+            if (TryGetToken(json, ScimConstants.SearchParameterNames.StartIndex, out jVal))
             {
-                var i = GetInt(jVal.Value<string>(), Common.ScimConstants.SearchParameterNames.StartIndex);
+                var i = GetInt(jVal.Value<string>(), ScimConstants.SearchParameterNames.StartIndex);
                 result.StartIndex = i <= 0 ? result.StartIndex : i;
             }
 
-            if (TryGetToken(json, Common.ScimConstants.SearchParameterNames.Count, out jVal))
+            if (TryGetToken(json, ScimConstants.SearchParameterNames.Count, out jVal))
             {
-                var i = GetInt(jVal.Value<string>(), Common.ScimConstants.SearchParameterNames.Count);
+                var i = GetInt(jVal.Value<string>(), ScimConstants.SearchParameterNames.Count);
                 result.Count = i <= 0 ? result.Count : i;
             }
 
@@ -182,7 +184,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             var filter = _filterParser.Parse(value);
             if (filter == null)
             {
-                throw new InvalidOperationException(string.Format(ErrorMessages.TheParameterIsNotValid, Common.ScimConstants.SearchParameterNames.Filter));
+                throw new InvalidOperationException(string.Format(ErrorMessages.TheParameterIsNotValid, ScimConstants.SearchParameterNames.Filter));
             }
 
             return filter;
@@ -229,17 +231,17 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         private static SortOrders GetSortOrder(string value)
         {
             SortOrders sortOrder;
-            if (value.Equals(Common.ScimConstants.SortOrderNames.Ascending, StringComparison.CurrentCultureIgnoreCase))
+            if (value.Equals(ScimConstants.SortOrderNames.Ascending, StringComparison.CurrentCultureIgnoreCase))
             {
                 sortOrder = SortOrders.Ascending;
             }
-            else if (value.Equals(Common.ScimConstants.SortOrderNames.Descending, StringComparison.CurrentCultureIgnoreCase))
+            else if (value.Equals(ScimConstants.SortOrderNames.Descending, StringComparison.CurrentCultureIgnoreCase))
             {
                 sortOrder = SortOrders.Descending;
             }
             else
             {
-                throw new InvalidOperationException(string.Format(ErrorMessages.TheParameterIsNotValid, Common.ScimConstants.SearchParameterNames.SortOrder));
+                throw new InvalidOperationException(string.Format(ErrorMessages.TheParameterIsNotValid, ScimConstants.SearchParameterNames.SortOrder));
             }
 
             return sortOrder;

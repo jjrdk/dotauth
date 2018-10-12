@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json.Linq;
-using System.Net;
-
-namespace SimpleIdentityServer.Scim.Client
+namespace SimpleIdentityServer.Core.Common
 {
+    using System.Net;
+    using Newtonsoft.Json.Linq;
+
     public class ScimResponse
     {
         public HttpStatusCode StatusCode { get; set; }

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleBus.Core;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Common.Extensions;
@@ -32,6 +31,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
+    using Core.Common;
+
     public sealed class AuthorizationActionsFixture
     {
         private Mock<IGetAuthorizationCodeOperation> _getAuthorizationCodeOperationFake;

@@ -39,7 +39,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 })
                 .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeUmaStartup).GetType().Assembly.FullName));
             Client = Server.CreateClient();
-            FakeHttpClientFactory.Instance.Set(Server);
         }
 
         public void Dispose()

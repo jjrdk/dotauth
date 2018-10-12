@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Scim.Common.DTOs
+namespace SimpleIdentityServer.Core.Common.DTOs
 {
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+
     [DataContract]
-    public class ErrorResponse
+    public class ScimErrorResponse
     {
         [DataMember(Name = ScimConstants.ScimResourceNames.Schemas)]
         public IEnumerable<string> Schemas { get; set; }
@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
     }
 
     [DataContract]
-    public class EnrichedErrorResponse : ErrorResponse
+    public class EnrichedErrorResponse : ScimErrorResponse
     {
         [DataMember(Name = ScimConstants.EnrichedErrorResponseNames.ScimType)]
         public string ScimType { get; set; }

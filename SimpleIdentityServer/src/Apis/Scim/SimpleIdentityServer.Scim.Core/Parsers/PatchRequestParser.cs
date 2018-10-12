@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Common.DTOs;
-using SimpleIdentityServer.Scim.Common.Models;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using System;
@@ -24,6 +22,10 @@ using System.Net;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
+    using SimpleIdentityServer.Core.Common;
+    using SimpleIdentityServer.Core.Common.DTOs;
+    using SimpleIdentityServer.Core.Common.Models;
+
     public interface IPatchRequestParser
     {
         /// <summary>
@@ -33,7 +35,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <param name="jObj">Json that will be parsed.</param>
         /// <param name="errorResponse">Error response.</param>
         /// <returns>Patch operation or null</returns>
-        IEnumerable<PatchOperation> Parse(JObject jObj, out ErrorResponse errorResponse);
+        IEnumerable<PatchOperation> Parse(JObject jObj, out ScimErrorResponse errorResponse);
     }
 
     internal class PatchRequestParser : IPatchRequestParser
@@ -52,7 +54,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <param name="jObj">Json that will be parsed.</param>
         /// <param name="errorResponse">Error response.</param>
         /// <returns>Patch operation or null</returns>
-        public IEnumerable<PatchOperation> Parse(JObject jObj, out ErrorResponse errorResponse)
+        public IEnumerable<PatchOperation> Parse(JObject jObj, out ScimErrorResponse errorResponse)
         {
             errorResponse = null;
             // 1. Check parameter.
@@ -63,12 +65,12 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             // 2. Parse the request.
             var obj = jObj.ToObject<PatchOperationsRequest>();
-            if (!obj.Schemas.Contains(Common.ScimConstants.Messages.PatchOp))
+            if (!obj.Schemas.Contains(ScimConstants.Messages.PatchOp))
             {
                 errorResponse = _errorResponseFactory.CreateError(
                     ErrorMessages.TheRequestIsNotAPatchOperation,
                     HttpStatusCode.BadRequest,
-                    Common.ScimConstants.ScimTypeValues.InvalidSyntax);
+                    ScimConstants.ScimTypeValues.InvalidSyntax);
                 return null;
             }
 
@@ -77,7 +79,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 errorResponse = _errorResponseFactory.CreateError(
                     ErrorMessages.TheOperationsParameterMustBeSpecified,
                     HttpStatusCode.BadRequest,
-                    Common.ScimConstants.ScimTypeValues.InvalidSyntax);
+                    ScimConstants.ScimTypeValues.InvalidSyntax);
                 return null;
             }
 
@@ -89,7 +91,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     errorResponse = _errorResponseFactory.CreateError(
                         string.Format(ErrorMessages.ThePatchOperationIsNotSupported, operation.Operation),
                         HttpStatusCode.BadRequest,
-                        Common.ScimConstants.ScimTypeValues.InvalidSyntax);
+                        ScimConstants.ScimTypeValues.InvalidSyntax);
                     return null;
                 }
 

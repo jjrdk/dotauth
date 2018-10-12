@@ -3,6 +3,8 @@ using System;
 
 namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
 {
+    using Core.Common;
+
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddTwoFactorSmsAuthentication(this IServiceCollection services, TwoFactorTwilioOptions twilioOptions)

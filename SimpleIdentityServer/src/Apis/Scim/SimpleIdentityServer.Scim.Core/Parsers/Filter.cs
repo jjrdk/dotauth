@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Scim.Common.DTOs;
-using SimpleIdentityServer.Scim.Common.Models;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
+    using SimpleIdentityServer.Core.Common.DTOs;
+    using SimpleIdentityServer.Core.Common.Models;
+
     public class Filter
     {
         public Expression Expression { get; set; }

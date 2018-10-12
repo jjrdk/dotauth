@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
-using Newtonsoft.Json;
-using SimpleIdentityServer.Client.Builders;
-using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Common.Dtos.Responses;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Host.Tests
+namespace SimpleIdentityServer.Host.Tests.Apis
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using Client.Builders;
+    using Client.Operations;
+    using Common.Dtos.Responses;
+    using Moq;
+    using Newtonsoft.Json;
+    using Xunit;
+
     public class RevokeTokenClientFixture : IClassFixture<TestOauthServerFixture>
     {
         private const string baseUrl = "http://localhost:5000";

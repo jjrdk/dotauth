@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.Contracts;
-
-namespace System.Security.Cryptography
+namespace System.Security.Cryptography.Algorithms.Extensions
 {
+    using Diagnostics.Contracts;
+
     public static class ECDsaCngExtensions
     {
         public static byte[] SignData(

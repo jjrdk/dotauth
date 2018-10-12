@@ -34,18 +34,11 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Stores
 
         public static List<JsonWebKey> GetJsonWebKeys(SharedContext sharedContext)
         {
-            var serializedRsa = string.Empty;
-#if NET461
-            using (var provider = new RSACryptoServiceProvider())
-            {
-                serializedRsa = provider.ToXmlString(true);
-            }
-#else
-                using (var rsa = new RSAOpenSsl())
-                {
-                    serializedRsa = rsa.ToXmlString(true);
-                }
-#endif
+            //var serializedRsa = string.Empty;
+            //    using (var rsa = new RSAOpenSsl())
+            //    {
+            //        serializedRsa = rsa.ToXmlString(true);
+            //    }
             return new List<JsonWebKey>
             {
                 sharedContext.EncryptionKey,

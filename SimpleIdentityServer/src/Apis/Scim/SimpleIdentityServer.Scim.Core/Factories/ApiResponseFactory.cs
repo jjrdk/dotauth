@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Results;
 using System.Net;
 
 namespace SimpleIdentityServer.Scim.Core.Factories
 {
+    using SimpleIdentityServer.Core.Common.DTOs;
+
     public interface IApiResponseFactory
     {
         ApiActionResult CreateEmptyResult(
@@ -50,7 +51,7 @@ namespace SimpleIdentityServer.Scim.Core.Factories
 
         ApiActionResult CreateError(
             HttpStatusCode status,
-            ErrorResponse error);
+            ScimErrorResponse error);
     }
 
     internal class ApiResponseFactory : IApiResponseFactory
@@ -131,7 +132,7 @@ namespace SimpleIdentityServer.Scim.Core.Factories
 
         public ApiActionResult CreateError(
             HttpStatusCode status,
-            ErrorResponse error)
+            ScimErrorResponse error)
         {
             return new ApiActionResult
             {

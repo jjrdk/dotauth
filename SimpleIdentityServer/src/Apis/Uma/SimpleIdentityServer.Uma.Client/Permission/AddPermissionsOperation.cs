@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Dtos.Responses;
-using SimpleIdentityServer.Uma.Client.Results;
-using SimpleIdentityServer.Uma.Common.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Client.Permission
+namespace SimpleIdentityServer.Uma.Client.Permission
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Common.DTOs;
+    using Newtonsoft.Json;
+    using Results;
+    using SimpleIdentityServer.Common.Dtos.Responses;
+
     public interface IAddPermissionsOperation
     {
         Task<AddPermissionResult> ExecuteAsync(PostPermission request, string url, string token);

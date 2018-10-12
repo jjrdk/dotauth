@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.AccessToken.Store;
-using SimpleIdentityServer.AccountFilter;
 using SimpleIdentityServer.Core.Api.Profile.Actions;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
@@ -30,7 +28,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
-    using Scim.Client;
+    using Common;
 
     public interface IAddUserOperation
     {

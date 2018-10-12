@@ -1,13 +1,13 @@
 ﻿using SimpleIdentityServer.AccountFilter.Basic.Aggregates;
-using SimpleIdentityServer.AccountFilter.Basic.Common;
-using SimpleIdentityServer.AccountFilter.Basic.Common.Requests;
-using SimpleIdentityServer.AccountFilter.Basic.Common.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleIdentityServer.AccountFilter.Basic.Extensions
 {
+    using Requests;
+    using Responses;
+
     internal static class MappingExtensions
     {
         public static FilterResponse ToDto(this FilterAggregate filter)

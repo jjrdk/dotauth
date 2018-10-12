@@ -27,6 +27,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 {
+    using System.Security.Cryptography.Algorithms.Extensions;
+
     public sealed class JsonWebKeyConverterFixture
     {
         private IJsonWebKeyConverter _jsonWebKeyConverter;
@@ -53,7 +55,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
                     new Dictionary<string, object>
                     {
                         {
-                            Constants.JsonWebKeyParameterNames.KeyTypeName, 
+                            Constants.JsonWebKeyParameterNames.KeyTypeName,
                             Constants.KeyTypeValues.RsaName
                         }
                     }
@@ -77,15 +79,15 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
                     new Dictionary<string, object>
                     {
                         {
-                            Constants.JsonWebKeyParameterNames.KeyTypeName, 
+                            Constants.JsonWebKeyParameterNames.KeyTypeName,
                             "not_supported"
                         },
                         {
-                            Constants.JsonWebKeyParameterNames.KeyIdentifierName, 
+                            Constants.JsonWebKeyParameterNames.KeyIdentifierName,
                             "kid"
                         },
                         {
-                            Constants.JsonWebKeyParameterNames.UseName, 
+                            Constants.JsonWebKeyParameterNames.UseName,
                             Constants.UseValues.Encryption
                         }
                     }
@@ -109,15 +111,15 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
                     new Dictionary<string, object>
                     {
                         {
-                            Constants.JsonWebKeyParameterNames.KeyTypeName, 
+                            Constants.JsonWebKeyParameterNames.KeyTypeName,
                             Constants.KeyTypeValues.RsaName
                         },
                         {
-                            Constants.JsonWebKeyParameterNames.KeyIdentifierName, 
+                            Constants.JsonWebKeyParameterNames.KeyIdentifierName,
                             "kid"
                         },
                         {
-                            Constants.JsonWebKeyParameterNames.UseName, 
+                            Constants.JsonWebKeyParameterNames.UseName,
                             "invalid_usage"
                         }
                     }
@@ -272,11 +274,11 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
             using (var rsa = new RSACryptoServiceProvider())
             {
                 var parameters = rsa.ExportParameters(false);
-                
+
                 jsonWebKey.Add(Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, parameters.Modulus.Base64EncodeBytes());
                 jsonWebKey.Add(Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, parameters.Exponent.Base64EncodeBytes());
 
-                var expectedXml = rsa.ToXmlString(false);
+                var expectedXml = RsaExtensions.ToXmlString(rsa, false);
 
                 // ACT & ASSERTS
                 var result = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);

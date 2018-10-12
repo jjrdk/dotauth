@@ -12,26 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Scim.Common.DTOs;
 using System;
 using System.Collections.Generic;
-using Domain = SimpleIdentityServer.Scim.Common.Models;
 using Model = SimpleIdentityServer.Scim.Core.EF.Models;
 
 namespace SimpleIdentityServer.Scim.Core.EF.Extensions
 {
+    using SimpleIdentityServer.Core.Common.DTOs;
+    using SimpleIdentityServer.Core.Common.Models;
+
     public static class MappingExtensions
     {
         private const char _separator = ',';
 
-        public static Domain.Representation ToDomain(this Model.Representation representation)
+        public static Representation ToDomain(this Model.Representation representation)
         {
             if (representation == null)
             {
                 throw new ArgumentNullException(nameof(representation));
             }
 
-            return new Domain.Representation
+            return new Representation
             {
                 Id = representation.Id,
                 Created = representation.Created,
@@ -41,7 +42,7 @@ namespace SimpleIdentityServer.Scim.Core.EF.Extensions
             };
         }
 
-        public static Model.Representation SetData(this Model.Representation representation, Domain.Representation repr)
+        public static Model.Representation SetData(this Model.Representation representation, Representation repr)
         {
             if (repr == null)
             {

@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleBus.Core;
 using System.Net.Http.Headers;
 
 namespace SimpleIdentityServer.OAuth.Events
 {
+    using Common.Dtos;
+
     public class GrantTokenViaClientCredentialsReceived : Event
     {
         public GrantTokenViaClientCredentialsReceived(string id, string processId, string payload, AuthenticationHeaderValue authHeader, int order)

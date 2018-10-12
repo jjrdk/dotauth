@@ -37,6 +37,12 @@ using System.Security.Claims;
 
 namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
 {
+    using System.Net.Http;
+    using SimpleIdentityServer.Client;
+    using SimpleIdentityServer.Client.Operations;
+    using SimpleIdentityServer.Core.Common;
+    using Store;
+
     public class FakeUmaStartup : IStartup
     {
         public const string DefaultSchema = "OAuth2Introspection";
@@ -122,12 +128,14 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
         {
             // 1. Add CORE.
             services.AddSimpleIdServerUmaCore(null, UmaStores.GetResources())
-                .AddSimpleIdentityServerCore(clients: OAuthStores.GetClients(), jsonWebKeys: OAuthStores.GetJsonWebKeys(_context), scopes: OAuthStores.GetScopes())
+                .AddSimpleIdentityServerCore(clients: OAuthStores.GetClients(),
+                    jsonWebKeys: OAuthStores.GetJsonWebKeys(_context),
+                    scopes: OAuthStores.GetScopes())
                 .AddSimpleIdentityServerJwt()
-                .AddIdServerClient()
-                .AddDefaultSimpleBus()
-                .AddDefaultTokenStore()
-                .AddConcurrency(opt => opt.UseInMemory());
+                //.AddIdServerClient()
+                //.AddDefaultSimpleBus()
+                .AddDefaultTokenStore();
+                //.AddConcurrency(opt => opt.UseInMemory());
 
             // 3. Enable logging.
             services.AddLogging();
@@ -140,7 +148,10 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
             services.AddTransient<IHostingProvider, HostingProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();
-            services.AddTransient<IIdentityServerClientFactory, FakeIdentityServerClientFactory>();
+            services.AddTransient<IJwksClient, JwksClient>();
+            services.AddTransient<IGetDiscoveryOperation, GetDiscoveryOperation>();
+            services.AddSingleton(new HttpClient());
+            services.AddSingleton<IEventPublisher>(new DefaultEventPublisher());
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Moq;
-using SimpleIdentityServer.Core.Common;
+﻿using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Common.Models;
@@ -18,7 +17,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
     public sealed class RegistrationParameterValidatorFixture
     {
-        private Mock<IHttpClientFactory> _httpClientFactoryFake;
+        private HttpClient _httpClientFactoryFake;
         private IRegistrationParameterValidator _registrationParameterValidator;
 
         [Fact]
@@ -40,7 +39,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             {
                 RedirectUris = null
             };
-            
+
             // ACT & ASSERTS
             var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
             Assert.True(ex.Code == ErrorCodes.InvalidRedirectUri);
@@ -308,8 +307,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest);
             var handler = new FakeHttpMessageHandler(httpResponseMessage);
             var httpClientFake = new HttpClient(handler);
-            _httpClientFactoryFake.Setup(h => h.GetHttpClient())
-                .Returns(httpClientFake);
+            _httpClientFactoryFake = httpClientFake;
+            //.Setup(h => h.GetHttpClient())
+            //.Returns(httpClientFake);
 
 
             // ACT & ASSERTS
@@ -343,8 +343,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             };
             var handler = new FakeHttpMessageHandler(httpResponseMessage);
             var httpClientFake = new HttpClient(handler);
-            _httpClientFactoryFake.Setup(h => h.GetHttpClient())
-                .Returns(httpClientFake);
+            _registrationParameterValidator = new RegistrationParameterValidator(httpClientFake);
+            //.Setup(h => h.GetHttpClient())
+            //.Returns(httpClientFake);
 
 
             // ACT & ASSERTS
@@ -374,7 +375,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         }
 
         [Fact]
-        public void When_IdToken_Encrypted_Response_Enc_Is_Specified_And_Id_Token_Encrypted_Response_Alg_Is_Not_Correct_Then_Exception_Is_Thrown ()
+        public void When_IdToken_Encrypted_Response_Enc_Is_Specified_And_Id_Token_Encrypted_Response_Alg_Is_Not_Correct_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -576,8 +577,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             };
             var handler = new FakeHttpMessageHandler(httpResponseMessage);
             var httpClientFake = new HttpClient(handler);
-            _httpClientFactoryFake.Setup(h => h.GetHttpClient())
-                .Returns(httpClientFake);
+
+            _registrationParameterValidator = new RegistrationParameterValidator(httpClientFake);
+            //.Setup(h => h.GetHttpClient())
+            //.Returns(httpClientFake);
 
             // ACT & ASSERTS
             var ex = Record.Exception(() => _registrationParameterValidator.Validate(parameter));
@@ -586,8 +589,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
         private void InitializeFakeObjects()
         {
-            _httpClientFactoryFake = new Mock<IHttpClientFactory>();
-            _registrationParameterValidator = new RegistrationParameterValidator(_httpClientFactoryFake.Object);
+            _httpClientFactoryFake = new HttpClient(); //new Mock<IHttpClientFactory>();
+            _registrationParameterValidator = new RegistrationParameterValidator(_httpClientFactoryFake);
         }
     }
 }

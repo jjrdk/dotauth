@@ -1,11 +1,12 @@
-﻿using SimpleIdentityServer.Common.Client;
-using SimpleIdentityServer.UserManagement.Client.Operations;
+﻿using SimpleIdentityServer.UserManagement.Client.Operations;
 using SimpleIdentityServer.UserManagement.Client.Results;
 using SimpleIdentityServer.UserManagement.Common.Requests;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.UserManagement.Client
 {
+    using Core.Common;
+
     public interface IProfileClient
     {
         Task<BaseResponse> LinkMyProfile(string requestUrl, LinkProfileRequest linkProfileRequest, string authorizationHeaderValue = null);

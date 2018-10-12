@@ -1,7 +1,7 @@
-﻿using SimpleBus.Core;
-
-namespace SimpleIdentityServer.Scim.Events
+﻿namespace SimpleIdentityServer.Scim.Events
 {
+    using Common.Dtos;
+
     public class RemoveGroupFinished : Event
     {
         public RemoveGroupFinished(string id, string processId, string payload, int order)

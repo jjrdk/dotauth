@@ -1,9 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Client.Permission;
-using SimpleIdentityServer.Client.Policy;
-using SimpleIdentityServer.Client.ResourceSet;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Signature;
@@ -16,12 +12,14 @@ using Xunit;
 
 namespace SimpleIdentityServer.Uma.Host.Tests
 {
+    using Client.Configuration;
+    using Client.Permission;
+    using SimpleIdentityServer.Client;
+
     public class TokenFixture : IClassFixture<TestUmaServerFixture>
     {
         private const string baseUrl = "http://localhost:5000";
-        private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private IJwsGenerator _jwsGenerator;
-        private IClientAuthSelector _clientAuthSelector;
         private IResourceSetClient _resourceSetClient;
         private IPermissionClient _permissionClient;
         private IPolicyClient _policyClient;
@@ -37,12 +35,16 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var token = await _clientAuthSelector.UseClientSecretPostAuth("resource_server", "resource_server") // Try to get the access token via "ticket_id" grant-type.
-                .UseTicketId("ticket_id", "")
-                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration");
+            var token = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
+                    RequestForm.FromTicketId("ticket_id", ""),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server
+                        .Client)) // Try to get the access token via "ticket_id" grant-type.
+                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(token);
@@ -56,12 +58,15 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var result = await _clientAuthSelector.UseClientSecretPostAuth("resource_server", "resource_server")
-                .UseClientCredentials("uma_protection", "uma_authorization")
-                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration");
+            var result = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
+                    RequestForm.FromClientCredentials("uma_protection", "uma_authorization"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
+                .ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -73,72 +78,90 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
-            var jwsPayload = new JwsPayload();
-            jwsPayload.Add("iss", "http://server.example.com");
-            jwsPayload.Add("sub", "248289761001");
-            jwsPayload.Add("aud", "s6BhdRkqt3");
-            jwsPayload.Add("nonce", "n-0S6_WzA2Mj");
-            jwsPayload.Add("exp", "1311281970");
-            jwsPayload.Add("iat", "1311280970");
+            var jwsPayload = new JwsPayload
+            {
+                {"iss", "http://server.example.com"},
+                {"sub", "248289761001"},
+                {"aud", "s6BhdRkqt3"},
+                {"nonce", "n-0S6_WzA2Mj"},
+                {"exp", "1311281970"},
+                {"iat", "1311280970"}
+            };
             var jwt = _jwsGenerator.Generate(jwsPayload, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
 
             // ACT
-            var result = await _clientAuthSelector.UseClientSecretPostAuth("resource_server", "resource_server") // Get PAT.
-                .UseClientCredentials("uma_protection", "uma_authorization")
-                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration");
+            var result = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("resource_server", "resource_server"), // Get PAT.
+                    RequestForm.FromClientCredentials("uma_protection", "uma_authorization"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
+                .ConfigureAwait(false);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet // Add ressource.
-                {
-                    Name = "name",
-                    Scopes = new List<string>
                     {
-                        "read",
-                        "write",
-                        "execute"
-                    }
-                },
-                baseUrl + "/.well-known/uma2-configuration", result.Content.AccessToken).ConfigureAwait(false);
-            var addPolicy = await _policyClient.AddByResolution(new PostPolicy // Add an authorization policy.
-                {
-                    Rules = new List<PostPolicyRule>
-                    {
-                        new PostPolicyRule
+                        Name = "name",
+                        Scopes = new List<string>
                         {
-                            IsResourceOwnerConsentNeeded = false,
-                            Scopes = new List<string>
-                            {
-                                "read"
-                            },
-                            ClientIdsAllowed = new List<string>
-                            {
-                                "resource_server"
-                            },
-                            Claims = new List<PostClaim>
-                            {
-                                new PostClaim { Type = "sub", Value = "248289761001" }
-                            }
+                            "read",
+                            "write",
+                            "execute"
                         }
                     },
-                    ResourceSetIds = new List<string>
+                    baseUrl + "/.well-known/uma2-configuration",
+                    result.Content.AccessToken)
+                .ConfigureAwait(false);
+            var addPolicy = await _policyClient.AddByResolution(new PostPolicy // Add an authorization policy.
                     {
-                        resource.Content.Id
-                    }
-                }, baseUrl + "/.well-known/uma2-configuration", result.Content.AccessToken).ConfigureAwait(false);
-            var ticket = await _permissionClient.AddByResolution(new PostPermission // Add permission & retrieve a ticket id.
-                {
-                    ResourceSetId = resource.Content.Id,
-                    Scopes = new List<string>
+                        Rules = new List<PostPolicyRule>
+                        {
+                            new PostPolicyRule
+                            {
+                                IsResourceOwnerConsentNeeded = false,
+                                Scopes = new List<string>
+                                {
+                                    "read"
+                                },
+                                ClientIdsAllowed = new List<string>
+                                {
+                                    "resource_server"
+                                },
+                                Claims = new List<PostClaim>
+                                {
+                                    new PostClaim {Type = "sub", Value = "248289761001"}
+                                }
+                            }
+                        },
+                        ResourceSetIds = new List<string>
+                        {
+                            resource.Content.Id
+                        }
+                    },
+                    baseUrl + "/.well-known/uma2-configuration",
+                    result.Content.AccessToken)
+                .ConfigureAwait(false);
+            var ticket = await _permissionClient.AddByResolution(
+                    new PostPermission // Add permission & retrieve a ticket id.
                     {
-                        "read"
-                    }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
-            var token = await _clientAuthSelector.UseClientSecretPostAuth("resource_server", "resource_server") // Try to get the access token via "ticket_id" grant-type.
-                .UseTicketId(ticket.Content.TicketId, jwt)
+                        ResourceSetId = resource.Content.Id,
+                        Scopes = new List<string>
+                        {
+                            "read"
+                        }
+                    },
+                    baseUrl + "/.well-known/uma2-configuration",
+                    "header")
+                .ConfigureAwait(false);
+            var token = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("resource_server",
+                        "resource_server"), // Try to get the access token via "ticket_id" grant-type.
+                    RequestForm.FromTicketId(ticket.Content.TicketId, jwt),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/uma2-configuration");
 
             // ASSERTS.
-            Assert.NotNull(token);            
+            Assert.NotNull(token);
         }
 
         private void InitializeFakeObjects()
@@ -147,34 +170,26 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             services.AddSimpleIdentityServerJwt();
             var provider = services.BuildServiceProvider();
             _jwsGenerator = provider.GetService<IJwsGenerator>();
-            _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            var postTokenOperation = new PostTokenOperation(_httpClientFactoryStub.Object);
-            var getDiscoveryOperation = new GetDiscoveryOperation(_httpClientFactoryStub.Object);
-            var introspectionOperation = new IntrospectOperation(_httpClientFactoryStub.Object);
-            var revokeTokenOperation = new RevokeTokenOperation(_httpClientFactoryStub.Object);
-            _clientAuthSelector = new ClientAuthSelector(
-                new TokenClientFactory(postTokenOperation, getDiscoveryOperation),
-                new IntrospectClientFactory(introspectionOperation, getDiscoveryOperation),
-                new RevokeTokenClientFactory(revokeTokenOperation, getDiscoveryOperation));
-            _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_httpClientFactoryStub.Object),
-                new DeleteResourceSetOperation(_httpClientFactoryStub.Object),
-                new GetResourcesOperation(_httpClientFactoryStub.Object),
-                new GetResourceOperation(_httpClientFactoryStub.Object),
-                new UpdateResourceOperation(_httpClientFactoryStub.Object),
-                new GetConfigurationOperation(_httpClientFactoryStub.Object),
-				new SearchResourcesOperation(_httpClientFactoryStub.Object));
+
+            _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_server.Client),
+                new DeleteResourceSetOperation(_server.Client),
+                new GetResourcesOperation(_server.Client),
+                new GetResourceOperation(_server.Client),
+                new UpdateResourceOperation(_server.Client),
+                new GetConfigurationOperation(_server.Client),
+                new SearchResourcesOperation(_server.Client));
             _permissionClient = new PermissionClient(
-                new AddPermissionsOperation(_httpClientFactoryStub.Object),
-                new GetConfigurationOperation(_httpClientFactoryStub.Object));
-            _policyClient = new PolicyClient(new AddPolicyOperation(_httpClientFactoryStub.Object),
-                new GetPolicyOperation(_httpClientFactoryStub.Object),
-                new DeletePolicyOperation(_httpClientFactoryStub.Object),
-                new GetPoliciesOperation(_httpClientFactoryStub.Object),
-                new AddResourceToPolicyOperation(_httpClientFactoryStub.Object),
-                new DeleteResourceFromPolicyOperation(_httpClientFactoryStub.Object),
-                new UpdatePolicyOperation(_httpClientFactoryStub.Object),
-                new GetConfigurationOperation(_httpClientFactoryStub.Object),
-				new SearchPoliciesOperation(_httpClientFactoryStub.Object));
+                new AddPermissionsOperation(_server.Client),
+                new GetConfigurationOperation(_server.Client));
+            _policyClient = new PolicyClient(new AddPolicyOperation(_server.Client),
+                new GetPolicyOperation(_server.Client),
+                new DeletePolicyOperation(_server.Client),
+                new GetPoliciesOperation(_server.Client),
+                new AddResourceToPolicyOperation(_server.Client),
+                new DeleteResourceFromPolicyOperation(_server.Client),
+                new UpdatePolicyOperation(_server.Client),
+                new GetConfigurationOperation(_server.Client),
+                new SearchPoliciesOperation(_server.Client));
         }
     }
 }

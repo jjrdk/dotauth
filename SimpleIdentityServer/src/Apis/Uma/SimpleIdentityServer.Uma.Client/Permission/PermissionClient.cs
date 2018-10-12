@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Configuration;
-using SimpleIdentityServer.Client.Extensions;
-using SimpleIdentityServer.Uma.Client.Results;
-using SimpleIdentityServer.Uma.Common.DTOs;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Client.Permission
+namespace SimpleIdentityServer.Uma.Client.Permission
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Common.DTOs;
+    using Configuration;
+    using Helpers;
+    using Results;
+
     public interface IPermissionClient
     {
         Task<AddPermissionResult> Add(PostPermission request, string url, string token);

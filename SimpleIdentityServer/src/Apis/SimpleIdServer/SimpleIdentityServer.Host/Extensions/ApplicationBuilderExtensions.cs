@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.Host.MiddleWare;
-using SimpleIdentityServer.OpenId.Logging;
-using System;
-
-namespace SimpleIdentityServer.Host
+namespace SimpleIdentityServer.Host.Extensions
 {
+    using System;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using MiddleWare;
+    using OpenId.Logging;
+
     public static class ApplicationBuilderExtensions 
     {        
         public static void UseOpenIdApi(this IApplicationBuilder app, Action<IdentityServerOptions> optionsCallback, ILoggerFactory loggerFactory) 

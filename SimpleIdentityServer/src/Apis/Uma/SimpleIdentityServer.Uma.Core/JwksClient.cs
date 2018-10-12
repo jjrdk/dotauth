@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Errors;
-using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using System;
 using System.Threading.Tasks;
@@ -21,7 +19,9 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Client
 {
     using System.Net.Http;
+    using Core.Api.Discovery;
     using Newtonsoft.Json;
+    using Uma.Core.Errors;
 
     public interface IJwksClient
     {
@@ -32,9 +32,9 @@ namespace SimpleIdentityServer.Client
     internal class JwksClient : IJwksClient
     {
         private readonly HttpClient _client;
-        private readonly IGetDiscoveryOperation _getDiscoveryOperation;
+        private readonly IDiscoveryActions _getDiscoveryOperation;
 
-        public JwksClient(HttpClient client, IGetDiscoveryOperation getDiscoveryOperation)
+        public JwksClient(HttpClient client, IDiscoveryActions getDiscoveryOperation)
         {
             _client = client;
             _getDiscoveryOperation = getDiscoveryOperation;
@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            var discoveryDocument = await _getDiscoveryOperation.CreateDiscoveryInformation().ConfigureAwait(false);
             return await ExecuteAsync(new Uri(discoveryDocument.JwksUri)).ConfigureAwait(false);
         }
 

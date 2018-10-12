@@ -1,7 +1,7 @@
-﻿using SimpleBus.Core;
-
-namespace SimpleIdentityServer.Scim.Events
+﻿namespace SimpleIdentityServer.Scim.Events
 {
+    using Common.Dtos;
+
     public class ScimErrorReceived : Event
     {
         public ScimErrorReceived(string id, string processId, string message, int order)

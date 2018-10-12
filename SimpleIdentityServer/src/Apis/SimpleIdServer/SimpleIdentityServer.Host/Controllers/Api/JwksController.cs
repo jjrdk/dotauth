@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Core.Api.Jwks;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Host;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Api.Controllers.Api
+namespace SimpleIdentityServer.Host.Controllers.Api
 {
+    using System.Threading.Tasks;
+    using Core.Api.Jwks;
+    using Core.Common.DTOs.Requests;
+    using Host;
+    using Microsoft.AspNetCore.Mvc;
+
     [Route(Constants.EndPoints.Jwks)]
     public class JwksController : Controller
     {

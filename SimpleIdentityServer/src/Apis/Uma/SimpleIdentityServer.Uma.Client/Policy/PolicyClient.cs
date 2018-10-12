@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Configuration;
-using SimpleIdentityServer.Client.Extensions;
-using SimpleIdentityServer.Common.Client;
-using SimpleIdentityServer.Uma.Client.Policy;
-using SimpleIdentityServer.Uma.Client.Results;
-using SimpleIdentityServer.Uma.Common.DTOs;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Client.Policy
+namespace SimpleIdentityServer.Uma.Client.Policy
 {
+    using System;
+    using System.Threading.Tasks;
+    using Common.DTOs;
+    using Configuration;
+    using Core.Common;
+    using Helpers;
+    using Results;
+
     public interface IPolicyClient
     {
         Task<AddPolicyResult> Add(PostPolicy request, string url, string token);

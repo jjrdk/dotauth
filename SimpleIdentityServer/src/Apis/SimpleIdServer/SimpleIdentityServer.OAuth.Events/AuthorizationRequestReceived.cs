@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleBus.Core;
-
 namespace SimpleIdentityServer.OAuth.Events
 {
+    using Common.Dtos;
+
     public class AuthorizationRequestReceived : Event
     {
         private readonly string _id;

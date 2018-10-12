@@ -18,7 +18,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using SimpleBus.Core;
 using SimpleIdentityServer.Authenticate.Basic.ViewModels;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Profile;
@@ -47,6 +46,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 {
+    using Core.Common;
     using Constants = Core.Constants;
 
     public abstract class BaseAuthenticateController : BaseController

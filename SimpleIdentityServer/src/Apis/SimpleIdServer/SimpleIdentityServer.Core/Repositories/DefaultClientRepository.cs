@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
+    using Common.Results;
+
     internal sealed class DefaultClientRepository : IClientRepository
     {
         public ICollection<Common.Models.Client> _clients;

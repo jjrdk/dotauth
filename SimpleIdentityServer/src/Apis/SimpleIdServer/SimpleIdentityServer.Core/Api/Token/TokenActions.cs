@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleBus.Core;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Exceptions;
@@ -27,6 +26,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token
 {
+    using Common;
+
     public interface ITokenActions
     {
         Task<GrantedToken> GetTokenByResourceOwnerCredentialsGrantType(ResourceOwnerGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);

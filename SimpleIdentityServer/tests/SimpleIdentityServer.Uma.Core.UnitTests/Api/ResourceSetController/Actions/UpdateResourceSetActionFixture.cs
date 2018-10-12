@@ -26,6 +26,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
 {
+    using Moq;
+
     public class UpdateResourceSetActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;

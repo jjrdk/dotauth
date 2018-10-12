@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using SimpleBus.Core;
 using SimpleIdentityServer.Authenticate.Basic.Controllers;
 using SimpleIdentityServer.Authenticate.Basic.ViewModels;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
@@ -31,6 +30,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 {
+    using Core.Common;
+
     [Area(Constants.AMR)]
     public class AuthenticateController : BaseAuthenticateController
     {

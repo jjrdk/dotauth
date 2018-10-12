@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Client;
-using SimpleIdentityServer.Common.Dtos.Responses;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Client.Policy
+namespace SimpleIdentityServer.Uma.Client.Policy
 {
+    using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using Core.Common;
+    using Newtonsoft.Json;
+    using SimpleIdentityServer.Common.Dtos.Responses;
+
     public interface IDeletePolicyOperation
     {
         Task<BaseResponse> ExecuteAsync(string id, string url, string token);

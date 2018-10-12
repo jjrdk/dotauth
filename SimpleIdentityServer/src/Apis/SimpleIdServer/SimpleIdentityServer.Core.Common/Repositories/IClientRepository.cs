@@ -14,12 +14,13 @@
 
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Parameters;
-using SimpleIdentityServer.Core.Results;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Common.Repositories
 {
+    using Results;
+
     public interface IClientRepository
     {
         Task<SearchClientResult> Search(SearchClientParameter parameter);

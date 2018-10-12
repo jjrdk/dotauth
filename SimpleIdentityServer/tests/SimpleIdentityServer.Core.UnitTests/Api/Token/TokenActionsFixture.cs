@@ -8,12 +8,13 @@ using SimpleIdentityServer.Core.Validators;
 using Xunit;
 using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
-using SimpleBus.Core;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.OAuth.Logging;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
+    using Core.Common;
+
     public sealed class TokenActionsFixture
     {
         private Mock<IGetTokenByResourceOwnerCredentialsGrantTypeAction>

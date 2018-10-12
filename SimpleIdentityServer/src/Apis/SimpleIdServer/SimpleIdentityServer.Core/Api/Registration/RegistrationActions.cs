@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleBus.Core;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Exceptions;
@@ -23,6 +22,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Registration
 {
+    using Common;
+
     public interface IRegistrationActions
     {
         Task<ClientRegistrationResponse> PostRegistration(RegistrationParameter registrationParameter);

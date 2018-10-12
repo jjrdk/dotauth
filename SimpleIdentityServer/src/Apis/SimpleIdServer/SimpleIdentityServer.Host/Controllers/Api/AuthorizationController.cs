@@ -12,29 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Common.Dtos.Responses;
-using SimpleIdentityServer.Core.Api.Authorization;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Serializers;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Protector;
-using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Host;
-using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Host.Parsers;
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Api.Controllers.Api
+namespace SimpleIdentityServer.Host.Controllers.Api
 {
+    using System;
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using Common.Dtos.Responses;
+    using Core.Api.Authorization;
+    using Core.Common.DTOs.Requests;
+    using Core.Common.Serializers;
+    using Core.Errors;
+    using Core.Exceptions;
+    using Core.JwtToken;
+    using Core.Parameters;
+    using Core.Protector;
+    using Core.Results;
+    using Extensions;
+    using Host;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.DataProtection;
+    using Microsoft.AspNetCore.Mvc;
+    using Parsers;
+
     [Route(Constants.EndPoints.Authorization)]
     public class AuthorizationController : Controller
     {

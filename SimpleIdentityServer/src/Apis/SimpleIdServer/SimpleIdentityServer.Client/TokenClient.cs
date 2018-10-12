@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Results;
@@ -24,51 +23,36 @@ namespace SimpleIdentityServer.Client
     using Core.Common.DTOs.Responses;
     using Newtonsoft.Json;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
 
-    public interface ITokenClient
-    {
-        Task<GetTokenResult> ExecuteAsync(Uri tokenUri);
-        Task<GetTokenResult> ResolveAsync(string discoveryDocumentationUrl);
-    }
-
-    internal class TokenClient : ITokenClient
+    public class TokenClient : ITokenClient
     {
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
+        private readonly string _authorizationValue;
+        private readonly X509Certificate2 _certificate;
         private readonly HttpClient _client;
-        private readonly RequestBuilder _requestBuilder;
+        private readonly Dictionary<string, string> _form;
 
         public TokenClient(
+            TokenCredentials credentials,
+            RequestForm form,
             HttpClient client,
-            RequestBuilder requestBuilder,
-            IGetDiscoveryOperation getDiscoveryOperation)
+            IGetDiscoveryOperation getDiscoveryOperation,
+            string authorizationValue = null,
+            X509Certificate2 certificate = null)
         {
+            _form = credentials.Concat(form).ToDictionary(x => x.Key, x => x.Value);
             _client = client;
-            _requestBuilder = requestBuilder;
             _getDiscoveryOperation = getDiscoveryOperation;
+            _authorizationValue = authorizationValue;
+            _certificate = certificate;
         }
 
-        public Task<GetTokenResult> ExecuteAsync(Uri tokenUri)
+        public Task<GetTokenResult> GetToken(Uri tokenUri)
         {
-            if (tokenUri == null)
-            {
-                throw new ArgumentNullException(nameof(tokenUri));
-            }
-
-            if (_requestBuilder.Certificate != null)
-            {
-                return PostToken(
-                    _requestBuilder.Content,
-                    tokenUri,
-                    _requestBuilder.AuthorizationHeaderValue,
-                    _requestBuilder.Certificate);
-            }
-
-            return PostToken(
-                _requestBuilder.Content,
-                tokenUri,
-                _requestBuilder.AuthorizationHeaderValue);
+            return PostToken(_form, tokenUri, _authorizationValue, _certificate);
         }
 
         public async Task<GetTokenResult> ResolveAsync(string discoveryDocumentationUrl)
@@ -84,10 +68,10 @@ namespace SimpleIdentityServer.Client
             }
 
             var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            return await ExecuteAsync(new Uri(discoveryDocument.TokenEndPoint)).ConfigureAwait(false);
+            return await GetToken(new Uri(discoveryDocument.TokenEndPoint)).ConfigureAwait(false);
         }
 
-        private async Task<GetTokenResult> PostToken(Dictionary<string, string> tokenRequest, Uri requestUri, string authorizationValue, X509Certificate2 certificate = null)
+        private async Task<GetTokenResult> PostToken(Dictionary<string, string> tokenRequest, Uri requestUri, string authorizationValue, X509Certificate2 certificate)
         {
             if (tokenRequest == null)
             {
@@ -113,7 +97,10 @@ namespace SimpleIdentityServer.Client
                 request.Headers.Add("X-ARR-ClientCert", base64Encoded);
             }
 
-            request.Headers.Add("Authorization", "Basic " + authorizationValue);
+            if (!string.IsNullOrWhiteSpace(authorizationValue))
+            {
+                request.Headers.Add("Authorization", "Basic " + authorizationValue);
+            }
             var result = await _client.SendAsync(request).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             try

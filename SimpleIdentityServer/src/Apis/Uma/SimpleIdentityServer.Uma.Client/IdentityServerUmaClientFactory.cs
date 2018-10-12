@@ -12,18 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Client.Configuration;
-using SimpleIdentityServer.Client.Permission;
-using SimpleIdentityServer.Client.Policy;
-using SimpleIdentityServer.Client.ResourceSet;
-using SimpleIdentityServer.Uma.Client.Policy;
-using SimpleIdentityServer.Uma.Client.ResourceSet;
-using System;
-
-namespace SimpleIdentityServer.Client
+namespace SimpleIdentityServer.Uma.Client
 {
+    using System;
     using System.Net.Http;
+    using Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Permission;
+    using Policy;
+    using ResourceSet;
 
     public interface IIdentityServerUmaClientFactory
     {

@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Configuration;
-using SimpleIdentityServer.Client.Policy;
-using SimpleIdentityServer.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Client.Policy;
 using SimpleIdentityServer.Uma.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Common.DTOs;
@@ -25,10 +22,11 @@ using Xunit;
 
 namespace SimpleIdentityServer.Uma.Host.Tests
 {
+    using Client.Configuration;
+
     public class PolicyFixture : IClassFixture<TestUmaServerFixture>
     {
-        const string baseUrl = "http://localhost:5000";
-        private Mock<IHttpClientFactory> _httpClientFactoryStub;
+        private const string baseUrl = "http://localhost:5000";
         private IPolicyClient _policyClient;
         private IResourceSetClient _resourceSetClient;
         private readonly TestUmaServerFixture _server;
@@ -43,13 +41,12 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
             var response = await _policyClient.AddByResolution(new PostPolicy
-                {
-                    ResourceSetIds = null
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            {
+                ResourceSetIds = null
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -63,16 +60,16 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
             // ACT
             var response = await _policyClient.AddByResolution(new PostPolicy
-                {
-                    ResourceSetIds = new List<string>
+            {
+                ResourceSetIds = new List<string>
                     {
                         "resource_id"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -86,23 +83,23 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
             // ACT
             var response = await _policyClient.AddByResolution(new PostPolicy
-                {
-                    ResourceSetIds = new List<string>
+            {
+                ResourceSetIds = new List<string>
                     {
                         "resource_id"
                     },
-                    Rules = new List<PostPolicyRule>
+                Rules = new List<PostPolicyRule>
                     {
                         new PostPolicyRule
                         {
 
                         }
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -116,24 +113,24 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
             var addResponse = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var response = await _policyClient.AddByResolution(new PostPolicy
-                {
-                    ResourceSetIds = new List<string>
+            {
+                ResourceSetIds = new List<string>
                     {
                         addResponse.Content.Id
                     },
-                    Rules = new List<PostPolicyRule>
+                Rules = new List<PostPolicyRule>
                     {
                         new PostPolicyRule
                         {
@@ -143,7 +140,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                             }
                         }
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -157,7 +154,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
             // ACT
             var response = await _policyClient.GetByResolution("unknown", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
@@ -174,13 +171,13 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
             // ACT
             var response = await _policyClient.UpdateByResolution(new PutPolicy
-                {
+            {
 
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -194,13 +191,13 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
             // ACT
             var response = await _policyClient.UpdateByResolution(new PutPolicy
-                {
-                    PolicyId = "policy"
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            {
+                PolicyId = "policy"
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -214,20 +211,20 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
             // ACT
             var response = await _policyClient.UpdateByResolution(new PutPolicy
-                {
-                    PolicyId = "policy",
-                    Rules = new List<PutPolicyRule>
+            {
+                PolicyId = "policy",
+                Rules = new List<PutPolicyRule>
                     {
                         new PutPolicyRule
                         {
 
                         }
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -241,18 +238,18 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var addResponse = await _policyClient.AddByResolution(new PostPolicy
-                {
-                    Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                     {
                         new PostPolicyRule
                         {
@@ -271,17 +268,17 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                             }
                         }
                     },
-                    ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                     {
                         addResource.Content.Id
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var response = await _policyClient.UpdateByResolution(new PutPolicy
-                {
-                    PolicyId = addResponse.Content.PolicyId,
-                    Rules = new List<PutPolicyRule>
+            {
+                PolicyId = addResponse.Content.PolicyId,
+                Rules = new List<PutPolicyRule>
                     {
                         new PutPolicyRule
                         {
@@ -291,7 +288,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                             }
                         }
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -305,7 +302,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
             // ACT
             var response = await _policyClient.DeleteByResolution("unknown", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
@@ -322,13 +319,13 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
             // ACT
             var response = await _policyClient.AddResourceByResolution("id", new PostAddResourceSet
-                {
-                    ResourceSets = null
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            {
+                ResourceSets = null
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -342,16 +339,16 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
             // ACT
             var response = await _policyClient.AddResourceByResolution("id", new PostAddResourceSet
-                {
-                    ResourceSets = new List<string>
+            {
+                ResourceSets = new List<string>
                     {
                         "resource"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.True(response.ContainsError);
@@ -364,18 +361,18 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-                {
-                    Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                     {
                         new PostPolicyRule
                         {
@@ -386,20 +383,20 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                             }
                         }
                     },
-                    ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                     {
                         addResource.Content.Id
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var response = await _policyClient.AddResourceByResolution(addPolicy.Content.PolicyId, new PostAddResourceSet
-                {
-                    ResourceSets = new List<string>
+            {
+                ResourceSets = new List<string>
                     {
                         "resource"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(response.ContainsError);
@@ -412,7 +409,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
             // ACT
             var response = await _policyClient.DeleteResourceByResolution("unknown", "resource_id", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
@@ -429,18 +426,18 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
             var addResponse = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-                {
-                    Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                     {
                         new PostPolicyRule
                         {
@@ -451,11 +448,11 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                             }
                         }
                     },
-                    ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                     {
                         addResponse.Content.Id
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var response = await _policyClient.DeleteResourceByResolution(addPolicy.Content.PolicyId, "resource_id", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
@@ -472,20 +469,20 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
             var addResponse = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var response = await _policyClient.AddByResolution(new PostPolicy
-                {
-                    Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                     {
                         new PostPolicyRule
                         {
@@ -504,11 +501,11 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                             }
                         }
                     },
-                    ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                     {
                         addResponse.Content.Id
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var information = await _policyClient.GetByResolution(response.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
@@ -528,18 +525,18 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-                {
-                    Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                     {
                         new PostPolicyRule
                         {
@@ -558,15 +555,15 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                             }
                         }
                     },
-                    ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                     {
                         addResource.Content.Id
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var response = await _policyClient.GetAllByResolution(baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
-            
+
             // ASSERT
             Assert.NotNull(response);
             Assert.True(response.Content.Any(r => r == addPolicy.Content.PolicyId));
@@ -577,18 +574,18 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-                {
-                    Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                     {
                         new PostPolicyRule
                         {
@@ -607,11 +604,11 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                             }
                         }
                     },
-                    ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                     {
                         addResource.Content.Id
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var isRemoved = await _policyClient.DeleteByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
@@ -628,26 +625,26 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
             var firstResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var secondResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-                {
-                    Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                     {
                         new PostPolicyRule
                         {
@@ -666,20 +663,20 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                             }
                         }
                     },
-                    ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                     {
                         firstResource.Content.Id
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var isUpdated = await _policyClient.AddResourceByResolution(addPolicy.Content.PolicyId, new PostAddResourceSet
-                {
-                    ResourceSets = new List<string>
+            {
+                ResourceSets = new List<string>
                     {
                         secondResource.Content.Id
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var information = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERTS
@@ -693,26 +690,26 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
             var firstResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var secondResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-                {
-                    Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                     {
                         new PostPolicyRule
                         {
@@ -731,12 +728,12 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                             }
                         }
                     },
-                    ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                     {
                         firstResource.Content.Id,
                         secondResource.Content.Id
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var isUpdated = await _policyClient.DeleteResourceByResolution(addPolicy.Content.PolicyId, secondResource.Content.Id, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
@@ -753,28 +750,28 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
             var firstResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read",
                         "write"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var secondResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read",
                         "write"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-                {
-                    Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                     {
                         new PostPolicyRule
                         {
@@ -793,19 +790,19 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                             }
                         }
                     },
-                    ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                     {
                         firstResource.Content.Id,
                         secondResource.Content.Id
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var firstInfo = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var isUpdated = await _policyClient.UpdateByResolution(new PutPolicy
-                {
-                    PolicyId = firstInfo.Content.Id,
-                    Rules = new List<PutPolicyRule>
+            {
+                PolicyId = firstInfo.Content.Id,
+                Rules = new List<PutPolicyRule>
                     {
                         new PutPolicyRule
                         {
@@ -830,7 +827,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                             }
                         }
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var updatedInformation = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
 
@@ -845,23 +842,22 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         private void InitializeFakeObjects()
         {
-            _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            _policyClient = new PolicyClient(new AddPolicyOperation(_httpClientFactoryStub.Object),
-                new GetPolicyOperation(_httpClientFactoryStub.Object),
-                new DeletePolicyOperation(_httpClientFactoryStub.Object),
-                new GetPoliciesOperation(_httpClientFactoryStub.Object),
-                new AddResourceToPolicyOperation(_httpClientFactoryStub.Object),
-                new DeleteResourceFromPolicyOperation(_httpClientFactoryStub.Object),
-                new UpdatePolicyOperation(_httpClientFactoryStub.Object),
-                new GetConfigurationOperation(_httpClientFactoryStub.Object),
-				new SearchPoliciesOperation(_httpClientFactoryStub.Object));
-            _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_httpClientFactoryStub.Object),
-                new DeleteResourceSetOperation(_httpClientFactoryStub.Object),
-                new GetResourcesOperation(_httpClientFactoryStub.Object),
-                new GetResourceOperation(_httpClientFactoryStub.Object),
-                new UpdateResourceOperation(_httpClientFactoryStub.Object),
-                new GetConfigurationOperation(_httpClientFactoryStub.Object),
-				new SearchResourcesOperation(_httpClientFactoryStub.Object));
+            _policyClient = new PolicyClient(new AddPolicyOperation(_server.Client),
+                new GetPolicyOperation(_server.Client),
+                new DeletePolicyOperation(_server.Client),
+                new GetPoliciesOperation(_server.Client),
+                new AddResourceToPolicyOperation(_server.Client),
+                new DeleteResourceFromPolicyOperation(_server.Client),
+                new UpdatePolicyOperation(_server.Client),
+                new GetConfigurationOperation(_server.Client),
+                new SearchPoliciesOperation(_server.Client));
+            _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_server.Client),
+                new DeleteResourceSetOperation(_server.Client),
+                new GetResourcesOperation(_server.Client),
+                new GetResourceOperation(_server.Client),
+                new UpdateResourceOperation(_server.Client),
+                new GetConfigurationOperation(_server.Client),
+                new SearchResourcesOperation(_server.Client));
         }
     }
 }

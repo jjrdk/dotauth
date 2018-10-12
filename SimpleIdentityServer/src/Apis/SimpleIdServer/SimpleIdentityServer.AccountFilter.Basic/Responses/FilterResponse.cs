@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.AccountFilter.Basic.Common.Responses
+﻿namespace SimpleIdentityServer.AccountFilter.Basic.Responses
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
+
     [DataContract]
     public class FilterRuleResponse
     {

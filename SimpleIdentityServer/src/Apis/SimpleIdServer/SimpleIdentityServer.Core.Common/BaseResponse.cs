@@ -1,8 +1,8 @@
-﻿using SimpleIdentityServer.Common.Dtos.Responses;
-using System.Net;
-
-namespace SimpleIdentityServer.Common.Client
+﻿namespace SimpleIdentityServer.Core.Common
 {
+    using System.Net;
+    using SimpleIdentityServer.Common.Dtos.Responses;
+
     public class BaseResponse
     {
         public HttpStatusCode HttpStatus { get; set; }

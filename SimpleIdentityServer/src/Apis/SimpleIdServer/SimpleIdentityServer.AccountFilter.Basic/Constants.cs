@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.AccountFilter.Basic.Common
+﻿namespace SimpleIdentityServer.AccountFilter.Basic
 {
     internal static class Constants
     {

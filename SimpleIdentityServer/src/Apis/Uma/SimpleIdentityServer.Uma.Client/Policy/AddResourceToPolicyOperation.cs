@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Client;
-using SimpleIdentityServer.Common.Dtos.Responses;
-using SimpleIdentityServer.Uma.Common.DTOs;
-using System;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Client.Policy
+namespace SimpleIdentityServer.Uma.Client.Policy
 {
+    using System;
+    using System.Net.Http;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Common.DTOs;
+    using Core.Common;
+    using Newtonsoft.Json;
+    using SimpleIdentityServer.Common.Dtos.Responses;
+
     public interface IAddResourceToPolicyOperation
     {
         Task<BaseResponse> ExecuteAsync(string id, PostAddResourceSet request, string url, string token);

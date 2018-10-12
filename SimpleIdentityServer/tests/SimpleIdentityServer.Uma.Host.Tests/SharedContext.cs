@@ -1,9 +1,10 @@
 ﻿using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Uma.Host.Tests.Fakes;
 using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Uma.Host.Tests
 {
+    using System.Security.Cryptography.Algorithms.Extensions;
+
     public class SharedContext
     {
         public SharedContext()
@@ -11,13 +12,13 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             var serializedRsa = string.Empty;
             using (var provider = new RSACryptoServiceProvider())
             {
-                serializedRsa = provider.ToXmlString(true);
+                serializedRsa = RsaExtensions.ToXmlString(provider, true);
             }
 
             SignatureKey = new JsonWebKey
             {
                 Alg = AllAlg.RS256,
-                KeyOps = new KeyOperations[]
+                KeyOps = new[]
                 {
                     KeyOperations.Sign,
                     KeyOperations.Verify
@@ -40,11 +41,9 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 Use = Use.Enc,
                 SerializedKey = serializedRsa,
             };
-            HttpClientFactory = FakeHttpClientFactory.Instance;
         }
 
         public JsonWebKey EncryptionKey { get; }
         public JsonWebKey SignatureKey { get; }
-        public FakeHttpClientFactory HttpClientFactory { get; }
     }
 }

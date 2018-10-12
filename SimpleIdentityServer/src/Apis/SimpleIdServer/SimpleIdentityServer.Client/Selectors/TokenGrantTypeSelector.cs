@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Client.Selectors
 {
-    using AccountFilter;
+    using RequestBuilder = Builders.RequestBuilder;
 
     public interface ITokenGrantTypeSelector
     {

@@ -17,10 +17,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using SimpleBus.Core;
 using SimpleIdentityServer.AccountFilter;
 using SimpleIdentityServer.AccountFilter.Basic.Repositories;
-using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Authenticate.SMS;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Authenticate.SMS.Controllers;
@@ -49,6 +47,9 @@ using System.Text;
 
 namespace SimpleIdentityServer.Host.Tests
 {
+    using Controllers.Api;
+    using Extensions;
+
     public class FakeStartup : IStartup
     {
         public const string ScimEndPoint = "http://localhost:5555/";

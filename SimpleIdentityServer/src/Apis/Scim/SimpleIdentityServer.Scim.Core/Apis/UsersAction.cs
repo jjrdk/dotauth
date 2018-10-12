@@ -18,13 +18,12 @@ using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using System.Threading.Tasks;
-using SimpleBus.Core;
 using SimpleIdentityServer.Scim.Events;
 using Newtonsoft.Json;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
-    using Common;
+    using SimpleIdentityServer.Core.Common;
 
     public interface IUsersAction
     {
@@ -140,19 +139,19 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
         public Task<ApiActionResult> GetUser(string id, string locationPattern)
         {
-            return _getRepresentationAction.Execute(id, locationPattern, Common.ScimConstants.SchemaUrns.User);
+            return _getRepresentationAction.Execute(id, locationPattern, ScimConstants.SchemaUrns.User);
         }
 
         public Task<ApiActionResult> SearchUsers(JObject jObj, string locationPattern)
         {
             var searchParam = _searchParameterParser.ParseJson(jObj);
-            return _getRepresentationsAction.Execute(Common.ScimConstants.ResourceTypes.User, searchParam, locationPattern);
+            return _getRepresentationsAction.Execute(ScimConstants.ResourceTypes.User, searchParam, locationPattern);
         }
 
         public Task<ApiActionResult> SearchUsers(IQueryCollection query, string locationPattern)
         {
             var searchParam = _searchParameterParser.ParseQuery(query);
-            return _getRepresentationsAction.Execute(Common.ScimConstants.ResourceTypes.User, searchParam, locationPattern);
+            return _getRepresentationsAction.Execute(ScimConstants.ResourceTypes.User, searchParam, locationPattern);
         }
     }
 }

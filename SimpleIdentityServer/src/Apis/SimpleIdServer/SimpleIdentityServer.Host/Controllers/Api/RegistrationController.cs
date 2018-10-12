@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Common.Dtos.Responses;
-using SimpleIdentityServer.Core.Api.Registration;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Host;
-using SimpleIdentityServer.Host.Extensions;
-using System.Net;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Api.Controllers.Api
+namespace SimpleIdentityServer.Host.Controllers.Api
 {
+    using System.Net;
+    using System.Threading.Tasks;
+    using Common.Dtos.Responses;
+    using Core.Api.Registration;
+    using Core.Common.DTOs.Requests;
+    using Core.Errors;
+    using Extensions;
+    using Host;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+
     [Route(Constants.EndPoints.Registration)]
     [Authorize("registration")]
     public class RegistrationController : Controller

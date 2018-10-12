@@ -26,6 +26,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 {
+    using Moq;
+
     public class AuthorizationPolicyValidatorFixture
     {
         private Mock<IBasicAuthorizationPolicy> _basicAuthorizationPolicyStub;

@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Configuration;
-using SimpleIdentityServer.Client.Permission;
-using SimpleIdentityServer.Client.Policy;
-using SimpleIdentityServer.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Client.Policy;
 using SimpleIdentityServer.Uma.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Common.DTOs;
@@ -26,10 +22,12 @@ using Xunit;
 
 namespace SimpleIdentityServer.Uma.Host.Tests
 {
+    using Client.Configuration;
+    using Client.Permission;
+
     public class PermissionFixture : IClassFixture<TestUmaServerFixture>
     {
-        const string baseUrl = "http://localhost:5000";
-        private Mock<IHttpClientFactory> _httpClientFactoryStub;
+        private const string baseUrl = "http://localhost:5000";
         private IPolicyClient _policyClient;
         private IResourceSetClient _resourceSetClient;
         private IPermissionClient _permissionClient;
@@ -46,26 +44,25 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             UserStore.Instance().ClientId = null;
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-                {
-                    ResourceSetId = resource.Content.Id,
-                    Scopes = new List<string>
+            {
+                ResourceSetId = resource.Content.Id,
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             UserStore.Instance().ClientId = "client";
 
             // ASSERTS
@@ -79,13 +76,12 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-
+            
             // ACT
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-                {
-                    ResourceSetId = string.Empty
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            {
+                ResourceSetId = string.Empty
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(ticket.ContainsError);
@@ -98,13 +94,12 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-                {
-                    ResourceSetId = "resource"
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            {
+                ResourceSetId = "resource"
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(ticket.ContainsError);
@@ -117,17 +112,16 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-                {
-                    ResourceSetId = "resource",
-                    Scopes = new List<string>
+            {
+                ResourceSetId = "resource",
+                Scopes = new List<string>
                     {
                         "scope"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(ticket.ContainsError);
@@ -140,25 +134,24 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-                {
-                    ResourceSetId = resource.Content.Id,
-                    Scopes = new List<string>
+            {
+                ResourceSetId = resource.Content.Id,
+                Scopes = new List<string>
                     {
                         "scopescopescope"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(ticket.ContainsError);
@@ -171,25 +164,24 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-                {
-                    ResourceSetId = resource.Content.Id,
-                    Scopes = new List<string>
+            {
+                ResourceSetId = resource.Content.Id,
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(ticket);
@@ -202,15 +194,14 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             const string baseUrl = "http://localhost:5000";
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                {
-                    Name = "picture",
-                    Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                     {
                         "read"
                     }
-                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var permissions = new List<PostPermission>
             {
                 new PostPermission
@@ -240,26 +231,25 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         private void InitializeFakeObjects()
         {
-            _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            _policyClient = new PolicyClient(new AddPolicyOperation(_httpClientFactoryStub.Object),
-                new GetPolicyOperation(_httpClientFactoryStub.Object),
-                new DeletePolicyOperation(_httpClientFactoryStub.Object),
-                new GetPoliciesOperation(_httpClientFactoryStub.Object),
-                new AddResourceToPolicyOperation(_httpClientFactoryStub.Object),
-                new DeleteResourceFromPolicyOperation(_httpClientFactoryStub.Object),
-                new UpdatePolicyOperation(_httpClientFactoryStub.Object),
-                new GetConfigurationOperation(_httpClientFactoryStub.Object),
-				new SearchPoliciesOperation(_httpClientFactoryStub.Object));
-            _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_httpClientFactoryStub.Object),
-                new DeleteResourceSetOperation(_httpClientFactoryStub.Object),
-                new GetResourcesOperation(_httpClientFactoryStub.Object),
-                new GetResourceOperation(_httpClientFactoryStub.Object),
-                new UpdateResourceOperation(_httpClientFactoryStub.Object),
-                new GetConfigurationOperation(_httpClientFactoryStub.Object),
-				new SearchResourcesOperation(_httpClientFactoryStub.Object));
+            _policyClient = new PolicyClient(new AddPolicyOperation(_server.Client),
+                new GetPolicyOperation(_server.Client),
+                new DeletePolicyOperation(_server.Client),
+                new GetPoliciesOperation(_server.Client),
+                new AddResourceToPolicyOperation(_server.Client),
+                new DeleteResourceFromPolicyOperation(_server.Client),
+                new UpdatePolicyOperation(_server.Client),
+                new GetConfigurationOperation(_server.Client),
+                new SearchPoliciesOperation(_server.Client));
+            _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_server.Client),
+                new DeleteResourceSetOperation(_server.Client),
+                new GetResourcesOperation(_server.Client),
+                new GetResourceOperation(_server.Client),
+                new UpdateResourceOperation(_server.Client),
+                new GetConfigurationOperation(_server.Client),
+                new SearchResourcesOperation(_server.Client));
             _permissionClient = new PermissionClient(
-                new AddPermissionsOperation(_httpClientFactoryStub.Object),
-                new GetConfigurationOperation(_httpClientFactoryStub.Object));
+                new AddPermissionsOperation(_server.Client),
+                new GetConfigurationOperation(_server.Client));
         }
     }
 }

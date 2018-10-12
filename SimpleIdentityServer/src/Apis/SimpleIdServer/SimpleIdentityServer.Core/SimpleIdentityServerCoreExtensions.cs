@@ -17,7 +17,6 @@ using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Api.Discovery;
-using SimpleIdentityServer.Core.Api.Discovery.Actions;
 using SimpleIdentityServer.Core.Api.Introspection;
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
 using SimpleIdentityServer.Core.Api.Jwks;
@@ -135,7 +134,6 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<ILocalOpenIdUserAuthenticationAction, LocalOpenIdUserAuthenticationAction>();
             serviceCollection.AddTransient<IAuthenticateHelper, AuthenticateHelper>();
             serviceCollection.AddTransient<IDiscoveryActions, DiscoveryActions>();
-            serviceCollection.AddTransient<ICreateDiscoveryDocumentationAction, CreateDiscoveryDocumentationAction>();
             serviceCollection.AddTransient<IProcessAuthorizationRequest, ProcessAuthorizationRequest>();
             serviceCollection.AddTransient<IJwtGenerator, JwtGenerator>();
             serviceCollection.AddTransient<IJwtParser, JwtParser>();

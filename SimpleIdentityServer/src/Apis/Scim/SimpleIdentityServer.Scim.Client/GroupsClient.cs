@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Client
 {
+    using Core.Common;
 
     public interface IGroupsClient
     {
@@ -41,7 +42,7 @@ namespace SimpleIdentityServer.Scim.Client
 
     internal class GroupsClient : IGroupsClient
     {
-        private readonly string _schema = Common.ScimConstants.SchemaUrns.Group;
+        private readonly string _schema = ScimConstants.SchemaUrns.Group;
         private readonly HttpClient _client;
 
         public GroupsClient(HttpClient client)

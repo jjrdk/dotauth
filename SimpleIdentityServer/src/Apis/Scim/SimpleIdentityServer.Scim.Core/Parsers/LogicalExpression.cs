@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Scim.Common.DTOs;
-using SimpleIdentityServer.Scim.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
+    using SimpleIdentityServer.Core.Common.DTOs;
+    using SimpleIdentityServer.Core.Common.Models;
+
     [Flags]
     public enum LogicalOperators
     {

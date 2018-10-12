@@ -15,7 +15,6 @@
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SimpleBus.Core;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Events;
@@ -24,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
-    using Common;
+    using SimpleIdentityServer.Core.Common;
 
     public interface IGroupsAction
     {
@@ -88,7 +87,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         public Task<ApiActionResult> GetGroup(string id, string locationPattern, IQueryCollection query)
         {
             var searchParameter = _searchParameterParser.ParseQuery(query);
-            return _getRepresentationAction.Execute(id, locationPattern, Common.ScimConstants.SchemaUrns.Group);
+            return _getRepresentationAction.Execute(id, locationPattern, ScimConstants.SchemaUrns.Group);
         }
 
         public async Task<ApiActionResult> RemoveGroup(string id)
@@ -147,13 +146,13 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         public Task<ApiActionResult> SearchGroups(IQueryCollection query, string locationPattern)
         {
             var searchParam = _searchParameterParser.ParseQuery(query);
-            return _getRepresentationsAction.Execute(Common.ScimConstants.ResourceTypes.Group, searchParam, locationPattern);
+            return _getRepresentationsAction.Execute(ScimConstants.ResourceTypes.Group, searchParam, locationPattern);
         }
 
         public Task<ApiActionResult> SearchGroups(JObject jObj, string locationPattern)
         {
             var searchParam = _searchParameterParser.ParseJson(jObj);
-            return _getRepresentationsAction.Execute(Common.ScimConstants.ResourceTypes.Group, searchParam, locationPattern);
+            return _getRepresentationsAction.Execute(ScimConstants.ResourceTypes.Group, searchParam, locationPattern);
         }
     }
 }

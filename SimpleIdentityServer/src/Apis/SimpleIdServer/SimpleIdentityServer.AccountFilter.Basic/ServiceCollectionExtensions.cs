@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.AccountFilter.Basic
 {
+    using Core.Common;
+
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddAccountFilter(this IServiceCollection services, IMvcBuilder mvcBuilder, List<FilterAggregate> filters = null)

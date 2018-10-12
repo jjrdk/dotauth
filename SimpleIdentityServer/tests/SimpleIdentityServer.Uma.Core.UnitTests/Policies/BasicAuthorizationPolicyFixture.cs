@@ -26,9 +26,11 @@ using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 {
+    using Moq;
+
     public class BasicAuthorizationPolicyFixture
     {
-        private Mock<IIdentityServerClientFactory> _identityServerClientFactoryStub;
+        //private Mock<IIdentityServerClientFactory> _identityServerClientFactoryStub;
         private Mock<IJwtTokenParser> _jwtTokenParserStub;
         private IBasicAuthorizationPolicy _basicAuthorizationPolicy;
 
@@ -42,7 +44,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             await Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(null, null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(new TicketLineParameter("client_id"), null, null)).ConfigureAwait(false);
         }
-        
+
         [Fact]
         public async Task When_Doesnt_have_Permission_To_Access_To_Scope_Then_NotAuthorized_Is_Returned()
         {
@@ -114,7 +116,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 }
 
             };
-            
+
             // ACT
             var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null).ConfigureAwait(false);
 
@@ -444,8 +446,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            var payload = new JwsPayload();
-            payload.Add("role", new JArray("role3"));
+            var payload = new JwsPayload { { "role", new JArray("role3") } };
             _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(payload));
 
@@ -455,7 +456,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
         }
-    
+
         [Fact]
         public async Task When_Passing_Not_Valid_Roles_InStringArray_Then_NotAuthorized_Is_Returned()
         {
@@ -510,8 +511,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            var payload = new JwsPayload();
-            payload.Add("role", new string[] { "role3" });
+            var payload = new JwsPayload
+            {
+                { "role", new string[] { "role3" } }
+            };
             _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(payload));
 
@@ -590,7 +593,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
         }
-        
+
         [Fact]
         public async Task When_ResourceOwnerConsent_Is_Required_Then_RequestSubmitted_Is_Returned()
         {
@@ -677,9 +680,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 
         private void InitializeFakeObjects()
         {
-            _identityServerClientFactoryStub = new Mock<IIdentityServerClientFactory>();
+            //_identityServerClientFactoryStub = new Mock<IIdentityServerClientFactory>();
             _jwtTokenParserStub = new Mock<IJwtTokenParser>();
-            _basicAuthorizationPolicy = new BasicAuthorizationPolicy(_identityServerClientFactoryStub.Object,
+            _basicAuthorizationPolicy = new BasicAuthorizationPolicy(
+                //_identityServerClientFactoryStub.Object,
                 _jwtTokenParserStub.Object);
         }
     }

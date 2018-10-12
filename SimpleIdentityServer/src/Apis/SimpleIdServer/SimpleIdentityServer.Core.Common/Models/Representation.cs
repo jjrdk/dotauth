@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Scim.Common.Models
+namespace SimpleIdentityServer.Core.Common.Models
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public class Representation : ICloneable
     {
         public string Id { get; set; }

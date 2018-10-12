@@ -1,7 +1,7 @@
-﻿using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.AccountFilter.Basic.Common
+﻿namespace SimpleIdentityServer.AccountFilter.Basic
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     public enum ComparisonOperationsDto
     {

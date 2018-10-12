@@ -3,6 +3,8 @@ using System;
 
 namespace SimpleIdentityServer.TwoFactorAuthentication.Email
 {
+    using Core.Common;
+
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddEmailTwoFactorAuthentication(this IServiceCollection services, TwoFactorEmailOptions twoFactorEmailOptions)

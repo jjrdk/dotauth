@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Client.Builders;
-using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Scim.Client
+namespace SimpleIdentityServer.Core.Common
 {
+    using System;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
+    using Newtonsoft.Json.Linq;
+
     public interface IUsersClient
     {
         RequestBuilder AddUser(Uri baseUri, string accessToken = null);

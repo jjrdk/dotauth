@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Common.DTOs;
-using SimpleIdentityServer.Scim.Common.Models;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Parsers;
@@ -29,6 +27,11 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
+    using Common.Dtos.Responses;
+    using SimpleIdentityServer.Core.Common;
+    using SimpleIdentityServer.Core.Common.DTOs;
+    using SimpleIdentityServer.Core.Common.Models;
+
     public interface IUpdateRepresentationAction
     {
         Task<ApiActionResult> Execute(string id, JObject jObj, string schemaId, string locationPattern, string resourceType);
@@ -69,13 +72,13 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 IsError = false;
             }
 
-            public void SetError(ErrorResponse errorResponse)
+            public void SetError(ScimErrorResponse errorResponse)
             {
                 ErrorResponse = errorResponse ?? throw new ArgumentNullException(nameof(errorResponse));
                 IsError = true;
             }
 
-            public ErrorResponse ErrorResponse { get; set; }
+            public ScimErrorResponse ErrorResponse { get; set; }
             public bool IsError { get; set; }
         }
 
@@ -177,26 +180,25 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         {
             var result = new UpdateResponse();
             var complexSource = source as ComplexRepresentationAttribute;
-            var complexTarget = target as ComplexRepresentationAttribute;
-            if (complexTarget != null)
+            if (target is ComplexRepresentationAttribute complexTarget)
             {
                 var schemaAttribute = complexTarget.SchemaAttribute;
                 if (schemaAttribute.MultiValued)
                 {
                     // Check mutability
-                    if (schemaAttribute.Mutability == Common.ScimConstants.SchemaAttributeMutability.Immutable)
+                    if (schemaAttribute.Mutability == ScimConstants.SchemaAttributeMutability.Immutable)
                     {
                         if (complexTarget.CompareTo(complexSource) != 0)
                         {
                             result.SetError(_errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, schemaAttribute.Name),
                                 HttpStatusCode.BadRequest,
-                                Common.ScimConstants.ScimTypeValues.Mutability));
+                                ScimConstants.ScimTypeValues.Mutability));
                             return result;
                         }
                     }
-                    
+
                     // Check uniqueness
-                    if (schemaAttribute.Uniqueness == Common.ScimConstants.SchemaAttributeUniqueness.Server)
+                    if (schemaAttribute.Uniqueness == ScimConstants.SchemaAttributeUniqueness.Server)
                     {
                         var filter = _filterParser.Parse(complexTarget.FullPath);
                         var uniqueAttrs = await _representationStore.SearchValues(resourceType, filter).ConfigureAwait(false);
@@ -205,9 +207,9 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                             if (uniqueAttrs.Any(a => a.CompareTo(complexTarget) == 0))
                             {
                                 result.SetError(_errorResponseFactory.CreateError(
-                                    string.Format(ErrorMessages.TheAttributeMustBeUnique, complexTarget.SchemaAttribute.Name), 
+                                    string.Format(ErrorMessages.TheAttributeMustBeUnique, complexTarget.SchemaAttribute.Name),
                                     HttpStatusCode.BadRequest,
-                                    Common.ScimConstants.ScimTypeValues.Uniqueness));
+                                    ScimConstants.ScimTypeValues.Uniqueness));
                                 return result;
                             }
                         }
@@ -217,21 +219,21 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 complexSource.Values = complexTarget.Values;
                 return result;
             }
-            
+
             // Check mutability
-            if (target.SchemaAttribute.Mutability == Common.ScimConstants.SchemaAttributeMutability.Immutable)
+            if (target.SchemaAttribute.Mutability == ScimConstants.SchemaAttributeMutability.Immutable)
             {
                 if (source.CompareTo(target) != 0)
                 {
                     result.SetError(_errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, target.SchemaAttribute.Name),
                         HttpStatusCode.BadRequest,
-                        Common.ScimConstants.ScimTypeValues.Mutability));
+                        ScimConstants.ScimTypeValues.Mutability));
                     return result;
                 }
             }
 
             // Check uniqueness
-            if (target.SchemaAttribute.Uniqueness == Common.ScimConstants.SchemaAttributeUniqueness.Server)
+            if (target.SchemaAttribute.Uniqueness == ScimConstants.SchemaAttributeUniqueness.Server)
             {
                 var filter = _filterParser.Parse(target.FullPath);
                 var uniqueAttrs = await _representationStore.SearchValues(resourceType, filter).ConfigureAwait(false);
@@ -242,7 +244,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                         result.SetError(_errorResponseFactory.CreateError(
                             string.Format(ErrorMessages.TheAttributeMustBeUnique, target.SchemaAttribute.Name),
                             HttpStatusCode.BadRequest,
-                            Common.ScimConstants.ScimTypeValues.Uniqueness));
+                            ScimConstants.ScimTypeValues.Uniqueness));
                         return result;
                     }
                 }

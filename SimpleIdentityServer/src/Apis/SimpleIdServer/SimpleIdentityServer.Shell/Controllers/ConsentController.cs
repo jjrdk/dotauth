@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
-using SimpleBus.Core;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Translation;
@@ -33,6 +32,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Shell.Controllers
 {
+    using Core.Common;
     using Constants = Host.Constants;
 
     [Area("Shell")]

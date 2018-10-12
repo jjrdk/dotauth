@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Client;
 using SimpleIdentityServer.Common.Dtos.Responses;
 using System;
 using System.Net.Http;
@@ -7,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.UserManagement.Client.Operations
 {
+    using Core.Common;
+
     public interface IUnlinkProfileOperation
     {
         Task<BaseResponse> Execute(string requestUrl, string externalSubject, string currentSubject, string authorizationHeaderValue = null);
