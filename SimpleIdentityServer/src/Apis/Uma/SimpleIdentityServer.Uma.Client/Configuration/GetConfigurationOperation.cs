@@ -15,13 +15,14 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Configuration
 {
+    using System.Net.Http;
+
     public interface IGetConfigurationOperation
     {
         Task<ConfigurationResponse> ExecuteAsync(Uri configurationUri);
@@ -29,9 +30,9 @@ namespace SimpleIdentityServer.Client.Configuration
 
     public class GetConfigurationOperation : IGetConfigurationOperation
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClientFactory;
 
-        public GetConfigurationOperation(IHttpClientFactory httpClientFactory)
+        public GetConfigurationOperation(HttpClient httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -43,8 +44,7 @@ namespace SimpleIdentityServer.Client.Configuration
                 throw new ArgumentNullException(nameof(configurationUri));
             }
 
-            var httpClient = _httpClientFactory.GetHttpClient();
-            var result = await httpClient.GetStringAsync(configurationUri);
+            var result = await _httpClientFactory.GetStringAsync(configurationUri);
             return JsonConvert.DeserializeObject<ConfigurationResponse>(result);
         }
     }

@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Uma.Client.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
@@ -17,9 +16,9 @@ namespace SimpleIdentityServer.Uma.Client.Policy
 
     internal sealed class SearchPoliciesOperation : ISearchPoliciesOperation
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClientFactory;
 
-        public SearchPoliciesOperation(IHttpClientFactory httpClientFactory)
+        public SearchPoliciesOperation(HttpClient httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -31,7 +30,6 @@ namespace SimpleIdentityServer.Uma.Client.Policy
                 throw new ArgumentNullException(nameof(url));
             }
 
-            var httpClient = _httpClientFactory.GetHttpClient();
             var serializedPostPermission = JsonConvert.SerializeObject(parameter);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
             var request = new HttpRequestMessage
@@ -45,7 +43,7 @@ namespace SimpleIdentityServer.Uma.Client.Policy
                 request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
             }
 
-            var httpResult = await httpClient.SendAsync(request);
+            var httpResult = await _httpClientFactory.SendAsync(request);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             try
             {

@@ -22,57 +22,31 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client
 {
+    using System.Net.Http;
+    using Newtonsoft.Json;
+
     public interface IJwksClient
     {
-        JsonWebKeySet Execute(string jwksUrl);
-        JsonWebKeySet Execute(Uri jwksUri);
-        Task<JsonWebKeySet> ExecuteAsync(string jwksUrl);
         Task<JsonWebKeySet> ExecuteAsync(Uri jwksUri);
         Task<JsonWebKeySet> ResolveAsync(string configurationUrl);
     }
 
     internal class JwksClient : IJwksClient
     {
-        private readonly IGetJsonWebKeysOperation _getJsonWebKeysOperation;
+        private readonly HttpClient _client;
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
 
         #region Constructor
 
-        public JwksClient(IGetJsonWebKeysOperation getJsonWebKeysOperation, IGetDiscoveryOperation getDiscoveryOperation)
+        public JwksClient(HttpClient client, IGetDiscoveryOperation getDiscoveryOperation)
         {
-            _getJsonWebKeysOperation = getJsonWebKeysOperation;
+            _client = client;
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
         #endregion
 
         #region Public methods
-
-        public JsonWebKeySet Execute(string jwksUrl)
-        {
-            return ExecuteAsync(jwksUrl).Result;
-        }
-
-        public JsonWebKeySet Execute(Uri jwksUri)
-        {
-            return ExecuteAsync(jwksUri).Result;
-        }
-
-        public Task<JsonWebKeySet> ExecuteAsync(string jwksUrl)
-        {
-            if (string.IsNullOrWhiteSpace(jwksUrl))
-            {
-                throw new ArgumentNullException(nameof(jwksUrl));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(jwksUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, jwksUrl));
-            }
-
-            return ExecuteAsync(uri);
-        }
 
         public Task<JsonWebKeySet> ExecuteAsync(Uri jwksUri)
         {
@@ -81,7 +55,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(jwksUri));
             }
 
-            return _getJsonWebKeysOperation.ExecuteAsync(jwksUri);
+            return GetJwks(jwksUri);
         }
 
         public async Task<JsonWebKeySet> ResolveAsync(string configurationUrl)
@@ -91,16 +65,25 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(configurationUrl));
             }
 
-            Uri uri = null;
-            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out uri))
+            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out var uri))
             {
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
             }
 
             var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            return await ExecuteAsync(discoveryDocument.JwksUri).ConfigureAwait(false);
+            return await ExecuteAsync(new Uri(discoveryDocument.JwksUri)).ConfigureAwait(false);
         }
 
+        private async Task<JsonWebKeySet> GetJwks(Uri jwksUri)
+        {
+            if (jwksUri == null)
+            {
+                throw new ArgumentNullException(nameof(jwksUri));
+            }
+
+            var serializedContent = await _client.GetStringAsync(jwksUri).ConfigureAwait(false);
+            return JsonConvert.DeserializeObject<JsonWebKeySet>(serializedContent);
+        }
         #endregion
     }
 }

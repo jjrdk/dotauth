@@ -23,43 +23,32 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client
 {
+    using Core.Common.DTOs.Responses;
+    using Newtonsoft.Json;
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using System.Security.Cryptography.X509Certificates;
+
     public interface ITokenClient
     {
-        Task<GetTokenResult> ExecuteAsync(string tokenUrl);
         Task<GetTokenResult> ExecuteAsync(Uri tokenUri);
         Task<GetTokenResult> ResolveAsync(string discoveryDocumentationUrl);
     }
 
     internal class TokenClient : ITokenClient
     {
-        private readonly IPostTokenOperation _postTokenOperation;
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
+        private readonly HttpClient _client;
         private readonly RequestBuilder _requestBuilder;
-        
+
         public TokenClient(
+            HttpClient client,
             RequestBuilder requestBuilder,
-            IPostTokenOperation postTokenOperation,
             IGetDiscoveryOperation getDiscoveryOperation)
         {
+            _client = client;
             _requestBuilder = requestBuilder;
-            _postTokenOperation = postTokenOperation;
             _getDiscoveryOperation = getDiscoveryOperation;
-        }
-        
-        public Task<GetTokenResult> ExecuteAsync(string tokenUrl)
-        {
-            if (string.IsNullOrWhiteSpace(tokenUrl))
-            {
-                throw new ArgumentNullException(nameof(tokenUrl));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(tokenUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, tokenUrl));
-            }
-
-            return ExecuteAsync(uri);
         }
 
         public Task<GetTokenResult> ExecuteAsync(Uri tokenUri)
@@ -68,16 +57,18 @@ namespace SimpleIdentityServer.Client
             {
                 throw new ArgumentNullException(nameof(tokenUri));
             }
-            
+
             if (_requestBuilder.Certificate != null)
             {
-                return _postTokenOperation.ExecuteAsync(_requestBuilder.Content,
+                return PostToken(
+                    _requestBuilder.Content,
                     tokenUri,
                     _requestBuilder.AuthorizationHeaderValue,
                     _requestBuilder.Certificate);
             }
-            
-            return _postTokenOperation.ExecuteAsync(_requestBuilder.Content,
+
+            return PostToken(
+                _requestBuilder.Content,
                 tokenUri,
                 _requestBuilder.AuthorizationHeaderValue);
         }
@@ -89,14 +80,62 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
             }
 
-            Uri uri = null;
-            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out uri))
+            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out var uri))
             {
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }
 
             var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            return await ExecuteAsync(discoveryDocument.TokenEndPoint).ConfigureAwait(false);
+            return await ExecuteAsync(new Uri(discoveryDocument.TokenEndPoint)).ConfigureAwait(false);
+        }
+
+        private async Task<GetTokenResult> PostToken(Dictionary<string, string> tokenRequest, Uri requestUri, string authorizationValue, X509Certificate2 certificate = null)
+        {
+            if (tokenRequest == null)
+            {
+                throw new ArgumentNullException(nameof(tokenRequest));
+            }
+
+            if (requestUri == null)
+            {
+                throw new ArgumentNullException(nameof(requestUri));
+            }
+
+            var body = new FormUrlEncodedContent(tokenRequest);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = requestUri
+            };
+            if (certificate != null)
+            {
+                var bytes = certificate.RawData;
+                var base64Encoded = Convert.ToBase64String(bytes);
+                request.Headers.Add("X-ARR-ClientCert", base64Encoded);
+            }
+
+            request.Headers.Add("Authorization", "Basic " + authorizationValue);
+            var result = await _client.SendAsync(request).ConfigureAwait(false);
+            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
+            {
+                result.EnsureSuccessStatusCode();
+            }
+            catch (Exception)
+            {
+                return new GetTokenResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(content),
+                    Status = result.StatusCode
+                };
+            }
+
+            return new GetTokenResult
+            {
+                Content = JsonConvert.DeserializeObject<GrantedTokenResponse>(content)
+            };
         }
     }
 }

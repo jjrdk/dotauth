@@ -22,34 +22,26 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client
 {
+    using Core.Common.DTOs.Responses;
+    using Newtonsoft.Json;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+
     public interface IRegistrationClient
     {
-        GetRegisterClientResult Execute(Core.Common.DTOs.Requests.ClientRequest client, string jwksUrl, string accessToken);
-        GetRegisterClientResult Execute(Core.Common.DTOs.Requests.ClientRequest client, Uri jwksUri, string accessToken);
-        Task<GetRegisterClientResult> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, string registrationUrl, string accessToken);
         Task<GetRegisterClientResult> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, Uri registrationUri, string accessToken);
         Task<GetRegisterClientResult> ResolveAsync(Core.Common.DTOs.Requests.ClientRequest client, string configurationUrl, string accessToken);
     }
 
     internal class RegistrationClient : IRegistrationClient
     {
-        private readonly IRegisterClientOperation _registerClientOperation;
+        private readonly HttpClient _client;
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
 
-        public RegistrationClient(IRegisterClientOperation registerClientOperation, IGetDiscoveryOperation getDiscoveryOperation)
+        public RegistrationClient(HttpClient client, IGetDiscoveryOperation getDiscoveryOperation)
         {
-            _registerClientOperation = registerClientOperation;
+            _client = client;
             _getDiscoveryOperation = getDiscoveryOperation;
-        }
-
-        public GetRegisterClientResult Execute(Core.Common.DTOs.Requests.ClientRequest client, Uri registrationUri, string accessToken)
-        {
-            return ExecuteAsync(client, registrationUri, accessToken).Result;
-        }
-
-        public GetRegisterClientResult Execute(Core.Common.DTOs.Requests.ClientRequest client, string registrationUrl, string accessToken)
-        {
-            return ExecuteAsync(client, registrationUrl, accessToken).Result;
         }
 
         public Task<GetRegisterClientResult> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, Uri registrationUri, string accessToken)
@@ -64,28 +56,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(registrationUri));
             }
 
-            return _registerClientOperation.ExecuteAsync(client, registrationUri, accessToken);
-        }
-
-        public Task<GetRegisterClientResult> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, string registrationUrl, string accessToken)
-        {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            if (string.IsNullOrWhiteSpace(registrationUrl))
-            {
-                throw new ArgumentNullException(nameof(registrationUrl));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(registrationUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, registrationUrl));
-            }
-
-            return ExecuteAsync(client, uri, accessToken);
+            return RegisterClient(client, registrationUri, accessToken);
         }
 
         public async Task<GetRegisterClientResult> ResolveAsync(Core.Common.DTOs.Requests.ClientRequest client, string configurationUrl, string accessToken)
@@ -95,14 +66,65 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(configurationUrl));
             }
 
-            Uri uri = null;
-            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out uri))
+            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out var uri))
             {
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
             }
 
             var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            return await ExecuteAsync(client, discoveryDocument.RegistrationEndPoint, accessToken).ConfigureAwait(false);
+            return await ExecuteAsync(client, new Uri(discoveryDocument.RegistrationEndPoint), accessToken).ConfigureAwait(false);
         }
+
+        private async Task<GetRegisterClientResult> RegisterClient(Core.Common.DTOs.Requests.ClientRequest client, Uri requestUri, string authorizationValue)
+        {
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+
+            if (requestUri == null)
+            {
+                throw new ArgumentNullException(nameof(requestUri));
+            }
+
+            var json = JsonConvert.SerializeObject(client, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = new StringContent(json),
+                RequestUri = requestUri
+            };
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            if (!string.IsNullOrWhiteSpace(authorizationValue))
+            {
+                request.Headers.Add("Authorization", "Bearer " + authorizationValue);
+            }
+
+            var result = await _client.SendAsync(request).ConfigureAwait(false);
+            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
+            {
+                result.EnsureSuccessStatusCode();
+            }
+            catch (Exception)
+            {
+                return new GetRegisterClientResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(content),
+                    Status = result.StatusCode
+                };
+            }
+
+            return new GetRegisterClientResult
+            {
+                ContainsError = false,
+                Content = JsonConvert.DeserializeObject<ClientRegistrationResponse>(content)
+            };
+        }
+
     }
 }

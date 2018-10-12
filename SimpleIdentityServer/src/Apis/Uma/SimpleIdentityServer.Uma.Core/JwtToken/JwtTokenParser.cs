@@ -32,16 +32,16 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
     internal class JwtTokenParser : IJwtTokenParser
     {
         private readonly IJwsParser _jwsParser;
-        private readonly IIdentityServerClientFactory _identityServerClientFactory;
+        private readonly IJwksClient _client;
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
 
         public JwtTokenParser(
             IJwsParser jwsParser,
-            IIdentityServerClientFactory identityServerClientFactory,
+            IJwksClient client,
             IJsonWebKeyConverter jsonWebKeyConverter)
         {
             _jwsParser = jwsParser;
-            _identityServerClientFactory = identityServerClientFactory;
+            _client = client;
             _jsonWebKeyConverter = jsonWebKeyConverter;
         }
 
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
                 return null;
             }
 
-            var jsonWebKeySet = await _identityServerClientFactory.CreateJwksClient()
+            var jsonWebKeySet = await _client // _identityServerClientFactory.CreateJwksClient()
                 .ResolveAsync(openidUrl)
                 .ConfigureAwait(false);
             var jsonWebKeys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);

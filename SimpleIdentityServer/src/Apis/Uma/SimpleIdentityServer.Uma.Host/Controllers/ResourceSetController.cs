@@ -24,7 +24,6 @@ using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using WebApiContrib.Core.Concurrency;
 using static SimpleIdentityServer.Uma.Host.Constants;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
@@ -33,14 +32,11 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
     public class ResourceSetController : Controller
     {
         private readonly IResourceSetActions _resourceSetActions;
-        private readonly IRepresentationManager _representationManager;
 
         public ResourceSetController(
-            IResourceSetActions resourceSetActions,
-            IRepresentationManager representationManager)
+            IResourceSetActions resourceSetActions)
         {
             _resourceSetActions = resourceSetActions;
-            _representationManager = representationManager;
         }
 
         [HttpPost(".search")]
@@ -61,16 +57,16 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         [Authorize("UmaProtection")]
         public async Task<ActionResult> GetResourceSets()
         {
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetResourcesStoreName))
-            {
-                return new ContentResult
-                {
-                    StatusCode = 412
-                };
-            }
+            //if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetResourcesStoreName))
+            //{
+            //    return new ContentResult
+            //    {
+            //        StatusCode = 412
+            //    };
+            //}
 
             var resourceSetIds = await _resourceSetActions.GetAllResourceSet();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName);
+            //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName);
             return new OkObjectResult(resourceSetIds);
         }
 
@@ -83,13 +79,13 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
             }
 
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetResourceStoreName + id))
-            {
-                return new ContentResult
-                {
-                    StatusCode = 412
-                };
-            }
+            //if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetResourceStoreName + id))
+            //{
+            //    return new ContentResult
+            //    {
+            //        StatusCode = 412
+            //    };
+            //}
 
             var result = await _resourceSetActions.GetResourceSet(id);
             if (result == null)
@@ -98,7 +94,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var content = result.ToResponse();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + id);
+            //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + id);
             return new OkObjectResult(content);
         }
 
@@ -117,7 +113,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             {
                 Id = result
             };
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName, false);
+            //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName, false);
             return new ObjectResult(response)
             {
                 StatusCode = (int)HttpStatusCode.Created
@@ -145,7 +141,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 Id = putResourceSet.Id
             };
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + putResourceSet.Id, false);
+            //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + putResourceSet.Id, false);
             return new ObjectResult(response)
             {
                 StatusCode = (int)HttpStatusCode.OK
@@ -169,12 +165,12 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             // Update all the representations include the authorization policies
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + id, false);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName, false);
-            foreach (var policyId in policyIds)
-            {
-                await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + policyId, false);
-            }
+            //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + id, false);
+            //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName, false);
+            //foreach (var policyId in policyIds)
+            //{
+            //    await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + policyId, false);
+            //}
 
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }

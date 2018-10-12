@@ -19,14 +19,14 @@ using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.Permission;
 using SimpleIdentityServer.Client.Policy;
 using SimpleIdentityServer.Client.ResourceSet;
-using SimpleIdentityServer.Common.Client;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Uma.Client.Policy;
 using SimpleIdentityServer.Uma.Client.ResourceSet;
 using System;
 
 namespace SimpleIdentityServer.Client
 {
+    using System.Net.Http;
+
     public interface IIdentityServerUmaClientFactory
     {
         IPermissionClient GetPermissionClient();
@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Client
             _serviceProvider = services.BuildServiceProvider();
         }
 
-        public IdentityServerUmaClientFactory(IHttpClientFactory httpClientFactory)
+        public IdentityServerUmaClientFactory(HttpClient httpClientFactory)
         {
             var services = new ServiceCollection();
             RegisterDependencies(services, httpClientFactory);
@@ -70,16 +70,17 @@ namespace SimpleIdentityServer.Client
             return policyClient;
         }
 
-        private static void RegisterDependencies(IServiceCollection serviceCollection, IHttpClientFactory httpClientFactory = null)
+        private static void RegisterDependencies(IServiceCollection serviceCollection, HttpClient httpClientFactory = null)
         {
-            if (httpClientFactory != null)
-            {
-                serviceCollection.AddSingleton(httpClientFactory);
-            }
-            else
-            {
-                serviceCollection.AddCommonClient();
-            }
+            serviceCollection.AddSingleton(httpClientFactory ?? new HttpClient());
+            //if (httpClientFactory != null)
+            //{
+            //    serviceCollection.AddSingleton(httpClientFactory);
+            //}
+            //else
+            //{
+            //    serviceCollection.AddCommonClient();
+            //}
 
             // Register clients
             serviceCollection.AddTransient<IResourceSetClient, ResourceSetClient>();

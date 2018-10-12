@@ -12,8 +12,15 @@ namespace SimpleIdentityServer.UserInfoIntrospection
 {
     public class UserInfoIntrospectionHandler : AuthenticationHandler<UserInfoIntrospectionOptions>
     {
-        public UserInfoIntrospectionHandler(IOptionsMonitor<UserInfoIntrospectionOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+        private readonly IUserInfoClient _userInfoClient;
+
+        public UserInfoIntrospectionHandler(IOptionsMonitor<UserInfoIntrospectionOptions> options,
+            ILoggerFactory logger,
+            UrlEncoder encoder,
+            IUserInfoClient userInfoClient,
+            ISystemClock clock) : base(options, logger, encoder, clock)
         {
+            _userInfoClient = userInfoClient;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -35,10 +42,10 @@ namespace SimpleIdentityServer.UserInfoIntrospection
                 return AuthenticateResult.NoResult();
             }
 
-            var factory = new IdentityServerClientFactory();
+            //var factory = new IdentityServerClientFactory();
             try
             {
-                var introspectionResult = await factory.CreateUserInfoClient()
+                var introspectionResult = await _userInfoClient
                     .Resolve(Options.WellKnownConfigurationUrl, token)
                     .ConfigureAwait(false);
                 if (introspectionResult == null || introspectionResult.ContainsError)
@@ -48,19 +55,20 @@ namespace SimpleIdentityServer.UserInfoIntrospection
 
                 var claims = new List<Claim>();
                 var values = introspectionResult.Content.ToObject<Dictionary<string, object>>();
-                foreach(var kvp in values)
+                foreach (var kvp in values)
                 {
                     claims.Add(new Claim(kvp.Key, kvp.Value.ToString()));
                 }
+
                 var claimsIdentity = new ClaimsIdentity(claims, UserInfoIntrospectionOptions.AuthenticationScheme);
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 var authenticationTicket = new AuthenticationTicket(
-                                                 claimsPrincipal,
-                                                 new AuthenticationProperties(),
-                                                 UserInfoIntrospectionOptions.AuthenticationScheme);
+                    claimsPrincipal,
+                    new AuthenticationProperties(),
+                    UserInfoIntrospectionOptions.AuthenticationScheme);
                 return AuthenticateResult.Success(authenticationTicket);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return AuthenticateResult.NoResult();
             }

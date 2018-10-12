@@ -22,6 +22,8 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Client.Selectors
 {
+    using AccountFilter;
+
     public interface ITokenGrantTypeSelector
     {
         ITokenClient UseAuthorizationCode(string code, string redirectUrl, string codeVerifier = null);
@@ -43,12 +45,9 @@ namespace SimpleIdentityServer.Client.Selectors
         private readonly IIntrospectClient _introspectClient;
         private readonly IRevokeTokenClient _revokeTokenClient;
         
-        public TokenGrantTypeSelector(RequestBuilder requestBuilder, ITokenClient tokenClient, IIntrospectClient introspectClient, IRevokeTokenClient revokeTokenClient)
+        public TokenGrantTypeSelector(RequestBuilder requestBuilder)
         {
             _requestBuilder = requestBuilder;
-            _tokenClient = tokenClient;
-            _introspectClient = introspectClient;
-            _revokeTokenClient = revokeTokenClient;
         }
 
         public ITokenClient UseAuthorizationCode(string code, string redirectUrl, string codeVerifier = null)

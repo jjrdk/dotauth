@@ -15,7 +15,6 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
@@ -33,12 +32,10 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy
     {
-        private readonly IIdentityServerClientFactory _identityServerClientFactory;
         private readonly IJwtTokenParser _jwtTokenParser;
-        
-        public BasicAuthorizationPolicy(IIdentityServerClientFactory identityServerClientFactory, IJwtTokenParser jwtTokenParser)
+
+        public BasicAuthorizationPolicy(IJwtTokenParser jwtTokenParser)
         {
-            _identityServerClientFactory = identityServerClientFactory;
             _jwtTokenParser = jwtTokenParser;
         }
 
@@ -203,20 +200,17 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                     }
                     else
                     {
-                        var arr = payload.Value as object[];
-                        var jArr = payload.Value as JArray;
-                        if (arr != null)
+                        if (payload.Value is object[] arr)
                         {
                             roles = arr.Select(c => c.ToString());
                         }
-
-                        if (jArr != null)
+                        else if (payload.Value is JArray jArr)
                         {
                             roles = jArr.Select(c => c.ToString());
                         }
                     }
 
-                    if (roles == null || !roles.Any(v => claim.Value == v))
+                    if (roles == null || roles.All(v => claim.Value != v))
                     {
                         return new AuthorizationPolicyResult
                         {

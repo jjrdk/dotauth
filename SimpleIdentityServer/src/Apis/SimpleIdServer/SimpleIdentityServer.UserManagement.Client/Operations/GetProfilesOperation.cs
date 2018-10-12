@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.UserManagement.Client.Results;
 using SimpleIdentityServer.UserManagement.Common.Responses;
@@ -18,9 +17,9 @@ namespace SimpleIdentityServer.UserManagement.Client.Operations
 
     internal sealed class GetProfilesOperation : IGetProfilesOperation
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClientFactory;
 
-        public GetProfilesOperation(IHttpClientFactory httpClientFactory)
+        public GetProfilesOperation(HttpClient httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -64,8 +63,7 @@ namespace SimpleIdentityServer.UserManagement.Client.Operations
                 request.Headers.Add("Authorization", "Bearer " + authorizationValue);
             }
 
-            var httpClient = _httpClientFactory.GetHttpClient();
-            var result = await httpClient.SendAsync(request).ConfigureAwait(false);
+            var result = await _httpClientFactory.SendAsync(request).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             try
             {

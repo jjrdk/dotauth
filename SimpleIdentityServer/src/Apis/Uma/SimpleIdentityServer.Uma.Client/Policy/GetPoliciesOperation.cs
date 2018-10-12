@@ -15,7 +15,6 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Uma.Client.Results;
 using System;
@@ -32,9 +31,9 @@ namespace SimpleIdentityServer.Client.Policy
 
     internal class GetPoliciesOperation : IGetPoliciesOperation
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClientFactory;
 
-        public GetPoliciesOperation(IHttpClientFactory httpClientFactory)
+        public GetPoliciesOperation(HttpClient httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -57,8 +56,7 @@ namespace SimpleIdentityServer.Client.Policy
                 RequestUri = new Uri(url)
             };
             request.Headers.Add("Authorization", "Bearer " + token);
-            var httpClient = _httpClientFactory.GetHttpClient();
-            var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
+            var httpResult = await _httpClientFactory.SendAsync(request).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             try
             {

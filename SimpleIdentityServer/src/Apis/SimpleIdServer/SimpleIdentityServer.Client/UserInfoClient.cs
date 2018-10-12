@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Results;
@@ -23,81 +22,30 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client
 {
+    using Core.Common;
+    using Core.Common.DTOs.Responses;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using System.Collections.Generic;
+    using System.Net.Http;
+
     public interface IUserInfoClient
     {
-        GetUserInfoResult GetUserInfo(string userInfoUrl, string accessToken, bool inBody = false);
-        GetUserInfoResult GetUserInfo(Uri userInfoUri, string accessToken, bool inBody = false);
-        Task<GetUserInfoResult> GetUserInfoAsync(string userInfoUrl, string accessToken, bool inBody = false);
         Task<GetUserInfoResult> GetUserInfoAsync(Uri userInfoUri, string accessToken, bool inBody = false);
         Task<GetUserInfoResult> Resolve(string configurationUrl, string accessToken, bool inBody = false);
     }
 
     internal class UserInfoClient : IUserInfoClient
     {
-        private readonly IGetUserInfoOperation _getUserInfoOperation;
+        private readonly HttpClient _client;
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
 
-        public UserInfoClient(IGetUserInfoOperation getUserInfoOperation,
+        public UserInfoClient(
+            HttpClient client,
             IGetDiscoveryOperation getDiscoveryOperation, bool inBody = false)
         {
-            if (getUserInfoOperation == null)
-            {
-                throw new ArgumentNullException(nameof(getUserInfoOperation));
-            }
-
-            if (getDiscoveryOperation == null)
-            {
-                throw new ArgumentNullException(nameof(getDiscoveryOperation));
-            }
-
-            _getUserInfoOperation = getUserInfoOperation;
-            _getDiscoveryOperation = getDiscoveryOperation;
-        }
-
-        public GetUserInfoResult GetUserInfo(Uri userInfoUri, string authorizationHeader, bool inBody = false)
-        {
-            return GetUserInfoAsync(userInfoUri, authorizationHeader).Result;
-        }
-
-        public GetUserInfoResult GetUserInfo(string userInfoUrl, string accessToken, bool inBody = false)
-        {
-            return GetUserInfoAsync(userInfoUrl, accessToken).Result;
-        }
-
-        public Task<GetUserInfoResult> GetUserInfoAsync(string userInfoUrl, string accessToken, bool inBody = false)
-        {
-            if (string.IsNullOrWhiteSpace(userInfoUrl))
-            {
-                throw new ArgumentNullException(nameof(userInfoUrl));
-            }
-
-            if (string.IsNullOrWhiteSpace(accessToken))
-            {
-                throw new ArgumentNullException(nameof(accessToken));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(userInfoUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, userInfoUrl));
-            }
-
-            return GetUserInfoAsync(uri, accessToken);
-        }
-
-        public Task<GetUserInfoResult> GetUserInfoAsync(Uri userInfoUri, string accessToken, bool inBody = false)
-        {
-            if (userInfoUri == null)
-            {
-                throw new ArgumentNullException(nameof(userInfoUri));
-            }
-
-            if (string.IsNullOrWhiteSpace(accessToken))
-            {
-                throw new ArgumentNullException(nameof(accessToken));
-            }
-            
-            return _getUserInfoOperation.ExecuteAsync(userInfoUri, accessToken, inBody);
+            _client = client;
+            _getDiscoveryOperation = getDiscoveryOperation ?? throw new ArgumentNullException(nameof(getDiscoveryOperation));
         }
 
         public async Task<GetUserInfoResult> Resolve(string configurationUrl, string accessToken, bool inBody = false)
@@ -112,14 +60,80 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
-            Uri uri = null;
-            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out uri))
+            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out Uri uri))
             {
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
             }
 
             var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            return await GetUserInfoAsync(discoveryDocument.UserInfoEndPoint, accessToken).ConfigureAwait(false);
+            return await GetUserInfoAsync(new Uri(discoveryDocument.UserInfoEndPoint), accessToken).ConfigureAwait(false);
+        }
+
+        public async Task<GetUserInfoResult> GetUserInfoAsync(Uri userInfoUri, string accessToken, bool inBody = false)
+        {
+            if (userInfoUri == null)
+            {
+                throw new ArgumentNullException(nameof(userInfoUri));
+            }
+
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            var request = new HttpRequestMessage
+            {
+                RequestUri = userInfoUri
+            };
+            request.Headers.Add("Accept", "application/json");
+
+            if (inBody)
+            {
+                request.Method = HttpMethod.Post;
+                request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    {
+                        GrantedTokenNames.AccessToken, accessToken
+                    }
+                });
+            }
+            else
+            {
+                request.Method = HttpMethod.Get;
+                request.Headers.Add("Authorization", $"Bearer {accessToken}");
+            }
+
+            var serializedContent = await _client.SendAsync(request).ConfigureAwait(false);
+            var json = await serializedContent.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
+            {
+                serializedContent.EnsureSuccessStatusCode();
+            }
+            catch (Exception)
+            {
+                return new GetUserInfoResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json),
+                    Status = serializedContent.StatusCode
+                };
+            }
+
+            var contentType = serializedContent.Content.Headers.ContentType;
+            if (contentType != null && contentType.Parameters != null && contentType.MediaType == "application/jwt")
+            {
+                return new GetUserInfoResult
+                {
+                    ContainsError = false,
+                    JwtToken = json
+                };
+            }
+
+            return new GetUserInfoResult
+            {
+                ContainsError = false,
+                Content = JObject.Parse(json)
+            };
         }
     }
 }

@@ -16,7 +16,6 @@
 
 using Newtonsoft.Json;
 using SimpleIdentityServer.Common.Client;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
@@ -33,9 +32,9 @@ namespace SimpleIdentityServer.Client.Policy
 
     internal class AddResourceToPolicyOperation : IAddResourceToPolicyOperation
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClientFactory;
 
-        public AddResourceToPolicyOperation(IHttpClientFactory httpClientFactory)
+        public AddResourceToPolicyOperation(HttpClient httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -68,7 +67,6 @@ namespace SimpleIdentityServer.Client.Policy
             }
 
             url = url + "/" + id + "/resources";
-            var httpClient = _httpClientFactory.GetHttpClient();
             var serializedPostResourceSet = JsonConvert.SerializeObject(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, "application/json");
             var httpRequest = new HttpRequestMessage
@@ -78,13 +76,13 @@ namespace SimpleIdentityServer.Client.Policy
                 RequestUri = new Uri(url)
             };
             httpRequest.Headers.Add("Authorization", "Bearer " + token);
-            var httpResult = await httpClient.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _httpClientFactory.SendAsync(httpRequest).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             try
             {
                 httpResult.EnsureSuccessStatusCode();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return new BaseResponse
                 {

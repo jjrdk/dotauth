@@ -16,7 +16,6 @@
 
 using Newtonsoft.Json;
 using SimpleIdentityServer.Common.Client;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Common.Dtos.Responses;
 using System;
 using System.Net.Http;
@@ -31,9 +30,9 @@ namespace SimpleIdentityServer.Client.Policy
 
     internal class DeleteResourceFromPolicyOperation : IDeleteResourceFromPolicyOperation
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClientFactory;
 
-        public DeleteResourceFromPolicyOperation(IHttpClientFactory httpClientFactory)
+        public DeleteResourceFromPolicyOperation(HttpClient httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -66,14 +65,13 @@ namespace SimpleIdentityServer.Client.Policy
             }
 
             url = url + "/" + id + "/resources/" + resourceId;
-            var httpClient = _httpClientFactory.GetHttpClient();
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Delete,
                 RequestUri = new Uri(url)
             };
             httpRequest.Headers.Add("Authorization", "Bearer " + token);
-            var httpResult = await httpClient.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _httpClientFactory.SendAsync(httpRequest).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             try
             {

@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using SimpleIdentityServer.Common.Client;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.UserManagement.Common.Requests;
 using System;
@@ -18,9 +17,9 @@ namespace SimpleIdentityServer.UserManagement.Client.Operations
 
     internal sealed class LinkProfileOperation : ILinkProfileOperation
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClientFactory;
 
-        public LinkProfileOperation(IHttpClientFactory httpClientFactory)
+        public LinkProfileOperation(HttpClient httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -60,7 +59,6 @@ namespace SimpleIdentityServer.UserManagement.Client.Operations
 
         private async Task<BaseResponse> Link(string requestUrl, LinkProfileRequest linkProfileRequest, string authorizationHeaderValue = null)
         {
-            var httpClient = _httpClientFactory.GetHttpClient();
             var json = JsonConvert.SerializeObject(linkProfileRequest, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
@@ -77,7 +75,7 @@ namespace SimpleIdentityServer.UserManagement.Client.Operations
                 request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
             }
 
-            var result = await httpClient.SendAsync(request).ConfigureAwait(false);
+            var result = await _httpClientFactory.SendAsync(request).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             try
             {

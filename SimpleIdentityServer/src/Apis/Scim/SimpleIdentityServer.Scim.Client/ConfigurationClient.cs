@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Common.Client.Factories;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -14,11 +13,11 @@ namespace SimpleIdentityServer.Scim.Client
 
     internal class ConfigurationClient : IConfigurationClient
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _client;
 
-        public ConfigurationClient(IHttpClientFactory httpClientFactory)
+        public ConfigurationClient(HttpClient client)
         {
-            _httpClientFactory = httpClientFactory;
+            _client = client;
         }
 
         public async Task<JObject> GetServiceProviderConfig(string baseUri)
@@ -33,13 +32,12 @@ namespace SimpleIdentityServer.Scim.Client
 
         private async Task<string> Get(Uri baseUri)
         {
-            var client = _httpClientFactory.GetHttpClient();
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
                 RequestUri = baseUri
             };
-            var result = await client.SendAsync(request).ConfigureAwait(false);
+            var result = await _client.SendAsync(request).ConfigureAwait(false);
             result.EnsureSuccessStatusCode();
             return await result.Content.ReadAsStringAsync().ConfigureAwait(false);
         }

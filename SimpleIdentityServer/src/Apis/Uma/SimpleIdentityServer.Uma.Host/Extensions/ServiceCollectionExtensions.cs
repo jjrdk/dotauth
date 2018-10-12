@@ -32,14 +32,12 @@ using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WebApiContrib.Core.Concurrency;
-using WebApiContrib.Core.Storage;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        private static List<Scope> DEFAULT_SCOPES = new List<Scope>
+        private static readonly List<Scope> DEFAULT_SCOPES = new List<Scope>
         {
             new Scope
             {
@@ -97,18 +95,20 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 
         private static void RegisterServices(IServiceCollection services, AuthorizationServerOptions authorizationServerOptions)
         {
-            services.AddSimpleIdServerUmaCore(authorizationServerOptions.UmaConfigurationOptions, 
-                authorizationServerOptions.Configuration == null ? null : authorizationServerOptions.Configuration.Resources,
-                authorizationServerOptions.Configuration == null ? null : authorizationServerOptions.Configuration.Policies)
-                .AddSimpleIdentityServerCore(authorizationServerOptions.OAuthConfigurationOptions, null, 
-                    clients: authorizationServerOptions.Configuration == null ? null : authorizationServerOptions.Configuration.Clients,
-                    scopes: authorizationServerOptions.Configuration == null ? DEFAULT_SCOPES : authorizationServerOptions.Configuration.Scopes,
+            services.AddSimpleIdServerUmaCore(authorizationServerOptions.UmaConfigurationOptions,
+                    authorizationServerOptions.Configuration?.Resources,
+                    authorizationServerOptions.Configuration?.Policies)
+                .AddSimpleIdentityServerCore(authorizationServerOptions.OAuthConfigurationOptions,
+                    clients: authorizationServerOptions.Configuration?.Clients,
+                    scopes: authorizationServerOptions.Configuration == null
+                        ? DEFAULT_SCOPES
+                        : authorizationServerOptions.Configuration.Scopes,
                     claims: new List<ClaimAggregate>())
                 .AddSimpleIdentityServerJwt()
-                .AddIdServerClient()
-                .AddDefaultTokenStore()
-                .AddDefaultSimpleBus()
-                .AddConcurrency(opt => opt.UseInMemory());
+                //.AddIdServerClient()
+                .AddDefaultTokenStore();
+                //.AddDefaultSimpleBus()
+                //.AddConcurrency(opt => opt.UseInMemory());
             services.AddTechnicalLogging();
             services.AddOAuthLogging();
             services.AddUmaLogging();

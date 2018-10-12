@@ -8,12 +8,14 @@ using Xunit;
 
 namespace SimpleIdentityServer.Host.Tests.Apis
 {
+    using System.Net.Http;
+
     public class UserInfoClientFixture : IClassFixture<TestOauthServerFixture>
     {
         private const string baseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
-        private Mock<IHttpClientFactory> _httpClientFactoryStub;
-        private IClientAuthSelector _clientAuthSelector;
+        private Mock<HttpClient> _httpClientFactoryStub;
+        //private IClientAuthSelector _clientAuthSelector;
         private IUserInfoClient _userInfoClient;
 
         public UserInfoClientFixture(TestOauthServerFixture server)

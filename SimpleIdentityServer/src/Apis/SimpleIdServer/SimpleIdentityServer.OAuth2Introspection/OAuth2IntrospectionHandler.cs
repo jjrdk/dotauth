@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SimpleIdentityServer.Client;
@@ -12,10 +11,21 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.OAuth2Introspection
 {
+    using System.Net.Http;
+    using AccountFilter;
+    using Core.Factories;
+
     public class OAuth2IntrospectionHandler : AuthenticationHandler<OAuth2IntrospectionOptions>
     {
-        public OAuth2IntrospectionHandler(IOptionsMonitor<OAuth2IntrospectionOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+        private readonly IIntrospectClient _client;
+
+        public OAuth2IntrospectionHandler(IOptionsMonitor<OAuth2IntrospectionOptions> options,
+            ILoggerFactory logger,
+            UrlEncoder encoder,
+            ISystemClock clock,
+            IIntrospectClient client) : base(options, logger, encoder, clock)
         {
+            _client = client;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -37,12 +47,12 @@ namespace SimpleIdentityServer.OAuth2Introspection
                 return AuthenticateResult.NoResult();
             }
 
-            var factory = new IdentityServerClientFactory();
+            //var factory = new IdentityServerClientFactory(_clientFactory);
             try
             {
-                var introspectionResult = await factory.CreateAuthSelector()
-                    .UseClientSecretPostAuth(Options.ClientId, Options.ClientSecret)
-                    .Introspect(token, TokenType.AccessToken)
+                var introspectionResult = await _client //factory.CreateAuthSelector()
+                    //.UseClientSecretPostAuth(Options.ClientId, Options.ClientSecret)
+                    //.Introspect(token, TokenType.AccessToken)
                     .ResolveAsync(Options.WellKnownConfigurationUrl);
                 if (introspectionResult.ContainsError || !introspectionResult.Content.Active)
                 {
@@ -57,7 +67,8 @@ namespace SimpleIdentityServer.OAuth2Introspection
 
                 if (!string.IsNullOrWhiteSpace(introspectionResult.Content.Subject))
                 {
-                    claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, introspectionResult.Content.Subject));
+                    claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                        introspectionResult.Content.Subject));
                 }
 
                 if (!string.IsNullOrWhiteSpace(introspectionResult.Content.ClientId))
@@ -81,12 +92,12 @@ namespace SimpleIdentityServer.OAuth2Introspection
                 var claimsIdentity = new ClaimsIdentity(claims, OAuth2IntrospectionOptions.AuthenticationScheme);
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 var authenticationTicket = new AuthenticationTicket(
-                                                 claimsPrincipal,
-                                                 new AuthenticationProperties(),
-                                                 OAuth2IntrospectionOptions.AuthenticationScheme);
+                    claimsPrincipal,
+                    new AuthenticationProperties(),
+                    OAuth2IntrospectionOptions.AuthenticationScheme);
                 return AuthenticateResult.Success(authenticationTicket);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return AuthenticateResult.NoResult();
             }

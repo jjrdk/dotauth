@@ -15,29 +15,30 @@
 #endregion
 
 using SimpleIdentityServer.AccessToken.Store;
+using SimpleIdentityServer.AccountFilter;
 using SimpleIdentityServer.Core.Api.Profile.Actions;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.OpenId.Logging;
-using SimpleIdentityServer.Scim.Client;
-using SimpleIdentityServer.AccountFilter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
+    using Scim.Client;
+
     public interface IAddUserOperation
     {
         Task<bool> Execute(AddUserParameter addUserParameter, AuthenticationParameter authenticationParameter, string scimBaseUrl = null, bool addScimResource = false, string issuer = null);
     }
-    
+
     public class AddUserOperation : IAddUserOperation
     {
         private class ScimUser
@@ -52,28 +53,28 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             public string Url { get; set; }
         }
 
+        private readonly IUsersClient _usersClient;
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IClaimRepository _claimRepository;
         private readonly IAccessTokenStore _tokenStore;
-        private readonly IScimClientFactory _scimClientFactory;
         private readonly IEnumerable<IAccountFilter> _accountFilters;
         private readonly ILinkProfileAction _linkProfileAction;
         private readonly IOpenIdEventSource _openidEventSource;
 
         public AddUserOperation(
+            IUsersClient usersClient,
             IResourceOwnerRepository resourceOwnerRepository,
             IClaimRepository claimRepository,
-            IAccessTokenStore tokenStore,            
-            IScimClientFactory scimClientFactory,        
+            IAccessTokenStore tokenStore,
             ILinkProfileAction linkProfileAction,
             IEnumerable<IAccountFilter> accountFilters,
             IOpenIdEventSource openIdEventSource,
             ISubjectBuilder subjectBuilder)
         {
+            _usersClient = usersClient;
             _resourceOwnerRepository = resourceOwnerRepository;
             _claimRepository = claimRepository;
             _tokenStore = tokenStore;
-            _scimClientFactory = scimClientFactory;
             _accountFilters = accountFilters;
             _linkProfileAction = linkProfileAction;
             _openidEventSource = openIdEventSource;
@@ -136,13 +137,13 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             if (_accountFilters != null)
             {
                 var isFilterValid = true;
-                foreach(var resourceOwnerFilter in _accountFilters)
+                foreach (var resourceOwnerFilter in _accountFilters)
                 {
                     var userFilterResult = await resourceOwnerFilter.Check(newClaims);
                     if (!userFilterResult.IsValid)
                     {
                         isFilterValid = false;
-                        foreach(var ruleResult in userFilterResult.AccountFilterRules)
+                        foreach (var ruleResult in userFilterResult.AccountFilterRules)
                         {
                             if (!ruleResult.IsValid)
                             {
@@ -161,7 +162,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                     throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheUserIsNotAuthorized);
                 }
             }
-            
+
             // 3. Add the scim resource.
             if (addScimResource)
             {
@@ -190,7 +191,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 TwoFactorAuthentication = string.Empty,
                 IsLocalAccount = true,
                 Password = PasswordHelper.ComputeHash(addUserParameter.Password)
-            };                        
+            };
             if (!await _resourceOwnerRepository.InsertAsync(newResourceOwner))
             {
                 throw new IdentityServerException(Errors.ErrorCodes.UnhandledExceptionCode,
@@ -219,7 +220,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 "scim_manage"
             });
 
-            var scimResponse = await _scimClientFactory.GetUserClient().AddUser(scimBaseUrl, grantedToken.AccessToken)
+            var scimResponse = await _usersClient.AddUser(scimBaseUrl, grantedToken.AccessToken)
                 .SetCommonAttributes(subject)
                 .Execute();
             var scimId = scimResponse.Content["id"].ToString();

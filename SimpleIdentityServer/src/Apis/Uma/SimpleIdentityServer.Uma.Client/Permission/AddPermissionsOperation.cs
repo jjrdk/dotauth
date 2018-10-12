@@ -15,7 +15,6 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Uma.Client.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
@@ -35,9 +34,9 @@ namespace SimpleIdentityServer.Client.Permission
 
     internal class AddPermissionsOperation : IAddPermissionsOperation
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClientFactory;
 
-        public AddPermissionsOperation(IHttpClientFactory httpClientFactory)
+        public AddPermissionsOperation(HttpClient httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -59,7 +58,6 @@ namespace SimpleIdentityServer.Client.Permission
                 throw new ArgumentNullException(nameof(token));
             }
 
-            var httpClient = _httpClientFactory.GetHttpClient();
             var serializedPostPermission = JsonConvert.SerializeObject(request);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
             var httpRequest = new HttpRequestMessage
@@ -69,7 +67,7 @@ namespace SimpleIdentityServer.Client.Permission
                 RequestUri = new Uri(url)
             };
             httpRequest.Headers.Add("Authorization", "Bearer " + token);
-            var result = await httpClient.SendAsync(httpRequest).ConfigureAwait(false);
+            var result = await _httpClientFactory.SendAsync(httpRequest).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             try
             {
@@ -115,7 +113,6 @@ namespace SimpleIdentityServer.Client.Permission
 
             url = url + "/bulk";
 
-            var httpClient = _httpClientFactory.GetHttpClient();
             var serializedPostPermission = JsonConvert.SerializeObject(request);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
             var httpRequest = new HttpRequestMessage
@@ -125,13 +122,13 @@ namespace SimpleIdentityServer.Client.Permission
                 RequestUri = new Uri(url)
             };
             httpRequest.Headers.Add("Authorization", "Bearer " + token);
-            var result = await httpClient.SendAsync(httpRequest).ConfigureAwait(false);
+            var result = await _httpClientFactory.SendAsync(httpRequest).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             try
             {
                 result.EnsureSuccessStatusCode();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return new AddPermissionResult
                 {
