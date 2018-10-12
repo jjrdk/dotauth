@@ -616,19 +616,14 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
         }
 
-        private bool ValidateClaimValue(
-            string claimValue,
-            ClaimParameter claimParameter)
+        private bool ValidateClaimValue(object claimValue, ClaimParameter claimParameter)
         {
-            if (claimParameter.EssentialParameterExist &&
-                string.IsNullOrWhiteSpace(claimValue) &&
-                claimParameter.Essential)
+            if (claimParameter.EssentialParameterExist && (claimValue == null || string.IsNullOrWhiteSpace(claimValue.ToString())) && claimParameter.Essential)
             {
                 return false;                  
             }
 
-            if (claimParameter.ValueParameterExist && 
-                claimValue != claimParameter.Value)
+            if (claimParameter.ValueParameterExist && claimValue.ToString() != claimParameter.Value)
             {
                 return false;
             }
@@ -642,7 +637,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
             return true;
         }
-
+		
         private bool ValidateClaimValues(
             string[] claimValues,
             ClaimParameter claimParameter)
@@ -670,9 +665,9 @@ namespace SimpleIdentityServer.Core.JwtToken
             return true;
         }
 
-        private async Task<Dictionary<string, string>> GetClaimsFromRequestedScopes(IEnumerable<string> scopes, ClaimsPrincipal claimsPrincipal)
+         private async Task<Dictionary<string, object>> GetClaimsFromRequestedScopes(IEnumerable<string> scopes, ClaimsPrincipal claimsPrincipal)
         {
-            var result = new Dictionary<string, string>();
+            var result = new Dictionary<string, object>();
             var returnedScopes = await _scopeRepository.SearchByNamesAsync(scopes);
             foreach (var returnedScope in returnedScopes)
             {
@@ -682,11 +677,9 @@ namespace SimpleIdentityServer.Core.JwtToken
             return result;
         }
 
-        private Dictionary<string, string> GetClaims(
-            IEnumerable<string> claims,
-            ClaimsPrincipal claimsPrincipal)
+        private Dictionary<string, object> GetClaims(IEnumerable<string> claims, ClaimsPrincipal claimsPrincipal)
         {
-            var result = new Dictionary<string, string>();
+            var result = new Dictionary<string, object>();
             var openIdClaims = _claimsMapping.MapToOpenIdClaims(claimsPrincipal.Claims);
             var tmp = openIdClaims.Where(oc => claims.Contains(oc.Key))
                 .Select(oc => new { key = oc.Key, val = oc.Value });

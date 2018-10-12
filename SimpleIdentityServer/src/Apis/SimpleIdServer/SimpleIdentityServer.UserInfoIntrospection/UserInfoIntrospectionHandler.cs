@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Common.Client.Factories;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -16,12 +18,12 @@ namespace SimpleIdentityServer.UserInfoIntrospection
         {
         }
 
-        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             string authorization = Request.Headers["Authorization"];
             if (string.IsNullOrWhiteSpace(authorization))
             {
-                return AuthenticateResult.NoResult();
+                return Task.FromResult(AuthenticateResult.NoResult());
             }
 
             string token = null;
@@ -32,14 +34,19 @@ namespace SimpleIdentityServer.UserInfoIntrospection
 
             if (string.IsNullOrEmpty(token))
             {
-                return AuthenticateResult.NoResult();
+                return Task.FromResult(AuthenticateResult.NoResult());
             }
 
-            var factory = new IdentityServerClientFactory();
+            return HandleAuthenticate(Options.HttpClientFactory, Options.WellKnownConfigurationUrl, token);
+        }
+        
+        internal static async Task<AuthenticateResult> HandleAuthenticate(IHttpClientFactory httpClientFactory, string wellKnownConfiguration, string token)
+        {
+            var factory = new IdentityServerClientFactory(httpClientFactory);
             try
             {
                 var introspectionResult = await factory.CreateUserInfoClient()
-                    .Resolve(Options.WellKnownConfigurationUrl, token)
+                    .Resolve(wellKnownConfiguration, token)
                     .ConfigureAwait(false);
                 if (introspectionResult == null || introspectionResult.ContainsError)
                 {
@@ -48,22 +55,40 @@ namespace SimpleIdentityServer.UserInfoIntrospection
 
                 var claims = new List<Claim>();
                 var values = introspectionResult.Content.ToObject<Dictionary<string, object>>();
-                foreach(var kvp in values)
+                foreach (var kvp in values)
                 {
-                    claims.Add(new Claim(kvp.Key, kvp.Value.ToString()));
+                    claims.AddRange(Convert(kvp));
                 }
+
                 var claimsIdentity = new ClaimsIdentity(claims, UserInfoIntrospectionOptions.AuthenticationScheme);
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                var authenticationTicket = new AuthenticationTicket(
-                                                 claimsPrincipal,
-                                                 new AuthenticationProperties(),
-                                                 UserInfoIntrospectionOptions.AuthenticationScheme);
+                var authenticationTicket = new AuthenticationTicket(claimsPrincipal, new AuthenticationProperties(), UserInfoIntrospectionOptions.AuthenticationScheme);
                 return AuthenticateResult.Success(authenticationTicket);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return AuthenticateResult.NoResult();
             }
+        }
+
+        private static List<Claim> Convert(KeyValuePair<string, object> kvp)
+        {
+            var arr = kvp.Value as JArray;
+            if (arr == null)
+            {
+                return new List<Claim>
+                {
+                    new Claim(kvp.Key, kvp.Value.ToString())
+                };
+            }
+
+            var result = new List<Claim>();
+            foreach(var r in arr)
+            {
+                result.Add(new Claim(kvp.Key, r.ToString()));
+            }
+
+            return result;
         }
     }
 }
