@@ -18,21 +18,15 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
         private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
         private readonly ITokenStore _tokenStore;
 
-        #region Constructor
-
         public RotateJsonWebKeysOperation(IJsonWebKeyRepository jsonWebKeyRepository, ITokenStore tokenStore)
         {
             _jsonWebKeyRepository = jsonWebKeyRepository;
             _tokenStore = tokenStore;
         }
 
-        #endregion
-
-        #region Public methods
-
         public async Task<bool> Execute()
         {
-            var jsonWebKeys = await _jsonWebKeyRepository.GetAllAsync();
+            var jsonWebKeys = await _jsonWebKeyRepository.GetAllAsync().ConfigureAwait(false);
             if (jsonWebKeys == null ||
                 !jsonWebKeys.Any())
             {
@@ -58,13 +52,11 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
                 }
 
                 jsonWebKey.SerializedKey = serializedRsa;
-                await _jsonWebKeyRepository.UpdateAsync(jsonWebKey);
+                await _jsonWebKeyRepository.UpdateAsync(jsonWebKey).ConfigureAwait(false);
             }
 
             await _tokenStore.Clean().ConfigureAwait(false);
             return true;
         }
-
-        #endregion
     }
 }

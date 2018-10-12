@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -46,7 +44,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getJwsPayload.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getJwsPayload.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -58,7 +56,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = false }));
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<AuthorizationException>(() => _getJwsPayload.Execute("access_token"));
+            await Assert.ThrowsAsync<AuthorizationException>(() => _getJwsPayload.Execute("access_token")).ConfigureAwait(false);
         }
 
         [Fact]
@@ -74,7 +72,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
                 .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getJwsPayload.Execute("access_token"));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getJwsPayload.Execute("access_token")).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidToken);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientIdDoesntExist, "client_id"));
@@ -93,7 +91,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
                 .Returns(() => Task.FromResult(new Core.Common.Models.Client()));
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getJwsPayload.Execute("access_token"));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getJwsPayload.Execute("access_token")).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidToken);
             Assert.True(exception.Message == ErrorDescriptions.TheTokenIsNotAValidResourceOwnerToken);
@@ -120,7 +118,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
                 .Returns(Task.FromResult(client));
 
             // ACT
-            var result = await _getJwsPayload.Execute("access_token");
+            var result = await _getJwsPayload.Execute("access_token").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -147,7 +145,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
                 .Returns(Task.FromResult(client));
 
             // ACT
-            var result = await _getJwsPayload.Execute("access_token");
+            var result = await _getJwsPayload.Execute("access_token").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -180,7 +178,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
                 .Returns(Task.FromResult(jwt));
 
             // ACT
-            var result = await _getJwsPayload.Execute("access_token");
+            var result = await _getJwsPayload.Execute("access_token").ConfigureAwait(false);
 
             // ASSERT
             _jwtGeneratorFake.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), It.IsAny<JwsAlg>()));

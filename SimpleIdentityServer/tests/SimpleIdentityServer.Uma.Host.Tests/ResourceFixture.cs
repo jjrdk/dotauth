@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2016 Habart Thierry
+﻿// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -42,10 +40,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             _server = server;
         }
 
-        #region Errors
-
-        #region Add
-
         [Fact]
         public async Task When_Add_Resource_And_No_Name_Is_Specified_Then_Error_Is_Returned()
         {
@@ -55,10 +49,10 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = string.Empty
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                {
+                    Name = string.Empty
+                },
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -76,10 +70,10 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "name"
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                {
+                    Name = "name"
+                },
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -97,15 +91,15 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "name",
-                Scopes = new List<string>
                 {
-                    "scope"
+                    Name = "name",
+                    Scopes = new List<string>
+                    {
+                        "scope"
+                    },
+                    IconUri = "invalid"
                 },
-                IconUri = "invalid"
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -113,10 +107,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.Equal("invalid_request", resource.Error.Error);
             Assert.Equal("the url invalid is not well formed", resource.Error.ErrorDescription);
         }
-
-        #endregion
-
-        #region Get
 
         [Fact]
         public async Task When_Get_Unknown_Resource_Then_Error_Is_Returned()
@@ -127,7 +117,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.GetByResolution("unknown",
-                baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -135,10 +125,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.Equal("not_found", resource.Error.Error);
             Assert.Equal("resource cannot be found", resource.Error.ErrorDescription);
         }
-
-        #endregion
-
-        #region Delete
 
         [Fact]
         public async Task When_Delete_Unknown_Resource_Then_Error_Is_Returned()
@@ -149,7 +135,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.DeleteByResolution("unknown",
-                baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -157,10 +143,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.Equal("not_found", resource.Error.Error);
             Assert.Equal("resource cannot be found", resource.Error.ErrorDescription);
         }
-
-        #endregion
-
-        #region Update
 
         [Fact]
         public async Task When_Update_Resource_And_No_Id_Is_Specified_Then_Error_Is_Returned()
@@ -170,7 +152,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet(), baseUrl + "/.well-known/uma2-configuration", "header");
+            var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet(), baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -188,11 +170,11 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
-            {
-                Id = "invalid",
-                Name = string.Empty
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                {
+                    Id = "invalid",
+                    Name = string.Empty
+                },
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -210,11 +192,11 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
-            {
-                Id = "invalid",
-                Name = "name"
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                {
+                    Id = "invalid",
+                    Name = "name"
+                },
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -232,16 +214,16 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
-            {
-                Id = "invalid",
-                Name = "name",
-                Scopes = new List<string>
                 {
-                    "scope"
+                    Id = "invalid",
+                    Name = "name",
+                    Scopes = new List<string>
+                    {
+                        "scope"
+                    },
+                    IconUri = "invalid"
                 },
-                IconUri = "invalid"
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -259,15 +241,15 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
-            {
-                Id = "invalid",
-                Name = "name",
-                Scopes = new List<string>
                 {
-                    "scope"
-                }
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                    Id = "invalid",
+                    Name = "name",
+                    Scopes = new List<string>
+                    {
+                        "scope"
+                    }
+                },
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -275,14 +257,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.Equal("not_found", resource.Error.Error);
             Assert.Equal("resource cannot be found", resource.Error.ErrorDescription);
         }
-
-        #endregion
-
-        #endregion
-
-        #region Happy path
-
-        #region Get all
 
         [Fact]
         public async Task When_Getting_Resources_Then_Identifiers_Are_Returned()
@@ -293,16 +267,12 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resources = await _resourceSetClient.GetAllByResolution(
-                baseUrl + "/.well-known/uma2-configuration", "token");
+                baseUrl + "/.well-known/uma2-configuration", "token").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resources.Content);
             Assert.True(resources.Content.Any());
         }
-
-        #endregion
-
-        #region Get
 
         [Fact]
         public async Task When_Getting_ResourceInformation_Then_Dto_Is_Returned()
@@ -313,17 +283,13 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resources = await _resourceSetClient.GetAllByResolution(
-                baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var resource = await _resourceSetClient.GetByResolution(resources.Content.First(),
-                baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
         }
-
-        #endregion
-
-        #region Delete
 
         [Fact]
         public async Task When_Deleting_ResourceInformation_Then_It_Doesnt_Exist()
@@ -334,21 +300,17 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resources = await _resourceSetClient.GetAllByResolution(
-                baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var resource = await _resourceSetClient.DeleteByResolution(resources.Content.First(),
-                baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var information = await _resourceSetClient.GetByResolution(resources.Content.First(),
-                baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.False(resource.ContainsError);
             Assert.True(information.ContainsError);
             Assert.NotNull(information);
         }
-
-        #endregion
-
-        #region Add
 
         [Fact]
         public async Task When_Adding_Resource_Then_Information_Can_Be_Retrieved()
@@ -359,22 +321,18 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "name",
-                Scopes = new List<string>
                 {
-                    "scope"
-                }
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                    Name = "name",
+                    Scopes = new List<string>
+                    {
+                        "scope"
+                    }
+                },
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
         }
-
-        #endregion
-
-        #region Search
 
         [Fact]
         public async Task When_Search_Resources_Then_List_Is_Returned()
@@ -385,21 +343,17 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.ResolveSearch(baseUrl + "/.well-known/uma2-configuration", new SearchResourceSet
-            {
-                StartIndex = 0,
-                TotalResults = 100
-            },
-            "header");
+                {
+                    StartIndex = 0,
+                    TotalResults = 100
+                },
+                "header").ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(resource);
             Assert.False(resource.ContainsError);
             Assert.True(resource.Content.Content.Any());
         }
-
-        #endregion
-
-        #region Update
 
         [Fact]
         public async Task When_Updating_Resource_Then_Changes_Are_Persisted()
@@ -408,27 +362,27 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "name",
-                Scopes = new List<string>
                 {
-                    "scope"
-                }
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                    Name = "name",
+                    Scopes = new List<string>
+                    {
+                        "scope"
+                    }
+                },
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var updateResult = await _resourceSetClient.UpdateByResolution(new PutResourceSet
-            {
-                Id = resource.Content.Id,
-                Name = "name2",
-                Type = "type",
-                Scopes = new List<string>
                 {
-                    "scope2"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var information = await _resourceSetClient.GetByResolution(updateResult.Content.Id, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Id = resource.Content.Id,
+                    Name = "name2",
+                    Type = "type",
+                    Scopes = new List<string>
+                    {
+                        "scope2"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var information = await _resourceSetClient.GetByResolution(updateResult.Content.Id, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(information);
@@ -436,10 +390,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.True(information.Content.Type == "type");
             Assert.True(information.Content.Scopes.Count() == 1 && information.Content.Scopes.First() == "scope2");
         }
-
-        #endregion
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

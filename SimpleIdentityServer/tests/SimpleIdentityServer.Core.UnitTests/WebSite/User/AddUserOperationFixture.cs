@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.AccessToken.Store;
@@ -51,11 +49,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter(null, null), null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter("name", null), null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter("name", "password"), null, null, true));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter("name", "password"), new AuthenticationParameter(), null, true));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter(null, null), null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter("name", null), null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter("name", "password"), null, null, true)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter("name", "password"), new AuthenticationParameter(), null, true)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -69,7 +67,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 .Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _addResourceOwnerAction.Execute(parameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _addResourceOwnerAction.Execute(parameter, null)).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(exception);
@@ -86,7 +84,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             var parameter = new AddUserParameter("name", "password");
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _addResourceOwnerAction.Execute(parameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _addResourceOwnerAction.Execute(parameter, null)).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(exception);
@@ -105,7 +103,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             _resourceOwnerRepositoryStub.Setup(r => r.InsertAsync(It.IsAny<ResourceOwner>())).Returns(Task.FromResult(true));
 
             // ACT
-            await _addResourceOwnerAction.Execute(parameter, null);
+            await _addResourceOwnerAction.Execute(parameter, null).ConfigureAwait(false);
 
             // ASSERT
             _resourceOwnerRepositoryStub.Verify(r => r.InsertAsync(It.IsAny<ResourceOwner>()));

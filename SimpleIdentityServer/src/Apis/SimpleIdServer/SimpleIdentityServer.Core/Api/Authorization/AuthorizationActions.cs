@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleBus.Core;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
@@ -84,7 +82,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             _eventPublisher.Publish(new AuthorizationRequestReceived(Guid.NewGuid().ToString(), processId,  _payloadSerializer.GetPayload(parameter), 0));
             try
             {
-                var client = await _authorizationCodeGrantTypeParameterValidator.ValidateAsync(parameter);
+                var client = await _authorizationCodeGrantTypeParameterValidator.ValidateAsync(parameter).ConfigureAwait(false);
                 ActionResult actionResult = null;
                 _oauthEventSource.StartAuthorization(parameter.ClientId,
                     parameter.ResponseType,
@@ -100,13 +98,13 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                 switch (authorizationFlow)
                 {
                     case AuthorizationFlow.AuthorizationCodeFlow:
-                        actionResult = await _getAuthorizationCodeOperation.Execute(parameter, claimsPrincipal, client, issuerName);
+                        actionResult = await _getAuthorizationCodeOperation.Execute(parameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
                         break;
                     case AuthorizationFlow.ImplicitFlow:
-                        actionResult = await _getTokenViaImplicitWorkflowOperation.Execute(parameter, claimsPrincipal, client, issuerName);
+                        actionResult = await _getTokenViaImplicitWorkflowOperation.Execute(parameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
                         break;
                     case AuthorizationFlow.HybridFlow:
-                        actionResult = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(parameter, claimsPrincipal, client, issuerName);
+                        actionResult = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(parameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
                         break;
                 }
 

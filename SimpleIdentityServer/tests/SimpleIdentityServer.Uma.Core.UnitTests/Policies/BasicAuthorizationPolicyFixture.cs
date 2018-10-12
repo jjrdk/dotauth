@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using Newtonsoft.Json.Linq;
@@ -44,8 +42,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(new TicketLineParameter("client_id"), null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(new TicketLineParameter("client_id"), null, null)).ConfigureAwait(false);
         }
         
         [Fact]
@@ -78,7 +76,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
@@ -121,7 +119,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
             
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
@@ -181,7 +179,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
@@ -256,7 +254,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 .Returns(Task.FromResult((JwsPayload)null));
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
@@ -325,7 +323,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 }));
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
@@ -389,7 +387,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 .Returns(Task.FromResult(new JwsPayload()));
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
@@ -455,7 +453,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 .Returns(Task.FromResult(payload));
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
@@ -521,7 +519,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 .Returns(Task.FromResult(payload));
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
@@ -590,7 +588,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 }));
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
@@ -634,7 +632,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.RequestSubmitted);
@@ -674,7 +672,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.Authorized);

@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Common.DTOs;
@@ -101,7 +99,7 @@ namespace SimpleIdentityServer.Scim.Core.Factories
                 throw new ArgumentNullException(nameof(representation));
             }
 
-            var commonAttrs = await _schemaStore.GetCommonAttributes();
+            var commonAttrs = await _schemaStore.GetCommonAttributes().ConfigureAwait(false);
             var idAttr = commonAttrs.First(n => n.Name == Common.Constants.IdentifiedScimResourceNames.Id);
             return new SingularRepresentationAttribute<string>(idAttr, representation.Id);
         }
@@ -118,7 +116,7 @@ namespace SimpleIdentityServer.Scim.Core.Factories
                 throw new ArgumentNullException(nameof(location));
             }
 
-            var commonAttrs = await _schemaStore.GetCommonAttributes();
+            var commonAttrs = await _schemaStore.GetCommonAttributes().ConfigureAwait(false);
             var metaAttr = commonAttrs.First(m => m.Name == Common.Constants.ScimResourceNames.Meta) as ComplexSchemaAttributeResponse;
             return new ComplexRepresentationAttribute(metaAttr)
             {

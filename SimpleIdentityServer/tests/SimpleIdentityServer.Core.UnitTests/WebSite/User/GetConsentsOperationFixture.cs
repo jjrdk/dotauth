@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Core.Common.Repositories;
@@ -37,7 +35,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getConsentsOperation.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getConsentsOperation.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -63,7 +61,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 .Returns(Task.FromResult(consents));
 
             // ACT
-            var result = await _getConsentsOperation.Execute(claimsPrincipal);
+            var result = await _getConsentsOperation.Execute(claimsPrincipal).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);

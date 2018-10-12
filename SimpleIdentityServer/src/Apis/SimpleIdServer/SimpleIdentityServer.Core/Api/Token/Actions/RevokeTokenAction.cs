@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common.Models;
@@ -40,8 +38,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         private readonly ITokenStore _tokenStore;
         private readonly IClientRepository _clientRepository;
 
-        #region Constructor
-
         public RevokeTokenAction(
             IAuthenticateInstructionGenerator authenticateInstructionGenerator,
             IAuthenticateClient authenticateClient,
@@ -53,10 +49,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _tokenStore = tokenStore;
             _clientRepository = clientRepository;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
         {
@@ -73,7 +65,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             // 1. Check the client credentials
             var errorMessage = string.Empty;
             var instruction = CreateAuthenticateInstruction(revokeTokenParameter, authenticationHeaderValue, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {
@@ -81,11 +73,11 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 2. Retrieve the granted token & check if it exists
-            GrantedToken grantedToken = await _tokenStore.GetAccessToken(revokeTokenParameter.Token);
+            GrantedToken grantedToken = await _tokenStore.GetAccessToken(revokeTokenParameter.Token).ConfigureAwait(false);
             bool isAccessToken = true;
             if (grantedToken == null)
             {
-                grantedToken = await _tokenStore.GetRefreshToken(revokeTokenParameter.Token);
+                grantedToken = await _tokenStore.GetRefreshToken(revokeTokenParameter.Token).ConfigureAwait(false);
                 isAccessToken = false;
             }
 
@@ -103,15 +95,11 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             // 4. Invalid the granted token
             if (isAccessToken)
             {
-                return await _tokenStore.RemoveAccessToken(grantedToken.AccessToken);
+                return await _tokenStore.RemoveAccessToken(grantedToken.AccessToken).ConfigureAwait(false);
             }
 
-            return await _tokenStore.RemoveRefreshToken(grantedToken.RefreshToken);
+            return await _tokenStore.RemoveRefreshToken(grantedToken.RefreshToken).ConfigureAwait(false);
         }
-
-        #endregion
-
-        #region Private methods
 
         private AuthenticateInstruction CreateAuthenticateInstruction(
             RevokeTokenParameter revokeTokenParameter,
@@ -125,7 +113,5 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             result.Certificate = certificate;
             return result;
         }
-        
-        #endregion
     }
 }

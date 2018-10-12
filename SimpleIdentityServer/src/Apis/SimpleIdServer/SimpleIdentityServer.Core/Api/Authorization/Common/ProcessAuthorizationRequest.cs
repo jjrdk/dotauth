@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
@@ -88,7 +86,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             Consent confirmedConsent = null;
             if (endUserIsAuthenticated)
             {
-                confirmedConsent = await GetResourceOwnerConsent(claimsPrincipal, authorizationParameter);
+                confirmedConsent = await GetResourceOwnerConsent(claimsPrincipal, authorizationParameter).ConfigureAwait(false);
             }
 
             var serializedAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
@@ -189,7 +187,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                     authorizationParameter,
                     prompts,
                     claimsPrincipal,
-                    issuerName);
+                    issuerName).ConfigureAwait(false);
             }
 
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
@@ -228,7 +226,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 string jwsToken;
                 if (_jwtParser.IsJweToken(token))
                 {
-                    jwsToken = await _jwtParser.DecryptAsync(token);
+                    jwsToken = await _jwtParser.DecryptAsync(token).ConfigureAwait(false);
                     if (string.IsNullOrWhiteSpace(jwsToken))
                     {
                         throw new IdentityServerExceptionWithState(
@@ -242,7 +240,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                     jwsToken = token;
                 }
 
-                var jwsPayload = await _jwtParser.UnSignAsync(jwsToken);
+                var jwsPayload = await _jwtParser.UnSignAsync(jwsToken).ConfigureAwait(false);
                 if (jwsPayload == null)
                 {
                     throw new IdentityServerExceptionWithState(
@@ -346,7 +344,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
         private async Task<Consent> GetResourceOwnerConsent(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
         {
             var subject = claimsPrincipal.GetSubject();
-            return await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
+            return await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
         }
 
         private static bool IsAuthenticated(ClaimsPrincipal principal)

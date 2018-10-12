@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -37,6 +35,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Shell.Controllers
 {
+    using Constants = Host.Constants;
+
     [Area("Shell")]
     [Authorize("Connected")]
     public class ConsentController : BaseController
@@ -67,10 +67,10 @@ namespace SimpleIdentityServer.Shell.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var client = new Core.Common.Models.Client();
-            var authenticatedUser = await SetUser();
+            var authenticatedUser = await SetUser().ConfigureAwait(false);
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _consentActions.DisplayConsent(request.ToParameter(),
-                authenticatedUser, issuerName);
+                authenticatedUser, issuerName).ConfigureAwait(false);
 
             var result = this.CreateRedirectionFromActionResult(actionResult.ActionResult, request);
             if (result != null)
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Shell.Controllers
                 return result;
             }
 
-            await TranslateConsentScreen(request.UiLocales);
+            await TranslateConsentScreen(request.UiLocales).ConfigureAwait(false);
             var viewModel = new ConsentViewModel
             {
                 ClientDisplayName = client.ClientName,
@@ -96,11 +96,11 @@ namespace SimpleIdentityServer.Shell.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.CookieNames.CookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.CookieName).ConfigureAwait(false);
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _consentActions.ConfirmConsent(parameter,
-                authenticatedUser, issuerName);
-            await LogConsentAccepted(actionResult, parameter.ProcessId);
+                authenticatedUser, issuerName).ConfigureAwait(false);
+            await LogConsentAccepted(actionResult, parameter.ProcessId).ConfigureAwait(false);
             return this.CreateRedirectionFromActionResult(actionResult,
                 request);
         }
@@ -114,7 +114,7 @@ namespace SimpleIdentityServer.Shell.Controllers
         public async Task<ActionResult> Cancel(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            await LogConsentRejected(request.ProcessId);
+            await LogConsentRejected(request.ProcessId).ConfigureAwait(false);
             return Redirect(request.RedirectUri);
         }
 
@@ -130,7 +130,7 @@ namespace SimpleIdentityServer.Shell.Controllers
                 Core.Constants.StandardTranslationCodes.ConfirmCode,
                 Core.Constants.StandardTranslationCodes.LinkToThePolicy,
                 Core.Constants.StandardTranslationCodes.Tos
-            });
+            }).ConfigureAwait(false);
             ViewBag.Translations = translations;
         }
 

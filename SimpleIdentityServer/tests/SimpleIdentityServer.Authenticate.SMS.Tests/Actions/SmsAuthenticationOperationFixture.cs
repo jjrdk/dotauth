@@ -27,8 +27,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _smsAuthenticationOperation.Execute(null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _smsAuthenticationOperation.Execute(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _smsAuthenticationOperation.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _smsAuthenticationOperation.Execute(string.Empty)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
             _resourceOwnerRepositoryStub.Setup(p => p.GetResourceOwnerByClaim("phone_number", phone)).Returns(() => Task.FromResult(resourceOwner));
 
             // ACT
-            var result = await _smsAuthenticationOperation.Execute(phone);
+            var result = await _smsAuthenticationOperation.Execute(phone).ConfigureAwait(false);
 
             // ASSERT
             _generateAndSendSmsCodeOperationStub.Verify(s => s.Execute(phone));
@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
             _smsAuthenticationOptions.ScimBaseUrl = "scim";
 
             // ACT
-            await _smsAuthenticationOperation.Execute(phone);
+            await _smsAuthenticationOperation.Execute(phone).ConfigureAwait(false);
 
             // ASSERT
             _generateAndSendSmsCodeOperationStub.Verify(s => s.Execute(phone));
@@ -95,7 +95,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
             _smsAuthenticationOptions.AuthenticationOptions = new Basic.BasicAuthenticationOptions();
 
             // ACT
-            await _smsAuthenticationOperation.Execute(phone);
+            await _smsAuthenticationOperation.Execute(phone).ConfigureAwait(false);
 
             // ASSERT
             _generateAndSendSmsCodeOperationStub.Verify(s => s.Execute(phone));

@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common.Models;
@@ -50,8 +48,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         private readonly ITokenStore _tokenStore;
         private readonly IGrantedTokenHelper _grantedTokenHelper;
 
-        #region Constructor
-
         public GetTokenByClientCredentialsGrantTypeAction(
             IAuthenticateInstructionGenerator authenticateInstructionGenerator,
             IAuthenticateClient authenticateClient,
@@ -78,10 +74,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _grantedTokenHelper = grantedTokenHelper;
         }
 
-        #endregion
-
-        #region Public methods
-
         public async Task<GrantedToken> Execute(ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
         {
             if (clientCredentialsGrantTypeParameter == null)
@@ -93,7 +85,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             // 1. Authenticate the client
             var instruction = CreateAuthenticateInstruction(clientCredentialsGrantTypeParameter, authenticationHeaderValue, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {
@@ -129,20 +121,16 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 4. Generate the JWT access token on the fly.
-            var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId);
+            var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId).ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes, issuerName);
-                await _tokenStore.AddToken(grantedToken);
+                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes, issuerName).ConfigureAwait(false);
+                await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);
                 _oauthEventSource.GrantAccessToClient(client.ClientId, grantedToken.AccessToken, allowedTokenScopes);
             }
 
             return grantedToken;
         }
-
-        #endregion
-
-        #region Private methods
 
         private AuthenticateInstruction CreateAuthenticateInstruction(
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
@@ -157,7 +145,5 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             result.Certificate = certificate;
             return result;
         }
-
-        #endregion
     }
 }

@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using System.Linq;
 using Moq;
@@ -41,7 +39,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 .Returns(() => Task.FromResult((ICollection<ResourceSet>)null));
 
             // ACT & ASSERTS
-            var exception  = await Assert.ThrowsAsync<BaseUmaException>(() => _getAllResourceSetAction.Execute());
+            var exception  = await Assert.ThrowsAsync<BaseUmaException>(() => _getAllResourceSetAction.Execute()).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheResourceSetsCannotBeRetrieved);
@@ -64,7 +62,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 .Returns(Task.FromResult(resourceSets));
 
             // ACT
-            var result = await _getAllResourceSetAction.Execute();
+            var result = await _getAllResourceSetAction.Execute().ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);

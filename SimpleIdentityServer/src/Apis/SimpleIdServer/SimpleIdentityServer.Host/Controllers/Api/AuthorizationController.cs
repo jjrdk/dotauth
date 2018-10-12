@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
@@ -77,13 +75,13 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             var sessionId = GetSessionId();
             var serializer = new ParamSerializer();
             var authorizationRequest = serializer.Deserialize<AuthorizationRequest>(query);
-            authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest);
+            authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest).ConfigureAwait(false);
             authorizationRequest.OriginUrl = originUrl;
             authorizationRequest.SessionId = sessionId;
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.CookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.CookieName).ConfigureAwait(false);
             var parameter = authorizationRequest.ToParameter();
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-            var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser, issuerName);
+            var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser, issuerName).ConfigureAwait(false);
             if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var redirectUrl = new Uri(authorizationRequest.RedirectUri);
@@ -138,10 +136,10 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             var jwsToken = token;
             if (_jwtParser.IsJweToken(token))
             {
-                jwsToken = await _jwtParser.DecryptAsync(token, clientId);
+                jwsToken = await _jwtParser.DecryptAsync(token, clientId).ConfigureAwait(false);
             }
 
-            var jwsPayload = await _jwtParser.UnSignAsync(jwsToken, clientId);
+            var jwsPayload = await _jwtParser.UnSignAsync(jwsToken, clientId).ConfigureAwait(false);
             return jwsPayload == null ? null : jwsPayload.ToAuthorizationRequest();
         }
         
@@ -168,7 +166,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         {
             if (!string.IsNullOrWhiteSpace(authorizationRequest.Request))
             {
-                var result = await GetAuthorizationRequestFromJwt(authorizationRequest.Request, authorizationRequest.ClientId);
+                var result = await GetAuthorizationRequestFromJwt(authorizationRequest.Request, authorizationRequest.ClientId).ConfigureAwait(false);
                 if (result == null)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode, ErrorDescriptions.TheRequestParameterIsNotCorrect, authorizationRequest.State);
@@ -189,10 +187,10 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                             BaseAddress = uri
                         };
 
-                        var httpResult = await httpClient.GetAsync(uri.AbsoluteUri);
+                        var httpResult = await httpClient.GetAsync(uri.AbsoluteUri).ConfigureAwait(false);
                         httpResult.EnsureSuccessStatusCode();
-                        var request = await httpResult.Content.ReadAsStringAsync();
-                        var result = await GetAuthorizationRequestFromJwt(request, authorizationRequest.ClientId);
+                        var request = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        var result = await GetAuthorizationRequestFromJwt(request, authorizationRequest.ClientId).ConfigureAwait(false);
                         if (result == null)
                         {
                             throw new IdentityServerExceptionWithState(

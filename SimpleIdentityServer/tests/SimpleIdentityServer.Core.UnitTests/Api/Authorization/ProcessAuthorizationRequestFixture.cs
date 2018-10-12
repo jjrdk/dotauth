@@ -22,14 +22,14 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
+    using Core.Common.Models;
+
     public sealed class ProcessAuthorizationRequestFixture
     {
         private ProcessAuthorizationRequest _processAuthorizationRequest;
         private Mock<IConfigurationService> _simpleIdentityServerConfiguratorStub;
         private Mock<IOAuthEventSource> _oauthEventSource;
         private JwtGenerator _jwtGenerator;
-
-        #region TEST FAILURES
 
         [Fact]
         public async Task When_Passing_NullAuthorization_To_Function_Then_ArgumentNullException_Is_Thrown()
@@ -38,8 +38,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             InitializeMockingObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(null, null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(new AuthorizationParameter(), null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(null, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(new AuthorizationParameter(), null, null, null)).ConfigureAwait(false);
         }
         
         [Fact]
@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.ProcessAsync(authorizationParameter, null, new Core.Common.Models.Client(), null));
+                () => _processAuthorizationRequest.ProcessAsync(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
             Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectUrl)));
             Assert.True(exception.State.Equals(state));
@@ -402,7 +402,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             Assert.True(exception.State.Equals(state));
         }
         */
-        #endregion
         /*
         #region TEST VALID SCENARIOS
 

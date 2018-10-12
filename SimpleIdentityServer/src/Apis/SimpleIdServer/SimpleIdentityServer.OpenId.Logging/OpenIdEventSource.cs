@@ -5,21 +5,13 @@ namespace SimpleIdentityServer.OpenId.Logging
 {
     public interface IOpenIdEventSource : IEventSource
     {
-        #region User interaction
-
         void GiveConsent(string subject, string clientId, string consentId);
         void AuthenticateResourceOwner(string subject);
         void GetConfirmationCode(string code);
         void InvalidateConfirmationCode(string code);
         void ConfirmationCodeNotValid(string code);
 
-        #endregion
-
-        #region UserManagement
-
         void AddResourceOwner(string subject);
-
-        #endregion
 
         void OpenIdFailure(string code,
             string description,
@@ -38,8 +30,6 @@ namespace SimpleIdentityServer.OpenId.Logging
         {
         }
 
-        #region User interaction
-        
         public void AuthenticateResourceOwner(string subject)
         {
             var evt = new Event
@@ -97,10 +87,6 @@ namespace SimpleIdentityServer.OpenId.Logging
             LogError(evt);
         }
 
-        #endregion
-
-        #region UserManagement
-
         public void AddResourceOwner(string subject)
         {
             var evt = new Event
@@ -111,10 +97,6 @@ namespace SimpleIdentityServer.OpenId.Logging
             };
             LogInformation(evt);
         }
-
-        #endregion
-
-        #region Failures
 
         public void OpenIdFailure(string code,
             string description,
@@ -129,7 +111,5 @@ namespace SimpleIdentityServer.OpenId.Logging
 
             LogError(evt);
         }
-
-        #endregion
     }
 }

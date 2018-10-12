@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 namespace System.Security.Cryptography
 {
@@ -28,8 +26,6 @@ namespace System.Security.Cryptography
         private SecurityDocument _doc;
         private readonly Tokenizer _t;
 
-        #region Constructors
-
         internal Parser(string input)
             : this(new Tokenizer(input))
         {
@@ -43,18 +39,10 @@ namespace System.Security.Cryptography
             ParseContents();
         }
 
-        #endregion
-
-        #region Public methods
-
         internal SecurityElement GetTopElement()
         {
             return _doc.GetRootElement();
         }
-
-        #endregion
-
-        #region private methods
 
         private void ParseContents()
         {
@@ -465,7 +453,5 @@ namespace System.Security.Cryptography
 
             return 2;
         }
-
-        #endregion
     }
 }

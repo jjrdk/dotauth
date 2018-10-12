@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
@@ -52,7 +50,7 @@ namespace SimpleIdentityServer.Core.Validators
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
-            var grantedToken = await _tokenStore.GetAccessToken(accessToken);
+            var grantedToken = await _tokenStore.GetAccessToken(accessToken).ConfigureAwait(false);
             return CheckGrantedToken(grantedToken);
         }
 
@@ -63,7 +61,7 @@ namespace SimpleIdentityServer.Core.Validators
                 throw new ArgumentNullException(nameof(refreshToken));
             }
 
-            var grantedToken = await _tokenStore.GetRefreshToken(refreshToken);
+            var grantedToken = await _tokenStore.GetRefreshToken(refreshToken).ConfigureAwait(false);
             return CheckGrantedToken(grantedToken);
         }
 

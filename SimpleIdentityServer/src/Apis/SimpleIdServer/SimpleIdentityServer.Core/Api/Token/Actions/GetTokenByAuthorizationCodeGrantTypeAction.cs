@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common.Models;
@@ -58,8 +56,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         private readonly IGrantedTokenHelper _grantedTokenHelper;
         private readonly IJwtGenerator _jwtGenerator;
 
-        #region Constructor
-
         public GetTokenByAuthorizationCodeGrantTypeAction(
             IClientValidator clientValidator,
             IAuthorizationCodeStore authorizationCodeStore,
@@ -86,10 +82,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _jwtGenerator = jwtGenerator;
         }
 
-        #endregion
-
-        #region Public methods
-
         public async Task<GrantedToken> Execute(AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
         {
             if (authorizationCodeGrantTypeParameter == null)
@@ -97,16 +89,16 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 throw new ArgumentNullException(nameof(authorizationCodeGrantTypeParameter));
             }
 
-            var result = await ValidateParameter(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate, issuerName);
-            await _authorizationCodeStore.RemoveAuthorizationCode(result.AuthCode.Code); // 1. Invalidate the authorization code by removing it !
+            var result = await ValidateParameter(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
+            await _authorizationCodeStore.RemoveAuthorizationCode(result.AuthCode.Code).ConfigureAwait(false); // 1. Invalidate the authorization code by removing it !
             var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(
                 result.AuthCode.Scopes,
                 result.AuthCode.ClientId,
                 result.AuthCode.IdTokenPayload,
-                result.AuthCode.UserInfoPayLoad);
+                result.AuthCode.UserInfoPayLoad).ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(result.Client, result.AuthCode.Scopes, issuerName, result.AuthCode.UserInfoPayLoad, result.AuthCode.IdTokenPayload);
+                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(result.Client, result.AuthCode.Scopes, issuerName, result.AuthCode.UserInfoPayLoad, result.AuthCode.IdTokenPayload).ConfigureAwait(false);
                 _oauthEventSource.GrantAccessToClient(
                     result.AuthCode.ClientId,
                     grantedToken.AccessToken,
@@ -114,19 +106,15 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 // Fill-in the id-token
                 if (grantedToken.IdTokenPayLoad != null)
                 {
-                    await _jwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad);
-                    grantedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(result.Client, grantedToken.IdTokenPayLoad);
+                    await _jwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad).ConfigureAwait(false);
+                    grantedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(result.Client, grantedToken.IdTokenPayLoad).ConfigureAwait(false);
                 }
 
-                await _tokenStore.AddToken(grantedToken);
+                await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);
             }
 
             return grantedToken;
         }
-
-        #endregion
-
-        #region Private methods
 
         /// <summary>
         /// Check the parameters based on the RFC : http://openid.net/specs/openid-connect-core-1_0.html#TokenRequestValidation
@@ -142,7 +130,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         {
             // 1. Authenticate the client
             var instruction = CreateAuthenticateInstruction(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {
@@ -162,7 +150,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, ResponseType.code));
             }
 
-            var authorizationCode = await _authorizationCodeStore.GetAuthorizationCode(authorizationCodeGrantTypeParameter.Code);
+            var authorizationCode = await _authorizationCodeStore.GetAuthorizationCode(authorizationCodeGrantTypeParameter.Code).ConfigureAwait(false);
             // 2. Check if the authorization code is valid
             if (authorizationCode == null)
             {
@@ -192,7 +180,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 5. Ensure the authorization code is still valid.
-            var authCodeValidity = await _configurationService.GetAuthorizationCodeValidityPeriodInSecondsAsync();
+            var authCodeValidity = await _configurationService.GetAuthorizationCodeValidityPeriodInSecondsAsync().ConfigureAwait(false);
             var expirationDateTime = authorizationCode.CreateDateTime.AddSeconds(authCodeValidity);
             var currentDateTime = DateTime.UtcNow;
             if (currentDateTime > expirationDateTime)
@@ -230,7 +218,5 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             result.Certificate = certificate;
             return result;
         }
-
-        #endregion
     }
 }

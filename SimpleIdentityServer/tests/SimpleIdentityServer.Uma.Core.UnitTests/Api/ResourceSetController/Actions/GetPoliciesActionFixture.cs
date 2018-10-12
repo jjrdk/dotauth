@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
@@ -38,8 +36,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getPoliciesAction.Execute(null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getPoliciesAction.Execute(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getPoliciesAction.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getPoliciesAction.Execute(string.Empty)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -59,7 +57,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 .Returns(Task.FromResult(policies));
 
             // ACT
-            var result = await _getPoliciesAction.Execute("resource_id");
+            var result = await _getPoliciesAction.Execute("resource_id").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);

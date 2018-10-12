@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2016 Habart Thierry
+﻿// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using Newtonsoft.Json;
@@ -43,8 +41,6 @@ namespace SimpleIdentityServer.Host.Tests
             _server = server;
         }
 
-        #region Errors
-
         [Fact]
         public async Task When_No_Parameters_Is_Passed_To_TokenRevoke_Edp_Then_Error_Is_Returned()
         {
@@ -57,7 +53,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             // ASSERT
@@ -86,7 +82,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             // ASSERT
@@ -152,8 +148,6 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.Equal("invalid_token", ex.Error.Error);
             Assert.Equal("the token has not been issued for the given client id 'client'", ex.Error.ErrorDescription);
         }
-
-        #endregion
 
         [Fact]
         public async Task When_Revoking_AccessToken_Then_True_Is_Returned()

@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Core.Api.Token.Actions;
@@ -38,8 +36,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<IClientRepository> _clientRepositoryStub;
         private IRevokeTokenAction _revokeTokenAction;
 
-        #region Exceptions
-
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exceptions_Are_Thrown()
         {
@@ -47,8 +43,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(null, null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(new RevokeTokenParameter(), null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(null, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(new RevokeTokenParameter(), null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -68,7 +64,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null, null, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
         }
@@ -92,16 +88,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT
-            var result = await Assert.ThrowsAsync<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null, null, null));
+            var result = await Assert.ThrowsAsync<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
             Assert.Equal("invalid_token", result.Code);
         }
-
-        #endregion
-
-        #region Happy path
 
         [Fact]
         public async Task When_Invalidating_Refresh_Token_Then_GrantedTokenChildren_Are_Removed()
@@ -133,7 +125,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(true));
 
             // ACT
-            await _revokeTokenAction.Execute(parameter, null, null, null);
+            await _revokeTokenAction.Execute(parameter, null, null, null).ConfigureAwait(false);
 
             // ASSERTS
             _grantedTokenRepositoryStub.Verify(g => g.RemoveRefreshToken(parent.RefreshToken));
@@ -164,15 +156,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(true));
 
             // ACT
-            await _revokeTokenAction.Execute(parameter, null, null, null);
+            await _revokeTokenAction.Execute(parameter, null, null, null).ConfigureAwait(false);
 
             // ASSERTS
             _grantedTokenRepositoryStub.Verify(g => g.RemoveAccessToken(grantedToken.AccessToken));
         }
-
-        #endregion
-
-        #region Private methods
 
         private void InitializeFakeObjects()
         {
@@ -186,7 +174,5 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _grantedTokenRepositoryStub.Object,
                 _clientRepositoryStub.Object);
         }
-
-        #endregion
     }
 }

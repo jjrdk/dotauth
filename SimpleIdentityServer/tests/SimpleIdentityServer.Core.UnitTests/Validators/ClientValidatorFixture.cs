@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Common.Models;
@@ -29,8 +27,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
     public class ClientValidatorFixture
     {
         private IClientValidator _clientValidator;
-
-        #region ValidateRedirectionUrl
 
         [Fact]
         public void When_Client_Doesnt_Contain_RedirectionUri_Then_EmptyArray_Is_Returned()
@@ -68,10 +64,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             // ASSERT
             Assert.True(result.First() == url);
         }
-
-        #endregion
-
-        #region ValidateGrantType
 
         [Fact]
         public void When_Passing_Null_Parameter_To_ValidateGrantType_Then_False_Is_Returned()
@@ -121,10 +113,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             Assert.True(result);
         }
 
-        #endregion
-
-        #region ValidateGrantTypes
-
         [Fact]
         public void When_Passing_Null_Parameters_Then_Null_Is_Returned()
         {
@@ -173,10 +161,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             Assert.False(_clientValidator.CheckGrantTypes(client, GrantType.refresh_token));
             Assert.False(_clientValidator.CheckGrantTypes(client, GrantType.refresh_token, GrantType.password));
         }
-
-        #endregion
-
-        #region CheckPkce
 
         [Fact]
         public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
@@ -267,8 +251,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             // ASSERT
             Assert.True(result);
         }
-
-        #endregion
 
         public void InitializeMockingObjects()
         {

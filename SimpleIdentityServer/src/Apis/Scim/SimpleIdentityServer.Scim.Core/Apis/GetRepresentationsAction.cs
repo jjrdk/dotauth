@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Factories;
@@ -66,14 +64,14 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _parametersValidator.ValidateLocationPattern(locationPattern);
 
             // 2. Get representations & add the common attributes.
-            var paginatedResponse = await _representationStore.SearchRepresentations(resourceType, searchParameter);
+            var paginatedResponse = await _representationStore.SearchRepresentations(resourceType, searchParameter).ConfigureAwait(false);
             foreach(var representation in paginatedResponse.Content)
             {
                 var location = locationPattern.Replace("{id}", representation.Id);
                 representation.Attributes = representation.Attributes.Concat(new[] 
                 {
-                    await _commonAttributesFactory.CreateMetaDataAttribute(representation, location),
-                    await _commonAttributesFactory.CreateId(representation)
+                    await _commonAttributesFactory.CreateMetaDataAttribute(representation, location).ConfigureAwait(false),
+                    await _commonAttributesFactory.CreateId(representation).ConfigureAwait(false)
                 });
             }
 

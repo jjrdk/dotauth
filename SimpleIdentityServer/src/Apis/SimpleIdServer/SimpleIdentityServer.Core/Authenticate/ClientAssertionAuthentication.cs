@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Repositories;
@@ -111,13 +109,13 @@ namespace SimpleIdentityServer.Core.Authenticate
             }
 
             var clientId = jwsPayload.Issuer;
-            var payload = await _jwtParser.UnSignAsync(jws, clientId);
+            var payload = await _jwtParser.UnSignAsync(jws, clientId).ConfigureAwait(false);
             if (payload == null)
             {
                 return new AuthenticationResult(null, ErrorDescriptions.TheSignatureIsNotCorrect);
             }
 
-            return await ValidateJwsPayLoad(payload, expectedIssuer);
+            return await ValidateJwsPayLoad(payload, expectedIssuer).ConfigureAwait(false);
         }
         
         public async Task<AuthenticationResult> AuthenticateClientWithClientSecretJwtAsync(AuthenticateInstruction instruction, string clientSecret, string expectedIssuer)
@@ -136,7 +134,7 @@ namespace SimpleIdentityServer.Core.Authenticate
 
             var jwe = instruction.ClientAssertion;
             var clientId = instruction.ClientIdFromHttpRequestBody;
-            var jws = await _jwtParser.DecryptWithPasswordAsync(jwe, clientId, clientSecret);
+            var jws = await _jwtParser.DecryptWithPasswordAsync(jwe, clientId, clientSecret).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(jws))
             {
                 return new AuthenticationResult(null, ErrorDescriptions.TheJweTokenCannotBeDecrypted);
@@ -148,13 +146,13 @@ namespace SimpleIdentityServer.Core.Authenticate
                 return new AuthenticationResult(null, ErrorDescriptions.TheClientAssertionIsNotAJwsToken);
             }
 
-            var jwsPayload = await _jwtParser.UnSignAsync(jws, clientId);
+            var jwsPayload = await _jwtParser.UnSignAsync(jws, clientId).ConfigureAwait(false);
             if (jwsPayload == null)
             {
                 return new AuthenticationResult(null, ErrorDescriptions.TheJwsPayloadCannotBeExtracted);
             }
 
-            return await ValidateJwsPayLoad(jwsPayload, expectedIssuer);
+            return await ValidateJwsPayLoad(jwsPayload, expectedIssuer).ConfigureAwait(false);
         }
         
         private async Task<AuthenticationResult> ValidateJwsPayLoad(JwsPayload jwsPayload, string expectedIssuer)
@@ -168,7 +166,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             // 1. Check the issuer is correct.
             if (!string.IsNullOrWhiteSpace(jwsIssuer))
             {
-                client = await _clientRepository.GetClientByIdAsync(jwsIssuer);
+                client = await _clientRepository.GetClientByIdAsync(jwsIssuer).ConfigureAwait(false);
             }
 
             // 2. Check the client is correct.

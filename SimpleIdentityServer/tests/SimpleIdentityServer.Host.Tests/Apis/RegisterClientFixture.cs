@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using Newtonsoft.Json;
@@ -30,6 +28,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Host.Tests
 {
+    using Core.Common.DTOs.Requests;
+
     public class RegisterClientFixture : IClassFixture<TestOauthServerFixture>
     {
         const string baseUrl = "http://localhost:5000";
@@ -42,8 +42,6 @@ namespace SimpleIdentityServer.Host.Tests
         {
             _server = server;
         }
-
-        #region Errors
 
         [Fact]
         public async Task When_Empty_Json_Request_Is_Passed_To_Registration_Api_Then_Error_Is_Returned()
@@ -70,7 +68,7 @@ namespace SimpleIdentityServer.Host.Tests
             httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -105,7 +103,7 @@ namespace SimpleIdentityServer.Host.Tests
             httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -139,7 +137,7 @@ namespace SimpleIdentityServer.Host.Tests
             httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -173,7 +171,7 @@ namespace SimpleIdentityServer.Host.Tests
             httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -207,7 +205,7 @@ namespace SimpleIdentityServer.Host.Tests
             httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -241,7 +239,7 @@ namespace SimpleIdentityServer.Host.Tests
             httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -275,7 +273,7 @@ namespace SimpleIdentityServer.Host.Tests
             httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -283,8 +281,6 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.Equal("invalid_client_metadata", error.Error);
             Assert.Equal("the parameter jwks_uri is not correct", error.ErrorDescription);
         }
-
-        #endregion
 
         [Fact]
         public async Task When_Registering_A_Client_Then_No_Exception_Is_Thrown()
@@ -298,14 +294,14 @@ namespace SimpleIdentityServer.Host.Tests
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
-            var client = await _registrationClient.ResolveAsync(new Core.Common.DTOs.Requests.ClientRequest
-            {
-                RedirectUris = new []
+            var client = await _registrationClient.ResolveAsync(new ClientRequest
                 {
-                    "https://localhost"
-                },
-                ScimProfile = true
-            }, baseUrl + "/.well-known/openid-configuration", grantedToken.Content.AccessToken);
+                    RedirectUris = new []
+                    {
+                        "https://localhost"
+                    },
+                    ScimProfile = true
+                }, baseUrl + "/.well-known/openid-configuration", grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(client);

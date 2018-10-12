@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Models;
@@ -51,7 +49,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var token = await _tokenStore.GetToken(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload);
+            var token = await _tokenStore.GetToken(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload).ConfigureAwait(false);
             if (token == null)
             {
                 return null;
@@ -59,7 +57,7 @@ namespace SimpleIdentityServer.Core.Helpers
 
             if (!_grantedTokenValidator.CheckGrantedToken(token).IsValid)
             {
-                await _tokenStore.RemoveAccessToken(token.AccessToken);
+                await _tokenStore.RemoveAccessToken(token.AccessToken).ConfigureAwait(false);
                 return null;
             }
 

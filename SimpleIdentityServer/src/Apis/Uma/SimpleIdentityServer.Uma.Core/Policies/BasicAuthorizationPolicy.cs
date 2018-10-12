@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Uma.Core.JwtToken;
@@ -39,8 +37,6 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             _jwtTokenParser = jwtTokenParser;
         }
 
-        #region Public methods
-
         public async Task<AuthorizationPolicyResult> Execute(TicketLineParameter ticketLineParameter, Policy authorizationPolicy, ClaimTokenParameter claimTokenParameter)
         {
             if (ticketLineParameter == null)
@@ -65,7 +61,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             AuthorizationPolicyResult result = null;
             foreach (var rule in authorizationPolicy.Rules)
             {
-                result = await ExecuteAuthorizationPolicyRule(ticketLineParameter, rule, claimTokenParameter);
+                result = await ExecuteAuthorizationPolicyRule(ticketLineParameter, rule, claimTokenParameter).ConfigureAwait(false);
                 if (result.Type == AuthorizationPolicyResultEnum.Authorized)
                 {
                     return result;
@@ -74,10 +70,6 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
             return result;
         }
-
-        #endregion
-
-        #region Private methods
 
         private async Task<AuthorizationPolicyResult> ExecuteAuthorizationPolicyRule(TicketLineParameter ticketLineParameter, PolicyRule authorizationPolicy, ClaimTokenParameter claimTokenParameter)
         {
@@ -99,7 +91,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             }
 
             // 3. Check claims are correct
-            var claimAuthorizationResult = await CheckClaims(authorizationPolicy, claimTokenParameter);
+            var claimAuthorizationResult = await CheckClaims(authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
             if (claimAuthorizationResult != null
                 && claimAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
@@ -170,7 +162,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             }
 
             var idToken = claimTokenParameter.Token;
-            var jwsPayload = await _jwtTokenParser.UnSign(idToken, authorizationPolicy.OpenIdProvider);
+            var jwsPayload = await _jwtTokenParser.UnSign(idToken, authorizationPolicy.OpenIdProvider).ConfigureAwait(false);
             if (jwsPayload == null)
             {
                 return new AuthorizationPolicyResult
@@ -257,7 +249,5 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 Type = AuthorizationPolicyResultEnum.Authorized
             };
         }
-
-        #endregion
     }
 }

@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
@@ -40,7 +38,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 
         public async Task<IEnumerable<string>> Execute()
         {
-            var resourceSets = await _resourceSetRepository.GetAll();
+            var resourceSets = await _resourceSetRepository.GetAll().ConfigureAwait(false);
             if (resourceSets == null)
             {
                 throw new BaseUmaException(

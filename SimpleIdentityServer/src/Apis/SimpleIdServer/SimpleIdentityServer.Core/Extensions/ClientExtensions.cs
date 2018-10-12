@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using System;
 using System.Linq;
@@ -23,8 +21,6 @@ namespace SimpleIdentityServer.Core.Extensions
 {
     public static class ClientExtensions
     {
-        #region Public static methods
-        
         public static JwsAlg? GetIdTokenSignedResponseAlg(this Core.Common.Models.Client client)
         {
             var algName = client.IdTokenSignedResponseAlg;
@@ -79,10 +75,6 @@ namespace SimpleIdentityServer.Core.Extensions
             return GetDefaultEncryptEnc(encName);
         }
 
-        #endregion
-
-        #region Private static methods
-
         private static JweAlg? GetDefaultEncryptAlg(string algName)
         {
             JweAlg? algEnum = null;
@@ -119,7 +111,5 @@ namespace SimpleIdentityServer.Core.Extensions
 
             return signedAlgorithm;
         }
-
-        #endregion
     }
 }

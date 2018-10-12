@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Core.Factories;
@@ -43,7 +41,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerOpenIdAction.Execute(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerOpenIdAction.Execute(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -54,7 +52,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
 
             // ACT
-            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null, null);
+            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null, null).ConfigureAwait(false);
 
             // ASSERT
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
@@ -72,7 +70,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             // ACT
             await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, 
                 claimsPrincipal, 
-                null, null);
+                null, null).ConfigureAwait(false);
 
             // ASSERT
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
@@ -96,7 +94,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             // ACT
             await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
                 claimsPrincipal,
-                null, null);
+                null, null).ConfigureAwait(false);
 
             // ASSERT
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
@@ -132,7 +130,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             // ACT
             await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
                 claimsPrincipal,
-                code, null);
+                code, null).ConfigureAwait(false);
 
             // ASSERT
             _authenticateHelperFake.Verify(a => a.ProcessRedirection(authorizationParameter, 

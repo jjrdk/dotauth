@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using System;
 
@@ -155,7 +153,6 @@ namespace SimpleIdentityServer.Core.Common
     /// </summary>
     public enum AllAlg
     {
-        #region JWS ALGORITHMS
         HS256,
         HS384,
         HS512,
@@ -169,9 +166,7 @@ namespace SimpleIdentityServer.Core.Common
         PS384,
         PS512,
         none,
-        #endregion
 
-        #region JWE ALGORITHMS
         RSA1_5,
         RSA_OAEP,
         RSA_OAEP_256,
@@ -189,7 +184,6 @@ namespace SimpleIdentityServer.Core.Common
         PBES2_HS256_A128KW,
         PBES2_HS384_A192KW,
         PBES2_HS512_A256KW
-        #endregion
     }
 
     /// <summary>

@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
@@ -25,8 +23,6 @@ namespace SimpleIdentityServer.Host.MiddleWare
     {
         private readonly RequestDelegate _next;
 
-        #region Constructor
-
         public XFrameMiddleware(
             RequestDelegate next)
         {
@@ -38,16 +34,10 @@ namespace SimpleIdentityServer.Host.MiddleWare
             _next = next;
         }
 
-        #endregion
-
-        #region Public methods
-
         public async Task Invoke(HttpContext context)
         {
             context.Response.Headers.Add("X-Frame-Options", new StringValues("DENY"));
-            await _next(context);
+            await _next(context).ConfigureAwait(false);
         }
-
-        #endregion
     }
 }

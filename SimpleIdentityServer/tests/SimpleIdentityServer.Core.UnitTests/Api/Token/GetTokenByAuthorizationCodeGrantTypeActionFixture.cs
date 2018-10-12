@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Core.Api.Token.Actions;
@@ -50,8 +48,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<IJwtGenerator> _jwtGeneratorStub;
         private IGetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
 
-        #region Exceptions
-
         [Fact]
         public async Task When_Passing_Empty_Request_Then_Exception_Is_Thrown()
         {
@@ -59,7 +55,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByAuthorizationCodeGrantTypeAction.Execute(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByAuthorizationCodeGrantTypeAction.Execute(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -82,7 +78,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => 
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
         }
 
@@ -109,7 +105,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, "id", GrantType.authorization_code));
         }
@@ -141,7 +137,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, "id", ResponseType.code));
         }
@@ -180,7 +176,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationCodeIsNotCorrect);
         }
@@ -225,7 +221,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
             Assert.True(exception.Message == ErrorDescriptions.TheCodeVerifierIsNotCorrect);
         }
@@ -271,7 +267,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
             Assert.True(exception.Message == 
                 string.Format(ErrorDescriptions.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
@@ -321,7 +317,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
             Assert.True(exception.Message == ErrorDescriptions.TheRedirectionUrlIsNotTheSame);
         }
@@ -371,7 +367,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationCodeIsObsolete);
         }
@@ -424,14 +420,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.RedirectUrlIsNotValid, "redirectUri"));
         }
-
-        #endregion
-
-        #region Happy paths
 
         [Fact]
         public async Task When_Requesting_An_Existed_Granted_Token_Then_Check_Id_Token_Is_Signed_And_Encrypted()
@@ -497,7 +489,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            var r = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null);
+            var r = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(r);
@@ -567,7 +559,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT
-            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null);
+            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null, null, null).ConfigureAwait(false);
 
             // ASSERTS
             _tokenStoreFake.Verify(g => g.AddToken(grantedToken));
@@ -577,8 +569,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 identityToken));
             Assert.True(result.AccessToken == accessToken);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

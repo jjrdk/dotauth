@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Core.Common;
@@ -39,8 +37,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             InitializeFakeObjects();
 
             // ACT & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientHelper.GenerateIdTokenAsync(string.Empty, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientHelper.GenerateIdTokenAsync("client_id", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientHelper.GenerateIdTokenAsync(string.Empty, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientHelper.GenerateIdTokenAsync("client_id", null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -53,7 +51,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 .Returns(Task.FromResult(client));
 
             // ACT
-            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload());
+            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload()).ConfigureAwait(false);
 
             // ASSERT
             _jwtGeneratorStub.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), JwsAlg.RS256));
@@ -73,7 +71,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 .Returns(Task.FromResult(client));
 
             // ACT
-            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload());
+            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload()).ConfigureAwait(false);
 
             // ASSERT
             _jwtGeneratorStub.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), JwsAlg.RS256));
@@ -95,7 +93,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 .Returns(Task.FromResult(client));
 
             // ACT
-            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload());
+            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload()).ConfigureAwait(false);
 
             // ASSERT
             _jwtGeneratorStub.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), JwsAlg.RS256));

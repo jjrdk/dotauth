@@ -20,8 +20,6 @@ namespace SimpleIdentityServer.Logging
             _logger = logger;
         }
 
-        #region Information
-
         public void Info(string message)
         {
             var evt = new Event
@@ -33,10 +31,6 @@ namespace SimpleIdentityServer.Logging
 
             LogInformation(evt);
         }
-
-        #endregion
-
-        #region Failures
 
         public void Failure(string message)
         {
@@ -62,10 +56,6 @@ namespace SimpleIdentityServer.Logging
             LogError(evt, new EventId(28), exception);
         }
 
-        #endregion
-
-        #region Protected methods
-
         protected void LogInformation(Event evt)
         {
             _logger.LogInformation(MessagePattern, evt.Id, evt.Task, evt.Message, evt.Operation);
@@ -80,7 +70,5 @@ namespace SimpleIdentityServer.Logging
         {
             _logger.LogError(evtId, ex, MessagePattern, evt.Id, evt.Task, evt.Message, evt.Operation);
         }
-
-        #endregion
     }
 }

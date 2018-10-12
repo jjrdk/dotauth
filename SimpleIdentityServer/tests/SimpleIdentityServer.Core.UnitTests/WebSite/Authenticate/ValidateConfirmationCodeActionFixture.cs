@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Core.Common.Models;
@@ -37,8 +35,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _validateConfirmationCodeAction.Execute(null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _validateConfirmationCodeAction.Execute(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _validateConfirmationCodeAction.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _validateConfirmationCodeAction.Execute(string.Empty)).ConfigureAwait(false);
         }
         
         [Fact]
@@ -50,7 +48,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 .Returns(Task.FromResult((ConfirmationCode)null));
 
             // ACT
-            var result = await _validateConfirmationCodeAction.Execute("code");
+            var result = await _validateConfirmationCodeAction.Execute("code").ConfigureAwait(false);
 
             // ARRANGE
             Assert.False(result);
@@ -70,7 +68,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 .Returns(Task.FromResult(confirmationCode));
 
             // ACT
-            var result = await _validateConfirmationCodeAction.Execute("code");
+            var result = await _validateConfirmationCodeAction.Execute("code").ConfigureAwait(false);
 
             // ASSERT
             Assert.False(result);
@@ -90,7 +88,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 .Returns(Task.FromResult(confirmationCode));
 
             // ACT
-            var result = await _validateConfirmationCodeAction.Execute("code");
+            var result = await _validateConfirmationCodeAction.Execute("code").ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result);

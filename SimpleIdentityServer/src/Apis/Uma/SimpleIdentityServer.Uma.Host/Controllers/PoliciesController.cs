@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -49,7 +47,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var parameter = searchAuthPolicies.ToParameter();
-            var result = await _policyActions.Search(parameter);
+            var result = await _policyActions.Search(parameter).ConfigureAwait(false);
             return new OkObjectResult(result.ToResponse());
         }
 
@@ -70,7 +68,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             //    };
             //}
 
-            var result = await _policyActions.GetPolicy(id);
+            var result = await _policyActions.GetPolicy(id).ConfigureAwait(false);
             if (result == null)
             {
                 return GetNotFoundPolicy();
@@ -93,7 +91,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             //    };
             //}
 
-            var policies = await _policyActions.GetPolicies();
+            var policies = await _policyActions.GetPolicies().ConfigureAwait(false);
             //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName);
             return new OkObjectResult(policies);
         }
@@ -108,7 +106,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
-            var isPolicyExists = await _policyActions.UpdatePolicy(putPolicy.ToParameter());
+            var isPolicyExists = await _policyActions.UpdatePolicy(putPolicy.ToParameter()).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
@@ -136,7 +134,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             {
                 PolicyId = id,
                 ResourceSets = postAddResourceSet.ResourceSets
-            });
+            }).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
@@ -160,7 +158,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "the resource_id must be specified", HttpStatusCode.BadRequest);
             }
 
-            var isPolicyExists = await _policyActions.DeleteResourceSet(id, resourceId);
+            var isPolicyExists = await _policyActions.DeleteResourceSet(id, resourceId).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
@@ -179,7 +177,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
-            var policyId = await _policyActions.AddPolicy(postPolicy.ToParameter());
+            var policyId = await _policyActions.AddPolicy(postPolicy.ToParameter()).ConfigureAwait(false);
             var content = new AddPolicyResponse
             {
                 PolicyId = policyId
@@ -201,7 +199,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
             }
 
-            var isPolicyExists = await _policyActions.DeletePolicy(id);
+            var isPolicyExists = await _policyActions.DeletePolicy(id).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();

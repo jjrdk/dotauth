@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
@@ -43,7 +41,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateResourceSetAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateResourceSetAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -66,7 +64,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 .Returns(() => Task.FromResult(false));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updateResourceSetAction.Execute(udpateResourceSetParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updateResourceSetAction.Execute(udpateResourceSetParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, udpateResourceSetParameter.Id));
@@ -92,7 +90,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 .Returns(Task.FromResult(true));
 
             // ACT
-            var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter);
+            var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);

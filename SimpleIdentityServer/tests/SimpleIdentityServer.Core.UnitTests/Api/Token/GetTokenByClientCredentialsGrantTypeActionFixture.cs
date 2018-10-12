@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Core.Api.Token.Actions;
@@ -51,8 +49,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
         private IGetTokenByClientCredentialsGrantTypeAction _getTokenByClientCredentialsGrantTypeAction;
 
-        #region Exceptions
-
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
@@ -60,7 +56,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -79,7 +75,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
         }
@@ -107,7 +103,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(client));
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.Client.ClientId, GrantType.client_credentials));
@@ -140,7 +136,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(client));
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.Client.ClientId, ResponseType.token));
@@ -180,15 +176,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 });
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidScope);
             Assert.True(exception.Message == messageDescription);
         }
-
-        #endregion
-        
-        #region Happy paths
 
         [Fact]
         public async Task When_Access_Is_Granted_Then_Token_Is_Returned()
@@ -239,7 +231,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null);
+            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
 
             // ASSERTS
             _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));
@@ -301,15 +293,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 It.IsAny<JwsPayload>())).Returns(Task.FromResult(grantedToken));
 
             // ACT
-            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null);
+            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
 
             // ASSERTS
             _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));
             Assert.NotNull(result);
             Assert.True(result.ClientId == clientId);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

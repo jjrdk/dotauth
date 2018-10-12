@@ -32,8 +32,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(null, null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(new AuthorizationParameter(), null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(null, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(new AuthorizationParameter(), null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 .Returns(false);
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Core.Common.Models.Client(), null));
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
 
             Assert.NotNull(exception);
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
             // ACT & ASSERT
             var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                () => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Core.Common.Models.Client(), null));
+                () => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(ex.Message ==
                           ErrorDescriptions.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated);
@@ -120,7 +120,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 .Returns(true);
 
             // ACT
-            await _getAuthorizationCodeOperation.Execute(authorizationParameter, null, client, null);
+            await _getAuthorizationCodeOperation.Execute(authorizationParameter, null, client, null).ConfigureAwait(false);
 
             // ASSERTS
             _oauthEventSource.Verify(s => s.StartAuthorizationCodeFlow(clientId, scope, string.Empty));

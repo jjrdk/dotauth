@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using System.Diagnostics.Contracts;
 using System.Text;
@@ -21,8 +19,6 @@ namespace System.Security.Cryptography
 {
     public static class RsaExtensions
     {
-        #region Public static methods
-
         public static string ToXmlString(this RSA rsa, bool includePrivateParameters)
         {
             // From the XMLDSIG spec, RFC 3075, Section 6.4.2,
@@ -119,7 +115,5 @@ namespace System.Security.Cryptography
 
             rsa.ImportParameters(rsaParams);
         }
-
-        #endregion
     }
 }

@@ -85,8 +85,6 @@ namespace SimpleIdentityServer.Scim.Core.EF.Extensions
             return filter.Expression.Evaluate(representations);
         }
 
-        #region Private static methods
-
         private static System.Linq.Expressions.LambdaExpression Evaluate(this Expression expression, IQueryable<Representation> representations)
         {
             if (expression == null)
@@ -555,7 +553,5 @@ namespace SimpleIdentityServer.Scim.Core.EF.Extensions
             _scI++;
             return $"sc{_scI}";
         }
-
-        #endregion
     }
 }

@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
@@ -45,7 +43,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceSetAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceSetAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -55,7 +53,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             InitializeFakeObjects();
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(new AddResourceSetParameter()));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(new AddResourceSetParameter())).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddResourceSetParameterNames.PolicyId));
@@ -71,7 +69,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(new AddResourceSetParameter
             {
                 PolicyId = "policy_id"
-            }));
+            })).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddResourceSetParameterNames.ResourceSet));
@@ -99,7 +97,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 {
                     resourceSetId
                 }
-            }));
+            })).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidResourceSetId);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
@@ -123,7 +121,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 {
                     "resource_set_id"
                 }
-            });
+            }).ConfigureAwait(false);
 
             // ASSERT
             Assert.False(result);
@@ -157,7 +155,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 {
                     resourceSetId
                 }
-            });
+            }).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result);

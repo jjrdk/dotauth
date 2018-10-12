@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.AspNetCore.Http;
 using SimpleIdentityServer.Common.Dtos.Responses;
@@ -51,7 +49,7 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
         {
             try
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
@@ -70,7 +68,7 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 context.Response.ContentType = "application/json";
                 var serializedError = error.SerializeWithDataContract();
-                await context.Response.WriteAsync(serializedError);
+                await context.Response.WriteAsync(serializedError).ConfigureAwait(false);
             }
         }
     }

@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Repositories;
@@ -44,7 +42,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
         public async Task<List<Dictionary<string, object>>> Execute()
         {
             var result = new List<Dictionary<string, object>>();
-            var jsonWebKeys = await _jsonWebKeyRepository.GetAllAsync();
+            var jsonWebKeys = await _jsonWebKeyRepository.GetAllAsync().ConfigureAwait(false);
             // Retrieve all the JWK used by the client to encrypt the JWS
             var jsonWebKeysUsedForEncryption =
                 jsonWebKeys.Where(jwk => jwk.Use == Use.Enc && jwk.KeyOps.Contains(KeyOperations.Encrypt));

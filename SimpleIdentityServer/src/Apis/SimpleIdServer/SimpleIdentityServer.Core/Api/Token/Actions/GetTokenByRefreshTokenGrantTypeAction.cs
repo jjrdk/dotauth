@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common.Models;
@@ -72,7 +70,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             // 1. Try to authenticate the client
             var instruction = CreateAuthenticateInstruction(refreshTokenGrantTypeParameter, authenticationHeaderValue, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (authResult.Client == null)
             {
@@ -88,7 +86,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 3. Validate parameters
-            var grantedToken = await ValidateParameter(refreshTokenGrantTypeParameter);
+            var grantedToken = await ValidateParameter(refreshTokenGrantTypeParameter).ConfigureAwait(false);
             if (grantedToken.ClientId != client.ClientId)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidGrant, ErrorDescriptions.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer);
@@ -100,28 +98,26 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 grantedToken.Scope,
                 issuerName,
                 grantedToken.UserInfoPayLoad,
-                grantedToken.IdTokenPayLoad);
+                grantedToken.IdTokenPayLoad).ConfigureAwait(false);
             generatedToken.ParentTokenId = grantedToken.Id;
             // 5. Fill-in the idtoken
             if (generatedToken.IdTokenPayLoad != null)
             {
-                await _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad);
-                generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(generatedToken.ClientId, generatedToken.IdTokenPayLoad);
+                await _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad).ConfigureAwait(false);
+                generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(generatedToken.ClientId, generatedToken.IdTokenPayLoad).ConfigureAwait(false);
             }
 
-            await _tokenStore.AddToken(generatedToken);
+            await _tokenStore.AddToken(generatedToken).ConfigureAwait(false);
             _oauthEventSource.GrantAccessToClient(generatedToken.ClientId,
                 generatedToken.AccessToken,
                 generatedToken.Scope);
             return generatedToken;
         }
 
-        #region Private methods
-
 
         private async Task<GrantedToken> ValidateParameter(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter)
         {
-            var grantedToken = await _tokenStore.GetRefreshToken(refreshTokenGrantTypeParameter.RefreshToken);
+            var grantedToken = await _tokenStore.GetRefreshToken(refreshTokenGrantTypeParameter.RefreshToken).ConfigureAwait(false);
             if (grantedToken == null)
             {
                 throw new IdentityServerException(
@@ -142,7 +138,5 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             result.Certificate = certificate;
             return result;
         }
-
-        #endregion
     }
 }

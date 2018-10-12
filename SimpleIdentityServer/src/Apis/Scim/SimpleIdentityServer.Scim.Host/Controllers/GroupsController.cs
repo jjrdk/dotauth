@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,7 +43,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            var result = await _groupsAction.AddGroup(jObj, GetLocationPattern());
+            var result = await _groupsAction.AddGroup(jObj, GetLocationPattern()).ConfigureAwait(false);
             //if (result.IsSucceed())
             //{
             //    await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version, true);
@@ -71,7 +69,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             //    };
             //}
 
-            var result = await _groupsAction.GetGroup(id, GetLocationPattern(), Request.Query);
+            var result = await _groupsAction.GetGroup(id, GetLocationPattern(), Request.Query).ConfigureAwait(false);
             //if (result.IsSucceed())
             //{
             //    await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version, true);
@@ -84,7 +82,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
         [HttpGet]
         public async Task<ActionResult> SearchGroups()
         {
-            var result = await _groupsAction.SearchGroups(Request.Query, GetLocationPattern());
+            var result = await _groupsAction.SearchGroups(Request.Query, GetLocationPattern()).ConfigureAwait(false);
             return this.GetActionResult(result);
         }
 
@@ -92,7 +90,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
         [HttpPost(".search")]
         public async Task<ActionResult> SearchGroups([FromBody] JObject jObj)
         {
-            var result = await _groupsAction.SearchGroups(jObj, GetLocationPattern());
+            var result = await _groupsAction.SearchGroups(jObj, GetLocationPattern()).ConfigureAwait(false);
             return this.GetActionResult(result);
         }
 
@@ -105,7 +103,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var result = await _groupsAction.RemoveGroup(id);
+            var result = await _groupsAction.RemoveGroup(id).ConfigureAwait(false);
             //if (result.IsSucceed())
             //{
             //    await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), false);
@@ -123,7 +121,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            var result = await _groupsAction.UpdateGroup(id, jObj, GetLocationPattern());
+            var result = await _groupsAction.UpdateGroup(id, jObj, GetLocationPattern()).ConfigureAwait(false);
             //if (result.IsSucceed())
             //{
             //    await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version, true);
@@ -146,7 +144,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            var result = await _groupsAction.PatchGroup(id, jObj, GetLocationPattern());
+            var result = await _groupsAction.PatchGroup(id, jObj, GetLocationPattern()).ConfigureAwait(false);
             //if (result.IsSucceed())
             //{
             //    await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version, true);

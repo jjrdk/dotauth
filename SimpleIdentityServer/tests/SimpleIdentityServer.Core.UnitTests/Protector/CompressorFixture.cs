@@ -9,8 +9,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Protector
     {
         private ICompressor _compressor;
 
-        #region Compress
-
         [Fact]
         public void When_Passing_Empty_Parameter_To_Compress_Then_Exception_Is_Thrown()
         {
@@ -35,10 +33,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Protector
             Assert.NotNull(result);
             Assert.True(result.Length < toCompress.Length);
         }
-
-        #endregion
-
-        #region Decompress
 
         [Fact]
         public void When_Passing_EmptryString_To_Decompress_Then_Exceptin_Is_Thrown()
@@ -65,8 +59,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Protector
             Assert.NotNull(result);
             Assert.True(result == toCompress);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

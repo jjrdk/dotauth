@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
 
             // 2. Try to authenticate the client.
             var instruction = CreateAuthenticateInstruction(parameter, authenticationHeaderValue, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             // 3. Retrieve the ticket.
             var json = JsonConvert.SerializeObject(parameter);
             _umaServerEventSource.StartGettingAuthorization(json);
-            var ticket = await _ticketStore.GetAsync(parameter.Ticket);
+            var ticket = await _ticketStore.GetAsync(parameter.Ticket).ConfigureAwait(false);
             if (ticket == null)
             {
                 throw new BaseUmaException(ErrorCodes.InvalidTicket, string.Format(ErrorDescriptions.TheTicketDoesntExist, parameter.Ticket));
@@ -111,7 +111,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             };
 
             // 4. Check the authorization.
-            var authorizationResult = await _authorizationPolicyValidator.IsAuthorized(ticket, client.ClientId, claimTokenParameter);
+            var authorizationResult = await _authorizationPolicyValidator.IsAuthorized(ticket, client.ClientId, claimTokenParameter).ConfigureAwait(false);
             if (authorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
                 _umaServerEventSource.RequestIsNotAuthorized(json);
@@ -119,9 +119,9 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             }
 
             // 5. Generate a granted token.
-            var grantedToken = await GenerateTokenAsync(client, ticket.Lines, "openid", issuerName);
-            await _tokenStore.AddToken(grantedToken);
-            await _ticketStore.RemoveAsync(ticket.Id);
+            var grantedToken = await GenerateTokenAsync(client, ticket.Lines, "openid", issuerName).ConfigureAwait(false);
+            await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);
+            await _ticketStore.RemoveAsync(ticket.Id).ConfigureAwait(false);
             return grantedToken;
         }
 
@@ -153,8 +153,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            var expiresIn = await _configurationService.GetRptLifeTime(); // 1. Retrieve the expiration time of the granted token.
-            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName); // 2. Construct the JWT token (client).
+            var expiresIn = await _configurationService.GetRptLifeTime().ConfigureAwait(false); // 1. Retrieve the expiration time of the granted token.
+            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName).ConfigureAwait(false); // 2. Construct the JWT token (client).
             var jArr = new JArray();
             foreach (var ticketLine in ticketLines)
             {
@@ -167,7 +167,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             }
 
             jwsPayload.Add(Constants.RptClaims.Ticket, jArr);
-            var accessToken = await _clientHelper.GenerateIdTokenAsync(client, jwsPayload);
+            var accessToken = await _clientHelper.GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
             var refreshTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()); // 3. Construct the refresh token.
             return new GrantedToken
             {

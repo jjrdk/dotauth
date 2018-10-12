@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Core.Common.Models;
@@ -43,7 +41,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(string.Empty, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(string.Empty, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -54,7 +52,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).Returns(Task.FromResult((Core.Common.Models.Client)null));
 
             // ACTS & ASSERTS
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("invalid_client", null, null));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("invalid_client", null, null)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClient);
             Assert.True(ex.Message == ErrorDescriptions.TheClientIdDoesntExist);
         }
@@ -74,7 +72,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 .Returns(Task.FromResult((double)3700));
 
             // ACT
-            var result = await _grantedTokenGeneratorHelper.GenerateTokenAsync("client_id", "scope", "issuer");
+            var result = await _grantedTokenGeneratorHelper.GenerateTokenAsync("client_id", "scope", "issuer").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);

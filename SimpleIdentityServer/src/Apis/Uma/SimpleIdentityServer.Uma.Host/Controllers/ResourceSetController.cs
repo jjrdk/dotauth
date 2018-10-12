@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -49,7 +47,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var parameter = searchResourceSet.ToParameter();
-            var result = await _resourceSetActions.Search(parameter);
+            var result = await _resourceSetActions.Search(parameter).ConfigureAwait(false);
             return new OkObjectResult(result.ToResponse());
         }
 
@@ -65,7 +63,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             //    };
             //}
 
-            var resourceSetIds = await _resourceSetActions.GetAllResourceSet();
+            var resourceSetIds = await _resourceSetActions.GetAllResourceSet().ConfigureAwait(false);
             //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName);
             return new OkObjectResult(resourceSetIds);
         }
@@ -87,7 +85,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             //    };
             //}
 
-            var result = await _resourceSetActions.GetResourceSet(id);
+            var result = await _resourceSetActions.GetResourceSet(id).ConfigureAwait(false);
             if (result == null)
             {
                 return GetNotFoundResourceSet();
@@ -108,7 +106,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var parameter = postResourceSet.ToParameter();
-            var result = await _resourceSetActions.AddResourceSet(parameter);
+            var result = await _resourceSetActions.AddResourceSet(parameter).ConfigureAwait(false);
             var response = new AddResourceSetResponse
             {
                 Id = result
@@ -130,7 +128,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var parameter = putResourceSet.ToParameter();
-            var resourceSetExists = await _resourceSetActions.UpdateResourceSet(parameter);
+            var resourceSetExists = await _resourceSetActions.UpdateResourceSet(parameter).ConfigureAwait(false);
             if (!resourceSetExists)
             {
                 return GetNotFoundResourceSet();
@@ -157,8 +155,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
             }
 
-            var policyIds = await _resourceSetActions.GetPolicies(id);
-            var resourceSetExists = await _resourceSetActions.RemoveResourceSet(id);
+            var policyIds = await _resourceSetActions.GetPolicies(id).ConfigureAwait(false);
+            var resourceSetExists = await _resourceSetActions.RemoveResourceSet(id).ConfigureAwait(false);
             if (!resourceSetExists)
             {
                 return GetNotFoundResourceSet();

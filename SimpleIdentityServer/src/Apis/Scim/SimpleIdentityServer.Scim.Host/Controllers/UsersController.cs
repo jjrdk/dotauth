@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -115,7 +113,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
         [HttpGet]
         public async Task<ActionResult> SearchUsers()
         {
-            var result = await _usersAction.SearchUsers(Request.Query, GetLocationPattern());
+            var result = await _usersAction.SearchUsers(Request.Query, GetLocationPattern()).ConfigureAwait(false);
             return this.GetActionResult(result);
         }
 
@@ -123,11 +121,9 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
         [HttpPost(".search")]
         public async Task<ActionResult> SearchUsers([FromBody] JObject jObj)
         {
-            var result = await _usersAction.SearchUsers(jObj, GetLocationPattern());
+            var result = await _usersAction.SearchUsers(jObj, GetLocationPattern()).ConfigureAwait(false);
             return this.GetActionResult(result);
         }
-
-        #region Current user operations
 
         [HttpPost("Me")]
         [Authorize("authenticated")]
@@ -197,13 +193,9 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             return DeleteUser(scimId);
         }
 
-        #endregion
-
-        #region Common user operations
-
         private async Task<ActionResult> CreateUser(JObject jObj)
         {
-            var result = await _usersAction.AddUser(jObj, GetLocationPattern());
+            var result = await _usersAction.AddUser(jObj, GetLocationPattern()).ConfigureAwait(false);
             //if (result.IsSucceed())
             //{
             //    await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
@@ -222,7 +214,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             //    };
             //}
 
-            var result = await _usersAction.GetUser(id, GetLocationPattern());
+            var result = await _usersAction.GetUser(id, GetLocationPattern()).ConfigureAwait(false);
             //if (result.IsSucceed())
             //{
             //    await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
@@ -233,7 +225,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
         private async Task<ActionResult> PatchUser(string id, JObject jObj)
         {
-            var result = await _usersAction.PatchUser(id, jObj, GetLocationPattern());
+            var result = await _usersAction.PatchUser(id, jObj, GetLocationPattern()).ConfigureAwait(false);
             //if (result.IsSucceed())
             //{
             //    await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
@@ -244,7 +236,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
         private async Task<ActionResult> UpdateUser(string id, JObject jObj)
         {
-            var result = await _usersAction.UpdateUser(id, jObj, GetLocationPattern());
+            var result = await _usersAction.UpdateUser(id, jObj, GetLocationPattern()).ConfigureAwait(false);
             //if (result.IsSucceed())
             //{
             //    await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
@@ -255,7 +247,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
         private async Task<ActionResult> DeleteUser(string id)
         {
-            var result = await _usersAction.RemoveUser(id);
+            var result = await _usersAction.RemoveUser(id).ConfigureAwait(false);
             //if (result.IsSucceed())
             //{
             //    await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, false);
@@ -263,10 +255,6 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
             return this.GetActionResult(result);
         }
-
-        #endregion
-
-        #region Common operations
 
         private string GetLocationPattern()
         {
@@ -332,7 +320,5 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
                 StatusCode = (int)HttpStatusCode.BadRequest
             };
         }
-
-        #endregion
     }
 }

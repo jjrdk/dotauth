@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Core.Common;
@@ -34,8 +32,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
         private Mock<IJsonWebKeyConverter> _jsonWebKeyConverterFake;
         private IGenerateClientFromRegistrationRequest _generateClientFromRegistrationRequest;
 
-        #region Exceptions
-
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
@@ -45,10 +41,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             // ACT & ASSERT
             Assert.Throws<ArgumentNullException>(() => _generateClientFromRegistrationRequest.Execute(null));
         }
-
-        #endregion
-
-        #region Happy paths
 
         [Fact]
         public void When_Passing_Registration_Parameter_Without_Specific_Values_Then_Client_Is_Returned()
@@ -235,8 +227,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             Assert.True(client.InitiateLoginUri == initiateLoginUri);
             Assert.True(client.RequestUris.First() == requestUri);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

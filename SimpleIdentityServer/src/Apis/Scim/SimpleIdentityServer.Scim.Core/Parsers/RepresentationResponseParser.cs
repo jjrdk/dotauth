@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Common.DTOs;
@@ -112,7 +110,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 throw new ArgumentNullException(nameof(schemaId));
             }
 
-            var schema = await _schemasStore.GetSchema(schemaId);
+            var schema = await _schemasStore.GetSchema(schemaId).ConfigureAwait(false);
             if (schema == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId));
@@ -120,7 +118,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             if (_attributeMappers != null && _attributeMappers.Any())
             {
-                await _attributeMappers.First().Map(representation, schemaId);
+                await _attributeMappers.First().Map(representation, schemaId).ConfigureAwait(false);
             }
 
             JObject result = new JObject();
