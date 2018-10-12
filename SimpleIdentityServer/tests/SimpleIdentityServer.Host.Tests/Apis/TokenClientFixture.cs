@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -40,6 +38,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Host.Tests
 {
+    using Authenticate.SMS.Common.Requests;
+
     public class TokenClientFixture : IClassFixture<TestOauthServerFixture>
     {
         private const string baseUrl = "http://localhost:5000";
@@ -56,8 +56,6 @@ namespace SimpleIdentityServer.Host.Tests
         {
             _server = server;
         }
-
-        #region Errors password grant_type
 
         [Fact]
         public async Task When_GrantType_Is_Not_Specified_To_Token_Endpoint_Then_Json_Is_Returned()
@@ -77,7 +75,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -105,7 +103,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -134,7 +132,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -164,7 +162,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -196,7 +194,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -228,7 +226,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -261,7 +259,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -294,7 +292,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -303,10 +301,6 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.Equal("invalid_scope", error.Error);
             Assert.Equal("the scopes invalid are not allowed or invalid", error.ErrorDescription);
         }
-
-        #endregion
-
-        #region Errors client credentials grant_type
 
         [Fact]
         public async Task When_Use_ClientCredentials_Grant_Type_And_No_Scope_Is_Passwed_Then_Json_Is_Returned()
@@ -326,7 +320,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -357,7 +351,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -388,7 +382,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -419,7 +413,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -428,10 +422,6 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.Equal("invalid_scope", error.Error);
             Assert.Equal("the scopes invalid are not allowed or invalid", error.ErrorDescription);
         }
-
-        #endregion
-
-        #region Errors refresh token
 
         [Fact]
         public async Task When_Use_RefreshToken_Grant_Type_And_No_RefreshToken_Is_Passed_Then_Json_Is_Returned()
@@ -451,7 +441,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -481,7 +471,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -512,7 +502,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -543,10 +533,6 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.Equal("the refresh token can be used only by the same issuer", refreshToken.Error.ErrorDescription);
         }
 
-        #endregion
-
-        #region Errors authorization code
-        
         [Fact]
         public async Task When_Use_AuthCode_Grant_Type_And_No_Code_Is_Passed_Then_Json_Is_Returned()
         {
@@ -565,7 +551,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -594,7 +580,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -625,7 +611,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -657,7 +643,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -689,7 +675,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -721,7 +707,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -732,10 +718,6 @@ namespace SimpleIdentityServer.Host.Tests
         }
 
         // TH : CONTINUE TO WRITE UTS
-
-        #endregion
-
-        #region GrantTypes
 
         [Fact]
         public async Task When_Using_ClientCredentials_Grant_Type_Then_AccessToken_Is_Returned()
@@ -796,10 +778,10 @@ namespace SimpleIdentityServer.Host.Tests
             {
                 return Task.FromResult(true);
             });
-            await _sidSmsAuthenticateClient.Send(baseUrl, new Authenticate.SMS.Common.Requests.ConfirmationCodeRequest
+            await _sidSmsAuthenticateClient.Send(baseUrl, new ConfirmationCodeRequest
             {
                 PhoneNumber = "phone"
-            });
+            }).ConfigureAwait(false);
             _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>())).Returns(Task.FromResult(confirmationCode));
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UsePassword("phone", confirmationCode.Value, new List<string> { "sms" }, new List<string> { "scim" })
@@ -862,7 +844,7 @@ namespace SimpleIdentityServer.Host.Tests
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UsePassword("administrator", "password", "scim")
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-            var jwks = await _jwksClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var jwks = await _jwksClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             
             // ASSERTS
             Assert.NotNull(result);
@@ -870,10 +852,6 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.NotEmpty(result.Content.AccessToken);
 
         }
-
-        #endregion
-
-        #region Client authentications
 
         [Fact]
         public async Task When_Using_ClientSecretPostAuthentication_Then_AccessToken_Is_Returned()
@@ -986,8 +964,6 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.False(token.ContainsError);
             Assert.NotEmpty(token.Content.AccessToken);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

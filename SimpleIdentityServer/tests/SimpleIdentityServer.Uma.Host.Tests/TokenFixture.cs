@@ -36,8 +36,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             _server = server;
         }
 
-        #region Errors
-
         [Fact]
         public async Task When_Ticket_Id_Doesnt_Exist_Then_Error_Is_Returned()
         {
@@ -56,10 +54,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.Equal("invalid_ticket", token.Error.Error);
             Assert.Equal("the ticket ticket_id doesn't exist", token.Error.ErrorDescription);
         }
-
-        #endregion
-
-        #region Happy path
 
         [Fact]
         public async Task When_Using_ClientCredentials_Grant_Type_Then_AccessToken_Is_Returned()
@@ -99,50 +93,50 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 .UseClientCredentials("uma_protection", "uma_authorization")
                 .ResolveAsync(baseUrl + "/.well-known/uma2-configuration");
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet // Add ressource.
-            {
-                Name = "name",
-                Scopes = new List<string>
                 {
-                    "read",
-                    "write",
-                    "execute"
-                }
-            },
-            baseUrl + "/.well-known/uma2-configuration", result.Content.AccessToken);
-            var addPolicy = await _policyClient.AddByResolution(new PostPolicy // Add an authorization policy.
-            {
-                Rules = new List<PostPolicyRule>
-                {
-                    new PostPolicyRule
+                    Name = "name",
+                    Scopes = new List<string>
                     {
-                        IsResourceOwnerConsentNeeded = false,
-                        Scopes = new List<string>
-                        {
-                            "read"
-                        },
-                        ClientIdsAllowed = new List<string>
-                        {
-                            "resource_server"
-                        },
-                        Claims = new List<PostClaim>
-                        {
-                            new PostClaim { Type = "sub", Value = "248289761001" }
-                        }
+                        "read",
+                        "write",
+                        "execute"
                     }
                 },
-                ResourceSetIds = new List<string>
+                baseUrl + "/.well-known/uma2-configuration", result.Content.AccessToken).ConfigureAwait(false);
+            var addPolicy = await _policyClient.AddByResolution(new PostPolicy // Add an authorization policy.
                 {
-                    resource.Content.Id
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", result.Content.AccessToken);
+                    Rules = new List<PostPolicyRule>
+                    {
+                        new PostPolicyRule
+                        {
+                            IsResourceOwnerConsentNeeded = false,
+                            Scopes = new List<string>
+                            {
+                                "read"
+                            },
+                            ClientIdsAllowed = new List<string>
+                            {
+                                "resource_server"
+                            },
+                            Claims = new List<PostClaim>
+                            {
+                                new PostClaim { Type = "sub", Value = "248289761001" }
+                            }
+                        }
+                    },
+                    ResourceSetIds = new List<string>
+                    {
+                        resource.Content.Id
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", result.Content.AccessToken).ConfigureAwait(false);
             var ticket = await _permissionClient.AddByResolution(new PostPermission // Add permission & retrieve a ticket id.
-            {
-                ResourceSetId = resource.Content.Id,
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    ResourceSetId = resource.Content.Id,
+                    Scopes = new List<string>
+                    {
+                        "read"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var token = await _clientAuthSelector.UseClientSecretPostAuth("resource_server", "resource_server") // Try to get the access token via "ticket_id" grant-type.
                 .UseTicketId(ticket.Content.TicketId, jwt)
                 .ResolveAsync(baseUrl + "/.well-known/uma2-configuration");
@@ -150,8 +144,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             // ASSERTS.
             Assert.NotNull(token);            
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

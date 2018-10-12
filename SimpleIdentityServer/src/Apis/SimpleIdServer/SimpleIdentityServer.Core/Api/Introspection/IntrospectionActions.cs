@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleBus.Core;
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
@@ -62,7 +60,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection
             {
                 _eventPublisher.Publish(new IntrospectionRequestReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(introspectionParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
                 _introspectionParameterValidator.Validate(introspectionParameter);
-                var result = await _postIntrospectionAction.Execute(introspectionParameter, authenticationHeaderValue, issuerName);
+                var result = await _postIntrospectionAction.Execute(introspectionParameter, authenticationHeaderValue, issuerName).ConfigureAwait(false);
                 _eventPublisher.Publish(new IntrospectionResultReturned(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
                 return result;
             }

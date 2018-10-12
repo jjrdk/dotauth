@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs;
@@ -91,7 +89,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 return string.Empty;
             }
 
-            var jsonWebKey = await _jsonWebKeyRepository.GetByKidAsync(protectedHeader.Kid);
+            var jsonWebKey = await _jsonWebKeyRepository.GetByKidAsync(protectedHeader.Kid).ConfigureAwait(false);
             if (jsonWebKey == null)
             {
                 return string.Empty;
@@ -102,7 +100,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         public async Task<string> DecryptAsync(string jwe, string clientId)
         {
-            var jsonWebKey = await GetJsonWebKeyToDecrypt(jwe, clientId);
+            var jsonWebKey = await GetJsonWebKeyToDecrypt(jwe, clientId).ConfigureAwait(false);
             if (jsonWebKey == null)
             {
                 return string.Empty;
@@ -113,7 +111,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         public async Task<string> DecryptWithPasswordAsync(string jwe, string clientId, string password)
         {
-            var jsonWebKey = await GetJsonWebKeyToDecrypt(jwe, clientId);
+            var jsonWebKey = await GetJsonWebKeyToDecrypt(jwe, clientId).ConfigureAwait(false);
             if (jsonWebKey == null)
             {
                 return string.Empty;
@@ -135,7 +133,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 return null;
             }
 
-            var jsonWebKey = await _jsonWebKeyRepository.GetByKidAsync(protectedHeader.Kid);
+            var jsonWebKey = await _jsonWebKeyRepository.GetByKidAsync(protectedHeader.Kid).ConfigureAwait(false);
             return UnSignWithJsonWebKey(jsonWebKey, protectedHeader, jws);
         }
 
@@ -151,7 +149,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(clientId);
+            var client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
@@ -163,11 +161,9 @@ namespace SimpleIdentityServer.Core.JwtToken
                 return null;
             }
 
-            var jsonWebKey = await GetJsonWebKeyFromClient(client, protectedHeader.Kid);
+            var jsonWebKey = await GetJsonWebKeyFromClient(client, protectedHeader.Kid).ConfigureAwait(false);
             return UnSignWithJsonWebKey(jsonWebKey, protectedHeader, jws);
         }
-
-        #region Private methods
 
         private JwsPayload UnSignWithJsonWebKey(JsonWebKey jsonWebKey, JwsProtectedHeader jwsProtectedHeader, string jws)
         {
@@ -197,7 +193,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(clientId);
+            var client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
@@ -209,7 +205,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 return null;
             }
 
-            var jsonWebKey = await GetJsonWebKeyFromClient(client, protectedHeader.Kid);
+            var jsonWebKey = await GetJsonWebKeyFromClient(client, protectedHeader.Kid).ConfigureAwait(false);
             return jsonWebKey;
         }
         
@@ -250,7 +246,5 @@ namespace SimpleIdentityServer.Core.JwtToken
 
             return result;
         }
-
-        #endregion
     }
 }

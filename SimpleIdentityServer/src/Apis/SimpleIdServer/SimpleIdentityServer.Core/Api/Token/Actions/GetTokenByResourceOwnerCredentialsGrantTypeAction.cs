@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common.Models;
@@ -87,7 +85,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             // 1. Try to authenticate the client
             var instruction = CreateAuthenticateInstruction(resourceOwnerGrantTypeParameter, authenticationHeaderValue, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (authResult.Client == null)
             {                
@@ -110,7 +108,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             // 3. Try to authenticate a resource owner
             var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(resourceOwnerGrantTypeParameter.UserName, 
                 resourceOwnerGrantTypeParameter.Password,
-                resourceOwnerGrantTypeParameter.AmrValues);
+                resourceOwnerGrantTypeParameter.AmrValues).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidGrant, ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
@@ -137,25 +135,23 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             {
                 Scope = resourceOwnerGrantTypeParameter.Scope
             };
-            var payload = await _jwtGenerator.GenerateUserInfoPayloadForScopeAsync(claimsPrincipal, authorizationParameter);
-            var generatedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId, payload, payload);
+            var payload = await _jwtGenerator.GenerateUserInfoPayloadForScopeAsync(claimsPrincipal, authorizationParameter).ConfigureAwait(false);
+            var generatedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId, payload, payload).ConfigureAwait(false);
             if (generatedToken == null)
             {
-                generatedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes, issuerName, payload, payload);
+                generatedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes, issuerName, payload, payload).ConfigureAwait(false);
                 if (generatedToken.IdTokenPayLoad != null)
                 {
-                    await _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad);
-                    generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(client, generatedToken.IdTokenPayLoad);
+                    await _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad).ConfigureAwait(false);
+                    generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(client, generatedToken.IdTokenPayLoad).ConfigureAwait(false);
                 }
 
-                await _tokenStore.AddToken(generatedToken);
+                await _tokenStore.AddToken(generatedToken).ConfigureAwait(false);
                 _oauthEventSource.GrantAccessToClient(client.ClientId, generatedToken.AccessToken, allowedTokenScopes);
             }
 
             return generatedToken;
         }
-        
-        #region Private methods
 
         private AuthenticateInstruction CreateAuthenticateInstruction(
             ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
@@ -170,7 +166,5 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             result.Certificate = certificate;
             return result;
         }
-
-        #endregion
     }
 }

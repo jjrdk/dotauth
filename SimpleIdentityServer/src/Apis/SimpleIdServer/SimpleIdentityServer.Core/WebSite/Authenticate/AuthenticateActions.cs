@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleBus.Core;
 using SimpleIdentityServer.Core.Common.Models;
@@ -72,7 +70,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             return await _localOpenIdUserAuthenticationAction.Execute(
                 localAuthenticationParameter,
                 authorizationParameter,
-                code, issuerName);
+                code, issuerName).ConfigureAwait(false);
         }
 
         public async Task<ActionResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code, string issuerName)
@@ -89,22 +87,22 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 
             return await _authenticateResourceOwnerOpenIdAction.Execute(parameter, 
                 claimsPrincipal, 
-                code, issuerName);
+                code, issuerName).ConfigureAwait(false);
         }
 
         public async Task<string> GenerateAndSendCode(string subject)
         {
-            return await _generateAndSendCodeAction.ExecuteAsync(subject);
+            return await _generateAndSendCodeAction.ExecuteAsync(subject).ConfigureAwait(false);
         }
 
         public async Task<bool> ValidateCode(string code)
         {
-            return await _validateConfirmationCodeAction.Execute(code);
+            return await _validateConfirmationCodeAction.Execute(code).ConfigureAwait(false);
         }
 
         public async Task<bool> RemoveCode(string code)
         {
-            return await _removeConfirmationCodeAction.Execute(code);
+            return await _removeConfirmationCodeAction.Execute(code).ConfigureAwait(false);
         }
     }
 }

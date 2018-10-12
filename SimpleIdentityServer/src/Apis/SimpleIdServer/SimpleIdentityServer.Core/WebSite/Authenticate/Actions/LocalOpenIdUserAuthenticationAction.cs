@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
@@ -69,8 +67,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             _authenticateHelper = authenticateHelper;
         }
 
-        #region Public methods
-
         /// <summary>
         /// Authenticate local user account.
         /// Exceptions :
@@ -96,7 +92,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
-            var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(localAuthenticationParameter.UserName, localAuthenticationParameter.Password, authorizationParameter.AmrValues);
+            var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(localAuthenticationParameter.UserName, localAuthenticationParameter.Password, authorizationParameter.AmrValues).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new IdentityServerAuthenticationException("the resource owner credentials are not correct");
@@ -109,14 +105,12 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             return new LocalOpenIdAuthenticationResult
             {
                 ActionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
-                                code,
-                                resourceOwner.Id,
-                                claims, issuerName),
+                    code,
+                    resourceOwner.Id,
+                    claims, issuerName).ConfigureAwait(false),
                 Claims = claims,
                 TwoFactor = resourceOwner.TwoFactorAuthentication
             };
         }
-
-        #endregion
     }
 }

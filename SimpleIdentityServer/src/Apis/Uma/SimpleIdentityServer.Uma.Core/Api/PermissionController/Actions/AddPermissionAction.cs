@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Newtonsoft.Json;
 using SimpleIdentityServer.Uma.Core.Errors;
@@ -61,7 +59,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
 
         public async Task<string> Execute(string clientId, AddPermissionParameter addPermissionParameter)
         {
-            var result = await Execute(clientId, new[] { addPermissionParameter });
+            var result = await Execute(clientId, new[] { addPermissionParameter }).ConfigureAwait(false);
             return result;
         }
 
@@ -79,8 +77,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
 
             var json = addPermissionParameters == null ? string.Empty : JsonConvert.SerializeObject(addPermissionParameters);
             _umaServerEventSource.StartAddPermission(json);
-            await CheckAddPermissionParameter(addPermissionParameters);
-            var ticketLifetimeInSeconds = await _configurationService.GetTicketLifeTime();
+            await CheckAddPermissionParameter(addPermissionParameters).ConfigureAwait(false);
+            var ticketLifetimeInSeconds = await _configurationService.GetTicketLifeTime().ConfigureAwait(false);
             var ticket = new Ticket
             {
                 Id = Guid.NewGuid().ToString(),
@@ -101,7 +99,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
             }
 
             ticket.Lines = ticketLines;
-            if(!await _ticketStore.AddAsync(ticket))
+            if(!await _ticketStore.AddAsync(ticket).ConfigureAwait(false))
             {
                 throw new BaseUmaException(ErrorCodes.InternalError, ErrorDescriptions.TheTicketCannotBeInserted);
             }
@@ -114,7 +112,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
         {
             // 1. Get resource sets.
             var resourceSets = await _repositoryExceptionHelper.HandleException(ErrorDescriptions.TheResourceSetsCannotBeRetrieved,
-                () => _resourceSetRepository.Get(addPermissionParameters.Select(p => p.ResourceSetId)));
+                () => _resourceSetRepository.Get(addPermissionParameters.Select(p => p.ResourceSetId))).ConfigureAwait(false);
 
             // 2. Check parameters & scope exist.
             foreach (var addPermissionParameter in addPermissionParameters)

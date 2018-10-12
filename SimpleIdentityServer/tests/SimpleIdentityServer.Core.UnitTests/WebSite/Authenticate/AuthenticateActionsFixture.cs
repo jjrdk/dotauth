@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Core.Common.Models;
@@ -43,8 +41,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.AuthenticateResourceOwnerOpenId(null, null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.AuthenticateResourceOwnerOpenId(authorizationParameter, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.AuthenticateResourceOwnerOpenId(null, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.AuthenticateResourceOwnerOpenId(authorizationParameter, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -55,8 +53,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var localAuthenticationParameter = new LocalAuthenticationParameter();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.LocalOpenIdUserAuthentication(null, null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.LocalOpenIdUserAuthentication(localAuthenticationParameter, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.LocalOpenIdUserAuthentication(null, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.LocalOpenIdUserAuthentication(localAuthenticationParameter, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -71,7 +69,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var claimsPrincipal = new ClaimsPrincipal();
 
             // ACT
-            await _authenticateActions.AuthenticateResourceOwnerOpenId(authorizationParameter, claimsPrincipal, null, null);
+            await _authenticateActions.AuthenticateResourceOwnerOpenId(authorizationParameter, claimsPrincipal, null, null).ConfigureAwait(false);
 
             // ASSERT
             _authenticateResourceOwnerActionFake.Verify(a => a.Execute(authorizationParameter, claimsPrincipal, null, null));
@@ -93,7 +91,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
 
             // ACT
-            await _authenticateActions.LocalOpenIdUserAuthentication(localUserAuthentication, authorizationParameter, null, null);
+            await _authenticateActions.LocalOpenIdUserAuthentication(localUserAuthentication, authorizationParameter, null, null).ConfigureAwait(false);
 
             // ASSERT
             _localOpenIdUserAuthenticationActionFake.Verify(a => a.Execute(localUserAuthentication, 

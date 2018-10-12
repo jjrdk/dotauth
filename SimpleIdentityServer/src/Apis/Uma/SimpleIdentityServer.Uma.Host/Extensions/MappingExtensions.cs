@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
@@ -32,8 +30,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 {
     internal static class MappingExtensions
     {
-        #region UMA
-
         public static SearchResourceSetParameter ToParameter(this SearchResourceSet searchResourceSet)
         {
             if (searchResourceSet == null)
@@ -315,10 +311,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             };
         }
 
-        #endregion
-
-        #region OAUTH2.0
-        
         public static GrantedTokenResponse ToDto(this GrantedToken grantedToken)
         {
             if (grantedToken == null)
@@ -527,7 +519,5 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 TokenTypeHint = revocationRequest.TokenTypeHint
             };
         }
-
-        #endregion
     }
 }

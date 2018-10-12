@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.OAuth2Introspection
                 var introspectionResult = await _client //factory.CreateAuthSelector()
                     //.UseClientSecretPostAuth(Options.ClientId, Options.ClientSecret)
                     //.Introspect(token, TokenType.AccessToken)
-                    .ResolveAsync(Options.WellKnownConfigurationUrl);
+                    .ResolveAsync(Options.WellKnownConfigurationUrl).ConfigureAwait(false);
                 if (introspectionResult.ContainsError || !introspectionResult.Content.Active)
                 {
                     return AuthenticateResult.NoResult();

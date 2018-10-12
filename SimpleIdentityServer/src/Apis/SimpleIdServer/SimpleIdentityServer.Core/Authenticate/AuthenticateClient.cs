@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
@@ -67,7 +65,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             var clientId = TryGettingClientId(instruction);
             if (!string.IsNullOrWhiteSpace(clientId))
             {
-                client = await _clientRepository.GetClientByIdAsync(clientId);
+                client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
             }
 
             if (client == null)
@@ -103,9 +101,9 @@ namespace SimpleIdentityServer.Core.Authenticate
                         errorMessage = string.Format(ErrorDescriptions.TheClientDoesntContainASharedSecret, client.ClientId);
                         break;
                     }
-                    return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, client.Secrets.First(s => s.Type == ClientSecretTypes.SharedSecret).Value, issuerName);
+                    return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, client.Secrets.First(s => s.Type == ClientSecretTypes.SharedSecret).Value, issuerName).ConfigureAwait(false);
                 case TokenEndPointAuthenticationMethods.private_key_jwt:
-                   return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, issuerName);
+                   return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, issuerName).ConfigureAwait(false);
                 case TokenEndPointAuthenticationMethods.tls_client_auth:
                     client = _clientTlsAuthentication.AuthenticateClient(instruction, client);
                     if (client == null)

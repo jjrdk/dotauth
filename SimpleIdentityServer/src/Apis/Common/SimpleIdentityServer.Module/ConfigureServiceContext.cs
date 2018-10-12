@@ -18,16 +18,10 @@ namespace SimpleIdentityServer.Module
             _authenticationBuilders = new Dictionary<string, AuthenticationBuilder>();
         }
 
-        #region Events
-
         public event EventHandler Initialized;
         public event EventHandler AuthenticationCookieAdded;
         public event EventHandler AuthorizationAdded;
         public event EventHandler MvcAdded;
-
-        #endregion
-
-        #region Properties
 
         public Dictionary<string, AuthenticationBuilder> AuthenticationBuilders
         {
@@ -60,10 +54,6 @@ namespace SimpleIdentityServer.Module
                 return _mvcBuilder;
             }
         }
-
-        #endregion
-
-        #region Methods
 
         public void Init(IServiceCollection services)
         {
@@ -110,7 +100,5 @@ namespace SimpleIdentityServer.Module
                 MvcAdded(this, EventArgs.Empty);
             }
         }
-
-        #endregion
     }
 }

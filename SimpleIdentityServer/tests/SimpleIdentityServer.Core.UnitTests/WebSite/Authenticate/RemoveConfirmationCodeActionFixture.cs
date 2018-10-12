@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
@@ -35,7 +33,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _removeConfirmationCodeAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _removeConfirmationCodeAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -45,7 +43,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             InitializeFakeObjects();
 
             // ACT
-            await _removeConfirmationCodeAction.Execute("code");
+            await _removeConfirmationCodeAction.Execute("code").ConfigureAwait(false);
 
             // ASSERT
             _confirmationCodeStoreStub.Verify(c => c.Remove("code"));

@@ -6,8 +6,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
 {
     public sealed class ClientExtensionsFixture
     {
-        #region Test GetIdTokenSignedResponseAlg
-
         [Fact]
         public void When_Passing_Not_Supported_Alg_To_GetIdTokenSignedResponseAlg_Then_Null_Is_Returned()
         {
@@ -39,10 +37,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             // ASSERT
             Assert.NotNull(result == JwsAlg.RS256);
         }
-
-        #endregion
-
-        #region Test GetIdTokenEncryptedResponseAlg
 
         [Fact]
         public void When_Passing_Not_Supported_Alg_To_GetIdTokenEncryptedResponseAlg_Then_Null_Is_Returned()
@@ -76,10 +70,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             Assert.True(result == JweAlg.RSA1_5);
         }
 
-        #endregion
-
-        #region Test GetIdTokenEncryptedResponseEnc
-
         [Fact]
         public void When_Passing_Not_Supported_Alg_To_GetIdTokenEncryptedResponseEnc_Then_Null_Is_Returned()
         {
@@ -111,10 +101,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             // ASSERT
             Assert.True(result == JweEnc.A128CBC_HS256);
         }
-
-        #endregion
-
-        #region Test GetUserInfoSignedResponseAlg
 
         [Fact]
         public void When_Passing_Not_Supported_Alg_To_GetUserInfoSignedResponseAlg_Then_Null_Is_Returned()
@@ -148,10 +134,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             Assert.True(result == JwsAlg.RS256);
         }
 
-        #endregion
-
-        #region Test GetUserInfoEncryptedResponseAlg
-
         [Fact]
         public void When_Passing_Not_Supported_Alg_To_GetUserInfoEncryptedResponseAlg_Then_Null_Is_Returned()
         {
@@ -183,10 +165,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             // ASSERT
             Assert.True(result == JweAlg.RSA1_5);
         }
-
-        #endregion
-
-        #region Test GetUserInfoEncryptedResponseEnc
 
         [Fact]
         public void When_Passing_Not_Supported_Alg_To_GetUserInfoEncryptedResponseEnc_Then_Null_Is_Returned()
@@ -220,10 +198,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             Assert.True(result == JweEnc.A128CBC_HS256);
         }
 
-        #endregion
-
-        #region Test GetRequestObjectSigningAlg
-
         [Fact]
         public void When_Passing_Not_Supported_Alg_To_GetRequestObjectSigningAlg_Then_Null_Is_Returned()
         {
@@ -255,10 +229,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             // ASSERT
             Assert.True(result == JwsAlg.RS256);
         }
-
-        #endregion
-
-        #region Test GetRequestObjectEncryptionAlg
 
         [Fact]
         public void When_Passing_Not_Supported_Alg_To_GetRequestObjectEncryptionAlg_Then_Null_Is_Returned()
@@ -292,10 +262,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             Assert.True(result == JweAlg.RSA1_5);
         }
 
-        #endregion
-
-        #region Test GetRequestObjectEncryptionEnc
-
         [Fact]
         public void When_Passing_Not_Supported_Alg_To_GetRequestObjectEncryptionEnc_Then_Null_Is_Returned()
         {
@@ -327,7 +293,5 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             // ASSERT
             Assert.True(result == JweEnc.A128CBC_HS256);
         }
-
-        #endregion
     }
 }

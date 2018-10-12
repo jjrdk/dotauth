@@ -10,8 +10,6 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Extensions
 {
     internal static class MappingExtensions
     {
-        #region To Dtos
-
         public static FilterResponse ToDto(this FilterAggregate filter)
         {
             if (filter == null)
@@ -54,10 +52,6 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Extensions
 
             return filters.Select(f => f.ToDto());
         }
-
-        #endregion
-
-        #region To parameters
 
         public static FilterAggregate ToParameter(this AddFilterRequest addFilterRequest)
         {
@@ -117,7 +111,5 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Extensions
                 Operation = (ComparisonOperations)addFilterRuleRequest.Operation
             };
         }
-
-        #endregion
     }
 }

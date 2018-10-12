@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Core.Common;
@@ -39,8 +37,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync(null, null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync(null, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -52,7 +50,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 .Returns(Task.FromResult((GrantedToken)null));
 
             // ACT
-            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null);
+            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);
@@ -73,7 +71,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 });
 
             // ACT
-            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null);
+            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);
@@ -93,7 +91,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 });
 
             // ACT
-            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null);
+            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);

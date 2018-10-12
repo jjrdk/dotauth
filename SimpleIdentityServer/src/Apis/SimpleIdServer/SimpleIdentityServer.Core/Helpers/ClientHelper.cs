@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Repositories;
@@ -56,13 +54,13 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(jwsPayload));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(clientId);
+            var client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 return null;
             }
 
-            return await GenerateIdTokenAsync(client, jwsPayload);
+            return await GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
         }
 
         public async Task<string> GenerateIdTokenAsync(Core.Common.Models.Client client, JwsPayload jwsPayload)
@@ -85,7 +83,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 signedResponseAlg = JwsAlg.RS256;
             }
 
-            var idToken = await _jwtGenerator.SignAsync(jwsPayload, signedResponseAlg.Value);
+            var idToken = await _jwtGenerator.SignAsync(jwsPayload, signedResponseAlg.Value).ConfigureAwait(false);
             if (encryptResponseAlg == null)
             {
                 return idToken;
@@ -96,7 +94,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 encryptResponseEnc = JweEnc.A128CBC_HS256;
             }
 
-            return await _jwtGenerator.EncryptAsync(idToken, encryptResponseAlg.Value, encryptResponseEnc.Value);
+            return await _jwtGenerator.EncryptAsync(idToken, encryptResponseAlg.Value, encryptResponseEnc.Value).ConfigureAwait(false);
         }
 
         public async Task<JwsPayload> GetPayload(string clientId, string jwsToken)
@@ -111,13 +109,13 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(jwsToken));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(clientId);
+            var client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 return null;
             }
 
-            return await GetPayload(client, jwsToken);
+            return await GetPayload(client, jwsToken).ConfigureAwait(false);
         }
 
         public async Task<JwsPayload> GetPayload(Core.Common.Models.Client client, string jwsToken)
@@ -137,10 +135,10 @@ namespace SimpleIdentityServer.Core.Helpers
             var encryptResponseAlg = client.GetIdTokenEncryptedResponseAlg();
             if (encryptResponseAlg != null) // Decrypt the token.
             {
-                jwsToken = await _jwtParser.DecryptAsync(jwsToken, client.ClientId);
+                jwsToken = await _jwtParser.DecryptAsync(jwsToken, client.ClientId).ConfigureAwait(false);
             }
 
-            return await _jwtParser.UnSignAsync(jwsToken, client.ClientId);
+            return await _jwtParser.UnSignAsync(jwsToken, client.ClientId).ConfigureAwait(false);
         }
     }
 }

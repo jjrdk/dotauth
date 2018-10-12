@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Newtonsoft.Json.Linq;
 using System;
@@ -153,7 +151,7 @@ namespace SimpleIdentityServer.Scim.Client.Builders
             }
 
             _obj.Add(new JProperty(Common.Constants.PatchOperationsRequestNames.Operations, arr));
-            return await _callback(_obj);
+            return await _callback(_obj).ConfigureAwait(false);
         }
 
         private void Initialize(IEnumerable<string> schemas)

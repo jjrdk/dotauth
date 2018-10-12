@@ -125,8 +125,6 @@ namespace SimpleIdentityServer.Scim.Core.EF.Stores
             return Task.FromResult(true);
         }
 
-        #region Private methods
-
         private List<RepresentationAttribute> GetRepresentationAttributes(Model.Representation representation)
         {
             if (representation.Attributes == null)
@@ -273,8 +271,6 @@ namespace SimpleIdentityServer.Scim.Core.EF.Stores
                 }
             }
         }
-
-        #endregion
 
         private static string GetResourceSchemaType(string type)
         {

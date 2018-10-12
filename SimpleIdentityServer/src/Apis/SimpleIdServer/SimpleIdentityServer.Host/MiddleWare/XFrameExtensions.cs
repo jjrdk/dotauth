@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.AspNetCore.Builder;
 using System;
@@ -21,8 +19,6 @@ namespace SimpleIdentityServer.Host.MiddleWare
 {
     internal static class XFrameExtensions
     {
-        #region Public static methods
-
         public static IApplicationBuilder UseXFrame(
             this IApplicationBuilder applicationBuilder)
         {
@@ -33,7 +29,5 @@ namespace SimpleIdentityServer.Host.MiddleWare
 
             return applicationBuilder.UseMiddleware<XFrameMiddleware>();
         }
-
-        #endregion
     }
 }

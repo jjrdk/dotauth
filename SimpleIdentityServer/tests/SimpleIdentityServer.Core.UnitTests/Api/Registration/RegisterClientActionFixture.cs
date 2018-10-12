@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
@@ -38,8 +36,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
         private Mock<IClientPasswordService> _encryptedPasswordFactoryStub;
         private IRegisterClientAction _registerClientAction;
 
-        #region Exceptions
-
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
@@ -47,13 +43,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _registerClientAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _registerClientAction.Execute(null)).ConfigureAwait(false);
         }
 
-        #endregion
-
-        #region Happy Path
-        
         [Fact]
         public async Task When_Passing_Registration_Parameter_With_Specific_Values_Then_Client_Is_Returned()
         {
@@ -161,7 +153,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                 .Returns(Task.FromResult(true));
 
             // ACT
-            var result = await _registerClientAction.Execute(registrationParameter);
+            var result = await _registerClientAction.Execute(registrationParameter).ConfigureAwait(false);
 
             // ASSERT
             _oauthEventSource.Verify(s => s.StartRegistration(clientName));
@@ -174,8 +166,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             Assert.True(client.AllowedScopes.Contains(Constants.StandardScopes.Phone));
             Assert.True(client.AllowedScopes.Contains(Constants.StandardScopes.ProfileScope));
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

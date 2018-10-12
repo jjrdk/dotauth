@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Common.DTOs;
@@ -111,7 +109,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 2. Parse the request.
-            var representation = await _requestParser.Parse(jObj, schemaId, CheckStrategies.Strong);
+            var representation = await _requestParser.Parse(jObj, schemaId, CheckStrategies.Strong).ConfigureAwait(false);
             if (!representation.IsParsed)
             {
                 return _apiResponseFactory.CreateError(
@@ -119,7 +117,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                     representation.ErrorMessage);
             }
 
-            var record = await _representationStore.GetRepresentation(id);
+            var record = await _representationStore.GetRepresentation(id).ConfigureAwait(false);
 
             // 3. If the representation doesn't exist then 404 is returned.
             if (record == null)
@@ -131,7 +129,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
             // 4. Update attributes.
             // var allRepresentations = (await _representationStore.GetRepresentations(record.ResourceType)).Where(r => r.Id != record.Id);
-            var updateRepr = await UpdateRepresentation(record, representation.Representation);
+            var updateRepr = await UpdateRepresentation(record, representation.Representation).ConfigureAwait(false);
             if (updateRepr.IsError)
             {
                 return _apiResponseFactory.CreateError(HttpStatusCode.BadRequest, updateRepr.ErrorResponse);
@@ -140,14 +138,14 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             // 5. Store the new representation.
             record.LastModified = DateTime.UtcNow;
             record.Version = Guid.NewGuid().ToString();
-            if (!await _representationStore.UpdateRepresentation(record))
+            if (!await _representationStore.UpdateRepresentation(record).ConfigureAwait(false))
             {
                 return _apiResponseFactory.CreateError(HttpStatusCode.InternalServerError,
                    ErrorMessages.TheRepresentationCannotBeUpdated);
             }
 
             // 6. Parse the new representation.
-            var response = await _responseParser.Parse(record, locationPattern.Replace("{id}", id), schemaId, OperationTypes.Modification);
+            var response = await _responseParser.Parse(record, locationPattern.Replace("{id}", id), schemaId, OperationTypes.Modification).ConfigureAwait(false);
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK,
                 response.Object,
                 response.Location,
@@ -174,7 +172,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 }
 
                 // 2. Update the attribute
-                result = await UpdateAttribute(sourceAttribute, targetAttribute, source.ResourceType);
+                result = await UpdateAttribute(sourceAttribute, targetAttribute, source.ResourceType).ConfigureAwait(false);
             }
 
             return result;
@@ -206,7 +204,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                     if (schemaAttribute.Uniqueness == Common.Constants.SchemaAttributeUniqueness.Server)
                     {
                         var filter = _filterParser.Parse(complexTarget.FullPath);
-                        var uniqueAttrs = await _representationStore.SearchValues(resourceType, filter);
+                        var uniqueAttrs = await _representationStore.SearchValues(resourceType, filter).ConfigureAwait(false);
                         if (uniqueAttrs.Any())
                         {
                             if (uniqueAttrs.Any(a => a.CompareTo(complexTarget) == 0))
@@ -241,7 +239,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             if (target.SchemaAttribute.Uniqueness == Common.Constants.SchemaAttributeUniqueness.Server)
             {
                 var filter = _filterParser.Parse(target.FullPath);
-                var uniqueAttrs = await _representationStore.SearchValues(resourceType, filter);
+                var uniqueAttrs = await _representationStore.SearchValues(resourceType, filter).ConfigureAwait(false);
                 if (uniqueAttrs.Any())
                 {
                     if (uniqueAttrs.Any(a => a.CompareTo(target) == 0))

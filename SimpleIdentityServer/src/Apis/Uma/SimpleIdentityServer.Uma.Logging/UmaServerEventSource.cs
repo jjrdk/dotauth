@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Logging;
@@ -21,8 +19,6 @@ namespace SimpleIdentityServer.Uma.Logging
 {
     public interface IUmaServerEventSource : IEventSource
     {
-        #region Events linked to the authorization
-
         void StartGettingAuthorization(string request);
 
         void CheckAuthorizationPolicy(string request);
@@ -33,26 +29,14 @@ namespace SimpleIdentityServer.Uma.Logging
 
         void AuthorizationPoliciesFailed(string ticketId);
 
-        #endregion
-
-        #region Events linked to introspection
-
         void StartToIntrospect(string rpt);
 
         void RptHasExpired(string rpt);
 
         void EndIntrospection(string result);
 
-        #endregion
-
-        #region Events linked to permission
-
         void StartAddPermission(string request);
         void FinishAddPermission(string request);
-
-        #endregion
-
-        #region Events linked to authorization policy
 
         void StartAddingAuthorizationPolicy(string request);
         void FinishToAddAuthorizationPolicy(string result);
@@ -65,20 +49,12 @@ namespace SimpleIdentityServer.Uma.Logging
         void StartUpdateAuthorizationPolicy(string request);
         void FinishUpdateAuhthorizationPolicy(string request);
 
-        #endregion
-
-        #region Events linked to resource set
-
         void StartToAddResourceSet(string request);
         void FinishToAddResourceSet(string result);
         void StartToRemoveResourceSet(string resourceSetId);
         void FinishToRemoveResourceSet(string resourceSetId);
         void StartToUpdateResourceSet(string request);
         void FinishToUpdateResourceSet(string request);
-
-        #endregion
-
-        #region Events linked to scope
 
         void StartToAddScope(string request);
 
@@ -87,8 +63,6 @@ namespace SimpleIdentityServer.Uma.Logging
         void StartToRemoveScope(string scope);
 
         void FinishToRemoveScope(string scope);
-
-        #endregion
     }
 
     public class UmaServerEventSource : BaseEventSource, IUmaServerEventSource
@@ -104,15 +78,9 @@ namespace SimpleIdentityServer.Uma.Logging
             public const string Failure = "Failure";
         }
 
-        #region Constructor
-
         public UmaServerEventSource(ILoggerFactory loggerFactory) : base(loggerFactory.CreateLogger<UmaServerEventSource>())
         {
         }
-
-        #endregion
-
-        #region Events linked to the authorization
 
         public void StartGettingAuthorization(string request)
         {
@@ -176,10 +144,6 @@ namespace SimpleIdentityServer.Uma.Logging
             LogInformation(evt);
         }
 
-        #endregion
-
-        #region Events linked to introspection
-
         public void StartToIntrospect(string rpt)
         {
             var evt = new Event
@@ -216,10 +180,6 @@ namespace SimpleIdentityServer.Uma.Logging
             LogInformation(evt);
         }
 
-        #endregion
-
-        #region Events linked to permission
-
         public void StartAddPermission(string request)
         {
             var evt = new Event
@@ -243,10 +203,6 @@ namespace SimpleIdentityServer.Uma.Logging
 
             LogInformation(evt);
         }
-
-        #endregion
-
-        #region Events linked to authorization policy
 
         public void StartAddingAuthorizationPolicy(string request)
         {
@@ -368,10 +324,6 @@ namespace SimpleIdentityServer.Uma.Logging
             LogInformation(evt);
         }
 
-        #endregion
-
-        #region Events linked to resource set
-
         public void StartToAddResourceSet(string request)
         {
             var evt = new Event
@@ -444,10 +396,6 @@ namespace SimpleIdentityServer.Uma.Logging
             LogInformation(evt);
         }
 
-        #endregion
-
-        #region Events linked to scope
-
         public void StartToAddScope(string request)
         {
             var evt = new Event
@@ -495,7 +443,5 @@ namespace SimpleIdentityServer.Uma.Logging
 
             LogInformation(evt);
         }
-
-        #endregion
     }
 }

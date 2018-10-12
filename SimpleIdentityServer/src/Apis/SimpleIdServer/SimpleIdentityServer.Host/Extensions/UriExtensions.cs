@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Primitives;
@@ -23,8 +21,6 @@ namespace SimpleIdentityServer.Host.Extensions
 {
     public static class UriExtensions
     {
-        #region Public static methods
-
         public static Uri AddParameter(this Uri uri, string parameterName, string parameterValue)
         {
             var uriBuilder = new UriBuilder(uri);
@@ -72,10 +68,6 @@ namespace SimpleIdentityServer.Host.Extensions
             return new Uri(uriBuilder.ToString());
         }
 
-        #endregion
-
-        #region Private static methods
-
         private static string ConcatQueryStrings(IDictionary<string, StringValues> queryStrings)
         {
             var lst = new List<string>();
@@ -86,7 +78,5 @@ namespace SimpleIdentityServer.Host.Extensions
 
             return string.Join("&", lst);
         }
-
-        #endregion
     }
 }

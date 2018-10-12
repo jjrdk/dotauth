@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
@@ -55,13 +53,13 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 throw new ArgumentNullException(nameof(claims));
             }
 
-            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject);
+            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheRoDoesntExist);
             }
 
-            var supportedClaims = await _claimRepository.GetAllAsync();
+            var supportedClaims = await _claimRepository.GetAllAsync().ConfigureAwait(false);
             claims = claims.Where(c => supportedClaims.Any(sp => sp.Code == c.Code && !Jwt.Constants.NotEditableResourceOwnerClaimNames.Contains(c.Code)));
             var claimsToBeRemoved = resourceOwner.Claims
                 .Where(cl => claims.Any(c => c.Code == cl.Type))
@@ -90,7 +88,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             }
 
             resourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
-            return await _resourceOwnerRepository.UpdateAsync(resourceOwner);
+            return await _resourceOwnerRepository.UpdateAsync(resourceOwner).ConfigureAwait(false);
         }
     }
 }

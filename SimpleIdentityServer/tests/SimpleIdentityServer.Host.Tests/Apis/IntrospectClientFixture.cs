@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2016 Habart Thierry
+﻿// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using Newtonsoft.Json;
@@ -44,8 +42,6 @@ namespace SimpleIdentityServer.Host.Tests
             _server = server;
         }
 
-        #region Errors
-
         [Fact]
         public async Task When_No_Parameters_Is_Passed_To_Introspection_Edp_Then_Error_Is_Returned()
         {
@@ -58,7 +54,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             // ASSERT
@@ -87,7 +83,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             // ASSERT
@@ -135,10 +131,6 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.Equal("the token is not valid", introspection.Error.ErrorDescription);
         }
 
-        #endregion
-
-        #region Happy paths
-
         [Fact]
         public async Task When_Introspecting_AccessToken_Then_Information_Are_Returned()
         {
@@ -180,8 +172,6 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.NotNull(introspection.Content.Scope);
             Assert.True(introspection.Content.Scope.Count() == 1 && introspection.Content.Scope.First() == "scim");
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

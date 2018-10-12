@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -106,7 +104,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
                     new Claim("client_id", "resource_server")
                 }, "fakests");
                 context.User = new ClaimsPrincipal(claimsIdentity);
-                await next.Invoke();
+                await next.Invoke().ConfigureAwait(false);
             });
 
             // 3. Enable CORS

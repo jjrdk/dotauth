@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions;
@@ -48,9 +46,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addPermissionAction.Execute(null, (IEnumerable<AddPermissionParameter>)null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addPermissionAction.Execute("client_id", (IEnumerable<AddPermissionParameter>)null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addPermissionAction.Execute(null, (AddPermissionParameter)null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addPermissionAction.Execute(null, (IEnumerable<AddPermissionParameter>)null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addPermissionAction.Execute("client_id", (IEnumerable<AddPermissionParameter>)null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addPermissionAction.Execute(null, (AddPermissionParameter)null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -62,7 +60,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
             var addPermissionParameter = new AddPermissionParameter();
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPermissionNames.ResourceSetId));
@@ -80,7 +78,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
             };
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPermissionNames.Scopes));
@@ -105,7 +103,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
                 .Returns(Task.FromResult((IEnumerable<ResourceSet>)new List<ResourceSet>()));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidResourceSetId);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
@@ -141,7 +139,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
                 .Returns(Task.FromResult(resources));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidScope);
             Assert.True(exception.Message == ErrorDescriptions.TheScopeAreNotValid);
@@ -179,7 +177,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
             _configurationServiceStub.Setup(c => c.GetTicketLifeTime()).Returns(Task.FromResult(2));
 
             // ACT
-            var result = await _addPermissionAction.Execute(clientId, addPermissionParameter);
+            var result = await _addPermissionAction.Execute(clientId, addPermissionParameter).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotEmpty(result);

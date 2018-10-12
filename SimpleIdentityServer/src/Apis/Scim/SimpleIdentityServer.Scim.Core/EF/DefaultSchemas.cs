@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2016 Habart Thierry
+﻿// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Scim.Core.EF.Extensions;
 using SimpleIdentityServer.Scim.Core.EF.Models;
@@ -171,10 +169,6 @@ namespace SimpleIdentityServer.Scim.Core.EF
             }
         }
 
-        #region User
-
-        #region Attributes
-
         private static List<SchemaAttribute> EmailAttributeSub = new List<SchemaAttribute>
         {
            SchemaAttributeFactory.CreateValueAttribute("Email addresses for the user.  The value SHOULD be canonicalized by the service provider, e.g., 'bjensen@example.com' instead of 'bjensen@EXAMPLE.COM'. Canonical type values of 'work', 'home', and 'other'."),
@@ -259,8 +253,6 @@ namespace SimpleIdentityServer.Scim.Core.EF
              SchemaAttributeFactory.CreateAttribute(Common.Constants.AddressResponseNames.Country, "The country name component."),
              SchemaAttributeFactory.CreateTypeAttribute("A label indicating the attribute's function, e.g., 'work' or 'home'.", new string[] { "work", "home", "other" })
         };
-
-        #endregion
 
         public static Schema UserSchema = new Schema
         {
@@ -425,10 +417,6 @@ namespace SimpleIdentityServer.Scim.Core.EF
             }
         };
 
-        #endregion
-
-        #region Group
-
         private static List<SchemaAttribute> GroupMembersAttribute = new List<SchemaAttribute>
         {
             SchemaAttributeFactory.CreateAttribute(Common.Constants.GroupMembersResponseNames.Value, "Identifier of the member of this Group.", uniqueness: Common.Constants.SchemaAttributeUniqueness.None, required : false, mutability: Common.Constants.SchemaAttributeMutability.Immutable),
@@ -456,7 +444,5 @@ namespace SimpleIdentityServer.Scim.Core.EF
                 Location = Common.Constants.SchemaUrns.Group
             }
         };
-
-        #endregion
     }
 }

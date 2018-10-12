@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Services;
@@ -54,11 +52,11 @@ namespace SimpleIdentityServer.Core.Translation
                 throw new ArgumentNullException("translationCodes");
             }
 
-            var preferredLanguage = await GetPreferredLanguage(concatenateListOfCodeLanguages);
+            var preferredLanguage = await GetPreferredLanguage(concatenateListOfCodeLanguages).ConfigureAwait(false);
             var result = new Dictionary<string, string>();
             foreach(var translationCode in translationCodes)
             {
-                var record = await _translationRepository.GetAsync(preferredLanguage, translationCode);
+                var record = await _translationRepository.GetAsync(preferredLanguage, translationCode).ConfigureAwait(false);
                 if (record != null)
                 {
                     result.Add(record.Code, record.Value);
@@ -75,15 +73,15 @@ namespace SimpleIdentityServer.Core.Translation
         {
             if (string.IsNullOrWhiteSpace(concatenateListOfCodeLanguages))
             {
-                return await _configurationService.DefaultLanguageAsync();
+                return await _configurationService.DefaultLanguageAsync().ConfigureAwait(false);
             }
 
             var listOfCodeLanguages = concatenateListOfCodeLanguages.Split(' ');
-            var supportedCodeLanguages = await _translationRepository.GetLanguageTagsAsync();
+            var supportedCodeLanguages = await _translationRepository.GetLanguageTagsAsync().ConfigureAwait(false);
             if (listOfCodeLanguages == null || !listOfCodeLanguages.Any() ||
                 supportedCodeLanguages == null || !supportedCodeLanguages.Any())
             {
-                return await _configurationService.DefaultLanguageAsync();
+                return await _configurationService.DefaultLanguageAsync().ConfigureAwait(false);
             }
 
             foreach (var codeLanguage in listOfCodeLanguages)
@@ -94,7 +92,7 @@ namespace SimpleIdentityServer.Core.Translation
                 }
             }
 
-            return await _configurationService.DefaultLanguageAsync();
+            return await _configurationService.DefaultLanguageAsync().ConfigureAwait(false);
         }
     }
 }

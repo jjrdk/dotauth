@@ -12,15 +12,11 @@ namespace SimpleIdentityServer.Shell.Controllers
         {
         }
 
-        #region Public methods
-
         [HttpGet]
         public async Task<ActionResult> Index()
         {
-            await SetUser();
+            await SetUser().ConfigureAwait(false);
             return View();
         }
-
-        #endregion
     }
 }

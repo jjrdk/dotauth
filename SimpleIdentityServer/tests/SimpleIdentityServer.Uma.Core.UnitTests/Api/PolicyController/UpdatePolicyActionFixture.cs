@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
@@ -45,7 +43,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updatePolicyAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updatePolicyAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -61,7 +59,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 It.IsAny<Func<Task<Policy>>>())).Returns(() => Task.FromResult((Policy)null));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
@@ -81,7 +79,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 It.IsAny<Func<Task<Policy>>>())).Returns(() => Task.FromResult((Policy)null));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Rules));
@@ -105,7 +103,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 It.IsAny<Func<Task<Policy>>>())).Returns(() => Task.FromResult((Policy)null));
 
             // ACT
-            var result = await _updatePolicyAction.Execute(updatePolicyParameter);
+            var result = await _updatePolicyAction.Execute(updatePolicyParameter).ConfigureAwait(false);
 
             // ASSERT
             Assert.False(result);
@@ -148,7 +146,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             }));
 
             // ACT
-            var result = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter));
+            var result = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -205,7 +203,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             }));
 
             // ACT
-            var result = await _updatePolicyAction.Execute(updatePolicyParameter);
+            var result = await _updatePolicyAction.Execute(updatePolicyParameter).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result);

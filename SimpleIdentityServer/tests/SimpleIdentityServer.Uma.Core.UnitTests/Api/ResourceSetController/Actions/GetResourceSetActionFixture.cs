@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
@@ -38,7 +36,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             InitializeFakeObjects();
 
             // ACT && ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceSetAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceSetAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -54,7 +52,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 .Returns(Task.FromResult(resourceSet));
 
             // ACT
-            var result = await _getResourceSetAction.Execute(resourceSet.Id);
+            var result = await _getResourceSetAction.Execute(resourceSet.Id).ConfigureAwait(false);
         
             // ASSERTS
             Assert.NotNull(result);

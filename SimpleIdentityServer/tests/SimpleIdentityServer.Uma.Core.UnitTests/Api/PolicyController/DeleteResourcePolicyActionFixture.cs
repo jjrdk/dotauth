@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
@@ -44,10 +42,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourcePolicyAction.Execute(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourcePolicyAction.Execute(string.Empty, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourcePolicyAction.Execute("policy_id", null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourcePolicyAction.Execute("policy_id", string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourcePolicyAction.Execute(null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourcePolicyAction.Execute(string.Empty, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourcePolicyAction.Execute("policy_id", null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourcePolicyAction.Execute("policy_id", string.Empty)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -66,7 +64,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 .Returns(() => Task.FromResult((ResourceSet)null));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _deleteResourcePolicyAction.Execute(policyId, resourceId));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _deleteResourcePolicyAction.Execute(policyId, resourceId)).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(exception);
@@ -96,7 +94,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 .Returns(() => Task.FromResult(new ResourceSet()));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _deleteResourcePolicyAction.Execute(policyId, resourceId));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _deleteResourcePolicyAction.Execute(policyId, resourceId)).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(exception);
@@ -116,7 +114,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 .Returns(() => Task.FromResult((Policy)null));
 
             // ACT
-            var result = await _deleteResourcePolicyAction.Execute(policyId, "resource_id");
+            var result = await _deleteResourcePolicyAction.Execute(policyId, "resource_id").ConfigureAwait(false);
 
             // ASSERT
             Assert.False(result);
@@ -146,7 +144,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 .Returns(Task.FromResult(true));
 
             // ACT
-            var result = await _deleteResourcePolicyAction.Execute(policyId, resourceId);
+            var result = await _deleteResourcePolicyAction.Execute(policyId, resourceId).ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(result);

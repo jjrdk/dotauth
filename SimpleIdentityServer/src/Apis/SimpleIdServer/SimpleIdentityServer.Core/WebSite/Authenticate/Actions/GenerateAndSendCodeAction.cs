@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
@@ -54,7 +52,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException(nameof(subject));
             }
             
-            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject);
+            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TheRoDoesntExist);
@@ -69,7 +67,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
             var confirmationCode = new ConfirmationCode
             {
-                Value = await GetCode(),
+                Value = await GetCode().ConfigureAwait(false),
                 IssueAt = DateTime.UtcNow,
                 ExpiresIn = 300
             };
@@ -80,12 +78,12 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ClaimRequiredException(service.RequiredClaim);
             }
 
-            if (!await _confirmationCodeStore.Add(confirmationCode))
+            if (!await _confirmationCodeStore.Add(confirmationCode).ConfigureAwait(false))
             {
                 throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
             }
 
-            await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Value, resourceOwner.TwoFactorAuthentication, resourceOwner);
+            await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Value, resourceOwner.TwoFactorAuthentication, resourceOwner).ConfigureAwait(false);
             return confirmationCode.Value;
         }
         
@@ -93,9 +91,9 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         {
             var random = new Random();
             var number = random.Next(100000, 999999);
-            if (await _confirmationCodeStore.Get(number.ToString()) != null)
+            if (await _confirmationCodeStore.Get(number.ToString()).ConfigureAwait(false) != null)
             {
-                return await GetCode();
+                return await GetCode().ConfigureAwait(false);
             }
 
             return number.ToString();

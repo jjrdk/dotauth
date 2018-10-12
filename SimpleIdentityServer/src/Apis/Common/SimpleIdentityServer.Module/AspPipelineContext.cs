@@ -27,8 +27,6 @@ namespace SimpleIdentityServer.Module
             return _instance;
         }
 
-        #region Public methods
-
         public void StartConfigureServices(IServiceCollection services)
         {
             _configureServiceContext.Init(services);
@@ -38,10 +36,6 @@ namespace SimpleIdentityServer.Module
         {
             _applicationBuilderContext.Init(app, env, loggerFactory);
         }
-
-        #endregion
-
-        #region Properties
 
         public ConfigureServiceContext ConfigureServiceContext
         {
@@ -58,7 +52,5 @@ namespace SimpleIdentityServer.Module
                 return _applicationBuilderContext;
             }
         }
-
-        #endregion
     }
 }

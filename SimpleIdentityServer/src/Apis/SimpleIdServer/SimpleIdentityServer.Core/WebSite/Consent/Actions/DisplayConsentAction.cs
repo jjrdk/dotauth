@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
@@ -106,7 +104,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
             
-            var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId);
+            var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode,
@@ -116,12 +114,12 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 
             ActionResult actionResult;
             var subject = claimsPrincipal.GetSubject();
-            var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
+            var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
             // If there's already a consent then redirect to the callback
             if (assignedConsent != null)
             {
                 actionResult = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-                await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, client, issuerName);
+                await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {
@@ -147,7 +145,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
             else
             {
-                allowedScopes = (await GetScopes(authorizationParameter.Scope))
+                allowedScopes = (await GetScopes(authorizationParameter.Scope).ConfigureAwait(false))
                     .Where(s => s.IsDisplayedInConsent)
                     .ToList();
             }
@@ -171,10 +169,8 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         {
             var result = new List<Scope>();
             var scopeNames = concatenateListOfScopes.Split(' ');
-            return await _scopeRepository.SearchByNamesAsync(scopeNames);
+            return await _scopeRepository.SearchByNamesAsync(scopeNames).ConfigureAwait(false);
         }
-
-        #region Private static methods
 
         private static AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state)
         {
@@ -203,7 +199,5 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         {
             return Constants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
         }
-
-        #endregion
     }
 }

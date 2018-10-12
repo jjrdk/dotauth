@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleBus.Core;
@@ -34,8 +32,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
         private Mock<IIntrospectionParameterValidator> _validatorStub;
         private IIntrospectionActions _introspectionActions;
 
-        #region Exceptions
-
         [Fact]
         public async Task When_Passing_Null_Parameter_To_PostIntrospection_Then_Exception_Is_Thrown()
         {
@@ -43,12 +39,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _introspectionActions.PostIntrospection(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _introspectionActions.PostIntrospection(null, null, null)).ConfigureAwait(false);
         }
-
-        #endregion
-
-        #region Happy Path
 
         [Fact]
         public void When_Passing_Valid_Parameter_To_PostIntrospection_Then_Operation_Is_Called()
@@ -64,8 +56,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
             _postIntrospectionActionStub.Verify(p => p.Execute(It.IsAny<IntrospectionParameter>(),
                 It.IsAny<AuthenticationHeaderValue>(), null));
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

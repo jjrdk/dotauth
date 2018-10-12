@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -67,13 +65,13 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 
             // Check if the access token is still valid otherwise raise an authorization exception.
             GrantedTokenValidationResult valResult;
-            if (!((valResult = await _grantedTokenValidator.CheckAccessTokenAsync(accessToken)).IsValid))
+            if (!((valResult = await _grantedTokenValidator.CheckAccessTokenAsync(accessToken).ConfigureAwait(false)).IsValid))
             {
                 throw new AuthorizationException(valResult.MessageErrorCode, valResult.MessageErrorDescription);
             }
 
-            var grantedToken = await _tokenStore.GetAccessToken(accessToken);
-            var client = await _clientRepository.GetClientByIdAsync(grantedToken.ClientId);
+            var grantedToken = await _tokenStore.GetAccessToken(accessToken).ConfigureAwait(false);
+            var client = await _clientRepository.GetClientByIdAsync(grantedToken.ClientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidToken, string.Format(ErrorDescriptions.TheClientIdDoesntExist, grantedToken.ClientId));
@@ -102,7 +100,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
             }
 
             var jwt = await _jwtGenerator.SignAsync(userInformationPayload,
-                signedResponseAlg.Value);
+                signedResponseAlg.Value).ConfigureAwait(false);
             var encryptedResponseAlg = client.GetUserInfoEncryptedResponseAlg();
             var encryptedResponseEnc = client.GetUserInfoEncryptedResponseEnc();
             if (encryptedResponseAlg != null)
@@ -114,7 +112,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 
                 jwt = await _jwtGenerator.EncryptAsync(jwt,
                     encryptedResponseAlg.Value,
-                    encryptedResponseEnc.Value);
+                    encryptedResponseEnc.Value).ConfigureAwait(false);
             }
             
             return new UserInfoResult

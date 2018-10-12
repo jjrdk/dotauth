@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
@@ -49,8 +47,8 @@ namespace SimpleIdentityServer.Core.Api.Jwks
 
         public async Task<JsonWebKeySet> GetJwks()
         {
-            var publicKeysUsedToValidateSignature = await _getSetOfPublicKeysUsedToValidateJwsAction.Execute();
-            var publicKeysUsedForClientEncryption = await _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction.Execute();
+            var publicKeysUsedToValidateSignature = await _getSetOfPublicKeysUsedToValidateJwsAction.Execute().ConfigureAwait(false);
+            var publicKeysUsedForClientEncryption = await _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction.Execute().ConfigureAwait(false);
             var result = new JsonWebKeySet
             {
                 Keys = new List<Dictionary<string, object>>()
@@ -63,7 +61,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks
 
         public async Task<bool> RotateJwks()
         {
-            return await _rotateJsonWebKeysOperation.Execute();
+            return await _rotateJsonWebKeysOperation.Execute().ConfigureAwait(false);
         }
     }
 }

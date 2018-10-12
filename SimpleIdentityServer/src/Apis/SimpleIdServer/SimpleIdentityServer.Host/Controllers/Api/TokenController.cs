@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -90,19 +88,19 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             {
                 case Core.Common.DTOs.Requests.GrantTypes.password:
                     var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authenticationHeaderValue, certificate, issuerName);
+                    result = await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
                     break;
                 case Core.Common.DTOs.Requests.GrantTypes.authorization_code:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(authCodeParameter,authenticationHeaderValue, certificate, issuerName);
+                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(authCodeParameter,authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
                     break;
                 case Core.Common.DTOs.Requests.GrantTypes.refresh_token:
                     var refreshTokenParameter = tokenRequest.ToRefreshTokenGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter, authenticationHeaderValue, certificate, issuerName);
+                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
                     break;
                 case Core.Common.DTOs.Requests.GrantTypes.client_credentials:
                     var clientCredentialsParameter = tokenRequest.ToClientCredentialsGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue, certificate, issuerName);
+                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
                     break;
             }
 
@@ -149,7 +147,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
             // 2. Revoke the token
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-            await _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue, GetCertificate(), issuerName);
+            await _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue, GetCertificate(), issuerName).ConfigureAwait(false);
             return new OkResult();
         }
 

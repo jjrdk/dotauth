@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
@@ -76,8 +74,6 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         public CreateJwsSignature()
         {
         }
-
-#region Rsa agorithm
 
         public string SignWithRsa(
             JwsAlg algorithm, 
@@ -156,10 +152,6 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             }
         }
 
-        #endregion
-
-#region Elliptic Curve algorithm
-
 #if NET461
 
         public string SignWithEllipseCurve(string serializedKeys,
@@ -218,7 +210,5 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             }
         }
 #endif
-
-#endregion
     }
 }

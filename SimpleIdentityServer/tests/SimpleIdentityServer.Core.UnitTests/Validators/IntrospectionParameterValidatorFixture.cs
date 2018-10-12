@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
@@ -26,8 +24,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
     public class IntrospectionParameterValidatorFixture
     {
         private IntrospectionParameterValidator _introspectionParameterValidator;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
@@ -53,10 +49,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, Constants.IntrospectionRequestNames.Token));
         }
 
-        #endregion
-
-        #region Happy path
-        
         [Fact]
         public void When_Passing_Valid_Parameter_Then_No_Exception_Is_Thrown()
         {
@@ -73,8 +65,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             // ASSERT
             Assert.Null(exception);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

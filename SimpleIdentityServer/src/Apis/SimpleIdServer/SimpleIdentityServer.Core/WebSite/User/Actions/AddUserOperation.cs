@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.AccessToken.Store;
 using SimpleIdentityServer.AccountFilter;
@@ -32,8 +30,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
-    using Scim.Client;
-
     public interface IAddUserOperation
     {
         Task<bool> Execute(AddUserParameter addUserParameter, AuthenticationParameter authenticationParameter, string scimBaseUrl = null, bool addScimResource = false, string issuer = null);
@@ -53,7 +49,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             public string Url { get; set; }
         }
 
-        private readonly IUsersClient _usersClient;
+        private readonly IUsersClient x_usersClient;
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IClaimRepository _claimRepository;
         private readonly IAccessTokenStore _tokenStore;
@@ -108,7 +104,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             }
 
             // 1. Check the resource owner already exists.
-            if (await _resourceOwnerRepository.GetAsync(addUserParameter.Login) != null)
+            if (await _resourceOwnerRepository.GetAsync(addUserParameter.Login).ConfigureAwait(false) != null)
             {
                 throw new IdentityServerException(
                     Errors.ErrorCodes.UnhandledExceptionCode,
@@ -122,7 +118,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             };
 
             // 2. Populate the claims.
-            var existedClaims = await _claimRepository.GetAllAsync();
+            var existedClaims = await _claimRepository.GetAllAsync().ConfigureAwait(false);
             if (addUserParameter.Claims != null)
             {
                 foreach (var claim in addUserParameter.Claims)
@@ -139,7 +135,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 var isFilterValid = true;
                 foreach (var resourceOwnerFilter in _accountFilters)
                 {
-                    var userFilterResult = await resourceOwnerFilter.Check(newClaims);
+                    var userFilterResult = await resourceOwnerFilter.Check(newClaims).ConfigureAwait(false);
                     if (!userFilterResult.IsValid)
                     {
                         isFilterValid = false;
@@ -166,7 +162,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             // 3. Add the scim resource.
             if (addScimResource)
             {
-                var scimResource = await AddScimResource(authenticationParameter, scimBaseUrl, addUserParameter.Login);
+                var scimResource = await AddScimResource(authenticationParameter, scimBaseUrl, addUserParameter.Login).ConfigureAwait(false);
                 var scimUrl = newClaims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.ScimId);
                 var scimLocation = newClaims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.ScimLocation);
                 if (scimUrl != null)
@@ -192,7 +188,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 IsLocalAccount = true,
                 Password = PasswordHelper.ComputeHash(addUserParameter.Password)
             };
-            if (!await _resourceOwnerRepository.InsertAsync(newResourceOwner))
+            if (!await _resourceOwnerRepository.InsertAsync(newResourceOwner).ConfigureAwait(false))
             {
                 throw new IdentityServerException(Errors.ErrorCodes.UnhandledExceptionCode,
                     Errors.ErrorDescriptions.TheResourceOwnerCannotBeAdded);
@@ -201,7 +197,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             // 5. Link to a profile.
             if (!string.IsNullOrWhiteSpace(issuer))
             {
-                await _linkProfileAction.Execute(addUserParameter.Login, addUserParameter.ExternalLogin, issuer);
+                await _linkProfileAction.Execute(addUserParameter.Login, addUserParameter.ExternalLogin, issuer).ConfigureAwait(false);
             }
 
             _openidEventSource.AddResourceOwner(newResourceOwner.Id);
@@ -218,7 +214,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             var grantedToken = await _tokenStore.GetToken(scimOpts.WellKnownAuthorizationUrl, scimOpts.ClientId, scimOpts.ClientSecret, new[]
             {
                 "scim_manage"
-            });
+            }).ConfigureAwait(false);
 
             var scimResponse = await _usersClient.AddUser(scimBaseUrl, grantedToken.AccessToken)
                 .SetCommonAttributes(subject)

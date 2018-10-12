@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Newtonsoft.Json;
 using SimpleIdentityServer.Uma.Core.Errors;
@@ -72,12 +70,12 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
                 throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
             }
             _resourceSetParameterValidator.CheckResourceSetParameter(resourceSet);
-            if (await _resourceSetRepository.Get(udpateResourceSetParameter.Id) == null)
+            if (await _resourceSetRepository.Get(udpateResourceSetParameter.Id).ConfigureAwait(false) == null)
             {
                 return false;
             }
 
-            if (!await _resourceSetRepository.Update(resourceSet))
+            if (!await _resourceSetRepository.Update(resourceSet).ConfigureAwait(false))
             {
                 throw new BaseUmaException(ErrorCodes.InternalError, string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, resourceSet.Id));
             }

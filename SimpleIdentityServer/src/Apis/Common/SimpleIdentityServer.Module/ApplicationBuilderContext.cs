@@ -18,14 +18,8 @@ namespace SimpleIdentityServer.Module
 
         }
 
-        #region Events
-
         public event EventHandler Initialized;
         public event EventHandler RouteConfigured;
-
-        #endregion
-
-        #region Properties
 
         public IApplicationBuilder App
         {
@@ -59,10 +53,6 @@ namespace SimpleIdentityServer.Module
             }
         }
 
-        #endregion
-
-        #region Public methods
-
         public void Init(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (app == null)
@@ -92,7 +82,5 @@ namespace SimpleIdentityServer.Module
                 RouteConfigured(this, EventArgs.Empty);
             }
         }
-
-        #endregion
     }
 }

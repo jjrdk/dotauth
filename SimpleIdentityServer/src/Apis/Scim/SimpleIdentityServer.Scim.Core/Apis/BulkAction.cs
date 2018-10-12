@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Common.Models;
@@ -69,7 +67,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 2. Parse the request.
-            var bulk = await _bulkRequestParser.Parse(jObj, baseUrl);
+            var bulk = await _bulkRequestParser.Parse(jObj, baseUrl).ConfigureAwait(false);
             if (!bulk.IsParsed)
             {
                 return _apiResponseFactory.CreateError(HttpStatusCode.InternalServerError,
@@ -85,19 +83,19 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 ApiActionResult operationResult = null;
                 if (operation.Method == HttpMethod.Post)
                 {
-                    operationResult = await _addRepresentationAction.Execute(operation.Data, operation.LocationPattern, operation.SchemaId, operation.ResourceType);
+                    operationResult = await _addRepresentationAction.Execute(operation.Data, operation.LocationPattern, operation.SchemaId, operation.ResourceType).ConfigureAwait(false);
                 }
                 else if (operation.Method == HttpMethod.Put)
                 {
-                    operationResult = await _updateRepresentationAction.Execute(operation.ResourceId, operation.Data, operation.SchemaId, operation.LocationPattern, operation.ResourceType);
+                    operationResult = await _updateRepresentationAction.Execute(operation.ResourceId, operation.Data, operation.SchemaId, operation.LocationPattern, operation.ResourceType).ConfigureAwait(false);
                 }
                 else if (operation.Method == HttpMethod.Delete)
                 {
-                    operationResult = await _deleteRepresentationAction.Execute(operation.ResourceId);
+                    operationResult = await _deleteRepresentationAction.Execute(operation.ResourceId).ConfigureAwait(false);
                 }
                 else if (operation.Method.Method == "PATCH")
                 {
-                    operationResult = await _patchRepresentationAction.Execute(operation.ResourceId, operation.Data, operation.SchemaId, operation.LocationPattern);
+                    operationResult = await _patchRepresentationAction.Execute(operation.ResourceId, operation.Data, operation.SchemaId, operation.LocationPattern).ConfigureAwait(false);
                 }
                 
                 // 3.2. If maximum number of errors has been reached then return an error.

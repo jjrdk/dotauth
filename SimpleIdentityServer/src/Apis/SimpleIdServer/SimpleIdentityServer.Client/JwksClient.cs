@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
@@ -36,17 +34,11 @@ namespace SimpleIdentityServer.Client
         private readonly HttpClient _client;
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
 
-        #region Constructor
-
         public JwksClient(HttpClient client, IGetDiscoveryOperation getDiscoveryOperation)
         {
             _client = client;
             _getDiscoveryOperation = getDiscoveryOperation;
         }
-
-        #endregion
-
-        #region Public methods
 
         public Task<JsonWebKeySet> ExecuteAsync(Uri jwksUri)
         {
@@ -84,6 +76,5 @@ namespace SimpleIdentityServer.Client
             var serializedContent = await _client.GetStringAsync(jwksUri).ConfigureAwait(false);
             return JsonConvert.DeserializeObject<JsonWebKeySet>(serializedContent);
         }
-        #endregion
     }
 }

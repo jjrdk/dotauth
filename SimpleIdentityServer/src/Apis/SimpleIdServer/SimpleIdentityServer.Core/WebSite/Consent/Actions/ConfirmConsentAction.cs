@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
@@ -99,7 +97,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId);
+            var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new InvalidOperationException(string.Format("the client id {0} doesn't exist",
@@ -107,7 +105,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
 
             var subject = claimsPrincipal.GetSubject();
-            Common.Models.Consent assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
+            Common.Models.Consent assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
             // Insert a new consent.
             if (assignedConsent == null)
             {
@@ -120,7 +118,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     {
                         Id = Guid.NewGuid().ToString(),
                         Client = client,
-                        ResourceOwner = await _resourceOwnerRepository.GetAsync(subject),
+                        ResourceOwner = await _resourceOwnerRepository.GetAsync(subject).ConfigureAwait(false),
                         Claims = claimsParameter.GetClaimNames()
                     };
                 }
@@ -131,13 +129,13 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     {
                         Id = Guid.NewGuid().ToString(),
                         Client = client,
-                        GrantedScopes = (await GetScopes(authorizationParameter.Scope)).ToList(),
-                        ResourceOwner = await _resourceOwnerRepository.GetAsync(subject),
+                        GrantedScopes = (await GetScopes(authorizationParameter.Scope).ConfigureAwait(false)).ToList(),
+                        ResourceOwner = await _resourceOwnerRepository.GetAsync(subject).ConfigureAwait(false),
                     };
                 }
 
                 // A consent can be given to a set of claims
-                await _consentRepository.InsertAsync(assignedConsent);
+                await _consentRepository.InsertAsync(assignedConsent).ConfigureAwait(false);
 
                 _openidEventSource.GiveConsent(subject,
                     authorizationParameter.ClientId,
@@ -145,7 +143,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
 
             var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-            await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName);
+            await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
 
             // If redirect to the callback and the responde mode has not been set.
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)
@@ -173,7 +171,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         {
             var result = new List<Scope>();
             var scopeNames = _parameterParserHelper.ParseScopes(concatenateListOfScopes);
-            return await _scopeRepository.SearchByNamesAsync(scopeNames);
+            return await _scopeRepository.SearchByNamesAsync(scopeNames).ConfigureAwait(false);
         }
 
         private static AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state)

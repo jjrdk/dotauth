@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using SimpleIdentityServer.Core.Common.Extensions;
 using System.Linq;
@@ -27,8 +25,6 @@ namespace SimpleIdentityServer.Core.Authenticate
 
     internal class AuthenticateInstructionGenerator : IAuthenticateInstructionGenerator
     {
-        #region Public methods
-
         public AuthenticateInstruction GetAuthenticateInstruction(AuthenticationHeaderValue authenticationHeaderValue)
         {
             var result = new AuthenticateInstruction();
@@ -46,10 +42,6 @@ namespace SimpleIdentityServer.Core.Authenticate
             return result;
         }
 
-        #endregion
-
-        #region Private methods
-        
         private static string[] GetParameters(string authorizationHeaderValue)
         {
             if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
@@ -60,7 +52,5 @@ namespace SimpleIdentityServer.Core.Authenticate
             var decodedParameter = authorizationHeaderValue.Base64Decode();
             return decodedParameter.Split(':');
         }
-
-        #endregion
     }
 }

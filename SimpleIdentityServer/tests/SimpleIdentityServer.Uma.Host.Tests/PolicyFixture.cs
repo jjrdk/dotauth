@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2016 Habart Thierry
+﻿// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Client.Configuration;
@@ -42,10 +40,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             _server = server;
         }
 
-        #region Errors
-
-        #region Add
-
         [Fact]
         public async Task When_Add_Policy_And_Pass_No_ResourceIds_Then_Error_Is_Returned()
         {
@@ -55,9 +49,9 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var response = await _policyClient.AddByResolution(new PostPolicy
-            {
-                ResourceSetIds = null
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                {
+                    ResourceSetIds = null
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -75,12 +69,12 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var response = await _policyClient.AddByResolution(new PostPolicy
-            {
-                ResourceSetIds = new List<string>
                 {
-                    "resource_id"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    ResourceSetIds = new List<string>
+                    {
+                        "resource_id"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -98,19 +92,19 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var response = await _policyClient.AddByResolution(new PostPolicy
-            {
-                ResourceSetIds = new List<string>
                 {
-                    "resource_id"
-                },
-                Rules = new List<PostPolicyRule>
-                {
-                    new PostPolicyRule
+                    ResourceSetIds = new List<string>
                     {
+                        "resource_id"
+                    },
+                    Rules = new List<PostPolicyRule>
+                    {
+                        new PostPolicyRule
+                        {
 
+                        }
                     }
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -126,32 +120,32 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var addResponse = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Name = "picture",
+                    Scopes = new List<string>
+                    {
+                        "read"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var response = await _policyClient.AddByResolution(new PostPolicy
-            {
-                ResourceSetIds = new List<string>
                 {
-                    addResponse.Content.Id
-                },
-                Rules = new List<PostPolicyRule>
-                {
-                    new PostPolicyRule
+                    ResourceSetIds = new List<string>
                     {
-                        Scopes = new List<string>
+                        addResponse.Content.Id
+                    },
+                    Rules = new List<PostPolicyRule>
+                    {
+                        new PostPolicyRule
                         {
-                            "scope"
+                            Scopes = new List<string>
+                            {
+                                "scope"
+                            }
                         }
                     }
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -159,10 +153,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.Equal("invalid_scope", response.Error.Error);
             Assert.Equal("one or more scopes don't belong to a resource set", response.Error.ErrorDescription);
         }
-
-        #endregion
-
-        #region Get
 
         [Fact]
         public async Task When_Get_Unknown_Policy_Then_Error_Is_Returned()
@@ -172,7 +162,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var response = await _policyClient.GetByResolution("unknown", baseUrl + "/.well-known/uma2-configuration", "header");
+            var response = await _policyClient.GetByResolution("unknown", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -180,10 +170,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.Equal("not_found", response.Error.Error);
             Assert.Equal("policy cannot be found", response.Error.ErrorDescription);
         }
-
-        #endregion
-
-        #region Update
 
         [Fact]
         public async Task When_Update_Policy_And_No_Id_Is_Passed_Then_Error_Is_Returned()
@@ -194,9 +180,9 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var response = await _policyClient.UpdateByResolution(new PutPolicy
-            {
+                {
 
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -214,9 +200,9 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var response = await _policyClient.UpdateByResolution(new PutPolicy
-            {
-                PolicyId = "policy"
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                {
+                    PolicyId = "policy"
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -234,16 +220,16 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var response = await _policyClient.UpdateByResolution(new PutPolicy
-            {
-                PolicyId = "policy",
-                Rules = new List<PutPolicyRule>
                 {
-                    new PutPolicyRule
+                    PolicyId = "policy",
+                    Rules = new List<PutPolicyRule>
                     {
+                        new PutPolicyRule
+                        {
 
+                        }
                     }
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -259,55 +245,55 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var addResponse = await _policyClient.AddByResolution(new PostPolicy
-            {
-                Rules = new List<PostPolicyRule>
-                {
-                    new PostPolicyRule
+                    Name = "picture",
+                    Scopes = new List<string>
                     {
-                        IsResourceOwnerConsentNeeded = false,
-                        Claims = new List<PostClaim>
-                        {
-                            new PostClaim
-                            {
-                                Type = "role",
-                                Value = "administrator"
-                            }
-                        },
-                        Scopes = new List<string>
-                        {
-                            "read"
-                        }
+                        "read"
                     }
-                },
-                ResourceSetIds = new List<string>
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var addResponse = await _policyClient.AddByResolution(new PostPolicy
                 {
-                    addResource.Content.Id
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Rules = new List<PostPolicyRule>
+                    {
+                        new PostPolicyRule
+                        {
+                            IsResourceOwnerConsentNeeded = false,
+                            Claims = new List<PostClaim>
+                            {
+                                new PostClaim
+                                {
+                                    Type = "role",
+                                    Value = "administrator"
+                                }
+                            },
+                            Scopes = new List<string>
+                            {
+                                "read"
+                            }
+                        }
+                    },
+                    ResourceSetIds = new List<string>
+                    {
+                        addResource.Content.Id
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var response = await _policyClient.UpdateByResolution(new PutPolicy
-            {
-                PolicyId = addResponse.Content.PolicyId,
-                Rules = new List<PutPolicyRule>
                 {
-                    new PutPolicyRule
+                    PolicyId = addResponse.Content.PolicyId,
+                    Rules = new List<PutPolicyRule>
                     {
-                        Scopes = new List<string>
+                        new PutPolicyRule
                         {
-                            "invalid_scope"
+                            Scopes = new List<string>
+                            {
+                                "invalid_scope"
+                            }
                         }
                     }
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -315,10 +301,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.Equal("invalid_scope", response.Error.Error);
             Assert.Equal("one or more scopes don't belong to a resource set", response.Error.ErrorDescription);
         }
-
-        #endregion
-
-        #region Remove
 
         [Fact]
         public async Task When_Remove_Unknown_Policy_Then_Error_Is_Returned()
@@ -328,7 +310,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var response = await _policyClient.DeleteByResolution("unknown", baseUrl + "/.well-known/uma2-configuration", "header");
+            var response = await _policyClient.DeleteByResolution("unknown", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -336,10 +318,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.Equal("not_found", response.Error.Error);
             Assert.Equal("policy cannot be found", response.Error.ErrorDescription);
         }
-
-        #endregion
-
-        #region Add resource
 
         [Fact]
         public async Task When_Add_Resource_And_Pass_No_Resources_Then_Error_Is_Returned()
@@ -350,9 +328,9 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var response = await _policyClient.AddResourceByResolution("id", new PostAddResourceSet
-            {
-                ResourceSets = null
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                {
+                    ResourceSets = null
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -370,12 +348,12 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var response = await _policyClient.AddResourceByResolution("id", new PostAddResourceSet
-            {
-                ResourceSets = new List<string>
                 {
-                    "resource"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    ResourceSets = new List<string>
+                    {
+                        "resource"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.True(response.ContainsError);
@@ -390,50 +368,46 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-            {
-                Rules = new List<PostPolicyRule>
-                {
-                    new PostPolicyRule
+                    Name = "picture",
+                    Scopes = new List<string>
                     {
-                        IsResourceOwnerConsentNeeded = false,
-                        Scopes = new List<string>
-                        {
-                            "read"
-                        }
+                        "read"
                     }
-                },
-                ResourceSetIds = new List<string>
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var addPolicy = await _policyClient.AddByResolution(new PostPolicy
                 {
-                    addResource.Content.Id
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Rules = new List<PostPolicyRule>
+                    {
+                        new PostPolicyRule
+                        {
+                            IsResourceOwnerConsentNeeded = false,
+                            Scopes = new List<string>
+                            {
+                                "read"
+                            }
+                        }
+                    },
+                    ResourceSetIds = new List<string>
+                    {
+                        addResource.Content.Id
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var response = await _policyClient.AddResourceByResolution(addPolicy.Content.PolicyId, new PostAddResourceSet
-            {
-                ResourceSets = new List<string>
                 {
-                    "resource"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    ResourceSets = new List<string>
+                    {
+                        "resource"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(response.ContainsError);
             Assert.Equal("invalid_resource_set_id", response.Error.Error);
             Assert.Equal("resource set resource doesn't exist", response.Error.ErrorDescription);
         }
-
-        #endregion
-
-        #region Remove resource
 
         [Fact]
         public async Task When_Remove_Resource_And_Pass_Unknown_Policy_Then_Error_Is_Returned()
@@ -443,7 +417,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var response = await _policyClient.DeleteResourceByResolution("unknown", "resource_id", baseUrl + "/.well-known/uma2-configuration", "header");
+            var response = await _policyClient.DeleteResourceByResolution("unknown", "resource_id", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -459,34 +433,34 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var addResponse = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-            {
-                Rules = new List<PostPolicyRule>
-                {
-                    new PostPolicyRule
+                    Name = "picture",
+                    Scopes = new List<string>
                     {
-                        IsResourceOwnerConsentNeeded = false,
-                        Scopes = new List<string>
-                        {
-                            "read"
-                        }
+                        "read"
                     }
-                },
-                ResourceSetIds = new List<string>
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var addPolicy = await _policyClient.AddByResolution(new PostPolicy
                 {
-                    addResponse.Content.Id
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Rules = new List<PostPolicyRule>
+                    {
+                        new PostPolicyRule
+                        {
+                            IsResourceOwnerConsentNeeded = false,
+                            Scopes = new List<string>
+                            {
+                                "read"
+                            }
+                        }
+                    },
+                    ResourceSetIds = new List<string>
+                    {
+                        addResponse.Content.Id
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
-            var response = await _policyClient.DeleteResourceByResolution(addPolicy.Content.PolicyId, "resource_id", baseUrl + "/.well-known/uma2-configuration", "header");
+            var response = await _policyClient.DeleteResourceByResolution(addPolicy.Content.PolicyId, "resource_id", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -495,14 +469,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.Equal("resource set resource_id doesn't exist", response.Error.ErrorDescription);
         }
 
-        #endregion
-
-        #endregion
-
-        #region Happy path
-
-        #region Add
-
         [Fact]
         public async Task When_Adding_Policy_Then_Information_Can_Be_Returned()
         {
@@ -510,42 +476,42 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var addResponse = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Name = "picture",
+                    Scopes = new List<string>
+                    {
+                        "read"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var response = await _policyClient.AddByResolution(new PostPolicy
-            {
-                Rules = new List<PostPolicyRule>
                 {
-                    new PostPolicyRule
+                    Rules = new List<PostPolicyRule>
                     {
-                        IsResourceOwnerConsentNeeded = false,
-                        Claims = new List<PostClaim>
+                        new PostPolicyRule
                         {
-                            new PostClaim
+                            IsResourceOwnerConsentNeeded = false,
+                            Claims = new List<PostClaim>
                             {
-                                Type = "role",
-                                Value = "administrator"
+                                new PostClaim
+                                {
+                                    Type = "role",
+                                    Value = "administrator"
+                                }
+                            },
+                            Scopes = new List<string>
+                            {
+                                "read"
                             }
-                        },
-                        Scopes = new List<string>
-                        {
-                            "read"
                         }
+                    },
+                    ResourceSetIds = new List<string>
+                    {
+                        addResponse.Content.Id
                     }
-                },
-                ResourceSetIds = new List<string>
-                {
-                    addResponse.Content.Id
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var information = await _policyClient.GetByResolution(response.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header");
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var information = await _policyClient.GetByResolution(response.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -559,10 +525,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.True(rule.Scopes.Count() == 1);
         }
 
-        #endregion
-
-        #region Get all
-
         [Fact]
         public async Task When_Getting_All_Policies_Then_Identifiers_Are_Returned()
         {
@@ -570,51 +532,47 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-            {
-                Rules = new List<PostPolicyRule>
-                {
-                    new PostPolicyRule
+                    Name = "picture",
+                    Scopes = new List<string>
                     {
-                        IsResourceOwnerConsentNeeded = false,
-                        Claims = new List<PostClaim>
-                        {
-                            new PostClaim
-                            {
-                                Type = "role",
-                                Value = "administrator"
-                            }
-                        },
-                        Scopes = new List<string>
-                        {
-                            "read"
-                        }
+                        "read"
                     }
-                },
-                ResourceSetIds = new List<string>
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var addPolicy = await _policyClient.AddByResolution(new PostPolicy
                 {
-                    addResource.Content.Id
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Rules = new List<PostPolicyRule>
+                    {
+                        new PostPolicyRule
+                        {
+                            IsResourceOwnerConsentNeeded = false,
+                            Claims = new List<PostClaim>
+                            {
+                                new PostClaim
+                                {
+                                    Type = "role",
+                                    Value = "administrator"
+                                }
+                            },
+                            Scopes = new List<string>
+                            {
+                                "read"
+                            }
+                        }
+                    },
+                    ResourceSetIds = new List<string>
+                    {
+                        addResource.Content.Id
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
-            var response = await _policyClient.GetAllByResolution(baseUrl + "/.well-known/uma2-configuration", "header");
+            var response = await _policyClient.GetAllByResolution(baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             
             // ASSERT
             Assert.NotNull(response);
             Assert.True(response.Content.Any(r => r == addPolicy.Content.PolicyId));
         }
-
-        #endregion
-
-        #region Remove
 
         [Fact]
         public async Task When_Removing_Policy_Then_Information_Doesnt_Exist()
@@ -623,53 +581,49 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-            {
-                Rules = new List<PostPolicyRule>
-                {
-                    new PostPolicyRule
+                    Name = "picture",
+                    Scopes = new List<string>
                     {
-                        IsResourceOwnerConsentNeeded = false,
-                        Claims = new List<PostClaim>
-                        {
-                            new PostClaim
-                            {
-                                Type = "role",
-                                Value = "administrator"
-                            }
-                        },
-                        Scopes = new List<string>
-                        {
-                            "read"
-                        }
+                        "read"
                     }
-                },
-                ResourceSetIds = new List<string>
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var addPolicy = await _policyClient.AddByResolution(new PostPolicy
                 {
-                    addResource.Content.Id
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Rules = new List<PostPolicyRule>
+                    {
+                        new PostPolicyRule
+                        {
+                            IsResourceOwnerConsentNeeded = false,
+                            Claims = new List<PostClaim>
+                            {
+                                new PostClaim
+                                {
+                                    Type = "role",
+                                    Value = "administrator"
+                                }
+                            },
+                            Scopes = new List<string>
+                            {
+                                "read"
+                            }
+                        }
+                    },
+                    ResourceSetIds = new List<string>
+                    {
+                        addResource.Content.Id
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
-            var isRemoved = await _policyClient.DeleteByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header");
-            var ex = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header");
+            var isRemoved = await _policyClient.DeleteByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var ex = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERTS
             Assert.False(isRemoved.ContainsError);
             Assert.True(ex.ContainsError);
             Assert.NotNull(ex);
         }
-
-        #endregion
-
-        #region Add resource
 
         [Fact]
         public async Task When_Adding_Resource_To_Policy_Then_Changes_Are_Persisted()
@@ -678,67 +632,63 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var firstResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var secondResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
-                {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-            {
-                Rules = new List<PostPolicyRule>
-                {
-                    new PostPolicyRule
+                    Name = "picture",
+                    Scopes = new List<string>
                     {
-                        IsResourceOwnerConsentNeeded = false,
-                        Claims = new List<PostClaim>
-                        {
-                            new PostClaim
-                            {
-                                Type = "role",
-                                Value = "administrator"
-                            }
-                        },
-                        Scopes = new List<string>
-                        {
-                            "read"
-                        }
+                        "read"
                     }
-                },
-                ResourceSetIds = new List<string>
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var secondResource = await _resourceSetClient.AddByResolution(new PostResourceSet
                 {
-                    firstResource.Content.Id
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Name = "picture",
+                    Scopes = new List<string>
+                    {
+                        "read"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var addPolicy = await _policyClient.AddByResolution(new PostPolicy
+                {
+                    Rules = new List<PostPolicyRule>
+                    {
+                        new PostPolicyRule
+                        {
+                            IsResourceOwnerConsentNeeded = false,
+                            Claims = new List<PostClaim>
+                            {
+                                new PostClaim
+                                {
+                                    Type = "role",
+                                    Value = "administrator"
+                                }
+                            },
+                            Scopes = new List<string>
+                            {
+                                "read"
+                            }
+                        }
+                    },
+                    ResourceSetIds = new List<string>
+                    {
+                        firstResource.Content.Id
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var isUpdated = await _policyClient.AddResourceByResolution(addPolicy.Content.PolicyId, new PostAddResourceSet
-            {
-                ResourceSets = new List<string>
                 {
-                    secondResource.Content.Id
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var information = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header");
+                    ResourceSets = new List<string>
+                    {
+                        secondResource.Content.Id
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var information = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERTS
             Assert.False(isUpdated.ContainsError);
             Assert.NotNull(information);
             Assert.True(information.Content.ResourceSetIds.Count() == 2 && information.Content.ResourceSetIds.All(r => r == firstResource.Content.Id || r == secondResource.Content.Id));
         }
-
-        #endregion
-
-        #region Remove resource
 
         [Fact]
         public async Task When_Removing_Resource_From_Policy_Then_Changes_Are_Persisted()
@@ -747,62 +697,58 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var firstResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var secondResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
-                {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-            {
-                Rules = new List<PostPolicyRule>
-                {
-                    new PostPolicyRule
+                    Name = "picture",
+                    Scopes = new List<string>
                     {
-                        IsResourceOwnerConsentNeeded = false,
-                        Claims = new List<PostClaim>
-                        {
-                            new PostClaim
-                            {
-                                Type = "role",
-                                Value = "administrator"
-                            }
-                        },
-                        Scopes = new List<string>
-                        {
-                            "read"
-                        }
+                        "read"
                     }
-                },
-                ResourceSetIds = new List<string>
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var secondResource = await _resourceSetClient.AddByResolution(new PostResourceSet
                 {
-                    firstResource.Content.Id,
-                    secondResource.Content.Id
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Name = "picture",
+                    Scopes = new List<string>
+                    {
+                        "read"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var addPolicy = await _policyClient.AddByResolution(new PostPolicy
+                {
+                    Rules = new List<PostPolicyRule>
+                    {
+                        new PostPolicyRule
+                        {
+                            IsResourceOwnerConsentNeeded = false,
+                            Claims = new List<PostClaim>
+                            {
+                                new PostClaim
+                                {
+                                    Type = "role",
+                                    Value = "administrator"
+                                }
+                            },
+                            Scopes = new List<string>
+                            {
+                                "read"
+                            }
+                        }
+                    },
+                    ResourceSetIds = new List<string>
+                    {
+                        firstResource.Content.Id,
+                        secondResource.Content.Id
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
-            var isUpdated = await _policyClient.DeleteResourceByResolution(addPolicy.Content.PolicyId, secondResource.Content.Id, baseUrl + "/.well-known/uma2-configuration", "header");
-            var information = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header");
+            var isUpdated = await _policyClient.DeleteResourceByResolution(addPolicy.Content.PolicyId, secondResource.Content.Id, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var information = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERTS
             Assert.False(isUpdated.ContainsError);
             Assert.NotNull(information);
             Assert.True(information.Content.ResourceSetIds.Count() == 1 && information.Content.ResourceSetIds.First() == firstResource.Content.Id);
         }
-
-        #endregion
-
-        #region Update
 
         [Fact]
         public async Task When_Updating_Policy_Then_Changes_Are_Persisted()
@@ -811,83 +757,83 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var firstResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                 {
-                    "read",
-                    "write"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var secondResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
-                {
-                    "read",
-                    "write"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-            {
-                Rules = new List<PostPolicyRule>
-                {
-                    new PostPolicyRule
+                    Name = "picture",
+                    Scopes = new List<string>
                     {
-                        IsResourceOwnerConsentNeeded = false,
-                        Claims = new List<PostClaim>
-                        {
-                            new PostClaim
-                            {
-                                Type = "role",
-                                Value = "administrator"
-                            }
-                        },
-                        Scopes = new List<string>
-                        {
-                            "read"
-                        }
+                        "read",
+                        "write"
                     }
-                },
-                ResourceSetIds = new List<string>
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var secondResource = await _resourceSetClient.AddByResolution(new PostResourceSet
                 {
-                    firstResource.Content.Id,
-                    secondResource.Content.Id
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var firstInfo = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Name = "picture",
+                    Scopes = new List<string>
+                    {
+                        "read",
+                        "write"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var addPolicy = await _policyClient.AddByResolution(new PostPolicy
+                {
+                    Rules = new List<PostPolicyRule>
+                    {
+                        new PostPolicyRule
+                        {
+                            IsResourceOwnerConsentNeeded = false,
+                            Claims = new List<PostClaim>
+                            {
+                                new PostClaim
+                                {
+                                    Type = "role",
+                                    Value = "administrator"
+                                }
+                            },
+                            Scopes = new List<string>
+                            {
+                                "read"
+                            }
+                        }
+                    },
+                    ResourceSetIds = new List<string>
+                    {
+                        firstResource.Content.Id,
+                        secondResource.Content.Id
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var firstInfo = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var isUpdated = await _policyClient.UpdateByResolution(new PutPolicy
-            {
-                PolicyId = firstInfo.Content.Id,
-                Rules = new List<PutPolicyRule>
                 {
-                    new PutPolicyRule
+                    PolicyId = firstInfo.Content.Id,
+                    Rules = new List<PutPolicyRule>
                     {
-                       Id = firstInfo.Content.Rules.First().Id,
-                        Claims = new List<PostClaim>
+                        new PutPolicyRule
                         {
-                            new PostClaim
+                            Id = firstInfo.Content.Rules.First().Id,
+                            Claims = new List<PostClaim>
                             {
-                                Type = "role",
-                                Value = "administrator"
+                                new PostClaim
+                                {
+                                    Type = "role",
+                                    Value = "administrator"
+                                },
+                                new PostClaim
+                                {
+                                    Type = "role",
+                                    Value = "other"
+                                }
                             },
-                            new PostClaim
+                            Scopes = new List<string>
                             {
-                                Type = "role",
-                                Value = "other"
+                                "read",
+                                "write"
                             }
-                        },
-                        Scopes = new List<string>
-                        {
-                            "read",
-                            "write"
                         }
                     }
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var updatedInformation = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header");
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var updatedInformation = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
 
             // ASSERTS
@@ -898,10 +844,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.True(rule.Claims.Count() == 2);
             Assert.True(rule.Scopes.Count() == 2);
         }
-
-        #endregion
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

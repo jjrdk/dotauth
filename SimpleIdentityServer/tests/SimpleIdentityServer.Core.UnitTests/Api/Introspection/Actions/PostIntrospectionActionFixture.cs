@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
@@ -41,8 +39,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
         private Mock<ITokenStore> _tokenStoreStub;
         private IPostIntrospectionAction _postIntrospectionAction;
 
-        #region Exceptions
-
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
@@ -50,7 +46,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _postIntrospectionAction.Execute(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _postIntrospectionAction.Execute(null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -66,7 +62,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                .Returns(Task.FromResult(new AuthenticationResult(null, null)));
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
         }
         
@@ -89,14 +85,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidToken);
             Assert.True(exception.Message == ErrorDescriptions.TheTokenIsNotValid);
         }
-        
-        #endregion
-
-        #region Happy paths
 
         [Fact]
         public async Task When_Passing_Expired_AccessToken_Then_Result_Should_Be_Returned()
@@ -145,7 +137,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 .Returns(() => Task.FromResult(grantedToken));
 
             // ACT
-            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue, null);
+            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue, null).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -201,7 +193,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 .Returns(() => Task.FromResult(grantedToken));
 
             // ACT
-            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue, null);
+            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue, null).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -209,8 +201,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
             Assert.True(result.Audience == audience);
             Assert.True(result.Subject == subject);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

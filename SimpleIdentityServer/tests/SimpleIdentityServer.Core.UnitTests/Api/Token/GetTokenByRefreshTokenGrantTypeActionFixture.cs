@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
 using SimpleIdentityServer.Core.Api.Token.Actions;
@@ -45,8 +43,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<IAuthenticateClient> _authenticateClientStub;
         private IGetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
 
-        #region Exceptions
-
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
@@ -54,7 +50,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByRefreshTokenGrantTypeAction.Execute(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByRefreshTokenGrantTypeAction.Execute(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -69,7 +65,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null)).Returns(Task.FromResult(new AuthenticationResult(null, "error")));
 
             // ACT & ASSERT
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClient);
             Assert.True(ex.Message == "error");
         }
@@ -93,7 +89,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             }, null)));
             
             // ACT & ASSERT
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClient);
             Assert.True(ex.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, "id", GrantType.refresh_token));
         }
@@ -119,7 +115,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT & ASSERT
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidGrant);
             Assert.True(ex.Message == ErrorDescriptions.TheRefreshTokenIsNotValid);
         }
@@ -148,14 +144,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 }));
 
             // ACT & ASSERT
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidGrant);
             Assert.True(ex.Message == ErrorDescriptions.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer);
         }
-
-        #endregion
-
-        #region Happy path
 
         [Fact]
         public async Task When_Requesting_Token_Then_New_One_Is_Generated()
@@ -189,15 +181,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 It.IsAny<JwsPayload>())).Returns(Task.FromResult(grantedToken));
 
             // ACT
-             await _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null);
+             await _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null).ConfigureAwait(false);
 
             // ASSERT
             _tokenStoreStub.Verify(g => g.AddToken(It.IsAny<GrantedToken>()));
         }
-
-        #endregion
-
-        #region Private methods
 
         private void InitializeFakeObjects()
         {
@@ -217,7 +205,5 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _authenticateInstructionGeneratorStub.Object,
                 _authenticateClientStub.Object);
         }
-
-        #endregion
     }
 }

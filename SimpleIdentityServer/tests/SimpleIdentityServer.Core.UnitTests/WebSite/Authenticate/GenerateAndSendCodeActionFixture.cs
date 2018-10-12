@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 
 using Moq;
@@ -46,7 +44,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAndSendCodeAction.ExecuteAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAndSendCodeAction.ExecuteAsync(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -58,7 +56,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject"));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
             Assert.True(exception.Message == ErrorDescriptions.TheRoDoesntExist);
@@ -76,7 +74,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 }));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject"));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
             Assert.True(exception.Message == ErrorDescriptions.TwoFactorAuthenticationIsNotEnabled);
@@ -102,7 +100,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _twoFactorAuthenticationHandlerStub.Setup(t => t.Get(It.IsAny<string>())).Returns(fakeAuthService.Object);
 
             // ACT
-            var exception = await Assert.ThrowsAsync<ClaimRequiredException>(() => _generateAndSendCodeAction.ExecuteAsync("subject"));
+            var exception = await Assert.ThrowsAsync<ClaimRequiredException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(exception);
@@ -131,7 +129,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 .Returns(Task.FromResult(false));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject"));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(exception);
@@ -162,7 +160,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 .Returns(Task.FromResult(true));
 
             // ACT
-            await _generateAndSendCodeAction.ExecuteAsync("subject");
+            await _generateAndSendCodeAction.ExecuteAsync("subject").ConfigureAwait(false);
 
             // ASSERTS
             _twoFactorAuthenticationHandlerStub.Verify(t => t.SendCode(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ResourceOwner>()));

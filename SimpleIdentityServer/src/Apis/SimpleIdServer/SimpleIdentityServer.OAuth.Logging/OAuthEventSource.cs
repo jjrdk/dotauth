@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Logging;
@@ -21,8 +19,6 @@ namespace SimpleIdentityServer.OAuth.Logging
 {
     public interface IOAuthEventSource : IEventSource
     {
-        #region Events linked to the authorization process
-
         void StartAuthorization(
             string clientId,
             string responseType,
@@ -87,10 +83,6 @@ namespace SimpleIdentityServer.OAuth.Logging
 
         void GrantAccessToClient(string clientId, string accessToken, string scopes);
 
-        #endregion
-
-        #region Events linked to the token process
-
         void StartGetTokenByResourceOwnerCredentials(
             string clientId, 
             string userName,
@@ -133,14 +125,8 @@ namespace SimpleIdentityServer.OAuth.Logging
 
         void EndRevokeToken(string token);
 
-        #endregion
-
-        #region Event linked to client registration
-
         void StartRegistration(string clientName);
         void EndRegistration(string clientId, string clientName);
-
-        #endregion
 
         void OAuthFailure(string code, 
             string description, 
@@ -156,15 +142,9 @@ namespace SimpleIdentityServer.OAuth.Logging
             public const string ClientRegistration = "ClientRegistration";
         }
 
-        #region Constructor
-
         public OAuthEventSource(ILoggerFactory loggerFactory) : base(loggerFactory.CreateLogger<OAuthEventSource>())
         {
         }
-
-        #endregion
-
-        #region Events linked to the authorization process
 
         public void StartAuthorization(
             string clientId, 
@@ -369,10 +349,6 @@ namespace SimpleIdentityServer.OAuth.Logging
             LogInformation(evt);
         }
 
-        #endregion
-
-        #region Events linked to the token endpoint
-
         public void StartGetTokenByResourceOwnerCredentials(string clientId, string userName, string password)
         {
             var evt = new Event
@@ -527,10 +503,6 @@ namespace SimpleIdentityServer.OAuth.Logging
             LogInformation(evt);
         }
 
-        #endregion
-
-        #region Client registration
-
         public void StartRegistration(string clientName)
         {
             var evt = new Event
@@ -555,10 +527,6 @@ namespace SimpleIdentityServer.OAuth.Logging
             LogInformation(evt);
         }
 
-        #endregion
-
-        #region Failing events
-
         public void OAuthFailure(string code,
             string description,
             string state)
@@ -572,7 +540,5 @@ namespace SimpleIdentityServer.OAuth.Logging
 
             LogError(evt);
         }
-
-        #endregion
     }
 }
