@@ -23,26 +23,30 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client
 {
+    using Core.Common.DTOs.Responses;
+    using Newtonsoft.Json;
+    using System.Collections.Generic;
+    using System.Net.Http;
+
     public interface IRevokeTokenClient
     {
-        Task<GetRevokeTokenResult> ExecuteAsync(string tokenUrl);
         Task<GetRevokeTokenResult> ExecuteAsync(Uri tokenUri);
         Task<GetRevokeTokenResult> ResolveAsync(string discoveryDocumentationUrl);
     }
 
     internal class RevokeTokenClient : IRevokeTokenClient
     {
+        private readonly HttpClient _client;
         private readonly RequestBuilder _requestBuilder;
-        private readonly IRevokeTokenOperation _revokeTokenOperation;
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
 
         public RevokeTokenClient(
+            HttpClient client,
             RequestBuilder requestBuilder,
-            IRevokeTokenOperation revokeTokenOperation,
             IGetDiscoveryOperation getDiscoveryOperation)
         {
+            _client = client;
             _requestBuilder = requestBuilder;
-            _revokeTokenOperation = revokeTokenOperation;
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
@@ -53,23 +57,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(tokenUri));
             }
 
-            return _revokeTokenOperation.ExecuteAsync(_requestBuilder.Content, tokenUri, _requestBuilder.AuthorizationHeaderValue);
-        }
-
-        public Task<GetRevokeTokenResult> ExecuteAsync(string revokeUrl)
-        {
-            if (string.IsNullOrWhiteSpace(revokeUrl))
-            {
-                throw new ArgumentNullException(nameof(revokeUrl));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(revokeUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, revokeUrl));
-            }
-
-            return ExecuteAsync(uri);
+            return RevokeToken(_requestBuilder.Content, tokenUri, _requestBuilder.AuthorizationHeaderValue);
         }
 
         public async Task<GetRevokeTokenResult> ResolveAsync(string discoveryDocumentationUrl)
@@ -79,14 +67,57 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
             }
 
-            Uri uri = null;
-            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out uri))
+            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out var uri))
             {
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }
 
             var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            return await ExecuteAsync(discoveryDocument.RevocationEndPoint).ConfigureAwait(false);
+            return await ExecuteAsync(new Uri(discoveryDocument.RevocationEndPoint)).ConfigureAwait(false);
         }
+
+        public async Task<GetRevokeTokenResult> RevokeToken(Dictionary<string, string> revokeParameter, Uri requestUri, string authorizationValue)
+        {
+            if (revokeParameter == null)
+            {
+                throw new ArgumentNullException(nameof(revokeParameter));
+            }
+
+            if (requestUri == null)
+            {
+                throw new ArgumentNullException(nameof(requestUri));
+            }
+
+            var body = new FormUrlEncodedContent(revokeParameter);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = requestUri
+            };
+            if (!string.IsNullOrWhiteSpace(authorizationValue))
+            {
+                request.Headers.Add("Authorization", "Basic " + authorizationValue);
+            }
+
+            var result = await _client.SendAsync(request).ConfigureAwait(false);
+            var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
+            {
+                result.EnsureSuccessStatusCode();
+            }
+            catch (Exception)
+            {
+                return new GetRevokeTokenResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json),
+                    Status = result.StatusCode
+                };
+            }
+
+            return new GetRevokeTokenResult();
+        }
+
     }
 }

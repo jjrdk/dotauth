@@ -24,49 +24,30 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client
 {
+    using Newtonsoft.Json;
+    using System.Collections.Generic;
+    using System.Net.Http;
+
     public interface IIntrospectClient
     {
-        Task<GetIntrospectionResult> ExecuteAsync(string tokenUrl);
         Task<GetIntrospectionResult> ExecuteAsync(Uri tokenUri);
         Task<GetIntrospectionResult> ResolveAsync(string discoveryDocumentationUrl);
     }
 
-    public enum TokenType
-    {
-        AccessToken,
-        RefreshToken
-    }
-
     internal class IntrospectClient : IIntrospectClient
     {
+        private readonly HttpClient _client;
         private readonly RequestBuilder _requestBuilder;
-        private readonly IIntrospectOperation _introspectOperation;
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
 
         public IntrospectClient(
+            HttpClient client,
             RequestBuilder requestBuilder,
-            IIntrospectOperation introspectOperation,
             IGetDiscoveryOperation getDiscoveryOperation)
         {
+            _client = client;
             _requestBuilder = requestBuilder;
-            _introspectOperation = introspectOperation;
             _getDiscoveryOperation = getDiscoveryOperation;
-        }
-
-        public Task<GetIntrospectionResult> ExecuteAsync(string tokenUrl)
-        {
-            if (string.IsNullOrWhiteSpace(tokenUrl))
-            {
-                throw new ArgumentNullException(nameof(tokenUrl));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(tokenUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, tokenUrl));
-            }
-
-            return ExecuteAsync(uri);
         }
 
         public Task<GetIntrospectionResult> ExecuteAsync(Uri tokenUri)
@@ -75,8 +56,8 @@ namespace SimpleIdentityServer.Client
             {
                 throw new ArgumentNullException(nameof(tokenUri));
             }
-            
-            return _introspectOperation.ExecuteAsync(_requestBuilder.Content,
+
+            return GetIntrospection(_requestBuilder.Content,
                 tokenUri,
                 _requestBuilder.AuthorizationHeaderValue);
         }
@@ -88,14 +69,60 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
             }
 
-            Uri uri = null;
-            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out uri))
+            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out Uri uri))
             {
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }
 
             var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            return await ExecuteAsync(discoveryDocument.IntrospectionEndPoint).ConfigureAwait(false);
+            return await ExecuteAsync(new Uri(discoveryDocument.IntrospectionEndPoint)).ConfigureAwait(false);
+        }
+
+        private async Task<GetIntrospectionResult> GetIntrospection(Dictionary<string, string> introspectionParameter, Uri requestUri, string authorizationValue)
+        {
+            if (introspectionParameter == null)
+            {
+                throw new ArgumentNullException(nameof(introspectionParameter));
+            }
+
+            if (requestUri == null)
+            {
+                throw new ArgumentNullException(nameof(requestUri));
+            }
+
+            var body = new FormUrlEncodedContent(introspectionParameter);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = requestUri
+            };
+            if (!string.IsNullOrWhiteSpace(authorizationValue))
+            {
+                request.Headers.Add("Authorization", "Basic " + authorizationValue);
+            }
+
+            var result = await _client.SendAsync(request).ConfigureAwait(false);
+            var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
+            {
+                result.EnsureSuccessStatusCode();
+            }
+            catch (Exception)
+            {
+                return new GetIntrospectionResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json),
+                    Status = result.StatusCode
+                };
+            }
+
+            return new GetIntrospectionResult
+            {
+                ContainsError = false,
+                Content = JsonConvert.DeserializeObject<IntrospectionResponse>(json)
+            };
         }
     }
 }

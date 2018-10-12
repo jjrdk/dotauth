@@ -153,7 +153,7 @@ namespace SimpleIdentityServer.Host
                 jsonWebKeys: options.Configuration?.JsonWebKeys)
                 .AddSimpleIdentityServerJwt()
                 .AddHostIdentityServer(options)
-                .AddIdServerClient()
+                //.AddIdServerClient()
                 .AddDefaultTokenStore()
                 //.AddDefaultAccessTokenStore()
                 //.AddDefaultSimpleBus()

@@ -30,6 +30,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.JwtToken
 {
+    using System.Net.Http;
+
     public interface IJwtParser
     {
         bool IsJweToken(string jwe);
@@ -45,7 +47,7 @@ namespace SimpleIdentityServer.Core.JwtToken
     {
         private readonly IJweParser _jweParser;
         private readonly IJwsParser _jwsParser;        
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClientFactory;
         private readonly IClientRepository _clientRepository;
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
         private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
@@ -53,7 +55,7 @@ namespace SimpleIdentityServer.Core.JwtToken
         public JwtParser(
             IJweParser jweParser,
             IJwsParser jwsParser,
-            IHttpClientFactory httpClientFactory,
+            HttpClient httpClientFactory,
             IClientRepository clientRepository,
             IJsonWebKeyConverter jsonWebKeyConverter,
             IJsonWebKeyRepository jsonWebKeyRepository)
@@ -217,15 +219,14 @@ namespace SimpleIdentityServer.Core.JwtToken
             // Fetch the json web key from the jwks_uri
             if (!string.IsNullOrWhiteSpace(client.JwksUri))
             {
-                Uri uri = null;
-                if (!Uri.TryCreate(client.JwksUri, UriKind.Absolute, out uri))
+                if (!Uri.TryCreate(client.JwksUri, UriKind.Absolute, out var uri))
                 {
                     return null;
                 }
 
-                var httpClient = _httpClientFactory.GetHttpClient();
-                httpClient.BaseAddress = uri;
-                var request = httpClient.GetAsync(uri.AbsoluteUri).Result;
+                //var httpClient = _httpClientFactory.GetHttpClient();
+                //httpClient.BaseAddress = uri;
+                var request = _httpClientFactory.GetAsync(uri.AbsoluteUri).Result;
                 try
                 {
                     request.EnsureSuccessStatusCode();

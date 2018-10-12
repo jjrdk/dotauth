@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Authenticate.SMS.Client.Factories;
 using System;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Client
@@ -13,9 +12,9 @@ namespace SimpleIdentityServer.Authenticate.SMS.Client
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddTransient<IHttpClientFactory, HttpClientFactory>();
+            //services.AddTransient<IHttpClientFactory, HttpClientFactory>();
             services.AddTransient<ISidSmsAuthenticateClient, SidSmsAuthenticateClient>();
-            services.AddTransient<ISendSmsOperation, SendSmsOperation>();
+            //services.AddTransient<ISendSmsOperation, SendSmsOperation>();
             return services;
         }
     }

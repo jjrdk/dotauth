@@ -27,6 +27,8 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Validators
 {
+    using System.Net.Http;
+
     public interface IRegistrationParameterValidator
     {
         void Validate(RegistrationParameter parameter);
@@ -34,9 +36,9 @@ namespace SimpleIdentityServer.Core.Validators
 
     public class RegistrationParameterValidator : IRegistrationParameterValidator
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClientFactory;
 
-        public RegistrationParameterValidator(IHttpClientFactory httpClientFactory)
+        public RegistrationParameterValidator(HttpClient httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -198,10 +200,9 @@ namespace SimpleIdentityServer.Core.Validators
 
         private List<string> GetSectorIdentifierUris(string sectorIdentifierUri)
         {
-            var httpClient = _httpClientFactory.GetHttpClient();
             try
             {
-                var response = httpClient.GetAsync(sectorIdentifierUri).Result;
+                var response = _httpClientFactory.GetAsync(sectorIdentifierUri).Result;
                 response.EnsureSuccessStatusCode();
                 var result = response.Content.ReadAsStringAsync().Result;
                 return result.DeserializeWithJavascript<List<string>>();

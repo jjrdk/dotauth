@@ -15,7 +15,6 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Uma.Client.Results;
 using System;
@@ -25,6 +24,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.ResourceSet
 {
+    using Core.Factories;
+
     public interface IGetResourcesOperation
     {
         Task<GetResourcesResult> ExecuteAsync(string resourceSetUrl, string authorizationHeaderValue);
@@ -32,9 +33,9 @@ namespace SimpleIdentityServer.Client.ResourceSet
 
     internal class GetResourcesOperation : IGetResourcesOperation
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClientFactory;
 
-        public GetResourcesOperation(IHttpClientFactory httpClientFactory)
+        public GetResourcesOperation(HttpClient httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -57,8 +58,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
                 RequestUri = new Uri(resourceSetUrl)
             };
             request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
-            var httpClient = _httpClientFactory.GetHttpClient();
-            var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
+            var httpResult = await _httpClientFactory.SendAsync(request).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             try
             {

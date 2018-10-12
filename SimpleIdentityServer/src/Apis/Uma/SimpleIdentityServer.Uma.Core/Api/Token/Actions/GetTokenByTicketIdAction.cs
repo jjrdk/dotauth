@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Helpers;
@@ -34,7 +33,6 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
         private readonly ITicketStore _ticketStore;
         private readonly IUmaConfigurationService _configurationService;
         private readonly IUmaServerEventSource _umaServerEventSource;
-        private readonly IIdentityServerClientFactory _identityServerClientFactory;
         private readonly IAuthorizationPolicyValidator _authorizationPolicyValidator;
         private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
         private readonly IAuthenticateClient _authenticateClient;
@@ -43,14 +41,13 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
         private readonly ITokenStore _tokenStore;
 
         public GetTokenByTicketIdAction(ITicketStore ticketStore, IUmaConfigurationService configurationService,
-            IUmaServerEventSource umaServerEventSource, IIdentityServerClientFactory identityServerClientFactory,
+            IUmaServerEventSource umaServerEventSource,
             IAuthorizationPolicyValidator authorizationPolicyValidator, IAuthenticateInstructionGenerator authenticateInstructionGenerator,
             IAuthenticateClient authenticateClient, IJwtGenerator jwtGenerator, IClientHelper clientHelper, ITokenStore tokenStore)
         {
             _ticketStore = ticketStore;
             _configurationService = configurationService;
             _umaServerEventSource = umaServerEventSource;
-            _identityServerClientFactory = identityServerClientFactory;
             _authorizationPolicyValidator = authorizationPolicyValidator;
             _authenticateInstructionGenerator = authenticateInstructionGenerator;
             _authenticateClient = authenticateClient;
@@ -161,9 +158,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             var jArr = new JArray();
             foreach (var ticketLine in ticketLines)
             {
-                var jObj = new JObject();
-                jObj.Add(Constants.RptClaims.ResourceSetId, ticketLine.ResourceSetId);
-                jObj.Add(Constants.RptClaims.Scopes, string.Join(" ",ticketLine.Scopes));
+                var jObj = new JObject
+                {
+                    { Constants.RptClaims.ResourceSetId, ticketLine.ResourceSetId },
+                    { Constants.RptClaims.Scopes, string.Join(" ", ticketLine.Scopes) }
+                };
                 jArr.Add(jObj);
             }
 
@@ -175,7 +174,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
                 AccessToken = accessToken,
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
                 ExpiresIn = expiresIn,
-                TokenType =SimpleIdentityServer.Core.Constants.StandardTokenTypes.Bearer,
+                TokenType = SimpleIdentityServer.Core.Constants.StandardTokenTypes.Bearer,
                 CreateDateTime = DateTime.UtcNow,
                 Scope = scope,
                 ClientId = client.ClientId

@@ -15,7 +15,6 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Scim.Client.Builders;
 using SimpleIdentityServer.Scim.Client.Extensions;
 using System;
@@ -45,11 +44,11 @@ namespace SimpleIdentityServer.Scim.Client
     internal class GroupsClient : IGroupsClient
     {
         private readonly string _schema = Common.Constants.SchemaUrns.Group;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _client;
 
-        public GroupsClient(IHttpClientFactory httpClientFactory)
+        public GroupsClient(HttpClient client)
         {
-            _httpClientFactory = httpClientFactory;
+            _client = client;
         }
 
         public RequestBuilder AddGroup(string baseUrl, string accessToken = null)
@@ -106,7 +105,6 @@ namespace SimpleIdentityServer.Scim.Client
             }
 
             var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
-            var client = _httpClientFactory.GetHttpClient();
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
@@ -117,7 +115,7 @@ namespace SimpleIdentityServer.Scim.Client
                 request.Headers.Add("Authorization", "Bearer " + accessToken);
             }
 
-            var response = await client.SendAsync(request).ConfigureAwait(false);
+            var response = await _client.SendAsync(request).ConfigureAwait(false);
             return await ParseHttpResponse(response).ConfigureAwait(false);
         }
 
@@ -149,7 +147,6 @@ namespace SimpleIdentityServer.Scim.Client
             }
 
             var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
-            var client = _httpClientFactory.GetHttpClient();
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Delete,
@@ -160,7 +157,7 @@ namespace SimpleIdentityServer.Scim.Client
                 request.Headers.Add("Authorization", "Bearer " + accessToken);
             }
 
-            var response = await client.SendAsync(request).ConfigureAwait(false);
+            var response = await _client.SendAsync(request).ConfigureAwait(false);
             return await ParseHttpResponse(response).ConfigureAwait(false);
         }
 
@@ -249,7 +246,6 @@ namespace SimpleIdentityServer.Scim.Client
             }
 
             var url = $"{FormatUrl(baseUri.AbsoluteUri)}/.search";
-            var client = _httpClientFactory.GetHttpClient();
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -262,7 +258,7 @@ namespace SimpleIdentityServer.Scim.Client
                 request.Headers.Add("Authorization", "Bearer " + accessToken);
             }
 
-            var response = await client.SendAsync(request).ConfigureAwait(false);
+            var response = await _client.SendAsync(request).ConfigureAwait(false);
             return await ParseHttpResponse(response).ConfigureAwait(false);
         }
 
@@ -295,11 +291,10 @@ namespace SimpleIdentityServer.Scim.Client
                 request.Headers.Add("Authorization", "Bearer " + accessToken);
             }
 
-            var client = _httpClientFactory.GetHttpClient();
-            var response = await client.SendAsync(request).ConfigureAwait(false);
+            var response = await _client.SendAsync(request).ConfigureAwait(false);
             return await ParseHttpResponse(response).ConfigureAwait(false);
         }
-        
+
         private static string FormatUrl(string baseUrl)
         {
             var result = baseUrl.ParseUri();
@@ -307,7 +302,7 @@ namespace SimpleIdentityServer.Scim.Client
             {
                 return null;
             }
-            
+
             return baseUrl.TrimEnd('/', '\\') + "/Groups";
         }
 

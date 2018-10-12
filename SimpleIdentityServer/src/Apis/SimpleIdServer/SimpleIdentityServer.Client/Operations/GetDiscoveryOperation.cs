@@ -15,13 +15,14 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Operations
 {
+    using System.Net.Http;
+
     public interface IGetDiscoveryOperation
     {
         Task<DiscoveryInformation> ExecuteAsync(Uri discoveryDocumentationUri);
@@ -29,13 +30,13 @@ namespace SimpleIdentityServer.Client.Operations
 
     internal class GetDiscoveryOperation : IGetDiscoveryOperation
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClient;
 
         #region Constructor
 
-        public GetDiscoveryOperation(IHttpClientFactory httpClientFactory)
+        public GetDiscoveryOperation(HttpClient httpClient)
         {
-            _httpClientFactory = httpClientFactory;
+            _httpClient = httpClient;
         }
 
         #endregion
@@ -49,8 +50,7 @@ namespace SimpleIdentityServer.Client.Operations
                 throw new ArgumentNullException(nameof(discoveryDocumentationUri));
             }
 
-            var httpClient = _httpClientFactory.GetHttpClient();
-            var serializedContent = await httpClient.GetStringAsync(discoveryDocumentationUri).ConfigureAwait(false);
+            var serializedContent = await _httpClient.GetStringAsync(discoveryDocumentationUri).ConfigureAwait(false);
             return JsonConvert.DeserializeObject<DiscoveryInformation>(serializedContent);
         }
 

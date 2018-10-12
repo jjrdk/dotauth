@@ -23,21 +23,25 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client
 {
+    using Core.Common.DTOs.Responses;
+    using Core.Common.Serializers;
+    using Newtonsoft.Json;
+    using System.Net.Http;
+
     public interface IAuthorizationClient
     {
-        Task<GetAuthorizationResult> ExecuteAsync(string authorizationUrl, AuthorizationRequest request);
         Task<GetAuthorizationResult> ExecuteAsync(Uri authorizationUri, AuthorizationRequest request);
         Task<GetAuthorizationResult> ResolveAsync(string discoveryDocumentationUrl, AuthorizationRequest request);
     }
 
     internal class AuthorizationClient : IAuthorizationClient
     {
-        private readonly IGetAuthorizationOperation _getAuthorizationOperation;
+        private readonly HttpClient _client;
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
 
-        public AuthorizationClient(IGetAuthorizationOperation getAuthorizationOperation, IGetDiscoveryOperation getDiscoveryOperation)
+        public AuthorizationClient(HttpClient client, IGetDiscoveryOperation getDiscoveryOperation)
         {
-            _getAuthorizationOperation = getAuthorizationOperation;
+            _client = client;
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
@@ -53,23 +57,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(request));
             }
 
-            return _getAuthorizationOperation.ExecuteAsync(authorizationUri, request);
-        }
-
-        public Task<GetAuthorizationResult> ExecuteAsync(string authorizationUrl, AuthorizationRequest request)
-        {
-            if (string.IsNullOrWhiteSpace(authorizationUrl))
-            {
-                throw new ArgumentNullException(nameof(authorizationUrl));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(authorizationUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, authorizationUrl));
-            }
-
-            return ExecuteAsync(uri, request);
+            return GetAuthorization(authorizationUri, request);
         }
 
         public async Task<GetAuthorizationResult> ResolveAsync(string discoveryDocumentationUrl, AuthorizationRequest request)
@@ -79,14 +67,47 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
             }
 
-            Uri uri = null;
-            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out uri))
+            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out var uri))
             {
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }
 
             var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            return await ExecuteAsync(discoveryDocument.AuthorizationEndPoint, request).ConfigureAwait(false);
+            return await ExecuteAsync(new Uri(discoveryDocument.AuthorizationEndPoint), request).ConfigureAwait(false);
+        }
+
+        private async Task<GetAuthorizationResult> GetAuthorization(Uri uri, AuthorizationRequest request)
+        {
+            if (uri == null)
+            {
+                throw new ArgumentNullException(nameof(uri));
+            }
+
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var uriBuilder = new UriBuilder(uri);
+            var pSerializer = new ParamSerializer();
+            uriBuilder.Query = pSerializer.Serialize(request);
+            var response = await _client.GetAsync(uriBuilder.Uri).ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            if (response.StatusCode >= System.Net.HttpStatusCode.BadRequest)
+            {
+                return new GetAuthorizationResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(content),
+                    Status = response.StatusCode
+                };
+            }
+
+            return new GetAuthorizationResult
+            {
+                ContainsError = false,
+                Location = response.Headers.Location
+            };
         }
     }
 }
