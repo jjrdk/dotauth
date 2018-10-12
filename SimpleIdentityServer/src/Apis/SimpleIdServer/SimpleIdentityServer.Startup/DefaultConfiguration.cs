@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Startup
                     Claims = new List<Claim>
                     {
                         new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "administrator"),
-                        new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role, "administrator")
+                        new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role, "[ 'administrator', 'role']")
                     },
                     Password = PasswordHelper.ComputeHash("password"),
                     IsLocalAccount = true
