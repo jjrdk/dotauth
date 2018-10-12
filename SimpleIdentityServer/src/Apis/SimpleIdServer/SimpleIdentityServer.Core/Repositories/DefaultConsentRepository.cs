@@ -14,7 +14,7 @@ namespace SimpleIdentityServer.Core.Repositories
 
         public DefaultConsentRepository(ICollection<Consent> consents)
         {
-            _consents = consents == null ? new List<Consent>() : consents;
+            _consents = consents ?? new List<Consent>();
         }
 
         public Task<bool> DeleteAsync(Consent record)

@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Scim.Client.Builders
                 throw new ArgumentNullException(nameof(externalId));
             }
 
-            _obj[Common.Constants.IdentifiedScimResourceNames.ExternalId] = externalId;
+            _obj[Common.ScimConstants.IdentifiedScimResourceNames.ExternalId] = externalId;
             return this;
         }
 
@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Scim.Client.Builders
         private void Initialize(IEnumerable<string> schemas)
         {
             var arr = new JArray(schemas);
-            _obj = new JObject {[Common.Constants.ScimResourceNames.Schemas] = arr};
+            _obj = new JObject {[Common.ScimConstants.ScimResourceNames.Schemas] = arr};
         }
     }
 }

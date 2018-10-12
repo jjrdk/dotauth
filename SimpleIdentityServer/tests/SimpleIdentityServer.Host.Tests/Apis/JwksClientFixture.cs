@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Client.Selectors;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Core.Jwt;
 using System;
 using System.Net.Http;

@@ -14,7 +14,6 @@
 
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Models;
-using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 

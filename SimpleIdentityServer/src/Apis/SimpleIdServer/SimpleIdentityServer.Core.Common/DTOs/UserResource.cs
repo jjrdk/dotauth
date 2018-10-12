@@ -19,17 +19,17 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
     [DataContract]
     public class Name
     {
-        [DataMember(Name = Constants.NameResponseNames.Formatted)]
+        [DataMember(Name = ScimConstants.NameResponseNames.Formatted)]
         public string Formatted { get; set; }
-        [DataMember(Name = Constants.NameResponseNames.FamilyName)]
+        [DataMember(Name = ScimConstants.NameResponseNames.FamilyName)]
         public string FamilyName { get; set; }
-        [DataMember(Name = Constants.NameResponseNames.GivenName)]
+        [DataMember(Name = ScimConstants.NameResponseNames.GivenName)]
         public string GivenName { get; set; }
-        [DataMember(Name = Constants.NameResponseNames.MiddleName)]
+        [DataMember(Name = ScimConstants.NameResponseNames.MiddleName)]
         public string MiddleName { get; set; }
-        [DataMember(Name = Constants.NameResponseNames.HonorificPrefix)]
+        [DataMember(Name = ScimConstants.NameResponseNames.HonorificPrefix)]
         public string HonorificPrefix { get; set; }
-        [DataMember(Name = Constants.NameResponseNames.HonorificSuffix)]
+        [DataMember(Name = ScimConstants.NameResponseNames.HonorificSuffix)]
         public string HonorificSuffix { get; set; }
     }
 
@@ -37,17 +37,17 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
     [DataContract]
     public class Address : MultiValueAttrResponse
     {
-        [DataMember(Name = Constants.AddressResponseNames.Formatted)]
+        [DataMember(Name = ScimConstants.AddressResponseNames.Formatted)]
         public string Formatted { get; set; }
-        [DataMember(Name = Constants.AddressResponseNames.StreetAddress)]
+        [DataMember(Name = ScimConstants.AddressResponseNames.StreetAddress)]
         public string StreetAddress { get; set; }
-        [DataMember(Name = Constants.AddressResponseNames.Locality)]
+        [DataMember(Name = ScimConstants.AddressResponseNames.Locality)]
         public string Locality { get; set; }
-        [DataMember(Name = Constants.AddressResponseNames.Region)]
+        [DataMember(Name = ScimConstants.AddressResponseNames.Region)]
         public string Region { get; set; }
-        [DataMember(Name = Constants.AddressResponseNames.PostalCode)]
+        [DataMember(Name = ScimConstants.AddressResponseNames.PostalCode)]
         public string PostalCode { get; set; }
-        [DataMember(Name = Constants.AddressResponseNames.Country)]
+        [DataMember(Name = ScimConstants.AddressResponseNames.Country)]
         public string Country { get; set; }
     }
     */
@@ -55,54 +55,54 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
     [DataContract]
     public class UserResourceResponse : IdentifiedScimResource
     {
-        [DataMember(Name = Constants.UserResourceResponseNames.UserName)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.UserName)]
         public string UserName { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.Name)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.Name)]
         public Name Name { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.DisplayName)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.DisplayName)]
         public string DisplayName { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.NickName)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.NickName)]
         public string NickName { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.ProfileUrl)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.ProfileUrl)]
         public string ProfileUrl { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.Title)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.Title)]
         public string Title { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.UserType)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.UserType)]
         public string UserType { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.PreferredLanguage)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.PreferredLanguage)]
         public string PreferredLanguage { get; set; }
         /// <summary>
         /// Read the RFC : https://tools.ietf.org/html/rfc5646
         /// </summary>
-        [DataMember(Name = Constants.UserResourceResponseNames.Locale)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.Locale)]
         public string Locale { get; set; }
         /// <summary>
         /// Read the RFC : https://tools.ietf.org/html/rfc6557
         /// </summary>
-        [DataMember(Name = Constants.UserResourceResponseNames.Timezone)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.Timezone)]
         public string Timezone { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.Active)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.Active)]
         public bool Active { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.Password)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.Password)]
         public string Password { get; set; }
         /*
-        [DataMember(Name = Constants.UserResourceResponseNames.Emails)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.Emails)]
         public IEnumerable<MultiValueAttrResponse> Emails { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.Phones)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.Phones)]
         public IEnumerable<MultiValueAttrResponse> Phones { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.Ims)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.Ims)]
         public IEnumerable<MultiValueAttrResponse> Ims { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.Photos)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.Photos)]
         public IEnumerable<MultiValueAttrResponse> Photos { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.Addresses)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.Addresses)]
         public IEnumerable<AddressResponse> Addresses { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.Groups)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.Groups)]
         public IEnumerable<AddressResponse> Groups { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.Entitlements)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.Entitlements)]
         public IEnumerable<MultiValueAttrResponse> Entitlements { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.Roles)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.Roles)]
         public IEnumerable<MultiValueAttrResponse> Roles { get; set; }
-        [DataMember(Name = Constants.UserResourceResponseNames.X509Certificates)]
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.X509Certificates)]
         public IEnumerable<MultiValueAttrResponse> X509Certificates { get; set; }
         */
     }

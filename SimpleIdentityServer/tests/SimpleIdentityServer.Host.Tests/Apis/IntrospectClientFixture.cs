@@ -14,15 +14,11 @@
 
 using Moq;
 using Newtonsoft.Json;
-using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Client.Selectors;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Common.Dtos.Responses;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;

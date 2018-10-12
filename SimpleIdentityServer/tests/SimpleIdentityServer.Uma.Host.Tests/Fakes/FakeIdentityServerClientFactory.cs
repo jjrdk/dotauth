@@ -1,6 +1,5 @@
 ﻿using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Client.Selectors;
 using System;
 
 namespace SimpleIdentityServer.Uma.Host.Tests.Fakes

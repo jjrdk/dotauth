@@ -16,8 +16,6 @@ using Moq;
 using Newtonsoft.Json;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Client.Selectors;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Net;

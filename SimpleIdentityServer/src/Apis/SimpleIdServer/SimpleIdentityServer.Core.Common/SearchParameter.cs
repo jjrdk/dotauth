@@ -19,36 +19,38 @@ using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Scim.Client
 {
+    using Common;
+
     public enum SortOrders
     {
-        [EnumMember(Value = Common.Constants.SortOrderNames.Ascending)]
+        [EnumMember(Value = ScimConstants.SortOrderNames.Ascending)]
         Ascending,
-        [EnumMember(Value = Common.Constants.SortOrderNames.Descending)]
+        [EnumMember(Value = ScimConstants.SortOrderNames.Descending)]
         Descending
     }
 
     [DataContract]
     public class SearchParameter
     {
-        [DataMember(Name = Common.Constants.SearchParameterNames.Attributes)]
+        [DataMember(Name = ScimConstants.SearchParameterNames.Attributes)]
         public IEnumerable<string> Attributes { get; set; }
 
-        [DataMember(Name = Common.Constants.SearchParameterNames.ExcludedAttributes)]
+        [DataMember(Name = ScimConstants.SearchParameterNames.ExcludedAttributes)]
         public IEnumerable<string> ExcludedAttributes { get; set; }
 
-        [DataMember(Name = Common.Constants.SearchParameterNames.Filter)]
+        [DataMember(Name = ScimConstants.SearchParameterNames.Filter)]
         public string Filter { get; set; }
 
-        [DataMember(Name = Common.Constants.SearchParameterNames.SortBy)]
+        [DataMember(Name = ScimConstants.SearchParameterNames.SortBy)]
         public string SortBy { get; set; }
 
-        [DataMember(Name = Common.Constants.SearchParameterNames.SortOrder)]
+        [DataMember(Name = ScimConstants.SearchParameterNames.SortOrder)]
         public SortOrders? SortOrder { get; set; }
 
-        [DataMember(Name = Common.Constants.SearchParameterNames.StartIndex)]
+        [DataMember(Name = ScimConstants.SearchParameterNames.StartIndex)]
         public int? StartIndex { get; set; }
 
-        [DataMember(Name = Common.Constants.SearchParameterNames.Count)]
+        [DataMember(Name = ScimConstants.SearchParameterNames.Count)]
         public int? Count { get; set; }
 
         public string ToJson()
@@ -56,39 +58,39 @@ namespace SimpleIdentityServer.Scim.Client
             var obj = new JObject();
             if (Attributes != null && Attributes.Any())
             {
-                obj[Common.Constants.SearchParameterNames.Attributes] = new JArray(Attributes);
+                obj[ScimConstants.SearchParameterNames.Attributes] = new JArray(Attributes);
             }
 
             if (ExcludedAttributes != null && ExcludedAttributes.Any())
             {
-                obj[Common.Constants.SearchParameterNames.ExcludedAttributes] = new JArray(ExcludedAttributes);
+                obj[ScimConstants.SearchParameterNames.ExcludedAttributes] = new JArray(ExcludedAttributes);
             }
 
             if (!string.IsNullOrEmpty(Filter))
             {
-                obj[Common.Constants.SearchParameterNames.Filter] = Filter;
+                obj[ScimConstants.SearchParameterNames.Filter] = Filter;
             }
 
             if (!string.IsNullOrEmpty(SortBy))
             {
-                obj[Common.Constants.SearchParameterNames.SortBy] = SortBy;
+                obj[ScimConstants.SearchParameterNames.SortBy] = SortBy;
             }
 
             if (SortOrder != null)
             {
-                obj[Common.Constants.SearchParameterNames.SortOrder] = SortOrder == SortOrders.Ascending
-                    ? Common.Constants.SortOrderNames.Ascending
-                    : Common.Constants.SortOrderNames.Descending;
+                obj[ScimConstants.SearchParameterNames.SortOrder] = SortOrder == SortOrders.Ascending
+                    ? ScimConstants.SortOrderNames.Ascending
+                    : ScimConstants.SortOrderNames.Descending;
             }
 
             if (StartIndex != null)
             {
-                obj[Common.Constants.SearchParameterNames.StartIndex] = StartIndex;
+                obj[ScimConstants.SearchParameterNames.StartIndex] = StartIndex;
             }
 
             if (Count != null)
             {
-                obj[Common.Constants.SearchParameterNames.Count] = Count;
+                obj[ScimConstants.SearchParameterNames.Count] = Count;
             }
 
             return obj.ToString();

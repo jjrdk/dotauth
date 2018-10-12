@@ -1,8 +1,4 @@
-﻿using SimpleIdentityServer.Authenticate.Basic.ViewModels;
-using SimpleIdentityServer.Core.Parameters;
-using System;
-
-namespace SimpleIdentityServer.Authenticate.Basic.Extensions
+﻿namespace SimpleIdentityServer.Authenticate.Basic.Extensions
 {
     public static class MappingExtensions
     {

@@ -22,8 +22,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.ResourceSet
 {
-    using Core.Factories;
-
     public interface IGetResourcesOperation
     {
         Task<GetResourcesResult> ExecuteAsync(string resourceSetUrl, string authorizationHeaderValue);

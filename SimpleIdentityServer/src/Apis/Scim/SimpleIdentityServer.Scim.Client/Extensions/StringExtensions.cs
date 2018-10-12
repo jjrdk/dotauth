@@ -20,8 +20,7 @@ namespace SimpleIdentityServer.Scim.Client.Extensions
     {
         public static Uri ParseUri(this string url)
         {
-            Uri result;
-            if (!Uri.TryCreate(url, UriKind.Absolute, out result))
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var result))
             {
                 return null;
             }

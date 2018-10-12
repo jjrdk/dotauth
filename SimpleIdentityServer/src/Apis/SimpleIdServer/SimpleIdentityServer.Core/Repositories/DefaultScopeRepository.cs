@@ -151,7 +151,7 @@ namespace SimpleIdentityServer.Core.Repositories
 
         public DefaultScopeRepository(ICollection<Scope> scopes)
         {
-            _scopes = scopes == null ? DEFAULT_SCOPES : scopes;
+            _scopes = scopes ?? DEFAULT_SCOPES;
         }
 
         public Task<bool> DeleteAsync(Scope scope)

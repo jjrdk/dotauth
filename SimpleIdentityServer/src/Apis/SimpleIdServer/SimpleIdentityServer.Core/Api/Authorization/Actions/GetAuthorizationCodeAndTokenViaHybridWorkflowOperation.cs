@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                     authorizationParameter.State);
             }
 
-            var claimsPrincipal = principal == null ? null : principal as ClaimsPrincipal;
+            var claimsPrincipal = principal as ClaimsPrincipal;
 
             _oauthEventSource.StartHybridFlow(
                 authorizationParameter.ClientId,

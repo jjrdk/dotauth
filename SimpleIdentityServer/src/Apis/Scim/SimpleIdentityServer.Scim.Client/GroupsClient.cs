@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Scim.Client
 
     internal class GroupsClient : IGroupsClient
     {
-        private readonly string _schema = Common.Constants.SchemaUrns.Group;
+        private readonly string _schema = Common.ScimConstants.SchemaUrns.Group;
         private readonly HttpClient _client;
 
         public GroupsClient(HttpClient client)

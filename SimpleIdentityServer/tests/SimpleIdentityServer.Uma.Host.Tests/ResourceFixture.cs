@@ -13,16 +13,13 @@
 // limitations under the License.
 
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.ResourceSet;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Uma.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 

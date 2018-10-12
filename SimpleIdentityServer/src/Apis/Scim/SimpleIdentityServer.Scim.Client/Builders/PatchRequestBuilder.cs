@@ -104,14 +104,9 @@ namespace SimpleIdentityServer.Scim.Client.Builders
 
         public PatchRequestBuilder(Func<JObject, Task<ScimResponse>> callback)
         {
-            if (callback == null)
-            {
-                throw new ArgumentNullException(nameof(callback));
-            }
-
-            _callback = callback;
+            _callback = callback ?? throw new ArgumentNullException(nameof(callback));
             _operations = new List<PatchOperation>();
-            Initialize(new string[] { Common.Constants.Messages.PatchOp });
+            Initialize(new string[] { Common.ScimConstants.Messages.PatchOp });
         }
 
         public PatchRequestBuilder AddOperation(PatchOperation operation)
@@ -136,21 +131,21 @@ namespace SimpleIdentityServer.Scim.Client.Builders
             foreach(var operation in _operations)
             {
                 var obj = new JObject();
-                obj.Add(new JProperty(Common.Constants.PatchOperationRequestNames.Operation, Enum.GetName(typeof(PatchOperations), operation.Type)));
+                obj.Add(new JProperty(Common.ScimConstants.PatchOperationRequestNames.Operation, Enum.GetName(typeof(PatchOperations), operation.Type)));
                 if (!string.IsNullOrWhiteSpace(operation.Path))
                 {
-                    obj.Add(new JProperty(Common.Constants.PatchOperationRequestNames.Path, operation.Path));
+                    obj.Add(new JProperty(Common.ScimConstants.PatchOperationRequestNames.Path, operation.Path));
                 }
 
                 if (operation.Value != null)
                 {
-                    obj.Add(new JProperty(Common.Constants.PatchOperationRequestNames.Value, operation.Value));
+                    obj.Add(new JProperty(Common.ScimConstants.PatchOperationRequestNames.Value, operation.Value));
                 }
 
                 arr.Add(obj);
             }
 
-            _obj.Add(new JProperty(Common.Constants.PatchOperationsRequestNames.Operations, arr));
+            _obj.Add(new JProperty(Common.ScimConstants.PatchOperationsRequestNames.Operations, arr));
             return await _callback(_obj).ConfigureAwait(false);
         }
 
@@ -158,7 +153,7 @@ namespace SimpleIdentityServer.Scim.Client.Builders
         {
             var arr = new JArray(schemas);
             _obj = new JObject();
-            _obj[Common.Constants.ScimResourceNames.Schemas] = arr;
+            _obj[Common.ScimConstants.ScimResourceNames.Schemas] = arr;
         }
     }
 }

@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Api.PermissionController;
 using SimpleIdentityServer.Uma.Host.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;

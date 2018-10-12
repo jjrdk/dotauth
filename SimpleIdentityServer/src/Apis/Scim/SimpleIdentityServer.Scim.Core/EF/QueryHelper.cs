@@ -1,9 +1,6 @@
-﻿using SimpleIdentityServer.Scim.Common.Models;
-using SimpleIdentityServer.Scim.Core.EF.Extensions;
-using SimpleIdentityServer.Scim.Core.EF.Helpers;
+﻿using SimpleIdentityServer.Scim.Core.EF.Extensions;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Model = SimpleIdentityServer.Scim.Core.EF.Models;
 

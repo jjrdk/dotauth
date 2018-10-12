@@ -14,7 +14,6 @@
 
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Client.Builders;
-using SimpleIdentityServer.Scim.Client.Extensions;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -24,48 +23,27 @@ namespace SimpleIdentityServer.Scim.Client
 {
     public interface IUsersClient
     {
-        RequestBuilder AddUser(string baseUrl, string accessToken = null);
         RequestBuilder AddUser(Uri baseUri, string accessToken = null);
-        Task<ScimResponse> AddAuthenticatedUser(string baseUri, string accessToken);
-        Task<ScimResponse> AddAuthenticatedUser(Uri baseUri, string accessToken);
-        PatchRequestBuilder PartialUpdateUser(string baseUrl, string id, string accessToken = null);
-        PatchRequestBuilder PartialUpdateUser(Uri baseUri, string id, string accessToken = null);
-        PatchRequestBuilder PartialUpdateAuthenticatedUser(string baseUrl, string accessToken = null);
-        PatchRequestBuilder PartialUpdateAuthenticatedUser(Uri baseUri, string accessToken = null);
-        RequestBuilder UpdateUser(string baseUrl, string id, string accessToken = null);
+        //Task<ScimResponse> AddAuthenticatedUser(Uri baseUri, string accessToken);
+        //PatchRequestBuilder PartialUpdateUser(Uri baseUri, string id, string accessToken = null);
+        //PatchRequestBuilder PartialUpdateAuthenticatedUser(Uri baseUri, string accessToken = null);
         RequestBuilder UpdateUser(Uri baseUri, string id, string accessToken = null);
-        RequestBuilder UpdateAuthenticatedUser(string baseUrl, string accessToken = null);
         RequestBuilder UpdateAuthenticatedUser(Uri baseUri, string accessToken = null);
-        Task<ScimResponse> DeleteUser(string baseUrl, string id, string accessToken = null);
         Task<ScimResponse> DeleteUser(Uri baseUri, string id, string accessToken = null);
-        Task<ScimResponse> DeleteAuthenticatedUser(string baseUrl, string accessToken);
         Task<ScimResponse> DeleteAuthenticatedUser(Uri baseUri, string accessToken);
-        Task<ScimResponse> GetUser(string baseUrl, string id, string accessToken = null);
         Task<ScimResponse> GetUser(Uri baseUri, string id, string accessToken = null);
-        Task<ScimResponse> GetAuthenticatedUser(string baseUrl,string accessToken = null);
         Task<ScimResponse> GetAuthenticatedUser(Uri baseUri, string accessToken = null);
-        Task<ScimResponse> SearchUsers(string baseUrl, SearchParameter parameter, string accessToken = null);
         Task<ScimResponse> SearchUsers(Uri baseUri, SearchParameter parameter, string accessToken = null);
     }
 
     internal class UsersClient : IUsersClient
     {
-        private readonly string _schema = Common.Constants.SchemaUrns.User;
+        private readonly string _schema = Common.ScimConstants.SchemaUrns.User;
         private readonly HttpClient _httpClientFactory;
 
         public UsersClient(HttpClient httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
-        }
-
-        public RequestBuilder AddUser(string baseUrl, string accessToken = null)
-        {
-            if (string.IsNullOrWhiteSpace(baseUrl))
-            {
-                throw new ArgumentNullException(nameof(baseUrl));
-            }
-
-            return AddUser(baseUrl.ParseUri(), accessToken);
         }
 
         public RequestBuilder AddUser(Uri baseUri, string accessToken = null)
@@ -82,50 +60,6 @@ namespace SimpleIdentityServer.Scim.Client
             }
 
             return new RequestBuilder(_schema, (obj) => AddUser(obj, new Uri(url), accessToken));
-        }
-
-        public Task<ScimResponse> AddAuthenticatedUser(string baseUrl, string accessToken)
-        {
-            if (string.IsNullOrWhiteSpace(baseUrl))
-            {
-                throw new ArgumentNullException(nameof(baseUrl));
-            }
-
-            return AddAuthenticatedUser(baseUrl.ParseUri(), accessToken);
-        }
-
-        public async Task<ScimResponse> AddAuthenticatedUser(Uri baseUri, string accessToken)
-        {
-            if (baseUri == null)
-            {
-                throw new ArgumentNullException(nameof(baseUri));
-            }
-
-            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/Me";
-
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri(url)
-            };
-
-            if (!string.IsNullOrWhiteSpace(accessToken))
-            {
-                request.Headers.Add("Authorization", "Bearer " + accessToken);
-            }
-
-            var response = await _httpClientFactory.SendAsync(request).ConfigureAwait(false);
-            return await ParseHttpResponse(response).ConfigureAwait(false);
-        }
-
-        public Task<ScimResponse> DeleteAuthenticatedUser(string baseUrl, string accessToken)
-        {
-            if (string.IsNullOrWhiteSpace(baseUrl))
-            {
-                throw new ArgumentNullException(nameof(baseUrl));
-            }
-
-            return DeleteAuthenticatedUser(baseUrl.ParseUri(), accessToken);
         }
 
         public async Task<ScimResponse> DeleteAuthenticatedUser(Uri baseUri, string accessToken)
@@ -151,63 +85,6 @@ namespace SimpleIdentityServer.Scim.Client
             return await ParseHttpResponse(response).ConfigureAwait(false);
         }
 
-        public PatchRequestBuilder PartialUpdateUser(string baseUrl, string id, string accessToken = null)
-        {
-            if (string.IsNullOrWhiteSpace(baseUrl))
-            {
-                throw new ArgumentNullException(nameof(baseUrl));
-            }
-
-            return PartialUpdateUser(baseUrl.ParseUri(), id, accessToken);
-        }
-
-        public PatchRequestBuilder PartialUpdateUser(Uri baseUri, string id, string accessToken = null)
-        {
-            if (baseUri == null)
-            {
-                throw new ArgumentNullException(nameof(baseUri));
-            }
-
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
-            return new PatchRequestBuilder((obj) => PartialUpdateUser(obj, new Uri(url), accessToken));
-        }
-
-        public PatchRequestBuilder PartialUpdateAuthenticatedUser(string baseUrl, string accessToken = null)
-        {
-            if (string.IsNullOrWhiteSpace(baseUrl))
-            {
-                throw new ArgumentNullException(nameof(baseUrl));
-            }
-
-            return PartialUpdateAuthenticatedUser(baseUrl.ParseUri(), accessToken);
-        }
-
-        public PatchRequestBuilder PartialUpdateAuthenticatedUser(Uri baseUri, string accessToken = null)
-        {
-            if (baseUri == null)
-            {
-                throw new ArgumentNullException(nameof(baseUri));
-            }
-
-            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/Me";
-            return new PatchRequestBuilder((obj) => PartialUpdateUser(obj, new Uri(url), accessToken));
-        }
-
-        public RequestBuilder UpdateUser(string baseUrl, string id, string accessToken = null)
-        {
-            if (string.IsNullOrWhiteSpace(baseUrl))
-            {
-                throw new ArgumentNullException(nameof(baseUrl));
-            }
-
-            return UpdateUser(baseUrl.ParseUri(), id, accessToken);
-        }
-
         public RequestBuilder UpdateUser(Uri baseUri, string id, string accessToken = null)
         {
             if (baseUri == null)
@@ -224,16 +101,6 @@ namespace SimpleIdentityServer.Scim.Client
             return new RequestBuilder(_schema, (obj) => UpdateUser(obj, new Uri(url), accessToken));
         }
 
-        public RequestBuilder UpdateAuthenticatedUser(string baseUrl, string accessToken = null)
-        {
-            if (string.IsNullOrWhiteSpace(baseUrl))
-            {
-                throw new ArgumentNullException(nameof(baseUrl));
-            }
-
-            return UpdateAuthenticatedUser(baseUrl.ParseUri(), accessToken);
-        }
-
         public RequestBuilder UpdateAuthenticatedUser(Uri baseUri, string accessToken = null)
         {
             if (baseUri == null)
@@ -243,16 +110,6 @@ namespace SimpleIdentityServer.Scim.Client
 
             var url = $"{FormatUrl(baseUri.AbsoluteUri)}/Me";
             return new RequestBuilder(_schema, (obj) => UpdateUser(obj, new Uri(url), accessToken));
-        }
-
-        public Task<ScimResponse> DeleteUser(string baseUrl, string id, string accessToken = null)
-        {
-            if (string.IsNullOrWhiteSpace(baseUrl))
-            {
-                throw new ArgumentNullException(nameof(baseUrl));
-            }
-
-            return DeleteUser(baseUrl.ParseUri(), id, accessToken);
         }
 
         public async Task<ScimResponse> DeleteUser(Uri baseUri, string id, string accessToken = null)
@@ -283,16 +140,6 @@ namespace SimpleIdentityServer.Scim.Client
             return await ParseHttpResponse(response).ConfigureAwait(false);
         }
 
-        public Task<ScimResponse> GetUser(string baseUrl, string id, string accessToken = null)
-        {
-            if (string.IsNullOrWhiteSpace(baseUrl))
-            {
-                throw new ArgumentNullException(nameof(baseUrl));
-            }
-
-            return GetUser(baseUrl.ParseUri(), id, accessToken);
-        }
-
         public async Task<ScimResponse> GetUser(Uri baseUri, string id, string accessToken = null)
         {
             if (baseUri == null)
@@ -321,16 +168,6 @@ namespace SimpleIdentityServer.Scim.Client
             return await ParseHttpResponse(response).ConfigureAwait(false);
         }
 
-        public Task<ScimResponse> GetAuthenticatedUser(string baseUrl, string accessToken = null)
-        {
-            if (string.IsNullOrWhiteSpace(baseUrl))
-            {
-                throw new ArgumentNullException(nameof(baseUrl));
-            }
-
-            return GetAuthenticatedUser(baseUrl.ParseUri(), accessToken);
-        }
-
         public async Task<ScimResponse> GetAuthenticatedUser(Uri baseUri, string accessToken = null)
         {
             if (baseUri == null)
@@ -352,16 +189,6 @@ namespace SimpleIdentityServer.Scim.Client
 
             var response = await _httpClientFactory.SendAsync(request).ConfigureAwait(false);
             return await ParseHttpResponse(response).ConfigureAwait(false);
-        }
-
-        public Task<ScimResponse> SearchUsers(string baseUrl, SearchParameter parameter, string accessToken = null)
-        {
-            if (string.IsNullOrWhiteSpace(baseUrl))
-            {
-                throw new ArgumentNullException(nameof(baseUrl));
-            }
-
-            return SearchUsers(baseUrl.ParseUri(), parameter, accessToken);
         }
 
         public async Task<ScimResponse> SearchUsers(Uri baseUri, SearchParameter parameter, string accessToken = null)
@@ -395,7 +222,7 @@ namespace SimpleIdentityServer.Scim.Client
 
         private static string FormatUrl(string baseUrl)
         {
-            var result = baseUrl.ParseUri();
+            Uri.TryCreate(baseUrl, UriKind.Absolute, out var result);
             if (result == null)
             {
                 return null;
@@ -409,17 +236,7 @@ namespace SimpleIdentityServer.Scim.Client
             return ExecuteRequest(jObj, uri, HttpMethod.Post, accessToken);
         }
 
-        private Task<ScimResponse> PartialUpdateUser(JObject jObj, Uri uri, string accessToken)
-        {
-            return ExecuteRequest(jObj, uri, new HttpMethod("PATCH"), accessToken);
-        }
-
         private Task<ScimResponse> UpdateUser(JObject jObj, Uri uri, string accessToken = null)
-        {
-            return ExecuteRequest(jObj, uri, HttpMethod.Put, accessToken);
-        }
-
-        private Task<ScimResponse> UpdateAuthenticatedUser(JObject jObj, Uri uri, string accessToken = null)
         {
             return ExecuteRequest(jObj, uri, HttpMethod.Put, accessToken);
         }

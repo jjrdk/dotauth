@@ -24,21 +24,21 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
         /// <summary>
         /// HTTP method of the current operation.
         /// </summary>
-        [DataMember(Name = Constants.BulkOperationRequestNames.Method)]
+        [DataMember(Name = ScimConstants.BulkOperationRequestNames.Method)]
         public string Method { get; set; }
         /// <summary>
         /// Transient identifier of a newly created resource.
         /// Unique and created by the client. 
         /// REQUIRED when method is "POST"
         /// </summary>
-        [DataMember(Name = Constants.BulkOperationRequestNames.BulkId)]
+        [DataMember(Name = ScimConstants.BulkOperationRequestNames.BulkId)]
         public string BulkId { get; set; }
         /// <summary>
         /// Current resource version.
         /// </summary>
-        [DataMember(Name = Constants.BulkOperationRequestNames.Version)]
+        [DataMember(Name = ScimConstants.BulkOperationRequestNames.Version)]
         public string Version { get; set; }
-        [DataMember(Name = Constants.BulkOperationRequestNames.Path)]
+        [DataMember(Name = ScimConstants.BulkOperationRequestNames.Path)]
         /// <summary>
         /// Resource's relative path to the SCIM service provider's root.
         /// POST : "/Users" or "/Groups"
@@ -48,25 +48,25 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
         /// <summary>
         /// Resource data as it would appear for a single SCIM POST, PUT etc ...
         /// </summary>
-        [DataMember(Name = Constants.BulkOperationRequestNames.Data)]
+        [DataMember(Name = ScimConstants.BulkOperationRequestNames.Data)]
         public JToken Data { get; set; }
     }
 
     [DataContract]
     public class BulkRequest
     {
-        [DataMember(Name = Constants.ScimResourceNames.Schemas)]
+        [DataMember(Name = ScimConstants.ScimResourceNames.Schemas)]
         public IEnumerable<string> Schemas { get; set; }
         /// <summary>
         /// Number of errors that the service provider will accept before the operation is terminated
         /// and an error response is returned.
         /// </summary>
-        [DataMember(Name = Constants.BulkRequestNames.FailOnErrors)]
+        [DataMember(Name = ScimConstants.BulkRequestNames.FailOnErrors)]
         public int? FailOnErrors { get; set; }
         /// <summary>
         /// Operations within a bulk job.
         /// </summary>
-        [DataMember(Name = Constants.BulkRequestNames.Operations)]
+        [DataMember(Name = ScimConstants.BulkRequestNames.Operations)]
         public IEnumerable<BulkOperationRequest> Operations { get; set; }
     }
 }

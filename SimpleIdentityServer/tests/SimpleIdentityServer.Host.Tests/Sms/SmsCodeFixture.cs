@@ -1,6 +1,5 @@
 ﻿using Moq;
 using SimpleIdentityServer.Authenticate.SMS.Client;
-using SimpleIdentityServer.Authenticate.SMS.Client.Factories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Store;

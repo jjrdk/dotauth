@@ -14,10 +14,7 @@
 
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Extensions;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 

@@ -59,62 +59,62 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
         /// <summary>
         /// Gets or sets the id
         /// </summary>
-        [DataMember(Name = Constants.SchemaAttributeResponseNames.Id)]
+        [DataMember(Name = ScimConstants.SchemaAttributeResponseNames.Id)]
         public string Id { get; set; }
         /// <summary>
         /// Attribute's name
         /// </summary>
-        [DataMember(Name = Constants.SchemaAttributeResponseNames.Name)]
+        [DataMember(Name = ScimConstants.SchemaAttributeResponseNames.Name)]
         public string Name { get; set; }
         /// <summary>
         /// Attribute's data type. Valid values are : "string", "boolean", "decimal", "integer" etc ...
         /// </summary>
-        [DataMember(Name = Constants.SchemaAttributeResponseNames.Type)]
+        [DataMember(Name = ScimConstants.SchemaAttributeResponseNames.Type)]
         public string Type { get; set; }
         /// <summary>
         /// Indicate attribute's plurality
         /// </summary>
-        [DataMember(Name = Constants.SchemaAttributeResponseNames.MultiValued)]
+        [DataMember(Name = ScimConstants.SchemaAttributeResponseNames.MultiValued)]
         public bool MultiValued { get; set; }
         /// <summary>
         /// Human-readable description
         /// </summary>
-        [DataMember(Name = Constants.SchemaAttributeResponseNames.Description)]
+        [DataMember(Name = ScimConstants.SchemaAttributeResponseNames.Description)]
         public string Description { get; set; }
         /// <summary>
         /// Specifies whether or not the attribute is required
         /// </summary>
-        [DataMember(Name = Constants.SchemaAttributeResponseNames.Required)]
+        [DataMember(Name = ScimConstants.SchemaAttributeResponseNames.Required)]
         public bool Required { get; set; }
         /// <summary>
         /// Collection of suggested canonical values
         /// </summary>
-        [DataMember(Name = Constants.SchemaAttributeResponseNames.CanonicalValues)]
+        [DataMember(Name = ScimConstants.SchemaAttributeResponseNames.CanonicalValues)]
         public IEnumerable<string> CanonicalValues { get; set; }
         /// <summary>
         /// Specifies whether or not a string attribute is case sensitive
         /// </summary>
-        [DataMember(Name = Constants.SchemaAttributeResponseNames.CaseExact)]
+        [DataMember(Name = ScimConstants.SchemaAttributeResponseNames.CaseExact)]
         public bool CaseExact { get; set; }
         /// <summary>
         /// Circumstances under which the value of the attribute can be (re)defined
         /// </summary>
-        [DataMember(Name = Constants.SchemaAttributeResponseNames.Mutability)]
+        [DataMember(Name = ScimConstants.SchemaAttributeResponseNames.Mutability)]
         public string Mutability { get; set; }
         /// <summary>
         /// When an attribute and associated values are returned in response to a GET or in response to PUT etc ...
         /// </summary>
-        [DataMember(Name = Constants.SchemaAttributeResponseNames.Returned)]
+        [DataMember(Name = ScimConstants.SchemaAttributeResponseNames.Returned)]
         public string Returned { get; set; }
         /// <summary>
         /// How the service provider enforces uniqueness of attribute values
         /// </summary>
-        [DataMember(Name = Constants.SchemaAttributeResponseNames.Uniqueness)]
+        [DataMember(Name = ScimConstants.SchemaAttributeResponseNames.Uniqueness)]
         public string Uniqueness { get; set; }
         /// <summary>
         /// Indicate the SCIM resource types that may be referenced.
         /// </summary>
-        [DataMember(Name = Constants.SchemaAttributeResponseNames.ReferenceTypes)]
+        [DataMember(Name = ScimConstants.SchemaAttributeResponseNames.ReferenceTypes)]
         public IEnumerable<string> ReferenceTypes { get; set; }
     }
 
@@ -123,13 +123,13 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
     {
         public ComplexSchemaAttributeResponse()
         {
-            Type = Constants.SchemaAttributeTypes.Complex;
+            Type = ScimConstants.SchemaAttributeTypes.Complex;
         }
 
         /// <summary>
         /// Defines a set of sub-attributes
         /// </summary>
-        [DataMember(Name = Constants.ComplexSchemaAttributeResponseNames.SubAttributes)]
+        [DataMember(Name = ScimConstants.ComplexSchemaAttributeResponseNames.SubAttributes)]
         public IEnumerable<SchemaAttributeResponse> SubAttributes { get; set; }
     }
 
@@ -139,22 +139,22 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
         /// <summary>
         /// Unique URI of the schema
         /// </summary>
-        [DataMember(Name = Constants.SchemaResponseNames.Id)]
+        [DataMember(Name = ScimConstants.SchemaResponseNames.Id)]
         public string Id { get; set; }
         /// <summary>
         /// Human-readable name
         /// </summary>
-        [DataMember(Name = Constants.SchemaResponseNames.Name)]
+        [DataMember(Name = ScimConstants.SchemaResponseNames.Name)]
         public string Name { get; set; }
         /// <summary>
         /// Human-readable description
         /// </summary>
-        [DataMember(Name = Constants.SchemaResponseNames.Description)]
+        [DataMember(Name = ScimConstants.SchemaResponseNames.Description)]
         public string Description { get; set; }
         /// <summary>
         /// Service provider attributes and their qualities
         /// </summary>
-        [DataMember(Name = Constants.SchemaResponseNames.Attributes)]
+        [DataMember(Name = ScimConstants.SchemaResponseNames.Attributes)]
         public IEnumerable<SchemaAttributeResponse> Attributes { get; set; }
     }
 }

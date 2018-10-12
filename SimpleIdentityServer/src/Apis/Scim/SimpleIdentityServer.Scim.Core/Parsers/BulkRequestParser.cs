@@ -88,7 +88,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             // 2. Parse the request.
             var obj = jObj.ToObject<BulkRequest>();
-            if (!obj.Schemas.Contains(Common.Constants.Messages.Bulk))
+            if (!obj.Schemas.Contains(Common.ScimConstants.Messages.Bulk))
             {
                 return new BulkRequestResponse
                 {
@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     ErrorResponse = _errorResponseFactory.CreateError(
                         ErrorMessages.TheRequestIsNotABulkOperation,
                         HttpStatusCode.BadRequest,
-                        Common.Constants.ScimTypeValues.InvalidSyntax)
+                        Common.ScimConstants.ScimTypeValues.InvalidSyntax)
                 };
             }
 
@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     ErrorResponse = _errorResponseFactory.CreateError(
                         ErrorMessages.TheOperationsParameterMustBeSpecified,
                         HttpStatusCode.BadRequest,
-                        Common.Constants.ScimTypeValues.InvalidSyntax)
+                        Common.ScimConstants.ScimTypeValues.InvalidSyntax)
                 };
             }
 
@@ -122,7 +122,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 return _errorResponseFactory.CreateError(
                         string.Format(ErrorMessages.TheBulkMethodIsNotSupported, method),
                         HttpStatusCode.BadRequest,
-                        Common.Constants.ScimTypeValues.InvalidSyntax);
+                        Common.ScimConstants.ScimTypeValues.InvalidSyntax);
             };
             Func<string, IList<string>> splitPath = (path) =>
             {
@@ -192,7 +192,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                             ErrorResponse = _errorResponseFactory.CreateError(
                                 ErrorMessages.TheBulkDataParameterMustBeSpecified,
                                 HttpStatusCode.BadRequest,
-                                Common.Constants.ScimTypeValues.InvalidSyntax)
+                                Common.ScimConstants.ScimTypeValues.InvalidSyntax)
                         };
                     }
 
@@ -216,7 +216,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                             ErrorResponse = _errorResponseFactory.CreateError(
                                 ErrorMessages.TheBulkOperationPathIsRequired,
                                 HttpStatusCode.BadRequest,
-                                Common.Constants.ScimTypeValues.InvalidSyntax)
+                                Common.ScimConstants.ScimTypeValues.InvalidSyntax)
                         };
                     }
 
@@ -234,7 +234,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                             ErrorResponse = _errorResponseFactory.CreateError(
                                 string.Format(ErrorMessages.TheBulkOperationPathIsNotSupported, operation.Path),
                                 HttpStatusCode.BadRequest,
-                                Common.Constants.ScimTypeValues.InvalidSyntax)
+                                Common.ScimConstants.ScimTypeValues.InvalidSyntax)
                         };
                     }
 
@@ -247,7 +247,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                             ErrorResponse = _errorResponseFactory.CreateError(
                                 ErrorMessages.TheBulkIdParameterMustBeSpecified,
                                 HttpStatusCode.BadRequest,
-                                Common.Constants.ScimTypeValues.InvalidSyntax)
+                                Common.ScimConstants.ScimTypeValues.InvalidSyntax)
                         };
                     }
 

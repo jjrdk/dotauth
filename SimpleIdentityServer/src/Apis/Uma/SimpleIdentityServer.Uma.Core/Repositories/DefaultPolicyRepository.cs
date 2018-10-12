@@ -14,7 +14,7 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
 
         public DefaultPolicyRepository(ICollection<Policy> policies)
         {
-            _policies = policies == null ? new List<Policy>() : policies;
+            _policies = policies ?? new List<Policy>();
         }
 
         public Task<bool> Add(Policy policy)

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using SimpleIdentityServer.Client;
 
 namespace SimpleIdentityServer.Host.Tests.MiddleWares
 {

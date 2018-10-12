@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.TestHost;
-using System;
 using System.Net.Http;
 
 namespace SimpleIdentityServer.Host.Tests

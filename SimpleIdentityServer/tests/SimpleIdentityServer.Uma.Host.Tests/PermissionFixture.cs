@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.Permission;
 using SimpleIdentityServer.Client.Policy;
 using SimpleIdentityServer.Client.ResourceSet;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Uma.Client.Policy;
 using SimpleIdentityServer.Uma.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Common.DTOs;

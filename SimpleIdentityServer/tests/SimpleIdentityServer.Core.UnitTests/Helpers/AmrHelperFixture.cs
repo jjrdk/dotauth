@@ -1,5 +1,4 @@
-﻿using Moq;
-using SimpleIdentityServer.Core.Exceptions;
+﻿using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using System.Collections.Generic;
 using Xunit;

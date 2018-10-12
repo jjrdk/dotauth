@@ -15,13 +15,13 @@ namespace SimpleIdentityServer.Scim.Core.EF.Stores
 {
     public class DefaultRepresentationStore : IRepresentationStore
     {
-        public List<Model.Representation> _representations;
+        private List<Model.Representation> _representations;
         private ITransformers _transformers;
         private ISchemaStore _schemaStore;
 
         public DefaultRepresentationStore(List<Model.Representation> representations, ISchemaStore schemaStore)
         {
-            _representations = representations == null ? new List<Model.Representation>() : representations;
+            _representations = representations ?? new List<Model.Representation>();
             _transformers = new Transformers();
             _schemaStore = schemaStore;
         }
@@ -274,12 +274,12 @@ namespace SimpleIdentityServer.Scim.Core.EF.Stores
 
         private static string GetResourceSchemaType(string type)
         {
-            if (type == Scim.Common.Constants.ResourceTypes.User)
+            if (type == Scim.Common.ScimConstants.ResourceTypes.User)
             {
-                return Scim.Common.Constants.SchemaUrns.User;
+                return Scim.Common.ScimConstants.SchemaUrns.User;
             }
 
-            return Scim.Common.Constants.SchemaUrns.Group;
+            return Scim.Common.ScimConstants.SchemaUrns.Group;
         }
     }
 }

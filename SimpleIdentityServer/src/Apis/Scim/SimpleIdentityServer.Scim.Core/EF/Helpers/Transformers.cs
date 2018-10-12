@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
 using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Common.Models;
 using SimpleIdentityServer.Scim.Core.EF.Extensions;
@@ -39,7 +38,7 @@ namespace SimpleIdentityServer.Scim.Core.EF.Helpers
                 return null;
             }
 
-            if (record.Type == Common.Constants.SchemaAttributeTypes.Complex)
+            if (record.Type == Common.ScimConstants.SchemaAttributeTypes.Complex)
             {
                 var comlexSchemaAttr = new ComplexSchemaAttributeResponse();
                 comlexSchemaAttr.SetData(record);
@@ -78,7 +77,7 @@ namespace SimpleIdentityServer.Scim.Core.EF.Helpers
                 schemaAttr = Transform(attr.SchemaAttribute);
             }
 
-            if (attr.SchemaAttribute != null && attr.SchemaAttribute.Type == Common.Constants.SchemaAttributeTypes.Complex ||
+            if (attr.SchemaAttribute != null && attr.SchemaAttribute.Type == Common.ScimConstants.SchemaAttributeTypes.Complex ||
                 attr.SchemaAttribute == null && attr.Children != null && attr.Children.Any())
             {
                 ComplexRepresentationAttribute result = new ComplexRepresentationAttribute(schemaAttr);
@@ -101,7 +100,7 @@ namespace SimpleIdentityServer.Scim.Core.EF.Helpers
             var isArr = attr.SchemaAttribute.MultiValued;
             switch (attr.SchemaAttribute.Type)
             {
-                case Common.Constants.SchemaAttributeTypes.String:
+                case Common.ScimConstants.SchemaAttributeTypes.String:
                     if (isArr)
                     {
                         var values = new List<string>();
@@ -115,7 +114,7 @@ namespace SimpleIdentityServer.Scim.Core.EF.Helpers
                         return new SingularRepresentationAttribute<IEnumerable<string>>(schemaAttr, values);
                     }                    
                     return new SingularRepresentationAttribute<string>(schemaAttr, attr.Value);
-                case Common.Constants.SchemaAttributeTypes.Boolean:
+                case Common.ScimConstants.SchemaAttributeTypes.Boolean:
                     bool r = false;
                     if (isArr)
                     {
@@ -134,7 +133,7 @@ namespace SimpleIdentityServer.Scim.Core.EF.Helpers
                     }
                     bool.TryParse(attr.Value, out r);
                     return new SingularRepresentationAttribute<bool>(schemaAttr, r);
-                case Common.Constants.SchemaAttributeTypes.DateTime:
+                case Common.ScimConstants.SchemaAttributeTypes.DateTime:
                     DateTime dateTime = DateTime.Now;
                     double d;
                     if (isArr)
@@ -157,7 +156,7 @@ namespace SimpleIdentityServer.Scim.Core.EF.Helpers
                         dateTime = attr.ValueNumber.ToDateTime();
                     }
                     return new SingularRepresentationAttribute<DateTime>(schemaAttr, dateTime);
-                case Common.Constants.SchemaAttributeTypes.Decimal:
+                case Common.ScimConstants.SchemaAttributeTypes.Decimal:
                     decimal dec;
                     if (isArr)
                     {
@@ -175,7 +174,7 @@ namespace SimpleIdentityServer.Scim.Core.EF.Helpers
                         return new SingularRepresentationAttribute<IEnumerable<decimal>>(schemaAttr, values);
                     }
                     return new SingularRepresentationAttribute<decimal>(schemaAttr, (decimal)attr.ValueNumber);
-                case Common.Constants.SchemaAttributeTypes.Integer:
+                case Common.ScimConstants.SchemaAttributeTypes.Integer:
                     int i;
                     if (isArr)
                     {
@@ -239,10 +238,10 @@ namespace SimpleIdentityServer.Scim.Core.EF.Helpers
                     var representationAttributeValues = new List<Model.RepresentationAttributeValue>();
                     switch (attr.SchemaAttribute.Type)
                     {
-                        case Common.Constants.SchemaAttributeTypes.Boolean:
-                        case Common.Constants.SchemaAttributeTypes.String:
-                        case Common.Constants.SchemaAttributeTypes.Integer:
-                        case Common.Constants.SchemaAttributeTypes.Decimal:
+                        case Common.ScimConstants.SchemaAttributeTypes.Boolean:
+                        case Common.ScimConstants.SchemaAttributeTypes.String:
+                        case Common.ScimConstants.SchemaAttributeTypes.Integer:
+                        case Common.ScimConstants.SchemaAttributeTypes.Decimal:
                             foreach (var value in singular.Value)
                             {
                                 representationAttributeValues.Add(new Model.RepresentationAttributeValue
@@ -252,7 +251,7 @@ namespace SimpleIdentityServer.Scim.Core.EF.Helpers
                                 });
                             }
                             break;
-                        case Common.Constants.SchemaAttributeTypes.DateTime:
+                        case Common.ScimConstants.SchemaAttributeTypes.DateTime:
                             foreach (var value in singular.Value)
                             {
                                 DateTime dt;
@@ -276,19 +275,19 @@ namespace SimpleIdentityServer.Scim.Core.EF.Helpers
                 var value = attr.GetValue();                
                 switch (attr.SchemaAttribute.Type)
                 {
-                    case Common.Constants.SchemaAttributeTypes.Boolean:
-                    case Common.Constants.SchemaAttributeTypes.String:
+                    case Common.ScimConstants.SchemaAttributeTypes.Boolean:
+                    case Common.ScimConstants.SchemaAttributeTypes.String:
                         record.Value = value == null ? string.Empty : value.ToString();
                         break;
-                    case Common.Constants.SchemaAttributeTypes.Decimal:
+                    case Common.ScimConstants.SchemaAttributeTypes.Decimal:
                         var dec = (decimal)value;
                         record.ValueNumber = (double)dec;
                         break;
-                    case Common.Constants.SchemaAttributeTypes.Integer:
+                    case Common.ScimConstants.SchemaAttributeTypes.Integer:
                         var i = (int)value;
                         record.ValueNumber = i;
                         break;
-                    case Common.Constants.SchemaAttributeTypes.DateTime:
+                    case Common.ScimConstants.SchemaAttributeTypes.DateTime:
                         var d = (DateTime)value;
                         record.ValueNumber = d.ToUnix();
                         break;

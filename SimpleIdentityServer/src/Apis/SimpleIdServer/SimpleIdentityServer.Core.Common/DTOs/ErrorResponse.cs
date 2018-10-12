@@ -12,17 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Scim.Common.DTOs
 {
     [DataContract]
-    public class IdentifiedScimResource : ScimResource
+    public class ErrorResponse
     {
-        [DataMember(Name = Constants.IdentifiedScimResourceNames.Id)]
-        public string Id { get; set; }
+        [DataMember(Name = ScimConstants.ScimResourceNames.Schemas)]
+        public IEnumerable<string> Schemas { get; set; }
+        [DataMember(Name = ScimConstants.ErrorResponseNames.Detail)]
+        public string Detail { get; set; }
+        [DataMember(Name = ScimConstants.ErrorResponseNames.Status)]
+        public int Status { get; set; }
+    }
 
-        [DataMember(Name = Constants.IdentifiedScimResourceNames.ExternalId)]
-        public string ExternalId { get; set; }
+    [DataContract]
+    public class EnrichedErrorResponse : ErrorResponse
+    {
+        [DataMember(Name = ScimConstants.EnrichedErrorResponseNames.ScimType)]
+        public string ScimType { get; set; }
     }
 }

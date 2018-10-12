@@ -114,7 +114,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             foreach (var attribute in schema.Attributes)
             {
                 // 1. Ignore the attribute with readonly mutability
-                if (attribute.Mutability == Common.Constants.SchemaAttributeMutability.ReadOnly)
+                if (attribute.Mutability == Common.ScimConstants.SchemaAttributeMutability.ReadOnly)
                 {
                     continue;
                 }
@@ -255,19 +255,19 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             // Note : Don't cast to object to avoid unecessaries boxing operations ...
             switch (attribute.Type)
             {
-                case Common.Constants.SchemaAttributeTypes.String:
+                case Common.ScimConstants.SchemaAttributeTypes.String:
                     result = GetSingularToken<string>(jArr, attribute, token);
                     break;
-                case Common.Constants.SchemaAttributeTypes.Boolean:
+                case Common.ScimConstants.SchemaAttributeTypes.Boolean:
                     result = GetSingularToken<bool>(jArr, attribute, token);
                     break;
-                case Common.Constants.SchemaAttributeTypes.Decimal:
+                case Common.ScimConstants.SchemaAttributeTypes.Decimal:
                     result = GetSingularToken<decimal>(jArr, attribute, token);
                     break;
-                case Common.Constants.SchemaAttributeTypes.DateTime:
+                case Common.ScimConstants.SchemaAttributeTypes.DateTime:
                     result = GetSingularToken<DateTime>(jArr, attribute, token);
                     break;
-                case Common.Constants.SchemaAttributeTypes.Integer:
+                case Common.ScimConstants.SchemaAttributeTypes.Integer:
                     result = GetSingularToken<int>(jArr, attribute, token);
                     break;
                 default:
@@ -316,23 +316,23 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             RepresentationAttribute result = null;
             switch (attr.Type)
             {
-                case Common.Constants.SchemaAttributeTypes.String:
-                case Common.Constants.SchemaAttributeTypes.Reference:
+                case Common.ScimConstants.SchemaAttributeTypes.String:
+                case Common.ScimConstants.SchemaAttributeTypes.Reference:
                     result = GetEmptyToken(attr, string.Empty);
                     break;
-                case Common.Constants.SchemaAttributeTypes.Boolean:
+                case Common.ScimConstants.SchemaAttributeTypes.Boolean:
                     result = GetEmptyToken(attr, default(bool));
                     break;
-                case Common.Constants.SchemaAttributeTypes.Decimal:
+                case Common.ScimConstants.SchemaAttributeTypes.Decimal:
                     result = GetEmptyToken(attr, default(decimal));
                     break;
-                case Common.Constants.SchemaAttributeTypes.DateTime:
+                case Common.ScimConstants.SchemaAttributeTypes.DateTime:
                     result = GetEmptyToken(attr, default(DateTime));
                     break;
-                case Common.Constants.SchemaAttributeTypes.Integer:
+                case Common.ScimConstants.SchemaAttributeTypes.Integer:
                     result = GetEmptyToken(attr, default(int));
                     break;
-                case Common.Constants.SchemaAttributeTypes.Complex:
+                case Common.ScimConstants.SchemaAttributeTypes.Complex:
                     result = new ComplexRepresentationAttribute(attr);
                     break;
                 default:

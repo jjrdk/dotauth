@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
         {
             var result = new ServiceProviderConfigResponse
             {
-                Schemas = new[] { Common.Constants.SchemaUrns.ServiceProvider },
+                Schemas = new[] { Common.ScimConstants.SchemaUrns.ServiceProvider },
                 DocumentationUri = "http://www.simplecloud.info/",
                 Patch = new PatchResponse
                 {

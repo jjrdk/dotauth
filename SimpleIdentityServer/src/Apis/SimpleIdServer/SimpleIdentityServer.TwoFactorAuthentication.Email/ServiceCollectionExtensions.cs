@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.TwoFactorAuthentication.Email;
 using System;
 
 namespace SimpleIdentityServer.TwoFactorAuthentication.Email

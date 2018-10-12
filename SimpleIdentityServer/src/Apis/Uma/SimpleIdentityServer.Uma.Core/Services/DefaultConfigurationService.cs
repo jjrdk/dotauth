@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.Uma.Core.Services
 
         public DefaultUmaConfigurationService(UmaConfigurationOptions opts)
         {
-            _opts = opts == null ? new UmaConfigurationOptions() : opts;
+            _opts = opts ?? new UmaConfigurationOptions();
         }
 
         public Task<int> GetRptLifeTime()

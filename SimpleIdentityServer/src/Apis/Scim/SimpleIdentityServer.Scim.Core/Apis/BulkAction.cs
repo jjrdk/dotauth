@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             // 3. Execute bulk operation.
             var numberOfErrors = 0;
             var operationsResult = new JArray();
-            foreach(var operation in bulk.BulkResult.Operations)
+            foreach (var operation in bulk.BulkResult.Operations)
             {
                 ApiActionResult operationResult = null;
                 if (operation.Method == HttpMethod.Post)
@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 {
                     operationResult = await _patchRepresentationAction.Execute(operation.ResourceId, operation.Data, operation.SchemaId, operation.LocationPattern).ConfigureAwait(false);
                 }
-                
+
                 // 3.2. If maximum number of errors has been reached then return an error.
                 if (!operationResult.IsSucceed())
                 {
@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                             _errorResponseFactory.CreateError(
                                 string.Format(ErrorMessages.TheMaximumNumberOfErrorHasBeenReached, bulk.BulkResult.FailOnErrors),
                                 HttpStatusCode.InternalServerError,
-                                Common.Constants.ScimTypeValues.TooMany));
+                                Common.ScimConstants.ScimTypeValues.TooMany));
                     }
                 }
 
@@ -121,42 +121,45 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
         private JObject CreateResponse(JArray operationsResult)
         {
-            var result = new JObject();
-            var schemas = new JArray();
-            schemas.Add(Common.Constants.Messages.BulkResponse);
-            result.Add(Common.Constants.ScimResourceNames.Schemas, schemas);
-            result.Add(Common.Constants.PatchOperationsRequestNames.Operations, operationsResult);
+            var schemas = new JArray { Common.ScimConstants.Messages.BulkResponse };
+            var result = new JObject
+            {
+                {Common.ScimConstants.ScimResourceNames.Schemas, schemas},
+                {Common.ScimConstants.PatchOperationsRequestNames.Operations, operationsResult}
+            };
             return result;
         }
 
         private JObject CreateOperationResponse(ApiActionResult apiActionResult, BulkOperationResult bulkOperation)
         {
-            var result = new JObject();
-            result[Common.Constants.BulkOperationRequestNames.Method] = bulkOperation.Method.Method;
-            result[Common.Constants.BulkOperationResponseNames.Status] = apiActionResult.StatusCode;
+            var result = new JObject
+            {
+                [Common.ScimConstants.BulkOperationRequestNames.Method] = bulkOperation.Method.Method,
+                [Common.ScimConstants.BulkOperationResponseNames.Status] = apiActionResult.StatusCode
+            };
             if (!string.IsNullOrWhiteSpace(bulkOperation.BulkId))
             {
-                result[Common.Constants.BulkOperationRequestNames.BulkId] = bulkOperation.BulkId;
+                result[Common.ScimConstants.BulkOperationRequestNames.BulkId] = bulkOperation.BulkId;
             }
 
             if (!string.IsNullOrWhiteSpace(bulkOperation.Version))
             {
-                result[Common.Constants.BulkOperationRequestNames.Version] = bulkOperation.Version;
+                result[Common.ScimConstants.BulkOperationRequestNames.Version] = bulkOperation.Version;
             }
 
             if (!string.IsNullOrWhiteSpace(bulkOperation.Path))
             {
-                result[Common.Constants.BulkOperationRequestNames.Path] = bulkOperation.Path;
+                result[Common.ScimConstants.BulkOperationRequestNames.Path] = bulkOperation.Path;
             }
 
             if (!string.IsNullOrWhiteSpace(apiActionResult.Location))
             {
-                result[Common.Constants.BulkOperationResponseNames.Location] = apiActionResult.Location;
+                result[Common.ScimConstants.BulkOperationResponseNames.Location] = apiActionResult.Location;
             }
-            
+
             if (apiActionResult.Content != null)
             {
-                result.Add(new JProperty(Common.Constants.BulkOperationResponseNames.Response, JObject.FromObject(apiActionResult.Content)));
+                result.Add(new JProperty(Common.ScimConstants.BulkOperationResponseNames.Response, JObject.FromObject(apiActionResult.Content)));
             }
 
             return result;

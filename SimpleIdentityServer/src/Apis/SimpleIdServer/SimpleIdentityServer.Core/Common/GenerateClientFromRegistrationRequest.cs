@@ -102,8 +102,7 @@ namespace SimpleIdentityServer.Core.Common
                 client.GrantTypes = registrationParameter.GrantTypes;
             }
 
-            client.ApplicationType = registrationParameter.ApplicationType == null ? ApplicationTypes.web
-                : registrationParameter.ApplicationType.Value;
+            client.ApplicationType = registrationParameter.ApplicationType ?? ApplicationTypes.web;
 
             if (registrationParameter.Jwks != null)
             {

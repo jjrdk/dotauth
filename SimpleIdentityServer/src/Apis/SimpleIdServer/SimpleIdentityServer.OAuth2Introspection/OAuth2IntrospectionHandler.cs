@@ -11,10 +11,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.OAuth2Introspection
 {
-    using System.Net.Http;
-    using AccountFilter;
-    using Core.Factories;
-
     public class OAuth2IntrospectionHandler : AuthenticationHandler<OAuth2IntrospectionOptions>
     {
         private readonly IIntrospectClient _client;

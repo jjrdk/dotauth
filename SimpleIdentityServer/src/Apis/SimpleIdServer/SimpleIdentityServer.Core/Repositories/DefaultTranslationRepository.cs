@@ -160,7 +160,7 @@ namespace SimpleIdentityServer.Core.Repositories
 
         public DefaultTranslationRepository(ICollection<Common.Models.Translation> translations)
         {
-            _translations = translations == null ? DEFAULT_TRANSLATIONS : translations;
+            _translations = translations ?? DEFAULT_TRANSLATIONS;
         }
 
         public Task<Common.Models.Translation> GetAsync(string languageTag, string code)

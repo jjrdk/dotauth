@@ -90,8 +90,7 @@ namespace SimpleIdentityServer.Scim.Common.Models
                 return 1;
             }
 
-            var representation = obj as RepresentationAttribute;
-            if (representation == null)
+            if (!(obj is RepresentationAttribute representation))
             {
                 return 1;
             }
@@ -188,23 +187,23 @@ namespace SimpleIdentityServer.Scim.Common.Models
 
             switch (SchemaAttribute.Type)
             {
-                case Common.Constants.SchemaAttributeTypes.String:
+                case ScimConstants.SchemaAttributeTypes.String:
                     var ss = Value as string;
                     var ts = target as string;
                     return ss.CompareTo(ts);
-                case Common.Constants.SchemaAttributeTypes.Boolean:
+                case ScimConstants.SchemaAttributeTypes.Boolean:
                     var sb = bool.Parse(Value as string);
                     var tb = bool.Parse(target as string);
                     return sb.CompareTo(tb);
-                case Common.Constants.SchemaAttributeTypes.Integer:
+                case ScimConstants.SchemaAttributeTypes.Integer:
                     var si = int.Parse(Value as string);
                     var ti = int.Parse(target as string);
                     return si.CompareTo(ti);
-                case Common.Constants.SchemaAttributeTypes.Decimal:
+                case ScimConstants.SchemaAttributeTypes.Decimal:
                     var sd = decimal.Parse(Value as string);
                     var td = decimal.Parse(target as string);
                     return sd.CompareTo(td);
-                case Common.Constants.SchemaAttributeTypes.DateTime:
+                case ScimConstants.SchemaAttributeTypes.DateTime:
                     var sdt = DateTime.Parse(Value as string);
                     var tdt = DateTime.Parse(target as string);
                     return sdt.CompareTo(tdt);
@@ -280,8 +279,8 @@ namespace SimpleIdentityServer.Scim.Common.Models
                 return -1;
             }
 
-            var sourcePrimary = Values.FirstOrDefault(p => p.SchemaAttribute != null && p.SchemaAttribute.Name == Common.Constants.MultiValueAttributeNames.Primary);
-            var targetPrimary = complex.Values.FirstOrDefault(p => p.SchemaAttribute != null && p.SchemaAttribute.Name == Common.Constants.MultiValueAttributeNames.Primary);
+            var sourcePrimary = Values.FirstOrDefault(p => p.SchemaAttribute != null && p.SchemaAttribute.Name == ScimConstants.MultiValueAttributeNames.Primary);
+            var targetPrimary = complex.Values.FirstOrDefault(p => p.SchemaAttribute != null && p.SchemaAttribute.Name == ScimConstants.MultiValueAttributeNames.Primary);
             if (sourcePrimary == null || targetPrimary == null)
             {
                 return 0;

@@ -3,7 +3,6 @@ using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Threading.Tasks;

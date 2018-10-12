@@ -322,7 +322,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                         AllowedScopeDescriptions = scopes == null || !scopes.Any() ?
                             new List<string>() :
                             scopes.Select(g => g.Description).ToList(),
-                        AllowedIndividualClaims = claims == null ? new List<string>() : claims,
+                        AllowedIndividualClaims = claims ?? new List<string>(),
                         LogoUri = client == null ? string.Empty : client.LogoUri,
                         PolicyUri = client == null ? string.Empty : client.PolicyUri,
                         TosUri = client == null ? string.Empty : client.TosUri

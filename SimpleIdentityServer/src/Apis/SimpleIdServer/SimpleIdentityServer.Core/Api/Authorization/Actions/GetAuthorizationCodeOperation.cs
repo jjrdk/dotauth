@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 throw new ArgumentNullException(nameof(client));
             }
 
-            var claimsPrincipal = principal == null ? null : principal as ClaimsPrincipal;
+            var claimsPrincipal = principal as ClaimsPrincipal;
             _oAuthEventSource.StartAuthorizationCodeFlow(
                 authorizationParameter.ClientId,
                 authorizationParameter.Scope,

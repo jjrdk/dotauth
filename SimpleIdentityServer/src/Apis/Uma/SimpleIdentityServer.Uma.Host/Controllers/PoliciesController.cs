@@ -22,7 +22,6 @@ using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System.Net;
 using System.Threading.Tasks;
-using static SimpleIdentityServer.Uma.Host.Constants;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {

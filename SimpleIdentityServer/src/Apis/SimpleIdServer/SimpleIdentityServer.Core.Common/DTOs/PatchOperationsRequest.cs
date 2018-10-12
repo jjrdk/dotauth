@@ -21,23 +21,23 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
     [DataContract]
     public class PatchOperationRequest
     {
-        [DataMember(Name = Constants.PatchOperationRequestNames.Operation)]
+        [DataMember(Name = ScimConstants.PatchOperationRequestNames.Operation)]
         public string Operation { get; set; }
 
-        [DataMember(Name = Constants.PatchOperationRequestNames.Path)]
+        [DataMember(Name = ScimConstants.PatchOperationRequestNames.Path)]
         public string Path { get; set; }
 
-        [DataMember(Name = Constants.PatchOperationRequestNames.Value)]
+        [DataMember(Name = ScimConstants.PatchOperationRequestNames.Value)]
         public JToken Value { get; set; }
     }
 
     [DataContract]
     public class PatchOperationsRequest
     {
-        [DataMember(Name = Constants.ScimResourceNames.Schemas)]
+        [DataMember(Name = ScimConstants.ScimResourceNames.Schemas)]
         public IEnumerable<string> Schemas { get; set; }
 
-        [DataMember(Name = Constants.PatchOperationsRequestNames.Operations)]
+        [DataMember(Name = ScimConstants.PatchOperationsRequestNames.Operations)]
         public IEnumerable<PatchOperationRequest> Operations { get; set; }
     }
 }

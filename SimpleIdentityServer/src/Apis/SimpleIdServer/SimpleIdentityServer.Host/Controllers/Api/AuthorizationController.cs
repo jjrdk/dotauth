@@ -140,7 +140,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             }
 
             var jwsPayload = await _jwtParser.UnSignAsync(jwsToken, clientId).ConfigureAwait(false);
-            return jwsPayload == null ? null : jwsPayload.ToAuthorizationRequest();
+            return jwsPayload?.ToAuthorizationRequest();
         }
         
         private static string GetRedirectionUrl(Microsoft.AspNetCore.Http.HttpRequest request, string amr, IdentityServerEndPoints identityServerEndPoints)

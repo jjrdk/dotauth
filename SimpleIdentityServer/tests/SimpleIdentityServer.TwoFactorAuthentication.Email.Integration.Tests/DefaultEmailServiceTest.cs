@@ -1,8 +1,4 @@
 ﻿using SimpleIdentityServer.Core.Common.Models;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace SimpleIdentityServer.TwoFactorAuthentication.Email.Integration.Tests
 {

@@ -15,11 +15,11 @@ namespace SimpleIdentityServer.Scim.Core.EF.Stores
 
         public DefaultSchemaStore(List<Core.EF.Models.Schema> schemas)
         {
-            _schemas = schemas == null ? new List<Models.Schema>
+            _schemas = schemas ?? new List<Models.Schema>
             {
                 DefaultSchemas.GroupSchema,
                 DefaultSchemas.UserSchema
-            } : schemas;
+            };
             _transformers = new Transformers();
         }
 
