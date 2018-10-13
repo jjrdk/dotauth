@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using SimpleIdentityServer.Common.Client.Factories;
 using System.Net.Http;
 
 namespace SimpleIdentityServer.UserInfoIntrospection
@@ -8,6 +9,6 @@ namespace SimpleIdentityServer.UserInfoIntrospection
         public const string AuthenticationScheme = "UserInfoIntrospection";
 
         public string WellKnownConfigurationUrl { get; set; }
-        public HttpClientHandler BackChannelHttpHandler { get; set; }
+        public IHttpClientFactory HttpClientFactory { get; set; }
     }
 }

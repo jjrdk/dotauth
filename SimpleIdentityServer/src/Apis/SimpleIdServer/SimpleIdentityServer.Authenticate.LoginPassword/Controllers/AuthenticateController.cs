@@ -105,6 +105,11 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
             try
             {
                 var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(authorizeViewModel.Login, authorizeViewModel.Password, new[] { Constants.AMR }).ConfigureAwait(false);
+                if (resourceOwner == null)
+                {
+                    throw new IdentityServerAuthenticationException("the resource owner credentials are not correct");
+                }
+
                 var claims = resourceOwner.Claims;
                 claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
                     DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),

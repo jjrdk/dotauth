@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Security.Claims;
 
@@ -39,6 +40,17 @@ namespace SimpleIdentityServer.Core.Jwt.Extensions
             }
 
             return result;
+        }
+		
+		public static object GetClaimValue(this Claim claim)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject(claim.Value);
+            }
+            catch { }
+			
+             return claim.Value;
         }
     }
 }

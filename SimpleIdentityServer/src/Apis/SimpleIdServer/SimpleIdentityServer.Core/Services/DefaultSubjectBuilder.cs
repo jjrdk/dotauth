@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Services
 {
     public class DefaultSubjectBuilder : ISubjectBuilder
     {
-        public string BuildSubject()
+        public Task<string> BuildSubject()
         {
-            return Guid.NewGuid().ToString();
+            return Task.FromResult(Guid.NewGuid().ToString());
         }
     }
 }
