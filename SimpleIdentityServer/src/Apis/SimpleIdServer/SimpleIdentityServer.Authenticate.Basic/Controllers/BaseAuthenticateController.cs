@@ -543,7 +543,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 }
             }
 
-            var subject = _subjectBuilder.BuildSubject();
+            var subject = await _subjectBuilder.BuildSubject().ConfigureAwait(false);
             var record = new AddUserParameter(subject, Guid.NewGuid().ToString(), openidClaims)
             {
                 ExternalLogin = authenticatedUser.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value

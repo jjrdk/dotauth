@@ -147,7 +147,8 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         Claims = new List<Claim>
                         {
                             new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "administrator"),
-                            new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role, "administrator")
+                            new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role, "administrator"),
+                            new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Address, "{ country : 'france' }")
                         },
                         Password = "password",
                         IsLocalAccount = true
@@ -159,6 +160,17 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         Claims = new List<Claim>
                         {
                             new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "user")
+                        },
+                        IsLocalAccount = true
+                    },
+                    new ResourceOwner
+                    {
+                        Id = "superuser",
+                        Password = "password",
+                        Claims = new List<Claim>
+                        {
+                            new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "superuser"),
+                            new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role, "[ 'administrator', 'role' ]")
                         },
                         IsLocalAccount = true
                     }
@@ -202,6 +214,10 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         new Scope
                         {
                             Name = "scim"
+                        },
+                        new Scope
+                        {
+                            Name = "address"
                         }
                     },
                     GrantTypes = new List<GrantType>

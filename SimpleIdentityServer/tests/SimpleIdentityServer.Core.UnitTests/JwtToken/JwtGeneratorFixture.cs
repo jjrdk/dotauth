@@ -438,8 +438,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
                 new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject),
-                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Role, "role1"),
-                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Role, "role2")
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Role, "['role1', 'role2']", Core.Jwt.Constants.ClaimValueTypes.Json)
             };
             var authorizationParameter = new AuthorizationParameter
             {
@@ -509,7 +508,6 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             Assert.True(result.ContainsKey(StandardClaimNames.AuthenticationTime));
             Assert.True(result.ContainsKey(StandardClaimNames.Nonce));
             Assert.True(result[Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString().Equals(subject));
-            Assert.True(result[Jwt.Constants.StandardResourceOwnerClaimNames.Role].ToString().Equals("role1,role2"));
             Assert.True(long.Parse(result[StandardClaimNames.AuthenticationTime].ToString()).Equals(currentDateTimeOffset));
         }
 

@@ -755,6 +755,31 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         }
 
         [Fact]
+        public async Task When_Using_Password_Grant_Type_Then_Multiple_Roles_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+            // ACT
+            var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
+                .UsePassword("superuser", "password", "role")
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            // var claims = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.AccessToken);
+
+            // ASSERTS
+            var jwsParserFactory = new JwsParserFactory();
+            var jwsParser = jwsParserFactory.BuildJwsParser();
+            Assert.NotNull(result);
+            Assert.False(result.ContainsError);
+            Assert.NotEmpty(result.Content.IdToken);
+            var payload = jwsParser.GetPayload(result.Content.IdToken);
+            Assert.True(payload.ContainsKey("role"));
+            var roles = payload["role"] as JArray;
+            Assert.True(roles.Count == 2 && roles[0].ToString() == "administrator");
+        }
+
+        [Fact]
         public async Task When_Using_Password_Grant_Type_With_SMS_Then_Access_Token_Is_Returned()
         {
             // ARRANGE
