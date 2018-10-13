@@ -1,19 +1,14 @@
-﻿using Moq;
-using SimpleIdentityServer.Client;
+﻿using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Operations;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Host.Tests.Apis
 {
-    using System.Net.Http;
-
     public class UserInfoClientFixture : IClassFixture<TestOauthServerFixture>
     {
         private const string baseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
-        private Mock<HttpClient> _httpClientFactoryStub;
-        //private IClientAuthSelector _clientAuthSelector;
         private IUserInfoClient _userInfoClient;
 
         public UserInfoClientFixture(TestOauthServerFixture server)
@@ -26,7 +21,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
             var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", "invalid_access_token").ConfigureAwait(false);
@@ -43,12 +37,14 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var result = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("openid")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var result = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("openid"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
@@ -63,12 +59,14 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var result = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    TokenRequest.FromPassword("administrator", "password", new []{"scim"}),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
@@ -80,12 +78,14 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var result = await _clientAuthSelector.UseClientSecretPostAuth("client_userinfo_sig_rs256", "client_userinfo_sig_rs256")
-                .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var result = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("client_userinfo_sig_rs256", "client_userinfo_sig_rs256"),
+                    TokenRequest.FromPassword("administrator", "password", new []{"scim"}),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
@@ -98,12 +98,14 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var result = await _clientAuthSelector.UseClientSecretPostAuth("client_userinfo_enc_rsa15", "client_userinfo_enc_rsa15")
-                .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var result = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("client_userinfo_enc_rsa15", "client_userinfo_enc_rsa15"),
+                    TokenRequest.FromPassword("administrator", "password", new []{"scim"}),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
@@ -113,17 +115,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
         private void InitializeFakeObjects()
         {
-            _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            var postTokenOperation = new PostTokenOperation(_httpClientFactoryStub.Object);
-            var getDiscoveryOperation = new GetDiscoveryOperation(_httpClientFactoryStub.Object);
-            var introspectionOperation = new IntrospectOperation(_httpClientFactoryStub.Object);
-            var revokeTokenOperation = new RevokeTokenOperation(_httpClientFactoryStub.Object);
-            _clientAuthSelector = new ClientAuthSelector(
-                new TokenClientFactory(postTokenOperation, getDiscoveryOperation),
-                new IntrospectClientFactory(introspectionOperation, getDiscoveryOperation),
-                new RevokeTokenClientFactory(revokeTokenOperation, getDiscoveryOperation));
-            var getUserInfoOperation = new GetUserInfoOperation(_httpClientFactoryStub.Object);
-            _userInfoClient = new UserInfoClient(getUserInfoOperation, getDiscoveryOperation);
+            var getDiscoveryOperation = new GetDiscoveryOperation(_server.Client);
+            _userInfoClient = new UserInfoClient(_server.Client, getDiscoveryOperation);
         }
     }
 }

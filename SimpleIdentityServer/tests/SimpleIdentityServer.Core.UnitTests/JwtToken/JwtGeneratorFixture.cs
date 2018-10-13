@@ -40,6 +40,7 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
     using System.Security.Cryptography.Algorithms.Extensions;
+    using Client = Core.Common.Models.Client;
 
     public class JwtGeneratorFixture
     {
@@ -67,7 +68,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string clientId = "client_id";
             var scopes = new List<string> { "openid", "role" };
             InitializeMockObjects();
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 ClientId = clientId
             };

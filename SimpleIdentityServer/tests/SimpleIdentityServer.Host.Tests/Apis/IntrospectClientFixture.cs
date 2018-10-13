@@ -18,15 +18,14 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Client.Operations;
     using Common.Dtos.Responses;
     using Core.Common;
-    using Moq;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Xunit;
-    using RequestBuilder = Client.Builders.RequestBuilder;
 
     public class IntrospectClientFixture : IClassFixture<TestOauthServerFixture>
     {
@@ -41,8 +40,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_No_Parameters_Is_Passed_To_Introspection_Edp_Then_Error_Is_Returned()
         {
-            // ARRANGE
-            InitializeFakeObjects();
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -64,8 +61,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_No_Valid_Parameters_Is_Passed_Then_Error_Is_Returned()
         {
-            // ARRANGE
-            InitializeFakeObjects();
             var request = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("invalid", "invalid")
@@ -92,16 +87,14 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Introspect_And_Client_Not_Authenticated_Then_Error_Is_Returned()
         {
-            // ARRANGE
-            InitializeFakeObjects();
-
             // ACT
-            var introspection = await new TokenClient(
+            var introspection = await new IntrospectClient(
                     TokenCredentials.FromClientCredentials("invalid_client", "invalid_client"),
-                    RequestForm.Introspect("invalid_token", TokenType.AccessToken),
+                    IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(introspection);
@@ -113,16 +106,14 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Introspect_And_Token_Doesnt_Exist_Then_Error_Is_Returned()
         {
-            // ARRANGE
-            InitializeFakeObjects();
-
             // ACT
-            var introspection = await new TokenClient(
+            var introspection = await new IntrospectClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    RequestForm.Introspect("invalid_token", TokenType.AccessToken),
+                    IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(introspection);
@@ -134,56 +125,52 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Introspecting_AccessToken_Then_Information_Are_Returned()
         {
-            // ARRANGE
-            InitializeFakeObjects();
-
             // ACT
-            var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-            var introspection = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .Introspect(result.Content.AccessToken, TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var result = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
+            var introspection = await new IntrospectClient(
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(introspection);
             Assert.NotNull(introspection.Content.Scope);
-            Assert.True(introspection.Content.Scope.Count() == 1 && introspection.Content.Scope.First() == "scim");
+            Assert.True(introspection.Content.Scope.Count() == 1);
+            Assert.True(introspection.Content.Scope.First() == "scim");
         }
 
         [Fact]
         public async Task When_Introspecting_RefreshToken_Then_Information_Are_Returned()
         {
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-
             // ACT
-            var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-            var introspection = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .Introspect(result.Content.AccessToken, TokenType.RefreshToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var result = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
+            var introspection = await new IntrospectClient(
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.RefreshToken),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(introspection);
             Assert.NotNull(introspection.Content.Scope);
             Assert.True(introspection.Content.Scope.Count() == 1 && introspection.Content.Scope.First() == "scim");
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            var requestBuilder = new RequestBuilder();
-            var postTokenOperation = new PostTokenOperation(_httpClientFactoryStub.Object);
-            var getDiscoveryOperation = new GetDiscoveryOperation(_httpClientFactoryStub.Object);
-            var introspectionOperation = new IntrospectOperation(_httpClientFactoryStub.Object);
-            var revokeTokenOperation = new RevokeTokenOperation(_httpClientFactoryStub.Object);
-            _clientAuthSelector = new ClientAuthSelector(
-                new TokenClientFactory(postTokenOperation, getDiscoveryOperation),
-                new IntrospectClientFactory(introspectionOperation, getDiscoveryOperation),
-                new RevokeTokenClientFactory(revokeTokenOperation, getDiscoveryOperation));
         }
     }
 }

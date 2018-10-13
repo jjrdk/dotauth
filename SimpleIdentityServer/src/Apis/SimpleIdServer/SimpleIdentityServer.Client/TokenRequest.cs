@@ -5,16 +5,16 @@
     using System.Collections;
     using System.Collections.Generic;
 
-    public class RequestForm : IEnumerable<KeyValuePair<string, string>>
+    public class TokenRequest : IEnumerable<KeyValuePair<string, string>>
     {
         private readonly Dictionary<string, string> _form;
 
-        private RequestForm(Dictionary<string, string> form)
+        private TokenRequest(Dictionary<string, string> form)
         {
             _form = form;
         }
 
-        public static RequestForm FromAuthorizationCode(string code, string redirectUrl, string codeVerifier = null)
+        public static TokenRequest FromAuthorizationCode(string code, string redirectUrl, string codeVerifier = null)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
@@ -37,10 +37,10 @@
                 dict.Add(RequestTokenNames.CodeVerifier, codeVerifier);
             }
 
-            return new RequestForm(dict);
+            return new TokenRequest(dict);
         }
 
-        public static RequestForm FromTicketId(string ticketId, string claimToken)
+        public static TokenRequest FromTicketId(string ticketId, string claimToken)
         {
             if (string.IsNullOrWhiteSpace(ticketId))
             {
@@ -61,10 +61,10 @@
                 dict.Add(RequestTokenUma.ClaimToken, claimToken);
             }
 
-            return new RequestForm(dict);
+            return new TokenRequest(dict);
         }
 
-        public static RequestForm FromClientCredentials(params string[] scopes)
+        public static TokenRequest FromScopes(params string[] scopes)
         {
             if (scopes.Length == 0)
             {
@@ -77,10 +77,58 @@
                 {RequestTokenNames.GrantType, GrantTypes.ClientCredentials}
             };
 
-            return new RequestForm(dict);
+            return new TokenRequest(dict);
         }
 
-        public static RequestForm Introspect(string token, TokenType tokenType)
+        public static TokenRequest FromRefreshToken(string refreshToken)
+        {
+            if (string.IsNullOrWhiteSpace(refreshToken))
+            {
+                throw new ArgumentNullException(nameof(refreshToken));
+            }
+
+            var dict = new Dictionary<string, string>
+            {
+                {RequestTokenNames.GrantType, GrantTypes.RefreshToken},
+                {RequestTokenNames.RefreshToken, refreshToken}
+            };
+
+            return new TokenRequest(dict);
+        }
+
+        public static TokenRequest FromPassword(string userName, string password, string[] scopes, params string[] amrValues)
+        {
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+                throw new ArgumentNullException(nameof(userName));
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new ArgumentNullException(nameof(password));
+            }
+
+            if (scopes == null || scopes.Length == 0)
+            {
+                throw new ArgumentNullException(nameof(scopes));
+            }
+
+            var dict = new Dictionary<string, string>
+            {
+                { RequestTokenNames.Username, userName },
+                { RequestTokenNames.Password, password },
+                { RequestTokenNames.Scope, string.Join(" ", scopes) },
+                { RequestTokenNames.GrantType, GrantTypes.Password }
+            };
+            if (amrValues.Length > 0)
+            {
+                dict.Add(RequestTokenNames.AmrValues, string.Join(" ", amrValues));
+            }
+
+            return new TokenRequest(dict);
+        }
+
+        public static TokenRequest RevokeToken(string token, string tokenType)
         {
             if (string.IsNullOrWhiteSpace(token))
             {
@@ -89,11 +137,10 @@
 
             var dict = new Dictionary<string, string>
             {
-                { IntrospectionRequestNames.Token, token },
-                { IntrospectionRequestNames.TokenTypeHint, tokenType == TokenType.RefreshToken ? TokenTypes.RefreshToken : TokenTypes.AccessToken }
+                {IntrospectionRequestNames.Token, token},
+                {IntrospectionRequestNames.TokenTypeHint, tokenType}
             };
-
-            return new RequestForm(dict);
+            return new TokenRequest(dict);
         }
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
@@ -105,10 +152,5 @@
         {
             return GetEnumerator();
         }
-    }
-
-    public class IntrospectForm
-    {
-
     }
 }

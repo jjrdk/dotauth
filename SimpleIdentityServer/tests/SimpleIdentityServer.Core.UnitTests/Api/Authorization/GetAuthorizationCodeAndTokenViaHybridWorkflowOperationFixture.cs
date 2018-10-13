@@ -16,6 +16,8 @@ using SimpleIdentityServer.OAuth.Logging;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
+    using Client = Core.Common.Models.Client;
+
     public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperationFixture
     {
         private Mock<IOAuthEventSource> _oauthEventSource;
@@ -33,8 +35,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(null, null, null, null)).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(new AuthorizationParameter(), null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() =>
+                    _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(null, null, null, null))
+                .ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() =>
+                    _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(new AuthorizationParameter(),
+                        null,
+                        null,
+                        null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
@@ -48,9 +57,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             // ACT & ASSERT
-            var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() =>
+                    _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter,
+                        null,
+                        new Client(),
+                        null))
+                .ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(ex.Message == string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.NonceName));
+            Assert.True(ex.Message ==
+                        string.Format(ErrorDescriptions.MissingParameter,
+                            Constants.StandardAuthorizationRequestParameterNames.NonceName));
             Assert.True(ex.State == authorizationParameter.State);
         }
 
@@ -65,15 +81,22 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 Nonce = "nonce"
             };
 
-            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>())).Returns(false);
+            _clientValidatorFake
+                .Setup(c => c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
+                .Returns(false);
 
             // ACT & ASSERT
             var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
+                    () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter,
+                        null,
+                        new Client(),
+                        null))
+                .ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(ex.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
-                        authorizationParameter.ClientId,
-                        "implicit"));
+            Assert.True(ex.Message ==
+                        string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                            authorizationParameter.ClientId,
+                            "implicit"));
             Assert.True(ex.State == authorizationParameter.State);
         }
 
@@ -93,22 +116,31 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 Type = TypeActionResult.RedirectToCallBackUrl
             };
 
-            _processAuthorizationRequestFake.Setup(p => p.ProcessAsync(It.IsAny<AuthorizationParameter>(), It.IsAny<ClaimsPrincipal>(), It.IsAny<Core.Common.Models.Client>(), null))
+            _processAuthorizationRequestFake.Setup(p => p.ProcessAsync(It.IsAny<AuthorizationParameter>(),
+                    It.IsAny<ClaimsPrincipal>(),
+                    It.IsAny<Core.Common.Models.Client>(),
+                    null))
                 .Returns(Task.FromResult(actionResult));
-            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
+            _clientValidatorFake.Setup(c =>
+                    c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
             // ACT & ASSERT
             var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
+                    () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter,
+                        null,
+                        new Client(),
+                        null))
+                .ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(ex.Message ==
-                          ErrorDescriptions.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated);
+                        ErrorDescriptions.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated);
             Assert.True(ex.State == authorizationParameter.State);
         }
 
         [Fact]
-        public async Task When_Resource_Owner_Is_Authenticated_And_Pass_Correct_Authorization_Request_Then_Events_Are_Logged()
+        public async Task
+            When_Resource_Owner_Is_Authenticated_And_Pass_Correct_Authorization_Request_Then_Events_Are_Logged()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -131,17 +163,27 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
             var claimsPrincipal = new ClaimsPrincipal();
 
-            _processAuthorizationRequestFake.Setup(p => p.ProcessAsync(It.IsAny<AuthorizationParameter>(), It.IsAny<ClaimsPrincipal>(), It.IsAny<Core.Common.Models.Client>(), It.IsAny<string>()))
+            _processAuthorizationRequestFake.Setup(p => p.ProcessAsync(It.IsAny<AuthorizationParameter>(),
+                    It.IsAny<ClaimsPrincipal>(),
+                    It.IsAny<Core.Common.Models.Client>(),
+                    It.IsAny<string>()))
                 .Returns(Task.FromResult(actionResult));
-            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
+            _clientValidatorFake.Setup(c =>
+                    c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
             // ACT
-            await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
+            await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation
+                .Execute(authorizationParameter, claimsPrincipal, new Client(), null)
+                .ConfigureAwait(false);
             _oauthEventSource.Verify(s => s.StartHybridFlow(authorizationParameter.ClientId,
                 authorizationParameter.Scope,
                 string.Empty));
-            _generateAuthorizationResponseFake.Verify(g => g.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, It.IsAny<Core.Common.Models.Client>(), It.IsAny<string>()));
+            _generateAuthorizationResponseFake.Verify(g => g.ExecuteAsync(actionResult,
+                authorizationParameter,
+                claimsPrincipal,
+                It.IsAny<Core.Common.Models.Client>(),
+                It.IsAny<string>()));
             _oauthEventSource.Verify(s => s.EndHybridFlow(authorizationParameter.ClientId,
                 Enum.GetName(typeof(TypeActionResult), actionResult.Type),
                 Enum.GetName(typeof(IdentityServerEndPoints), actionResult.RedirectInstruction.Action)));
@@ -153,11 +195,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _processAuthorizationRequestFake = new Mock<IProcessAuthorizationRequest>();
             _clientValidatorFake = new Mock<IClientValidator>();
             _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
-            _getAuthorizationCodeAndTokenViaHybridWorkflowOperation = new GetAuthorizationCodeAndTokenViaHybridWorkflowOperation(
-                _oauthEventSource.Object,
-                _processAuthorizationRequestFake.Object,
-                _clientValidatorFake.Object,
-                _generateAuthorizationResponseFake.Object);
+            _getAuthorizationCodeAndTokenViaHybridWorkflowOperation =
+                new GetAuthorizationCodeAndTokenViaHybridWorkflowOperation(
+                    _oauthEventSource.Object,
+                    _processAuthorizationRequestFake.Object,
+                    _clientValidatorFake.Object,
+                    _generateAuthorizationResponseFake.Object);
         }
     }
 }

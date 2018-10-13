@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Builders;
-using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Results;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
@@ -24,7 +22,9 @@ namespace SimpleIdentityServer.Client
 {
     using Newtonsoft.Json;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
+    using Errors;
 
     public interface IIntrospectClient
     {
@@ -35,69 +35,40 @@ namespace SimpleIdentityServer.Client
     internal class IntrospectClient : IIntrospectClient
     {
         private readonly HttpClient _client;
-        private readonly RequestBuilder _requestBuilder;
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
+        private readonly string _authorizationValue;
+        private readonly Dictionary<string, string> _form;
 
         public IntrospectClient(
+            TokenCredentials credentials,
+            IntrospectionRequest request,
             HttpClient client,
-            RequestBuilder requestBuilder,
-            IGetDiscoveryOperation getDiscoveryOperation)
+            IGetDiscoveryOperation getDiscoveryOperation,
+            string authorizationValue = null)
         {
+            _form = credentials.Concat(request).ToDictionary(x => x.Key, x => x.Value);
             _client = client;
-            _requestBuilder = requestBuilder;
             _getDiscoveryOperation = getDiscoveryOperation;
+            _authorizationValue = authorizationValue;
         }
 
-        public Task<GetIntrospectionResult> ExecuteAsync(Uri tokenUri)
+        public async Task<GetIntrospectionResult> ExecuteAsync(Uri tokenUri)
         {
             if (tokenUri == null)
             {
                 throw new ArgumentNullException(nameof(tokenUri));
             }
 
-            return GetIntrospection(_requestBuilder.Content,
-                tokenUri,
-                _requestBuilder.AuthorizationHeaderValue);
-        }
-
-        public async Task<GetIntrospectionResult> ResolveAsync(string discoveryDocumentationUrl)
-        {
-            if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
-            {
-                throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
-            }
-
-            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out Uri uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
-            }
-
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            return await ExecuteAsync(new Uri(discoveryDocument.IntrospectionEndPoint)).ConfigureAwait(false);
-        }
-
-        private async Task<GetIntrospectionResult> GetIntrospection(Dictionary<string, string> introspectionParameter, Uri requestUri, string authorizationValue)
-        {
-            if (introspectionParameter == null)
-            {
-                throw new ArgumentNullException(nameof(introspectionParameter));
-            }
-
-            if (requestUri == null)
-            {
-                throw new ArgumentNullException(nameof(requestUri));
-            }
-
-            var body = new FormUrlEncodedContent(introspectionParameter);
+            var body = new FormUrlEncodedContent(_form);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 Content = body,
-                RequestUri = requestUri
+                RequestUri = tokenUri
             };
-            if (!string.IsNullOrWhiteSpace(authorizationValue))
+            if (!string.IsNullOrWhiteSpace(_authorizationValue))
             {
-                request.Headers.Add("Authorization", "Basic " + authorizationValue);
+                request.Headers.Add("Authorization", "Basic " + _authorizationValue);
             }
 
             var result = await _client.SendAsync(request).ConfigureAwait(false);
@@ -121,6 +92,22 @@ namespace SimpleIdentityServer.Client
                 ContainsError = false,
                 Content = JsonConvert.DeserializeObject<IntrospectionResponse>(json)
             };
+        }
+
+        public async Task<GetIntrospectionResult> ResolveAsync(string discoveryDocumentationUrl)
+        {
+            if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
+            {
+                throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
+            }
+
+            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out Uri uri))
+            {
+                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
+            }
+
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            return await ExecuteAsync(new Uri(discoveryDocument.IntrospectionEndPoint)).ConfigureAwait(false);
         }
     }
 }

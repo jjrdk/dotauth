@@ -14,26 +14,24 @@
 
 namespace SimpleIdentityServer.Host.Tests.Apis
 {
+    using Client;
+    using Client.Operations;
+    using Core.Common.DTOs.Requests;
+    using Core.Common.DTOs.Responses;
+    using Newtonsoft.Json;
     using System;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
-    using Client;
-    using Client.Operations;
-    using Core.Common.DTOs.Requests;
-    using Core.Common.DTOs.Responses;
-    using Moq;
-    using Newtonsoft.Json;
     using Xunit;
+    using TokenRequest = Client.TokenRequest;
 
     public class RegisterClientFixture : IClassFixture<TestOauthServerFixture>
     {
-        const string baseUrl = "http://localhost:5000";
+        private const string baseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
-        private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private IRegistrationClient _registrationClient;
-        private IClientAuthSelector _clientAuthSelector;
 
         public RegisterClientFixture(TestOauthServerFixture server)
         {
@@ -45,16 +43,20 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("register_client")
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("register_client"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ConfigureAwait(false);
             var obj = new { fake = "fake" };
-            var fakeJson = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            });
+            var fakeJson = JsonConvert.SerializeObject(obj,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -71,8 +73,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ASSERT
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal((string) "invalid_redirect_uri", (string) error.Error);
-            Assert.Equal((string) "the parameter request_uris is missing", (string) error.ErrorDescription);
+            Assert.Equal("invalid_redirect_uri", error.Error);
+            Assert.Equal("the parameter request_uris is missing", error.ErrorDescription);
         }
 
         [Fact]
@@ -80,16 +82,20 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("register_client")
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("register_client"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ConfigureAwait(false);
             var obj = new { redirect_uris = new[] { "invalid_redirect_uris" } };
-            var fakeJson = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            });
+            var fakeJson = JsonConvert.SerializeObject(obj,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -105,8 +111,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
             // ASSERT
-            Assert.Equal((string) "invalid_redirect_uri", (string) error.Error);
-            Assert.Equal((string) "the redirect_uri invalid_redirect_uris is not well formed", (string) error.ErrorDescription);
+            Assert.Equal("invalid_redirect_uri", error.Error);
+            Assert.Equal("the redirect_uri invalid_redirect_uris is not well formed", error.ErrorDescription);
         }
 
         [Fact]
@@ -114,16 +120,20 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("register_client")
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("register_client"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ConfigureAwait(false);
             var obj = new { redirect_uris = new[] { "http://localhost#fg=fg" } };
-            var fakeJson = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            });
+            var fakeJson = JsonConvert.SerializeObject(obj,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -139,8 +149,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
             // ASSERT
-            Assert.Equal((string) "invalid_redirect_uri", (string) error.Error);
-            Assert.Equal((string) "the redirect_uri http://localhost#fg=fg cannot contains fragment", (string) error.ErrorDescription);
+            Assert.Equal("invalid_redirect_uri", error.Error);
+            Assert.Equal("the redirect_uri http://localhost#fg=fg cannot contains fragment", error.ErrorDescription);
         }
 
         [Fact]
@@ -148,16 +158,20 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("register_client")
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
-            var obj = new { redirect_uris = new[] { "http://localhost" }, logo_uri  = "invalid_logo_uri" };
-            var fakeJson = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            });
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("register_client"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ConfigureAwait(false);
+            var obj = new { redirect_uris = new[] { "http://localhost" }, logo_uri = "invalid_logo_uri" };
+            var fakeJson = JsonConvert.SerializeObject(obj,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -173,8 +187,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
             // ASSERT
-            Assert.Equal((string) "invalid_client_metadata", (string) error.Error);
-            Assert.Equal((string) "the parameter logo_uri is not correct", (string) error.ErrorDescription);
+            Assert.Equal("invalid_client_metadata", error.Error);
+            Assert.Equal("the parameter logo_uri is not correct", error.ErrorDescription);
         }
 
         [Fact]
@@ -182,16 +196,25 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("register_client")
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
-            var obj = new { redirect_uris = new[] { "http://localhost" }, logo_uri = "http://google.com", client_uri = "invalid_client_uri" };
-            var fakeJson = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("register_client"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ConfigureAwait(false);
+            var obj = new
             {
-                NullValueHandling = NullValueHandling.Ignore
-            });
+                redirect_uris = new[] { "http://localhost" },
+                logo_uri = "http://google.com",
+                client_uri = "invalid_client_uri"
+            };
+            var fakeJson = JsonConvert.SerializeObject(obj,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -207,8 +230,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
             // ASSERT
-            Assert.Equal((string) "invalid_client_metadata", (string) error.Error);
-            Assert.Equal((string) "the parameter client_uri is not correct", (string) error.ErrorDescription);
+            Assert.Equal("invalid_client_metadata", error.Error);
+            Assert.Equal("the parameter client_uri is not correct", error.ErrorDescription);
         }
 
         [Fact]
@@ -216,16 +239,26 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("register_client")
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
-            var obj = new { redirect_uris = new[] { "http://localhost" }, logo_uri = "http://google.com", client_uri = "http://google.com", tos_uri = "invalid_tos_uri" };
-            var fakeJson = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("register_client"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ConfigureAwait(false);
+            var obj = new
             {
-                NullValueHandling = NullValueHandling.Ignore
-            });
+                redirect_uris = new[] { "http://localhost" },
+                logo_uri = "http://google.com",
+                client_uri = "http://google.com",
+                tos_uri = "invalid_tos_uri"
+            };
+            var fakeJson = JsonConvert.SerializeObject(obj,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -241,8 +274,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
             // ASSERT
-            Assert.Equal((string) "invalid_client_metadata", (string) error.Error);
-            Assert.Equal((string) "the parameter tos_uri is not correct", (string) error.ErrorDescription);
+            Assert.Equal("invalid_client_metadata", error.Error);
+            Assert.Equal("the parameter tos_uri is not correct", error.ErrorDescription);
         }
 
         [Fact]
@@ -250,16 +283,27 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("register_client")
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
-            var obj = new { redirect_uris = new[] { "http://localhost" }, logo_uri = "http://google.com", client_uri = "http://google.com", tos_uri = "http://google.com", jwks_uri = "invalid_jwks_uri" };
-            var fakeJson = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("register_client"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ConfigureAwait(false);
+            var obj = new
             {
-                NullValueHandling = NullValueHandling.Ignore
-            });
+                redirect_uris = new[] { "http://localhost" },
+                logo_uri = "http://google.com",
+                client_uri = "http://google.com",
+                tos_uri = "http://google.com",
+                jwks_uri = "invalid_jwks_uri"
+            };
+            var fakeJson = JsonConvert.SerializeObject(obj,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -275,8 +319,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
             // ASSERT
-            Assert.Equal((string) "invalid_client_metadata", (string) error.Error);
-            Assert.Equal((string) "the parameter jwks_uri is not correct", (string) error.ErrorDescription);
+            Assert.Equal("invalid_client_metadata", error.Error);
+            Assert.Equal("the parameter jwks_uri is not correct", error.ErrorDescription);
         }
 
         [Fact]
@@ -284,21 +328,27 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("register_client")
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("register_client"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
             // ACT
             var client = await _registrationClient.ResolveAsync(new ClientRequest
-                {
-                    RedirectUris = new []
-                    {
-                        "https://localhost"
-                    },
-                    ScimProfile = true
-                }, baseUrl + "/.well-known/openid-configuration", grantedToken.Content.AccessToken).ConfigureAwait(false);
+            {
+                RedirectUris = new[]
+                        {
+                            "https://localhost"
+                        },
+                ScimProfile = true
+            },
+                    baseUrl + "/.well-known/openid-configuration",
+                    grantedToken.Content.AccessToken)
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(client);
@@ -307,16 +357,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
         private void InitializeFakeObjects()
         {
-            _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            var postTokenOperation = new PostTokenOperation(_httpClientFactoryStub.Object);
-            var getDiscoveryOperation = new GetDiscoveryOperation(_httpClientFactoryStub.Object);
-            var introspectionOperation = new IntrospectOperation(_httpClientFactoryStub.Object);
-            var revokeTokenOperation = new RevokeTokenOperation(_httpClientFactoryStub.Object);
-            _clientAuthSelector = new ClientAuthSelector(
-                new TokenClientFactory(postTokenOperation, getDiscoveryOperation),
-                new IntrospectClientFactory(introspectionOperation, getDiscoveryOperation),
-                new RevokeTokenClientFactory(revokeTokenOperation, getDiscoveryOperation));
-            _registrationClient = new RegistrationClient(new RegisterClientOperation(_httpClientFactoryStub.Object), new GetDiscoveryOperation(_httpClientFactoryStub.Object));
+            _registrationClient = new RegistrationClient(_server.Client, new GetDiscoveryOperation(_server.Client));
         }
     }
 }

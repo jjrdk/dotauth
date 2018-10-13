@@ -1,8 +1,8 @@
 ﻿namespace SimpleIdentityServer.Client
 {
+    using Core.Common;
     using System.Collections;
     using System.Collections.Generic;
-    using Core.Common;
 
     public class TokenCredentials : IEnumerable<KeyValuePair<string, string>>
     {
@@ -13,12 +13,34 @@
             _form = form;
         }
 
+        public static TokenCredentials FromClientId(string clientId)
+        {
+            var dict = new Dictionary<string, string>
+            {
+                { ClientAuthNames.ClientId, clientId },
+            };
+
+            return new TokenCredentials(dict);
+        }
+
         public static TokenCredentials FromClientCredentials(string clientId, string clientSecret)
         {
             var dict = new Dictionary<string, string>
             {
                 { ClientAuthNames.ClientId, clientId },
                 { ClientAuthNames.ClientSecret, clientSecret }
+            };
+
+            return new TokenCredentials(dict);
+        }
+
+        public static TokenCredentials FromClientSecret(string clientAssertion, string clientId)
+        {
+            var dict = new Dictionary<string, string>
+            {
+                { ClientAuthNames.ClientId, clientId },
+                { ClientAuthNames.ClientAssertion, clientAssertion },
+                { ClientAuthNames.ClientAssertionType, ClientAssertionTypes.JwtBearer }
             };
 
             return new TokenCredentials(dict);

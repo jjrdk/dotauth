@@ -35,6 +35,8 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Core
 {
+    using SimpleIdentityServer.Core;
+
     public static class SimpleIdServerUmaCoreExtensions
     {
         public static IServiceCollection AddSimpleIdServerUmaCore(this IServiceCollection serviceCollection, UmaConfigurationOptions umaConfigurationOptions = null, ICollection<ResourceSet> resources = null, ICollection<Policy> policies = null)
@@ -77,6 +79,7 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddSingleton<IUmaConfigurationService>(new DefaultUmaConfigurationService(umaConfigurationOptions));
             serviceCollection.AddSingleton<IPolicyRepository>(new DefaultPolicyRepository(policies));
             serviceCollection.AddSingleton<IResourceSetRepository>(new DefaultResourceSetRepository(resources));
+            serviceCollection.AddTransient<IJwksClient, JwksClient>();
             serviceCollection.AddSingleton<ITicketStore>(new DefaultTicketStore());
         }
     }

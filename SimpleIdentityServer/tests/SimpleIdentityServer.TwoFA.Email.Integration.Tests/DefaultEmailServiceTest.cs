@@ -2,10 +2,16 @@
 
 namespace SimpleIdentityServer.TwoFactorAuthentication.Email.Integration.Tests
 {
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Xunit;
+
     public class DefaultEmailServiceTest
     {
         private const string _userName = "";
         private const string _password = "";
+
         [Fact]
         public async Task When_Send_ConfirmationCode_And_Use_No_Auth_Then_Email_Is_Received()
         {

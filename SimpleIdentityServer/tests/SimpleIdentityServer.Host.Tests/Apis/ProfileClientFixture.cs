@@ -1,5 +1,4 @@
-﻿using Moq;
-using SimpleIdentityServer.Client.Operations;
+﻿using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.UserManagement.Client;
 using SimpleIdentityServer.UserManagement.Client.Operations;
 using SimpleIdentityServer.UserManagement.Common.Requests;
@@ -9,13 +8,13 @@ using Xunit;
 
 namespace SimpleIdentityServer.Host.Tests.Apis
 {
+    using Client;
+
     public class ProfileClientFixture : IClassFixture<TestOauthServerFixture>
     {
-        const string baseUrl = "http://localhost:5000";
+        private const string baseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
-        private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private IProfileClient _profileClient;
-        private IClientAuthSelector _clientAuthSelector;
 
         public ProfileClientFixture(TestOauthServerFixture server)
         {
@@ -27,11 +26,13 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("manage_profile")
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("manage_profile"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
             // ACT
             var result = await _profileClient.LinkProfile(baseUrl + "/profiles", "currentSubject", new LinkProfileRequest
@@ -50,10 +51,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("manage_profile")
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("manage_profile"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
@@ -73,10 +76,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("manage_profile")
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("manage_profile"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
@@ -97,10 +102,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("manage_profile")
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("manage_profile"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
@@ -117,10 +124,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("manage_profile")
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("manage_profile"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
@@ -137,10 +146,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("manage_profile")
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("manage_profile"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
@@ -158,10 +169,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("manage_profile")
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("manage_profile"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
@@ -180,10 +193,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("manage_profile")
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("manage_profile"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
             var linkResult = await _profileClient.LinkProfile(baseUrl + "/profiles", "administrator", new LinkProfileRequest
             {
@@ -203,10 +218,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _server.SharedCtx.Oauth2IntrospectionHttpClientFactory.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
-                .UseClientCredentials("manage_profile")
+
+            var grantedToken = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("manage_profile"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
             var linkResult = await _profileClient.LinkProfile(baseUrl + "/profiles", "administrator", new LinkProfileRequest
             {
@@ -219,25 +236,16 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ASSERT
             Assert.False(getProfilesResult.ContainsError);
-            Assert.True(getProfilesResult.Content.Count() >= 1);
+            Assert.True(getProfilesResult.Content.Any());
 
         }
 
         private void InitializeFakeObjects()
         {
-            _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            var linkProfileOperation = new LinkProfileOperation(_httpClientFactoryStub.Object);
-            var unlinkProfileOperation = new UnlinkProfileOperation(_httpClientFactoryStub.Object);
-            var getProfilesOperation = new GetProfilesOperation(_httpClientFactoryStub.Object);
+            var linkProfileOperation = new LinkProfileOperation(_server.Client);
+            var unlinkProfileOperation = new UnlinkProfileOperation(_server.Client);
+            var getProfilesOperation = new GetProfilesOperation(_server.Client);
             _profileClient = new ProfileClient(linkProfileOperation, unlinkProfileOperation, getProfilesOperation);
-            var postTokenOperation = new PostTokenOperation(_httpClientFactoryStub.Object);
-            var getDiscoveryOperation = new GetDiscoveryOperation(_httpClientFactoryStub.Object);
-            var introspectionOperation = new IntrospectOperation(_httpClientFactoryStub.Object);
-            var revokeTokenOperation = new RevokeTokenOperation(_httpClientFactoryStub.Object);
-            _clientAuthSelector = new ClientAuthSelector(
-                new TokenClientFactory(postTokenOperation, getDiscoveryOperation),
-                new IntrospectClientFactory(introspectionOperation, getDiscoveryOperation),
-                new RevokeTokenClientFactory(revokeTokenOperation, getDiscoveryOperation));
         }
     }
 }

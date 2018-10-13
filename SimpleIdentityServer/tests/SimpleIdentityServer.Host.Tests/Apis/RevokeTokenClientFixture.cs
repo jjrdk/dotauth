@@ -14,24 +14,23 @@
 
 namespace SimpleIdentityServer.Host.Tests.Apis
 {
+    using Client;
+    using Client.Operations;
+    using Common.Dtos.Responses;
+    using Core.Common;
+    using Moq;
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Client.Builders;
-    using Client.Operations;
-    using Common.Dtos.Responses;
-    using Moq;
-    using Newtonsoft.Json;
     using Xunit;
 
     public class RevokeTokenClientFixture : IClassFixture<TestOauthServerFixture>
     {
         private const string baseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
-        private Mock<IHttpClientFactory> _httpClientFactoryStub;
-        private IClientAuthSelector _clientAuthSelector;
 
         public RevokeTokenClientFixture(TestOauthServerFixture server)
         {
@@ -42,7 +41,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         public async Task When_No_Parameters_Is_Passed_To_TokenRevoke_Edp_Then_Error_Is_Returned()
         {
             // ARRANGE
-            InitializeFakeObjects();
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -65,7 +63,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         public async Task When_No_Valid_Parameters_Is_Passed_Then_Error_Is_Returned()
         {
             // ARRANGE
-            InitializeFakeObjects();
             var request = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("invalid", "invalid")
@@ -92,14 +89,14 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Revoke_Token_And_Client_Cannot_Be_Authenticated_Then_Error_Is_Returned()
         {
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-
             // ACT
-            var ex = await _clientAuthSelector.UseClientSecretPostAuth("invalid_client", "invalid_client")
-                .RevokeToken("access_token", TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var ex = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("invalid_client", "invalid_client"),
+                    TokenRequest.RevokeToken("access_token", TokenTypes.AccessToken),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.True(ex.ContainsError);
@@ -110,14 +107,13 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Token_Doesnt_Exist_Then_Error_Is_Returned()
         {
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-
             // ACT
-            var ex = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .RevokeToken("access_token", TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var ex = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    TokenRequest.RevokeToken("access_token", TokenTypes.AccessToken),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERT
             Assert.True(ex.ContainsError);
@@ -128,17 +124,19 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Revoke_Token_And_Client_Is_Different_Then_Error_Is_Returned()
         {
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-
             // ACT
-            var result = await _clientAuthSelector.UseClientSecretPostAuth("client_userinfo_enc_rsa15", "client_userinfo_enc_rsa15")
-                .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-            var ex = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .RevokeToken(result.Content.AccessToken, TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var result = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("client_userinfo_enc_rsa15", "client_userinfo_enc_rsa15"),
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+            var ex = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    TokenRequest.RevokeToken(result.Content.AccessToken, TokenTypes.AccessToken),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERT
             Assert.True(ex.ContainsError);
@@ -149,20 +147,25 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Revoking_AccessToken_Then_True_Is_Returned()
         {
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-
             // ACT
-            var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-            var revoke = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .RevokeToken(result.Content.AccessToken, TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-            var ex = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .Introspect(result.Content.AccessToken, TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var result = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+            var revoke = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    TokenRequest.RevokeToken(result.Content.AccessToken, TokenTypes.AccessToken),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+            var ex = await new IntrospectClient(
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERT
             Assert.False(revoke.ContainsError);
@@ -172,38 +175,29 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Revoking_RefreshToken_Then_True_Is_Returned()
         {
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-
             // ACT
-            var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-            var revoke = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .RevokeToken(result.Content.RefreshToken, TokenType.RefreshToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-            var ex = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .Introspect(result.Content.RefreshToken, TokenType.RefreshToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var result = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    TokenRequest.FromPassword("administrator", "password", new []{"scim"}),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+            var revoke = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    TokenRequest.RevokeToken(result.Content.RefreshToken, TokenTypes.RefreshToken),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+            var ex = await new IntrospectClient(
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    IntrospectionRequest.Create(result.Content.RefreshToken, TokenTypes.RefreshToken),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERT
             Assert.False(revoke.ContainsError);
             Assert.True(ex.ContainsError);
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            var requestBuilder = new RequestBuilder();
-            var postTokenOperation = new PostTokenOperation(_httpClientFactoryStub.Object);
-            var getDiscoveryOperation = new GetDiscoveryOperation(_httpClientFactoryStub.Object);
-            var introspectionOperation = new IntrospectOperation(_httpClientFactoryStub.Object);
-            var revokeTokenOperation = new RevokeTokenOperation(_httpClientFactoryStub.Object);
-            _clientAuthSelector = new ClientAuthSelector(
-                new TokenClientFactory(postTokenOperation, getDiscoveryOperation),
-                new IntrospectClientFactory(introspectionOperation, getDiscoveryOperation),
-                new RevokeTokenClientFactory(revokeTokenOperation, getDiscoveryOperation));
         }
     }
 }

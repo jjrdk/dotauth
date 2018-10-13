@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Signature;
@@ -22,6 +21,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.JwtToken
 {
+    using SimpleIdentityServer.Core;
+
     public interface IJwtTokenParser
     {
         Task<JwsPayload> UnSign(string jws, string openidUrl);

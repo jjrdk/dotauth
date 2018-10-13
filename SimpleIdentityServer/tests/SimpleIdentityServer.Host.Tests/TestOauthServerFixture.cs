@@ -38,7 +38,6 @@ namespace SimpleIdentityServer.Host.Tests
                 })
                 .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeStartup).GetType().Assembly.FullName));
             Client = Server.CreateClient();
-            SharedCtx.HttpClientFactory.Set(Server);
         }
 
         public void Dispose()

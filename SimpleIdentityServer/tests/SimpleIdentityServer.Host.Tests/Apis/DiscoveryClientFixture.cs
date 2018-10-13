@@ -14,16 +14,14 @@
 
 namespace SimpleIdentityServer.Host.Tests.Apis
 {
-    using System.Threading.Tasks;
     using Client;
     using Client.Operations;
-    using Moq;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class DiscoveryClientFixture : IClassFixture<TestOauthServerFixture>
     {
         private readonly TestOauthServerFixture _server;
-        private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private IDiscoveryClient _discoveryClient;
 
         public DiscoveryClientFixture(TestOauthServerFixture server)
@@ -37,7 +35,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             const string baseUrl = "http://localhost:5000";
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
             var discovery = await _discoveryClient.GetDiscoveryInformationAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
@@ -49,8 +46,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
         private void InitializeFakeObjects()
         {
-            _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            _discoveryClient = new DiscoveryClient(new GetDiscoveryOperation(_httpClientFactoryStub.Object));
+            _discoveryClient = new DiscoveryClient(new GetDiscoveryOperation(_server.Client));
         }
     }
 }
