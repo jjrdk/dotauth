@@ -19,7 +19,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Operations
 {
+    using System.Collections.Generic;
     using System.Net.Http;
+    using System.Threading;
 
     public interface IGetDiscoveryOperation
     {
@@ -28,6 +30,8 @@ namespace SimpleIdentityServer.Client.Operations
 
     internal class GetDiscoveryOperation : IGetDiscoveryOperation
     {
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private readonly Dictionary<string, DiscoveryInformation> _cache = new Dictionary<string, DiscoveryInformation>();
         private readonly HttpClient _httpClient;
 
         public GetDiscoveryOperation(HttpClient httpClient)
@@ -42,8 +46,25 @@ namespace SimpleIdentityServer.Client.Operations
                 throw new ArgumentNullException(nameof(discoveryDocumentationUri));
             }
 
-            var serializedContent = await _httpClient.GetStringAsync(discoveryDocumentationUri).ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<DiscoveryInformation>(serializedContent);
+            var key = discoveryDocumentationUri.ToString();
+            try
+            {
+                await _semaphore.WaitAsync().ConfigureAwait(false);
+                if (_cache.TryGetValue(key, out var doc))
+                {
+                    return doc;
+                }
+
+                var serializedContent =
+                    await _httpClient.GetStringAsync(discoveryDocumentationUri).ConfigureAwait(false);
+                doc = JsonConvert.DeserializeObject<DiscoveryInformation>(serializedContent);
+                _cache.Add(key, doc);
+                return doc;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
     }
 }

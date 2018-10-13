@@ -17,6 +17,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
+    using Client = Core.Common.Models.Client;
+
     public sealed class GetAuthorizationCodeOperationFixture
     {
         private Mock<IProcessAuthorizationRequest> _processAuthorizationRequestFake;

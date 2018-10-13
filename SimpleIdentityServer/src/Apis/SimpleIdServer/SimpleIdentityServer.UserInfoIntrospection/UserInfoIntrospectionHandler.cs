@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Common.Client.Factories;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -15,6 +14,7 @@ namespace SimpleIdentityServer.UserInfoIntrospection
     public class UserInfoIntrospectionHandler : AuthenticationHandler<UserInfoIntrospectionOptions>
     {
         private readonly IUserInfoClient _userInfoClient;
+        private static readonly int StartIndex = "Bearer ".Length;
 
         public UserInfoIntrospectionHandler(IOptionsMonitor<UserInfoIntrospectionOptions> options,
             ILoggerFactory logger,
@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.UserInfoIntrospection
             string token = null;
             if (authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
             {
-                token = authorization.Substring("Bearer ".Length).Trim();
+                token = authorization.Substring(StartIndex).Trim();
             }
 
             if (string.IsNullOrEmpty(token))
@@ -44,12 +44,11 @@ namespace SimpleIdentityServer.UserInfoIntrospection
                 return Task.FromResult(AuthenticateResult.NoResult());
             }
 
-            return HandleAuthenticate(Options.HttpClientFactory, Options.WellKnownConfigurationUrl, token);
+            return HandleAuthenticate(Options.WellKnownConfigurationUrl, token);
         }
         
-        internal static async Task<AuthenticateResult> HandleAuthenticate(IHttpClientFactory httpClientFactory, string wellKnownConfiguration, string token)
+        internal async Task<AuthenticateResult> HandleAuthenticate(string wellKnownConfiguration, string token)
         {
-            var factory = new IdentityServerClientFactory(httpClientFactory);
             try
             {
                 var introspectionResult = await _userInfoClient
@@ -80,14 +79,13 @@ namespace SimpleIdentityServer.UserInfoIntrospection
 
         private static List<Claim> Convert(KeyValuePair<string, object> kvp)
         {
-            var arr = kvp.Value as JArray;
-            if (arr == null)
+            if (!(kvp.Value is JArray arr))
             {
                 return new List<Claim>
                 {
                     new Claim(kvp.Key, kvp.Value.ToString())
                 };
-    }
+            }
 
             var result = new List<Claim>();
             foreach(var r in arr)

@@ -1,20 +1,19 @@
 ﻿namespace SimpleIdentityServer.Host.Tests.Sms
 {
-    using System;
-    using System.Net;
-    using System.Threading.Tasks;
     using Authenticate.SMS.Client;
     using Authenticate.SMS.Common.Requests;
     using Core.Errors;
     using Core.Exceptions;
     using Moq;
     using Store;
+    using System;
+    using System.Net;
+    using System.Threading.Tasks;
     using Twilio.Client;
     using Xunit;
 
     public class SmsCodeFixture : IClassFixture<TestOauthServerFixture>
     {
-        private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private SidSmsAuthenticateClient _sidSmsAuthenticateClient;
         private const string baseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
@@ -29,7 +28,6 @@
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT : NO PHONE NUMBER
             var noPhoneNumberResult = await _sidSmsAuthenticateClient.Send(baseUrl, new ConfirmationCodeRequest
@@ -123,7 +121,7 @@
             Assert.True(twilioNotConfigured.ContainsError);
             Assert.Equal("unhandled_exception", twilioNotConfigured.Error.Error);
             Assert.Equal("the twilio account is not properly configured", twilioNotConfigured.Error.ErrorDescription);
-            Assert.Equal(HttpStatusCode.InternalServerError, twilioNotConfigured.HttpStatus);            
+            Assert.Equal(HttpStatusCode.InternalServerError, twilioNotConfigured.HttpStatus);
             // ASSERT : CANNOT INSERT CONFIRMATION CODE
             Assert.NotNull(cannotInsertConfirmationCode);
             Assert.True(cannotInsertConfirmationCode.ContainsError);
@@ -144,9 +142,7 @@
 
         private void InitializeFakeObjects()
         {
-            _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            var sendSmsOperation = new SendSmsOperation(_httpClientFactoryStub.Object);
-            _sidSmsAuthenticateClient = new SidSmsAuthenticateClient(sendSmsOperation);
+            _sidSmsAuthenticateClient = new SidSmsAuthenticateClient(_server.Client);
         }
     }
 }

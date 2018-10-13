@@ -34,6 +34,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Common
 {
+    using Client = Core.Common.Models.Client;
+
     public sealed  class GenerateAuthorizationResponseFixture
     {
         private Mock<IAuthorizationCodeStore> _authorizationCodeRepositoryFake;

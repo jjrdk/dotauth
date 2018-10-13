@@ -14,8 +14,6 @@
 
 namespace SimpleIdentityServer.Host.Tests.Apis
 {
-    using System;
-    using System.Threading.Tasks;
     using Client;
     using Client.Builders;
     using Client.Operations;
@@ -29,15 +27,16 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using MiddleWares;
     using Moq;
     using Newtonsoft.Json;
+    using System;
+    using System.Threading.Tasks;
     using Xunit;
+    using TokenRequest = Client.TokenRequest;
 
     public class AuthorizationClientFixture : IClassFixture<TestOauthServerFixture>
     {
-        const string baseUrl = "http://localhost:5000";
+        private const string baseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
-        private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private IAuthorizationClient _authorizationClient;
-        private IClientAuthSelector _clientAuthSelector;
         private IJwsGenerator _jwsGenerator;
         private IJweGenerator _jweGenerator;
 
@@ -53,14 +52,14 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             InitializeFakeObjects();
 
             // ACT
-            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization" )).ConfigureAwait(false);
+            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization")).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal((string) "invalid_request", (string) error.Error);
-            Assert.Equal((string) "the parameter scope is missing", (string) error.ErrorDescription);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the parameter scope is missing", error.ErrorDescription);
         }
 
         [Fact]
@@ -76,8 +75,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal((string) "invalid_request", (string) error.Error);
-            Assert.Equal((string) "the parameter client_id is missing", (string) error.ErrorDescription);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the parameter client_id is missing", error.ErrorDescription);
         }
 
         [Fact]
@@ -93,8 +92,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal((string) "invalid_request", (string) error.Error);
-            Assert.Equal((string) "the parameter redirect_uri is missing", (string) error.ErrorDescription);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the parameter redirect_uri is missing", error.ErrorDescription);
         }
 
         [Fact]
@@ -110,8 +109,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal((string) "invalid_request", (string) error.Error);
-            Assert.Equal((string) "the parameter response_type is missing", (string) error.ErrorDescription);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the parameter response_type is missing", error.ErrorDescription);
         }
 
         [Fact]
@@ -127,8 +126,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal((string) "invalid_request", (string) error.Error);
-            Assert.Equal((string) "at least one response_type parameter is not supported", (string) error.ErrorDescription);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("at least one response_type parameter is not supported", error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -145,8 +144,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal((string) "invalid_request", (string) error.Error);
-            Assert.Equal((string) "at least one prompt parameter is not supported", (string) error.ErrorDescription);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("at least one prompt parameter is not supported", error.ErrorDescription);
             Assert.Equal("state", error.State);
 
         }
@@ -164,8 +163,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal((string) "invalid_request", (string) error.Error);
-            Assert.Equal((string) "Based on the RFC-3986 the redirection-uri is not well formed", (string) error.ErrorDescription);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("Based on the RFC-3986 the redirection-uri is not well formed", error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -183,8 +182,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal((string) "invalid_request", (string) error.Error);
-            Assert.Equal((string) "the client id parameter bad_client doesn't exist or is not valid", (string) error.ErrorDescription);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the client id parameter bad_client doesn't exist or is not valid", error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -202,8 +201,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal((string) "invalid_request", (string) error.Error);
-            Assert.Equal((string) "the redirect url http://localhost:5000 doesn't exist or is not valid", (string) error.ErrorDescription);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the redirect url http://localhost:5000 doesn't exist or is not valid", error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -220,8 +219,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal((string) "invalid_request", (string) error.Error);
-            Assert.Equal((string) "the client pkce_client requires PKCE", (string) error.ErrorDescription);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the client pkce_client requires PKCE", error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -238,8 +237,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal((string) "invalid_request", (string) error.Error);
-            Assert.Equal((string) "the parameter nonce is missing", (string) error.ErrorDescription);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the parameter nonce is missing", error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -256,8 +255,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal((string) "invalid_scope", (string) error.Error);
-            Assert.Equal((string) "the scopes scope are not allowed or invalid", (string) error.ErrorDescription);
+            Assert.Equal("invalid_scope", error.Error);
+            Assert.Equal("the scopes scope are not allowed or invalid", error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -274,8 +273,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ASSERT
             Assert.NotNull(error);
-            Assert.Equal((string) "invalid_request", (string) error.Error);
-            Assert.Equal((string) "the client 'incomplete_authcode_client' doesn't support the response type: 'id_token,code,token'", (string) error.ErrorDescription);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the client 'incomplete_authcode_client' doesn't support the response type: 'id_token,code,token'", error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
@@ -285,7 +284,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             const string baseUrl = "http://localhost:5000";
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration", new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "implicit_client", "http://localhost:5000/invalid_callback", "state")).ConfigureAwait(false);
@@ -301,7 +299,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
             UserStore.Instance().IsInactive = true;
@@ -315,8 +312,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal((string) "login_required", (string) result.Error.Error);
-            Assert.Equal((string) "the user needs to be authenticated", (string) result.Error.ErrorDescription);
+            Assert.Equal("login_required", result.Error.Error);
+            Assert.Equal("the user needs to be authenticated", result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -324,7 +321,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
 
             // ACT
@@ -339,8 +336,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal((string) "interaction_required", (string) result.Error.Error);
-            Assert.Equal((string) "the user needs to give his consent", (string) result.Error.ErrorDescription);
+            Assert.Equal("interaction_required", result.Error.Error);
+            Assert.Equal("the user needs to give his consent", result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -348,7 +345,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
             // ACT
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
@@ -361,16 +358,16 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal((string) "invalid_request", (string) result.Error.Error);
-            Assert.Equal((string) "the id_token_hint parameter is not a valid token", (string) result.Error.ErrorDescription);
+            Assert.Equal("invalid_request", result.Error.Error);
+            Assert.Equal("the id_token_hint parameter is not a valid token", result.Error.ErrorDescription);
         }
-        
+
         [Fact]
         public async Task When_Pass_IdTokenHint_And_The_Audience_Is_Not_Correct_Then_Error_Is_Returned()
         {
             // GENERATE JWS
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
             var payload = new JwsPayload
             {
                 {
@@ -390,8 +387,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal((string) "invalid_request", (string) result.Error.Error);
-            Assert.Equal((string) "the identity token doesnt contain simple identity server in the audience", (string) result.Error.ErrorDescription);
+            Assert.Equal("invalid_request", result.Error.Error);
+            Assert.Equal("the identity token doesnt contain simple identity server in the audience", result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -399,7 +396,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // GENERATE JWS
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
             var payload = new JwsPayload
             {
                 {
@@ -420,8 +417,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal((string) "invalid_request", (string) result.Error.Error);
-            Assert.Equal((string) "the current authenticated user doesn't match with the identity token", (string) result.Error.ErrorDescription);
+            Assert.Equal("invalid_request", result.Error.Error);
+            Assert.Equal("the current authenticated user doesn't match with the identity token", result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -430,7 +427,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             const string baseUrl = "http://localhost:5000";
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
             // ACT
             // NOTE : The consent has already been given in the database.
@@ -441,9 +438,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 }).ConfigureAwait(false);
             Uri location = result.Location;
             var queries = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(location.Query);
-            var token = await _clientAuthSelector.UseClientSecretPostAuth("authcode_client", "authcode_client")
-                .UseAuthorizationCode(queries["code"], "http://localhost:5000/callback")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var token = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("authcode_client", "authcode_client"),
+                    TokenRequest.FromAuthorizationCode(queries["code"], "http://localhost:5000/callback"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -458,7 +458,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
             // ACT
             UserStore.Instance().AuthenticationOffset = DateTimeOffset.UtcNow.AddDays(-2);
@@ -480,7 +480,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
 
             // ACT
@@ -500,7 +500,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
 
             // ACT
@@ -522,7 +522,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
 
             // ACT
@@ -542,7 +542,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // GENERATE JWS
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
             var payload = new JwsPayload
             {
                 {
@@ -571,7 +571,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
             var builder = new PkceBuilder();
             var pkce = builder.Build(CodeChallengeMethods.S256);
 
@@ -588,9 +588,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             }).ConfigureAwait(false);
             Uri location = result.Location;
             var queries = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(location.Query);
-            var token = await _clientAuthSelector.UseClientSecretPostAuth("pkce_client", "pkce_client")
-                .UseAuthorizationCode(queries["code"], "http://localhost:5000/callback", pkce.CodeVerifier)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var token = await new TokenClient(
+                    TokenCredentials.FromClientCredentials("pkce_client", "pkce_client"),
+                    TokenRequest.FromAuthorizationCode(queries["code"], "http://localhost:5000/callback", pkce.CodeVerifier),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(token);
@@ -603,7 +606,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             const string baseUrl = "http://localhost:5000";
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
             // ACT
             // NOTE : The consent has already been given in the database.
@@ -630,7 +633,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             const string baseUrl = "http://localhost:5000";
             // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
 
             // ACT
             // NOTE : The consent has already been given in the database.
@@ -659,17 +662,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var provider = services.BuildServiceProvider();
             _jwsGenerator = (IJwsGenerator)provider.GetService(typeof(IJwsGenerator));
             _jweGenerator = (IJweGenerator)provider.GetService(typeof(IJweGenerator));
-            _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            var getAuthorizationOperation = new GetAuthorizationOperation(_httpClientFactoryStub.Object);
-            var getDiscoveryOperation = new GetDiscoveryOperation(_httpClientFactoryStub.Object);
-            var postTokenOperation = new PostTokenOperation(_httpClientFactoryStub.Object);
-            var introspectionOperation = new IntrospectOperation(_httpClientFactoryStub.Object);
-            var revokeTokenOperation = new RevokeTokenOperation(_httpClientFactoryStub.Object);
-            _authorizationClient = new AuthorizationClient(getAuthorizationOperation, getDiscoveryOperation);
-            _clientAuthSelector = new ClientAuthSelector(
-                new TokenClientFactory(postTokenOperation, getDiscoveryOperation),
-                new IntrospectClientFactory(introspectionOperation, getDiscoveryOperation),
-                new RevokeTokenClientFactory(revokeTokenOperation, getDiscoveryOperation));
+            var getDiscoveryOperation = new GetDiscoveryOperation(_server.Client);
+            _authorizationClient = new AuthorizationClient(_server.Client, getDiscoveryOperation);
         }
     }
 }

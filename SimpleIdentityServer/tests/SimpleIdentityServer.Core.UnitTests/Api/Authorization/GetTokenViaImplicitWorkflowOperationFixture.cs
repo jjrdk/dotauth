@@ -16,6 +16,8 @@ using SimpleIdentityServer.OAuth.Logging;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
+    using Client = Core.Common.Models.Client;
+
     public class GetTokenViaImplicitWorkflowOperationFixture
     {
         private Mock<IProcessAuthorizationRequest> _processAuthorizationRequestFake;

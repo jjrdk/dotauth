@@ -28,7 +28,6 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
     using SimpleIdentityServer.Core.Common;
-    using SimpleIdentityServer.Core.Common.DTOs;
     using SimpleIdentityServer.Core.Common.Models;
 
     public interface IPatchRepresentationAction

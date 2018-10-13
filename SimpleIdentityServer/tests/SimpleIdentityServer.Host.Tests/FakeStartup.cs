@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using SimpleIdentityServer.AccountFilter;
 using SimpleIdentityServer.AccountFilter.Basic.Repositories;
 using SimpleIdentityServer.Authenticate.SMS;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
@@ -91,7 +90,7 @@ namespace SimpleIdentityServer.Host.Tests
                 o.WellKnownConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration";
                 o.ClientId = "stateless_client";
                 o.ClientSecret = "stateless_client";
-                o.IdentityServerClientFactory = new IdentityServerClientFactory(_context.Oauth2IntrospectionHttpClientFactory.Object);
+               // o.IdentityServerClientFactory = new IdentityServerClientFactory(_context.Oauth2IntrospectionHttpClientFactory.Object);
             })
             .AddFakeUserInfoIntrospection(o => { });
             services.AddAuthorization(opt =>
@@ -156,7 +155,7 @@ namespace SimpleIdentityServer.Host.Tests
             services.AddTransient<IAuthenticateResourceOwnerService, CustomAuthenticateResourceOwnerService>();
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
             services.AddHostIdentityServer(_options)
-                .AddSimpleIdentityServerCore(null, _context.HttpClientFactory, null, DefaultStores.Clients(_context), DefaultStores.Consents(), DefaultStores.JsonWebKeys(_context), null, DefaultStores.Users())
+                .AddSimpleIdentityServerCore(null, null, DefaultStores.Clients(_context), DefaultStores.Consents(), DefaultStores.JsonWebKeys(_context), null, DefaultStores.Users())
                 .AddDefaultTokenStore()
                 .AddSimpleIdentityServerJwt()
                 .AddTechnicalLogging()

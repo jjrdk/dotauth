@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Client
 
         public TokenClient(
             TokenCredentials credentials,
-            RequestForm form,
+            TokenRequest form,
             HttpClient client,
             IGetDiscoveryOperation getDiscoveryOperation,
             string authorizationValue = null,

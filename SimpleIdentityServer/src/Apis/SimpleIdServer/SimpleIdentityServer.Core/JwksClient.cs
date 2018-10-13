@@ -12,24 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Client
+namespace SimpleIdentityServer.Core
 {
+    using System;
     using System.Net.Http;
-    using Core.Api.Discovery;
+    using System.Threading.Tasks;
+    using Api.Discovery;
+    using Client.Errors;
+    using Common.DTOs.Requests;
     using Newtonsoft.Json;
-    using Uma.Core.Errors;
 
     public interface IJwksClient
     {
-        Task<JsonWebKeySet> ExecuteAsync(Uri jwksUri);
         Task<JsonWebKeySet> ResolveAsync(string configurationUrl);
     }
 
-    internal class JwksClient : IJwksClient
+    public class JwksClient : IJwksClient
     {
         private readonly HttpClient _client;
         private readonly IDiscoveryActions _getDiscoveryOperation;
@@ -38,16 +36,6 @@ namespace SimpleIdentityServer.Client
         {
             _client = client;
             _getDiscoveryOperation = getDiscoveryOperation;
-        }
-
-        public Task<JsonWebKeySet> ExecuteAsync(Uri jwksUri)
-        {
-            if (jwksUri == null)
-            {
-                throw new ArgumentNullException(nameof(jwksUri));
-            }
-
-            return GetJwks(jwksUri);
         }
 
         public async Task<JsonWebKeySet> ResolveAsync(string configurationUrl)
@@ -59,11 +47,11 @@ namespace SimpleIdentityServer.Client
 
             if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out var uri))
             {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
+                throw new ArgumentException(string.Format(ClientErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
             }
 
             var discoveryDocument = await _getDiscoveryOperation.CreateDiscoveryInformation().ConfigureAwait(false);
-            return await ExecuteAsync(new Uri(discoveryDocument.JwksUri)).ConfigureAwait(false);
+            return await GetJwks(new Uri(discoveryDocument.JwksUri)).ConfigureAwait(false);
         }
 
         private async Task<JsonWebKeySet> GetJwks(Uri jwksUri)

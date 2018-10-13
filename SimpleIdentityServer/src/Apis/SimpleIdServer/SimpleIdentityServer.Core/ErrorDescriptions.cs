@@ -12,23 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.TestHost;
-using System.Net.Http;
-
-namespace SimpleIdentityServer.Host.Tests
+namespace SimpleIdentityServer.Client.Errors
 {
-    public class FakeHttpClientFactory : Core.Factories.IHttpClientFactory
+    internal static class ClientErrorDescriptions
     {
-        private TestServer _server;
-
-        public void Set(TestServer server)
-        {
-            _server = server;
-        }
-
-        public HttpClient GetHttpClient()
-        {
-            return _server.CreateClient();
-        }
+        public const string TheUrlIsNotWellFormed = "the url {0} is not well formed";
     }
 }

@@ -12,7 +12,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.MiddleWares
     public class UserStore
     {
         private static UserStore _instance;
-        private static string _defaultClient = "client";
+        private static readonly string _defaultClient = "client";
 
         private UserStore()
         {

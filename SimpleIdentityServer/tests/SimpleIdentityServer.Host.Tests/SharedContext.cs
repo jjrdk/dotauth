@@ -20,6 +20,8 @@ using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Host.Tests
 {
+    using System.Security.Cryptography.Algorithms.Extensions;
+
     public class SharedContext
     {
         public SharedContext()
@@ -27,13 +29,13 @@ namespace SimpleIdentityServer.Host.Tests
             var serializedRsa = string.Empty;
             using (var provider = new RSACryptoServiceProvider())
             {
-                serializedRsa = provider.ToXmlString(true);
+                serializedRsa = RsaExtensions.ToXmlString(provider, true);
             }
 
             SignatureKey = new JsonWebKey
             {
                 Alg = AllAlg.RS256,
-                KeyOps = new KeyOperations[]
+                KeyOps = new []
                 {
                     KeyOperations.Sign,
                     KeyOperations.Verify
@@ -46,7 +48,7 @@ namespace SimpleIdentityServer.Host.Tests
             ModelSignatureKey = new JsonWebKey
             {
                 Alg = AllAlg.RS256,
-                KeyOps = new KeyOperations[]
+                KeyOps = new []
                 {
                     KeyOperations.Encrypt,
                     KeyOperations.Decrypt
@@ -82,19 +84,15 @@ namespace SimpleIdentityServer.Host.Tests
                 Use = Use.Enc,
                 SerializedKey = serializedRsa,
             };
-            HttpClientFactory = new FakeHttpClientFactory();
             ConfirmationCodeStore = new Mock<IConfirmationCodeStore>();
             TwilioClient = new Mock<ITwilioClient>();
-            Oauth2IntrospectionHttpClientFactory = null; //new Mock<IHttpClientFactory>();
         }
 
         public JsonWebKey EncryptionKey { get; }
         public JsonWebKey ModelEncryptionKey { get; }
         public JsonWebKey SignatureKey { get; }
         public JsonWebKey ModelSignatureKey { get; }
-        public FakeHttpClientFactory HttpClientFactory { get; }
         public Mock<IConfirmationCodeStore> ConfirmationCodeStore { get; }
         public Mock<ITwilioClient> TwilioClient { get; }
-        public Mock<object> Oauth2IntrospectionHttpClientFactory { get; }
     }
 }

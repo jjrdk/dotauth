@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
     public class FakeUmaStartup : IStartup
     {
         public const string DefaultSchema = "OAuth2Introspection";
-        private SharedContext _context;
+        private readonly SharedContext _context;
 
         public FakeUmaStartup(SharedContext context)
         {
@@ -148,7 +148,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
             services.AddTransient<IHostingProvider, HostingProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();
-            services.AddTransient<IJwksClient, JwksClient>();
             services.AddTransient<IGetDiscoveryOperation, GetDiscoveryOperation>();
             services.AddSingleton(new HttpClient());
             services.AddSingleton<IEventPublisher>(new DefaultEventPublisher());

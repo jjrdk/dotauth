@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             // ACT
             var token = await new TokenClient(
                     TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
-                    RequestForm.FromTicketId("ticket_id", ""),
+                    TokenRequest.FromTicketId("ticket_id", ""),
                     _server.Client,
                     new GetDiscoveryOperation(_server
                         .Client)) // Try to get the access token via "ticket_id" grant-type.
@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             // ACT
             var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
-                    RequestForm.FromClientCredentials("uma_protection", "uma_authorization"),
+                    TokenRequest.FromScopes("uma_protection", "uma_authorization"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             // ACT
             var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("resource_server", "resource_server"), // Get PAT.
-                    RequestForm.FromClientCredentials("uma_protection", "uma_authorization"),
+                    TokenRequest.FromScopes("uma_protection", "uma_authorization"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
@@ -155,7 +155,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             var token = await new TokenClient(
                     TokenCredentials.FromClientCredentials("resource_server",
                         "resource_server"), // Try to get the access token via "ticket_id" grant-type.
-                    RequestForm.FromTicketId(ticket.Content.TicketId, jwt),
+                    TokenRequest.FromTicketId(ticket.Content.TicketId, jwt),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/uma2-configuration");

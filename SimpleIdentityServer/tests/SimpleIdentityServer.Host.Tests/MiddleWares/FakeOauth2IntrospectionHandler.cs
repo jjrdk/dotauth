@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Tests.MiddleWares
 {
+    using Client;
+    using Client.Operations;
+
     public class FakeOauth2IntrospectionHandler : AuthenticationHandler<FakeOAuth2IntrospectionOptions>
     {
         public FakeOauth2IntrospectionHandler(IOptionsMonitor<FakeOAuth2IntrospectionOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
@@ -35,13 +38,14 @@ namespace SimpleIdentityServer.Host.Tests.MiddleWares
                 return AuthenticateResult.NoResult();
             }
 
-            var factory = new IdentityServerClientFactory();
             try
             {
-                var introspectionResult = await Options.IdentityServerClientFactory.CreateAuthSelector()
-                    .UseClientSecretPostAuth(Options.ClientId, Options.ClientSecret)
-                    .Introspect(token, TokenType.AccessToken)
-                    .ResolveAsync(Options.WellKnownConfigurationUrl);
+                var introspectionResult = await new IntrospectClient(
+                        TokenCredentials.FromClientCredentials(Options.ClientId, Options.ClientSecret),
+                        IntrospectionRequest.Create(token, TokenTypes.AccessToken),
+                        Options.Client,
+                        new GetDiscoveryOperation(Options.Client))
+                    .ResolveAsync(Options.WellKnownConfigurationUrl).ConfigureAwait(false);
                 if (introspectionResult.ContainsError || !introspectionResult.Content.Active)
                 {
                     return AuthenticateResult.NoResult();
