@@ -46,6 +46,7 @@ using System.Text;
 
 namespace SimpleIdentityServer.Host.Tests
 {
+    using System.Net.Http;
     using Controllers.Api;
     using Extensions;
 
@@ -90,7 +91,8 @@ namespace SimpleIdentityServer.Host.Tests
                 o.WellKnownConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration";
                 o.ClientId = "stateless_client";
                 o.ClientSecret = "stateless_client";
-               // o.IdentityServerClientFactory = new IdentityServerClientFactory(_context.Oauth2IntrospectionHttpClientFactory.Object);
+                o.Client = _context.Client;
+                // o.IdentityServerClientFactory = new IdentityServerClientFactory(_context.Oauth2IntrospectionHttpClientFactory.Object);
             })
             .AddFakeUserInfoIntrospection(o => { });
             services.AddAuthorization(opt =>
@@ -166,6 +168,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddTransient<IAccountFilter, SimpleIdentityServer.AccountFilter.Basic.AccountFilter>()
                 .AddSingleton<IFilterRepository>(new DefaultFilterRepository(null));
             services.AddSingleton(_context.ConfirmationCodeStore.Object);
+            services.AddSingleton(new HttpClient());
         }
 
         private List<Dictionary<string, object>> ExtractPublicKeysForSignature(IEnumerable<JsonWebKey> jsonWebKeys)

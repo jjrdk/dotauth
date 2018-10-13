@@ -90,9 +90,9 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         public async Task When_Revoke_Token_And_Client_Cannot_Be_Authenticated_Then_Error_Is_Returned()
         {
             // ACT
-            var ex = await new TokenClient(
+            var ex = await new RevokeTokenClient(
                     TokenCredentials.FromClientCredentials("invalid_client", "invalid_client"),
-                    TokenRequest.RevokeToken("access_token", TokenTypes.AccessToken),
+                    RevokeTokenRequest.RevokeToken("access_token", TokenTypes.AccessToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
@@ -108,9 +108,9 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         public async Task When_Token_Doesnt_Exist_Then_Error_Is_Returned()
         {
             // ACT
-            var ex = await new TokenClient(
+            var ex = await new RevokeTokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    TokenRequest.RevokeToken("access_token", TokenTypes.AccessToken),
+                    RevokeTokenRequest.RevokeToken("access_token", TokenTypes.AccessToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
@@ -131,9 +131,9 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
-            var ex = await new TokenClient(
+            var ex = await new RevokeTokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    TokenRequest.RevokeToken(result.Content.AccessToken, TokenTypes.AccessToken),
+                    RevokeTokenRequest.RevokeToken(result.Content.AccessToken, TokenTypes.AccessToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
@@ -154,9 +154,9 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
-            var revoke = await new TokenClient(
+            var revoke = await new RevokeTokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    TokenRequest.RevokeToken(result.Content.AccessToken, TokenTypes.AccessToken),
+                    RevokeTokenRequest.RevokeToken(result.Content.AccessToken, TokenTypes.AccessToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
@@ -182,9 +182,9 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
-            var revoke = await new TokenClient(
+            var revoke = await new RevokeTokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    TokenRequest.RevokeToken(result.Content.RefreshToken, TokenTypes.RefreshToken),
+                    RevokeTokenRequest.RevokeToken(result.Content.RefreshToken, TokenTypes.RefreshToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);

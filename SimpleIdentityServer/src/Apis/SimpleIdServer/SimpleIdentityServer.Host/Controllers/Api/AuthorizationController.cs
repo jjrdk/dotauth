@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Microsoft.AspNetCore.Mvc;
     using Parsers;
 
-    [Route(Constants.EndPoints.Authorization)]
+    [Route(Core.Constants.EndPoints.Authorization)]
     public class AuthorizationController : Controller
     {
         private const string SESSION_ID = "session_id";
@@ -177,8 +177,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
 
             if (!string.IsNullOrWhiteSpace(authorizationRequest.RequestUri))
             {
-                Uri uri;
-                if (Uri.TryCreate(authorizationRequest.RequestUri, UriKind.Absolute, out uri))
+                if (Uri.TryCreate(authorizationRequest.RequestUri, UriKind.Absolute, out var uri))
                 {
                     try
                     {

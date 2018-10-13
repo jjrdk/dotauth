@@ -14,14 +14,13 @@
 
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
-    using System.Threading.Tasks;
     using Core.Api.Discovery;
     using Core.Common.DTOs.Responses;
     using Extensions;
-    using Host;
     using Microsoft.AspNetCore.Mvc;
+    using System.Threading.Tasks;
 
-    [Route(Constants.EndPoints.DiscoveryAction)]
+    [Route(Core.Constants.EndPoints.DiscoveryAction)]
     public class DiscoveryController : Controller
     {
         private readonly IDiscoveryActions _discoveryActions;
@@ -36,39 +35,8 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         [HttpGet]
         public async Task<DiscoveryInformation> Get()
         {
-            return await GetMetadata().ConfigureAwait(false);
-        }
-
-        private async Task<DiscoveryInformation> GetMetadata()
-        {
             var issuer = Request.GetAbsoluteUriWithVirtualPath();
-            var authorizationEndPoint = issuer + "/" + Constants.EndPoints.Authorization;
-            var tokenEndPoint = issuer + "/" + Constants.EndPoints.Token;
-            var userInfoEndPoint = issuer + "/" + Constants.EndPoints.UserInfo;
-            var jwksUri = issuer + "/" + Constants.EndPoints.Jwks;
-            var registrationEndPoint = issuer + "/" + Constants.EndPoints.Registration;
-            var revocationEndPoint = issuer + "/" + Constants.EndPoints.Revocation;
-            // TODO : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
-            var checkSessionIframe = issuer + "/" + Constants.EndPoints.CheckSession;
-            var endSessionEndPoint = issuer + "/" + Constants.EndPoints.EndSession;
-            var introspectionEndPoint = issuer + "/" + Constants.EndPoints.Introspection;
-
-            var result = await _discoveryActions.CreateDiscoveryInformation().ConfigureAwait(false);
-            result.Issuer = issuer;
-            result.AuthorizationEndPoint = authorizationEndPoint;
-            result.TokenEndPoint = tokenEndPoint;
-            result.UserInfoEndPoint = userInfoEndPoint;
-            result.JwksUri = jwksUri;
-            result.RegistrationEndPoint = registrationEndPoint;
-            result.RevocationEndPoint = revocationEndPoint;
-            result.IntrospectionEndPoint = introspectionEndPoint;
-            result.Version = "1.0";
-            result.CheckSessionEndPoint = checkSessionIframe;
-            result.EndSessionEndPoint = endSessionEndPoint;
-            if (_scim.IsEnabled)
-            {
-                result.ScimEndpoint = _scim.EndPoint;
-            }
+            var result = await _discoveryActions.CreateDiscoveryInformation(issuer, _scim.IsEnabled ? _scim.EndPoint : null).ConfigureAwait(false);
 
             return result;
         }

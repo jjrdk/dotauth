@@ -22,29 +22,27 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Uma.Core.JwtToken
 {
     using SimpleIdentityServer.Core;
+    using SimpleIdentityServer.Core.Common.DTOs.Requests;
 
     public interface IJwtTokenParser
     {
-        Task<JwsPayload> UnSign(string jws, string openidUrl);
+        Task<JwsPayload> UnSign(string jws, string openidUrl, JsonWebKeySet jsonWebKeySet);
     }
 
     internal class JwtTokenParser : IJwtTokenParser
     {
         private readonly IJwsParser _jwsParser;
-        private readonly IJwksClient _client;
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
 
         public JwtTokenParser(
             IJwsParser jwsParser,
-            IJwksClient client,
             IJsonWebKeyConverter jsonWebKeyConverter)
         {
             _jwsParser = jwsParser;
-            _client = client;
             _jsonWebKeyConverter = jsonWebKeyConverter;
         }
 
-        public async Task<JwsPayload> UnSign(string jws, string openidUrl)
+        public async Task<JwsPayload> UnSign(string jws, string openidUrl, JsonWebKeySet jsonWebKeySet)
         {
             if (string.IsNullOrWhiteSpace(jws))
             {
@@ -62,9 +60,9 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
                 return null;
             }
 
-            var jsonWebKeySet = await _client // _identityServerClientFactory.CreateJwksClient()
-                .ResolveAsync(openidUrl)
-                .ConfigureAwait(false);
+            //var jsonWebKeySet = await _client // _identityServerClientFactory.CreateJwksClient()
+            //    .ResolveAsync(openidUrl)
+            //    .ConfigureAwait(false);
             var jsonWebKeys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
             if (jsonWebKeys == null ||
                 !jsonWebKeys.Any(j => j.Kid == protectedHeader.Kid))

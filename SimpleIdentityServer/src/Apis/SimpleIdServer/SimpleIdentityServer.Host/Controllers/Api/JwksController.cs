@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Host;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route(Constants.EndPoints.Jwks)]
+    [Route(Core.Constants.EndPoints.Jwks)]
     public class JwksController : Controller
     {
         private readonly IJwksActions _jwksActions;

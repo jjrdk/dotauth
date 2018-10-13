@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery
 
     public interface IDiscoveryActions
     {
-        Task<DiscoveryInformation> CreateDiscoveryInformation();
+        Task<DiscoveryInformation> CreateDiscoveryInformation(string issuer, string scimEndpoint = null);
     }
 
     public class DiscoveryActions : IDiscoveryActions
@@ -40,10 +40,10 @@ namespace SimpleIdentityServer.Core.Api.Discovery
             _claimRepository = claimRepository;
         }
 
-        public async Task<DiscoveryInformation> CreateDiscoveryInformation()
+        public async Task<DiscoveryInformation> CreateDiscoveryInformation(string issuer, string scimEndpoint = null)
         {
             var result = new DiscoveryInformation();
-
+            issuer = issuer.TrimEnd('/');
             // Returns only the exposed scopes
             var scopes = await _scopeRepository.GetAllAsync().ConfigureAwait(false);
             var scopeSupportedNames = new string[0];
@@ -70,6 +70,33 @@ namespace SimpleIdentityServer.Core.Api.Discovery
             result.SubjectTypesSupported = Constants.Supported.SupportedSubjectTypes.ToArray();
             result.TokenEndpointAuthMethodSupported = tokenAuthMethodSupported;
             result.IdTokenSigningAlgValuesSupported = Constants.Supported.SupportedJwsAlgs.ToArray();
+            //var issuer = Request.GetAbsoluteUriWithVirtualPath();
+            var authorizationEndPoint = issuer + "/" + Core.Constants.EndPoints.Authorization;
+            var tokenEndPoint = issuer + "/" + Core.Constants.EndPoints.Token;
+            var userInfoEndPoint = issuer + "/" + Core.Constants.EndPoints.UserInfo;
+            var jwksUri = issuer + "/" + Core.Constants.EndPoints.Jwks;
+            var registrationEndPoint = issuer + "/" + Core.Constants.EndPoints.Registration;
+            var revocationEndPoint = issuer + "/" + Core.Constants.EndPoints.Revocation;
+            // TODO : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
+            var checkSessionIframe = issuer + "/" + Core.Constants.EndPoints.CheckSession;
+            var endSessionEndPoint = issuer + "/" + Core.Constants.EndPoints.EndSession;
+            var introspectionEndPoint = issuer + "/" + Core.Constants.EndPoints.Introspection;
+
+            result.Issuer = issuer;
+            result.AuthorizationEndPoint = authorizationEndPoint;
+            result.TokenEndPoint = tokenEndPoint;
+            result.UserInfoEndPoint = userInfoEndPoint;
+            result.JwksUri = jwksUri;
+            result.RegistrationEndPoint = registrationEndPoint;
+            result.RevocationEndPoint = revocationEndPoint;
+            result.IntrospectionEndPoint = introspectionEndPoint;
+            result.Version = "1.0";
+            result.CheckSessionEndPoint = checkSessionIframe;
+            result.EndSessionEndPoint = endSessionEndPoint;
+            if (!string.IsNullOrWhiteSpace(scimEndpoint))
+            {
+                result.ScimEndpoint = scimEndpoint;
+            }
 
             return result;
         }

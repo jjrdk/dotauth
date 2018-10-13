@@ -14,20 +14,19 @@
 
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
+    using Core.Api.UserInfo;
+    using Core.Errors;
+    using Core.Exceptions;
+    using Extensions;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Primitives;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
-    using Core.Api.UserInfo;
-    using Core.Errors;
-    using Core.Exceptions;
-    using Extensions;
-    using Host;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Primitives;
 
-    [Route(Constants.EndPoints.UserInfo)]
+    [Route(Core.Constants.EndPoints.UserInfo)]
     public class UserInfoController : Controller
     {
         private readonly IUserInfoActions _userInfoActions;
@@ -85,8 +84,8 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         private string GetAccessTokenFromAuthorizationHeader()
         {
             const string authorizationName = "Authorization";
-            StringValues values;
-            if (!Request.Headers.TryGetValue(authorizationName, out values)) {
+            if (!Request.Headers.TryGetValue(authorizationName, out var values))
+            {
                 return string.Empty;
             }
 
@@ -111,15 +110,14 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             const string contentTypeValue = "application/x-www-form-urlencoded";
             string accessTokenName = Core.Constants.StandardAuthorizationResponseNames.AccessTokenName;
             var emptyResult = string.Empty;
-            StringValues values;
-            if (Request.Headers == null 
-                || !Request.Headers.TryGetValue(contentTypeName, out values))
+            if (Request.Headers == null
+                || !Request.Headers.TryGetValue(contentTypeName, out var values))
             {
                 return emptyResult;
             }
 
             var contentTypeHeader = values.First();
-            if (string.Compare(contentTypeHeader, contentTypeValue) !=  0)
+            if (string.Compare(contentTypeHeader, contentTypeValue) != 0)
             {
                 return emptyResult;
             }
@@ -131,8 +129,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                 return emptyResult;
             }
 
-            var result = default(StringValues);
-            queryString.TryGetValue(accessTokenName, out result);
+            queryString.TryGetValue(accessTokenName, out var result);
             return result.First();
         }
 
@@ -145,9 +142,12 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             string accessTokenName = Core.Constants.StandardAuthorizationResponseNames.AccessTokenName;
             var query = Request.Query;
             var record = query.FirstOrDefault(q => q.Key == accessTokenName);
-            if (record.Equals(default(KeyValuePair<string, StringValues>))) {
+            if (record.Equals(default(KeyValuePair<string, StringValues>)))
+            {
                 return string.Empty;
-            } else {
+            }
+            else
+            {
                 return record.Value.First();
             }
         }

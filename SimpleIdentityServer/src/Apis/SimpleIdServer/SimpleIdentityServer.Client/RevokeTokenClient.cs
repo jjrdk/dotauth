@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Results;
@@ -24,7 +23,9 @@ namespace SimpleIdentityServer.Client
     using Core.Common.DTOs.Responses;
     using Newtonsoft.Json;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
+    using System.Security.Cryptography.X509Certificates;
 
     public interface IRevokeTokenClient
     {
@@ -34,28 +35,25 @@ namespace SimpleIdentityServer.Client
 
     internal class RevokeTokenClient : IRevokeTokenClient
     {
+        private readonly Dictionary<string, string> _form;
         private readonly HttpClient _client;
-        private readonly RequestBuilder _requestBuilder;
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
+        private readonly string _authorizationValue;
+        private readonly X509Certificate2 _certificate;
 
         public RevokeTokenClient(
+            TokenCredentials credentials,
+            RevokeTokenRequest request,
             HttpClient client,
-            RequestBuilder requestBuilder,
-            IGetDiscoveryOperation getDiscoveryOperation)
+            IGetDiscoveryOperation getDiscoveryOperation,
+            string authorizationValue = null,
+            X509Certificate2 certificate = null)
         {
+            _form = credentials.Concat(request).ToDictionary(x => x.Key, x => x.Value);
             _client = client;
-            _requestBuilder = requestBuilder;
             _getDiscoveryOperation = getDiscoveryOperation;
-        }
-
-        public Task<GetRevokeTokenResult> ExecuteAsync(Uri tokenUri)
-        {
-            if (tokenUri == null)
-            {
-                throw new ArgumentNullException(nameof(tokenUri));
-            }
-
-            return RevokeToken(_requestBuilder.Content, tokenUri, _requestBuilder.AuthorizationHeaderValue);
+            _authorizationValue = authorizationValue;
+            _certificate = certificate;
         }
 
         public async Task<GetRevokeTokenResult> ResolveAsync(string discoveryDocumentationUrl)
@@ -74,28 +72,23 @@ namespace SimpleIdentityServer.Client
             return await ExecuteAsync(new Uri(discoveryDocument.RevocationEndPoint)).ConfigureAwait(false);
         }
 
-        public async Task<GetRevokeTokenResult> RevokeToken(Dictionary<string, string> revokeParameter, Uri requestUri, string authorizationValue)
+        public async Task<GetRevokeTokenResult> ExecuteAsync(Uri tokenUri)
         {
-            if (revokeParameter == null)
+            if (tokenUri == null)
             {
-                throw new ArgumentNullException(nameof(revokeParameter));
+                throw new ArgumentNullException(nameof(tokenUri));
             }
 
-            if (requestUri == null)
-            {
-                throw new ArgumentNullException(nameof(requestUri));
-            }
-
-            var body = new FormUrlEncodedContent(revokeParameter);
+            var body = new FormUrlEncodedContent(_form);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 Content = body,
-                RequestUri = requestUri
+                RequestUri = tokenUri
             };
-            if (!string.IsNullOrWhiteSpace(authorizationValue))
+            if (!string.IsNullOrWhiteSpace(_authorizationValue))
             {
-                request.Headers.Add("Authorization", "Basic " + authorizationValue);
+                request.Headers.Add("Authorization", "Basic " + _authorizationValue);
             }
 
             var result = await _client.SendAsync(request).ConfigureAwait(false);

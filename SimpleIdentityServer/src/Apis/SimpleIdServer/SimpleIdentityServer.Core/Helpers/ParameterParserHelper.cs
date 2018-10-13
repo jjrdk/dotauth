@@ -46,13 +46,6 @@ namespace SimpleIdentityServer.Core.Helpers
 
     public class ParameterParserHelper : IParameterParserHelper
     {
-        private readonly IScopeRepository _scopeRepository;
-
-        public ParameterParserHelper(IScopeRepository scopeRepository)
-        {
-            _scopeRepository = scopeRepository;
-        }
-
         /// <summary>
         /// Parse the parameter and returns a list of prompt parameter.
         /// </summary>

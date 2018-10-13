@@ -43,24 +43,5 @@ namespace SimpleIdentityServer.Host
                 "/Form"
             }
         };
-
-        public static class EndPoints
-        {
-            public const string DiscoveryAction = ".well-known/openid-configuration";
-            public const string Authorization = "authorization";
-            public const string Token = "token";
-            public const string UserInfo = "userinfo";
-            public const string Jwks = "jwks";
-            public const string Registration = "registration";
-            public const string RevokeSessionCallback = "revoke_session_callback";
-            public const string Revocation = "token/revoke";
-            public const string Introspection = "introspect";
-            public const string CheckSession = "check_session";
-            public const string EndSession = "end_session";
-            public const string EndSessionCallback = "end_session_callback";
-            public const string Get401 = "Error/401";            
-            public const string Get404 = "Error/404";
-            public const string Get500 = "Error/500";
-        }
     }
 }

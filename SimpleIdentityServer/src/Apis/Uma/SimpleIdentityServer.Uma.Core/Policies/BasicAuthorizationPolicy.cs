@@ -23,21 +23,31 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Policies
 {
+    using SimpleIdentityServer.Core;
+    using Constants = Core.Constants;
+
     public interface IBasicAuthorizationPolicy
     {
-        Task<AuthorizationPolicyResult> Execute(TicketLineParameter ticket, Policy policy, ClaimTokenParameter claimTokenParameters);
+        Task<AuthorizationPolicyResult> Execute(TicketLineParameter ticket,
+            Policy policy,
+            ClaimTokenParameter claimTokenParameters);
     }
 
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy
     {
         private readonly IJwtTokenParser _jwtTokenParser;
+        private readonly IJwksClient _jwksClient;
 
-        public BasicAuthorizationPolicy(IJwtTokenParser jwtTokenParser)
+        public BasicAuthorizationPolicy(IJwtTokenParser jwtTokenParser, IJwksClient jwksClient)
         {
             _jwtTokenParser = jwtTokenParser;
+            _jwksClient = jwksClient;
         }
 
-        public async Task<AuthorizationPolicyResult> Execute(TicketLineParameter ticketLineParameter, Policy authorizationPolicy, ClaimTokenParameter claimTokenParameter)
+        public async Task<AuthorizationPolicyResult> Execute(
+            TicketLineParameter ticketLineParameter,
+            Policy authorizationPolicy,
+            ClaimTokenParameter claimTokenParameter)
         {
             if (ticketLineParameter == null)
             {
@@ -61,7 +71,8 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             AuthorizationPolicyResult result = null;
             foreach (var rule in authorizationPolicy.Rules)
             {
-                result = await ExecuteAuthorizationPolicyRule(ticketLineParameter, rule, claimTokenParameter).ConfigureAwait(false);
+                result = await ExecuteAuthorizationPolicyRule(ticketLineParameter, rule, claimTokenParameter)
+                    .ConfigureAwait(false);
                 if (result.Type == AuthorizationPolicyResultEnum.Authorized)
                 {
                     return result;
@@ -71,7 +82,10 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             return result;
         }
 
-        private async Task<AuthorizationPolicyResult> ExecuteAuthorizationPolicyRule(TicketLineParameter ticketLineParameter, PolicyRule authorizationPolicy, ClaimTokenParameter claimTokenParameter)
+        private async Task<AuthorizationPolicyResult> ExecuteAuthorizationPolicyRule(
+            TicketLineParameter ticketLineParameter,
+            PolicyRule authorizationPolicy,
+            ClaimTokenParameter claimTokenParameter)
         {
             // 1. Check can access to the scope
             if (ticketLineParameter.Scopes.Any(s => !authorizationPolicy.Scopes.Contains(s)))
@@ -91,9 +105,10 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             }
 
             // 3. Check claims are correct
-            var claimAuthorizationResult = await CheckClaims(authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
-            if (claimAuthorizationResult != null
-                && claimAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
+            var claimAuthorizationResult =
+                await CheckClaims(authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
+            if (claimAuthorizationResult != null &&
+                claimAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
                 return claimAuthorizationResult;
             }
@@ -148,7 +163,8 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             };
         }
 
-        private async Task<AuthorizationPolicyResult> CheckClaims(PolicyRule authorizationPolicy, ClaimTokenParameter claimTokenParameter)
+        private async Task<AuthorizationPolicyResult> CheckClaims(PolicyRule authorizationPolicy,
+            ClaimTokenParameter claimTokenParameter)
         {
             if (authorizationPolicy.Claims == null ||
                 !authorizationPolicy.Claims.Any())
@@ -162,7 +178,9 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             }
 
             var idToken = claimTokenParameter.Token;
-            var jwsPayload = await _jwtTokenParser.UnSign(idToken, authorizationPolicy.OpenIdProvider).ConfigureAwait(false);
+            var keyset = await _jwksClient.ResolveAsync(new Uri(authorizationPolicy.OpenIdProvider)).ConfigureAwait(false);
+            var jwsPayload = await _jwtTokenParser.UnSign(idToken, authorizationPolicy.OpenIdProvider, keyset)
+                .ConfigureAwait(false);
             if (jwsPayload == null)
             {
                 return new AuthorizationPolicyResult
@@ -228,7 +246,8 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             };
         }
 
-        private AuthorizationPolicyResult CheckClients(PolicyRule authorizationPolicy, TicketLineParameter ticketLineParameter)
+        private AuthorizationPolicyResult CheckClients(PolicyRule authorizationPolicy,
+            TicketLineParameter ticketLineParameter)
         {
             if (authorizationPolicy.ClientIdsAllowed == null ||
                 !authorizationPolicy.ClientIdsAllowed.Any())

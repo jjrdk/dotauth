@@ -14,7 +14,7 @@ namespace SimpleIdentityServer.Shell
             }
 
             routeBuilder.MapRoute("Error401Route",
-                Host.Constants.EndPoints.Get401,
+                Core.Constants.EndPoints.Get401,
                 new
                 {
                     controller = "Error",
@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.Shell
                     area = "Shell"
                 }, constraints: new { area = "Shell" });
             routeBuilder.MapRoute("Error404Route",
-                Host.Constants.EndPoints.Get404,
+                Core.Constants.EndPoints.Get404,
                 new
                 {
                     controller = "Error",
@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Shell
                     area = "Shell"
                 }, constraints: new { area = "Shell" });
             routeBuilder.MapRoute("Error500Route",
-                Host.Constants.EndPoints.Get500,
+                Core.Constants.EndPoints.Get500,
                 new
                 {
                     controller = "Error",

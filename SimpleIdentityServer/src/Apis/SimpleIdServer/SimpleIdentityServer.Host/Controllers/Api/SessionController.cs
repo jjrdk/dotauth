@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             _jwtParser = jwtParser;
         }
 
-        [HttpGet(Constants.EndPoints.CheckSession)]
+        [HttpGet(Core.Constants.EndPoints.CheckSession)]
         public async Task CheckSession()
         {
             await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.CheckSession.html", (html) =>
@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             }).ConfigureAwait(false);
         }
 
-        [HttpGet(Constants.EndPoints.EndSession)]
+        [HttpGet(Core.Constants.EndPoints.EndSession)]
         public async Task RevokeSession()
         {
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.CookieName).ConfigureAwait(false);
@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                 return;
             }
 
-            var url = Constants.EndPoints.EndSessionCallback;
+            var url = Core.Constants.EndPoints.EndSessionCallback;
             if (Request.QueryString.HasValue)
             {
                 url = $"{url}{Request.QueryString.Value}";
@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             }).ConfigureAwait(false);
         }
 
-        [HttpGet(Constants.EndPoints.EndSessionCallback)]
+        [HttpGet(Core.Constants.EndPoints.EndSessionCallback)]
         public async Task RevokeSessionCallback()
         {
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.CookieName).ConfigureAwait(false);
