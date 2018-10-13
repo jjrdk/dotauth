@@ -55,11 +55,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
                 .Returns(() => Task.FromResult(claims));
 
             // ACT
-            var discoveryInformation = await _createDiscoveryDocumentationAction.CreateDiscoveryInformation().ConfigureAwait(false);
+            var discoveryInformation = await _createDiscoveryDocumentationAction.CreateDiscoveryInformation("http://test").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(discoveryInformation);
-            Assert.True(discoveryInformation.ScopesSupported.Count() == 2);
+            Assert.True(discoveryInformation.ScopesSupported.Length == 2);
             Assert.True(discoveryInformation.ScopesSupported.Contains(firstScopeName));
             Assert.True(discoveryInformation.ScopesSupported.Contains(secondScopeName));
             Assert.False(discoveryInformation.ScopesSupported.Contains(notExposedScopeName));

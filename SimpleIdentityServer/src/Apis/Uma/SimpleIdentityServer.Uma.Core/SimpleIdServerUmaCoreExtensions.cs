@@ -22,7 +22,6 @@ using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.Token;
-using SimpleIdentityServer.Uma.Core.Api.Token.Actions;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Models;
@@ -41,12 +40,6 @@ namespace SimpleIdentityServer.Uma.Core
     {
         public static IServiceCollection AddSimpleIdServerUmaCore(this IServiceCollection serviceCollection, UmaConfigurationOptions umaConfigurationOptions = null, ICollection<ResourceSet> resources = null, ICollection<Policy> policies = null)
         {
-            RegisterDependencies(serviceCollection, umaConfigurationOptions, resources, policies);
-            return serviceCollection;
-        }
-
-        private static void RegisterDependencies(IServiceCollection serviceCollection, UmaConfigurationOptions umaConfigurationOptions = null, ICollection<ResourceSet> resources = null, ICollection<Policy> policies = null)
-        {
             serviceCollection.AddTransient<IResourceSetActions, ResourceSetActions>();
             serviceCollection.AddTransient<IAddResourceSetAction, AddResourceSetAction>();
             serviceCollection.AddTransient<IGetResourceSetAction, GetResourceSetAction>();
@@ -58,7 +51,7 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IAddPermissionAction, AddPermissionAction>();
             serviceCollection.AddTransient<IRepositoryExceptionHelper, RepositoryExceptionHelper>();
             serviceCollection.AddTransient<IAuthorizationPolicyValidator, AuthorizationPolicyValidator>();
-            serviceCollection.AddTransient<IBasicAuthorizationPolicy, BasicAuthorizationPolicy>();
+            serviceCollection.AddTransient<IBasicAuthorizationPolicy>(sp => new BasicAuthorizationPolicy(sp.GetService<IJwtTokenParser>(), sp.GetService<IJwksClient>()));
             serviceCollection.AddTransient<ICustomAuthorizationPolicy, CustomAuthorizationPolicy>();
             serviceCollection.AddTransient<IAddAuthorizationPolicyAction, AddAuthorizationPolicyAction>();
             serviceCollection.AddTransient<IPolicyActions, PolicyActions>();
@@ -75,12 +68,13 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<ISearchAuthPoliciesAction, SearchAuthPoliciesAction>();
             serviceCollection.AddTransient<ISearchResourceSetOperation, SearchResourceSetOperation>();
             serviceCollection.AddTransient<IUmaTokenActions, UmaTokenActions>();
-            serviceCollection.AddTransient<IGetTokenByTicketIdAction, GetTokenByTicketIdAction>();
             serviceCollection.AddSingleton<IUmaConfigurationService>(new DefaultUmaConfigurationService(umaConfigurationOptions));
             serviceCollection.AddSingleton<IPolicyRepository>(new DefaultPolicyRepository(policies));
             serviceCollection.AddSingleton<IResourceSetRepository>(new DefaultResourceSetRepository(resources));
             serviceCollection.AddTransient<IJwksClient, JwksClient>();
             serviceCollection.AddSingleton<ITicketStore>(new DefaultTicketStore());
+
+            return serviceCollection;
         }
     }
 }

@@ -20,6 +20,8 @@ using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Host.Tests.Stores
 {
+    using System.Security.Cryptography.Algorithms.Extensions;
+
     public static class DefaultStores
     {
         public static List<Consent> Consents()
@@ -126,7 +128,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
             var serializedRsa = string.Empty;
             using (var provider = new RSACryptoServiceProvider())
             {
-                serializedRsa = provider.ToXmlString(true);
+                serializedRsa = RsaExtensions.ToXmlString(provider, true);
             }
 
             return new List<JsonWebKey>
@@ -861,6 +863,6 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     ApplicationType = ApplicationTypes.native
                 }
             };
-        }        
+        }
     }
 }

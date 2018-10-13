@@ -128,9 +128,29 @@
             return new TokenRequest(dict);
         }
 
-        public static TokenRequest RevokeToken(string token, string tokenType)
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {
-            if (string.IsNullOrWhiteSpace(token))
+            return _form.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+    
+    public class RevokeTokenRequest : IEnumerable<KeyValuePair<string, string>>
+    {
+        private readonly Dictionary<string, string> _form;
+
+        private RevokeTokenRequest(Dictionary<string, string> form)
+        {
+            _form = form;
+        }
+
+        public static RevokeTokenRequest RevokeToken(string token, string tokenType)
+        {
+            if (String.IsNullOrWhiteSpace(token))
             {
                 throw new ArgumentNullException(nameof(token));
             }
@@ -140,7 +160,7 @@
                 {IntrospectionRequestNames.Token, token},
                 {IntrospectionRequestNames.TokenTypeHint, tokenType}
             };
-            return new TokenRequest(dict);
+            return new RevokeTokenRequest(dict);
         }
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()

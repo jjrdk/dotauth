@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Primitives;
 
-    [Route(Constants.EndPoints.Token)]
+    [Route(Core.Constants.EndPoints.Token)]
     public class TokenController : Controller
     {
         private readonly ITokenActions _tokenActions;
@@ -69,9 +69,8 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             }
 
             GrantedToken result = null;
-            StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;
-            if (Request.Headers.TryGetValue("Authorization", out authorizationHeader)) 
+            if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader)) 
             {
                 var authorizationHeaderValue = authorizationHeader.First();
                 var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
@@ -131,9 +130,8 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             var serializer = new ParamSerializer();
             var revocationRequest = serializer.Deserialize<RevocationRequest>(nameValueCollection);
             // 1. Fetch the authorization header
-            StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;
-            if (Request.Headers.TryGetValue("Authorization", out authorizationHeader))
+            if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
             {
                 var authorizationHeaderValue = authorizationHeader.First();
                 var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');

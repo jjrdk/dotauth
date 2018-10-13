@@ -25,7 +25,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route(Constants.EndPoints.Registration)]
+    [Route(Core.Constants.EndPoints.Registration)]
     [Authorize("registration")]
     public class RegistrationController : Controller
     {

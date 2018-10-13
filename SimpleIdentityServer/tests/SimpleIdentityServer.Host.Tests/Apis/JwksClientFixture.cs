@@ -16,6 +16,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 {
     using Client;
     using Client.Operations;
+    using Core;
     using Core.Api.Discovery;
     using Core.Common.Models;
     using Core.Jwt;
@@ -24,8 +25,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Core;
-    using Uma.Core;
     using Xunit;
 
     public class JwksClientFixture : IClassFixture<TestOauthServerFixture>
@@ -49,7 +48,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         public async Task When_Requesting_JWKS_Then_List_Is_Returned()
         {
             // ACT 
-            var jwks = await _jwksClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+            var jwks = await _jwksClient.ResolveAsync(new Uri(baseUrl + "/.well-known/openid-configuration"))
                 .ConfigureAwait(false);
 
             // ASSERT
@@ -72,7 +71,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                             _httpClientFactoryStub)) // _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                     .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
                     .ConfigureAwait(false);
-            var jwks = await _jwksClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+            var jwks = await _jwksClient.ResolveAsync(new Uri(baseUrl + "/.well-known/openid-configuration"))
                 .ConfigureAwait(false);
 
             // ASSERTS
@@ -105,7 +104,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 Method = HttpMethod.Put
             };
             await _server.Client.SendAsync(httpRequestMessage).ConfigureAwait(false);
-            var jwks = await _jwksClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+            var jwks = await _jwksClient.ResolveAsync(new Uri(baseUrl + "/.well-known/openid-configuration"))
                 .ConfigureAwait(false);
 
             // ASSERTS

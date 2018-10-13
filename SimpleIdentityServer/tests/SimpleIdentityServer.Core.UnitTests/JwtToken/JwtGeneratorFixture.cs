@@ -439,7 +439,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
                 new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject),
-                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Role, "['role1', 'role2']", Core.Jwt.Constants.ClaimValueTypes.Json)
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Role, "['role1', 'role2']", ClaimValueTypes.String)
             };
             var authorizationParameter = new AuthorizationParameter
             {

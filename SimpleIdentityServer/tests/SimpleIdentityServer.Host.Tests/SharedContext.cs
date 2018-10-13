@@ -20,6 +20,7 @@ using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Host.Tests
 {
+    using System.Net.Http;
     using System.Security.Cryptography.Algorithms.Extensions;
 
     public class SharedContext
@@ -94,5 +95,6 @@ namespace SimpleIdentityServer.Host.Tests
         public JsonWebKey ModelSignatureKey { get; }
         public Mock<IConfirmationCodeStore> ConfirmationCodeStore { get; }
         public Mock<ITwilioClient> TwilioClient { get; }
+        public HttpClient Client { get; set; }
     }
 }

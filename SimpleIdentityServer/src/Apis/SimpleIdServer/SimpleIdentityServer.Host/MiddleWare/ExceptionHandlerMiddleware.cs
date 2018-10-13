@@ -24,6 +24,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.MiddleWare
 {
+    using System.IO;
+
     public class ExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;

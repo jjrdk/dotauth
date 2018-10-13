@@ -30,7 +30,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
-    [Route(Constants.EndPoints.Introspection)]
+    [Route(Core.Constants.EndPoints.Introspection)]
     public class IntrospectionController : Controller
     {
         private readonly IIntrospectionActions _introspectionActions;
@@ -65,9 +65,8 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             var s = Thread.CurrentThread.ManagedThreadId;
             var serializer = new ParamSerializer();
             var introspectionRequest = serializer.Deserialize<IntrospectionRequest>(nameValueCollection);
-            StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;
-            if (Request.Headers.TryGetValue("Authorization", out authorizationHeader))
+            if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
             {
                 var authorizationHeaderValue = authorizationHeader.First();
                 var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');

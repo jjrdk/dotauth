@@ -14,17 +14,16 @@
 
 namespace SimpleIdentityServer.Core
 {
+    using Api.Discovery;
+    using Common.DTOs.Requests;
+    using Newtonsoft.Json;
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Api.Discovery;
-    using Client.Errors;
-    using Common.DTOs.Requests;
-    using Newtonsoft.Json;
 
     public interface IJwksClient
     {
-        Task<JsonWebKeySet> ResolveAsync(string configurationUrl);
+        Task<JsonWebKeySet> ResolveAsync(Uri configurationUrl);
     }
 
     public class JwksClient : IJwksClient
@@ -38,30 +37,13 @@ namespace SimpleIdentityServer.Core
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
-        public async Task<JsonWebKeySet> ResolveAsync(string configurationUrl)
+        public async Task<JsonWebKeySet> ResolveAsync(Uri configurationUrl)
         {
-            if (string.IsNullOrWhiteSpace(configurationUrl))
-            {
-                throw new ArgumentNullException(nameof(configurationUrl));
-            }
-
-            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out var uri))
-            {
-                throw new ArgumentException(string.Format(ClientErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
-            }
-
-            var discoveryDocument = await _getDiscoveryOperation.CreateDiscoveryInformation().ConfigureAwait(false);
-            return await GetJwks(new Uri(discoveryDocument.JwksUri)).ConfigureAwait(false);
-        }
-
-        private async Task<JsonWebKeySet> GetJwks(Uri jwksUri)
-        {
-            if (jwksUri == null)
-            {
-                throw new ArgumentNullException(nameof(jwksUri));
-            }
-
-            var serializedContent = await _client.GetStringAsync(jwksUri).ConfigureAwait(false);
+            var builder = new UriBuilder(configurationUrl.Scheme, configurationUrl.Host, configurationUrl.Port);
+            var uri = builder.Uri;
+            var discoveryDocument = await _getDiscoveryOperation.CreateDiscoveryInformation(uri.ToString()).ConfigureAwait(false);
+            
+            var serializedContent = await _client.GetStringAsync(discoveryDocument.JwksUri).ConfigureAwait(false);
             return JsonConvert.DeserializeObject<JsonWebKeySet>(serializedContent);
         }
     }
