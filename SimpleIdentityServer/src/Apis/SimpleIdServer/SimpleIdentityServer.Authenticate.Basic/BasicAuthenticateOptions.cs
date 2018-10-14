@@ -19,10 +19,10 @@ namespace SimpleIdentityServer.Authenticate.Basic
         }
 
         /// <summary>
-        /// List of claims include when the resource owner is created.
+        /// Gets a list of claims include when the resource owner is created.
         /// If the list is empty then all the claims are included.
         /// </summary>
-        public IEnumerable<string> ClaimsIncludedInUserCreation { get; set; }
+        public List<string> ClaimsIncludedInUserCreation { get; }
         /// <summary>
         /// Base url of the SCIM server.
         /// </summary>

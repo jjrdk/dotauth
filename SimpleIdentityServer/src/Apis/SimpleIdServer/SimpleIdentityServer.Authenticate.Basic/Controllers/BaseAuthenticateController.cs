@@ -28,7 +28,6 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt.Extensions;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
@@ -57,7 +56,6 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         protected readonly IAuthenticateActions _authenticateActions;
         protected readonly IProfileActions _profileActions;
         protected readonly IDataProtector _dataProtector;
-        protected readonly IEncoder _encoder;
         protected readonly ITranslationManager _translationManager;
         protected readonly IOpenIdEventSource _simpleIdentityServerEventSource;
         protected readonly IUrlHelper _urlHelper;
@@ -75,7 +73,6 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             IAuthenticateActions authenticateActions,
             IProfileActions profileActions,
             IDataProtectionProvider dataProtectionProvider,
-            IEncoder encoder,
             ITranslationManager translationManager,
             IOpenIdEventSource simpleIdentityServerEventSource,
             IUrlHelperFactory urlHelperFactory,
@@ -94,7 +91,6 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             _authenticateActions = authenticateActions;
             _profileActions = profileActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
-            _encoder = encoder;
             _translationManager = translationManager;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
@@ -211,7 +207,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             }
 
             // 2. Return translated view.
-            var resourceOwner = await _userActions.GetUser(authenticatedUser);
+            var resourceOwner = await _userActions.GetUser(authenticatedUser).ConfigureAwait(false);
             var service = _twoFactorAuthenticationHandler.Get(resourceOwner.TwoFactorAuthentication);
             var viewModel = new CodeViewModel
             {
@@ -257,7 +253,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             if (codeViewModel.Action == CodeViewModel.RESEND_ACTION)
             {
                 await TranslateView(DefaultLanguage).ConfigureAwait(false);
-                var resourceOwner = await _userActions.GetUser(authenticatedUser);
+                var resourceOwner = await _userActions.GetUser(authenticatedUser).ConfigureAwait(false);
                 var claim = resourceOwner.Claims.FirstOrDefault(c => c.Type == codeViewModel.ClaimName);
                 if (claim != null)
                 {
@@ -266,7 +262,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
                 resourceOwner.Claims.Add(new Claim(codeViewModel.ClaimName, codeViewModel.ClaimValue));
                 var claimsLst = resourceOwner.Claims.Select(c => new ClaimAggregate(c.Type, c.Value));
-                await _userActions.UpdateClaims(authenticatedUser.GetSubject(), claimsLst);
+                await _userActions.UpdateClaims(authenticatedUser.GetSubject(), claimsLst).ConfigureAwait(false);
                 var code = await _authenticateActions.GenerateAndSendCode(authenticatedUser.GetSubject()).ConfigureAwait(false);
                 _simpleIdentityServerEventSource.GetConfirmationCode(code);
                 return View(codeViewModel);
@@ -529,37 +525,44 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         /// </summary>
         /// <param name="authenticatedUser"></param>
         /// <returns></returns>
-        protected async Task<string> AddExternalUser(ClaimsPrincipal authenticatedUser)
+        private async Task<string> AddExternalUser(ClaimsPrincipal authenticatedUser)
         {
             var openidClaims = authenticatedUser.Claims.ToOpenidClaims().ToList();
-            if (_basicAuthenticateOptions.ClaimsIncludedInUserCreation != null && _basicAuthenticateOptions.ClaimsIncludedInUserCreation.Any())
+            if (_basicAuthenticateOptions.ClaimsIncludedInUserCreation.Any())
             {
-                var lstIndexesToRemove = openidClaims.Where(oc => !_basicAuthenticateOptions.ClaimsIncludedInUserCreation.Contains(oc.Type))
-                    .Select(oc => openidClaims.IndexOf(oc))
-                    .OrderByDescending(oc => oc);
-                foreach (var index in lstIndexesToRemove)
-                {
-                    openidClaims.RemoveAt(index);
-                }
+                openidClaims.RemoveAll(oc => !_basicAuthenticateOptions.ClaimsIncludedInUserCreation.Contains(oc.Type));
+                //var lstIndexesToRemove = openidClaims.Where(oc => !_basicAuthenticateOptions.ClaimsIncludedInUserCreation.Contains(oc.Type))
+                //    .Select(oc => openidClaims.IndexOf(oc))
+                //    .OrderByDescending(oc => oc);
+                //foreach (var index in lstIndexesToRemove)
+                //{
+                //    openidClaims.RemoveAt(index);
+                //}
             }
 
             var subject = await _subjectBuilder.BuildSubject().ConfigureAwait(false);
-            var record = new AddUserParameter(subject, Guid.NewGuid().ToString(), openidClaims)
+            var record = new AddUserParameter(subject, Guid.NewGuid().ToString("N"), openidClaims)
             {
                 ExternalLogin = authenticatedUser.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value
             };
             if (_basicAuthenticateOptions.IsScimResourceAutomaticallyCreated)
             {
-                await _userActions.AddUser(record, new AuthenticationParameter
-                {
-                    ClientId = _basicAuthenticateOptions.AuthenticationOptions.ClientId,
-                    ClientSecret = _basicAuthenticateOptions.AuthenticationOptions.ClientSecret,
-                    WellKnownAuthorizationUrl = _basicAuthenticateOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration
-                }, _basicAuthenticateOptions.ScimBaseUrl, true, authenticatedUser.Identity.AuthenticationType);
+                await _userActions.AddUser(
+                    record,
+                    new AuthenticationParameter
+                    {
+                        ClientId = _basicAuthenticateOptions.AuthenticationOptions.ClientId,
+                        ClientSecret = _basicAuthenticateOptions.AuthenticationOptions.ClientSecret,
+                        WellKnownAuthorizationUrl = _basicAuthenticateOptions.AuthenticationOptions
+                            .AuthorizationWellKnownConfiguration
+                    },
+                    _basicAuthenticateOptions.ScimBaseUrl,
+                    _basicAuthenticateOptions.IsScimResourceAutomaticallyCreated,
+                    authenticatedUser.Identity.AuthenticationType).ConfigureAwait(false);
             }
             else
             {
-                await _userActions.AddUser(record, null, null, false, authenticatedUser.Identity.AuthenticationType);
+                await _userActions.AddUser(record, null, null, false, authenticatedUser.Identity.AuthenticationType).ConfigureAwait(false);
             }
 
             return subject;

@@ -46,9 +46,11 @@ using System.Text;
 
 namespace SimpleIdentityServer.Host.Tests
 {
-    using System.Net.Http;
     using Controllers.Api;
+    using Core.Common.DTOs.Responses;
     using Extensions;
+    using System.Net.Http;
+    using System.Threading.Tasks;
 
     public class FakeStartup : IStartup
     {
@@ -165,12 +167,12 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddOAuthLogging()
                 .AddLogging()
                 //.AddDefaultAccessTokenStore()
-                .AddTransient<IAccountFilter, SimpleIdentityServer.AccountFilter.Basic.AccountFilter>()
+                .AddTransient<IAccountFilter, AccountFilter.Basic.AccountFilter>()
                 .AddSingleton<IFilterRepository>(new DefaultFilterRepository(null));
             services.AddSingleton(_context.ConfirmationCodeStore.Object);
-            services.AddSingleton(new HttpClient());
+            services.AddSingleton(sp => _context.Client);
             services.AddSingleton<IUsersClient>(sp => new UsersClient(sp.GetService<HttpClient>()));
-           // services.AddSingleton<IAccessTokenStore>(new Acce)
+            services.AddSingleton<IAccessTokenStore>(new TestAccessTokenStore());
         }
 
         private List<Dictionary<string, object>> ExtractPublicKeysForSignature(IEnumerable<JsonWebKey> jsonWebKeys)
@@ -203,6 +205,14 @@ namespace SimpleIdentityServer.Host.Tests
             }
 
             return result;
+        }
+    }
+
+    internal class TestAccessTokenStore : IAccessTokenStore
+    {
+        public Task<GrantedTokenResponse> GetToken(string url, string clientId, string clientSecret, IEnumerable<string> scopes)
+        {
+            return Task.FromResult(new GrantedTokenResponse());
         }
     }
 }

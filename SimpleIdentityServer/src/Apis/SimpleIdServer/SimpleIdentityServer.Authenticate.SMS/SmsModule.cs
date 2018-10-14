@@ -39,13 +39,12 @@ namespace SimpleIdentityServer.Authenticate.SMS
                 var accountSid = string.Empty;
                 var authToken = string.Empty;
                 var fromNumber = string.Empty;
-                bool isScimResourceAutomaticallyCreated = false;
                 if (_properties.TryGetValue("ScimBaseUrl", out scimBaseUrl))
                 {
                     result.ScimBaseUrl = scimBaseUrl;
                 }
 
-                if (_properties.TryGetValue("IsScimResourceAutomaticallyCreated", out isScimResourceAutomaticallyCreated))
+                if (_properties.TryGetValue("IsScimResourceAutomaticallyCreated", out bool isScimResourceAutomaticallyCreated))
                 {
                     result.IsScimResourceAutomaticallyCreated = isScimResourceAutomaticallyCreated;
                 }
@@ -80,12 +79,12 @@ namespace SimpleIdentityServer.Authenticate.SMS
                     result.TwilioSmsCredentials.AuthToken = authToken;
                 }
 
-                if(_properties.TryGetValue("FromNumber", out fromNumber))
+                if (_properties.TryGetValue("FromNumber", out fromNumber))
                 {
                     result.TwilioSmsCredentials.FromNumber = fromNumber;
                 }
-
-                result.ClaimsIncludedInUserCreation = _properties.TryGetArr("ClaimsIncludedInUserCreation");
+                result.ClaimsIncludedInUserCreation.Clear();
+                result.ClaimsIncludedInUserCreation.AddRange(_properties.TryGetArr("ClaimsIncludedInUserCreation"));
             }
 
             return result;

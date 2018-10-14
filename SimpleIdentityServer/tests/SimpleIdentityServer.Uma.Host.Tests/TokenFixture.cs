@@ -158,7 +158,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     TokenRequest.FromTicketId(ticket.Content.TicketId, jwt),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration").ConfigureAwait(false);
 
             // ASSERTS.
             Assert.NotNull(token);

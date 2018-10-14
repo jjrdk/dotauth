@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             ISmsAuthenticationOperation smsAuthenticationOperation,
             IGenerateAndSendSmsCodeOperation generateAndSendSmsCodeOperation,
             ISubjectBuilder subjectBuilder,
-            SmsAuthenticationOptions basicAuthenticateOptions) : base(authenticateActions, profileActions, dataProtectionProvider, encoder,
+            SmsAuthenticationOptions basicAuthenticateOptions) : base(authenticateActions, profileActions, dataProtectionProvider,
                 translationManager, simpleIdentityServerEventSource, urlHelperFactory, actionContextAccessor, eventPublisher,
                 authenticationService, authenticationSchemeProvider, userActions, payloadSerializer, configurationService,
                 authenticateHelper, twoFactorAuthenticationHandler,subjectBuilder, basicAuthenticateOptions)
@@ -202,7 +202,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             }
 
             await _authenticationService.SignOutAsync(HttpContext, Host.Constants.CookieNames.PasswordLessCookieName, new AuthenticationProperties()).ConfigureAwait(false);
-            var resourceOwner = await _userActions.GetUser(authenticatedUser);
+            var resourceOwner = await _userActions.GetUser(authenticatedUser).ConfigureAwait(false);
             if (!string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication)) // Execute TWO Factor authentication
             {
                 try
