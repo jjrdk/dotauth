@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.OAuth2Introspection
 {
+    using System.Globalization;
+
     public class OAuth2IntrospectionHandler : AuthenticationHandler<OAuth2IntrospectionOptions>
     {
         private readonly IIntrospectClient _client;
@@ -58,7 +60,7 @@ namespace SimpleIdentityServer.OAuth2Introspection
                 var claims = new List<Claim>
                 {
                     new Claim(StandardClaimNames.ExpirationTime, introspectionResult.Content.Expiration.ToString()),
-                    new Claim(StandardClaimNames.Iat, introspectionResult.Content.IssuedAt.ToString())
+                    new Claim(StandardClaimNames.Iat, introspectionResult.Content.IssuedAt.ToString(CultureInfo.InvariantCulture))
                 };
 
                 if (!string.IsNullOrWhiteSpace(introspectionResult.Content.Subject))

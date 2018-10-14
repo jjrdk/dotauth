@@ -74,7 +74,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         }
         
         [Fact]
-        public async Task When_Correct_Subject_Is_Passed_Then_ResourceOwner_Is_Returned()
+        public void When_Correct_Subject_Is_Passed_Then_ResourceOwner_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();

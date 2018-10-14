@@ -18,22 +18,24 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.TwoFactors
 {
+    using System.Threading.Tasks;
+
     public class TwoFactorAuthenticationHandlerFixture
     {
         private ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
 
         [Fact]
-        public void When_Passing_Null_Parameter_To_SendCode_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_To_SendCode_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(null, null, null));
-            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(string.Empty, null, null));
-            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode("code", null, null));
-            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode("code", string.Empty, null));
-            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode("code", "service", null));
+          await  Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(null, null, null)).ConfigureAwait(false);
+          await  Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(string.Empty, null, null)).ConfigureAwait(false);
+          await  Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode("code", null, null)).ConfigureAwait(false);
+          await  Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode("code", string.Empty, null)).ConfigureAwait(false);
+          await  Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode("code", "service", null)).ConfigureAwait(false);
         }
 
         private void InitializeFakeObjects()

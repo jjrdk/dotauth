@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
 
             var hashed = ToHexString(hash);
             var b = hashed.Base64Encode();
-            string s = "";
+            //string s = "";
         }
 
         [Fact]

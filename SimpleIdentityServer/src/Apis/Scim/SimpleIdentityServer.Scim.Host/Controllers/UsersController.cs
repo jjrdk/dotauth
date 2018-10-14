@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
     {
         private readonly IUsersAction _usersAction;
         //private readonly IRepresentationManager _representationManager;
-        private readonly string UsersName = "Users_{0}";
+        //private readonly string UsersName = "Users_{0}";
 
         public UsersController(
             IUsersAction usersAction)

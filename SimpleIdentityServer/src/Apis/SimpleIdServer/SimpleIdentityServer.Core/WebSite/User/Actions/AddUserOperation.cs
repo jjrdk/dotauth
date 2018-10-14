@@ -218,9 +218,10 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 "scim_manage"
             }).ConfigureAwait(false);
 
-            var scimResponse = await _usersClient.AddUser(new Uri(scimBaseUrl), grantedToken.AccessToken)
-                .SetCommonAttributes(subject)
-                .Execute().ConfigureAwait(false);
+            var scimResponse = await _usersClient.AddUser(new Uri(scimBaseUrl), subject, grantedToken.AccessToken)
+                //.SetCommonAttributes(subject)
+                //.Execute()
+                .ConfigureAwait(false);
             var scimId = scimResponse.Content["id"].ToString();
             return new ScimUser(scimId, $"{scimBaseUrl}/Users/{scimId}");
         }

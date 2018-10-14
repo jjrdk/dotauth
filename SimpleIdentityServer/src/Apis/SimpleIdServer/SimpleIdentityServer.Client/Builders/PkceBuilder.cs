@@ -30,8 +30,7 @@ namespace SimpleIdentityServer.Client.Builders
     {
         public PKCE Build(CodeChallengeMethods method)
         {
-            var result = new PKCE();
-            result.CodeVerifier = GetCodeVerifier();
+            var result = new PKCE {CodeVerifier = GetCodeVerifier()};
             result.CodeChallenge = GetCodeChallenge(result.CodeVerifier, method);
             return result;
         }

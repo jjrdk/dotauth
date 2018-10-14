@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Client
 
         public UserInfoClient(
             HttpClient client,
-            IGetDiscoveryOperation getDiscoveryOperation, bool inBody = false)
+            IGetDiscoveryOperation getDiscoveryOperation)
         {
             _client = client;
             _getDiscoveryOperation = getDiscoveryOperation ?? throw new ArgumentNullException(nameof(getDiscoveryOperation));
@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Client
             }
 
             var contentType = serializedContent.Content.Headers.ContentType;
-            if (contentType != null && contentType.Parameters != null && contentType.MediaType == "application/jwt")
+            if (contentType?.Parameters != null && contentType?.MediaType == "application/jwt")
             {
                 return new GetUserInfoResult
                 {
