@@ -1020,7 +1020,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             _scopeRepositoryStub = new Mock<IScopeRepository>();
             var clientValidator = new ClientValidator();
             var claimsMapping = new ClaimsMapping();
-            var parameterParserHelper = new ParameterParserHelper(_scopeRepositoryStub.Object);
+            var parameterParserHelper = new ParameterParserHelper();
             var createJwsSignature = new CreateJwsSignature();
             var aesEncryptionHelper = new AesEncryptionHelper();
             var jweHelper = new JweHelper(aesEncryptionHelper);

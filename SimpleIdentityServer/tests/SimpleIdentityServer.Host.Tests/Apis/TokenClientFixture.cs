@@ -831,12 +831,10 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ACT
             var result = await new TokenClient(
-                    TokenCredentials.FromClientId("certificate_client"),
+                    TokenCredentials.FromCertificate("certificate_client", certificate),
                     TokenRequest.FromPassword("administrator", "password", new[] { "openid" }),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client),
-                    null,
-                    certificate)
+                    new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERTS
@@ -901,7 +899,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             // ACT
             var token = await new TokenClient(
-                    TokenCredentials.FromClientCredentials("basic_client", "basic_client"),
+                    TokenCredentials.FromBasicAuthentication("basic_client", "basic_client"),
                     TokenRequest.FromScopes("api1"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
@@ -918,10 +916,10 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             // ARRANGE
             InitializeFakeObjects();
-            
+
             // ACT
             var firstToken = await new TokenClient(
-                    TokenCredentials.FromClientCredentials("basic_client", "basic_client"),
+                    TokenCredentials.FromBasicAuthentication("basic_client", "basic_client"),
                     TokenRequest.FromScopes("api1"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))

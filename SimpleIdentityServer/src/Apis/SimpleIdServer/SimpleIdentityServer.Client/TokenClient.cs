@@ -39,15 +39,13 @@ namespace SimpleIdentityServer.Client
             TokenCredentials credentials,
             TokenRequest form,
             HttpClient client,
-            IGetDiscoveryOperation getDiscoveryOperation,
-            string authorizationValue = null,
-            X509Certificate2 certificate = null)
+            IGetDiscoveryOperation getDiscoveryOperation)
         {
             _form = credentials.Concat(form).ToDictionary(x => x.Key, x => x.Value);
             _client = client;
             _getDiscoveryOperation = getDiscoveryOperation;
-            _authorizationValue = authorizationValue;
-            _certificate = certificate;
+            _authorizationValue = credentials.AuthorizationValue;
+            _certificate = credentials.Certificate;
         }
 
         public Task<GetTokenResult> GetToken(Uri tokenUri)

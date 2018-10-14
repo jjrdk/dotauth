@@ -627,7 +627,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var clientRepository = new Mock<IClientRepository>();
             var consentRepository = new Mock<IConsentRepository>();
             var jsonWebKeyRepository = new Mock<IJsonWebKeyRepository>();
-            var parameterParserHelper = new ParameterParserHelper(scopeRepository.Object);
+            var parameterParserHelper = new ParameterParserHelper();
             var scopeValidator = new ScopeValidator(parameterParserHelper);
             var actionResultFactory = new ActionResultFactory();
             var consentHelper = new ConsentHelper(consentRepository.Object, parameterParserHelper);
