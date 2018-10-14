@@ -17,7 +17,6 @@ using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.JwtToken
 {
@@ -25,7 +24,7 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
 
     public interface IJwtTokenParser
     {
-        Task<JwsPayload> UnSign(string jws, string openidUrl, JsonWebKeySet jsonWebKeySet);
+        JwsPayload UnSign(string jws, string openidUrl, JsonWebKeySet jsonWebKeySet);
     }
 
     internal class JwtTokenParser : IJwtTokenParser
@@ -41,7 +40,7 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
             _jsonWebKeyConverter = jsonWebKeyConverter;
         }
 
-        public async Task<JwsPayload> UnSign(string jws, string openidUrl, JsonWebKeySet jsonWebKeySet)
+        public JwsPayload UnSign(string jws, string openidUrl, JsonWebKeySet jsonWebKeySet)
         {
             if (string.IsNullOrWhiteSpace(jws))
             {

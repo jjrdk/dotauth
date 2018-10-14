@@ -28,20 +28,11 @@ namespace SimpleIdentityServer.Common.Dtos.Events.OAuth
             Order = order;
         }
 
-        public string Id
-        {
-            get { return _id; }
-        }
+        public string Id => _id;
 
-        public string ProcessId 
-        {
-            get { return _processId; }
-        }
+        public string ProcessId => _processId;
 
-        public  string Payload
-        {
-            get { return _payload; }
-        }
+        public  string Payload => _payload;
 
         public int Order { get; private set; }
     }

@@ -75,7 +75,10 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Repositories
             }
 
             var record = _filters.FirstOrDefault(f => f.Id == filter.Id);
-
+            if (record == null)
+            {
+                return Task.FromResult(false);
+            }
             record.Name = filter.Name;
             record.Rules = filter.Rules;
             record.CreateDateTime = filter.CreateDateTime;

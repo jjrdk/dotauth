@@ -21,13 +21,7 @@ namespace SimpleIdentityServer.Core.Common.DTOs
     [DataContract]
     public class SchemaAttributeResponse
     {
-        public string FullPath
-        {
-            get
-            {
-                return GetFullPath();
-            }
-        }
+        public string FullPath => GetFullPath();
 
         private string GetFullPath()
         {

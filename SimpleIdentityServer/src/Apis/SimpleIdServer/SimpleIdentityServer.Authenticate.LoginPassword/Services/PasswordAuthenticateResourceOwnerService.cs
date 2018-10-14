@@ -16,13 +16,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Services
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
-        public string Amr
-        {
-            get
-            {
-                return Constants.AMR;
-            }
-        }
+        public string Amr => Constants.AMR;
 
         public Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password)
         {

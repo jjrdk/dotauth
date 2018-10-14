@@ -44,8 +44,11 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(null, null, null)).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(new TicketLineParameter("client_id"), null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(null, null, null))
+                .ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() =>
+                    _basicAuthorizationPolicy.Execute(new TicketLineParameter("client_id"), null, null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
@@ -78,7 +81,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null).ConfigureAwait(false);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null)
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
@@ -121,7 +125,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null).ConfigureAwait(false);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null)
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
@@ -181,23 +186,30 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter)
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
             var errorDetails = result.ErrorDetails as Dictionary<string, object>;
             Assert.NotNull(errorDetails);
             Assert.True(errorDetails.ContainsKey(Constants.ErrorDetailNames.RequestingPartyClaims));
-            var requestingPartyClaims = errorDetails[Constants.ErrorDetailNames.RequestingPartyClaims] as Dictionary<string, object>;
+            var requestingPartyClaims =
+                errorDetails[Constants.ErrorDetailNames.RequestingPartyClaims] as Dictionary<string, object>;
             Assert.NotNull(requestingPartyClaims);
             Assert.True(requestingPartyClaims.ContainsKey(Constants.ErrorDetailNames.RequiredClaims));
             Assert.True(requestingPartyClaims.ContainsKey(Constants.ErrorDetailNames.RedirectUser));
-            var requiredClaims = requestingPartyClaims[Constants.ErrorDetailNames.RequiredClaims] as List<Dictionary<string, string>>;
+            var requiredClaims =
+                requestingPartyClaims[Constants.ErrorDetailNames.RequiredClaims] as List<Dictionary<string, string>>;
             Assert.NotNull(requiredClaims);
-            Assert.True(requiredClaims.Any(r => r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimName && kv.Value == "name")));
-            Assert.True(requiredClaims.Any(r => r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimFriendlyName && kv.Value == "name")));
-            Assert.True(requiredClaims.Any(r => r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimName && kv.Value == "email")));
-            Assert.True(requiredClaims.Any(r => r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimFriendlyName && kv.Value == "email")));
+            Assert.Contains(requiredClaims, r =>
+                r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimName && kv.Value == "name"));
+            Assert.Contains(requiredClaims, r =>
+                r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimFriendlyName && kv.Value == "name"));
+            Assert.Contains(requiredClaims, r =>
+                r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimName && kv.Value == "email"));
+            Assert.Contains(requiredClaims, r =>
+                r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimFriendlyName && kv.Value == "email"));
         }
 
         [Fact]
@@ -253,10 +265,11 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Token = "token"
             };
             _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
-                .Returns(Task.FromResult((JwsPayload)null));
+                .Returns((JwsPayload) null);
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters).ConfigureAwait(false);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters)
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
@@ -317,15 +330,16 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Token = "token"
             };
             _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
-                .Returns(Task.FromResult(new JwsPayload
+                .Returns(new JwsPayload
                 {
                     {
                         "role", "role1,role3"
                     }
-                }));
+                });
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter)
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
@@ -386,10 +400,11 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Token = "token"
             };
             _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
-                .Returns(Task.FromResult(new JwsPayload()));
+                .Returns(new JwsPayload());
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters).ConfigureAwait(false);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters)
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
@@ -449,12 +464,13 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            var payload = new JwsPayload { { "role", new JArray("role3") } };
+            var payload = new JwsPayload {{"role", new JArray("role3")}};
             _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
-                .Returns(Task.FromResult(payload));
+                .Returns(payload);
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters).ConfigureAwait(false);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters)
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
@@ -516,13 +532,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
             var payload = new JwsPayload
             {
-                { "role", new[] { "role3" } }
+                {"role", new[] {"role3"}}
             };
             _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
-                .Returns(Task.FromResult(payload));
+                .Returns(payload);
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter)
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
@@ -583,15 +600,16 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Token = "token"
             };
             _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
-                .Returns(Task.FromResult(new JwsPayload
+                .Returns(new JwsPayload
                 {
                     {
                         "name", "bad_name"
                     }
-                }));
+                });
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter)
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
@@ -635,7 +653,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null).ConfigureAwait(false);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null)
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.RequestSubmitted);
@@ -675,7 +694,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null).ConfigureAwait(false);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null)
+                .ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.Authorized);

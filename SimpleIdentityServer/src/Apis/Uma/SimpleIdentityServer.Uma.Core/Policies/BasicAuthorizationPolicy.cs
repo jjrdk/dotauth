@@ -179,8 +179,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
             var idToken = claimTokenParameter.Token;
             var keyset = await _jwksClient.ResolveAsync(new Uri(authorizationPolicy.OpenIdProvider)).ConfigureAwait(false);
-            var jwsPayload = await _jwtTokenParser.UnSign(idToken, authorizationPolicy.OpenIdProvider, keyset)
-                .ConfigureAwait(false);
+            var jwsPayload = _jwtTokenParser.UnSign(idToken, authorizationPolicy.OpenIdProvider, keyset);
             if (jwsPayload == null)
             {
                 return new AuthorizationPolicyResult

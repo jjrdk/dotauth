@@ -51,20 +51,11 @@ namespace SimpleIdentityServer.Core.Parameters
 
         public Dictionary<string, object> Parameters { get; set; }
 
-        public bool Essential
-        {
-            get { return GetBoolean(Constants.StandardClaimParameterValueNames.EssentialName); }
-        }
+        public bool Essential => GetBoolean(Constants.StandardClaimParameterValueNames.EssentialName);
 
-        public string Value
-        {
-            get { return GetString(Constants.StandardClaimParameterValueNames.ValueName); }
-        }
+        public string Value => GetString(Constants.StandardClaimParameterValueNames.ValueName);
 
-        public string[] @Values
-        {
-            get { return GetArray(Constants.StandardClaimParameterValueNames.ValuesName); }
-        }
+        public string[] @Values => GetArray(Constants.StandardClaimParameterValueNames.ValuesName);
 
         public bool EssentialParameterExist
         {
