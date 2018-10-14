@@ -36,13 +36,12 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword
                 var clientId = string.Empty;
                 var clientSecret = string.Empty;
                 var authorizationWellKnownConfiguration = string.Empty;
-                bool isScimResourceAutomaticallyCreated = false;
                 if (_properties.TryGetValue("ScimBaseUrl", out scimBaseUrl))
                 {
                     result.ScimBaseUrl = scimBaseUrl;
                 }
 
-                if (_properties.TryGetValue("IsScimResourceAutomaticallyCreated", out isScimResourceAutomaticallyCreated))
+                if (_properties.TryGetValue("IsScimResourceAutomaticallyCreated", out bool isScimResourceAutomaticallyCreated))
                 {
                     result.IsScimResourceAutomaticallyCreated = isScimResourceAutomaticallyCreated;
                 }
@@ -61,8 +60,8 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword
                 {
                     result.AuthenticationOptions.AuthorizationWellKnownConfiguration = authorizationWellKnownConfiguration;
                 }
-
-                result.ClaimsIncludedInUserCreation = _properties.TryGetArr("ClaimsIncludedInUserCreation");                
+                result.ClaimsIncludedInUserCreation.Clear();
+                result.ClaimsIncludedInUserCreation.AddRange(_properties.TryGetArr("ClaimsIncludedInUserCreation"));
             }
 
             return result;

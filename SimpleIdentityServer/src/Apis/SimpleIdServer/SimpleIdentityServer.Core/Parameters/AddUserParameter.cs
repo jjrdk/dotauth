@@ -30,10 +30,10 @@ namespace SimpleIdentityServer.Core.Parameters
             Claims = claims;
         }
 
-        public string Login { get; set; }
+        public string Login { get; }
         public string ExternalLogin { get; set; }
-        public string Password { get; set; }
+        public string Password { get; }
         public string TwoFactorAuthentication { get; set; }
-        public IEnumerable<Claim> Claims { get; set; }
+        public IEnumerable<Claim> Claims { get; }
     }
 }

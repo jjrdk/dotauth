@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             ISubjectBuilder subjectBuilder,
-            BasicAuthenticateOptions basicAuthenticateOptions) : base(authenticateActions, profileActions, dataProtectionProvider, encoder,
+            BasicAuthenticateOptions basicAuthenticateOptions) : base(authenticateActions, profileActions, dataProtectionProvider,
                 translationManager, simpleIdentityServerEventSource, urlHelperFactory, actionContextAccessor, eventPublisher,
                 authenticationService, authenticationSchemeProvider, userActions, payloadSerializer, configurationService,
                 authenticateHelper, twoFactorAuthenticationHandler, subjectBuilder, basicAuthenticateOptions)
