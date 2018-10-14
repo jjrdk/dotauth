@@ -29,87 +29,54 @@ namespace SimpleIdentityServer.Core.Common
         /// <summary>
         /// Gets or sets the issuer.
         /// </summary>
-        public string Issuer
-        {
-            get { return GetStringClaim(StandardClaimNames.Issuer); }
-        }
+        public string Issuer => GetStringClaim(StandardClaimNames.Issuer);
 
         /// <summary>
         /// Gets or sets the audience(s)
         /// </summary>
-        public string[] Audiences
-        {
-            get { return GetArrayClaim(StandardClaimNames.Audiences); }
-        }
+        public string[] Audiences => GetArrayClaim(StandardClaimNames.Audiences);
 
         /// <summary>
         /// Gets or sets the expiration time
         /// </summary>
-        public double ExpirationTime
-        {
-            get { return GetDoubleClaim(StandardClaimNames.ExpirationTime); }
-        }
+        public double ExpirationTime => GetDoubleClaim(StandardClaimNames.ExpirationTime);
 
         /// <summary>
         /// Gets or sets the IAT
         /// </summary>
-        public double Iat
-        {
-            get { return GetDoubleClaim(StandardClaimNames.Iat); }
-        }
+        public double Iat => GetDoubleClaim(StandardClaimNames.Iat);
 
         /// <summary>
         /// Gets or sets the unique identifier.
         /// </summary>
-        public string Jti
-        {
-            get
-            {
-                return GetStringClaim(StandardClaimNames.Jti);
-            }
-        }
+        public string Jti => GetStringClaim(StandardClaimNames.Jti);
 
         /// <summary>
         /// Gets or sets the authentication time
         /// </summary>
-        public double AuthenticationTime
-        {
-            get { return GetDoubleClaim(StandardClaimNames.AuthenticationTime); }
-        }
+        public double AuthenticationTime => GetDoubleClaim(StandardClaimNames.AuthenticationTime);
 
         /// <summary>
         /// Gets or sets the NONCE
         /// </summary>
-        public string Nonce
-        {
-            get { return GetStringClaim(StandardClaimNames.Nonce); }
-        }
+        public string Nonce => GetStringClaim(StandardClaimNames.Nonce);
 
         /// <summary>
         /// Gets or sets the authentication context class reference
         /// </summary>
-        public string Acr
-        {
-            get { return GetStringClaim(StandardClaimNames.Acr); }
-        }
+        public string Acr => GetStringClaim(StandardClaimNames.Acr);
 
         /// <summary>
         /// Gets or sets the Authentication Methods References
         /// </summary>
         [DataMember(Name = "amr")]
-        public string Amr
-        {
-            get { return GetStringClaim(StandardClaimNames.Amr); }
-        }
+        public string Amr => GetStringClaim(StandardClaimNames.Amr);
 
         /// <summary>
         /// Gets or sets the Authorized party
         /// </summary>
         [DataMember(Name = "azp")]
-        public string Azp
-        {
-            get { return GetStringClaim(StandardClaimNames.Azp); }
-        }
+        public string Azp => GetStringClaim(StandardClaimNames.Azp);
 
         public string GetClaimValue(string claimName)
         {

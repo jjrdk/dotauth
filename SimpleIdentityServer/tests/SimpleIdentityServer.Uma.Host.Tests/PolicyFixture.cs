@@ -566,7 +566,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ASSERT
             Assert.NotNull(response);
-            Assert.True(response.Content.Any(r => r == addPolicy.Content.PolicyId));
+            Assert.Contains(response.Content, r => r == addPolicy.Content.PolicyId);
         }
 
         [Fact]

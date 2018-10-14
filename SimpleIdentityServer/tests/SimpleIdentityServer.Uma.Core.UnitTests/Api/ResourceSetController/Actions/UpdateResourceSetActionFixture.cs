@@ -94,7 +94,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter).ConfigureAwait(false);
 
             // ASSERTS
-            Assert.NotNull(result);
             Assert.True(result);
 
         }

@@ -22,38 +22,20 @@ namespace SimpleIdentityServer.Uma.Common.DTOs
     {
         public string ResourceSetId
         {
-            get
-            {
-                return this.GetString(IntrospectPermissionNames.ResourceSetIdName);
-            }
-            set
-            {
-                this.SetValue(IntrospectPermissionNames.ResourceSetIdName, value);
-            }
+            get => this.GetString(IntrospectPermissionNames.ResourceSetIdName);
+            set => this.SetValue(IntrospectPermissionNames.ResourceSetIdName, value);
         }
 
         public IEnumerable<string> Scopes
         {
-            get
-            {
-                return this.GetObject<IEnumerable<string>>(IntrospectPermissionNames.ScopesName);
-            }
-            set
-            {
-                this.SetObject(IntrospectPermissionNames.ScopesName, value);
-            }
+            get => this.GetObject<IEnumerable<string>>(IntrospectPermissionNames.ScopesName);
+            set => this.SetObject(IntrospectPermissionNames.ScopesName, value);
         }
 
         public double Expiration
         {
-            get
-            {
-                return this.GetDouble(IntrospectPermissionNames.ExpirationName);
-            }
-            set
-            {
-                this.SetValue(IntrospectPermissionNames.ExpirationName, value);
-            }
+            get => this.GetDouble(IntrospectPermissionNames.ExpirationName);
+            set => this.SetValue(IntrospectPermissionNames.ExpirationName, value);
         }
     }
 
@@ -62,62 +44,32 @@ namespace SimpleIdentityServer.Uma.Common.DTOs
 
         public bool IsActive
         {
-            get
-            {
-                return this.GetBoolean(IntrospectNames.ActiveName);
-            }
-            set
-            {
-                this.SetValue(IntrospectNames.ActiveName, value);
-            }
+            get => this.GetBoolean(IntrospectNames.ActiveName);
+            set => this.SetValue(IntrospectNames.ActiveName, value);
         }
 
         public double Expiration
         {
-            get
-            {
-                return this.GetDouble(IntrospectNames.ExpirationName);
-            }
-            set
-            {
-                this.SetValue(IntrospectNames.ExpirationName, value);
-            }
+            get => this.GetDouble(IntrospectNames.ExpirationName);
+            set => this.SetValue(IntrospectNames.ExpirationName, value);
         }
 
         public double IssuedAt
         {
-            get
-            {
-                return this.GetDouble(IntrospectNames.IatName);
-            }
-            set
-            {
-                this.SetValue(IntrospectNames.IatName, value);
-            }
+            get => this.GetDouble(IntrospectNames.IatName);
+            set => this.SetValue(IntrospectNames.IatName, value);
         }
 
         public double Nbf
         {
-            get
-            {
-                return this.GetDouble(IntrospectNames.NbfName);
-            }
-            set
-            {
-                this.SetValue(IntrospectNames.NbfName, value);
-            }
+            get => this.GetDouble(IntrospectNames.NbfName);
+            set => this.SetValue(IntrospectNames.NbfName, value);
         }
 
         public List<PermissionResponse> Permissions
         {
-            get
-            {
-                return this.GetObject<List<PermissionResponse>>(IntrospectNames.PermissionsName);
-            }
-            set
-            {
-                this.SetObject(IntrospectNames.PermissionsName, value);
-            }
+            get => this.GetObject<List<PermissionResponse>>(IntrospectNames.PermissionsName);
+            set => this.SetObject(IntrospectNames.PermissionsName, value);
         }
     }
 }

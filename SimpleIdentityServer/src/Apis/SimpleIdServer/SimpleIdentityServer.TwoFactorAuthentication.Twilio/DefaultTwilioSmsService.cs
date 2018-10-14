@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
             _twilioClient = new TwilioClient();
         }
 
-        public string RequiredClaim { get { return Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber; } }
+        public string RequiredClaim => Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber;
         public string Name => "SMS";
 
         public async Task SendAsync(string code, ResourceOwner user)

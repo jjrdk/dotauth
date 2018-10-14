@@ -33,13 +33,7 @@ namespace SimpleIdentityServer.Core.Common.Models
 
         public string Name { get; set; }
 
-        public string FullPath
-        {
-            get
-            {
-                return GetFullPath();
-            }
-        }
+        public string FullPath => GetFullPath();
 
         public object Clone()
         {

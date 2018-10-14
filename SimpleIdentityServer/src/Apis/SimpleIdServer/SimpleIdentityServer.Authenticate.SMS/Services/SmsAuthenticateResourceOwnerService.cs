@@ -18,13 +18,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Services
             _confirmationCodeStore = confirmationCodeStore;
         }
 
-        public string Amr
-        {
-            get
-            {
-                return Constants.AMR;
-            }
-        }
+        public string Amr => Constants.AMR;
 
         public async Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password)
         {
