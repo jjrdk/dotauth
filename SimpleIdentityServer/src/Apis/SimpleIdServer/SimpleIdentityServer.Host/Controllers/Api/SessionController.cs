@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
+    using Microsoft.AspNetCore.Http;
+
     public class SessionController : Controller
     {
         private readonly IAuthenticationService _authenticationService;
@@ -67,14 +69,14 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                 return;
             }
 
-            var query = Request.Query;
+            IQueryCollection query = Request.Query;
             var serializer = new ParamSerializer();
             RevokeSessionRequest request = null;
             if (query != null)
             {
                 request = serializer.Deserialize<RevokeSessionRequest>(query);
             }
-            
+
             Response.Cookies.Delete(Core.Constants.SESSION_ID);
             await _authenticationService.SignOutAsync(HttpContext, Constants.CookieNames.CookieName, new AuthenticationProperties()).ConfigureAwait(false);
             if (request != null && !string.IsNullOrWhiteSpace(request.PostLogoutRedirectUri) && !string.IsNullOrWhiteSpace(request.IdTokenHint))
@@ -86,19 +88,16 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                     if (!claim.Equals(default(KeyValuePair<string, object>)) && claim.Value != null)
                     {
                         var client = await _clientRepository.GetClientByIdAsync(claim.Value.ToString()).ConfigureAwait(false);
-                        if (client != null)
+                        if (client?.PostLogoutRedirectUris != null && client.PostLogoutRedirectUris.Contains(request.PostLogoutRedirectUri))
                         {
-                            if (client.PostLogoutRedirectUris != null && client.PostLogoutRedirectUris.Contains(request.PostLogoutRedirectUri))
+                            var redirectUrl = request.PostLogoutRedirectUri;
+                            if (!string.IsNullOrWhiteSpace(request.State))
                             {
-                                var redirectUrl = request.PostLogoutRedirectUri;
-                                if (!string.IsNullOrWhiteSpace(request.State))
-                                {
-                                    redirectUrl = $"{redirectUrl}?state={request.State}";
-                                }
-
-                                Response.Redirect(redirectUrl);
-                                return;
+                                redirectUrl = $"{redirectUrl}?state={request.State}";
                             }
+
+                            Response.Redirect(redirectUrl);
+                            return;
                         }
                     }
                 }

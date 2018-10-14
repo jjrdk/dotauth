@@ -23,7 +23,6 @@ using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.OpenId.Events;
 using SimpleIdentityServer.Shell.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -32,6 +31,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Shell.Controllers
 {
+    using Common.Dtos.Events.Openid;
     using Core.Common;
     using Constants = Host.Constants;
 

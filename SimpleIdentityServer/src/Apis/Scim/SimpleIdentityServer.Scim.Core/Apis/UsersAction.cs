@@ -18,11 +18,11 @@ using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Scim.Events;
 using Newtonsoft.Json;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
+    using Common.Dtos.Events.Scim;
     using SimpleIdentityServer.Core.Common;
 
     public interface IUsersAction

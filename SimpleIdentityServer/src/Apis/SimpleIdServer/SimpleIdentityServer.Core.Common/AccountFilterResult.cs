@@ -10,8 +10,8 @@
             ErrorMessages = new List<string>();
         }
 
-        public string RuleName { get; set; }
-        public IEnumerable<string> ErrorMessages { get; set; }
+        public string RuleName { get; }
+        public List<string> ErrorMessages { get; }
         public bool IsValid { get; set; }
     }
 

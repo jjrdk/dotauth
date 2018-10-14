@@ -15,13 +15,13 @@
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.OpenId.Events;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo
 {
     using Common;
+    using SimpleIdentityServer.Common.Dtos.Events.Openid;
 
     public interface IUserInfoActions
     {

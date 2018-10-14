@@ -12,273 +12,80 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Specialized;
-using System.Globalization;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace SimpleIdentityServer.Core.Common.Serializers
 {
-    public interface IParamSerializer
-    {
-        string Serialize(object obj);
-        object Deserialize(string input);
-        T Deserialize<T>(string input);
-        object Deserialize(NameValueCollection input);
-        T Deserialize<T>(NameValueCollection input);
-    }
+    using Microsoft.Extensions.Primitives;
+    using System.Collections.Generic;
+    using System.Reflection;
+    using System.Runtime.Serialization;
 
-    public class ParamSerializer : IParamSerializer
+    public class ParamSerializer
     {
         public string Serialize(object obj)
         {
-            var paramString = this.Parametrize(JObject.FromObject(obj));
-            return paramString.TrimEnd(new[] { '&' });
+            var type = obj.GetType();
+            var properties = type.GetProperties();
+            var keyvalues =
+                properties.Select(p => new KeyValuePair<string, object>(GetPropertyAlias(p), p.GetValue(obj)))
+                    .Where(x => x.Value != null);
+            return string.Join("&", keyvalues.Select(x => $"{x.Key}={x.Value}"));
         }
 
-        public object Deserialize(NameValueCollection input)
+        public T Deserialize<T>(IEnumerable<KeyValuePair<string, StringValues>> keyValues)
         {
-            return Deserialize(this.ConvertNameValueCollection(input));
+            var dict = keyValues.ToDictionary(x => x.Key, x => x.Value.ToArray());
+            var properties = typeof(T).GetProperties();
+
+            var instance = Activator.CreateInstance<T>();
+            foreach (var property in properties)
+            {
+                var name = GetPropertyAlias(property);
+                if (dict.TryGetValue(name, out var values))
+                {
+                    if (values.Length > 0)
+                    {
+                        var stringValue = values.Length == 1
+                            ? (object)values[0]
+                            : values;
+                        var type = property.PropertyType;
+                        if (type.IsGenericType && typeof(Nullable<>).IsAssignableFrom(type.GetGenericTypeDefinition()))
+                        {
+                            type = type.GetGenericArguments()[0];
+                        }
+
+                        var value = type.IsEnum
+                            ? Enum.Parse(type, (string)stringValue, true)
+                            : stringValue;
+
+
+                        property.SetValue(
+                            instance,
+                            Convert.ChangeType(
+                                value,
+                                type));
+                    }
+                }
+            }
+
+            return instance;
+        }
+
+        private static string GetPropertyAlias(PropertyInfo property)
+        {
+            var datamember = property.GetCustomAttribute<DataMemberAttribute>(true);
+            var name = datamember?.Name ?? property.Name;
+            return name;
         }
 
         public T Deserialize<T>(NameValueCollection input)
         {
-            return Deserialize<T>(this.ConvertNameValueCollection(input));
-        }
-
-        public T Deserialize<T>(IFormCollection form)
-        {
-            return Deserialize<T>(ConvertNameValueCollection(form));
-        }
-
-        public T Deserialize<T>(IQueryCollection query)
-        {
-            return Deserialize<T>(ConvertNameValueCollection(query));
-        }
-
-        public object Deserialize(string input)
-        {
-            return Deparametrize(input).ToObject<object>();
-        }
-
-        public T Deserialize<T>(string input)
-        {
-            return this.Deparametrize(input).ToObject<T>();
-        }
-
-        private JObject Deparametrize(string input)
-        {
-            var obj = new JObject();
-            var items = input.Replace("+", " ").Split(new[] { '&' });
-            foreach (string item in items)
-            {
-                var param = item.Split(new[] { '=' });
-                var key = WebUtility.UrlDecode(param[0]);
-                if (!string.IsNullOrEmpty(key))
-                {
-                    var keys = key.Split(new[] { "][" }, StringSplitOptions.RemoveEmptyEntries);
-                    var keysLast = keys.Length - 1;
-                    if (Regex.IsMatch(keys[0], @"\[") && Regex.IsMatch(keys[keysLast], @"\]$"))
-                    {
-                        keys[keysLast] = Regex.Replace(keys[keysLast], @"\]$", string.Empty);
-                        keys = keys[0].Split(new[] { '[' }).Concat(keys.Skip(1)).ToArray();
-                        keysLast = keys.Length - 1;
-                    }
-                    else
-                    {
-                        keysLast = 0;
-                    }
-                    
-                    if (param.Length == 2)
-                    {
-                        var val = WebUtility.UrlDecode(param[1]);
-                        if (keysLast != 0)
-                        {
-                            object cur = obj;
-                            for (var i = 0; i <= keysLast; i++)
-                            {
-                                int index = -1, nextindex;                                
-                                key = keys[i];
-                                if (key == string.Empty || int.TryParse(key, out index))
-                                {
-                                    key = index == -1 ? "0" : index.ToString(CultureInfo.InvariantCulture);
-                                }
-
-                                if (cur is JArray)
-                                {
-                                    var jarr = cur as JArray;
-                                    if (i == keysLast)
-                                    {
-                                        if (index >= 0 && index < jarr.Count)
-                                        {
-                                            jarr[index] = val;
-                                        }
-                                        else
-                                        {
-                                            jarr.Add(val);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (index < 0 || index >= jarr.Count)
-                                        {
-                                            if (keys[i + 1] == string.Empty || int.TryParse(keys[i + 1], out nextindex))
-                                            {
-                                                jarr.Add(new JArray());
-                                            }
-                                            else
-                                            {
-                                                jarr.Add(new JObject());
-                                            }
-
-                                            index = jarr.Count - 1;
-                                        }
-
-                                        cur = jarr.ElementAt(index);
-                                    }
-                                }
-                                else if (cur is JObject)
-                                {
-                                    var jobj = cur as JObject;
-                                    if (i == keysLast)
-                                    {
-                                        jobj[key] = val;
-                                    }
-                                    else
-                                    {
-                                        if (jobj[key] == null)
-                                        {
-                                            if (keys[i + 1] == string.Empty || int.TryParse(keys[i + 1], out nextindex))
-                                            {
-                                                jobj.Add(key, new JArray());
-                                            }
-                                            else
-                                            {
-                                                jobj.Add(key, new JObject());
-                                            }
-                                        }
-
-                                        cur = jobj[key];
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (obj[key] is JArray)
-                            {
-                                (obj[key] as JArray).Add(val);
-                            }
-                            else if (obj[key] != null && val != null)
-                            {
-                                obj[key] = new JArray { obj[key], val };
-                            }
-                            else
-                            {
-                                obj[key] = val;
-                            }
-                        }
-                    }
-                    else if (!string.IsNullOrEmpty(key))
-                    {
-                        obj[key] = null;
-                    }
-                }
-            }
-
-            return obj;
-        }
-
-        private string Parametrize(object obj, string value = "")
-        {
-            var returnVal = string.Empty;
-
-            if (obj is JObject)
-            {
-                var jobj = obj as JObject;
-                foreach (var key in jobj.Properties())
-                {
-                    if (jobj[key.Name] == null || string.IsNullOrWhiteSpace(jobj[key.Name].ToString()))
-                    {
-                        continue;
-                    }
-
-                    returnVal += this.Parametrize(
-                        jobj[key.Name], value == string.Empty ? key.Name : string.Format("{0}[{1}]", value, key.Name));
-                }
-            }
-            else if (obj is JArray)
-            {
-                var arr = obj as JArray;
-                for (int i = 0; i < arr.Count; i++)
-                {
-                    var item = arr[i];
-                    if (item is JArray || item is JObject)
-                    {
-                        returnVal += this.Parametrize(item, string.Format("{0}[{1}]", value, i));
-                    }
-                    else
-                    {
-                        returnVal += this.Parametrize(item, string.Format("{0}[]", value));
-                    }
-                }
-            }
-            else
-            {
-                return string.Format("{0}={1}&", value, obj);
-            }
-
-            return returnVal;
-        }
-
-        private string ConvertNameValueCollection(NameValueCollection input)
-        {
-            var output = new StringBuilder();
-            foreach (var key in input.AllKeys)
-            {
-                var values = input.GetValues(key) ?? new string[] { };
-                foreach (var value in values)
-                {
-                    output.AppendFormat("{0}={1}&", WebUtility.UrlEncode(key), WebUtility.UrlEncode(value));
-                }
-            }
-
-            return output.ToString().TrimEnd(new[] { '&' });
-        }
-		
-        private string ConvertNameValueCollection(IFormCollection form)
-        {
-            var output = new StringBuilder();
-            foreach (var key in form.Keys)
-            {
-                var values = form[key];
-                foreach (var value in values)
-                {
-                    output.AppendFormat("{0}={1}&", WebUtility.UrlEncode(key), WebUtility.UrlEncode(value));
-                }
-            }
-
-            return output.ToString().TrimEnd(new[] { '&' });
-        }
-
-        private string ConvertNameValueCollection(IQueryCollection query)
-        {
-            var output = new StringBuilder();
-            foreach (var key in query.Keys)
-            {
-                var values = query[key];
-                foreach (var value in values)
-                {
-                    output.AppendFormat("{0}={1}&", WebUtility.UrlEncode(key), WebUtility.UrlEncode(value));
-                }
-            }
-
-            return output.ToString().TrimEnd(new[] { '&' });
+            var keyvalues =
+                input.AllKeys.Select(x => new KeyValuePair<string, StringValues>(x, new StringValues(input[x])));
+            return Deserialize<T>(keyvalues);
         }
     }
 }
