@@ -211,8 +211,8 @@ namespace System.Security.Cryptography.Algorithms.Extensions
                 for (int i = 0; i < elCurrent.m_lAttributes.Count; i += 2)
                 {
                     AddToken(c_attribute, ref position);
-                    AddString((String)elCurrent.m_lAttributes[i], ref position);
-                    AddString((String)elCurrent.m_lAttributes[i + 1], ref position);
+                    AddString((string)elCurrent.m_lAttributes[i], ref position);
+                    AddString((string)elCurrent.m_lAttributes[i + 1], ref position);
                 }
             }
 
@@ -296,45 +296,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
             return strTag;
         }
 
-        public ArrayList GetChildrenPositionForElement(int position)
-        {
-            if (m_data.Length <= position)
-                throw new XmlSyntaxException();
-
-            if (m_data[position++] != c_element)
-                throw new XmlSyntaxException();
-
-            var children = new ArrayList();
-
-            // This is to move past the tag string
-            GetString(ref position);
-
-            while (m_data[position] == c_attribute)
-            {
-                position++;
-                // Read name and value, then throw them away 
-                GetString(ref position, false);
-                GetString(ref position, false);
-            }
-
-            if (m_data[position] == c_text)
-            {
-                position++;
-                // Read text, then throw it away.
-                GetString(ref position, false);
-            }
-
-            while (m_data[position] != c_children)
-            {
-                children.Add(position);
-                InternalGetElement(ref position, false);
-            }
-
-            position++;
-            return children;
-        }
-
-        public string GetAttributeForElement(int position, String attributeName)
+        public string GetAttributeForElement(int position, string attributeName)
         {
             if (m_data.Length <= position)
                 throw new XmlSyntaxException();

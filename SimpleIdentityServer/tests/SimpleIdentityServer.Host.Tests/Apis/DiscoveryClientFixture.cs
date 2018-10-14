@@ -16,6 +16,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 {
     using Client;
     using Client.Operations;
+    using System;
     using System.Threading.Tasks;
     using Xunit;
 
@@ -37,7 +38,9 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             InitializeFakeObjects();
 
             // ACT
-            var discovery = await _discoveryClient.GetDiscoveryInformationAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+            var discovery =
+                await _discoveryClient.GetDiscoveryInformationAsync(
+                    new Uri(baseUrl + "/.well-known/openid-configuration")).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(discovery);

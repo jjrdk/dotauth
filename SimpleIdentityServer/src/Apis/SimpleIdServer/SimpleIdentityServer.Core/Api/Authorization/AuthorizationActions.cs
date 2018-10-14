@@ -119,7 +119,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                         actionName = Enum.GetName(typeof(IdentityServerEndPoints), actionEnum);
                     }
 
-                    var serializedParameters = actionResult.RedirectInstruction == null || actionResult.RedirectInstruction.Parameters == null ? String.Empty :
+                    var serializedParameters = actionResult.RedirectInstruction == null || actionResult.RedirectInstruction.Parameters == null ? string.Empty :
                         actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
                     _oauthEventSource.EndAuthorization(actionTypeName,
                         actionName,

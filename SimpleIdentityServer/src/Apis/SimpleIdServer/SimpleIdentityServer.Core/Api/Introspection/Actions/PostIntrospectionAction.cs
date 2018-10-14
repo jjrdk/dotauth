@@ -18,7 +18,6 @@ using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
@@ -155,31 +154,6 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
             else
             {
                 result.Active = true;
-            }
-
-            return result;
-        }
-
-        private static GrantedToken GetGrantedToken(JwsPayload jwsPayload)
-        {
-            if (jwsPayload == null)
-            {
-                throw new ArgumentNullException(nameof(jwsPayload));
-            }
-
-            var result = new GrantedToken
-            {
-                Scope = jwsPayload.GetClaimValue(StandardClaimNames.Scopes),
-                ClientId = jwsPayload.GetClaimValue(StandardClaimNames.ClientId),
-                ExpiresIn = (int)jwsPayload.ExpirationTime,
-                TokenType = Constants.StandardTokenTypes.Bearer,
-                IdTokenPayLoad = jwsPayload
-            };
-            
-            var issuedAt = jwsPayload.GetDoubleClaim(StandardClaimNames.Iat);
-            if (issuedAt != default(double))
-            {
-                result.CreateDateTime = issuedAt.UnixTimeStampToDateTime();
             }
 
             return result;

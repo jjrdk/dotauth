@@ -175,7 +175,7 @@ namespace SimpleIdentityServer.Scim.Core.EF
         {
            SchemaAttributeFactory.CreateValueAttribute("Email addresses for the user.  The value SHOULD be canonicalized by the service provider, e.g., 'bjensen@example.com' instead of 'bjensen@EXAMPLE.COM'. Canonical type values of 'work', 'home', and 'other'."),
            SchemaAttributeFactory.CreateDisplayAttribute("A human-readable name, primarily used for display purposes.  READ-ONLY."),
-           SchemaAttributeFactory.CreateTypeAttribute("A label indicating the attribute's function, e.g., 'work' or 'home'.", new string[] { "work", "home", "other" }),
+           SchemaAttributeFactory.CreateTypeAttribute("A label indicating the attribute's function, e.g., 'work' or 'home'.", new[] { "work", "home", "other" }),
            SchemaAttributeFactory.CreatePrimaryAttribute("A Boolean value indicating the 'primary' or preferred attribute value for this attribute, e.g., the preferred mailing address or primary email address. The primary attribute value 'true' MUST appear no more than once.")
         };
 
@@ -183,7 +183,7 @@ namespace SimpleIdentityServer.Scim.Core.EF
         {
            SchemaAttributeFactory.CreateValueAttribute("Phone number of the User."),
            SchemaAttributeFactory.CreateDisplayAttribute("A human-readable name, primarily used for display purposes.  READ-ONLY."),
-           SchemaAttributeFactory.CreateTypeAttribute("A label indicating the attribute's function, e.g., 'work', 'home', 'mobile'.", new string[] { "work", "home", "mobile", "fax", "pager", "other" }),
+           SchemaAttributeFactory.CreateTypeAttribute("A label indicating the attribute's function, e.g., 'work', 'home', 'mobile'.", new[] { "work", "home", "mobile", "fax", "pager", "other" }),
            SchemaAttributeFactory.CreatePrimaryAttribute("A Boolean value indicating the 'primary' or preferred attribute value for this attribute, e.g., the preferred phone number or primary phone number.  The primary attribute value 'true' MUST appear no more than once.")
         };
 
@@ -191,24 +191,24 @@ namespace SimpleIdentityServer.Scim.Core.EF
         {
             SchemaAttributeFactory.CreateValueAttribute("Instant messaging address for the User."),
             SchemaAttributeFactory.CreateDisplayAttribute("A human-readable name, primarily used for display purposes.READ - ONLY."),
-            SchemaAttributeFactory.CreateTypeAttribute("A label indicating the attribute's function, e.g., 'aim', 'gtalk', 'xmpp'.", new string[] { "aim", "gtalk", "icq", "xmpp", "msn", "skype", "qq", "yahoo" }),
+            SchemaAttributeFactory.CreateTypeAttribute("A label indicating the attribute's function, e.g., 'aim', 'gtalk', 'xmpp'.", new[] { "aim", "gtalk", "icq", "xmpp", "msn", "skype", "qq", "yahoo" }),
             SchemaAttributeFactory.CreatePrimaryAttribute("A Boolean value indicating the 'primary' or preferred attribute value for this attribute, e.g., the preferred messenger or primary messenger. The primary attribute value 'true' MUST appear no more than once."),
         };
 
         private static List<SchemaAttribute> UserPhotoAttributes = new List<SchemaAttribute>
         {
-            SchemaAttributeFactory.CreateValueAttribute("URL of a photo of the User.", referenceTypes: new string [] { "external" }, type: ScimConstants.SchemaAttributeTypes.Reference),
+            SchemaAttributeFactory.CreateValueAttribute("URL of a photo of the User.", referenceTypes: new[] { "external" }, type: ScimConstants.SchemaAttributeTypes.Reference),
             SchemaAttributeFactory.CreateDisplayAttribute("A human-readable name, primarily used for display purposes.  READ-ONLY."),
-            SchemaAttributeFactory.CreateTypeAttribute("A label indicating the attribute's function, i.e., 'photo' or 'thumbnail'.", new string[] { "photo", "thumbnail" }),
+            SchemaAttributeFactory.CreateTypeAttribute("A label indicating the attribute's function, i.e., 'photo' or 'thumbnail'.", new[] { "photo", "thumbnail" }),
             SchemaAttributeFactory.CreatePrimaryAttribute("A Boolean value indicating the 'primary' or preferred attribute value for this attribute, e.g., the preferred photo or thumbnail.  The primary attribute value 'true' MUST appear no more than once.")
         };
 
         private static List<SchemaAttribute> UserGroupAttributes = new List<SchemaAttribute>
         {
             SchemaAttributeFactory.CreateValueAttribute("The identifier of the User's group.", mutability: ScimConstants.SchemaAttributeMutability.ReadOnly),
-            SchemaAttributeFactory.CreateRefAttribute("The URI of the corresponding 'Group' resource to which the user belongs.", new string[] { "User", "Group" }, mutability: ScimConstants.SchemaAttributeMutability.ReadOnly),
+            SchemaAttributeFactory.CreateRefAttribute("The URI of the corresponding 'Group' resource to which the user belongs.", new[] { "User", "Group" }, mutability: ScimConstants.SchemaAttributeMutability.ReadOnly),
             SchemaAttributeFactory.CreateDisplayAttribute("A human-readable name, primarily used for display purposes.  READ-ONLY.", mutability: ScimConstants.SchemaAttributeMutability.ReadOnly),
-            SchemaAttributeFactory.CreateTypeAttribute("A label indicating the attribute's function, e.g., 'direct' or 'indirect'.", new string[] { "direct", "indirect" }, mutability: ScimConstants.SchemaAttributeMutability.ReadOnly),
+            SchemaAttributeFactory.CreateTypeAttribute("A label indicating the attribute's function, e.g., 'direct' or 'indirect'.", new[] { "direct", "indirect" }, mutability: ScimConstants.SchemaAttributeMutability.ReadOnly),
         };
 
         private static List<SchemaAttribute> UserEntitlementAttributes = new List<SchemaAttribute>
@@ -253,7 +253,7 @@ namespace SimpleIdentityServer.Scim.Core.EF
              SchemaAttributeFactory.CreateAttribute(ScimConstants.AddressResponseNames.Region, "The state or region component."),
              SchemaAttributeFactory.CreateAttribute(ScimConstants.AddressResponseNames.PostalCode, "The zip code or postal code component."),
              SchemaAttributeFactory.CreateAttribute(ScimConstants.AddressResponseNames.Country, "The country name component."),
-             SchemaAttributeFactory.CreateTypeAttribute("A label indicating the attribute's function, e.g., 'work' or 'home'.", new string[] { "work", "home", "other" })
+             SchemaAttributeFactory.CreateTypeAttribute("A label indicating the attribute's function, e.g., 'work' or 'home'.", new[] { "work", "home", "other" })
         };
 
         public static Schema UserSchema = new Schema
@@ -303,7 +303,7 @@ namespace SimpleIdentityServer.Scim.Core.EF
                      "A fully qualified URL pointing to a page"+
                                     "representing the User's online profile.",
                      type: ScimConstants.SchemaAttributeTypes.Reference,
-                     referenceTypes: new string [] { "external" }),
+                     referenceTypes: new[] { "external" }),
                 // Title
                 SchemaAttributeFactory.CreateAttribute(
                      ScimConstants.UserResourceResponseNames.Title,
@@ -422,8 +422,8 @@ namespace SimpleIdentityServer.Scim.Core.EF
         private static List<SchemaAttribute> GroupMembersAttribute = new List<SchemaAttribute>
         {
             SchemaAttributeFactory.CreateAttribute(ScimConstants.GroupMembersResponseNames.Value, "Identifier of the member of this Group.", uniqueness: ScimConstants.SchemaAttributeUniqueness.None, required : false, mutability: ScimConstants.SchemaAttributeMutability.Immutable),
-            SchemaAttributeFactory.CreateRefAttribute("The URI corresponding to a SCIM resource that is a member of this Group.", new string[] { "User", "Group" }, ScimConstants.SchemaAttributeMutability.Immutable),
-            SchemaAttributeFactory.CreateTypeAttribute("A label indicating the type of resource, e.g., 'User' or 'Group'.", new string[] { "User", "Group" }, ScimConstants.SchemaAttributeMutability.Immutable)
+            SchemaAttributeFactory.CreateRefAttribute("The URI corresponding to a SCIM resource that is a member of this Group.", new[] { "User", "Group" }, ScimConstants.SchemaAttributeMutability.Immutable),
+            SchemaAttributeFactory.CreateTypeAttribute("A label indicating the type of resource, e.g., 'User' or 'Group'.", new[] { "User", "Group" }, ScimConstants.SchemaAttributeMutability.Immutable)
         };
 
         public static Schema GroupSchema = new Schema

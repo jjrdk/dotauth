@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Host.Tests
             ModelEncryptionKey = new JsonWebKey
             {
                 Alg = AllAlg.RSA1_5,
-                KeyOps = new KeyOperations[]
+                KeyOps = new[]
                 {
                     KeyOperations.Encrypt,
                     KeyOperations.Decrypt

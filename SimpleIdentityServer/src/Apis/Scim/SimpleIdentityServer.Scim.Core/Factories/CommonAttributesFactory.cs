@@ -145,7 +145,7 @@ namespace SimpleIdentityServer.Scim.Core.Factories
                 throw new ArgumentNullException(nameof(location));
             }
 
-            return new JProperty[]
+            return new[]
             {
                 new JProperty(ScimConstants.MetaResponseNames.ResourceType, representation.ResourceType),
                 new JProperty(ScimConstants.MetaResponseNames.Created, representation.Created),

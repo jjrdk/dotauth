@@ -17,7 +17,6 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using System.Threading.Tasks;
     using Core.Api.Jwks;
     using Core.Common.DTOs.Requests;
-    using Host;
     using Microsoft.AspNetCore.Mvc;
 
     [Route(Core.Constants.EndPoints.Jwks)]

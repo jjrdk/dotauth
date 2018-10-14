@@ -26,7 +26,6 @@ namespace SimpleIdentityServer.Core.Validators
 {
     public interface IAuthorizationCodeGrantTypeParameterAuthEdpValidator
     {
-        Core.Common.Models.Client Validate(AuthorizationParameter parameter);
         Task<Core.Common.Models.Client> ValidateAsync(AuthorizationParameter parameter);
     }
 
@@ -43,11 +42,6 @@ namespace SimpleIdentityServer.Core.Validators
             _parameterParserHelper = parameterParserHelper;
             _clientRepository = clientRepository;
             _clientValidator = clientValidator;
-        }
-
-        public Core.Common.Models.Client Validate(AuthorizationParameter parameter)
-        {
-            return ValidateAsync(parameter).Result;
         }
 
         public async Task<Core.Common.Models.Client> ValidateAsync(AuthorizationParameter parameter)

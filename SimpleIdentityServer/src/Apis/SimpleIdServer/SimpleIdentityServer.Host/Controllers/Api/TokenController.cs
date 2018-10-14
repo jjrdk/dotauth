@@ -30,7 +30,6 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Core.Common.Serializers;
     using Core.Errors;
     using Extensions;
-    using Host;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Primitives;
 

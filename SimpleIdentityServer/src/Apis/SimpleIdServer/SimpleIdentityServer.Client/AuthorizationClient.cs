@@ -28,7 +28,6 @@ namespace SimpleIdentityServer.Client
 
     public interface IAuthorizationClient
     {
-        Task<GetAuthorizationResult> ExecuteAsync(Uri authorizationUri, AuthorizationRequest request);
         Task<GetAuthorizationResult> ResolveAsync(string discoveryDocumentationUrl, AuthorizationRequest request);
     }
 
@@ -41,21 +40,6 @@ namespace SimpleIdentityServer.Client
         {
             _client = client;
             _getDiscoveryOperation = getDiscoveryOperation;
-        }
-
-        public Task<GetAuthorizationResult> ExecuteAsync(Uri authorizationUri, AuthorizationRequest request)
-        {
-            if (authorizationUri == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationUri));
-            }
-
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            return GetAuthorization(authorizationUri, request);
         }
 
         public async Task<GetAuthorizationResult> ResolveAsync(string discoveryDocumentationUrl, AuthorizationRequest request)
@@ -71,7 +55,7 @@ namespace SimpleIdentityServer.Client
             }
 
             var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            return await ExecuteAsync(new Uri(discoveryDocument.AuthorizationEndPoint), request).ConfigureAwait(false);
+            return await GetAuthorization(new Uri(discoveryDocument.AuthorizationEndPoint), request).ConfigureAwait(false);
         }
 
         private async Task<GetAuthorizationResult> GetAuthorization(Uri uri, AuthorizationRequest request)

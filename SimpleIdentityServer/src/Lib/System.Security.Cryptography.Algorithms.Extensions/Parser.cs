@@ -120,7 +120,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
             bool intag = false;
             int stackDepth = 1;
             SecurityElementType type = SecurityElementType.Regular;
-            String strValue = null;
+            string strValue = null;
             bool sawEquals = false;
             bool sawText = false;
             int status = 0;
@@ -427,7 +427,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
                                 }
                                 else if (!sawEquals)
                                 {
-                                    if (String.Compare(stream.GetNextString(), "encoding", StringComparison.Ordinal) == 0)
+                                    if (string.Compare(stream.GetNextString(), "encoding", StringComparison.Ordinal) == 0)
                                         sawEncoding = true;
                                 }
                                 else

@@ -516,7 +516,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
             var payload = new JwsPayload
             {
-                { "role", new string[] { "role3" } }
+                { "role", new[] { "role3" } }
             };
             _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
                 .Returns(Task.FromResult(payload));

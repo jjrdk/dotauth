@@ -12,18 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 namespace SimpleIdentityServer.Core.Exceptions
 {
     public class IdentityServerAuthenticationException : InternalIdentityServerException
     {
         public IdentityServerAuthenticationException(string message) : base(message)
-        {
-        }
-
-        public IdentityServerAuthenticationException(string message, Exception innerException)
-            : base(message, innerException)
         {
         }
     }

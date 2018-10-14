@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
@@ -25,33 +24,7 @@ namespace SimpleIdentityServer.Client
         /// <summary>
         /// Get information about open-id contract asynchronously.
         /// </summary>
-        /// <param name="discoveryDocumentationUrl">Absolute uri of the open-id contract</param>
-        /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
-        /// <exception cref="ArgumentException">Thrown when parameter is not a valid URI</exception>
-        /// <returns>Open-id contract</returns>
-        DiscoveryInformation GetDiscoveryInformation(string discoveryDocumentationUrl);
-
-        /// <summary>
-        /// Get information about open-id contract synchronously.
-        /// </summary>
-        /// <param name="discoveryDocumentationUri">Absolute URI of the open-id contract</param>
-        /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
-        /// <returns>Open-id contract</returns>
-        DiscoveryInformation GetDiscoveryInformation(Uri discoveryDocumentationUrl);
-
-        /// <summary>
-        /// Get information about open-id contract asynchronously.
-        /// </summary>
-        /// <param name="discoveryDocumentationUrl">Absolute uri of the open-id contract</param>
-        /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
-        /// <exception cref="ArgumentException">Thrown when parameter is not a valid URI</exception>
-        /// <returns>Open-id contract</returns>
-        Task<DiscoveryInformation> GetDiscoveryInformationAsync(string discoveryDocumentationUrl);
-
-        /// <summary>
-        /// Get information about open-id contract asynchronously.
-        /// </summary>
-        /// <param name="discoveryDocumentationUri">Absolute URI of the open-id contract</param>
+        /// <param name="discoveryDocumentationUrl">Absolute URI of the open-id contract</param>
         /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
         /// <returns>Open-id contract</returns>
         Task<DiscoveryInformation> GetDiscoveryInformationAsync(Uri discoveryDocumentationUrl);
@@ -64,51 +37,6 @@ namespace SimpleIdentityServer.Client
         public DiscoveryClient(IGetDiscoveryOperation getDiscoveryOperation)
         {
             _getDiscoveryOperation = getDiscoveryOperation;
-        }
-
-        /// <summary>
-        /// Get information about open-id contract asynchronously.
-        /// </summary>
-        /// <param name="discoveryDocumentationUrl">Absolute uri of the open-id contract</param>
-        /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
-        /// <exception cref="ArgumentException">Thrown when parameter is not a valid URI</exception>
-        /// <returns>Open-id contract</returns>
-        public DiscoveryInformation GetDiscoveryInformation(string discoveryDocumentationUrl)
-        {
-            return GetDiscoveryInformationAsync(discoveryDocumentationUrl).Result;
-        }
-
-        /// <summary>
-        /// Get information about open-id contract synchronously.
-        /// </summary>
-        /// <param name="discoveryDocumentationUri">Absolute URI of the open-id contract</param>
-        /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
-        /// <returns>Open-id contract</returns>
-        public DiscoveryInformation GetDiscoveryInformation(Uri discoveryDocumentationUri)
-        {
-            return GetDiscoveryInformationAsync(discoveryDocumentationUri).Result;
-        }
-        
-        /// <summary>
-        /// Get information about open-id contract asynchronously.
-        /// </summary>
-        /// <param name="discoveryDocumentationUrl">Absolute uri of the open-id contract</param>
-        /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
-        /// <exception cref="ArgumentException">Thrown when parameter is not a valid URI</exception>
-        /// <returns>Open-id contract</returns>
-        public Task<DiscoveryInformation> GetDiscoveryInformationAsync(string discoveryDocumentationUrl)
-        {
-            if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
-            {
-                throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
-            }
-
-            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out var uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
-            }
-
-            return GetDiscoveryInformationAsync(uri);
         }
 
         /// <summary>

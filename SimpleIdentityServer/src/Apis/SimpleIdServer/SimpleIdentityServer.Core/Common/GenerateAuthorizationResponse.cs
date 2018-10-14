@@ -153,8 +153,7 @@ namespace SimpleIdentityServer.Core.Common
 
             _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(idTokenPayload,
                 authorizationCode == null ? string.Empty : authorizationCode.Code,
-                grantedToken == null ? string.Empty : grantedToken.AccessToken,
-                authorizationParameter, client);
+                grantedToken == null ? string.Empty : grantedToken.AccessToken, client);
             
             if (newAccessTokenGranted) // 3. Insert the stateful access token into the DB OR insert the access token into the caching.
             {
@@ -238,7 +237,6 @@ namespace SimpleIdentityServer.Core.Common
                 return null;
             }
 
-            var sessionState = string.Empty;
             var salt = Guid.NewGuid().ToString();
             var bytes = Encoding.UTF8.GetBytes(clientId + originUrl + sessionId + salt);
             byte[] hash;

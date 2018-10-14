@@ -21,7 +21,6 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Core.Common.DTOs.Requests;
     using Core.Errors;
     using Extensions;
-    using Host;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 

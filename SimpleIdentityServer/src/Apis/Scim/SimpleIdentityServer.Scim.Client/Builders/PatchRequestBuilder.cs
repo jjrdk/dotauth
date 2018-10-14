@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Scim.Client.Builders
         {
             _callback = callback ?? throw new ArgumentNullException(nameof(callback));
             _operations = new List<PatchOperation>();
-            Initialize(new string[] { ScimConstants.Messages.PatchOp });
+            Initialize(new[] { ScimConstants.Messages.PatchOp });
         }
 
         public PatchRequestBuilder AddOperation(PatchOperation operation)

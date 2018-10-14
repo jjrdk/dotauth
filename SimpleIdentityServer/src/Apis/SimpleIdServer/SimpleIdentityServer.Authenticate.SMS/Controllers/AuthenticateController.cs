@@ -13,7 +13,6 @@ using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
@@ -42,7 +41,6 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             IAuthenticateActions authenticateActions,
             IProfileActions profileActions,
             IDataProtectionProvider dataProtectionProvider,
-            IEncoder encoder,
             ITranslationManager translationManager,
             IOpenIdEventSource simpleIdentityServerEventSource,
             IUrlHelperFactory urlHelperFactory,

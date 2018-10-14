@@ -67,7 +67,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
         public BCryptHashAlgorithm(CngAlgorithm algorithm, string implementation)
         {
             Contract.Requires(algorithm != null);
-            Contract.Requires(!String.IsNullOrEmpty(implementation));
+            Contract.Requires(!string.IsNullOrEmpty(implementation));
             Contract.Ensures(m_algorithmHandle != null && !m_algorithmHandle.IsInvalid && !m_algorithmHandle.IsClosed);
             Contract.Ensures(m_hashHandle != null && !m_hashHandle.IsInvalid && !m_hashHandle.IsClosed);
             
@@ -230,24 +230,6 @@ namespace System.Security.Cryptography.Algorithms.Extensions
             }
 
             return hashValue;
-        }
-
-        [SecuritySafeCritical]
-        public void HashStream(Stream stream)
-        {
-            Contract.Requires(stream != null);
-
-            // Read the data 4KB at a time, providing similar read characteristics to a standard HashAlgorithm
-            byte[] buffer = new byte[4096];
-            int bytesRead = 0;
-            do
-            {
-                bytesRead = stream.Read(buffer, 0, buffer.Length);
-                if (bytesRead > 0)
-                {
-                    HashCore(buffer, 0, bytesRead);
-                }
-            } while (bytesRead > 0);
         }
     }
 }

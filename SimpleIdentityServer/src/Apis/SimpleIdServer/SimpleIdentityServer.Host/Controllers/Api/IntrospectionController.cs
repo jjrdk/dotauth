@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
 using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Api.Introspection;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;

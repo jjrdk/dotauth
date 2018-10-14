@@ -852,8 +852,8 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             InitializeMockObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(null, null, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(new JwsPayload(), null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(new JwsPayload(), null, null, null));
         }
 
         [Fact]
@@ -870,7 +870,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
 
             // ACT & ASSERT
-            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, null, null, authorizationParameter, new Core.Common.Models.Client());
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, null, null, new Core.Common.Models.Client());
             Assert.False(jwsPayload.ContainsKey(StandardClaimNames.AtHash));
             Assert.False(jwsPayload.ContainsKey(StandardClaimNames.CHash));
         }
@@ -889,7 +889,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
 
             // ACT & ASSERT
-            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, "authorization_code", "access_token", authorizationParameter, client);
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, "authorization_code", "access_token", client);
             Assert.True(jwsPayload.ContainsKey(StandardClaimNames.AtHash));
             Assert.True(jwsPayload.ContainsKey(StandardClaimNames.CHash));
         }
@@ -908,7 +908,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
 
             // ACT & ASSERT
-            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, "authorization_code", "access_token", authorizationParameter, client);
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, "authorization_code", "access_token", client);
             Assert.True(jwsPayload.ContainsKey(StandardClaimNames.AtHash));
             Assert.True(jwsPayload.ContainsKey(StandardClaimNames.CHash));
         }
@@ -927,7 +927,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
 
             // ACT & ASSERT
-            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, "authorization_code", "access_token", authorizationParameter, client);
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, "authorization_code", "access_token", client);
             Assert.True(jwsPayload.ContainsKey(StandardClaimNames.AtHash));
             Assert.True(jwsPayload.ContainsKey(StandardClaimNames.CHash));
         }

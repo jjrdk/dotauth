@@ -16,7 +16,6 @@ namespace System.Security.Cryptography.Algorithms.Extensions
 {
     using Collections;
     using Diagnostics.Contracts;
-    using IO;
     using Newtonsoft.Json;
     using Text;
 
@@ -30,33 +29,25 @@ namespace System.Security.Cryptography.Algorithms.Extensions
     internal interface ISecurityElementFactory
     {
         SecurityElement CreateSecurityElement();
-
-        object Copy();
-
-        string GetTag();
-
-        string Attribute(string attributeName);
     }
 
     [JsonObject]
     [Runtime.InteropServices.ComVisible(true)]
-    sealed public class SecurityElement : ISecurityElementFactory
+    public sealed class SecurityElement : ISecurityElementFactory
     {
         internal string m_strTag;
         internal string m_strText;
-        private ArrayList m_lChildren;
         internal ArrayList m_lAttributes;
         internal SecurityElementType m_type = SecurityElementType.Regular;
 
-        private static readonly char[] s_tagIllegalCharacters = new char[] { ' ', '<', '>' };
-        private static readonly char[] s_textIllegalCharacters = new char[] { '<', '>' };
-        private static readonly char[] s_valueIllegalCharacters = new char[] { '<', '>', '\"' };
-        private const String s_strIndent = "   ";
+        private static readonly char[] s_tagIllegalCharacters = new[] { ' ', '<', '>' };
+        private static readonly char[] s_textIllegalCharacters = new[] { '<', '>' };
+        private static readonly char[] s_valueIllegalCharacters = new[] { '<', '>', '\"' };
 
         private const int c_AttributesTypical = 4 * 2;  // 4 attributes, times 2 strings per attribute 
         private const int c_ChildrenTypical = 1;
 
-        private static readonly String[] s_escapeStringPairs = new String[]
+        private static readonly string[] s_escapeStringPairs = new[]
             { 
                 // these must be all once character escape sequences or a new escaping algorithm is needed
                 "<", "&lt;",
@@ -65,8 +56,6 @@ namespace System.Security.Cryptography.Algorithms.Extensions
                 "\'", "&apos;",
                 "&", "&amp;"
             };
-
-        private static readonly char[] s_escapeChars = new char[] { '<', '>', '\"', '\'', '&' };
 
         //-------------------------- Constructors --------------------------- 
 
@@ -81,44 +70,41 @@ namespace System.Security.Cryptography.Algorithms.Extensions
             return this;
         }
 
-        string ISecurityElementFactory.GetTag()
-        {
-            return Tag;
-        }
-
-        object ISecurityElementFactory.Copy()
-        {
-            return Copy();
-        }
-
-        string ISecurityElementFactory.Attribute(string attributeName)
-        {
-            return Attribute(attributeName);
-        }
-
         public SecurityElement(string tag)
         {
             if (tag == null)
+            {
                 throw new ArgumentNullException("tag");
+            }
 
             if (!IsValidTag(tag))
+            {
                 throw new ArgumentException("Argument_InvalidElementTag");
+            }
+
             Contract.EndContractBlock();
 
             m_strTag = tag;
             m_strText = null;
         }
 
-        public SecurityElement(String tag, String text)
+        public SecurityElement(string tag, string text)
         {
             if (tag == null)
+            {
                 throw new ArgumentNullException("tag");
+            }
 
             if (!IsValidTag(tag))
+            {
                 throw new ArgumentException("Argument_InvalidElementTag");
+            }
 
             if (text != null && !IsValidText(text))
+            {
                 throw new ArgumentException("Argument_InvalidElementText");
+            }
+
             Contract.EndContractBlock();
 
             m_strTag = tag;
@@ -126,106 +112,6 @@ namespace System.Security.Cryptography.Algorithms.Extensions
         }
 
         //-------------------------- Properties ----------------------------- 
-
-        public string Tag
-        {
-            [Pure]
-            get
-            {
-                return m_strTag;
-            }
-
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException("Tag");
-
-                if (!IsValidTag(value))
-                    throw new ArgumentException("Argument_InvalidElementTag");
-                Contract.EndContractBlock();
-
-                m_strTag = value;
-            }
-        }
-
-        public Hashtable Attributes
-        {
-            get
-            {
-                if (m_lAttributes == null || m_lAttributes.Count == 0)
-                {
-                    return null;
-                }
-                else
-                {
-                    Hashtable hashtable = new Hashtable(m_lAttributes.Count / 2);
-
-                    int iMax = m_lAttributes.Count;
-                    Contract.Assert(iMax % 2 == 0, "Odd number of strings means the attr/value pairs were not added correctly");
-
-                    for (int i = 0; i < iMax; i += 2)
-                    {
-                        hashtable.Add(m_lAttributes[i], m_lAttributes[i + 1]);
-                    }
-
-                    return hashtable;
-                }
-            }
-
-            set
-            {
-                if (value == null || value.Count == 0)
-                {
-                    m_lAttributes = null;
-                }
-                else
-                {
-                    ArrayList list = new ArrayList(value.Count);
-
-                    System.Collections.IDictionaryEnumerator enumerator = (System.Collections.IDictionaryEnumerator)value.GetEnumerator();
-
-                    while (enumerator.MoveNext())
-                    {
-                        String attrName = (String)enumerator.Key;
-                        String attrValue = (String)enumerator.Value;
-
-                        if (!IsValidAttributeName(attrName))
-                            throw new ArgumentException("Argument_InvalidElementName");
-
-                        if (!IsValidAttributeValue(attrValue))
-                            throw new ArgumentException("Argument_InvalidElementValue");
-
-                        list.Add(attrName);
-                        list.Add(attrValue);
-                    }
-
-                    m_lAttributes = list;
-                }
-            }
-        }
-
-        public string Text
-        {
-            get
-            {
-                return Unescape(m_strText);
-            }
-
-            set
-            {
-                if (value == null)
-                {
-                    m_strText = null;
-                }
-                else
-                {
-                    if (!IsValidText(value))
-                        throw new ArgumentException("Argument_InvalidElementTag");
-
-                    m_strText = value;
-                }
-            }
-        }
 
         public ArrayList Children
         {
@@ -244,7 +130,9 @@ namespace System.Security.Cryptography.Algorithms.Extensions
                     while (enumerator.MoveNext())
                     {
                         if (enumerator.Current == null)
+                        {
                             throw new ArgumentException("ArgumentNull_Child");
+                        }
                     }
                 }
 
@@ -255,25 +143,24 @@ namespace System.Security.Cryptography.Algorithms.Extensions
         internal void ConvertSecurityElementFactories()
         {
             if (m_lChildren == null)
+            {
                 return;
+            }
 
             for (int i = 0; i < m_lChildren.Count; ++i)
             {
                 ISecurityElementFactory iseFactory = m_lChildren[i] as ISecurityElementFactory;
                 if (iseFactory != null && !(m_lChildren[i] is SecurityElement))
+                {
                     m_lChildren[i] = iseFactory.CreateSecurityElement();
+                }
             }
         }
 
-        internal ArrayList InternalChildren
-        {
-            get
-            {
+        internal ArrayList InternalChildren =>
                 // Beware!  This array list can contain SecurityElements and other ISecurityElementFactories. 
                 // If you want to get a consistent SecurityElement view, call get_Children.
-                return m_lChildren;
-            }
-        }
+                m_lChildren;
 
         //-------------------------- Public Methods -----------------------------
 
@@ -290,10 +177,12 @@ namespace System.Security.Cryptography.Algorithms.Extensions
 
                 for (int i = 0; i < iMax; i += 2)
                 {
-                    String strAttrName = (String)m_lAttributes[i];
+                    string strAttrName = (string)m_lAttributes[i];
 
-                    if (String.Equals(strAttrName, name))
+                    if (string.Equals(strAttrName, name))
+                    {
                         throw new ArgumentException("Argument_AttributeNamesMustBeUnique");
+                    }
                 }
             }
 
@@ -301,19 +190,28 @@ namespace System.Security.Cryptography.Algorithms.Extensions
             m_lAttributes.Add(value);
         }
 
-        public void AddAttribute(String name, String value)
+        public void AddAttribute(string name, string value)
         {
             if (name == null)
+            {
                 throw new ArgumentNullException("name");
+            }
 
             if (value == null)
+            {
                 throw new ArgumentNullException("value");
+            }
 
             if (!IsValidAttributeName(name))
+            {
                 throw new ArgumentException("Argument_InvalidElementName");
+            }
 
             if (!IsValidAttributeValue(value))
+            {
                 throw new ArgumentException("Argument_InvalidElementValue");
+            }
+
             Contract.EndContractBlock();
 
             AddAttributeSafe(name, value);
@@ -322,224 +220,69 @@ namespace System.Security.Cryptography.Algorithms.Extensions
         public void AddChild(SecurityElement child)
         {
             if (child == null)
+            {
                 throw new ArgumentNullException("child");
+            }
+
             Contract.EndContractBlock();
 
             if (m_lChildren == null)
+            {
                 m_lChildren = new ArrayList(c_ChildrenTypical);
+            }
 
             m_lChildren.Add(child);
-        }
-
-        internal void AddChild(ISecurityElementFactory child)
-        {
-            if (child == null)
-                throw new ArgumentNullException("child");
-            Contract.EndContractBlock();
-
-            if (m_lChildren == null)
-                m_lChildren = new ArrayList(c_ChildrenTypical);
-
-            m_lChildren.Add(child);
-        }
-
-        internal void AddChildNoDuplicates(ISecurityElementFactory child)
-        {
-            if (child == null)
-                throw new ArgumentNullException("child");
-            Contract.EndContractBlock();
-
-            if (m_lChildren == null)
-            {
-                m_lChildren = new ArrayList(c_ChildrenTypical);
-                m_lChildren.Add(child);
-            }
-            else
-            {
-                for (int i = 0; i < m_lChildren.Count; ++i)
-                {
-                    if (m_lChildren[i] == child)
-                        return;
-                }
-                m_lChildren.Add(child);
-            }
-        }
-
-        public bool Equal(SecurityElement other)
-        {
-            if (other == null)
-                return false;
-
-            // Check if the tags are the same 
-            if (!string.Equals(m_strTag, other.m_strTag))
-                return false;
-
-            // Check if the text is the same
-            if (!string.Equals(m_strText, other.m_strText))
-                return false;
-
-            // Check if the attributes are the same and appear in the same
-            // order. 
-
-            // Maybe we can get away by only checking the number of attributes
-            if (m_lAttributes == null || other.m_lAttributes == null)
-            {
-                if (m_lAttributes != other.m_lAttributes)
-                    return false;
-            }
-            else
-            {
-                int iMax = m_lAttributes.Count;
-                Contract.Assert(iMax % 2 == 0, "Odd number of strings means the attr/value pairs were not added correctly");
-
-                if (iMax != other.m_lAttributes.Count)
-                    return false;
-
-                for (int i = 0; i < iMax; i++)
-                {
-                    var lhs = m_lAttributes[i];
-                    var rhs = other.m_lAttributes[i];
-
-                    if (!string.Equals(lhs, rhs))
-                        return false;
-                }
-            }
-
-            // Finally we must check the child and make sure they are
-            // equal and in the same order 
-
-            // Maybe we can get away by only checking the number of children
-            if (m_lChildren == null || other.m_lChildren == null)
-            {
-                if (m_lChildren != other.m_lChildren)
-                    return false;
-            }
-            else
-            {
-                if (m_lChildren.Count != other.m_lChildren.Count)
-                    return false;
-
-                this.ConvertSecurityElementFactories();
-                other.ConvertSecurityElementFactories();
-
-                // Okay, we'll need to go through each one of them 
-                IEnumerator lhs = m_lChildren.GetEnumerator();
-                IEnumerator rhs = other.m_lChildren.GetEnumerator();
-
-                SecurityElement e1, e2;
-                while (lhs.MoveNext())
-                {
-                    rhs.MoveNext();
-                    e1 = (SecurityElement)lhs.Current;
-                    e2 = (SecurityElement)rhs.Current;
-                    if (e1 == null || !e1.Equal(e2))
-                        return false;
-                }
-            }
-            return true;
         }
 
         [Runtime.InteropServices.ComVisible(false)]
         public SecurityElement Copy()
         {
-            SecurityElement element = new SecurityElement(this.m_strTag, this.m_strText);
-            element.m_lChildren = this.m_lChildren == null ? null : new ArrayList(this.m_lChildren);
-            element.m_lAttributes = this.m_lAttributes == null ? null : new ArrayList(this.m_lAttributes);
+            SecurityElement element = new SecurityElement(m_strTag, m_strText)
+            {
+                m_lChildren = m_lChildren == null ? null : new ArrayList(m_lChildren),
+                m_lAttributes = m_lAttributes == null ? null : new ArrayList(m_lAttributes)
+            };
 
             return element;
         }
 
         [Pure]
-        public static bool IsValidTag(String tag)
+        public static bool IsValidTag(string tag)
         {
             if (tag == null)
+            {
                 return false;
+            }
 
             return tag.IndexOfAny(s_tagIllegalCharacters) == -1;
         }
 
         [Pure]
-        public static bool IsValidText(String text)
+        public static bool IsValidText(string text)
         {
             if (text == null)
+            {
                 return false;
+            }
 
             return text.IndexOfAny(s_textIllegalCharacters) == -1;
         }
 
         [Pure]
-        public static bool IsValidAttributeName(String name)
+        public static bool IsValidAttributeName(string name)
         {
             return IsValidTag(name);
         }
 
         [Pure]
-        public static bool IsValidAttributeValue(String value)
+        public static bool IsValidAttributeValue(string value)
         {
             if (value == null)
+            {
                 return false;
+            }
 
             return value.IndexOfAny(s_valueIllegalCharacters) == -1;
-        }
-
-        private static String GetEscapeSequence(char c)
-        {
-            int iMax = s_escapeStringPairs.Length;
-            Contract.Assert(iMax % 2 == 0, "Odd number of strings means the attr/value pairs were not added correctly");
-
-            for (int i = 0; i < iMax; i += 2)
-            {
-                var strEscSeq = s_escapeStringPairs[i];
-                var strEscValue = s_escapeStringPairs[i + 1];
-
-                if (strEscSeq[0] == c)
-                    return strEscValue;
-            }
-
-            Contract.Assert(false, "Unable to find escape sequence for this character");
-            return c.ToString();
-        }
-
-        public static string Escape(string str)
-        {
-            if (str == null)
-                return null;
-
-            StringBuilder sb = null;
-
-            int strLen = str.Length;
-            int index; // Pointer into the string that indicates the location of the current '&' character 
-            int newIndex = 0; // Pointer into the string that indicates the start index of the "remaining" string (that still needs to be processed).
-
-
-            do
-            {
-                index = str.IndexOfAny(s_escapeChars, newIndex);
-
-                if (index == -1)
-                {
-                    if (sb == null)
-                        return str;
-                    else
-                    {
-                        sb.Append(str, newIndex, strLen - newIndex);
-                        return sb.ToString();
-                    }
-                }
-                else
-                {
-                    if (sb == null)
-                        sb = new StringBuilder();
-
-                    sb.Append(str, newIndex, index - newIndex);
-                    sb.Append(GetEscapeSequence(str[index]));
-
-                    newIndex = (index + 1);
-                }
-            }
-            while (true);
-
-            // no normal exit is possible 
         }
 
         private static string GetUnescapeSequence(string str, int index, out int newIndex)
@@ -566,12 +309,13 @@ namespace System.Security.Cryptography.Algorithms.Extensions
             newIndex = index + 1;
             return str[index].ToString();
         }
-
-
+        
         private static string Unescape(string str)
         {
             if (str == null)
+            {
                 return null;
+            }
 
             StringBuilder sb = null;
 
@@ -586,7 +330,9 @@ namespace System.Security.Cryptography.Algorithms.Extensions
                 if (index == -1)
                 {
                     if (sb == null)
+                    {
                         return str;
+                    }
                     else
                     {
                         sb.Append(str, newIndex, strLen - newIndex);
@@ -596,7 +342,9 @@ namespace System.Security.Cryptography.Algorithms.Extensions
                 else
                 {
                     if (sb == null)
+                    {
                         sb = new StringBuilder();
+                    }
 
                     sb.Append(str, newIndex, index - newIndex);
                     sb.Append(GetUnescapeSequence(str, index, out newIndex)); // updates the newIndex too
@@ -617,26 +365,16 @@ namespace System.Security.Cryptography.Algorithms.Extensions
             ((StringBuilder)obj).Append(str);
         }
 
-        private static void ToStringHelperStreamWriter(object obj, string str)
-        {
-            ((StreamWriter)obj).Write(str);
-        }
-
-        public override String ToString()
+        public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
-            ToString("", sb, new ToStringHelperFunc(ToStringHelperStringBuilder));
+            ToString(sb, new ToStringHelperFunc(ToStringHelperStringBuilder));
 
             return sb.ToString();
         }
 
-        internal void ToWriter(StreamWriter writer)
-        {
-            ToString("", writer, new ToStringHelperFunc(ToStringHelperStreamWriter));
-        }
-
-        private void ToString(string indent, object obj, ToStringHelperFunc func)
+        private void ToString(object obj, ToStringHelperFunc func)
         {
             // First add the indent 
 
@@ -673,8 +411,8 @@ namespace System.Security.Cryptography.Algorithms.Extensions
 
                 for (int i = 0; i < iMax; i += 2)
                 {
-                    String strAttrName = (String)m_lAttributes[i];
-                    String strAttrValue = (String)m_lAttributes[i + 1];
+                    string strAttrName = (string)m_lAttributes[i];
+                    string strAttrValue = (string)m_lAttributes[i + 1];
 
                     func(obj, strAttrName);
                     func(obj, "=\"");
@@ -729,7 +467,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
 
                 if (m_lChildren != null)
                 {
-                    this.ConvertSecurityElementFactories();
+                    ConvertSecurityElementFactories();
 
                     func(obj, Environment.NewLine);
 
@@ -737,7 +475,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
 
                     for (int i = 0; i < m_lChildren.Count; ++i)
                     {
-                        ((SecurityElement)m_lChildren[i]).ToString("", obj, func);
+                        ((SecurityElement)m_lChildren[i]).ToString(obj, func);
                     }
 
                     // In the case where we have children, the close tag will not be on the same line as the 
@@ -753,70 +491,6 @@ namespace System.Security.Cryptography.Algorithms.Extensions
                 func(obj, ">");
                 func(obj, Environment.NewLine);
             }
-        }
-
-
-
-        public String Attribute(String name)
-        {
-            if (name == null)
-                throw new ArgumentNullException("name");
-            Contract.EndContractBlock();
-
-            // Note: we don't check for validity here because an
-            // if an invalid name is passed we simply won't find it. 
-
-            if (m_lAttributes == null)
-                return null;
-
-            // Go through all the attribute and see if we know about 
-            // the one we are asked for
-
-            int iMax = m_lAttributes.Count;
-            Contract.Assert(iMax % 2 == 0, "Odd number of strings means the attr/value pairs were not added correctly");
-
-            for (int i = 0; i < iMax; i += 2)
-            {
-                var strAttrName = m_lAttributes[i];
-
-                if (string.Equals(strAttrName, name))
-                {
-                    var strAttrValue = (string)m_lAttributes[i + 1];
-
-                    return Unescape(strAttrValue);
-                }
-            }
-
-            // In the case where we didn't find it, we are expected to 
-            // return null
-            return null;
-        }
-
-        public SecurityElement SearchForChildByTag(String tag)
-        {
-            // Go through all the children and see if we can 
-            // find the one are are asked for (matching tags)
-
-            if (tag == null)
-                throw new ArgumentNullException("tag");
-            Contract.EndContractBlock();
-
-            // Note: we don't check for a valid tag here because
-            // an invalid tag simply won't be found. 
-
-            if (m_lChildren == null)
-                return null;
-
-            IEnumerator enumerator = m_lChildren.GetEnumerator();
-
-            while (enumerator.MoveNext())
-            {
-                SecurityElement current = (SecurityElement)enumerator.Current;
-
-                if (current != null && String.Equals(current.Tag, tag))
-                    return current;
-            }
-            return null;
         }
 
         internal string SearchForTextOfLocalName(string strLocalName)
@@ -854,39 +528,6 @@ namespace System.Security.Cryptography.Algorithms.Extensions
                 }
             }
 
-            return null;
-        }
-
-        public string SearchForTextOfTag(string tag)
-        {
-            // Search on each child in order and each
-            // child's child, depth-first 
-
-            if (tag == null)
-                throw new ArgumentNullException("tag");
-            Contract.EndContractBlock();
-
-            // Note: we don't check for a valid tag here because 
-            // an invalid tag simply won't be found. 
-
-            // First we check this. 
-
-            if (string.Equals(m_strTag, tag))
-                return Unescape(m_strText);
-            if (m_lChildren == null)
-                return null;
-
-            IEnumerator enumerator = m_lChildren.GetEnumerator();
-
-            this.ConvertSecurityElementFactories();
-
-            while (enumerator.MoveNext())
-            {
-                var current = ((SecurityElement)enumerator.Current).SearchForTextOfTag(tag);
-
-                if (current != null)
-                    return current;
-            }
             return null;
         }
     }

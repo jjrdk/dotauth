@@ -18,7 +18,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Client.Operations;
     using Common.Dtos.Responses;
     using Core.Common;
-    using Moq;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;

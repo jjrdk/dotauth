@@ -13,11 +13,6 @@ namespace SimpleIdentityServer.Module
         private ILoggerFactory _loggerFactory;
         private IRouteBuilder _routeBuilder;
 
-        public ApplicationBuilderContext()
-        {
-
-        }
-
         public event EventHandler Initialized;
         public event EventHandler RouteConfigured;
 
