@@ -48,11 +48,6 @@ namespace SimpleIdentityServer.Client
             _certificate = credentials.Certificate;
         }
 
-        public Task<GetTokenResult> GetToken(Uri tokenUri)
-        {
-            return PostToken(_form, tokenUri, _authorizationValue, _certificate);
-        }
-
         public async Task<GetTokenResult> ResolveAsync(string discoveryDocumentationUrl)
         {
             if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
@@ -66,38 +61,24 @@ namespace SimpleIdentityServer.Client
             }
 
             var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            return await GetToken(new Uri(discoveryDocument.TokenEndPoint)).ConfigureAwait(false);
-        }
 
-        private async Task<GetTokenResult> PostToken(Dictionary<string, string> tokenRequest, Uri requestUri, string authorizationValue, X509Certificate2 certificate)
-        {
-            if (tokenRequest == null)
-            {
-                throw new ArgumentNullException(nameof(tokenRequest));
-            }
-
-            if (requestUri == null)
-            {
-                throw new ArgumentNullException(nameof(requestUri));
-            }
-
-            var body = new FormUrlEncodedContent(tokenRequest);
+            var body = new FormUrlEncodedContent(_form);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 Content = body,
-                RequestUri = requestUri
+                RequestUri = new Uri(discoveryDocument.TokenEndPoint)
             };
-            if (certificate != null)
+            if (_certificate != null)
             {
-                var bytes = certificate.RawData;
+                var bytes = _certificate.RawData;
                 var base64Encoded = Convert.ToBase64String(bytes);
                 request.Headers.Add("X-ARR-ClientCert", base64Encoded);
             }
 
-            if (!string.IsNullOrWhiteSpace(authorizationValue))
+            if (!string.IsNullOrWhiteSpace(_authorizationValue))
             {
-                request.Headers.Add("Authorization", "Basic " + authorizationValue);
+                request.Headers.Add("Authorization", "Basic " + _authorizationValue);
             }
             var result = await _client.SendAsync(request).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);

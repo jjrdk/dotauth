@@ -150,7 +150,7 @@
 
         public static RevokeTokenRequest RevokeToken(string token, string tokenType)
         {
-            if (String.IsNullOrWhiteSpace(token))
+            if (string.IsNullOrWhiteSpace(token))
             {
                 throw new ArgumentNullException(nameof(token));
             }

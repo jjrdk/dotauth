@@ -86,6 +86,12 @@ namespace SimpleIdentityServer.Client
                 Content = body,
                 RequestUri = tokenUri
             };
+            if (_certificate != null)
+            {
+                var bytes = _certificate.RawData;
+                var base64Encoded = Convert.ToBase64String(bytes);
+                request.Headers.Add("X-ARR-ClientCert", base64Encoded);
+            }
             if (!string.IsNullOrWhiteSpace(_authorizationValue))
             {
                 request.Headers.Add("Authorization", "Basic " + _authorizationValue);

@@ -53,16 +53,16 @@ namespace SimpleIdentityServer.Scim.Core.EF.Extensions
             var innerArg = LinqExpression.Parameter(typeof(RepresentationAttribute), "y");
             var outerProperty = LinqExpression.Property(outerArg, "Id");
             var innerProperty = LinqExpression.Property(innerArg, "RepresentationId");
-            var outerLambda = LinqExpression.Lambda(outerProperty, new System.Linq.Expressions.ParameterExpression[] { outerArg });
-            var innerLambda = LinqExpression.Lambda(innerProperty, new System.Linq.Expressions.ParameterExpression[] { innerArg });
-            var resultSelector = LinqExpression.Lambda(innerArg, new System.Linq.Expressions.ParameterExpression[] { outerArg, innerArg });
+            var outerLambda = LinqExpression.Lambda(outerProperty, new[] { outerArg });
+            var innerLambda = LinqExpression.Lambda(innerProperty, new[] { innerArg });
+            var resultSelector = LinqExpression.Lambda(innerArg, new[] { outerArg, innerArg });
             var joinMethod = enumerableMethods.Where(m => m.Name == "Join" && m.IsGenericMethodDefinition).Where(m => m.GetParameters().ToList().Count == 5).First();
             var joinGenericMethod = joinMethod.MakeGenericMethod(typeof(Representation), typeof(RepresentationAttribute), typeof(string), typeof(RepresentationAttribute));
             var join = LinqExpression.Call(joinGenericMethod, LinqExpression.Constant(representations), LinqExpression.Constant(representationAttributes), outerLambda, innerLambda, resultSelector); // add join.
 
             var result = attrExpression.Path.EvaluateSelection(join);
             var finalSelectArg = LinqExpression.Parameter(typeof(IQueryable<Representation>), "f");
-            var finalSelectRequestBody = LinqExpression.Lambda(result, new System.Linq.Expressions.ParameterExpression[] { finalSelectArg });
+            var finalSelectRequestBody = LinqExpression.Lambda(result, new[] { finalSelectArg });
             return finalSelectRequestBody;
         }
 
@@ -111,7 +111,7 @@ namespace SimpleIdentityServer.Scim.Core.EF.Extensions
             var equalLambda = LinqExpression.Lambda<Func<Representation, bool>>(result, representationParameter);
             var whereExpr = LinqExpression.Call(whereMethod, LinqExpression.Constant(representations), equalLambda);
             var finalSelectArg = LinqExpression.Parameter(typeof(IQueryable<Representation>), "f");
-            var finalSelectRequestBody = LinqExpression.Lambda(whereExpr, new System.Linq.Expressions.ParameterExpression[] { finalSelectArg });
+            var finalSelectRequestBody = LinqExpression.Lambda(whereExpr, new[] { finalSelectArg });
             return finalSelectRequestBody;
         }
 
@@ -192,9 +192,9 @@ namespace SimpleIdentityServer.Scim.Core.EF.Extensions
                 var innerArg = LinqExpression.Parameter(typeof(RepresentationAttribute), "y");
                 var outerProperty = LinqExpression.Property(outerArg, "Id");
                 var innerProperty = LinqExpression.Property(innerArg, "RepresentationAttributeIdParent");
-                var outerLambda = LinqExpression.Lambda(outerProperty, new System.Linq.Expressions.ParameterExpression[] { outerArg });
-                var innerLambda = LinqExpression.Lambda(innerProperty, new System.Linq.Expressions.ParameterExpression[] { innerArg });
-                var resultSelector = LinqExpression.Lambda(innerArg, new System.Linq.Expressions.ParameterExpression[] { outerArg, innerArg });
+                var outerLambda = LinqExpression.Lambda(outerProperty, new[] { outerArg });
+                var innerLambda = LinqExpression.Lambda(innerProperty, new[] { innerArg });
+                var resultSelector = LinqExpression.Lambda(innerArg, new[] { outerArg, innerArg });
                 var joinMethod = enumerableMethods.Where(m => m.Name == "Join" && m.IsGenericMethodDefinition).Where(m => m.GetParameters().ToList().Count == 5).First();
                 var joinGenericMethod = joinMethod.MakeGenericMethod(typeof(RepresentationAttribute), typeof(RepresentationAttribute), typeof(string), typeof(RepresentationAttribute));
                 result = LinqExpression.Call(joinGenericMethod, result, outerExpression, outerLambda, innerLambda, resultSelector); // add join.

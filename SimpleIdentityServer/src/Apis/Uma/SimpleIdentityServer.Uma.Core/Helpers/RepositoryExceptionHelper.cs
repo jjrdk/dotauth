@@ -21,36 +21,11 @@ namespace SimpleIdentityServer.Uma.Core.Helpers
 {
     public interface IRepositoryExceptionHelper
     {
-        T HandleException<T>(string message, Func<T> callback);
         Task<T> HandleException<T>(string message, Func<Task<T>> callback);
     }
 
     internal class RepositoryExceptionHelper : IRepositoryExceptionHelper
     {
-        public T HandleException<T>(string message, Func<T> callback)
-        {
-            if (string.IsNullOrWhiteSpace(message))
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
-
-            if (callback == null)
-            {
-                throw new ArgumentNullException(nameof(callback));
-            }
-
-            try
-            {
-                return callback();
-            }
-            catch (Exception ex)
-            {
-                throw new BaseUmaException(ErrorCodes.InternalError,
-                    message,
-                    ex);
-            }
-        }
-
         public Task<T> HandleException<T>(string message, Func<Task<T>> callback)
         {
             if (string.IsNullOrWhiteSpace(message))

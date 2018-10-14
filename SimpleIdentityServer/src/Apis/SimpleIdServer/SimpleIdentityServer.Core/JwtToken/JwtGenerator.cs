@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.JwtToken
         Task<JwsPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters, string issuerName);
         Task<JwsPayload> GenerateUserInfoPayloadForScopeAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
         JwsPayload GenerateFilteredUserInfoPayload(List<ClaimParameter> claimParameters, ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
-        void FillInOtherClaimsIdentityTokenPayload(JwsPayload jwsPayload, string authorizationCode, string accessToken, AuthorizationParameter authorizationParameter, Core.Common.Models.Client client);
+        void FillInOtherClaimsIdentityTokenPayload(JwsPayload jwsPayload, string authorizationCode, string accessToken, Core.Common.Models.Client client);
         Task<string> SignAsync(JwsPayload jwsPayload, JwsAlg alg);
         Task<string> EncryptAsync(string jwe, JweAlg jweAlg, JweEnc jweEnc);
     }
@@ -171,15 +171,14 @@ namespace SimpleIdentityServer.Core.JwtToken
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
 
-            var jwsPayload = new JwsPayload();
-            jwsPayload.Add(StandardClaimNames.Audiences, new[]
+            var jwsPayload = new JwsPayload
             {
-                client.ClientId
-            });
-            jwsPayload.Add(StandardClaimNames.Issuer, issuerName);
-            jwsPayload.Add(StandardClaimNames.ExpirationTime, expirationInSeconds);
-            jwsPayload.Add(StandardClaimNames.Iat, issuedAtTime);
-            jwsPayload.Add(StandardClaimNames.Scopes, scopes);
+                {StandardClaimNames.Audiences, new[] {client.ClientId}},
+                {StandardClaimNames.Issuer, issuerName},
+                {StandardClaimNames.ExpirationTime, expirationInSeconds},
+                {StandardClaimNames.Iat, issuedAtTime},
+                {StandardClaimNames.Scopes, scopes}
+            };
             return jwsPayload;
         }
 
@@ -264,8 +263,7 @@ namespace SimpleIdentityServer.Core.JwtToken
         public void FillInOtherClaimsIdentityTokenPayload(JwsPayload jwsPayload,
             string authorizationCode,
             string accessToken,
-            AuthorizationParameter authorizationParameter,
-            Core.Common.Models.Client client)
+            Client client)
         {
             if (jwsPayload == null)
             {
@@ -671,17 +669,10 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         private Dictionary<string, object> GetClaims(IEnumerable<string> claims, ClaimsPrincipal claimsPrincipal)
         {
-            var result = new Dictionary<string, object>();
             var openIdClaims = _claimsMapping.MapToOpenIdClaims(claimsPrincipal.Claims);
-            var tmp = openIdClaims.Where(oc => claims.Contains(oc.Key))
-                .Select(oc => new { key = oc.Key, val = oc.Value });
-            var roles = new List<string>();
-            foreach(var r in tmp)
-            {
-                result.Add(r.key, r.val);
-            }
-
-            return result;
+            return openIdClaims.Where(oc => claims.Contains(oc.Key))
+                .Select(oc => new { key = oc.Key, val = oc.Value })
+                .ToDictionary(r => r.key, r => r.val);
         }
 
         private async Task<JsonWebKey> GetJsonWebKey(

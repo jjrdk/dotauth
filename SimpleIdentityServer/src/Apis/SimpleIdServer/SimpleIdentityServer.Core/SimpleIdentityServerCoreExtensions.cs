@@ -56,7 +56,8 @@ namespace SimpleIdentityServer.Core
 {
     public static class SimpleIdentityServerCoreExtensions
     {
-        public static IServiceCollection AddSimpleIdentityServerCore(this IServiceCollection serviceCollection,
+        public static IServiceCollection AddSimpleIdentityServerCore(
+            this IServiceCollection serviceCollection,
             OAuthConfigurationOptions configurationOptions = null,
             //IHttpClientFactory factory = null,
             List<ClaimAggregate> claims = null,
@@ -87,14 +88,8 @@ namespace SimpleIdentityServer.Core
             serviceCollection
                 .AddTransient<IAuthorizationCodeGrantTypeParameterAuthEdpValidator,
                     AuthorizationCodeGrantTypeParameterAuthEdpValidator>();
-            serviceCollection
-                .AddTransient<IResourceOwnerGrantTypeParameterValidator, ResourceOwnerGrantTypeParameterValidator>();
-            serviceCollection
-                .AddTransient<IAuthorizationCodeGrantTypeParameterTokenEdpValidator,
-                    AuthorizationCodeGrantTypeParameterTokenEdpValidator>();
             serviceCollection.AddTransient<IRegistrationParameterValidator, RegistrationParameterValidator>();
             serviceCollection.AddTransient<ICompressor, Compressor>();
-            serviceCollection.AddTransient<IEncoder, Encoder>();
             serviceCollection.AddTransient<IParameterParserHelper, ParameterParserHelper>();
             serviceCollection.AddTransient<IActionResultFactory, ActionResultFactory>();
             serviceCollection.AddTransient<IAuthorizationActions, AuthorizationActions>();
@@ -146,18 +141,8 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IClientTlsAuthentication, ClientTlsAuthentication>();
             serviceCollection
                 .AddTransient<IGetTokenByRefreshTokenGrantTypeAction, GetTokenByRefreshTokenGrantTypeAction>();
-            serviceCollection
-                .AddTransient<IRefreshTokenGrantTypeParameterValidator, RefreshTokenGrantTypeParameterValidator>();
             serviceCollection.AddTransient<ITranslationManager, TranslationManager>();
             serviceCollection.AddTransient<IGrantedTokenHelper, GrantedTokenHelper>();
-            //if (factory != null)
-            //{
-            //    serviceCollection.AddSingleton(factory);
-            //}
-            //else
-            //{
-            //    serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
-            //}
 
             serviceCollection.AddTransient<IIntrospectionActions, IntrospectionActions>();
             serviceCollection.AddTransient<IPostIntrospectionAction, PostIntrospectionAction>();

@@ -107,8 +107,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             _jwtParserStub = new Mock<IJwtParser>();
             _clientHelper = new ClientHelper(
                 _clientRepositoryStub.Object,
-                _jwtGeneratorStub.Object,
-                _jwtParserStub.Object);
+                _jwtGeneratorStub.Object);
         }
     }
 }

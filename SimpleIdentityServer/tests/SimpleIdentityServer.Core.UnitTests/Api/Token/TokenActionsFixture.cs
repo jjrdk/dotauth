@@ -20,12 +20,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<IGetTokenByResourceOwnerCredentialsGrantTypeAction>
             _getTokenByResourceOwnerCredentialsGrantTypeActionFake;
         private Mock<IGetTokenByAuthorizationCodeGrantTypeAction> _getTokenByAuthorizationCodeGrantTypeActionFake;
-        private Mock<IResourceOwnerGrantTypeParameterValidator> _resourceOwnerGrantTypeParameterValidatorFake;
-        private Mock<IAuthorizationCodeGrantTypeParameterTokenEdpValidator>
-            _authorizationCodeGrantTypeParameterTokenEdptValidatorFake;
         private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IGetTokenByRefreshTokenGrantTypeAction> _getTokenByRefreshTokenGrantTypeActionFake;
-        private Mock<IRefreshTokenGrantTypeParameterValidator> _refreshTokenGrantTypeParameterValidatorFake;
         private Mock<IClientCredentialsGrantTypeParameterValidator> _clientCredentialsGrantTypeParameterValidatorStub;
         private Mock<IRevokeTokenParameterValidator> _revokeTokenParameterValidator;
         private Mock<IGetTokenByClientCredentialsGrantTypeAction> _getTokenByClientCredentialsGrantTypeActionStub;
@@ -226,11 +222,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         {
             _getTokenByResourceOwnerCredentialsGrantTypeActionFake = new Mock<IGetTokenByResourceOwnerCredentialsGrantTypeAction>();
             _getTokenByAuthorizationCodeGrantTypeActionFake = new Mock<IGetTokenByAuthorizationCodeGrantTypeAction>();
-            _resourceOwnerGrantTypeParameterValidatorFake = new Mock<IResourceOwnerGrantTypeParameterValidator>();
-            _authorizationCodeGrantTypeParameterTokenEdptValidatorFake = new Mock<IAuthorizationCodeGrantTypeParameterTokenEdpValidator>();
             _oauthEventSource = new Mock<IOAuthEventSource>();
             _getTokenByRefreshTokenGrantTypeActionFake = new Mock<IGetTokenByRefreshTokenGrantTypeAction>();
-            _refreshTokenGrantTypeParameterValidatorFake = new Mock<IRefreshTokenGrantTypeParameterValidator>();
             _clientCredentialsGrantTypeParameterValidatorStub = new Mock<IClientCredentialsGrantTypeParameterValidator>();
             _getTokenByClientCredentialsGrantTypeActionStub = new Mock<IGetTokenByClientCredentialsGrantTypeAction>();
             _revokeTokenParameterValidator = new Mock<IRevokeTokenParameterValidator>();
@@ -239,9 +232,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _revokeTokenActionStub = new Mock<IRevokeTokenAction>();
             _tokenActions = new TokenActions(_getTokenByResourceOwnerCredentialsGrantTypeActionFake.Object,
                 _getTokenByAuthorizationCodeGrantTypeActionFake.Object,
-                _resourceOwnerGrantTypeParameterValidatorFake.Object,
-                _authorizationCodeGrantTypeParameterTokenEdptValidatorFake.Object,
-                _refreshTokenGrantTypeParameterValidatorFake.Object,
                 _getTokenByRefreshTokenGrantTypeActionFake.Object,
                 _getTokenByClientCredentialsGrantTypeActionStub.Object,
                 _clientCredentialsGrantTypeParameterValidatorStub.Object,

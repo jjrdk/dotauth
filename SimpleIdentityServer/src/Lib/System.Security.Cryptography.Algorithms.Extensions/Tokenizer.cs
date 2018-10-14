@@ -79,7 +79,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
         private int _inProcessingTag;
         private readonly byte[] _inBytes;
         private readonly char[] _inChars;
-        private readonly String _inString;
+        private readonly string _inString;
         private int _inIndex;
         private int _inSize;
         private int _inSavedCharacter;
@@ -90,12 +90,12 @@ namespace System.Security.Cryptography.Algorithms.Extensions
 
         private StringMaker _maker = null;
 
-        private readonly String[] _searchStrings;
-        private readonly String[] _replaceStrings;
+        private readonly string[] _searchStrings;
+        private readonly string[] _replaceStrings;
 
         private int _inNestedIndex;
         private int _inNestedSize;
-        private String _inNestedString;
+        private string _inNestedString;
 
 
         //=============================================================== 
@@ -115,80 +115,12 @@ namespace System.Security.Cryptography.Algorithms.Extensions
             _maker = SharedStatics.GetSharedStringMaker();
         }
 
-        internal Tokenizer(String input)
+        internal Tokenizer(string input)
         {
             BasicInitialization();
             _inString = input;
             _inSize = input.Length;
             _inTokenSource = TokenSource.String;
-        }
-
-        internal Tokenizer(string input, string[] searchStrings, string[] replaceStrings)
-        {
-            BasicInitialization();
-            _inString = input;
-            _inSize = _inString.Length;
-            _inTokenSource = TokenSource.NestedStrings;
-            _searchStrings = searchStrings;
-            _replaceStrings = replaceStrings;
-
-#if DEBUG
-            Contract.Assert(searchStrings.Length == replaceStrings.Length, "different number of search/replace strings");
-            Contract.Assert(searchStrings.Length != 0, "no search replace strings, shouldn't be using this ctor");
-
-            for (int istr = 0; istr < searchStrings.Length; istr++)
-            {
-                var str = searchStrings[istr];
-                Contract.Assert(str != null, "XML Slug null");
-                Contract.Assert(str.Length >= 3, "XML Slug too small");
-                Contract.Assert(str[0] == '{', "XML Slug doesn't start with '{'");
-                Contract.Assert(str[str.Length - 1] == '}', "XML Slug doesn't end with '}'");
-
-                str = replaceStrings[istr];
-                Contract.Assert(str != null, "XML Replacement null");
-                Contract.Assert(str.Length >= 1, "XML Replacement empty");
-            }
-#endif
-        }
-
-        internal Tokenizer(byte[] array, ByteTokenEncoding encoding, int startIndex)
-        {
-            BasicInitialization();
-            _inBytes = array;
-            _inSize = array.Length;
-            _inIndex = startIndex;
-
-            switch (encoding)
-            {
-                case ByteTokenEncoding.UnicodeTokens:
-                    _inTokenSource = TokenSource.UnicodeByteArray;
-                    break;
-
-                case ByteTokenEncoding.UTF8Tokens:
-                    _inTokenSource = TokenSource.UTF8ByteArray;
-                    break;
-
-                case ByteTokenEncoding.ByteTokens:
-                    _inTokenSource = TokenSource.ASCIIByteArray;
-                    break;
-
-                default:
-                    throw new ArgumentException("Arg_EnumIllegalVal");
-            }
-        }
-
-        internal Tokenizer(char[] array)
-        {
-            BasicInitialization();
-            _inChars = array;
-            _inSize = array.Length;
-            _inTokenSource = TokenSource.CharArray;
-        }
-
-        internal Tokenizer(StreamReader input)
-        {
-            BasicInitialization();
-            _inTokenReader = new StreamTokenReader(input);
         }
 
         internal void ChangeFormat(System.Text.Encoding encoding)
@@ -272,7 +204,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
 
                     Contract.Assert(reader._in.CurrentEncoding != null, "Tokenizer's StreamReader does not have an encoding");
 
-                    String fakeReadString = new String(' ', reader.NumCharEncountered);
+                    string fakeReadString = new string(' ', reader.NumCharEncountered);
                     stream.Position = reader._in.CurrentEncoding.GetByteCount(fakeReadString);
                     break;
             }
@@ -445,7 +377,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
 
                             for (int istr = 0; istr < _searchStrings.Length; istr++)
                             {
-                                if (0 == String.Compare(_searchStrings[istr], 0, _inString, _inIndex - 1, _searchStrings[istr].Length, StringComparison.Ordinal))
+                                if (0 == string.Compare(_searchStrings[istr], 0, _inString, _inIndex - 1, _searchStrings[istr].Length, StringComparison.Ordinal))
                                 {
                                     _inNestedString = _replaceStrings[istr];
                                     _inNestedSize = _inNestedString.Length;
@@ -628,7 +560,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
         [JsonObject]
         internal sealed class StringMaker
         {
-            String[] aStrings;
+            string[] aStrings;
             uint cStringsMax;
             uint cStringsUsed;
 
@@ -638,7 +570,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
 
             public const int outMaxSize = 512;
 
-            static uint HashString(String str)
+            static uint HashString(string str)
             {
                 uint hash = 0;
 
@@ -670,11 +602,11 @@ namespace System.Security.Cryptography.Algorithms.Extensions
             {
                 cStringsMax = 2048;
                 cStringsUsed = 0;
-                aStrings = new String[cStringsMax];
+                aStrings = new string[cStringsMax];
                 _outChars = new char[outMaxSize];
             }
 
-            bool CompareStringAndChars(String str, char[] a, int l)
+            bool CompareStringAndChars(string str, char[] a, int l)
             {
                 if (str.Length != l)
                     return false;
@@ -686,7 +618,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
                 return true;
             }
 
-            public String MakeString()
+            public string MakeString()
             {
                 uint hash;
                 char[] a = _outChars;
@@ -706,7 +638,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
                     // we need to rehash
 
                     uint cNewMax = cStringsMax * 2;
-                    String[] aStringsNew = new String[cNewMax];
+                    string[] aStringsNew = new string[cNewMax];
 
                     for (int i = 0; i < cStringsMax; i++)
                     {
@@ -732,7 +664,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
 
                 hash = HashCharArray(a, l) % cStringsMax;
 
-                String str;
+                string str;
 
                 while ((str = aStrings[hash]) != null)
                 {
@@ -743,7 +675,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
                         hash = 0;
                 }
 
-                str = new String(a, 0, l);
+                str = new string(a, 0, l);
                 aStrings[hash] = str;
                 cStringsUsed++;
 
@@ -755,7 +687,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
         // 
         //
 
-        private String GetStringToken()
+        private string GetStringToken()
         {
             return _maker.MakeString();
         }
@@ -803,7 +735,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
 
     internal sealed class TokenizerStringBlock
     {
-        internal String[] m_block = new String[16];
+        internal string[] m_block = new string[16];
         internal TokenizerStringBlock m_next = null;
     }
 
@@ -846,7 +778,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
             m_currentTokens.m_block[m_indexTokens++] = token;
         }
 
-        internal void AddString(String str)
+        internal void AddString(string str)
         {
             if (m_currentStrings.m_block.Length <= m_indexStrings)
             {
@@ -892,7 +824,7 @@ namespace System.Security.Cryptography.Algorithms.Extensions
             return retval;
         }
 
-        internal String GetNextString()
+        internal string GetNextString()
         {
             if (m_currentStrings.m_block.Length <= m_indexStrings)
             {

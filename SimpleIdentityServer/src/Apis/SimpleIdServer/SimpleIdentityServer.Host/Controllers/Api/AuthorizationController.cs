@@ -26,7 +26,6 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Core.Exceptions;
     using Core.JwtToken;
     using Core.Parameters;
-    using Core.Protector;
     using Core.Results;
     using Extensions;
     using Host;
@@ -38,10 +37,8 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     [Route(Core.Constants.EndPoints.Authorization)]
     public class AuthorizationController : Controller
     {
-        private const string SESSION_ID = "session_id";
         private readonly IAuthorizationActions _authorizationActions;
         private readonly IDataProtector _dataProtector;
-        private readonly IEncoder _encoder;
         private readonly IActionResultParser _actionResultParser;
         private readonly IJwtParser _jwtParser;
         private readonly IAuthenticationService _authenticationService;
@@ -49,14 +46,12 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         public AuthorizationController(
             IAuthorizationActions authorizationActions,
             IDataProtectionProvider dataProtectionProvider,
-            IEncoder encoder,
             IActionResultParser actionResultParser,
             IJwtParser jwtParser,
             IAuthenticationService authenticationService)
         {
             _authorizationActions = authorizationActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
-            _encoder = encoder;
             _actionResultParser = actionResultParser;
             _jwtParser = jwtParser;
             _authenticationService = authenticationService;

@@ -70,10 +70,6 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             }
         };
 
-        public CreateJwsSignature()
-        {
-        }
-
         public string SignWithRsa(
             JwsAlg algorithm, 
             string serializedKeys,

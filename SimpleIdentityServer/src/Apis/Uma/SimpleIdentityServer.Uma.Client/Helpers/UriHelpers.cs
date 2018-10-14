@@ -26,8 +26,7 @@ namespace SimpleIdentityServer.Uma.Client.Helpers
                 throw new ArgumentNullException(nameof(value));
             }
 
-            Uri uri = null;
-            if (!Uri.TryCreate(value, UriKind.Absolute, out uri))
+            if (!Uri.TryCreate(value, UriKind.Absolute, out var uri))
             {
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUriIsNotWellFormed, value));
             }

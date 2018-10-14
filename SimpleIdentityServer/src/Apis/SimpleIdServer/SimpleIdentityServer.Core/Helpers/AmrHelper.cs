@@ -11,10 +11,6 @@ namespace SimpleIdentityServer.Core.Helpers
 
     internal sealed class AmrHelper : IAmrHelper
     {
-        public AmrHelper()
-        {
-        }
-
         public string GetAmr(IEnumerable<string> currentAmrs, IEnumerable<string> exceptedAmrs)
         {
             if (currentAmrs == null || !currentAmrs.Any())

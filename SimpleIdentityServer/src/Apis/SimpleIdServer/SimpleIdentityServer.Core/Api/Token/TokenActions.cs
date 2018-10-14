@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Api.Token
 {
     using Common;
+    using Errors;
 
     public interface ITokenActions
     {
@@ -40,10 +41,7 @@ namespace SimpleIdentityServer.Core.Api.Token
     public class TokenActions : ITokenActions
     {
         private readonly IGetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantType;
-        private readonly IResourceOwnerGrantTypeParameterValidator _resourceOwnerGrantTypeParameterValidator;
         private readonly IGetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
-        private readonly IAuthorizationCodeGrantTypeParameterTokenEdpValidator _authorizationCodeGrantTypeParameterTokenEdpValidator;
-        private readonly IRefreshTokenGrantTypeParameterValidator _refreshTokenGrantTypeParameterValidator;
         private readonly IGetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
         private readonly IGetTokenByClientCredentialsGrantTypeAction _getTokenByClientCredentialsGrantTypeAction;
         private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
@@ -56,9 +54,6 @@ namespace SimpleIdentityServer.Core.Api.Token
         public TokenActions(
             IGetTokenByResourceOwnerCredentialsGrantTypeAction getTokenByResourceOwnerCredentialsGrantType,
             IGetTokenByAuthorizationCodeGrantTypeAction getTokenByAuthorizationCodeGrantTypeAction,
-            IResourceOwnerGrantTypeParameterValidator resourceOwnerGrantTypeParameterValidator,
-            IAuthorizationCodeGrantTypeParameterTokenEdpValidator authorizationCodeGrantTypeParameterTokenEdpValidator,
-            IRefreshTokenGrantTypeParameterValidator refreshTokenGrantTypeParameterValidator,
             IGetTokenByRefreshTokenGrantTypeAction getTokenByRefreshTokenGrantTypeAction,
             IGetTokenByClientCredentialsGrantTypeAction getTokenByClientCredentialsGrantTypeAction,
             IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator,
@@ -70,9 +65,6 @@ namespace SimpleIdentityServer.Core.Api.Token
         {
             _getTokenByResourceOwnerCredentialsGrantType = getTokenByResourceOwnerCredentialsGrantType;
             _getTokenByAuthorizationCodeGrantTypeAction = getTokenByAuthorizationCodeGrantTypeAction;
-            _resourceOwnerGrantTypeParameterValidator = resourceOwnerGrantTypeParameterValidator;
-            _authorizationCodeGrantTypeParameterTokenEdpValidator = authorizationCodeGrantTypeParameterTokenEdpValidator;
-            _refreshTokenGrantTypeParameterValidator = refreshTokenGrantTypeParameterValidator;
             _getTokenByRefreshTokenGrantTypeAction = getTokenByRefreshTokenGrantTypeAction;
             _oauthEventSource = oauthEventSource;
             _getTokenByClientCredentialsGrantTypeAction = getTokenByClientCredentialsGrantTypeAction;
@@ -97,7 +89,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                 _oauthEventSource.StartGetTokenByResourceOwnerCredentials(resourceOwnerGrantTypeParameter.ClientId,
                     resourceOwnerGrantTypeParameter.UserName,
                     resourceOwnerGrantTypeParameter.Password);
-                _resourceOwnerGrantTypeParameterValidator.Validate(resourceOwnerGrantTypeParameter);
+                Validate(resourceOwnerGrantTypeParameter);
                 var result = await _getTokenByResourceOwnerCredentialsGrantType.Execute(resourceOwnerGrantTypeParameter,
                     authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
                 var accessToken = result != null ? result.AccessToken : string.Empty;
@@ -129,7 +121,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                 _oauthEventSource.StartGetTokenByAuthorizationCode(
                     authorizationCodeGrantTypeParameter.ClientId,
                     authorizationCodeGrantTypeParameter.Code);
-                _authorizationCodeGrantTypeParameterTokenEdpValidator.Validate(authorizationCodeGrantTypeParameter);
+                Validate(authorizationCodeGrantTypeParameter);
                 var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
                 _oauthEventSource.EndGetTokenByAuthorizationCode(
                     result.AccessToken,
@@ -156,7 +148,13 @@ namespace SimpleIdentityServer.Core.Api.Token
             {
                 _eventPublisher.Publish(new GrantTokenViaRefreshTokenReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(refreshTokenGrantTypeParameter), 0));
                 _oauthEventSource.StartGetTokenByRefreshToken(refreshTokenGrantTypeParameter.RefreshToken);
-                _refreshTokenGrantTypeParameterValidator.Validate(refreshTokenGrantTypeParameter);
+                // Read this RFC for more information
+                if (string.IsNullOrWhiteSpace(refreshTokenGrantTypeParameter.RefreshToken))
+                {
+                    throw new IdentityServerException(
+                        ErrorCodes.InvalidRequestCode,
+                        string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.RefreshToken));
+                }
                 var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(refreshTokenGrantTypeParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
                 _oauthEventSource.EndGetTokenByRefreshToken(result.AccessToken, result.IdToken);
                 _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
@@ -224,6 +222,50 @@ namespace SimpleIdentityServer.Core.Api.Token
             {
                 _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
+            }
+        }
+
+        private void Validate(ResourceOwnerGrantTypeParameter parameter)
+        {
+            if (string.IsNullOrWhiteSpace(parameter.UserName))
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.UserName));
+            }
+
+            if (string.IsNullOrWhiteSpace(parameter.Password))
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.PasswordName));
+            }
+
+            if (string.IsNullOrWhiteSpace(parameter.Scope))
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.ScopeName));
+            }
+        }
+
+        public void Validate(AuthorizationCodeGrantTypeParameter parameter)
+        {
+            if (string.IsNullOrWhiteSpace(parameter.Code))
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.AuthorizationCodeName));
+            }
+
+            // With this instruction
+            // The redirect_uri is considered well-formed according to the RFC-3986
+            var redirectUrlIsCorrect = Uri.IsWellFormedUriString(parameter.RedirectUri, UriKind.Absolute);
+            if (!redirectUrlIsCorrect)
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    ErrorDescriptions.TheRedirectionUriIsNotWellFormed);
             }
         }
     }

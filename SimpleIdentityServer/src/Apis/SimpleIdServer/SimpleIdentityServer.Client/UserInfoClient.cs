@@ -29,7 +29,6 @@ namespace SimpleIdentityServer.Client
 
     public interface IUserInfoClient
     {
-        Task<GetUserInfoResult> GetUserInfoAsync(Uri userInfoUri, string accessToken, bool inBody = false);
         Task<GetUserInfoResult> Resolve(string configurationUrl, string accessToken, bool inBody = false);
     }
 
@@ -64,24 +63,10 @@ namespace SimpleIdentityServer.Client
             }
 
             var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            return await GetUserInfoAsync(new Uri(discoveryDocument.UserInfoEndPoint), accessToken).ConfigureAwait(false);
-        }
-
-        public async Task<GetUserInfoResult> GetUserInfoAsync(Uri userInfoUri, string accessToken, bool inBody = false)
-        {
-            if (userInfoUri == null)
-            {
-                throw new ArgumentNullException(nameof(userInfoUri));
-            }
-
-            if (string.IsNullOrWhiteSpace(accessToken))
-            {
-                throw new ArgumentNullException(nameof(accessToken));
-            }
 
             var request = new HttpRequestMessage
             {
-                RequestUri = userInfoUri
+                RequestUri = new Uri(discoveryDocument.UserInfoEndPoint)
             };
             request.Headers.Add("Accept", "application/json");
 

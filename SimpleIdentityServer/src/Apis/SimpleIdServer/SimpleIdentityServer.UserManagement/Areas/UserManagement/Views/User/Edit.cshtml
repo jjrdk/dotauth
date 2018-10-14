@@ -73,7 +73,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">@ViewBag.Translations["two_factor"]</div>
             <div class="panel-body">
-                @if (Model.TwoFactorAuthTypes == null || !Model.TwoFactorAuthTypes.Any())
+                if (Model.TwoFactorAuthTypes == null || !Model.TwoFactorAuthTypes.Any())
                 {
                     <i>@ViewBag.Translations["no_two_factor_authenticator"]</i>
                 }

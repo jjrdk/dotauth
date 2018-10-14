@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Parameters;
 using System;
 using System.Collections.Generic;

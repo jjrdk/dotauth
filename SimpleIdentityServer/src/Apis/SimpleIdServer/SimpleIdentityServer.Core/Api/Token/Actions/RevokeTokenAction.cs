@@ -63,7 +63,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
             
             // 1. Check the client credentials
-            var errorMessage = string.Empty;
             var instruction = CreateAuthenticateInstruction(revokeTokenParameter, authenticationHeaderValue, certificate);
             var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;

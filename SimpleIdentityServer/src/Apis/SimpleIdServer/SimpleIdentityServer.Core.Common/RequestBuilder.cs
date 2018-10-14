@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Core.Common
             }
 
             _callback = callback ?? throw new ArgumentNullException(nameof(callback));
-            Initialize(new string[] { schema });
+            Initialize(new[] { schema });
         }
 
         public RequestBuilder(IEnumerable<string> schemas, Func<JObject, Task<ScimResponse>> callback)

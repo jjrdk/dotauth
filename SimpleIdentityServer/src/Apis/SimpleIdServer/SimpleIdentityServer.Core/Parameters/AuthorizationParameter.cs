@@ -98,13 +98,7 @@ namespace SimpleIdentityServer.Core.Parameters
                 return false;
             }
 
-            bool result;
-            if (!bool.TryParse(value, out result))
-            {
-                return false;
-            }
-
-            return result;
+            return bool.TryParse(value, out var result) && result;
         }
 
         private string GetString(string name)

@@ -28,7 +28,6 @@ namespace SimpleIdentityServer.Client
 
     public interface IIntrospectClient
     {
-        Task<GetIntrospectionResult> ExecuteAsync(Uri tokenUri);
         Task<GetIntrospectionResult> ResolveAsync(string discoveryDocumentationUrl);
     }
 
@@ -52,19 +51,26 @@ namespace SimpleIdentityServer.Client
             _authorizationValue = authorizationValue;
         }
 
-        public async Task<GetIntrospectionResult> ExecuteAsync(Uri tokenUri)
+        public async Task<GetIntrospectionResult> ResolveAsync(string discoveryDocumentationUrl)
         {
-            if (tokenUri == null)
+            if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
             {
-                throw new ArgumentNullException(nameof(tokenUri));
+                throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
             }
 
+            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out Uri uri))
+            {
+                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
+            }
+
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            
             var body = new FormUrlEncodedContent(_form);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 Content = body,
-                RequestUri = tokenUri
+                RequestUri = new Uri(discoveryDocument.IntrospectionEndPoint)
             };
             if (!string.IsNullOrWhiteSpace(_authorizationValue))
             {
@@ -92,22 +98,6 @@ namespace SimpleIdentityServer.Client
                 ContainsError = false,
                 Content = JsonConvert.DeserializeObject<IntrospectionResponse>(json)
             };
-        }
-
-        public async Task<GetIntrospectionResult> ResolveAsync(string discoveryDocumentationUrl)
-        {
-            if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
-            {
-                throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
-            }
-
-            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out Uri uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
-            }
-
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            return await ExecuteAsync(new Uri(discoveryDocument.IntrospectionEndPoint)).ConfigureAwait(false);
         }
     }
 }

@@ -25,7 +25,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Core.Jwt.Signature;
     using Microsoft.Extensions.DependencyInjection;
     using MiddleWares;
-    using Moq;
     using Newtonsoft.Json;
     using System;
     using System.Threading.Tasks;

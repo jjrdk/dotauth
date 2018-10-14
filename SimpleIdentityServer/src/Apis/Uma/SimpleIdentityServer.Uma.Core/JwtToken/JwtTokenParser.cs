@@ -21,7 +21,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.JwtToken
 {
-    using SimpleIdentityServer.Core;
     using SimpleIdentityServer.Core.Common.DTOs.Requests;
 
     public interface IJwtTokenParser

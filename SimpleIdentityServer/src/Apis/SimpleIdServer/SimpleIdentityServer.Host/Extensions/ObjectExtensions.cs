@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Linq;
 using System.Net;
 
@@ -26,7 +25,7 @@ namespace SimpleIdentityServer.Host.Extensions
                              where p.GetValue(obj, null) != null
                              select p.Name + "=" + WebUtility.UrlEncode(p.GetValue(obj, null).ToString());
 
-            return String.Join("&", properties.ToArray());
+            return string.Join("&", properties.ToArray());
         }
     }
 }

@@ -27,7 +27,6 @@ namespace SimpleIdentityServer.Client
 
     public interface IRegistrationClient
     {
-        Task<GetRegisterClientResult> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, Uri registrationUri, string accessToken);
         Task<GetRegisterClientResult> ResolveAsync(Core.Common.DTOs.Requests.ClientRequest client, string configurationUrl, string accessToken);
     }
 
@@ -40,21 +39,6 @@ namespace SimpleIdentityServer.Client
         {
             _client = client;
             _getDiscoveryOperation = getDiscoveryOperation;
-        }
-
-        public Task<GetRegisterClientResult> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, Uri registrationUri, string accessToken)
-        {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            if (registrationUri == null)
-            {
-                throw new ArgumentNullException(nameof(registrationUri));
-            }
-
-            return RegisterClient(client, registrationUri, accessToken);
         }
 
         public async Task<GetRegisterClientResult> ResolveAsync(Core.Common.DTOs.Requests.ClientRequest client, string configurationUrl, string accessToken)
@@ -70,20 +54,6 @@ namespace SimpleIdentityServer.Client
             }
 
             var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            return await ExecuteAsync(client, new Uri(discoveryDocument.RegistrationEndPoint), accessToken).ConfigureAwait(false);
-        }
-
-        private async Task<GetRegisterClientResult> RegisterClient(Core.Common.DTOs.Requests.ClientRequest client, Uri requestUri, string authorizationValue)
-        {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            if (requestUri == null)
-            {
-                throw new ArgumentNullException(nameof(requestUri));
-            }
 
             var json = JsonConvert.SerializeObject(client, new JsonSerializerSettings
             {
@@ -93,12 +63,12 @@ namespace SimpleIdentityServer.Client
             {
                 Method = HttpMethod.Post,
                 Content = new StringContent(json),
-                RequestUri = requestUri
+                RequestUri = new Uri(discoveryDocument.RegistrationEndPoint)
             };
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            if (!string.IsNullOrWhiteSpace(authorizationValue))
+            if (!string.IsNullOrWhiteSpace(accessToken))
             {
-                request.Headers.Add("Authorization", "Bearer " + authorizationValue);
+                request.Headers.Add("Authorization", "Bearer " + accessToken);
             }
 
             var result = await _client.SendAsync(request).ConfigureAwait(false);

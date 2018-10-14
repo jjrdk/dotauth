@@ -32,11 +32,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword
             var result = new BasicAuthenticateOptions();
             if (_properties != null)
             {
-                var scimBaseUrl = string.Empty;
-                var clientId = string.Empty;
-                var clientSecret = string.Empty;
-                var authorizationWellKnownConfiguration = string.Empty;
-                if (_properties.TryGetValue("ScimBaseUrl", out scimBaseUrl))
+                if (_properties.TryGetValue("ScimBaseUrl", out var scimBaseUrl))
                 {
                     result.ScimBaseUrl = scimBaseUrl;
                 }
@@ -46,17 +42,17 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword
                     result.IsScimResourceAutomaticallyCreated = isScimResourceAutomaticallyCreated;
                 }
 
-                if (_properties.TryGetValue("ClientId", out clientId))
+                if (_properties.TryGetValue("ClientId", out var clientId))
                 {
                     result.AuthenticationOptions.ClientId = clientId;
                 }
 
-                if (_properties.TryGetValue("ClientSecret", out clientSecret))
+                if (_properties.TryGetValue("ClientSecret", out var clientSecret))
                 {
                     result.AuthenticationOptions.ClientSecret = clientSecret;
                 }
 
-                if (_properties.TryGetValue("AuthorizationWellKnownConfiguration", out authorizationWellKnownConfiguration))
+                if (_properties.TryGetValue("AuthorizationWellKnownConfiguration", out var authorizationWellKnownConfiguration))
                 {
                     result.AuthenticationOptions.AuthorizationWellKnownConfiguration = authorizationWellKnownConfiguration;
                 }
