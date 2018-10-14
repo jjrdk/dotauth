@@ -49,9 +49,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             var serializer = new ParamSerializer();
             var tokenRequest = serializer.Deserialize<TokenRequest>(Request.Form);
             GrantedToken result = null;
-            StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;
-            if (Request.Headers.TryGetValue("Authorization", out authorizationHeader))
+            if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
             {
                 var authorizationHeaderValue = authorizationHeader.First();
                 var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
@@ -102,9 +101,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             var serializer = new ParamSerializer();
             var revocationRequest = serializer.Deserialize<RevocationRequest>(Request.Form);
             // 1. Fetch the authorization header
-            StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;
-            if (Request.Headers.TryGetValue("Authorization", out authorizationHeader))
+            if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
             {
                 var authorizationHeaderValue = authorizationHeader.First();
                 var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');

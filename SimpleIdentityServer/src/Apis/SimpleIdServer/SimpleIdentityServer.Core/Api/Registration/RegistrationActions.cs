@@ -16,13 +16,13 @@ using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.OAuth.Events;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Registration
 {
     using Common;
+    using SimpleIdentityServer.Common.Dtos.Events.OAuth;
 
     public interface IRegistrationActions
     {

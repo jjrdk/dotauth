@@ -17,7 +17,6 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.OAuth.Events;
 using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -25,6 +24,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Api.Introspection
 {
     using Common;
+    using SimpleIdentityServer.Common.Dtos.Events.OAuth;
 
     public interface IIntrospectionActions
     {

@@ -31,13 +31,13 @@ namespace SimpleIdentityServer.AccountFilter.Basic
             var filters = await _filterRepository.GetAll().ConfigureAwait(false);
             if (filters != null)
             {
-                foreach(var filter in filters)
+                foreach (var filter in filters)
                 {
                     var accountFilterRule = new AccountFilterRuleResult(filter.Name);
                     var errorMessages = new List<string>();
                     if (filter.Rules != null)
                     {
-                        foreach(var rule in filter.Rules)
+                        foreach (var rule in filter.Rules)
                         {
                             var claim = claims.FirstOrDefault(c => c.Type == rule.ClaimKey);
                             if (claim == null)
@@ -70,8 +70,8 @@ namespace SimpleIdentityServer.AccountFilter.Basic
                             }
                         }
                     }
-                    
-                    accountFilterRule.ErrorMessages = errorMessages;
+
+                    accountFilterRule.ErrorMessages.AddRange(errorMessages);
                     accountFilterRule.IsValid = !errorMessages.Any();
                     accountFilterRules.Add(accountFilterRule);
                 }

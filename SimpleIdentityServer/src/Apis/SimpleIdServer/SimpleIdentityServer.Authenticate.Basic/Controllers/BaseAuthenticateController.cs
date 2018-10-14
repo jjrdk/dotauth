@@ -35,7 +35,6 @@ using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.OpenId.Events;
 using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;
@@ -45,6 +44,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 {
+    using Common.Dtos.Events.Openid;
     using Core.Common;
     using Constants = Core.Constants;
 

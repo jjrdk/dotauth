@@ -56,9 +56,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
             var serializer = new ParamSerializer();
             var introspectionRequest = serializer.Deserialize<IntrospectionRequest>(Request.Form);
-            StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;
-            if (Request.Headers.TryGetValue("Authorization", out authorizationHeader))
+            if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
             {
                 var authorizationHeaderValue = authorizationHeader.First();
                 var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
