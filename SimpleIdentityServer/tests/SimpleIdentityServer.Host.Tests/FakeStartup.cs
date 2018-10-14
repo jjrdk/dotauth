@@ -169,6 +169,8 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddSingleton<IFilterRepository>(new DefaultFilterRepository(null));
             services.AddSingleton(_context.ConfirmationCodeStore.Object);
             services.AddSingleton(new HttpClient());
+            services.AddSingleton<IUsersClient>(sp => new UsersClient(sp.GetService<HttpClient>()));
+           // services.AddSingleton<IAccessTokenStore>(new Acce)
         }
 
         private List<Dictionary<string, object>> ExtractPublicKeysForSignature(IEnumerable<JsonWebKey> jsonWebKeys)

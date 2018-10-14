@@ -27,6 +27,9 @@ using Xunit;
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 {
     using Moq;
+    using SimpleIdentityServer.Core;
+    using SimpleIdentityServer.Core.Common.DTOs.Requests;
+    using Constants = Core.Constants;
 
     public class BasicAuthorizationPolicyFixture
     {
@@ -249,7 +252,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
                 .Returns(Task.FromResult((JwsPayload)null));
 
             // ACT
@@ -313,7 +316,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
                 .Returns(Task.FromResult(new JwsPayload
                 {
                     {
@@ -382,7 +385,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
                 .Returns(Task.FromResult(new JwsPayload()));
 
             // ACT
@@ -447,7 +450,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Token = "token"
             };
             var payload = new JwsPayload { { "role", new JArray("role3") } };
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
                 .Returns(Task.FromResult(payload));
 
             // ACT
@@ -515,7 +518,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             {
                 { "role", new string[] { "role3" } }
             };
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
                 .Returns(Task.FromResult(payload));
 
             // ACT
@@ -579,7 +582,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
                 .Returns(Task.FromResult(new JwsPayload
                 {
                     {
@@ -684,7 +687,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             _jwtTokenParserStub = new Mock<IJwtTokenParser>();
             _basicAuthorizationPolicy = new BasicAuthorizationPolicy(
                 //_identityServerClientFactoryStub.Object,
-                _jwtTokenParserStub.Object);
+                _jwtTokenParserStub.Object,
+                new Mock<IJwksClient>().Object);
         }
     }
 }
