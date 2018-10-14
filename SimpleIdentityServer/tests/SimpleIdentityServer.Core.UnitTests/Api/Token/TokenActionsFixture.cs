@@ -53,7 +53,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 ClientId = clientId,
                 UserName = userName,
-                Password = password
+                Password = password,
+                Scope = "fake"
             };
             var grantedToken = new GrantedToken
             {
@@ -94,7 +95,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             var parameter = new AuthorizationCodeGrantTypeParameter
             {
                 ClientId = clientId,
-                Code = code
+                Code = code,
+                RedirectUri = "https://fake/"
             };
             var grantedToken = new GrantedToken
             {
