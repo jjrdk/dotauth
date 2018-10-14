@@ -132,8 +132,11 @@ namespace SimpleIdentityServer.Scim.Client.Builders
             var arr = new JArray();
             foreach(var operation in _operations)
             {
-                var obj = new JObject();
-                obj.Add(new JProperty(ScimConstants.PatchOperationRequestNames.Operation, Enum.GetName(typeof(PatchOperations), operation.Type)));
+                var obj = new JObject
+                {
+                    new JProperty(ScimConstants.PatchOperationRequestNames.Operation,
+                        Enum.GetName(typeof(PatchOperations), operation.Type))
+                };
                 if (!string.IsNullOrWhiteSpace(operation.Path))
                 {
                     obj.Add(new JProperty(ScimConstants.PatchOperationRequestNames.Path, operation.Path));
@@ -154,8 +157,7 @@ namespace SimpleIdentityServer.Scim.Client.Builders
         private void Initialize(IEnumerable<string> schemas)
         {
             var arr = new JArray(schemas);
-            _obj = new JObject();
-            _obj[ScimConstants.ScimResourceNames.Schemas] = arr;
+            _obj = new JObject {[ScimConstants.ScimResourceNames.Schemas] = arr};
         }
     }
 }

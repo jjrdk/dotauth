@@ -98,7 +98,7 @@ namespace SimpleIdentityServer.Shell.Controllers
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _consentActions.ConfirmConsent(parameter,
                 authenticatedUser, issuerName).ConfigureAwait(false);
-            await LogConsentAccepted(actionResult, parameter.ProcessId).ConfigureAwait(false);
+            LogConsentAccepted(actionResult, parameter.ProcessId);
             return this.CreateRedirectionFromActionResult(actionResult,
                 request);
         }
@@ -112,7 +112,7 @@ namespace SimpleIdentityServer.Shell.Controllers
         public async Task<ActionResult> Cancel(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            await LogConsentRejected(request.ProcessId).ConfigureAwait(false);
+            LogConsentRejected(request.ProcessId);
             return Redirect(request.RedirectUri);
         }
 
@@ -132,7 +132,7 @@ namespace SimpleIdentityServer.Shell.Controllers
             ViewBag.Translations = translations;
         }
 
-        private async Task LogConsentAccepted(Core.Results.ActionResult act, string processId)
+        private void LogConsentAccepted(Core.Results.ActionResult act, string processId)
         {
             if (string.IsNullOrWhiteSpace(processId))
             {
@@ -142,7 +142,7 @@ namespace SimpleIdentityServer.Shell.Controllers
             _eventPublisher.Publish(new ConsentAccepted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(act), 10));
         }
 
-        private async Task LogConsentRejected(string processId)
+        private void LogConsentRejected(string processId)
         {
             if (string.IsNullOrWhiteSpace(processId))
             {

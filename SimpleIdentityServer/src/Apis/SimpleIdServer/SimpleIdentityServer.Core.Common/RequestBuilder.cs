@@ -35,17 +35,6 @@ namespace SimpleIdentityServer.Core.Common
             Initialize(new[] { schema });
         }
 
-        public RequestBuilder(IEnumerable<string> schemas, Func<JObject, Task<ScimResponse>> callback)
-        {
-            if (schemas == null)
-            {
-                throw new ArgumentNullException(nameof(schemas));
-            }
-
-            _callback = callback ?? throw new ArgumentNullException(nameof(callback));
-            Initialize(schemas);
-        }
-
         public RequestBuilder SetCommonAttributes(string externalId)
         {
             if (string.IsNullOrWhiteSpace(externalId))
@@ -54,17 +43,6 @@ namespace SimpleIdentityServer.Core.Common
             }
 
             _obj[Common.ScimConstants.IdentifiedScimResourceNames.ExternalId] = externalId;
-            return this;
-        }
-
-        public RequestBuilder AddAttribute(JProperty property)
-        {
-            if (property == null)
-            {
-                throw new ArgumentNullException(nameof(property));
-            }
-
-            _obj.Add(property);
             return this;
         }
 

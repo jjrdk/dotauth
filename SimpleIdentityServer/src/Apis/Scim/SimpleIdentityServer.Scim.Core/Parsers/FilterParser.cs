@@ -76,14 +76,12 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             var regex = new Regex("[ ]{2,}", RegexOptions.None);
             filter = regex.Replace(filter, " ");
             var result = new Filter();
-            var strBuilder = new StringBuilder();
             var attrs = SplitFilter(filter);
-            var isLogicalAttribute = attrs.Any(a => IsLogicalOperand(a));
-            if (attrs.Any(a => IsLogicalOperand(a)))
+            if (attrs.Any(IsLogicalOperand))
             {
                 result.Expression = GetLogicalExpression(attrs);
             }
-            else if (attrs.Any(a => IsComparisonOperand(a)))
+            else if (attrs.Any(IsComparisonOperand))
             {
                 result.Expression = GetAttributeExpression(attrs);
             }

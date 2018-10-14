@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
     public class GroupsController : Controller
     {
         private readonly IGroupsAction _groupsAction;
-        private readonly string GroupsName = "Groups_{0}";
+        //private readonly string GroupsName = "Groups_{0}";
 
         public GroupsController(
             IGroupsAction groupsAction)
