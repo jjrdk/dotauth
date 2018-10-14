@@ -1,16 +1,15 @@
 namespace SimpleIdentityServer.Host.Tests.Introspection
 {
-    using System.Threading.Tasks;
     using Client;
-    using Client.Builders;
     using Client.Operations;
-    using Core.Jwt;
+    using Client.Results;
     using Microsoft.AspNetCore.Authentication;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Microsoft.Extensions.WebEncoders.Testing;
     using Moq;
+    using Newtonsoft.Json.Linq;
+    using System.Threading.Tasks;
     using UserInfoIntrospection;
     using Xunit;
 
@@ -30,16 +29,20 @@ namespace SimpleIdentityServer.Host.Tests.Introspection
             // ACT
             var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    TokenRequest.FromPassword("superuser", "password", new[] {"role"}),
+                    TokenRequest.FromPassword("superuser", "password", new[] { "role" }),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
                 .ConfigureAwait(false);
+            var userInfoClient = new Mock<IUserInfoClient>();
+            var userInfoResult = new GetUserInfoResult { Content = new JObject() };
+            userInfoClient.Setup(x => x.Resolve(It.IsAny<string>(), It.IsAny<string>(), false))
+                .ReturnsAsync(userInfoResult);
             var authResult = await new UserInfoIntrospectionHandler(
                     new Mock<IOptionsMonitor<UserInfoIntrospectionOptions>>().Object,
                     new Mock<ILoggerFactory>().Object,
                     new UrlTestEncoder(),
-                    new Mock<IUserInfoClient>().Object,
+                    userInfoClient.Object,
                     new Mock<ISystemClock>().Object)
                 .HandleAuthenticate(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken)
                 .ConfigureAwait(false);
