@@ -1,11 +1,11 @@
 ﻿using SimpleIdentityServer.UserManagement.Client.Operations;
 using SimpleIdentityServer.UserManagement.Client.Results;
-using SimpleIdentityServer.UserManagement.Common.Requests;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.UserManagement.Client
 {
     using Core.Common;
+    using Requests;
 
     public interface IProfileClient
     {

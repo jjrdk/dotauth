@@ -1,16 +1,16 @@
-﻿using System.Runtime.Serialization;
-using static SimpleIdentityServer.UserManagement.Common.Constants;
-
-namespace SimpleIdentityServer.UserManagement.Common.Requests
+﻿namespace SimpleIdentityServer.UserManagement.Requests
 {
+    using System.Runtime.Serialization;
+    using Common;
+
     [DataContract]
     public sealed class LinkProfileRequest
     {
-        [DataMember(Name = LinkProfileRequestNames.UserId)]
+        [DataMember(Name = Constants.LinkProfileRequestNames.UserId)]
         public string UserId { get; set; }
-        [DataMember(Name = LinkProfileRequestNames.Issuer)]
+        [DataMember(Name = Constants.LinkProfileRequestNames.Issuer)]
         public string Issuer { get; set; }
-        [DataMember(Name = LinkProfileRequestNames.Force)]
+        [DataMember(Name = Constants.LinkProfileRequestNames.Force)]
         public bool Force { get; set; }
     }
 }

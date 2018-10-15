@@ -1,9 +1,9 @@
-﻿using SimpleIdentityServer.UserManagement.Common.Responses;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SimpleIdentityServer.UserManagement.Client.Results
 {
     using Core.Common;
+    using Responses;
 
     public class GetProfilesResult : BaseResponse
     {

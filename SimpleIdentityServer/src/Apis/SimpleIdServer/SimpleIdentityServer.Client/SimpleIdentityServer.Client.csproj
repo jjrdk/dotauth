@@ -26,10 +26,4 @@
     <PackageReference Include="HtmlAgilityPack.NetCore" Version="1.5.0.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="SimpleIdentityServer.Common.Client">
-      <HintPath>..\..\Common\SimpleIdentityServer.Common.Client\bin\Debug\netstandard2.0\SimpleIdentityServer.Common.Client.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

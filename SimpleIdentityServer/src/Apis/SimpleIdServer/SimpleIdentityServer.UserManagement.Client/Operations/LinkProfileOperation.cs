@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using SimpleIdentityServer.Common.Dtos.Responses;
-using SimpleIdentityServer.UserManagement.Common.Requests;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -9,6 +8,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.UserManagement.Client.Operations
 {
     using Core.Common;
+    using Requests;
 
     public interface ILinkProfileOperation
     {

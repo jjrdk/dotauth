@@ -17,6 +17,10 @@ using System;
 
 namespace SimpleIdentityServer.Logging
 {
+    using OAuth.Logging;
+    using OpenId.Logging;
+    using Uma.Logging;
+
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddTechnicalLogging(this IServiceCollection services)
@@ -27,6 +31,39 @@ namespace SimpleIdentityServer.Logging
             }
 
             services.AddTransient<ITechnicalEventSource, TechnicalEventSource>();
+            return services;
+        }
+
+        public static IServiceCollection AddOpenidLogging(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddTransient<IOpenIdEventSource, OpenIdEventSource>();
+            return services;
+        }
+
+        public static IServiceCollection AddOAuthLogging(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddTransient<IOAuthEventSource, OAuthEventSource>();
+            return services;
+        }
+
+        public static IServiceCollection AddUmaLogging(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();
             return services;
         }
     }

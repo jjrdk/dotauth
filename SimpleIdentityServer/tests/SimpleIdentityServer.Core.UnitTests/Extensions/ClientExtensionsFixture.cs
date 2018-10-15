@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             var result = client.GetIdTokenSignedResponseAlg();
 
             // ASSERT
-            Assert.NotNull(result == JwsAlg.RS256);
+            Assert.Equal(JwsAlg.RS256, result);
         }
 
         [Fact]

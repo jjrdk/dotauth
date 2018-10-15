@@ -132,7 +132,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _oauthEventSource.Verify(s => s.EndAuthorizationCodeFlow(clientId, "RedirectToAction", "FormIndex"));
         }
 
-        public void InitializeFakeObjects()
+        private void InitializeFakeObjects()
         {
             _processAuthorizationRequestFake = new Mock<IProcessAuthorizationRequest>();
             _clientValidatorFake = new Mock<IClientValidator>();
