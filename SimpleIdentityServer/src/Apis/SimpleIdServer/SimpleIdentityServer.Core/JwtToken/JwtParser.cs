@@ -207,7 +207,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             return jsonWebKey;
         }
         
-        private async Task<JsonWebKey> GetJsonWebKeyFromClient(Core.Common.Models.Client client, string kid)
+        private async Task<JsonWebKey> GetJsonWebKeyFromClient(Common.Models.Client client, string kid)
         {
             JsonWebKey result = null;
             // Fetch the json web key from the jwks_uri

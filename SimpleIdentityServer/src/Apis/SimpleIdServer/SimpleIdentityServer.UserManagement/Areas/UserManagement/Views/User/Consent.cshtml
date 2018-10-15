@@ -47,7 +47,7 @@
                     <ul class="list-group">
                         @foreach (var consent in client)
                         {
-                            <form method="post" action="@Url.Action("Consent", new { @id = consent.Id })">
+                            <form method="post" action="@Url.Action("Consent", new { id = consent.Id })">
                                 <li class="list-group-item" style="margin-top: 10px;">
                                     <!-- Display scopes -->
                                     <h4>Scopes</h4>

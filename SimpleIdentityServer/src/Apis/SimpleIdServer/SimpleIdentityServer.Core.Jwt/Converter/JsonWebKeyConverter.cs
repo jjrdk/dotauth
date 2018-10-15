@@ -115,7 +115,7 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
                 using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
                 {
                     rsaCryptoServiceProvider.ImportParameters(rsaParameters);
-                    return rsaCryptoServiceProvider.ToXmlStringNetCore(false);
+                    return rsaCryptoServiceProvider.ToXmlStringNetCore();
                 }
             }
             else
@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
                 using (var rsaCryptoServiceProvider = new RSAOpenSsl())
                 {
                     rsaCryptoServiceProvider.ImportParameters(rsaParameters);
-                    return rsaCryptoServiceProvider.ToXmlStringNetCore(false);
+                    return rsaCryptoServiceProvider.ToXmlStringNetCore();
                 }
             }
         }

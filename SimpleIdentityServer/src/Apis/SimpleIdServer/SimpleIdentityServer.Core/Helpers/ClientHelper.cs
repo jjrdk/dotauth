@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Core.Helpers
     public interface IClientHelper
     {
         Task<string> GenerateIdTokenAsync(string clientId, JwsPayload jwsPayload);
-        Task<string> GenerateIdTokenAsync(Core.Common.Models.Client client, JwsPayload jwsPayload);
+        Task<string> GenerateIdTokenAsync(Common.Models.Client client, JwsPayload jwsPayload);
     }
 
     public sealed class ClientHelper : IClientHelper
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Core.Helpers
             return await GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
         }
 
-        public async Task<string> GenerateIdTokenAsync(Core.Common.Models.Client client, JwsPayload jwsPayload)
+        public async Task<string> GenerateIdTokenAsync(Common.Models.Client client, JwsPayload jwsPayload)
         {
             if (client == null)
             {

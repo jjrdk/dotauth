@@ -15,145 +15,145 @@ namespace SimpleIdentityServer.Core.Repositories
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
+                Code = Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
                 Value = "the client {0} would like to access"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
+                Code = Constants.StandardTranslationCodes.IndividualClaimsCode,
                 Value = "individual claims"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.NameCode,
+                Code = Constants.StandardTranslationCodes.NameCode,
                 Value = "Name"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.LoginCode,
+                Code = Constants.StandardTranslationCodes.LoginCode,
                 Value = "Login"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.PasswordCode,
+                Code = Constants.StandardTranslationCodes.PasswordCode,
                 Value = "Password"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.UserNameCode,
+                Code = Constants.StandardTranslationCodes.UserNameCode,
                 Value = "Username"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.ConfirmCode,
+                Code = Constants.StandardTranslationCodes.ConfirmCode,
                 Value = "Confirm"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.CancelCode,
+                Code = Constants.StandardTranslationCodes.CancelCode,
                 Value = "Cancel"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.LoginLocalAccount,
+                Code = Constants.StandardTranslationCodes.LoginLocalAccount,
                 Value = "Login with your local account"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.LoginExternalAccount,
+                Code = Constants.StandardTranslationCodes.LoginExternalAccount,
                 Value = "Login with your external account"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.LinkToThePolicy,
+                Code = Constants.StandardTranslationCodes.LinkToThePolicy,
                 Value = "policy"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.Tos,
+                Code = Constants.StandardTranslationCodes.Tos,
                 Value = "Terms of Service"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.SendCode,
+                Code = Constants.StandardTranslationCodes.SendCode,
                 Value = "Send code"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.Code,
+                Code = Constants.StandardTranslationCodes.Code,
                 Value = "Code"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.EditResourceOwner,
+                Code = Constants.StandardTranslationCodes.EditResourceOwner,
                 Value = "Edit resource owner"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.YourName,
+                Code = Constants.StandardTranslationCodes.YourName,
                 Value = "Your name"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.YourPassword,
+                Code = Constants.StandardTranslationCodes.YourPassword,
                 Value = "Your password"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.Email,
+                Code = Constants.StandardTranslationCodes.Email,
                 Value = "Email"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.YourEmail,
+                Code = Constants.StandardTranslationCodes.YourEmail,
                 Value = "Your email"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.TwoAuthenticationFactor,
+                Code = Constants.StandardTranslationCodes.TwoAuthenticationFactor,
                 Value = "Two authentication factor"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.UserIsUpdated,
+                Code = Constants.StandardTranslationCodes.UserIsUpdated,
                 Value = "User has been updated"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.SendConfirmationCode,
+                Code = Constants.StandardTranslationCodes.SendConfirmationCode,
                 Value = "Send a confirmation code"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.Phone,
+                Code = Constants.StandardTranslationCodes.Phone,
                 Value = "Phone"
             },
             new Common.Models.Translation
             {
                 LanguageTag = "en",
-                Code = Core.Constants.StandardTranslationCodes.HashedPassword,
+                Code = Constants.StandardTranslationCodes.HashedPassword,
                 Value = "Hashed password"
             }
         };

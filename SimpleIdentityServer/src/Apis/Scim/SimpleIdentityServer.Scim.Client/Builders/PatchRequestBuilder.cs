@@ -21,82 +21,83 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Scim.Client.Builders
 {
     using Core.Common;
+    using Core.Common.Models;
 
-    public enum PatchOperations
-    {
-        add,
-        remove,
-        replace
-    }
+    //public enum PatchOperations
+    //{
+    //    add,
+    //    remove,
+    //    replace
+    //}
 
-    public class PatchOperation
-    {
-        public PatchOperations Type { get; set; }
-        public string Path { get; set; }
-        public JToken Value { get; set; }
-    }
+    //public class PatchOperation
+    //{
+    //    public PatchOperations Type { get; set; }
+    //    public string Path { get; set; }
+    //    public JToken Value { get; set; }
+    //}
 
-    public class PatchOperationBuilder
-    {
-        private readonly PatchOperation _patchOperation;
+    //public class PatchOperationBuilder
+    //{
+    //    private readonly PatchOperation _patchOperation;
 
-        public PatchOperationBuilder()
-        {
-            _patchOperation = new PatchOperation();
-        }
+    //    public PatchOperationBuilder()
+    //    {
+    //        _patchOperation = new PatchOperation();
+    //    }
 
-        public PatchOperationBuilder SetType(PatchOperations type)
-        {
-            _patchOperation.Type = type;
-            return this;
-        }
+    //    public PatchOperationBuilder SetType(PatchOperations type)
+    //    {
+    //        _patchOperation.Type = type;
+    //        return this;
+    //    }
 
-        public PatchOperationBuilder SetPath(string path)
-        {
-            // TODO : Check the path.
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
+    //    public PatchOperationBuilder SetPath(string path)
+    //    {
+    //        // TODO : Check the path.
+    //        if (string.IsNullOrWhiteSpace(path))
+    //        {
+    //            throw new ArgumentNullException(nameof(path));
+    //        }
 
-            _patchOperation.Path = path;
-            return this;
-        }
+    //        _patchOperation.Path = path;
+    //        return this;
+    //    }
         
-        public PatchOperationBuilder SetContent(JToken obj)
-        {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
+    //    public PatchOperationBuilder SetContent(JToken obj)
+    //    {
+    //        if (obj == null)
+    //        {
+    //            throw new ArgumentNullException(nameof(obj));
+    //        }
 
-            _patchOperation.Value = obj;
-            return this;
-        }
+    //        _patchOperation.Value = obj;
+    //        return this;
+    //    }
 
-        public PatchOperation Build()
-        {
-            if (_patchOperation.Type == PatchOperations.remove)
-            {
-                if (string.IsNullOrWhiteSpace(_patchOperation.Path))
-                {
-                    throw new InvalidOperationException("the path should be specified");
-                }
+    //    public PatchOperation Build()
+    //    {
+    //        if (_patchOperation.Type == PatchOperations.remove)
+    //        {
+    //            if (string.IsNullOrWhiteSpace(_patchOperation.Path))
+    //            {
+    //                throw new InvalidOperationException("the path should be specified");
+    //            }
 
-                if (_patchOperation.Value != null)
-                {
-                    throw new InvalidOperationException("the content shouldn't be specified");
-                }
-            }
+    //            if (_patchOperation.Value != null)
+    //            {
+    //                throw new InvalidOperationException("the content shouldn't be specified");
+    //            }
+    //        }
 
-            if ((_patchOperation.Type == PatchOperations.add || _patchOperation.Type == PatchOperations.replace ) && _patchOperation.Value == null)
-            {
-                throw new InvalidOperationException("the content should be specified");
-            }
+    //        if ((_patchOperation.Type == PatchOperations.add || _patchOperation.Type == PatchOperations.replace ) && _patchOperation.Value == null)
+    //        {
+    //            throw new InvalidOperationException("the content should be specified");
+    //        }
 
-            return _patchOperation;
-        }
-    }
+    //        return _patchOperation;
+    //    }
+    //}
 
     public class PatchRequestBuilder
     {

@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             Assert.NotNull(result);
             Assert.True(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
             Assert.True(result.ContainsKey(StandardClaimNames.AuthenticationTime));
-            Assert.True(result[Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString().Equals(subject));
+            Assert.Equal(subject, result[Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString());
             Assert.NotEmpty(result[StandardClaimNames.AuthenticationTime].ToString());
         }
 
@@ -155,7 +155,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
-            Assert.True(result.Audiences.Count() > 1);
+            Assert.True(result.Audiences.Length > 1);
             Assert.True(result.Azp == clientId);
         }
 
@@ -841,8 +841,8 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             Assert.NotNull(result);
             Assert.True(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
             Assert.True(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Name));
-            Assert.True(result[Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString().Equals(subject));
-            Assert.True(result[Jwt.Constants.StandardResourceOwnerClaimNames.Name].ToString().Equals(name));
+            Assert.Equal(subject, result[Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString());
+            Assert.Equal(name, result[Jwt.Constants.StandardResourceOwnerClaimNames.Name].ToString());
         }
 
         [Fact]

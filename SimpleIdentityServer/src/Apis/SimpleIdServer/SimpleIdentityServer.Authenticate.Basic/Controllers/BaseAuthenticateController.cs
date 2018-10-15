@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 {
     using Common.Dtos.Events.Openid;
     using Core.Common;
-    using Constants = Core.Constants;
+    using Constants = Constants;
 
     public abstract class BaseAuthenticateController : BaseController
     {
@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
         public async Task<ActionResult> Logout()
         {
-            HttpContext.Response.Cookies.Delete(Core.Constants.SESSION_ID);
+            HttpContext.Response.Cookies.Delete(Constants.SESSION_ID);
             await _authenticationService.SignOutAsync(HttpContext, Host.Constants.CookieNames.CookieName, new AuthenticationProperties()).ConfigureAwait(false);
             return RedirectToAction("Index", "Authenticate");
         }
@@ -133,7 +133,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, string.Format(ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
             // 1. Get the authenticated user.
@@ -203,7 +203,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.CookieNames.TwoFactorCookieName).ConfigureAwait(false);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
             }
 
             // 2. Return translated view.
@@ -246,7 +246,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.CookieNames.TwoFactorCookieName).ConfigureAwait(false);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
             }
 
             // 2. Resend the confirmation code.
@@ -379,8 +379,8 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             var request = Request.Cookies[string.Format(ExternalAuthenticateCookieName, code)];
             if (request == null)
             {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                    Core.Errors.ErrorDescriptions.TheRequestCannotBeExtractedFromTheCookie);
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                    ErrorDescriptions.TheRequestCannotBeExtractedFromTheCookie);
             }
 
             // 2 : remove the cookie
@@ -393,7 +393,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             // 3 : Raise an exception is there's an authentication error
             if (!string.IsNullOrWhiteSpace(error))
             {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, string.Format(ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
             // 4. Check if the user is authenticated
@@ -402,7 +402,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 !authenticatedUser.Identity.IsAuthenticated ||
                 !(authenticatedUser.Identity is ClaimsIdentity))
             {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, Core.Errors.ErrorDescriptions.TheUserNeedsToBeAuthenticated);
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TheUserNeedsToBeAuthenticated);
             }
 
             // 5. Rerieve the claims & insert the resource owner if needed.
@@ -576,7 +576,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 string.IsNullOrWhiteSpace(_basicAuthenticateOptions.AuthenticationOptions.ClientSecret) ||
                 string.IsNullOrWhiteSpace(_basicAuthenticateOptions.ScimBaseUrl)))
             {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.InternalError, Core.Errors.ErrorDescriptions.TheScimConfigurationMustBeSpecified);
+                throw new IdentityServerException(ErrorCodes.InternalError, ErrorDescriptions.TheScimConfigurationMustBeSpecified);
             }
         }
 
@@ -596,7 +596,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             var tokenValidity = await _configurationService.GetTokenValidityPeriodInSecondsAsync().ConfigureAwait(false);
             var now = DateTime.UtcNow;
             var expires = now.AddSeconds(tokenValidity);
-            HttpContext.Response.Cookies.Append(SimpleIdentityServer.Core.Constants.SESSION_ID, sessionId, new CookieOptions
+            HttpContext.Response.Cookies.Append(Constants.SESSION_ID, sessionId, new CookieOptions
             {
                 HttpOnly = false,
                 Expires = expires,

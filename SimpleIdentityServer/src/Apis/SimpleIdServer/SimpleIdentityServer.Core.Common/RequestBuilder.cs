@@ -46,6 +46,17 @@ namespace SimpleIdentityServer.Core.Common
             return this;
         }
 
+        public RequestBuilder AddAttribute(JProperty property)
+        {
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+
+            _obj.Add(property);
+            return this;
+        }
+
         public async Task<ScimResponse> Execute()
         {
             return await _callback(_obj).ConfigureAwait(false);

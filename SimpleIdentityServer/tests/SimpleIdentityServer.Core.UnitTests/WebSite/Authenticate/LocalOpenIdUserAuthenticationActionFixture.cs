@@ -67,8 +67,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             // Specify the resource owner authentication date
             Assert.NotNull(result);
             Assert.NotNull(result.Claims);
-            Assert.True(result.Claims.Any(r => r.Type == ClaimTypes.AuthenticationInstant ||
-                r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.Contains(result.Claims, r => r.Type == ClaimTypes.AuthenticationInstant ||
+                r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
         }
 
         private void InitializeFakeObjects()

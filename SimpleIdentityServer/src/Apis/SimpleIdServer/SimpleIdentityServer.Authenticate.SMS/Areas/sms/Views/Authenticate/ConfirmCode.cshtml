@@ -23,7 +23,7 @@
                     <!-- Confirmation code -->
                     <fieldset class="form-group">
                         <label class="control-label">@ViewBag.Translations["code"]</label>
-                        @Html.TextBoxFor(i => i.ConfirmationCode, new { @type = "number", @class = "form-control" })
+                        @Html.TextBoxFor(i => i.ConfirmationCode, new { type = "number", @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
                     </fieldset>
                     <!-- Submit buttons code -->

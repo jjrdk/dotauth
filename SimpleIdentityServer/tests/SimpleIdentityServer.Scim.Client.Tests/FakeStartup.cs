@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,6 +23,9 @@ using System.Reflection;
 
 namespace SimpleIdentityServer.Scim.Client.Tests
 {
+    using Common.Dtos;
+    using SimpleIdentityServer.Core.Common;
+
     public class FakeStartup
     {
         public const string DefaultSchema = "Cookies";
@@ -45,10 +46,12 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             }).AddFakeCustomAuth(o => { });
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("scim_manage", policy => policy.RequireAssertion((ctx) => {
+                options.AddPolicy("scim_manage", policy => policy.RequireAssertion((ctx) =>
+                {
                     return true;
                 }));
-                options.AddPolicy("scim_read", policy => policy.RequireAssertion((ctx) => {
+                options.AddPolicy("scim_read", policy => policy.RequireAssertion((ctx) =>
+                {
                     return true;
                 }));
                 options.AddPolicy("authenticated", (policy) =>
@@ -57,6 +60,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                     policy.RequireAuthenticatedUser();
                 });
             });
+            services.AddTransient<IEventPublisher, DefaultEventPublisher>();
             var mvc = services.AddMvc();
             var parts = mvc.PartManager.ApplicationParts;
             parts.Clear();
@@ -71,6 +75,13 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+    }
+
+    public class DefaultEventPublisher : IEventPublisher
+    {
+        public void Publish<T>(T evt) where T : Event
+        {
         }
     }
 }

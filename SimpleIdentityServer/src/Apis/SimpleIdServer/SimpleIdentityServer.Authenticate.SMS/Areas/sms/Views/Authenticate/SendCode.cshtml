@@ -20,18 +20,18 @@
                 {
                     @Html.AntiForgeryToken()
                     <!-- Authorization request code -->
-                    @Html.TextBoxFor(i => i.AuthRequestCode, new { @type = "hidden" })
+                    @Html.TextBoxFor(i => i.AuthRequestCode, new { type = "hidden" })
                     <!-- Claim -->
-                    @Html.TextBoxFor(i => i.ClaimName, new { @type = "hidden" })
+                    @Html.TextBoxFor(i => i.ClaimName, new { type = "hidden" })
                     <fieldset class="form-group">
                         <label class="control-label">@Model.ClaimName</label>
-                        @Html.TextBoxFor(i => i.ClaimValue, new { @type = "text", @class = "form-control" })
+                        @Html.TextBoxFor(i => i.ClaimValue, new { type = "text", @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.ClaimValue, "", new { @class = "text-danger" })
                     </fieldset>
                     <!-- Confirmation code -->
                     <fieldset class="form-group">
                         <label class="control-label">@ViewBag.Translations["code"]</label>
-                        @Html.TextBoxFor(i => i.Code, new { @type = "number", @class = "form-control" })
+                        @Html.TextBoxFor(i => i.Code, new { type = "number", @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
                     </fieldset>
                     <!-- Submit buttons code -->

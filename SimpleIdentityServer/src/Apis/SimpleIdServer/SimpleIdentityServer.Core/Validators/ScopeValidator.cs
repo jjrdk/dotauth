@@ -21,7 +21,7 @@ namespace SimpleIdentityServer.Core.Validators
 {
     public interface IScopeValidator
     {
-        ScopeValidationResult Check(string scope, Core.Common.Models.Client client);
+        ScopeValidationResult Check(string scope, Common.Models.Client client);
     }
 
     public class ScopeValidationResult
@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Core.Validators
             _parameterParserHelper = parameterParserHelper;
         }
 
-        public ScopeValidationResult Check(string scope, Core.Common.Models.Client client)
+        public ScopeValidationResult Check(string scope, Common.Models.Client client)
         {
             var emptyList = new List<string>();
             var scopes = _parameterParserHelper.ParseScopes(scope);
