@@ -18,8 +18,8 @@
   </PropertyGroup>  
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Apis\Scim\SimpleIdentityServer.Scim.Client\SimpleIdentityServer.Scim.Client.csproj" />
     <ProjectReference Include="..\..\src\Apis\Scim\SimpleIdentityServer.Scim.Host\SimpleIdentityServer.Scim.Host.csproj" />
+    <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
   </ItemGroup>  
 
   <ItemGroup>

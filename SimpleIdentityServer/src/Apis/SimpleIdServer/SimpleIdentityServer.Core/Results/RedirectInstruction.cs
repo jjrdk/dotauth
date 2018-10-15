@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Core.Results
             Parameters = new List<Parameter>();
         }
 
-        public IList<Parameter> Parameters { get; private set; }
+        public IList<Parameter> Parameters { get; }
         public IdentityServerEndPoints Action { get; set; }
         public ResponseMode ResponseMode { get; set; }
 

@@ -7,6 +7,6 @@
             Claim = claim;
         }
 
-        public string Claim { get; private set; }
+        public string Claim { get; }
     }
 }

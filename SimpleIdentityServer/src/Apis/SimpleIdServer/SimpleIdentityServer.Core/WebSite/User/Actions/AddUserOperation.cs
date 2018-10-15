@@ -45,8 +45,8 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 Url = url;
             }
 
-            public string Id { get; set; }
-            public string Url { get; set; }
+            public string Id { get; }
+            public string Url { get; }
         }
 
         private readonly IUsersClient _usersClient;
@@ -56,7 +56,6 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
         private readonly IEnumerable<IAccountFilter> _accountFilters;
         private readonly ILinkProfileAction _linkProfileAction;
         private readonly IOpenIdEventSource _openidEventSource;
-        private readonly ISubjectBuilder _subjectBuilder;
 
         public AddUserOperation(
             IUsersClient usersClient,
@@ -65,8 +64,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             IAccessTokenStore tokenStore,
             ILinkProfileAction linkProfileAction,
             IEnumerable<IAccountFilter> accountFilters,
-            IOpenIdEventSource openIdEventSource,
-            ISubjectBuilder subjectBuilder)
+            IOpenIdEventSource openIdEventSource)
         {
             _usersClient = usersClient;
             _resourceOwnerRepository = resourceOwnerRepository;
@@ -75,7 +73,6 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             _accountFilters = accountFilters;
             _linkProfileAction = linkProfileAction;
             _openidEventSource = openIdEventSource;
-            _subjectBuilder = subjectBuilder;
         }
 
         public async Task<bool> Execute(AddUserParameter addUserParameter, AuthenticationParameter authenticationParameter, string scimBaseUrl = null, bool addScimResource = false, string issuer = null)
