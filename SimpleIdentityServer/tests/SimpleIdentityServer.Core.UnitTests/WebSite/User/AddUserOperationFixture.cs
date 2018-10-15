@@ -127,8 +127,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 //_scimClientFactoryStub.Object,
                 _linkProfileActionStub.Object,
                 null,
-                _openidEventSourceStub.Object,
-                _subjectBuilderStub.Object);
+                _openidEventSourceStub.Object);
         }
     }
 }

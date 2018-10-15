@@ -80,41 +80,31 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             };
 
             // ACT : Create group
-            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl))
-                .SetCommonAttributes("external_id")
-                .Execute()
-                .ConfigureAwait(false);
+            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
             var id = firstResult.Content["id"].ToString();
 
             // ACT : Update group
-            await _groupsClient.UpdateGroup(new Uri(baseUrl), id)
-                .SetCommonAttributes("other_id")
-                .AddAttribute(new JProperty(ScimConstants.GroupResourceResponseNames.DisplayName, "display_name"))
-                .Execute().ConfigureAwait(false);
-
-            // 4 ACT : Partial update group
-            await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id)
-                .AddOperation(patchOperation)
-                .Execute()
+            await _groupsClient.UpdateGroup(
+                    new Uri(baseUrl),
+                    id,
+                    null,
+                    "other_id",
+                    new JProperty(ScimConstants.GroupResourceResponseNames.DisplayName, "display_name"))
                 .ConfigureAwait(false);
 
+            // 4 ACT : Partial update group
+            await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id, null, patchOperation).ConfigureAwait(false);
+
             // 5 ACT : Remove group2
-            await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id)
-                .AddOperation(removeGroupOperation)
-                .Execute()
+            await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id, null, removeGroupOperation)
                 .ConfigureAwait(false);
 
             // 6 ACT : Add group3
-            await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id)
-                .AddOperation(addGroupOperation)
-                .Execute()
-                .ConfigureAwait(false);
+            await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id, null, addGroupOperation).ConfigureAwait(false);
 
             // ACT : Update the group3 type (immutable property)
-            var sevenResult = await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id)
-                .AddOperation(updateGroupOperation)
-                .Execute()
+            var sevenResult = await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id, null, updateGroupOperation)
                 .ConfigureAwait(false);
 
             // ASSERTS
@@ -130,10 +120,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             InitializeFakeObjects();
 
             // ACT : Create group
-            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl))
-                .SetCommonAttributes("external_id")
-                .Execute()
-                .ConfigureAwait(false);
+            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(firstResult);
@@ -157,10 +144,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             InitializeFakeObjects();
 
             // ACT : Create group
-            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl))
-                .SetCommonAttributes("external_id")
-                .Execute()
-                .ConfigureAwait(false);
+            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
             var id = firstResult.Content["id"].ToString();
 
@@ -195,18 +179,12 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             };
 
             // ACT : Create group
-            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl))
-                .SetCommonAttributes("external_id")
-                .Execute()
-                .ConfigureAwait(false);
+            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
             var id = firstResult.Content["id"].ToString();
 
             // 4 ACT : Partial update group
-            await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id)
-                .AddOperation(patchOperation)
-                .Execute()
-                .ConfigureAwait(false);
+            await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id, null, patchOperation).ConfigureAwait(false);
 
             // ACT : Get only members
             var nineResult = await _groupsClient.SearchGroups(
@@ -214,7 +192,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                     new SearchParameter
                     {
                         Filter = "members[type pr]",
-                        Attributes = new[] { "members.type" }
+                        Attributes = new[] {"members.type"}
                     })
                 .ConfigureAwait(false);
 
@@ -232,10 +210,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             // ACT : Add ten groups
             for (var i = 0; i < 10; i++)
             {
-                await _groupsClient.AddGroup(new Uri(baseUrl))
-                    .SetCommonAttributes("external_id")
-                    .Execute()
-                    .ConfigureAwait(false);
+                await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
             }
 
             // ACT : Get 10 groups
@@ -260,18 +235,16 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             InitializeFakeObjects();
 
             // ACT : Create group
-            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl))
-                .SetCommonAttributes("external_id")
-                .Execute()
-                .ConfigureAwait(false);
+            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
             var id = firstResult.Content["id"].ToString();
 
             // ACT : Update group
-            var thirdResult = await _groupsClient.UpdateGroup(new Uri(baseUrl), id)
-                .SetCommonAttributes("other_id")
-                .AddAttribute(new JProperty(ScimConstants.GroupResourceResponseNames.DisplayName, "display_name"))
-                .Execute()
+            var thirdResult = await _groupsClient.UpdateGroup(new Uri(baseUrl),
+                    id,
+                    null,
+                    "other_id",
+                    new JProperty(ScimConstants.GroupResourceResponseNames.DisplayName, "display_name"))
                 .ConfigureAwait(false);
 
             // ASSERTS
@@ -307,18 +280,13 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             };
 
             // ACT : Create group
-            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl))
-                .SetCommonAttributes("external_id")
-                .Execute()
-                .ConfigureAwait(false);
+            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
 
             var id = firstResult.Content["id"].ToString();
 
             // ACT : Partial update group
-            var fourthResult = await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id)
-                .AddOperation(patchOperation)
-                .Execute()
+            var fourthResult = await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id, null, patchOperation)
                 .ConfigureAwait(false);
 
             // ASSERTS
@@ -366,29 +334,23 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             };
 
             // ACT : Create group
-            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl))
-                .SetCommonAttributes("external_id")
-                .Execute()
-                .ConfigureAwait(false);
+            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
             var id = firstResult.Content["id"].ToString();
 
             // ACT : Update group
-            await _groupsClient.UpdateGroup(new Uri(baseUrl), id)
-                .SetCommonAttributes("other_id")
-                .AddAttribute(new JProperty(ScimConstants.GroupResourceResponseNames.DisplayName, "display_name"))
-                .Execute().ConfigureAwait(false);
-
-            // 4 ACT : Partial update group
-            await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id)
-                .AddOperation(patchOperation)
-                .Execute()
+            await _groupsClient.UpdateGroup(new Uri(baseUrl),
+                    id,
+                    null,
+                    "other_id",
+                    new JProperty(ScimConstants.GroupResourceResponseNames.DisplayName, "display_name"))
                 .ConfigureAwait(false);
 
+            // 4 ACT : Partial update group
+            await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id, null, patchOperation).ConfigureAwait(false);
+
             // ACT : Remove group2
-            var fifthResult = await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id)
-                .AddOperation(removeGroupOperation)
-                .Execute()
+            var fifthResult = await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id, null, removeGroupOperation)
                 .ConfigureAwait(false);
 
             Assert.True(fifthResult.Content[ScimConstants.GroupResourceResponseNames.Members].Count() == 1);
@@ -434,40 +396,31 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             };
 
             // ACT : Create group
-            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl))
-                .SetCommonAttributes("external_id")
-                .Execute()
-                .ConfigureAwait(false);
+            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
             var id = firstResult.Content["id"].ToString();
 
             // ACT : Update group
-            await _groupsClient.UpdateGroup(new Uri(baseUrl), id)
-                .SetCommonAttributes("other_id")
-                .AddAttribute(new JProperty(ScimConstants.GroupResourceResponseNames.DisplayName, "display_name"))
-                .Execute().ConfigureAwait(false);
-
-            // 4 ACT : Partial update group
-            await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id)
-                .AddOperation(patchOperation)
-                .Execute()
+            await _groupsClient.UpdateGroup(new Uri(baseUrl),
+                    id,
+                    null,
+                    "other_id",
+                    new JProperty(ScimConstants.GroupResourceResponseNames.DisplayName, "display_name"))
                 .ConfigureAwait(false);
 
+            // 4 ACT : Partial update group
+            await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id, null, patchOperation).ConfigureAwait(false);
+
             // ACT : Remove group2
-            var fifthResult = await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id)
-                .AddOperation(removeGroupOperation)
-                .Execute()
+            await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id, null, removeGroupOperation)
                 .ConfigureAwait(false);
 
             // ACT : Add group3
-            var sixResult = await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id)
-                .AddOperation(addGroupOperation)
-                .Execute()
+            var sixResult = await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id, null, addGroupOperation)
                 .ConfigureAwait(false);
 
             Assert.NotNull(sixResult);
             Assert.True(sixResult.Content[ScimConstants.GroupResourceResponseNames.Members].Count() == 2);
-
         }
 
         private void InitializeFakeObjects()

@@ -30,6 +30,6 @@ namespace SimpleIdentityServer.Core.Exceptions
             Code = code;
         }
 
-        public string Code { get; private set; }
+        public string Code { get; }
     }
 }
