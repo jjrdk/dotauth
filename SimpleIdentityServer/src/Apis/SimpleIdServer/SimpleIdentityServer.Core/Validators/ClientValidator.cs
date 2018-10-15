@@ -24,15 +24,15 @@ namespace SimpleIdentityServer.Core.Validators
 {
     public interface IClientValidator
     {
-        IEnumerable<string> GetRedirectionUrls(Core.Common.Models.Client client, params string[] urls);
-        bool CheckGrantTypes(Core.Common.Models.Client client, params GrantType[] grantTypes);
-        bool CheckResponseTypes(Core.Common.Models.Client client, params ResponseType[] responseTypes);
-        bool CheckPkce(Core.Common.Models.Client client, string codeVerifier, AuthorizationCode code);
+        IEnumerable<string> GetRedirectionUrls(Client client, params string[] urls);
+        bool CheckGrantTypes(Client client, params GrantType[] grantTypes);
+        bool CheckResponseTypes(Client client, params ResponseType[] responseTypes);
+        bool CheckPkce(Client client, string codeVerifier, AuthorizationCode code);
     }
 
     public class ClientValidator : IClientValidator
     {        
-        public IEnumerable<string> GetRedirectionUrls(Core.Common.Models.Client client, params string[] urls)
+        public IEnumerable<string> GetRedirectionUrls(Client client, params string[] urls)
         {
             if (urls == null ||
                 client == null || 
@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Core.Validators
             return client.RedirectionUrls.Where(r => urls.Contains(r));
         }
 
-        public bool CheckGrantTypes(Core.Common.Models.Client client, params GrantType[] grantTypes)
+        public bool CheckGrantTypes(Client client, params GrantType[] grantTypes)
         {
             if (client == null || grantTypes == null)
             {
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Core.Validators
             return client.GrantTypes != null && grantTypes.All(gt => client.GrantTypes.Contains(gt));
         }
         
-        public bool CheckResponseTypes(Core.Common.Models.Client client, params ResponseType[] responseTypes)
+        public bool CheckResponseTypes(Client client, params ResponseType[] responseTypes)
         {
             if (client == null)
             {
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.Validators
             return client.ResponseTypes != null && responseTypes.All(rt => client.ResponseTypes.Contains(rt));
         }
 
-        public bool CheckPkce(Core.Common.Models.Client client, string codeVerifier, AuthorizationCode code)
+        public bool CheckPkce(Client client, string codeVerifier, AuthorizationCode code)
         {
             if (client == null)
             {

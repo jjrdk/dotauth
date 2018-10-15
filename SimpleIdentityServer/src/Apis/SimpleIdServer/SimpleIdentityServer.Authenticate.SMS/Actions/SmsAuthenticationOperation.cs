@@ -55,8 +55,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
             var id = await _subjectBuilder.BuildSubject().ConfigureAwait(false);
             var claims = new List<Claim>
             {
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber),
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified, "false")
+                new Claim(Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber),
+                new Claim(Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified, "false")
             };
             var record = new AddUserParameter(id, Guid.NewGuid().ToString(), claims);
             // 3.1 Add scim resource.

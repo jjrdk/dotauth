@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Core.Helpers
     public interface IGrantedTokenGeneratorHelper
     {
         Task<GrantedToken> GenerateTokenAsync(string clientId, string scope, string issuerName, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null);
-        Task<GrantedToken> GenerateTokenAsync(Core.Common.Models.Client clientId, string scope, string issuerName, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null);
+        Task<GrantedToken> GenerateTokenAsync(Client clientId, string scope, string issuerName, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null);
     }
 
     public class GrantedTokenGeneratorHelper : IGrantedTokenGeneratorHelper
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Core.Helpers
             return await GenerateTokenAsync(client, scope, issuerName, userInformationPayload, idTokenPayload).ConfigureAwait(false);
         }
 
-        public async Task<GrantedToken> GenerateTokenAsync(Core.Common.Models.Client client, string scope, string issuerName, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null)
+        public async Task<GrantedToken> GenerateTokenAsync(Client client, string scope, string issuerName, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null)
         {
             if (client == null)
             {

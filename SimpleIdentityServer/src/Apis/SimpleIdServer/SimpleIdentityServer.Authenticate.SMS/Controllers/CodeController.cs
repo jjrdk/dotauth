@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 return checkResult;
             }
 
-            IActionResult result = null;
+            IActionResult result;
             try
             {
                 await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber).ConfigureAwait(false);
@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 
             if (string.IsNullOrWhiteSpace(confirmationCodeRequest.PhoneNumber))
             {
-                return BuildError(Core.Errors.ErrorCodes.InvalidRequestCode, $"parameter {SMS.Common.Constants.ConfirmationCodeRequestNames.PhoneNumber} is missing", HttpStatusCode.BadRequest);
+                return BuildError(Core.Errors.ErrorCodes.InvalidRequestCode, $"parameter {Common.Constants.ConfirmationCodeRequestNames.PhoneNumber} is missing", HttpStatusCode.BadRequest);
             }
 
             return null;

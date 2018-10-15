@@ -35,9 +35,9 @@ namespace SimpleIdentityServer.Scim.Client.Tests.MiddleWares
         public DateTimeOffset? AuthenticationOffset { get; set; }
     }
 
-    public class TestAuthenticationHandler : AuthenticationHandler<TestAuthenticationOptions>
+    public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        public TestAuthenticationHandler(IOptionsMonitor<TestAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+        public TestAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
         {
         }
 

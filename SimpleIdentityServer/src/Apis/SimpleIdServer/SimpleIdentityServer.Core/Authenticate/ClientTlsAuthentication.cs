@@ -20,12 +20,12 @@ namespace SimpleIdentityServer.Core.Authenticate
 {
     public interface IClientTlsAuthentication
     {
-        Core.Common.Models.Client AuthenticateClient(AuthenticateInstruction instruction, Core.Common.Models.Client client);
+        Client AuthenticateClient(AuthenticateInstruction instruction, Client client);
     }
 
     internal class ClientTlsAuthentication : IClientTlsAuthentication
     {
-        public Core.Common.Models.Client AuthenticateClient(AuthenticateInstruction instruction, Core.Common.Models.Client client)
+        public Client AuthenticateClient(AuthenticateInstruction instruction, Client client)
         {
             if (instruction == null)
             {

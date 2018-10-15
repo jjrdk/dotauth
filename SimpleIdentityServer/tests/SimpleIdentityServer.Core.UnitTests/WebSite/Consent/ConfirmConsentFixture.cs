@@ -168,7 +168,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
             // ASSERT
             Assert.NotNull(insertedConsent);
-            Assert.True(insertedConsent.Claims.Contains(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.Contains(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, insertedConsent.Claims);
             Assert.True(insertedConsent.ResourceOwner.Id == subject);
             Assert.True(insertedConsent.Client.ClientId == clientId);
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl());

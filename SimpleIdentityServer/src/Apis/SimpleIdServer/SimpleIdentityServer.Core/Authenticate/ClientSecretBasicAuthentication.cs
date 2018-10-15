@@ -20,13 +20,13 @@ namespace SimpleIdentityServer.Core.Authenticate
 {
     public interface IClientSecretBasicAuthentication
     {
-        Core.Common.Models.Client AuthenticateClient(AuthenticateInstruction instruction, Core.Common.Models.Client client);
+        Client AuthenticateClient(AuthenticateInstruction instruction, Client client);
         string GetClientId(AuthenticateInstruction instruction);
     }
 
     public class ClientSecretBasicAuthentication : IClientSecretBasicAuthentication
     {
-        public Core.Common.Models.Client AuthenticateClient(AuthenticateInstruction instruction, Core.Common.Models.Client client)
+        public Client AuthenticateClient(AuthenticateInstruction instruction, Client client)
         {
             if (client == null || instruction == null)
             {

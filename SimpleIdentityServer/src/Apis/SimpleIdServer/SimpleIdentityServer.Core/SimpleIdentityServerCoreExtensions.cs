@@ -61,7 +61,7 @@ namespace SimpleIdentityServer.Core
             OAuthConfigurationOptions configurationOptions = null,
             //IHttpClientFactory factory = null,
             List<ClaimAggregate> claims = null,
-            List<Common.Models.Client> clients = null,
+            List<Client> clients = null,
             List<Consent> consents = null,
             List<JsonWebKey> jsonWebKeys = null,
             List<ResourceOwnerProfile> profiles = null,

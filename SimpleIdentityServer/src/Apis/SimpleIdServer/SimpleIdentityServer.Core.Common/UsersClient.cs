@@ -14,30 +14,40 @@
 
 namespace SimpleIdentityServer.Core.Common
 {
+    using Models;
+    using Newtonsoft.Json.Linq;
     using System;
+    using System.Collections.Generic;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
-    using Newtonsoft.Json.Linq;
 
     public interface IUsersClient
     {
-        Task<ScimResponse> AddUser(Uri baseUri, string subject, string accessToken = null);
-        //Task<ScimResponse> AddAuthenticatedUser(Uri baseUri, string accessToken);
-        //PatchRequestBuilder PartialUpdateUser(Uri baseUri, string id, string accessToken = null);
-        //PatchRequestBuilder PartialUpdateAuthenticatedUser(Uri baseUri, string accessToken = null);
-        //RequestBuilder UpdateUser(Uri baseUri, string id, string accessToken = null);
-        //RequestBuilder UpdateAuthenticatedUser(Uri baseUri, string accessToken = null);
-        //Task<ScimResponse> DeleteUser(Uri baseUri, string id, string accessToken = null);
-        //Task<ScimResponse> DeleteAuthenticatedUser(Uri baseUri, string accessToken);
+        Task<ScimResponse> AddUser(Uri baseUri,
+            string subject = null,
+            string accessToken = null,
+            params JProperty[] properties);
+
+        Task<ScimResponse> AddAuthenticatedUser(Uri baseUri, string accessToken);
+
+        Task<ScimResponse> PartialUpdateUser(Uri baseUri, string id, string accessToken = null, params PatchOperation[] patchOperations);
+        Task<ScimResponse> PartialUpdateAuthenticatedUser(
+            Uri baseUri,
+            string accessToken = null,
+            params PatchOperation[] patchOperations);
+        Task<ScimResponse> UpdateUser(Uri baseUri, string id, string accessToken = null, params JProperty[] properties);
+        Task<ScimResponse> UpdateAuthenticatedUser(Uri baseUri, string accessToken = null, params JProperty[] properties);
+        Task<ScimResponse> DeleteUser(Uri baseUri, string id, string accessToken = null);
+        Task<ScimResponse> DeleteAuthenticatedUser(Uri baseUri, string accessToken);
         //Task<ScimResponse> GetUser(Uri baseUri, string id, string accessToken = null);
-        //Task<ScimResponse> GetAuthenticatedUser(Uri baseUri, string accessToken = null);
-        //Task<ScimResponse> SearchUsers(Uri baseUri, SearchParameter parameter, string accessToken = null);
+        Task<ScimResponse> GetAuthenticatedUser(Uri baseUri, string accessToken = null);
+        Task<ScimResponse> SearchUsers(Uri baseUri, SearchParameter parameter, string accessToken = null);
     }
 
     internal class UsersClient : IUsersClient
     {
-        private readonly string _schema = Common.ScimConstants.SchemaUrns.User;
+        private readonly string _schema = ScimConstants.SchemaUrns.User;
         private readonly HttpClient _httpClientFactory;
 
         public UsersClient(HttpClient httpClientFactory)
@@ -45,7 +55,10 @@ namespace SimpleIdentityServer.Core.Common
             _httpClientFactory = httpClientFactory;
         }
 
-        public Task<ScimResponse> AddUser(Uri baseUri, string subject, string accessToken = null)
+        public Task<ScimResponse> AddUser(Uri baseUri,
+            string subject = null,
+            string accessToken = null,
+            params JProperty[] properties)
         {
             if (baseUri == null)
             {
@@ -57,89 +70,103 @@ namespace SimpleIdentityServer.Core.Common
             {
                 throw new ArgumentException($"{baseUri} is not a valid uri");
             }
-            var arr = new JArray(new[]{_schema});
-            var obj = new JObject { [Common.ScimConstants.ScimResourceNames.Schemas] = arr };
-            return AddUser(obj, new Uri(url), accessToken);
-            //return new RequestBuilder(_schema, (obj) => AddUser(obj, new Uri(url), accessToken));
+
+            var arr = new JArray(new[] { _schema });
+            var obj = new JObject
+            {
+                [ScimConstants.ScimResourceNames.Schemas] = arr
+            };
+            if (!string.IsNullOrWhiteSpace(subject))
+            {
+                obj[ScimConstants.IdentifiedScimResourceNames.ExternalId] = subject;
+            }
+
+            foreach (var property in properties)
+            {
+                obj.Add(property);
+            }
+
+            return ExecuteRequest(obj, new Uri(url), HttpMethod.Post, accessToken);
         }
 
-        //public async Task<ScimResponse> DeleteAuthenticatedUser(Uri baseUri, string accessToken)
-        //{
-        //    if (baseUri == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(baseUri));
-        //    }
+        public Task<ScimResponse> AddAuthenticatedUser(Uri baseUri, string accessToken)
+        {
+            return AddUser(baseUri, "Me", accessToken);
+        }
 
-        //    var url = $"{FormatUrl(baseUri.AbsoluteUri)}/Me";
-        //    var request = new HttpRequestMessage
-        //    {
-        //        Method = HttpMethod.Delete,
-        //        RequestUri = new Uri(url)
-        //    };
+        public async Task<ScimResponse> DeleteAuthenticatedUser(Uri baseUri, string accessToken)
+        {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
 
-        //    if (!string.IsNullOrWhiteSpace(accessToken))
-        //    {
-        //        request.Headers.Add("Authorization", "Bearer " + accessToken);
-        //    }
+            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/Me";
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Delete,
+                RequestUri = new Uri(url)
+            };
 
-        //    var response = await _httpClientFactory.SendAsync(request).ConfigureAwait(false);
-        //    return await ParseHttpResponse(response).ConfigureAwait(false);
-        //}
+            if (!string.IsNullOrWhiteSpace(accessToken))
+            {
+                request.Headers.Add("Authorization", "Bearer " + accessToken);
+            }
 
-        //public RequestBuilder UpdateUser(Uri baseUri, string id, string accessToken = null)
-        //{
-        //    if (baseUri == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(baseUri));
-        //    }
+            var response = await _httpClientFactory.SendAsync(request).ConfigureAwait(false);
+            return await ParseHttpResponse(response).ConfigureAwait(false);
+        }
 
-        //    if (string.IsNullOrWhiteSpace(id))
-        //    {
-        //        throw new ArgumentNullException(nameof(id));
-        //    }
+        public Task<ScimResponse> UpdateUser(Uri baseUri, string id, string accessToken = null, params JProperty[] properties)
+        {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
 
-        //    var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
-        //    return new RequestBuilder(_schema, (obj) => UpdateUser(obj, new Uri(url), accessToken));
-        //}
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
 
-        //public RequestBuilder UpdateAuthenticatedUser(Uri baseUri, string accessToken = null)
-        //{
-        //    if (baseUri == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(baseUri));
-        //    }
+            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
+            var obj = new JObject { [ScimConstants.ScimResourceNames.Schemas] = new JArray(new object[] { _schema }) };
 
-        //    var url = $"{FormatUrl(baseUri.AbsoluteUri)}/Me";
-        //    return new RequestBuilder(_schema, (obj) => UpdateUser(obj, new Uri(url), accessToken));
-        //}
+            foreach (var property in properties)
+            {
+                obj.Add(property);
+            }
 
-        //public async Task<ScimResponse> DeleteUser(Uri baseUri, string id, string accessToken = null)
-        //{
-        //    if (baseUri == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(baseUri));
-        //    }
+            return ExecuteRequest(obj, new Uri(url), HttpMethod.Put, accessToken);
+        }
 
-        //    if (string.IsNullOrWhiteSpace(id))
-        //    {
-        //        throw new ArgumentNullException(nameof(id));
-        //    }
+        public async Task<ScimResponse> DeleteUser(Uri baseUri, string id, string accessToken = null)
+        {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
 
-        //    var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
-        //    var request = new HttpRequestMessage
-        //    {
-        //        Method = HttpMethod.Delete,
-        //        RequestUri = new Uri(url)
-        //    };
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
 
-        //    if (!string.IsNullOrWhiteSpace(accessToken))
-        //    {
-        //        request.Headers.Add("Authorization", "Bearer " + accessToken);
-        //    }
+            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Delete,
+                RequestUri = new Uri(url)
+            };
 
-        //    var response = await _httpClientFactory.SendAsync(request).ConfigureAwait(false);
-        //    return await ParseHttpResponse(response).ConfigureAwait(false);
-        //}
+            if (!string.IsNullOrWhiteSpace(accessToken))
+            {
+                request.Headers.Add("Authorization", "Bearer " + accessToken);
+            }
+
+            var response = await _httpClientFactory.SendAsync(request).ConfigureAwait(false);
+            return await ParseHttpResponse(response).ConfigureAwait(false);
+        }
 
         //public async Task<ScimResponse> GetUser(Uri baseUri, string id, string accessToken = null)
         //{
@@ -169,62 +196,98 @@ namespace SimpleIdentityServer.Core.Common
         //    return await ParseHttpResponse(response).ConfigureAwait(false);
         //}
 
-        //public async Task<ScimResponse> GetAuthenticatedUser(Uri baseUri, string accessToken = null)
-        //{
-        //    if (baseUri == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(baseUri));
-        //    }
+        public Task<ScimResponse> UpdateAuthenticatedUser(Uri baseUri, string accessToken = null, params JProperty[] properties)
+        {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
 
-        //    var url = $"{FormatUrl(baseUri.AbsoluteUri)}/Me";
-        //    var request = new HttpRequestMessage
-        //    {
-        //        Method = HttpMethod.Get,
-        //        RequestUri = new Uri(url)
-        //    };
+            //var url = $"{FormatUrl(baseUri.AbsoluteUri)}/Me";
+            //return new RequestBuilder(_schema, (obj) => ExecuteRequest(obj, new Uri(url), HttpMethod.Put, accessToken));
 
-        //    if (!string.IsNullOrWhiteSpace(accessToken))
-        //    {
-        //        request.Headers.Add("Authorization", "Bearer " + accessToken);
-        //    }
+            return UpdateUser(baseUri, "Me", accessToken, properties);
+        }
 
-        //    var response = await _httpClientFactory.SendAsync(request).ConfigureAwait(false);
-        //    return await ParseHttpResponse(response).ConfigureAwait(false);
-        //}
+        public async Task<ScimResponse> GetAuthenticatedUser(Uri baseUri, string accessToken = null)
+        {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
 
-        //public async Task<ScimResponse> SearchUsers(Uri baseUri, SearchParameter parameter, string accessToken = null)
-        //{
-        //    if (baseUri == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(baseUri));
-        //    }
+            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/Me";
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(url)
+            };
 
-        //    if (parameter == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(parameter));
-        //    }
-            
-        //    var url = $"{FormatUrl(baseUri.AbsoluteUri)}/.search";
-        //    var request = new HttpRequestMessage
-        //    {
-        //        Method = HttpMethod.Post,
-        //        RequestUri = new Uri(url),
-        //        Content = new StringContent(parameter.ToJson())
-        //    };
-        //    request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-        //    if (!string.IsNullOrWhiteSpace(accessToken))
-        //    {
-        //        request.Headers.Add("Authorization", "Bearer " + accessToken);
-        //    }
+            if (!string.IsNullOrWhiteSpace(accessToken))
+            {
+                request.Headers.Add("Authorization", "Bearer " + accessToken);
+            }
 
-        //    var response = await _httpClientFactory.SendAsync(request).ConfigureAwait(false);
-        //    return await ParseHttpResponse(response).ConfigureAwait(false);
-        //}
+            var response = await _httpClientFactory.SendAsync(request).ConfigureAwait(false);
+            return await ParseHttpResponse(response).ConfigureAwait(false);
+        }
 
-        //private Task<ScimResponse> UpdateUser(JObject jObj, Uri uri, string accessToken = null)
-        //{
-        //    return ExecuteRequest(jObj, uri, HttpMethod.Put, accessToken);
-        //}
+        public Task<ScimResponse> PartialUpdateUser(
+            Uri baseUri,
+            string id,
+            string accessToken = null,
+            params PatchOperation[] patchOperations)
+        {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
+            return ExecuteRequest(BuildPatchRequest(patchOperations), new Uri(url), new HttpMethod("PATCH"), accessToken);
+        }
+
+        public Task<ScimResponse> PartialUpdateAuthenticatedUser(
+            Uri baseUri,
+            string accessToken = null,
+            params PatchOperation[] patchOperations)
+        {
+            return PartialUpdateUser(baseUri, "Me", accessToken, patchOperations);
+        }
+
+        public async Task<ScimResponse> SearchUsers(Uri baseUri, SearchParameter parameter, string accessToken = null)
+        {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
+
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/.search";
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri(url),
+                Content = new StringContent(parameter.ToJson())
+            };
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            if (!string.IsNullOrWhiteSpace(accessToken))
+            {
+                request.Headers.Add("Authorization", "Bearer " + accessToken);
+            }
+
+            var response = await _httpClientFactory.SendAsync(request).ConfigureAwait(false);
+            return await ParseHttpResponse(response).ConfigureAwait(false);
+        }
 
         private static string FormatUrl(string baseUrl)
         {
@@ -237,12 +300,39 @@ namespace SimpleIdentityServer.Core.Common
             return baseUrl.TrimEnd('/', '\\') + "/Users";
         }
 
-        private Task<ScimResponse> AddUser(JObject jObj, Uri uri, string accessToken = null)
+        private JObject BuildPatchRequest(IEnumerable<PatchOperation> operations)
         {
-            return ExecuteRequest(jObj, uri, HttpMethod.Post, accessToken);
+            var patch = new JObject { [ScimConstants.ScimResourceNames.Schemas] = new JArray(new object[] { ScimConstants.Messages.PatchOp }) };
+            var arr = new JArray();
+            foreach (var operation in operations)
+            {
+                var obj = new JObject
+                {
+                    new JProperty(ScimConstants.PatchOperationRequestNames.Operation,
+                        Enum.GetName(typeof(PatchOperations), operation.Type))
+                };
+                if (!string.IsNullOrWhiteSpace(operation.Path))
+                {
+                    obj.Add(new JProperty(ScimConstants.PatchOperationRequestNames.Path, operation.Path));
+                }
+
+                if (operation.Value != null)
+                {
+                    obj.Add(new JProperty(ScimConstants.PatchOperationRequestNames.Value, operation.Value));
+                }
+
+                arr.Add(obj);
+            }
+
+            patch.Add(new JProperty(ScimConstants.PatchOperationsRequestNames.Operations, arr));
+            return patch;
         }
 
-        private async Task<ScimResponse> ExecuteRequest(JObject jObj, Uri uri, HttpMethod method, string accessToken = null)
+        private async Task<ScimResponse> ExecuteRequest(
+            JObject jObj,
+            Uri uri,
+            HttpMethod method,
+            string accessToken = null)
         {
             var request = new HttpRequestMessage
             {

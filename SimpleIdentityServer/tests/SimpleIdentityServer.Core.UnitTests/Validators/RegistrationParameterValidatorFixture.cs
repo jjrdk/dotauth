@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             // ASSERT
             Assert.NotNull(parameter);
             Assert.True(parameter.ResponseTypes.Count == 1);
-            Assert.True(parameter.ResponseTypes.Contains(Core.Common.Models.ResponseType.code));
+            Assert.Contains(ResponseType.code, parameter.ResponseTypes);
         }
 
         [Fact]

@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         private class ValidationResult
         {
             public AuthorizationCode AuthCode { get; set; }
-            public Core.Common.Models.Client Client { get; set; }
+            public Client Client { get; set; }
         }
 
         private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;

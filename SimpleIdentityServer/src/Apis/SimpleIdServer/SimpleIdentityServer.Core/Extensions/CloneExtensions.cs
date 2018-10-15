@@ -72,9 +72,9 @@ namespace SimpleIdentityServer.Core.Extensions
             return new Claim(claim.Type, claim.Value);
         }
 
-        public static Common.Models.Client Copy(this Common.Models.Client client)
+        public static Client Copy(this Client client)
         {
-            return new Common.Models.Client
+            return new Client
             {
                 AllowedScopes = client.AllowedScopes == null ? new List<Scope>() : client.AllowedScopes.Select(s => s.Copy()).ToList(),
                 ApplicationType = client.ApplicationType,

@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Core.Parameters
 
         public string Value => GetString(Constants.StandardClaimParameterValueNames.ValueName);
 
-        public string[] @Values => GetArray(Constants.StandardClaimParameterValueNames.ValuesName);
+        public string[] Values => GetArray(Constants.StandardClaimParameterValueNames.ValuesName);
 
         public bool EssentialParameterExist
         {

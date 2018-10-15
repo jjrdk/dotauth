@@ -254,11 +254,10 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             }
 
             await SetUser().ConfigureAwait(false);
-            var uiLocales = DefaultLanguage;
             // 1. Decrypt the request
             var request = _dataProtector.Unprotect<AuthorizationRequest>(viewModel.Code);
             // 2. Retrieve the default language
-            uiLocales = string.IsNullOrWhiteSpace(request.UiLocales) ? DefaultLanguage : request.UiLocales;
+            var uiLocales = string.IsNullOrWhiteSpace(request.UiLocales) ? DefaultLanguage : request.UiLocales;
             if (ModelState.IsValid)
             {
                 ResourceOwner resourceOwner = null;

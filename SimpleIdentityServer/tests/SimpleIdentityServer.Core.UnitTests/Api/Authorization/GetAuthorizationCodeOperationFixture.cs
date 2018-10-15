@@ -17,7 +17,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
-    using Client = Core.Common.Models.Client;
+    using Client = Client;
 
     public sealed class GetAuthorizationCodeOperationFixture
     {
@@ -51,15 +51,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 Scope = scope,
                 Claims = null
             };
-            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
+            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(false);
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
 
             Assert.NotNull(exception);
-            Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
-            Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, clientId, "authorization_code")));
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                    clientId,
+                    "authorization_code"),
+                exception.Message);
         }
 
         [Fact]
@@ -78,9 +81,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             _processAuthorizationRequestFake.Setup(p => p.ProcessAsync(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<ClaimsPrincipal>(), It.IsAny<Core.Common.Models.Client>(), null))
+                It.IsAny<ClaimsPrincipal>(), It.IsAny<Client>(), null))
                 .Returns(Task.FromResult(actionResult));
-            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
+            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
             // ACT & ASSERT
@@ -91,7 +94,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                           ErrorDescriptions.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated);
             Assert.True(ex.State == authorizationParameter.State);
         }
-        
+
         [Fact]
         public async Task When_Passing_Valid_Request_Then_Events_Are_Logged()
         {
@@ -107,7 +110,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     Action = IdentityServerEndPoints.FormIndex
                 }
             };
-            var client = new Core.Common.Models.Client();
+            var client = new Client();
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = clientId,
@@ -117,8 +120,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var jsonAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
             _processAuthorizationRequestFake.Setup(p => p.ProcessAsync(
                 It.IsAny<AuthorizationParameter>(),
-                It.IsAny<ClaimsPrincipal>(), It.IsAny<Core.Common.Models.Client>(), null)).Returns(Task.FromResult(actionResult));
-            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
+                It.IsAny<ClaimsPrincipal>(), It.IsAny<Client>(), null)).Returns(Task.FromResult(actionResult));
+            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
             // ACT

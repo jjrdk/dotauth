@@ -71,16 +71,16 @@ namespace SimpleIdentityServer.Core.Api.Discovery
             result.TokenEndpointAuthMethodSupported = tokenAuthMethodSupported;
             result.IdTokenSigningAlgValuesSupported = Constants.Supported.SupportedJwsAlgs.ToArray();
             //var issuer = Request.GetAbsoluteUriWithVirtualPath();
-            var authorizationEndPoint = issuer + "/" + Core.Constants.EndPoints.Authorization;
-            var tokenEndPoint = issuer + "/" + Core.Constants.EndPoints.Token;
-            var userInfoEndPoint = issuer + "/" + Core.Constants.EndPoints.UserInfo;
-            var jwksUri = issuer + "/" + Core.Constants.EndPoints.Jwks;
-            var registrationEndPoint = issuer + "/" + Core.Constants.EndPoints.Registration;
-            var revocationEndPoint = issuer + "/" + Core.Constants.EndPoints.Revocation;
+            var authorizationEndPoint = issuer + "/" + Constants.EndPoints.Authorization;
+            var tokenEndPoint = issuer + "/" + Constants.EndPoints.Token;
+            var userInfoEndPoint = issuer + "/" + Constants.EndPoints.UserInfo;
+            var jwksUri = issuer + "/" + Constants.EndPoints.Jwks;
+            var registrationEndPoint = issuer + "/" + Constants.EndPoints.Registration;
+            var revocationEndPoint = issuer + "/" + Constants.EndPoints.Revocation;
             // TODO : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
-            var checkSessionIframe = issuer + "/" + Core.Constants.EndPoints.CheckSession;
-            var endSessionEndPoint = issuer + "/" + Core.Constants.EndPoints.EndSession;
-            var introspectionEndPoint = issuer + "/" + Core.Constants.EndPoints.Introspection;
+            var checkSessionIframe = issuer + "/" + Constants.EndPoints.CheckSession;
+            var endSessionEndPoint = issuer + "/" + Constants.EndPoints.EndSession;
+            var introspectionEndPoint = issuer + "/" + Constants.EndPoints.Introspection;
 
             result.Issuer = issuer;
             result.AuthorizationEndPoint = authorizationEndPoint;
