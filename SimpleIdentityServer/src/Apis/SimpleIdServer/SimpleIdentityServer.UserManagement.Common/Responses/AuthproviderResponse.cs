@@ -1,7 +1,7 @@
-﻿using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.UserManagement.Common.Responses
+﻿namespace SimpleIdentityServer.UserManagement.Responses
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class AuthproviderResponse
     {

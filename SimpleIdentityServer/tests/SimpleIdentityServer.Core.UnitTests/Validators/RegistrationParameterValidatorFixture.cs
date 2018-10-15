@@ -125,7 +125,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             // ASSERT
             Assert.NotNull(parameter);
             Assert.True(parameter.GrantTypes.Count == 1);
-            Assert.True(parameter.GrantTypes.Contains(Core.Common.Models.GrantType.authorization_code));
+            Assert.Contains(GrantType.authorization_code, parameter.GrantTypes);
         }
 
         [Fact]

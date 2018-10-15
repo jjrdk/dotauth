@@ -27,8 +27,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IAddRepresentationAction
     {
-        Task<ApiActionResult> Execute(JObject jObj, string locationPattern, string schemaId, string resourceType, string id);
-        Task<ApiActionResult> Execute(JObject jObj, string locationPattern, string schemaId, string resourceType);
+        Task<ApiActionResult> Execute(JObject jObj, string locationPattern, string schemaId, string resourceType, string id = null);
     }
 
     internal class AddRepresentationAction : IAddRepresentationAction
@@ -53,7 +52,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _parametersValidator = parametersValidator;
         }
         
-        public async Task<ApiActionResult> Execute(JObject jObj, string locationPattern, string schemaId, string resourceType, string id)
+        public async Task<ApiActionResult> Execute(JObject jObj, string locationPattern, string schemaId, string resourceType, string id = null)
         {
             if (jObj == null)
             {
@@ -73,7 +72,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
             if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentNullException(nameof(id));
+                id = Guid.NewGuid().ToString();
             }
 
             // 1. Check resource exists.
@@ -105,11 +104,6 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             // 5. Transform and returns the representation.
             var response = await _responseParser.Parse(result.Representation, locationPattern.Replace("{id}", result.Representation.Id), schemaId, OperationTypes.Modification).ConfigureAwait(false);
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.Created, response.Object, response.Location, result.Representation.Version, result.Representation.Id);
-        }
-
-        public Task<ApiActionResult> Execute(JObject jObj, string locationPattern, string schemaId, string resourceType)
-        {
-            return Execute(jObj, locationPattern, schemaId, resourceType, Guid.NewGuid().ToString());
         }
     }
 }

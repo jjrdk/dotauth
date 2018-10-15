@@ -61,9 +61,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
                 () => _processAuthorizationRequest.ProcessAsync(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
-            Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
-            Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectUrl)));
-            Assert.True(exception.State.Equals(state));
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectUrl), exception.Message);
+            Assert.Equal(state, exception.State);
         }
 
         /*

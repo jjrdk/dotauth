@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.UserManagement.Client.Results;
-using SimpleIdentityServer.UserManagement.Common.Responses;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -9,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.UserManagement.Client.Operations
 {
+    using Responses;
+
     public interface IGetProfilesOperation
     {
         Task<GetProfilesResult> Execute(string requestUrl, string currentSubject, string authorizationHeaderValue = null);

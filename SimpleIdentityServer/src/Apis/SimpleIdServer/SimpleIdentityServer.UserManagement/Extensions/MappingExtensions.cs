@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.UserManagement.Common.Responses;
 using SimpleIdentityServer.UserManagement.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -9,6 +8,8 @@ using System.Linq;
 
 namespace SimpleIdentityServer.UserManagement.Extensions
 {
+    using Responses;
+
     internal static class MappingExtensions
     {
         public static AuthproviderResponse ToDto(this AuthenticationScheme authenticationScheme)

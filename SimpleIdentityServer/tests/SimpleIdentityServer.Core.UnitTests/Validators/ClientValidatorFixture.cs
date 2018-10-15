@@ -90,7 +90,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ASSERTS
             Assert.True(result);
-            Assert.True(client.GrantTypes.Contains(GrantType.authorization_code));
+            Assert.Contains(GrantType.authorization_code, client.GrantTypes);
         }
 
         [Fact]

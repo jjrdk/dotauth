@@ -1,19 +1,19 @@
-﻿using System;
-using System.Runtime.Serialization;
-using static SimpleIdentityServer.UserManagement.Common.Constants;
-
-namespace SimpleIdentityServer.UserManagement.Common.Responses
+﻿namespace SimpleIdentityServer.UserManagement.Responses
 {
+    using System;
+    using System.Runtime.Serialization;
+    using Common;
+
     [DataContract]
     public class ProfileResponse
     {
-        [DataMember(Name = LinkProfileRequestNames.UserId)]
+        [DataMember(Name = Constants.LinkProfileRequestNames.UserId)]
         public string UserId { get; set; }
-        [DataMember(Name = LinkProfileRequestNames.Issuer)]
+        [DataMember(Name = Constants.LinkProfileRequestNames.Issuer)]
         public string Issuer { get; set; }
-        [DataMember(Name = LinkProfileResponseNames.CreateDatetime)]
+        [DataMember(Name = Constants.LinkProfileResponseNames.CreateDatetime)]
         public DateTime CreateDateTime { get; set; }
-        [DataMember(Name = LinkProfileResponseNames.UpdateDatetime)]
+        [DataMember(Name = Constants.LinkProfileResponseNames.UpdateDatetime)]
         public DateTime UpdateTime { get; set; }
     }
 }

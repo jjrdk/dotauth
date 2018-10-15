@@ -508,7 +508,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             Assert.True(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Role));
             Assert.True(result.ContainsKey(StandardClaimNames.AuthenticationTime));
             Assert.True(result.ContainsKey(StandardClaimNames.Nonce));
-            Assert.True(result[Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString().Equals(subject));
+            Assert.Equal(subject, result[Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString());
             Assert.True(long.Parse(result[StandardClaimNames.AuthenticationTime].ToString()).Equals(currentDateTimeOffset));
         }
 

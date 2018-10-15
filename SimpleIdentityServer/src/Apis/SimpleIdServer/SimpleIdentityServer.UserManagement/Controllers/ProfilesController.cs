@@ -4,7 +4,6 @@ using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Api.Profile;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.UserManagement.Common.Requests;
 using SimpleIdentityServer.UserManagement.Extensions;
 using System.Linq;
 using System.Net;
@@ -12,6 +11,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.UserManagement.Controllers
 {
+    using Requests;
+
     [Route("profiles")]
     public class ProfilesController : Controller
     {
