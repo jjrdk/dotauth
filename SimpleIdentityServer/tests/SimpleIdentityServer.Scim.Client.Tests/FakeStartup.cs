@@ -31,12 +31,9 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScimHost(new Host.ScimServerOptions
+            services.AddScimHost(new Host.ScimServerConfiguration
             {
-                ServerConfiguration = new Host.ScimServerConfiguration
-                {
-
-                }
+                
             });
             services.AddAuthentication(opts =>
             {
@@ -45,14 +42,8 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             }).AddFakeCustomAuth(o => { });
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("scim_manage", policy => policy.RequireAssertion((ctx) =>
-                {
-                    return true;
-                }));
-                options.AddPolicy("scim_read", policy => policy.RequireAssertion((ctx) =>
-                {
-                    return true;
-                }));
+                options.AddPolicy("scim_manage", policy => policy.RequireAssertion((ctx) => true));
+                options.AddPolicy("scim_read", policy => policy.RequireAssertion((ctx) => true));
                 options.AddPolicy("authenticated", (policy) =>
                 {
                     policy.AddAuthenticationSchemes(DefaultSchema);
