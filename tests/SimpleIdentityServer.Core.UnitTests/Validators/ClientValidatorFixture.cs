@@ -114,14 +114,23 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         }
 
         [Fact]
-        public void When_Passing_Null_Parameters_Then_Null_Is_Returned()
+        public void When_Passing_Null_Client_Then_False_Is_Returned()
         {
             // ARRANGE
             InitializeMockingObjects();
 
             // ACTS & ASSERTS
             Assert.False(_clientValidator.CheckGrantTypes(null, null));
-            Assert.False(_clientValidator.CheckGrantTypes(new Client(), null));
+        }
+
+        [Fact]
+        public void When_Passing_Null_GrantTypes_Then_True_Is_Returned()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+
+            // ACTS & ASSERTS
+            Assert.True(_clientValidator.CheckGrantTypes(new Client(), null));
         }
 
         [Fact]
