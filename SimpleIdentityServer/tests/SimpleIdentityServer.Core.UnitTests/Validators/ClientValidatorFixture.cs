@@ -36,9 +36,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ACTS & ASSERTS
             Assert.Empty(_clientValidator.GetRedirectionUrls(null, null));
-            Assert.Empty(_clientValidator.GetRedirectionUrls(new Core.Common.Models.Client(), null));
-            Assert.Empty(_clientValidator.GetRedirectionUrls(new Core.Common.Models.Client(), "url"));
-            Assert.Empty(_clientValidator.GetRedirectionUrls(new Core.Common.Models.Client
+            Assert.Empty(_clientValidator.GetRedirectionUrls(new Client(), null));
+            Assert.Empty(_clientValidator.GetRedirectionUrls(new Client(), "url"));
+            Assert.Empty(_clientValidator.GetRedirectionUrls(new Client
             {
                 RedirectionUrls = new List<string>()
             }, "url"));
@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             const string url = "url";
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 RedirectionUrls = new List<string>
                 {
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeMockingObjects();
-            var client = new Core.Common.Models.Client();
+            var client = new Client();
 
             // ACT
             var result = _clientValidator.CheckGrantTypes(client, GrantType.authorization_code);
@@ -98,7 +98,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeMockingObjects();
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 GrantTypes = new List<GrantType>
                 {
@@ -121,7 +121,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ACTS & ASSERTS
             Assert.False(_clientValidator.CheckGrantTypes(null, null));
-            Assert.False(_clientValidator.CheckGrantTypes(new Core.Common.Models.Client(), null));
+            Assert.False(_clientValidator.CheckGrantTypes(new Client(), null));
         }
 
         [Fact]
@@ -129,7 +129,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeMockingObjects();
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 GrantTypes = new List<GrantType>
                 {
@@ -148,7 +148,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeMockingObjects();
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 GrantTypes = new List<GrantType>
                 {
@@ -170,7 +170,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ACTS & ASSERTS
             Assert.Throws<ArgumentNullException>(() => _clientValidator.CheckPkce(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _clientValidator.CheckPkce(new Core.Common.Models.Client(), null, null));
+            Assert.Throws<ArgumentNullException>(() => _clientValidator.CheckPkce(new Client(), null, null));
         }
 
         [Fact]
@@ -180,7 +180,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             InitializeMockingObjects();
 
             // ACT
-            var result = _clientValidator.CheckPkce(new Core.Common.Models.Client
+            var result = _clientValidator.CheckPkce(new Client
             {
                 RequirePkce = false
             }, null, new AuthorizationCode());
@@ -197,7 +197,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             InitializeMockingObjects();
 
             // ACT
-            var result = _clientValidator.CheckPkce(new Core.Common.Models.Client
+            var result = _clientValidator.CheckPkce(new Client
             {
                 RequirePkce = true
             }, "invalid_code", new AuthorizationCode
@@ -217,7 +217,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             InitializeMockingObjects();
 
             // ACT
-            var result = _clientValidator.CheckPkce(new Core.Common.Models.Client
+            var result = _clientValidator.CheckPkce(new Client
             {
                 RequirePkce = true
             }, "code", new AuthorizationCode
@@ -239,7 +239,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             var codeChallenge = hashed.Base64EncodeBytes();
 
             // ACT
-            var result = _clientValidator.CheckPkce(new Core.Common.Models.Client
+            var result = _clientValidator.CheckPkce(new Client
             {
                 RequirePkce = true
             }, "code", new AuthorizationCode

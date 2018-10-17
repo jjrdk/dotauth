@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(authenticateInstruction);
             var parameter = new RefreshTokenGrantTypeParameter();
-            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null)).Returns(Task.FromResult(new AuthenticationResult(new Core.Common.Models.Client
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null)).Returns(Task.FromResult(new AuthenticationResult(new Client
             {
                 ClientId = "id",
                 GrantTypes = new System.Collections.Generic.List<GrantType>
@@ -102,7 +102,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(authenticateInstruction);
             var parameter = new RefreshTokenGrantTypeParameter();
-            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null)).Returns(Task.FromResult(new AuthenticationResult(new Core.Common.Models.Client
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null)).Returns(Task.FromResult(new AuthenticationResult(new Client
             {
                 ClientId = "id",
                 GrantTypes = new System.Collections.Generic.List<GrantType>
@@ -128,7 +128,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(authenticateInstruction);
             var parameter = new RefreshTokenGrantTypeParameter();
-            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null)).Returns(Task.FromResult(new AuthenticationResult(new Core.Common.Models.Client
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null)).Returns(Task.FromResult(new AuthenticationResult(new Client
             {
                 ClientId = "id",
                 GrantTypes = new System.Collections.Generic.List<GrantType>
@@ -162,7 +162,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 IdTokenPayLoad = new JwsPayload(),
                 ClientId = "id"
             };
-            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null)).Returns(Task.FromResult(new AuthenticationResult(new Core.Common.Models.Client
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null)).Returns(Task.FromResult(new AuthenticationResult(new Client
             {
                 ClientId = "id",
                 GrantTypes = new System.Collections.Generic.List<GrantType>

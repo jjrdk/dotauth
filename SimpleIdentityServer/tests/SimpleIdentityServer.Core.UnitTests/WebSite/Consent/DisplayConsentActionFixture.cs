@@ -61,7 +61,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             };
             var consent = new Core.Common.Models.Consent();
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new Core.Common.Models.Client()));
+                .Returns(Task.FromResult(new Client()));
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult(consent));
@@ -94,7 +94,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             };
             var consent = new Core.Common.Models.Consent();
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new Core.Common.Models.Client()));
+                .Returns(Task.FromResult(new Client()));
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult(consent));
@@ -128,7 +128,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult((Core.Common.Models.Consent)null));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).
-                Returns(Task.FromResult((Core.Common.Models.Client)null));
+                Returns(Task.FromResult((Client)null));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
@@ -148,7 +148,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             const string scopeName = "profile";
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var client = new Core.Common.Models.Client();
+            var client = new Client();
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = clientId,

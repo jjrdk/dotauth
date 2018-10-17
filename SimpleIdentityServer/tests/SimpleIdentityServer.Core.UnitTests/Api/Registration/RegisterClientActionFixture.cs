@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                     Kid = kid
                 }
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 ClientName = clientName,
                 ResponseTypes = new List<ResponseType>
@@ -148,8 +148,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             };
             _generateClientFromRegistrationRequest.Setup(g => g.Execute(It.IsAny<RegistrationParameter>()))
                 .Returns(client);                
-            _clientRepositoryFake.Setup(c => c.InsertAsync(It.IsAny<Core.Common.Models.Client>()))
-                .Callback<Core.Common.Models.Client>(c => client = c)
+            _clientRepositoryFake.Setup(c => c.InsertAsync(It.IsAny<Client>()))
+                .Callback<Client>(c => client = c)
                 .Returns(Task.FromResult(true));
 
             // ACT
@@ -157,7 +157,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 
             // ASSERT
             _oauthEventSource.Verify(s => s.StartRegistration(clientName));
-            _clientRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Core.Common.Models.Client>()));
+            _clientRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Client>()));
             _oauthEventSource.Verify(s => s.EndRegistration(It.IsAny<string>(), clientName));
             Assert.NotEmpty(result.ClientSecret);
             Assert.True(client.AllowedScopes.Contains(Constants.StandardScopes.OpenId));

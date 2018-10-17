@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedToken { ClientId = "client_id" }));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
+                .Returns(() => Task.FromResult((Client)null));
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getJwsPayload.Execute("access_token")).ConfigureAwait(false);
@@ -88,7 +88,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedToken { ClientId = "client_id" }));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(() => Task.FromResult(new Core.Common.Models.Client()));
+                .Returns(() => Task.FromResult(new Client()));
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getJwsPayload.Execute("access_token")).ConfigureAwait(false);
@@ -106,7 +106,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             {
                 UserInfoPayLoad = new JwsPayload()
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.NONE
             };
@@ -133,7 +133,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             {
                 UserInfoPayLoad = new JwsPayload()
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 UserInfoSignedResponseAlg = string.Empty
             };
@@ -161,7 +161,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             {
                 UserInfoPayLoad = new JwsPayload()
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
                 UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5

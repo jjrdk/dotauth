@@ -66,7 +66,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 ClientId = "clientId"
             };
@@ -132,7 +132,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 ClientId = clientId
             };
@@ -192,7 +192,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 ClientId = "clientId"
             };
