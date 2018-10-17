@@ -34,7 +34,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Common
 {
-    using Client = Core.Common.Models.Client;
+    using Client = Client;
 
     public sealed  class GenerateAuthorizationResponseFixture
     {
@@ -221,7 +221,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult((GrantedToken)null));
-            _grantedTokenGeneratorHelperFake.Setup(r => r.GenerateTokenAsync(It.IsAny<Core.Common.Models.Client>(),
+            _grantedTokenGeneratorHelperFake.Setup(r => r.GenerateTokenAsync(It.IsAny<Client>(),
                 It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
@@ -232,7 +232,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
 
             // ASSERTS
-            Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AccessTokenName));
+            Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Constants.StandardAuthorizationResponseNames.AccessTokenName));
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Value == grantedToken.AccessToken));
             _grantedTokenRepositoryFake.Verify(g => g.AddToken(grantedToken));
             _oauthEventSource.Verify(e => e.GrantAccessToClient(clientId, grantedToken.AccessToken, scope));
@@ -286,7 +286,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
 
             // ASSERTS
-            Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AccessTokenName));
+            Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Constants.StandardAuthorizationResponseNames.AccessTokenName));
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Value == grantedToken.AccessToken));
         }
 
@@ -331,7 +331,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
 
             // ASSERTS
-            Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
+            Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
             _authorizationCodeRepositoryFake.Verify(a => a.AddAuthorizationCode(It.IsAny<AuthorizationCode>()));
             _oauthEventSource.Verify(s => s.GrantAuthorizationCodeToClient(clientId, It.IsAny<string>(), scope));
         }
@@ -352,7 +352,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 Scope = scope,
                 ResponseType = responseType
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
                 IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
@@ -402,7 +402,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 ResponseType = responseType,
                 ResponseMode = ResponseMode.None
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
                 IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,

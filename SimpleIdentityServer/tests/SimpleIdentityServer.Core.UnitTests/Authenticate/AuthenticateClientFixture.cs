@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientAssertionAuthenticationFake.Setup(c => c.GetClientId(It.IsAny<AuthenticateInstruction>()))
                 .Returns("clientId");
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
+                .Returns(() => Task.FromResult((Client)null));
 
             // ACT
             var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction, null).ConfigureAwait(false);
@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
             const string clientId = "clientId";
             var authenticationInstruction = new AuthenticateInstruction();
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
                 ClientId = clientId
@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _clientSecretBasicAuthenticationFake.Setup(
-                c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Core.Common.Models.Client>()))
+                c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Client>()))
                 .Returns(client);
 
             // ACT
@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
             const string clientId = "clientId";
             var authenticationInstruction = new AuthenticateInstruction();
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
                 ClientId = clientId
@@ -114,7 +114,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _clientSecretBasicAuthenticationFake.Setup(
-                c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Core.Common.Models.Client>()))
+                c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Client>()))
                 .Returns(() => null);
 
             // ACT

@@ -16,7 +16,7 @@ using SimpleIdentityServer.OAuth.Logging;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
-    using Client = Core.Common.Models.Client;
+    using Client = Client;
 
     public class GetTokenViaImplicitWorkflowOperationFixture
     {
@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 State = "state"
             };
 
-            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
+            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(false);
 
             // ACT & ASSERTS
@@ -102,8 +102,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
             _processAuthorizationRequestFake.Setup(p => p.ProcessAsync(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<ClaimsPrincipal>(), It.IsAny<Core.Common.Models.Client>(), null)).Returns(Task.FromResult(actionResult));
-            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
+                It.IsAny<ClaimsPrincipal>(), It.IsAny<Client>(), null)).Returns(Task.FromResult(actionResult));
+            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
             // ACT

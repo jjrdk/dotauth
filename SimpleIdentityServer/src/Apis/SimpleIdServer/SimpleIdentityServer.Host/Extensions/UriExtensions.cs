@@ -19,6 +19,8 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Host.Extensions
 {
+    using System.Linq;
+
     public static class UriExtensions
     {
         public static Uri AddParameter(this Uri uri, string parameterName, string parameterValue)
@@ -38,13 +40,13 @@ namespace SimpleIdentityServer.Host.Extensions
         /// <returns></returns>
         public static Uri AddParametersInQuery(this Uri uri, RouteValueDictionary dic)
         {
-            var uriBuilder = new UriBuilder(uri); 
+            var uriBuilder = new UriBuilder(uri);
             var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
             foreach (var keyPair in dic)
             {
                 query[keyPair.Key] = keyPair.Value.ToString();
             }
-            
+
             uriBuilder.Query = ConcatQueryStrings(query);
             return new Uri(uriBuilder.ToString());
         }
@@ -70,11 +72,7 @@ namespace SimpleIdentityServer.Host.Extensions
 
         private static string ConcatQueryStrings(IDictionary<string, StringValues> queryStrings)
         {
-            var lst = new List<string>();
-            foreach(var keyValuePair in queryStrings)
-            {
-                lst.Add(string.Format("{0}={1}", keyValuePair.Key, keyValuePair.Value.ToString()));
-            }
+            var lst = queryStrings.Select(keyValuePair => $"{keyValuePair.Key}={keyValuePair.Value.ToString()}");
 
             return string.Join("&", lst);
         }

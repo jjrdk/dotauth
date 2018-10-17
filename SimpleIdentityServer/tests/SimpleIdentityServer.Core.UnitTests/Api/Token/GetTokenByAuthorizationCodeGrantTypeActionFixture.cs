@@ -98,7 +98,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-                .Returns(() => Task.FromResult(new AuthenticationResult(new Core.Common.Models.Client
+                .Returns(() => Task.FromResult(new AuthenticationResult(new Client
                 {
                     ClientId = "id"
                 }, null)));
@@ -126,7 +126,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-                .Returns(() => Task.FromResult(new AuthenticationResult(new Core.Common.Models.Client
+                .Returns(() => Task.FromResult(new AuthenticationResult(new Client
                 {
                     ClientId = "id",
                     GrantTypes = new System.Collections.Generic.List<GrantType>
@@ -154,7 +154,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = "clientId",
                 ClientSecret = "clientSecret"
             };
-            var client = new AuthenticationResult(new Core.Common.Models.Client
+            var client = new AuthenticationResult(new Client
             {
                 ClientId = "id",
                 GrantTypes = new System.Collections.Generic.List<GrantType>
@@ -197,7 +197,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 ClientId = "clientId"
             };
-            var client = new AuthenticationResult(new Core.Common.Models.Client
+            var client = new AuthenticationResult(new Client
             {
                 ClientId = "id",
                 GrantTypes = new System.Collections.Generic.List<GrantType>
@@ -216,7 +216,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(() => Task.FromResult(client));
             _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(authorizationCode));
-            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
+            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
                 .Returns(false);
 
             // ACT & ASSERTS
@@ -239,7 +239,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientSecret = "clientSecret"
             };
 
-            var result = new AuthenticationResult(new Core.Common.Models.Client
+            var result = new AuthenticationResult(new Client
             {
                 ClientId = "notCorrectClientId",
                 GrantTypes = new System.Collections.Generic.List<GrantType>
@@ -256,7 +256,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = "clientId"
             };
 
-            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
+            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
                 .Returns(true);
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
@@ -288,7 +288,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "notCorrectRedirectUri"
             };
 
-            var result = new AuthenticationResult(new Core.Common.Models.Client
+            var result = new AuthenticationResult(new Client
             {
                 ClientId = "clientId",
                 GrantTypes = new System.Collections.Generic.List<GrantType>
@@ -306,7 +306,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri"
             };
 
-            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
+            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
                 .Returns(true);
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
@@ -335,7 +335,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = "clientId",
             };
-            var result = new AuthenticationResult(new Core.Common.Models.Client
+            var result = new AuthenticationResult(new Client
             {
                 ClientId = "clientId",
                 GrantTypes = new System.Collections.Generic.List<GrantType>
@@ -354,7 +354,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 CreateDateTime = DateTime.UtcNow.AddSeconds(-30)
             };
 
-            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
+            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
                 .Returns(true);
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
@@ -385,7 +385,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = "clientId",
             };
-            var result = new AuthenticationResult(new Core.Common.Models.Client
+            var result = new AuthenticationResult(new Client
             {
                 ClientId = "clientId",
                 GrantTypes = new System.Collections.Generic.List<GrantType>
@@ -404,7 +404,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 CreateDateTime = DateTime.UtcNow
             };
 
-            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
+            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
                 .Returns(true);
             _authorizationCodeStoreFake.Setup(a => a.RemoveAuthorizationCode(It.IsAny<string>())).Returns(Task.FromResult(true));
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
@@ -415,7 +415,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(authorizationCode));
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
                 .Returns(Task.FromResult((double)3000));
-            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string[]>()))
+            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<string[]>()))
                 .Returns(new string[0]);
 
             // ACT & ASSERTS
@@ -442,7 +442,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = clientId
             };
 
-            var result = new AuthenticationResult(new Core.Common.Models.Client {
+            var result = new AuthenticationResult(new Client {
                 ClientId = "clientId",
                 GrantTypes = new System.Collections.Generic.List<GrantType>
                 {
@@ -470,7 +470,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 IdTokenPayLoad = new JwsPayload()
             };
 
-            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
+            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
                 .Returns(true);
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
@@ -480,7 +480,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(authorizationCode));
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
                 .Returns(Task.FromResult((double)3000));
-            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string>()))
+            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<string>()))
                 .Returns(new[] { "redirectUri" });
             _grantedTokenHelperStub.Setup(g => g.GetValidGrantedTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
@@ -511,7 +511,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = clientId
             };
-            var authResult = new AuthenticationResult(new Core.Common.Models.Client
+            var authResult = new AuthenticationResult(new Client
             {
                 ClientId = clientId,
                 GrantTypes = new System.Collections.Generic.List<GrantType>
@@ -535,7 +535,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 IdToken = identityToken
             };
 
-            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
+            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
                 .Returns(true);
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
@@ -545,9 +545,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(authorizationCode));
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
                 .Returns(Task.FromResult((double)3000));
-            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string>()))
+            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<string>()))
                 .Returns(new[] { "redirectUri" });
-            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateTokenAsync(It.IsAny<Core.Common.Models.Client>(),
+            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateTokenAsync(It.IsAny<Client>(),
                 It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),

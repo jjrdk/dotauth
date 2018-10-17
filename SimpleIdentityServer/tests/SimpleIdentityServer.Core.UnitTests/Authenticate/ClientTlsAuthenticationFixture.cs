@@ -43,11 +43,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction(), new Core.Common.Models.Client()));
+            Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction(), new Client()));
             Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
             {
                 Certificate = new X509Certificate2()
-            }, new Core.Common.Models.Client()));
+            }, new Client()));
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
             {
                 Certificate = new X509Certificate2()
-            }, new Core.Common.Models.Client
+            }, new Client
             {
                 Secrets = new List<ClientSecret>()
             }));

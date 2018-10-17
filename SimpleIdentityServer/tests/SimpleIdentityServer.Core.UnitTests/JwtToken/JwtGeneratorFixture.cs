@@ -40,7 +40,7 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
     using System.Security.Cryptography.Algorithms.Extensions;
-    using Client = Core.Common.Models.Client;
+    using Client = Client;
 
     public class JwtGeneratorFixture
     {
@@ -177,7 +177,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 ClientId = clientId
             };
-            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult((IEnumerable<Core.Common.Models.Client>)new List<Core.Common.Models.Client>()));
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult((IEnumerable<Client>)new List<Client>()));
 
             // ACT
             var result = await _jwtGenerator.GenerateIdTokenPayloadForScopesAsync(
@@ -186,7 +186,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             // ASSERT
             Assert.NotNull(result);
-            Assert.True(result.ContainsKey(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.True(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
             Assert.True(result.Audiences.Count() == 1);
             Assert.True(result.Azp == clientId);
         }
@@ -401,7 +401,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 new ClaimParameter
                 {
-                    Name = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                    Name = Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
                     Parameters = new Dictionary<string, object>
                     {
                         {
@@ -870,7 +870,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
 
             // ACT & ASSERT
-            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, null, null, new Core.Common.Models.Client());
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, null, null, new Client());
             Assert.False(jwsPayload.ContainsKey(StandardClaimNames.AtHash));
             Assert.False(jwsPayload.ContainsKey(StandardClaimNames.CHash));
         }

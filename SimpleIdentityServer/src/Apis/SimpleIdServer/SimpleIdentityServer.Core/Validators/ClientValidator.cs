@@ -39,10 +39,12 @@ namespace SimpleIdentityServer.Core.Validators
 
         public bool CheckGrantTypes(Client client, params GrantType[] grantTypes)
         {
-            if (client == null || grantTypes == null)
+            if (client == null)
             {
                 return false;
             }
+
+            grantTypes = grantTypes ?? Array.Empty<GrantType>();
 
             if (client.GrantTypes == null || !client.GrantTypes.Any())
             {
@@ -52,7 +54,7 @@ namespace SimpleIdentityServer.Core.Validators
                 };
             }
 
-            return client.GrantTypes != null && grantTypes.All(gt => client.GrantTypes.Contains(gt));
+            return grantTypes.All(gt => client.GrantTypes.Contains(gt));
         }
         
         public bool CheckResponseTypes(Client client, params ResponseType[] responseTypes)

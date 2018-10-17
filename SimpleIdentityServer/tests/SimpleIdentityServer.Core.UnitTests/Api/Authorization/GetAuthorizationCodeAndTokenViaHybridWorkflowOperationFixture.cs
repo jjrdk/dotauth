@@ -16,7 +16,7 @@ using SimpleIdentityServer.OAuth.Logging;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
-    using Client = Core.Common.Models.Client;
+    using Client = Client;
 
     public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperationFixture
     {
@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             _clientValidatorFake
-                .Setup(c => c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
+                .Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(false);
 
             // ACT & ASSERT
@@ -118,11 +118,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
             _processAuthorizationRequestFake.Setup(p => p.ProcessAsync(It.IsAny<AuthorizationParameter>(),
                     It.IsAny<ClaimsPrincipal>(),
-                    It.IsAny<Core.Common.Models.Client>(),
+                    It.IsAny<Client>(),
                     null))
                 .Returns(Task.FromResult(actionResult));
             _clientValidatorFake.Setup(c =>
-                    c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
+                    c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
             // ACT & ASSERT
@@ -165,11 +165,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
             _processAuthorizationRequestFake.Setup(p => p.ProcessAsync(It.IsAny<AuthorizationParameter>(),
                     It.IsAny<ClaimsPrincipal>(),
-                    It.IsAny<Core.Common.Models.Client>(),
+                    It.IsAny<Client>(),
                     It.IsAny<string>()))
                 .Returns(Task.FromResult(actionResult));
             _clientValidatorFake.Setup(c =>
-                    c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
+                    c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
             // ACT
@@ -182,7 +182,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _generateAuthorizationResponseFake.Verify(g => g.ExecuteAsync(actionResult,
                 authorizationParameter,
                 claimsPrincipal,
-                It.IsAny<Core.Common.Models.Client>(),
+                It.IsAny<Client>(),
                 It.IsAny<string>()));
             _oauthEventSource.Verify(s => s.EndHybridFlow(authorizationParameter.ClientId,
                 Enum.GetName(typeof(TypeActionResult), actionResult.Type),
