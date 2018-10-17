@@ -19,12 +19,6 @@ using SimpleIdentityServer.Core.Common.DTOs.Requests;
 
 namespace SimpleIdentityServer.Core.Api.Jwks
 {
-    public interface IJwksActions
-    {
-        Task<JsonWebKeySet> GetJwks();
-        Task<bool> RotateJwks();
-    }
-
     public class JwksActions : IJwksActions
     {
         private readonly IGetSetOfPublicKeysUsedToValidateJwsAction _getSetOfPublicKeysUsedToValidateJwsAction;

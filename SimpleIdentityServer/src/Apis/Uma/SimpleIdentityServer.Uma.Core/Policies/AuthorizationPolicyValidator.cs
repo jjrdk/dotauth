@@ -24,11 +24,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Policies
 {
-    public interface IAuthorizationPolicyValidator
-    {
-        Task<AuthorizationPolicyResult> IsAuthorized(Ticket validTicket, string clientId, ClaimTokenParameter claimTokenParameter);
-    }
-
     internal class AuthorizationPolicyValidator : IAuthorizationPolicyValidator
     {
         private readonly IBasicAuthorizationPolicy _basicAuthorizationPolicy;

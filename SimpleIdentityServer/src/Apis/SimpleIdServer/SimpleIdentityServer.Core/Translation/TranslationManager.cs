@@ -21,11 +21,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Translation
 {
-    public interface ITranslationManager
-    {
-        Task<Dictionary<string, string>> GetTranslationsAsync(string concatenateListOfCodeLanguages, List<string> translationCodes);
-    }
-
     public class TranslationManager : ITranslationManager
     {
         private readonly IConfigurationService _configurationService;

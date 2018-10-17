@@ -23,11 +23,6 @@ namespace SimpleIdentityServer.Client.Operations
     using System.Net.Http;
     using System.Threading;
 
-    public interface IGetDiscoveryOperation
-    {
-        Task<DiscoveryInformation> ExecuteAsync(Uri discoveryDocumentationUri);
-    }
-
     internal class GetDiscoveryOperation : IGetDiscoveryOperation
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);

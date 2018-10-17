@@ -17,53 +17,6 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Common.Models
 {
-    public enum ResponseType
-    {
-        code = 0,
-        token = 1,
-        id_token = 2
-    }
-
-    public enum GrantType
-    {
-        authorization_code = 0,
-        @implicit = 1,
-        refresh_token = 2,
-        client_credentials = 3,
-        password = 4,
-        uma_ticket = 5
-    }
-
-    public enum TokenEndPointAuthenticationMethods
-    {
-        // Defaut value
-        client_secret_basic = 0,
-        client_secret_post = 1,
-        client_secret_jwt = 2,
-        private_key_jwt = 3,
-        tls_client_auth = 4,
-        none = 5
-    }
-
-    public enum ApplicationTypes
-    {
-        native = 0,
-        web = 1
-    }
-
-    public enum ClientSecretTypes
-    {
-        SharedSecret= 0,
-        X509Thumbprint = 1,
-        X509Name = 2
-    }
-
-    public class ClientSecret
-    {
-        public ClientSecretTypes Type { get; set; }
-        public string Value { get; set; }
-    }
-
     public class Client
     {
         /// <summary>

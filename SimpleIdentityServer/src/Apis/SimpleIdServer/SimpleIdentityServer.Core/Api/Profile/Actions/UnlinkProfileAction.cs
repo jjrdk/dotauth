@@ -5,11 +5,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Profile.Actions
 {
-    public interface IUnlinkProfileAction
-    {
-        Task<bool> Execute(string localSubject, string externalSubject);
-    }
-
     internal sealed class UnlinkProfileAction : IUnlinkProfileAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

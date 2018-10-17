@@ -17,12 +17,6 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Common.Models
 {
-    public enum ScopeType
-    {
-        ProtectedApi,
-        ResourceOwner
-    }
-
     public class Scope
     {
         public string Name { get; set; }

@@ -21,12 +21,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Consent
 {
-    public interface IConsentActions
-    {
-        Task<DisplayContentResult> DisplayConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName);
-        Task<ActionResult> ConfirmConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName);
-    }
-
     public class ConsentActions : IConsentActions
     {
         private readonly IDisplayConsentAction _displayConsentAction;

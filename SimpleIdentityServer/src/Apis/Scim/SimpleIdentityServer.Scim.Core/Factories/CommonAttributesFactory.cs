@@ -25,16 +25,6 @@ namespace SimpleIdentityServer.Scim.Core.Factories
     using SimpleIdentityServer.Core.Common.DTOs;
     using SimpleIdentityServer.Core.Common.Models;
 
-    public interface ICommonAttributesFactory
-    {
-        JProperty CreateIdJson(Representation representation);
-        JProperty CreateIdJson(string id);
-        Task<RepresentationAttribute> CreateId(Representation representation);
-        IEnumerable<JProperty> CreateMetaDataAttributeJson(Representation representation, string location);
-        Task<RepresentationAttribute> CreateMetaDataAttribute(Representation representation, string location);
-        string GetFullPath(string key);
-    }
-
     internal class CommonAttributesFactory : ICommonAttributesFactory
     {
         private readonly Dictionary<string, string> _mappingCommonAttrsKeysWithFullPath = new Dictionary<string, string>

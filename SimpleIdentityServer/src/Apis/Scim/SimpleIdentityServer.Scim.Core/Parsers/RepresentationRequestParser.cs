@@ -25,52 +25,6 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
     using SimpleIdentityServer.Core.Common.DTOs;
     using SimpleIdentityServer.Core.Common.Models;
 
-    public interface IRepresentationRequestParser
-    {
-        /// <summary>
-        /// Parse JSON and returns its representation.
-        /// </summary>
-        /// <exception cref="ArgumentNullException">Thrown when a parameter is null or empty.</exception>
-        /// <param name="jObj">JSON</param>
-        /// <param name="schemaId">Schema identifier</param>
-        /// <param name="checkStrategy">Strategy used to check the parameters.</param>
-        /// <returns>Representation or null.</returns>
-        Task<ParseRepresentationResult> Parse(JToken jObj, string schemaId, CheckStrategies checkStrategy);
-    }
-
-    public interface IJsonParser
-    {
-        /// <summary>
-        /// Parse json and returns the representation.
-        /// </summary>
-        /// <exception cref="ArgumentNullException">Thrown when one of the parameter is null.</exception>
-        /// <param name="jObj">JSON</param>
-        /// <param name="attribute">Schema attribute</param>
-        /// <param name="checkStrategy">Strategy used to check the parameters.</param>
-        /// <returns>Representation or null.</returns>
-        ParseRepresentationAttrResult GetRepresentation(JToken jObj, SchemaAttributeResponse attribute, CheckStrategies checkStrategy);
-    }
-
-    public enum CheckStrategies
-    {
-        Strong,
-        Standard
-    }
-
-    public class ParseRepresentationResult
-    {
-        public Representation Representation { get; set; }
-        public string ErrorMessage { get; set; }
-        public bool IsParsed { get; set; }
-    }
-
-    public class ParseRepresentationAttrResult
-    {
-        public RepresentationAttribute RepresentationAttribute { get; set; }
-        public string ErrorMessage { get; set; }
-        public bool IsParsed { get; set; }
-    }
-
     internal class RepresentationRequestParser : IRepresentationRequestParser, IJsonParser
     {
         private readonly ISchemaStore _schemasStore;

@@ -23,11 +23,6 @@ namespace SimpleIdentityServer.Uma.Client.ResourceSet
     using Results;
     using SimpleIdentityServer.Common.Dtos.Responses;
 
-    public interface IUpdateResourceOperation
-    {
-        Task<UpdateResourceSetResult> ExecuteAsync(PutResourceSet request, string url, string token);
-    }
-
     internal class UpdateResourceOperation : IUpdateResourceOperation
     {
         private readonly HttpClient _httpClientFactory;

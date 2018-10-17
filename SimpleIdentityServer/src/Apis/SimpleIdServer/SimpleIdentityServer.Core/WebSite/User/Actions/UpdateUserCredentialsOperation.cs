@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
-    public interface IUpdateUserCredentialsOperation
-    {
-        Task<bool> Execute(string subject, string newPassword);
-    }
-
     internal sealed class UpdateUserCredentialsOperation : IUpdateUserCredentialsOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

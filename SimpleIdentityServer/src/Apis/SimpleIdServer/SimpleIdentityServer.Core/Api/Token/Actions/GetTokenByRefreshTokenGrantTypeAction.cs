@@ -28,11 +28,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
-    public interface IGetTokenByRefreshTokenGrantTypeAction
-    {
-        Task<GrantedToken> Execute(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
-    }
-
     public sealed class GetTokenByRefreshTokenGrantTypeAction : IGetTokenByRefreshTokenGrantTypeAction
     {
         private readonly IClientHelper _clientHelper;

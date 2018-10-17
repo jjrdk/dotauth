@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Host.Extensions
 
         public static string Protect(this IDataProtector dataProtector, string toEncode)
         {
-            var bytes = ASCIIEncoding.ASCII.GetBytes(toEncode);
+            var bytes = Encoding.ASCII.GetBytes(toEncode);
             var protectedBytes = dataProtector.Protect(bytes);
             return Convert.ToBase64String(protectedBytes);
         }

@@ -10,11 +10,6 @@ namespace SimpleIdentityServer.Authenticate.SMS.Client
     using Newtonsoft.Json;
     using SimpleIdentityServer.Common.Dtos.Responses;
 
-    public interface ISidSmsAuthenticateClient
-    {
-        Task<BaseResponse> Send(string requestUrl, ConfirmationCodeRequest request, string authorizationValue = null);
-    }
-
     internal sealed class SidSmsAuthenticateClient : ISidSmsAuthenticateClient
     {
         private readonly HttpClient _client;

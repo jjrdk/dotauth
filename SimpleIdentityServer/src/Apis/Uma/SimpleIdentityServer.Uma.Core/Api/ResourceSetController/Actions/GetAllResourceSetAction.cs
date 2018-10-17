@@ -21,11 +21,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
-    internal interface IGetAllResourceSetAction
-    {
-        Task<IEnumerable<string>> Execute();
-    }
-
     internal class GetAllResourceSetAction : IGetAllResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;

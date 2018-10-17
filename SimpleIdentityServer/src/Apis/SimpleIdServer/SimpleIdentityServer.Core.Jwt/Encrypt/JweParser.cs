@@ -18,20 +18,6 @@ using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt
 {
-    public interface IJweParser
-    {
-        string Parse(
-            string jwe,
-            JsonWebKey jsonWebKey);
-
-        string ParseByUsingSymmetricPassword(
-            string jwe,
-            JsonWebKey jsonWebKey,
-            string password);
-
-        JweProtectedHeader GetHeader(string jwe);
-    }
-
     public class JweParser : IJweParser
     {
         private readonly IJweHelper _jweHelper;

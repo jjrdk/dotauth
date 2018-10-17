@@ -24,13 +24,6 @@ namespace SimpleIdentityServer.Scim.Core.EF.Helpers
     using SimpleIdentityServer.Core.Common.DTOs;
     using SimpleIdentityServer.Core.Common.Models;
 
-    public interface ITransformers
-    {
-        SchemaAttributeResponse Transform(Model.SchemaAttribute attr);
-        RepresentationAttribute Transform(Model.RepresentationAttribute attr);
-        Model.RepresentationAttribute Transform(RepresentationAttribute attr);
-    }
-
     public class Transformers : ITransformers
     {
         public SchemaAttributeResponse Transform(Models.SchemaAttribute record)

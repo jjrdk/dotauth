@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SimpleIdentityServer.Core.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Claims;
@@ -11,31 +10,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Tests.MiddleWares
 {
-    public class UserStore
-    {
-        private static UserStore _instance;
-        private static string _defaultSubject = "administrator";
-
-        private UserStore()
-        {
-            Subject = _defaultSubject;
-        }
-
-        public static UserStore Instance()
-        {
-            if (_instance == null)
-            {
-                _instance = new UserStore();
-            }
-
-            return _instance;
-        }
-
-        public bool IsInactive { get; set; }
-        public string Subject { get; set; }
-        public DateTimeOffset? AuthenticationOffset { get; set; }
-    }
-
     public class TestAuthenticationHandler : AuthenticationHandler<TestAuthenticationOptions>
     {
         public TestAuthenticationHandler(IOptionsMonitor<TestAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)

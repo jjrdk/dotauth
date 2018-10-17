@@ -19,23 +19,6 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Validators
 {
-    public interface IScopeValidator
-    {
-        ScopeValidationResult Check(string scope, Common.Models.Client client);
-    }
-
-    public class ScopeValidationResult
-    {
-        public ScopeValidationResult(bool isValid)
-        {
-            IsValid = isValid;
-        }
-
-        public bool IsValid { get; set; }
-        public string ErrorMessage { get; set; }
-        public ICollection<string> Scopes { get; set; }
-    }
-
     internal class ScopeValidator : IScopeValidator
     {
         private readonly IParameterParserHelper _parameterParserHelper;

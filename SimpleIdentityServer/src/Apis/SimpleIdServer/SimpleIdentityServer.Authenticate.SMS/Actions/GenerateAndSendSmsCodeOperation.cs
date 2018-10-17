@@ -8,11 +8,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Actions
 {
-    public interface IGenerateAndSendSmsCodeOperation
-    {
-        Task<string> Execute(string phoneNumber);
-    }
-
     internal sealed class GenerateAndSendSmsCodeOperation : IGenerateAndSendSmsCodeOperation
     {
         private readonly IConfirmationCodeStore _confirmationCodeStore;

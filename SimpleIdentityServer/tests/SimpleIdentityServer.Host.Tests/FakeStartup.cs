@@ -47,10 +47,8 @@ using System.Text;
 namespace SimpleIdentityServer.Host.Tests
 {
     using Controllers.Api;
-    using Core.Common.DTOs.Responses;
     using Extensions;
     using System.Net.Http;
-    using System.Threading.Tasks;
 
     public class FakeStartup : IStartup
     {
@@ -205,14 +203,6 @@ namespace SimpleIdentityServer.Host.Tests
             }
 
             return result;
-        }
-    }
-
-    internal class TestAccessTokenStore : IAccessTokenStore
-    {
-        public Task<GrantedTokenResponse> GetToken(string url, string clientId, string clientSecret, IEnumerable<string> scopes)
-        {
-            return Task.FromResult(new GrantedTokenResponse());
         }
     }
 }

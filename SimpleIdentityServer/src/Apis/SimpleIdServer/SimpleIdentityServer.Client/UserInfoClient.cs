@@ -27,11 +27,6 @@ namespace SimpleIdentityServer.Client
     using System.Collections.Generic;
     using System.Net.Http;
 
-    public interface IUserInfoClient
-    {
-        Task<GetUserInfoResult> Resolve(string configurationUrl, string accessToken, bool inBody = false);
-    }
-
     internal class UserInfoClient : IUserInfoClient
     {
         private readonly HttpClient _client;

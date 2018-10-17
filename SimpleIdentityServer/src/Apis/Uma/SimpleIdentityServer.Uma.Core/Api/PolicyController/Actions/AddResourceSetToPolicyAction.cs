@@ -24,11 +24,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
-    public interface IAddResourceSetToPolicyAction
-    {
-        Task<bool> Execute(AddResourceSetParameter addResourceSetParameter);
-    }
-
     internal class AddResourceSetToPolicyAction : IAddResourceSetToPolicyAction
     {
         private readonly IPolicyRepository _policyRepository;

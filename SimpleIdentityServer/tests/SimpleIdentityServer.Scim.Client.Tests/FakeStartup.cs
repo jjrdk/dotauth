@@ -23,7 +23,6 @@ using System.Reflection;
 
 namespace SimpleIdentityServer.Scim.Client.Tests
 {
-    using Common.Dtos;
     using SimpleIdentityServer.Core.Common;
 
     public class FakeStartup
@@ -75,13 +74,6 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-        }
-    }
-
-    public class DefaultEventPublisher : IEventPublisher
-    {
-        public void Publish<T>(T evt) where T : Event
-        {
         }
     }
 }

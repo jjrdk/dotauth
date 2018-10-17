@@ -22,14 +22,6 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Jwt.Signature
 {
-    public interface IJwsParser
-    {
-        JwsPayload ValidateSignature(string jws, JsonWebKey jsonWebKey);
-        JwsPayload ValidateSignature(string jws, JsonWebKeySet jsonWebKeySet);
-        JwsProtectedHeader GetHeader(string jws);
-        JwsPayload GetPayload(string jws);
-    }
-
     public class JwsParser : IJwsParser
     {
         private readonly ICreateJwsSignature _createJwsSignature;

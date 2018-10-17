@@ -31,11 +31,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Common
 {
-    public interface IGenerateAuthorizationResponse
-    {
-        Task ExecuteAsync(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName);
-    }
-
     public class GenerateAuthorizationResponse : IGenerateAuthorizationResponse
     {
         private readonly IAuthorizationCodeStore _authorizationCodeStore;

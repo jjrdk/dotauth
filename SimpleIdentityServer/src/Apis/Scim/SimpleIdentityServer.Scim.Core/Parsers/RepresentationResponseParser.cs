@@ -27,55 +27,6 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
     using SimpleIdentityServer.Core.Common.DTOs;
     using SimpleIdentityServer.Core.Common.Models;
 
-    public interface IRepresentationResponseParser
-    {
-        /// <summary>
-        /// Parse the representation into JSON and returns the result.
-        /// </summary>
-        /// <exception cref="System.ArgumentNullException">Thrown when parameters are null empty</exception>
-        /// <exception cref="System.InvalidOperationException">Thrown when error occured during the parsing.</exception>
-        /// <param name="representation">Representation that will be parsed.</param>
-        /// <param name="location">Location of the representation.</param>
-        /// <param name="schemaId">Identifier of the schema.</param>
-        /// <param name="operationType">Type of operation.</param>
-        /// <returns>JSON representation</returns>
-        Task<Response> Parse(
-            Representation representation, 
-            string location,
-            string schemaId, 
-            OperationTypes operationType);
-
-        /// <summary>
-        /// Filter the representations and return the result.
-        /// </summary>
-        /// <exception cref="ArgumentNullException">Thrown when representations are null.</exception>
-        /// <param name="representations">Representations to filter.</param>
-        /// <param name="searchParameter">Search parameters.</param>
-        /// <param name="totalNumbers">Total numbers</param>
-        /// <returns>Filtered response</returns>
-        FilterResult Filter(IEnumerable<Representation> representations, SearchParameter searchParameter, int totalNumbers);
-    }
-
-    public class FilterResult
-    {
-        public int? ItemsPerPage { get; set; }
-        public int? StartIndex { get; set; }
-        public int TotalNumbers { get; set; }
-        public JArray Values { get; set; }
-    }
-
-    public class Response
-    {
-        public JObject Object { get; set; }
-        public string Location { get; set; }
-    }
-
-    public enum OperationTypes
-    {
-        Query,
-        Modification
-    }
-
     internal class RepresentationResponseParser : IRepresentationResponseParser
     {
         private readonly ISchemaStore _schemasStore;
@@ -411,45 +362,6 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
                 return new JProperty(singularRepresentation.SchemaAttribute.Name, singularRepresentation.Value);
             }
-        }
-    }
-
-    internal class RepresentationComparer : IComparer<Representation>
-    {
-        private readonly Filter _filter;
-
-        public RepresentationComparer(Filter filter)
-        {
-            _filter = filter;
-        }
-
-        public int Compare(Representation x, Representation y)
-        {
-            if (x == null)
-            {
-                return -1;
-            }
-
-            if (y == null)
-            {
-                return 1;
-            }
-
-            var xAttrs = _filter.Evaluate(x);
-            var yAttrs = _filter.Evaluate(y);
-            if (xAttrs == null || !xAttrs.Any())
-            {
-                return -1;
-            }
-
-            if (yAttrs == null || !yAttrs.Any())
-            {
-                return 1;
-            }
-
-            var xAttr = xAttrs.First();
-            var yAttr = yAttrs.First();
-            return xAttr.CompareTo(yAttr);
         }
     }
 }

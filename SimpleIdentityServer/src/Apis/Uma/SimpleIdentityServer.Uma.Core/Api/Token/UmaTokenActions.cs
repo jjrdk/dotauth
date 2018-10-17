@@ -24,14 +24,6 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
     using System.Collections.Generic;
     using System.Text;
 
-    public interface IUmaTokenActions
-    {
-        Task<GrantedToken> GetTokenByTicketId(GetTokenViaTicketIdParameter parameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
-            string issuerName);
-    }
-
     internal sealed class UmaTokenActions : IUmaTokenActions
     {
         private readonly ITicketStore _ticketStore;

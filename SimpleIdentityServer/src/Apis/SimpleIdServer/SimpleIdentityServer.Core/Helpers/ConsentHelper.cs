@@ -22,11 +22,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
-    public interface IConsentHelper
-    {
-        Task<Consent> GetConfirmedConsentsAsync(string subject, AuthorizationParameter authorizationParameter);
-    }
-
     public class ConsentHelper : IConsentHelper
     {
         private readonly IConsentRepository _consentRepository;

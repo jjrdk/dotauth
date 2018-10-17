@@ -9,30 +9,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Tests.MiddleWares
 {
-    public class UserStore
-    {
-        private static UserStore _instance;
-        private static readonly string _defaultClient = "client";
-
-        private UserStore()
-        {
-            ClientId = _defaultClient;
-        }
-
-        public static UserStore Instance()
-        {
-            if (_instance == null)
-            {
-                _instance = new UserStore();
-            }
-
-            return _instance;
-        }
-
-        public bool IsInactive { get; set; }
-        public string ClientId { get; set; }
-    }
-
     public class TestAuthenticationHandler : AuthenticationHandler<TestAuthenticationOptions>
     {
         public TestAuthenticationHandler(IOptionsMonitor<TestAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)

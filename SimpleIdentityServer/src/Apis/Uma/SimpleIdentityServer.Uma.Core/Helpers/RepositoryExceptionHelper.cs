@@ -19,11 +19,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Helpers
 {
-    public interface IRepositoryExceptionHelper
-    {
-        Task<T> HandleException<T>(string message, Func<Task<T>> callback);
-    }
-
     internal class RepositoryExceptionHelper : IRepositoryExceptionHelper
     {
         public Task<T> HandleException<T>(string message, Func<Task<T>> callback)

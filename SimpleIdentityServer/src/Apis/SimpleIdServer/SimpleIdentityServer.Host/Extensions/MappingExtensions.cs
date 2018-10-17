@@ -34,14 +34,14 @@ namespace SimpleIdentityServer.Host.Extensions
             {
                 AcrValues = request.AcrValues,
                 ClientId = request.ClientId,
-                Display = request.Display == null ? Core.Parameters.Display.page : (Core.Parameters.Display)request.Display,
+                Display = request.Display == null ? Display.page : (Display)request.Display,
                 IdTokenHint = request.IdTokenHint,
                 LoginHint = request.LoginHint,
                 MaxAge = request.MaxAge,
                 Nonce = request.Nonce,
                 Prompt = request.Prompt,
                 RedirectUrl = request.RedirectUri,
-                ResponseMode = request.ResponseMode == null ? Core.Parameters.ResponseMode.None : (Core.Parameters.ResponseMode)request.ResponseMode,
+                ResponseMode = request.ResponseMode == null ? ResponseMode.None : (ResponseMode)request.ResponseMode,
                 ResponseType = request.ResponseType,
                 Scope = request.Scope,
                 State = request.State,
@@ -274,14 +274,14 @@ namespace SimpleIdentityServer.Host.Extensions
                 throw new ArgumentNullException(nameof(clientRequest));
             }
 
-            var responseTypes = new List<Core.Common.Models.ResponseType>();
+            var responseTypes = new List<ResponseType>();
             var grantTypes = new List<GrantType>();
             ApplicationTypes? applicationType = null;
             if (clientRequest.ResponseTypes != null && clientRequest.ResponseTypes.Any())
             {
                 foreach (var responseType in clientRequest.ResponseTypes)
                 {
-                    Core.Common.Models.ResponseType responseTypeEnum;
+                    ResponseType responseTypeEnum;
                     if (Enum.TryParse(responseType, out responseTypeEnum) &&
                         !responseTypes.Contains(responseTypeEnum))
                     {

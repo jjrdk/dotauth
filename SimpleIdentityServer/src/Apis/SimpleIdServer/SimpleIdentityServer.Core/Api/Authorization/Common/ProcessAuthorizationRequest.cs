@@ -33,11 +33,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Common
 {
-    public interface IProcessAuthorizationRequest
-    {
-        Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName);
-    }
-
     public class ProcessAuthorizationRequest : IProcessAuthorizationRequest
     {
         private readonly IParameterParserHelper _parameterParserHelper;

@@ -29,12 +29,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
 {
-    internal interface IAddPermissionAction
-    {
-        Task<string> Execute(string clientId, AddPermissionParameter addPermissionParameters);
-        Task<string> Execute(string clientId, IEnumerable<AddPermissionParameter> addPermissionParameters);
-    }
-
     internal class AddPermissionAction : IAddPermissionAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;

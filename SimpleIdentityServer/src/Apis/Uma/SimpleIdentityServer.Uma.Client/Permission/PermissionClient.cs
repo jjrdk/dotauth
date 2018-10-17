@@ -21,14 +21,6 @@ namespace SimpleIdentityServer.Uma.Client.Permission
     using Helpers;
     using Results;
 
-    public interface IPermissionClient
-    {
-        Task<AddPermissionResult> Add(PostPermission request, string url, string token);
-        Task<AddPermissionResult> AddByResolution(PostPermission request, string url, string token);
-        Task<AddPermissionResult> Add(IEnumerable<PostPermission> request, string url, string token);
-        Task<AddPermissionResult> AddByResolution(IEnumerable<PostPermission> request, string url, string token);
-    }
-
     internal class PermissionClient : IPermissionClient
     {
         private readonly IAddPermissionsOperation _addPermissionsOperation;

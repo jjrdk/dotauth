@@ -21,22 +21,6 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt
 {
-    public interface IJweGenerator
-    {
-        string GenerateJwe(
-            string entry,
-            JweAlg alg,
-            JweEnc enc,
-            JsonWebKey jsonWebKey);
-
-        string GenerateJweByUsingSymmetricPassword(
-            string entry,
-            JweAlg alg,
-            JweEnc enc,
-            JsonWebKey jsonWebKey,
-            string password);
-    }
-
     public class JweGenerator : IJweGenerator
     {
         private readonly IJweHelper _jweHelper;

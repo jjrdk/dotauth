@@ -25,12 +25,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
-    public interface IGrantedTokenGeneratorHelper
-    {
-        Task<GrantedToken> GenerateTokenAsync(string clientId, string scope, string issuerName, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null);
-        Task<GrantedToken> GenerateTokenAsync(Client clientId, string scope, string issuerName, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null);
-    }
-
     public class GrantedTokenGeneratorHelper : IGrantedTokenGeneratorHelper
     {
         private readonly IConfigurationService _configurationService;

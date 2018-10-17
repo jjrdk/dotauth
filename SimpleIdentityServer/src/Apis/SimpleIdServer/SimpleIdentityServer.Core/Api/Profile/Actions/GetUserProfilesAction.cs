@@ -8,11 +8,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Profile.Actions
 {
-    public interface IGetUserProfilesAction
-    {
-        Task<IEnumerable<ResourceOwnerProfile>> Execute(string subject);
-    }
-
     internal sealed class GetUserProfilesAction : IGetUserProfilesAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

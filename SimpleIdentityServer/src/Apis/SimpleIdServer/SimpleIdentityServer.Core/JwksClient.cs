@@ -21,11 +21,6 @@ namespace SimpleIdentityServer.Core
     using System.Net.Http;
     using System.Threading.Tasks;
 
-    public interface IJwksClient
-    {
-        Task<JsonWebKeySet> ResolveAsync(Uri configurationUrl);
-    }
-
     public class JwksClient : IJwksClient
     {
         private readonly HttpClient _client;

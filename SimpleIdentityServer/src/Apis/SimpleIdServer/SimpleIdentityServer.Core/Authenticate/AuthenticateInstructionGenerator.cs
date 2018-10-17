@@ -18,11 +18,6 @@ using System.Net.Http.Headers;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
-    public interface IAuthenticateInstructionGenerator
-    {
-        AuthenticateInstruction GetAuthenticateInstruction(AuthenticationHeaderValue authenticationHeaderValue);
-    }
-
     internal class AuthenticateInstructionGenerator : IAuthenticateInstructionGenerator
     {
         public AuthenticateInstruction GetAuthenticateInstruction(AuthenticationHeaderValue authenticationHeaderValue)

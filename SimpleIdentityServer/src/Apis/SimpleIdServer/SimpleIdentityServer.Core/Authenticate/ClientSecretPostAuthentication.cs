@@ -18,12 +18,6 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
-    public interface IClientSecretPostAuthentication
-    {
-        Client AuthenticateClient(AuthenticateInstruction instruction, Client client);
-        string GetClientId(AuthenticateInstruction instruction);
-    }
-
     public class ClientSecretPostAuthentication : IClientSecretPostAuthentication
     {
         public Client AuthenticateClient(AuthenticateInstruction instruction, Client client)

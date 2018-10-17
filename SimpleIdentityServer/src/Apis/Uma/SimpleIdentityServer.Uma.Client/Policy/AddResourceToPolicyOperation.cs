@@ -23,11 +23,6 @@ namespace SimpleIdentityServer.Uma.Client.Policy
     using Newtonsoft.Json;
     using SimpleIdentityServer.Common.Dtos.Responses;
 
-    public interface IAddResourceToPolicyOperation
-    {
-        Task<BaseResponse> ExecuteAsync(string id, PostAddResourceSet request, string url, string token);
-    }
-
     internal class AddResourceToPolicyOperation : IAddResourceToPolicyOperation
     {
         private readonly HttpClient _httpClientFactory;

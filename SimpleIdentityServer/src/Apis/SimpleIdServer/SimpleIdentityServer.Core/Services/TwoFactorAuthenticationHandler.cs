@@ -22,13 +22,6 @@ namespace SimpleIdentityServer.Core.Services
 {
     using Common;
 
-    public interface ITwoFactorAuthenticationHandler
-    {
-        IEnumerable<ITwoFactorAuthenticationService> GetAll();
-        ITwoFactorAuthenticationService Get(string twoFactorAuthType);
-        Task<bool> SendCode(string code, string twoFactorAuthType, ResourceOwner user);
-    }
-
     internal class TwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandler
     {
         private readonly IEnumerable<ITwoFactorAuthenticationService> _twoFactorServices;

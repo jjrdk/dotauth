@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Profile.Actions
 {
-    public interface ILinkProfileAction
-    {
-        Task<bool> Execute(string localSubject, string externalSubject, string issuer, bool force = false);
-    }
-
     internal sealed class LinkProfileAction : ILinkProfileAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

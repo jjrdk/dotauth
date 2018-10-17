@@ -19,13 +19,6 @@ using Microsoft.AspNetCore.Routing;
 
 namespace SimpleIdentityServer.Host.Parsers
 {
-    public interface IRedirectInstructionParser
-    {
-        ActionInformation GetActionInformation(RedirectInstruction action);
-
-        RouteValueDictionary GetRouteValueDictionary(RedirectInstruction instruction);
-    }
-
     public class RedirectInstructionParser : IRedirectInstructionParser
     {
         private readonly Dictionary<IdentityServerEndPoints, ActionInformation> _mappingEnumToActionInformations = new Dictionary<IdentityServerEndPoints, ActionInformation>

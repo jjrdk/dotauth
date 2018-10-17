@@ -21,11 +21,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
-    public interface IGetSetOfPublicKeysUsedToValidateJwsAction
-    {
-        Task<List<Dictionary<string, object>>> Execute();
-    }
-
     public class GetSetOfPublicKeysUsedToValidateJwsAction : IGetSetOfPublicKeysUsedToValidateJwsAction
     {
         private readonly IJsonWebKeyRepository _jsonWebKeyRepository;

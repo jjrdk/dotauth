@@ -20,13 +20,6 @@ using System.Security.Claims;
 
 namespace SimpleIdentityServer.Uma.Common
 {
-    public class Permission
-    {
-        public string ResourceSetId { get; set; }
-        public IEnumerable<string> Scopes { get; set; }
-        public string Url { get; set; }
-    }
-
     public static class ClaimsIdentityExtensions
     {
         private const string PermissionName = "permission";

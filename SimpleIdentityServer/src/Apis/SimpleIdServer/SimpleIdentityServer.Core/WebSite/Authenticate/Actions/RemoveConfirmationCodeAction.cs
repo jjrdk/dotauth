@@ -18,11 +18,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
-    public interface IRemoveConfirmationCodeAction
-    {
-        Task<bool> Execute(string code);
-    }
-
     internal class RemoveConfirmationCodeAction : IRemoveConfirmationCodeAction
     {
         private readonly IConfirmationCodeStore _confirmationCodeStore;

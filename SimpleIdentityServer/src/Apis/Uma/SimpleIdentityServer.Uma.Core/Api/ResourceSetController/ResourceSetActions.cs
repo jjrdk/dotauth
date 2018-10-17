@@ -20,17 +20,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
 {
-    public interface IResourceSetActions
-    {
-        Task<string> AddResourceSet(AddResouceSetParameter addResouceSetParameter);
-        Task<ResourceSet> GetResourceSet(string id);
-        Task<bool> UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter);
-        Task<bool> RemoveResourceSet(string resourceSetId);
-        Task<IEnumerable<string>> GetAllResourceSet();
-        Task<IEnumerable<string>> GetPolicies(string resourceId);
-        Task<SearchResourceSetResult> Search(SearchResourceSetParameter parameter);
-    }
-
     internal class ResourceSetActions : IResourceSetActions
     {
         private readonly IAddResourceSetAction _addResourceSetAction;

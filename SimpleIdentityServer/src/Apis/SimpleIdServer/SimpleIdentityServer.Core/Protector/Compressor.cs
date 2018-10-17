@@ -20,13 +20,6 @@ using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.Protector
 {
-    public interface ICompressor
-    {
-        string Compress(string textToCompress);
-
-        string Decompress(string compressedText);
-    }
-
     public class Compressor : ICompressor
     {
         public string Compress(string textToCompress)

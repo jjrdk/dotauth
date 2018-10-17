@@ -30,11 +30,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 {
-    public interface IPostIntrospectionAction
-    {
-        Task<IntrospectionResult> Execute(IntrospectionParameter introspectionParameter, AuthenticationHeaderValue authenticationHeaderValue, string issuerName);
-    }
-
     public class PostIntrospectionAction : IPostIntrospectionAction
     {
         private readonly IOAuthEventSource _oauthEventSource;

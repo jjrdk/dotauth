@@ -28,11 +28,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
-    public interface IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation
-    {
-        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal claimsPrincipal, Client client, string issuerName);
-    }
-
     public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperation : IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation
     {
         private readonly IOAuthEventSource _oauthEventSource;

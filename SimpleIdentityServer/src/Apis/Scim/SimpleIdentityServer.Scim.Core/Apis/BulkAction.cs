@@ -27,11 +27,6 @@ namespace SimpleIdentityServer.Scim.Core.Apis
     using SimpleIdentityServer.Core.Common;
     using SimpleIdentityServer.Core.Common.Models;
 
-    public interface IBulkAction
-    {
-        Task<ApiActionResult> Execute(JObject jObj, string baseUrl);
-    }
-
     internal class BulkAction : IBulkAction
     {
         private readonly IBulkRequestParser _bulkRequestParser;

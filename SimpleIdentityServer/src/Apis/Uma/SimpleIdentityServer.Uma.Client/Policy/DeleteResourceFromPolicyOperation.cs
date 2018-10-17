@@ -21,11 +21,6 @@ namespace SimpleIdentityServer.Uma.Client.Policy
     using Newtonsoft.Json;
     using SimpleIdentityServer.Common.Dtos.Responses;
 
-    public interface IDeleteResourceFromPolicyOperation
-    {
-        Task<BaseResponse> ExecuteAsync(string id, string resourceId, string url, string token);
-    }
-
     internal class DeleteResourceFromPolicyOperation : IDeleteResourceFromPolicyOperation
     {
         private readonly HttpClient _httpClientFactory;

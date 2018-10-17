@@ -23,11 +23,6 @@ namespace SimpleIdentityServer.Core.Api.UserInfo
     using Common;
     using SimpleIdentityServer.Common.Dtos.Events.Openid;
 
-    public interface IUserInfoActions
-    {
-        Task<UserInfoResult> GetUserInformation(string accessToken);
-    }
-
     public class UserInfoActions : IUserInfoActions
     {
         private readonly IGetJwsPayload _getJwsPayload;

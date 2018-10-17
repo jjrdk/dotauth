@@ -26,13 +26,6 @@ namespace SimpleIdentityServer.Uma.Core.Policies
     using SimpleIdentityServer.Core;
     using Constants = Core.Constants;
 
-    public interface IBasicAuthorizationPolicy
-    {
-        Task<AuthorizationPolicyResult> Execute(TicketLineParameter ticket,
-            Policy policy,
-            ClaimTokenParameter claimTokenParameters);
-    }
-
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy
     {
         private readonly IJwtTokenParser _jwtTokenParser;

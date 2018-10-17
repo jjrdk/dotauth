@@ -23,19 +23,6 @@ using System.Text;
 
 namespace SimpleIdentityServer.Core.Jwt.Signature
 {
-    public interface ICreateJwsSignature
-    {
-        string SignWithRsa(
-            JwsAlg algorithm,
-            string serializedKeys,
-            string combinedJwsNotSigned);
-        bool VerifyWithRsa(
-            JwsAlg algorithm,
-            string serializedKeys,
-            string input,
-            byte[] signature);
-    }
-
     public class CreateJwsSignature : ICreateJwsSignature
     {
         private readonly IEnumerable<JwsAlg> _supportedAlgs = new List<JwsAlg>

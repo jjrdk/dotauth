@@ -9,11 +9,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Client.Policy
 {
-    public interface ISearchPoliciesOperation
-    {
-        Task<SearchAuthPoliciesResult> ExecuteAsync(string url, SearchAuthPolicies parameter, string authorizationHeaderValue = null);
-    }
-
     internal sealed class SearchPoliciesOperation : ISearchPoliciesOperation
     {
         private readonly HttpClient _httpClientFactory;

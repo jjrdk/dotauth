@@ -26,11 +26,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
-    public interface IRevokeTokenAction
-    {
-        Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
-    }
-
     internal class RevokeTokenAction : IRevokeTokenAction
     {
         private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;

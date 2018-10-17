@@ -19,11 +19,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
 {
-    public interface IGetConfigurationAction
-    {
-        Task<ConfigurationResponse> Execute();
-    }
-    
     public class GetConfigurationAction : IGetConfigurationAction
     {
         private readonly List<string> _umaProfilesSupported = new List<string>

@@ -25,11 +25,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
-    public interface IAddRepresentationAction
-    {
-        Task<ApiActionResult> Execute(JObject jObj, string locationPattern, string schemaId, string resourceType, string id = null);
-    }
-
     internal class AddRepresentationAction : IAddRepresentationAction
     {
         private readonly IRepresentationRequestParser _requestParser;

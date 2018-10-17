@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Host.Extensions
                 SimpleIdentityServerEventSource = app.ApplicationServices.GetService<IOpenIdEventSource>()
             });
             var httpContextAccessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
-            Extensions.UriHelperExtensions.Configure(httpContextAccessor);
+            UriHelperExtensions.Configure(httpContextAccessor);
         }
     }
 }

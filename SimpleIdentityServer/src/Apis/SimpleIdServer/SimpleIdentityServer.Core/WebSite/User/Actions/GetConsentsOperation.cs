@@ -21,11 +21,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
-    public interface IGetConsentsOperation
-    {
-        Task<IEnumerable<Common.Models.Consent>> Execute(ClaimsPrincipal claimsPrincipal);
-    }
-
     internal class GetConsentsOperation : IGetConsentsOperation
     {
         private readonly IConsentRepository _consentRepository;

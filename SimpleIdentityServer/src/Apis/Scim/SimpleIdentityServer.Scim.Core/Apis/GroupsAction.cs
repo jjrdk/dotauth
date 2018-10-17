@@ -25,17 +25,6 @@ namespace SimpleIdentityServer.Scim.Core.Apis
     using Common.Dtos.Events.Scim;
     using SimpleIdentityServer.Core.Common;
 
-    public interface IGroupsAction
-    {
-        Task<ApiActionResult> AddGroup(JObject jObj, string locationPattern);
-        Task<ApiActionResult> GetGroup(string id, string locationPattern, IQueryCollection query);
-        Task<ApiActionResult> RemoveGroup(string id);
-        Task<ApiActionResult> UpdateGroup(string id, JObject jObj, string locationPattern);
-        Task<ApiActionResult> PatchGroup(string id, JObject jObj, string locationPattern);
-        Task<ApiActionResult> SearchGroups(JObject jObj, string locationPattern);
-        Task<ApiActionResult> SearchGroups(IQueryCollection query, string locationPattern);
-    }
-
     internal class GroupsAction : IGroupsAction
     {
         private readonly IAddRepresentationAction _addRepresentationAction;

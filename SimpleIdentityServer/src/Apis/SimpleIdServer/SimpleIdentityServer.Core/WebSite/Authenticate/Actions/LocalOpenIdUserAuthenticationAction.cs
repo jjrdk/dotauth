@@ -16,7 +16,6 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using System;
 using System.Collections.Generic;
@@ -27,31 +26,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
-    public interface ILocalOpenIdUserAuthenticationAction
-    {
-        /// <summary>
-        /// Authenticate local user account.
-        /// Exceptions :
-        /// Throw the exception <see cref="IdentityServerAuthenticationException "/> if the user cannot be authenticated
-        /// </summary>
-        /// <param name="localAuthenticationParameter">User's credentials</param>
-        /// <param name="authorizationParameter">Authorization parameters</param>
-        /// <param name="code">Encrypted & signed authorization parameters</param>
-        /// <param name="claims">Returned the claims of the authenticated user</param>
-        /// <returns>Consent screen or redirect to the Index page.</returns>
-        Task<LocalOpenIdAuthenticationResult> Execute(
-            LocalAuthenticationParameter localAuthenticationParameter,
-            AuthorizationParameter authorizationParameter,
-            string code, string issuerName);
-    }
-
-    public class LocalOpenIdAuthenticationResult
-    {
-        public ActionResult ActionResult { get; set; }
-        public ICollection<Claim> Claims { get; set; }
-        public string TwoFactor { get; set; }
-    }
-
     public class LocalOpenIdUserAuthenticationAction : ILocalOpenIdUserAuthenticationAction
     {
         private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;

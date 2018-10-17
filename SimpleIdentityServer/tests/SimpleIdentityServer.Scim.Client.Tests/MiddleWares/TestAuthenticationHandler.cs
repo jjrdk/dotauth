@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
@@ -9,32 +8,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Client.Tests.MiddleWares
 {
-    public class UserStore
-    {
-        private static UserStore _instance;
-        private static string _defaultSubject = "administrator";
-
-        private UserStore()
-        {
-            Subject = _defaultSubject;
-        }
-
-        public static UserStore Instance()
-        {
-            if (_instance == null)
-            {
-                _instance = new UserStore();
-            }
-
-            return _instance;
-        }
-
-        public bool IsInactive { get; set; }
-        public string Subject { get; set; }
-        public string ScimId { get; set; }
-        public DateTimeOffset? AuthenticationOffset { get; set; }
-    }
-
     public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         public TestAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)

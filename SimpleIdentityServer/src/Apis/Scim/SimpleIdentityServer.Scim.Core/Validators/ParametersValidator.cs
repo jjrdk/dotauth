@@ -17,11 +17,6 @@ using System;
 
 namespace SimpleIdentityServer.Scim.Core.Validators
 {
-    public interface IParametersValidator
-    {
-        void ValidateLocationPattern(string locationPattern);
-    }
-
     internal class ParametersValidator : IParametersValidator
     {
         public void ValidateLocationPattern(string locationPattern)

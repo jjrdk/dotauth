@@ -28,11 +28,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Registration.Actions
 {
-    public interface IRegisterClientAction
-    {
-        Task<ClientRegistrationResponse> Execute(RegistrationParameter registrationParameter);
-    }
-
     public class RegisterClientAction : IRegisterClientAction
     {
         private readonly IOAuthEventSource _oauthEventSource;

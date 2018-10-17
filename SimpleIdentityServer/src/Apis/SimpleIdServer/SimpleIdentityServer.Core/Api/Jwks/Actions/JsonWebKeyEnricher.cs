@@ -22,12 +22,6 @@ using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
-    public interface IJsonWebKeyEnricher
-    {
-        Dictionary<string, object> GetPublicKeyInformation(JsonWebKey jsonWebKey);
-        Dictionary<string, object> GetJsonWebKeyInformation(JsonWebKey jsonWebKey);
-    }
-
     public class JsonWebKeyEnricher : IJsonWebKeyEnricher
     {
         private readonly Dictionary<KeyType, Action<Dictionary<string, object>, JsonWebKey>> _mappingKeyTypeAndPublicKeyEnricher;

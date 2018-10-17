@@ -20,11 +20,6 @@ namespace SimpleIdentityServer.Uma.Client.Configuration
     using Common.DTOs;
     using Newtonsoft.Json;
 
-    public interface IGetConfigurationOperation
-    {
-        Task<ConfigurationResponse> ExecuteAsync(Uri configurationUri);
-    }
-
     public class GetConfigurationOperation : IGetConfigurationOperation
     {
         private readonly HttpClient _httpClientFactory;

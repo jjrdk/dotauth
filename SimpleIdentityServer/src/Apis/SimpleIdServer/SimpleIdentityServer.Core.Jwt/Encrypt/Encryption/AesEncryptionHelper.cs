@@ -20,31 +20,6 @@ using SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
 {
-    public interface IAesEncryptionHelper
-    {
-        byte[] GenerateContentEncryptionKey(int keySize);
-
-        byte[] EncryptContentEncryptionKey(
-            byte[] contentEncryptionKey,
-            JweAlg alg,
-            JsonWebKey jsonWebKey);
-
-        byte[] DecryptContentEncryptionKey(
-            byte[] encryptedContentEncryptionKey,
-            JweAlg alg,
-            JsonWebKey jsonWebKey);
-
-        byte[] EncryptWithAesAlgorithm(
-            string toEncrypt,
-            byte[] key,
-            byte[] iv);
-
-        string DecryptWithAesAlgorithm(
-            byte[] cipherText,
-            byte[] key,
-            byte[] iv);
-    }
-
     public class AesEncryptionHelper : IAesEncryptionHelper
     {
         private readonly Dictionary<JweAlg, IAlgorithm> _mappingJweAlgToAlgorithms = new Dictionary<JweAlg, IAlgorithm>

@@ -18,15 +18,6 @@ using System.Runtime.Serialization;
 namespace SimpleIdentityServer.Uma.Common.DTOs
 {
     [DataContract]
-    public class PostClaimToken
-    {
-        [DataMember(Name = PostClaimTokenNames.Format)]
-        public string Format { get; set; }
-        [DataMember(Name = PostClaimTokenNames.Token)]
-        public string Token { get; set; }
-    }
-
-    [DataContract]
     public class PostAuthorization
     {
         [DataMember(Name = PostAuthorizationNames.TicketId)]

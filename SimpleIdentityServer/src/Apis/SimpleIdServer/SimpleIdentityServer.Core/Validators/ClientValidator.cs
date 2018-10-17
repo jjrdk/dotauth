@@ -22,14 +22,6 @@ using System.Text;
 
 namespace SimpleIdentityServer.Core.Validators
 {
-    public interface IClientValidator
-    {
-        IEnumerable<string> GetRedirectionUrls(Client client, params string[] urls);
-        bool CheckGrantTypes(Client client, params GrantType[] grantTypes);
-        bool CheckResponseTypes(Client client, params ResponseType[] responseTypes);
-        bool CheckPkce(Client client, string codeVerifier, AuthorizationCode code);
-    }
-
     public class ClientValidator : IClientValidator
     {        
         public IEnumerable<string> GetRedirectionUrls(Client client, params string[] urls)

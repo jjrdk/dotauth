@@ -27,11 +27,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
-    public interface IUpdatePolicyAction
-    {
-        Task<bool> Execute(UpdatePolicyParameter updatePolicyParameter);
-    }
-
     internal class UpdatePolicyAction : IUpdatePolicyAction
     {
         private readonly IPolicyRepository _policyRepository;

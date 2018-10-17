@@ -7,14 +7,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Profile
 {
-    public interface IProfileActions
-    {
-        Task<bool> Unlink(string localSubject, string externalSubject);
-        Task<bool> Link(string localSubject, string externalSubject, string issuer, bool force = false);
-        Task<IEnumerable<ResourceOwnerProfile>> GetProfiles(string subject);
-        Task<ResourceOwner> GetResourceOwner(string externalSubject);
-    }
-
     internal sealed class ProfileActions : IProfileActions
     {
         private readonly IUnlinkProfileAction _unlinkProfileAction;

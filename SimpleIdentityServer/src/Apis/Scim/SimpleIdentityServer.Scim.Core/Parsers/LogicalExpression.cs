@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,17 +19,6 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 {
     using SimpleIdentityServer.Core.Common.DTOs;
     using SimpleIdentityServer.Core.Common.Models;
-
-    [Flags]
-    public enum LogicalOperators
-    {
-        // Logical and
-        and = 1,
-        // Logical or
-        or = 2,
-        // Not function
-        not = 4
-    }
 
     public class LogicalExpression : Expression
     {

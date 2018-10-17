@@ -12,11 +12,6 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
 {
     using Core.Jwt;
 
-    public interface ISmsAuthenticationOperation
-    {
-        Task<ResourceOwner> Execute(string phoneNumber);
-    }
-
     internal sealed class SmsAuthenticationOperation : ISmsAuthenticationOperation
     {
         private readonly IGenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;

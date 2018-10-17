@@ -25,13 +25,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
-    public interface IClientAssertionAuthentication
-    {
-        string GetClientId(AuthenticateInstruction instruction);
-        Task<AuthenticationResult> AuthenticateClientWithPrivateKeyJwtAsync(AuthenticateInstruction instruction, string issuer);
-        Task<AuthenticationResult> AuthenticateClientWithClientSecretJwtAsync(AuthenticateInstruction instruction, string clientSecret, string issuer);
-    }
-
     public class ClientAssertionAuthentication : IClientAssertionAuthentication
     {
         private readonly IJwsParser _jwsParser;        

@@ -32,11 +32,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 {
-    public interface IGetJwsPayload
-    {
-        Task<UserInfoResult> Execute(string accessToken);
-    }
-
     public class GetJwsPayload : IGetJwsPayload
     {
         private readonly IGrantedTokenValidator _grantedTokenValidator;

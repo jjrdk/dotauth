@@ -18,11 +18,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController
 {
-    public interface IConfigurationActions
-    {
-        Task<ConfigurationResponse> GetConfiguration();
-    }
-
     public class ConfigurationActions : IConfigurationActions
     {
         private readonly IGetConfigurationAction _getConfigurationAction;

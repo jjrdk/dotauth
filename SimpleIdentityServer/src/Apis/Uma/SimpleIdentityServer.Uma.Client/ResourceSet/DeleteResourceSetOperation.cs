@@ -21,14 +21,6 @@ namespace SimpleIdentityServer.Uma.Client.ResourceSet
     using Newtonsoft.Json;
     using SimpleIdentityServer.Common.Dtos.Responses;
 
-    public interface IDeleteResourceSetOperation
-    {
-        Task<BaseResponse> ExecuteAsync(
-            string resourceSetId,
-            string resourceSetUrl,
-            string authorizationHeaderValue);
-    }
-
     internal class DeleteResourceSetOperation : IDeleteResourceSetOperation
     {
         private readonly HttpClient _httpClientFactory;

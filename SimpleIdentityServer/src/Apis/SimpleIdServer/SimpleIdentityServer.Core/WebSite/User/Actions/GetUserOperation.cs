@@ -22,11 +22,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
-    public interface IGetUserOperation
-    {
-        Task<ResourceOwner> Execute(ClaimsPrincipal claimsPrincipal);
-    }
-
     internal class GetUserOperation : IGetUserOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

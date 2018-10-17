@@ -21,11 +21,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
-    internal interface IDeleteResourceSetAction
-    {
-        Task<bool> Execute(string resourceSetId);
-    }
-
     internal class DeleteResourceSetAction : IDeleteResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
