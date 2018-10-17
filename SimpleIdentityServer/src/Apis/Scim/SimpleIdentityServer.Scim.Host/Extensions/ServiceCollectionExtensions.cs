@@ -8,14 +8,14 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddScimHost(this IServiceCollection services, ScimServerOptions scimServerOptions)
+        public static IServiceCollection AddScimHost(this IServiceCollection services, ScimServerConfiguration scimServerOptions)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            RegisterServices(services, scimServerOptions);
+            services.AddScimCore(scimServerOptions?.Representations, scimServerOptions?.Schemas);
             return services;
         }
 
@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
 				policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
                 policy.RequireAssertion(p =>
                 {
-                    if (p.User == null || p.User.Identity == null || !p.User.Identity.IsAuthenticated)
+                    if (p.User?.Identity?.IsAuthenticated != true)
                     {
                         return false;
                     }
@@ -72,14 +72,6 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
                 policy.RequireAuthenticatedUser();
             });
             return options;
-        }
-
-        private static void RegisterServices(IServiceCollection services, ScimServerOptions scimServerOptions)
-        {
-            services.AddScimCore(scimServerOptions.ServerConfiguration?.Representations,
-                scimServerOptions.ServerConfiguration?.Schemas);
-            //.AddDefaultSimpleBus()
-            //.AddConcurrency(opt => opt.UseInMemory());
         }
     }
 }
