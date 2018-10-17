@@ -31,11 +31,6 @@ namespace SimpleIdentityServer.Scim.Core.Apis
     using SimpleIdentityServer.Core.Common.DTOs;
     using SimpleIdentityServer.Core.Common.Models;
 
-    public interface IUpdateRepresentationAction
-    {
-        Task<ApiActionResult> Execute(string id, JObject jObj, string schemaId, string locationPattern, string resourceType);
-    }
-
     internal class UpdateRepresentationAction : IUpdateRepresentationAction
     {
         private readonly IRepresentationRequestParser _requestParser;

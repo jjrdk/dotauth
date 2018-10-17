@@ -5,11 +5,6 @@ using System;
 
 namespace SimpleIdentityServer.Core.Validators
 {
-    public interface IRevokeTokenParameterValidator
-    {
-        void Validate(RevokeTokenParameter parameter);
-    }
-
     internal sealed class RevokeTokenParameterValidator : IRevokeTokenParameterValidator
     {
         public void Validate(RevokeTokenParameter parameter)

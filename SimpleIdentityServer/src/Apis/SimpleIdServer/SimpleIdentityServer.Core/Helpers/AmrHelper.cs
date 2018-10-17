@@ -4,11 +4,6 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
-    public interface IAmrHelper
-    {
-        string GetAmr(IEnumerable<string> currentAmrs, IEnumerable<string> exceptedAmrs);
-    }
-
     internal sealed class AmrHelper : IAmrHelper
     {
         public string GetAmr(IEnumerable<string> currentAmrs, IEnumerable<string> exceptedAmrs)

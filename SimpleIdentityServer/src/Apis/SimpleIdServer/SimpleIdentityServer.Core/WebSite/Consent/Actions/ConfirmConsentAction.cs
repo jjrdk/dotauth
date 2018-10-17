@@ -32,11 +32,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
-    public interface IConfirmConsentAction
-    {
-        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName);
-    }
-
     public class ConfirmConsentAction : IConfirmConsentAction
     {
         private readonly IConsentRepository _consentRepository;

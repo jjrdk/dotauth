@@ -10,12 +10,6 @@ namespace SimpleIdentityServer.UserManagement.Client.Operations
 {
     using Responses;
 
-    public interface IGetProfilesOperation
-    {
-        Task<GetProfilesResult> Execute(string requestUrl, string currentSubject, string authorizationHeaderValue = null);
-        Task<GetProfilesResult> Execute(string requestUrl, string authorizationHeaderValue = null);
-    }
-
     internal sealed class GetProfilesOperation : IGetProfilesOperation
     {
         private readonly HttpClient _httpClientFactory;

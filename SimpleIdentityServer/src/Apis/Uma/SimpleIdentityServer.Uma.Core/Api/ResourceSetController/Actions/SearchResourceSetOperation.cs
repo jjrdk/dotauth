@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
-    public interface ISearchResourceSetOperation
-    {
-        Task<SearchResourceSetResult> Execute(SearchResourceSetParameter parameter);
-    }
-
     internal sealed class SearchResourceSetOperation : ISearchResourceSetOperation
     {
         private readonly IResourceSetRepository _resourceSetRepository;

@@ -21,11 +21,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
-    public interface IGrantedTokenHelper 
-    {
-        Task<GrantedToken> GetValidGrantedTokenAsync(string scopes, string clientId, JwsPayload idTokenJwsPayload = null, JwsPayload userInfoJwsPayload = null);
-    }
-
     internal class GrantedTokenHelper : IGrantedTokenHelper
     {
         private readonly ITokenStore _tokenStore;

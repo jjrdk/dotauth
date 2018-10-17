@@ -18,11 +18,6 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt
 {
-    public interface IJweHelper
-    {
-        IEncryption GetEncryptor(JweEnc enc);
-    }
-
     public class JweHelper : IJweHelper
     {
         private readonly Dictionary<JweEnc, IEncryption> _mappingJweEncToKeySize;

@@ -22,11 +22,6 @@ namespace SimpleIdentityServer.Uma.Client.Policy
     using Results;
     using SimpleIdentityServer.Common.Dtos.Responses;
 
-    public interface IGetPoliciesOperation
-    {
-        Task<GetPoliciesResult> ExecuteAsync(string url, string token);
-    }
-
     internal class GetPoliciesOperation : IGetPoliciesOperation
     {
         private readonly HttpClient _httpClientFactory;

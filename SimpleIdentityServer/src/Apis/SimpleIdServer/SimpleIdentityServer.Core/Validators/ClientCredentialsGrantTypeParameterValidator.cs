@@ -19,11 +19,6 @@ using System;
 
 namespace SimpleIdentityServer.Core.Validators
 {
-    public interface IClientCredentialsGrantTypeParameterValidator
-    {
-        void Validate(ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter);
-    }
-
     internal class ClientCredentialsGrantTypeParameterValidator : IClientCredentialsGrantTypeParameterValidator
     {
         public void Validate(ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter)

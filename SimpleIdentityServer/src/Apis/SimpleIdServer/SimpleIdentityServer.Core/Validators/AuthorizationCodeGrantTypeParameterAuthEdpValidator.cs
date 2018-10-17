@@ -24,11 +24,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Validators
 {
-    public interface IAuthorizationCodeGrantTypeParameterAuthEdpValidator
-    {
-        Task<Client> ValidateAsync(AuthorizationParameter parameter);
-    }
-
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator : IAuthorizationCodeGrantTypeParameterAuthEdpValidator
     {
         private readonly IParameterParserHelper _parameterParserHelper;

@@ -16,22 +16,6 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Core.Parameters
 {
-    public class AddClaimParameter
-    {
-        public string Type { get; set; }
-        public string Value { get; set; }
-    }
-
-    public class AddPolicyRuleParameter
-    {
-        public List<string> Scopes { get; set; }
-        public List<string> ClientIdsAllowed { get; set; }
-        public List<AddClaimParameter> Claims { get; set; }
-        public bool IsResourceOwnerConsentNeeded { get; set; }
-        public string Script { get; set; }
-        public string OpenIdProvider { get; set; }
-    }
-
     public class AddPolicyParameter
     {
         public List<AddPolicyRuleParameter> Rules { get; set; }

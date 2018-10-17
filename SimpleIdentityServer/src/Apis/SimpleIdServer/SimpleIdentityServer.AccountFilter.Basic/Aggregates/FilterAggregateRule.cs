@@ -1,12 +1,5 @@
 ﻿namespace SimpleIdentityServer.AccountFilter.Basic.Aggregates
 {
-    public enum ComparisonOperations
-    {
-        Equal,
-        NotEqual,
-        RegularExpression
-    }
-
     public sealed class FilterAggregateRule
     {
         public string Id { get; set; }

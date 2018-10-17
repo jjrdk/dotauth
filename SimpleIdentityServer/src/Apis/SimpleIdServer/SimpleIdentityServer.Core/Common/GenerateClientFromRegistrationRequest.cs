@@ -22,11 +22,6 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Common
 {
-    public interface IGenerateClientFromRegistrationRequest
-    {
-        Client Execute(RegistrationParameter registrationParameter);
-    }
-
     public class GenerateClientFromRegistrationRequest : IGenerateClientFromRegistrationRequest
     {
         private readonly IRegistrationParameterValidator _registrationParameterValidator;

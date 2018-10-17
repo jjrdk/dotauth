@@ -28,11 +28,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
-    public interface IGetTokenViaImplicitWorkflowOperation
-    {
-        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client, string issuerName);
-    }
-
     public class GetTokenViaImplicitWorkflowOperation : IGetTokenViaImplicitWorkflowOperation
     {
         private readonly IProcessAuthorizationRequest _processAuthorizationRequest;

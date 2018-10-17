@@ -19,14 +19,6 @@ namespace SimpleIdentityServer.Core.Common
     using System.Runtime.Serialization;
     using Newtonsoft.Json.Linq;
 
-    public enum SortOrders
-    {
-        [EnumMember(Value = ScimConstants.SortOrderNames.Ascending)]
-        Ascending,
-        [EnumMember(Value = ScimConstants.SortOrderNames.Descending)]
-        Descending
-    }
-
     [DataContract]
     public class SearchParameter
     {

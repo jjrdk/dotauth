@@ -21,11 +21,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
-    public interface IGetAuthorizationPolicyAction
-    {
-        Task<Policy> Execute(string policyId);
-    }
-
     internal class GetAuthorizationPolicyAction : IGetAuthorizationPolicyAction
     {
         private readonly IPolicyRepository _policyRepository;

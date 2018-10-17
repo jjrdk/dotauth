@@ -26,13 +26,6 @@ namespace SimpleIdentityServer.Core.Api.Introspection
     using Common;
     using SimpleIdentityServer.Common.Dtos.Events.OAuth;
 
-    public interface IIntrospectionActions
-    {
-        Task<IntrospectionResult> PostIntrospection(
-            IntrospectionParameter introspectionParameter,
-            AuthenticationHeaderValue authenticationHeaderValue, string issuerName);
-    }
-
     public class IntrospectionActions : IIntrospectionActions
     {
         private readonly IPostIntrospectionAction _postIntrospectionAction;

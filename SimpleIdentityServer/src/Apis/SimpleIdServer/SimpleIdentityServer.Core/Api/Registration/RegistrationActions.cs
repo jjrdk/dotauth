@@ -24,11 +24,6 @@ namespace SimpleIdentityServer.Core.Api.Registration
     using Common;
     using SimpleIdentityServer.Common.Dtos.Events.OAuth;
 
-    public interface IRegistrationActions
-    {
-        Task<ClientRegistrationResponse> PostRegistration(RegistrationParameter registrationParameter);
-    }
-
     public class RegistrationActions : IRegistrationActions
     {
         private readonly IRegisterClientAction _registerClientAction;

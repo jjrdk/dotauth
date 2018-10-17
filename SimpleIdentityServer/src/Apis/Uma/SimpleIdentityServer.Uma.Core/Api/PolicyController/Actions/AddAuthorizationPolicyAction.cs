@@ -27,11 +27,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
-    public interface IAddAuthorizationPolicyAction
-    {
-        Task<string> Execute(AddPolicyParameter addPolicyParameter);
-    }
-
     internal class AddAuthorizationPolicyAction : IAddAuthorizationPolicyAction
     {
         private readonly IPolicyRepository _policyRepository;

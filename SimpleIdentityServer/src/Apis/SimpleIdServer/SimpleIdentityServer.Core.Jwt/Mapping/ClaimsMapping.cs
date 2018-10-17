@@ -18,11 +18,6 @@ using System.Security.Claims;
 
 namespace SimpleIdentityServer.Core.Jwt.Mapping
 {
-    public interface IClaimsMapping
-    {
-        Dictionary<string, object> MapToOpenIdClaims(IEnumerable<Claim> claims);
-    }
-
     public class ClaimsMapping : IClaimsMapping
     {
         public Dictionary<string, object> MapToOpenIdClaims(IEnumerable<Claim> claims)

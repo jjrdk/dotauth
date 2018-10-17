@@ -25,11 +25,6 @@ namespace SimpleIdentityServer.Client
     using System.Net.Http;
     using System.Net.Http.Headers;
 
-    public interface IRegistrationClient
-    {
-        Task<GetRegisterClientResult> ResolveAsync(Core.Common.DTOs.Requests.ClientRequest client, string configurationUrl, string accessToken);
-    }
-
     internal class RegistrationClient : IRegistrationClient
     {
         private readonly HttpClient _client;

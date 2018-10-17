@@ -14,24 +14,7 @@
 
 namespace SimpleIdentityServer.Host.Extensions
 {
-    using System.Collections.Generic;
     using Core;
-    using Core.Common;
-    using Core.Common.Models;
-
-    public class ScimOptions
-    {
-        public string EndPoint { get; set; }
-        public bool IsEnabled { get; set; }
-    }
-
-    public class OpenIdServerConfiguration
-    {
-        public List<ResourceOwner> Users { get; set; }
-        public List<Core.Common.Models.Client> Clients { get; set; }
-        public List<Translation> Translations { get; set; }
-        public List<JsonWebKey> JsonWebKeys { get; set; }
-    }
 
     public class IdentityServerOptions
     {

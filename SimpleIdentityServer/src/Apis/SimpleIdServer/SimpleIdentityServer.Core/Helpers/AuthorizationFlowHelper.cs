@@ -21,11 +21,6 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
-    public interface IAuthorizationFlowHelper
-    {
-        AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state);
-    }
-
     public class AuthorizationFlowHelper : IAuthorizationFlowHelper
     {
         public AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state)

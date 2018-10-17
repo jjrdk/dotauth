@@ -22,11 +22,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
-    public interface IDeleteResourcePolicyAction
-    {
-        Task<bool> Execute(string id, string resourceId);
-    }
-
     internal class DeleteResourcePolicyAction : IDeleteResourcePolicyAction
     {
         private readonly IPolicyRepository _policyRepository;

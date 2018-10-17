@@ -16,14 +16,6 @@ using SimpleIdentityServer.Core.Results;
 
 namespace SimpleIdentityServer.Core.Factories
 {
-    public interface IActionResultFactory
-    {
-        ActionResult CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-        ActionResult CreateAnEmptyActionResultWithRedirection();
-        ActionResult CreateAnEmptyActionResultWithOutput();
-        ActionResult CreateAnEmptyActionResultWithNoEffect();
-    }
-
     public class ActionResultFactory : IActionResultFactory
     {
         /// <summary>

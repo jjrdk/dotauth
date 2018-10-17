@@ -19,11 +19,6 @@ using System;
 
 namespace SimpleIdentityServer.Core.Validators
 {
-    public interface IIntrospectionParameterValidator
-    {
-        void Validate(IntrospectionParameter introspectionParameter);
-    }
-
     public class IntrospectionParameterValidator : IIntrospectionParameterValidator
     {
         public void Validate(IntrospectionParameter introspectionParameter)

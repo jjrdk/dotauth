@@ -27,11 +27,6 @@ using System.Xml.Serialization;
 
 namespace SimpleIdentityServer.Core.Jwt.Converter
 {
-    public interface IJsonWebKeyConverter
-    {
-        IEnumerable<JsonWebKey> ExtractSerializedKeys(JsonWebKeySet jsonWebKeySet);
-    }
-
     public class JsonWebKeyConverter : IJsonWebKeyConverter
     {
         public IEnumerable<JsonWebKey> ExtractSerializedKeys(JsonWebKeySet jsonWebKeySet)

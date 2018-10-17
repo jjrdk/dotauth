@@ -20,20 +20,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Validators
 {
-    public interface IGrantedTokenValidator
-    {
-        Task<GrantedTokenValidationResult> CheckAccessTokenAsync(string accessToken);
-        Task<GrantedTokenValidationResult> CheckRefreshTokenAsync(string refreshToken);
-        GrantedTokenValidationResult CheckGrantedToken(GrantedToken token);
-    }
-
-    public class GrantedTokenValidationResult
-    {
-        public bool IsValid { get; set; }
-        public string MessageErrorCode { get; set; }
-        public string MessageErrorDescription { get; set; }
-    }
-
     public class GrantedTokenValidator : IGrantedTokenValidator
     {
         private readonly ITokenStore _tokenStore;

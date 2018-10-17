@@ -22,18 +22,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
-    public interface IDeleteRepresentationAction
-    {
-        /// <summary>
-        /// Remove the representation.
-        /// </summary>
-        /// <exception cref="System.ArgumentNullException">Thrown when the id is null or empty</exception>
-        /// <param name="id">Representation's id</param>
-        /// <returns>StatusCode with the content.</returns>
-        Task<ApiActionResult> Execute(
-            string id);
-    }
-
     internal class DeleteRepresentationAction : IDeleteRepresentationAction
     {
         private readonly IRepresentationStore _representationStore;

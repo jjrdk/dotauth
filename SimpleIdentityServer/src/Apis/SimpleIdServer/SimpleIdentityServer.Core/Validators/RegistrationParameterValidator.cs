@@ -26,11 +26,6 @@ namespace SimpleIdentityServer.Core.Validators
 {
     using System.Net.Http;
 
-    public interface IRegistrationParameterValidator
-    {
-        void Validate(RegistrationParameter parameter);
-    }
-
     public class RegistrationParameterValidator : IRegistrationParameterValidator
     {
         private readonly HttpClient _httpClientFactory;

@@ -19,14 +19,6 @@ using System;
 
 namespace SimpleIdentityServer.Core.Jwt.Signature
 {
-    public interface IJwsGenerator
-    {
-        string Generate(
-            JwsPayload payload,
-            JwsAlg jwsAlg,
-            JsonWebKey jsonWebKey);
-    }
-
     public class JwsGenerator : IJwsGenerator
     {
         private const string JwsType = "JWT";

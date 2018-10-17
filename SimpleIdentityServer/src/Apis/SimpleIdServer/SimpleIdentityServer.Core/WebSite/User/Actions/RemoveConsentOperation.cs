@@ -18,11 +18,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
-    public interface IRemoveConsentOperation
-    {
-        Task<bool> Execute(string consentId);
-    }
-
     internal class RemoveConsentOperation : IRemoveConsentOperation
     {
         private readonly IConsentRepository _consentRepository;

@@ -18,11 +18,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
-    public interface IValidateConfirmationCodeAction
-    {
-        Task<bool> Execute(string code);
-    }
-
     internal class ValidateConfirmationCodeAction : IValidateConfirmationCodeAction
     {
         private readonly IConfirmationCodeStore _confirmationCodeStore;

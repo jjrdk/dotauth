@@ -27,11 +27,6 @@ namespace SimpleIdentityServer.Scim.Core.Apis
     using SimpleIdentityServer.Core.Common;
     using SearchParameter = Parsers.SearchParameter;
 
-    public interface IGetRepresentationsAction
-    {
-        Task<ApiActionResult> Execute(string resourceType, SearchParameter searchParameter, string locationPattern);
-    }
-
     internal class GetRepresentationsAction : IGetRepresentationsAction
     {
         private readonly IRepresentationStore _representationStore;

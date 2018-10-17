@@ -5,11 +5,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Profile.Actions
 {
-    public interface IGetResourceOwnerClaimsAction
-    {
-        Task<ResourceOwner> Execute(string externalSubject);
-    }
-
     internal sealed class GetResourceOwnerClaimsAction : IGetResourceOwnerClaimsAction
     {
         private readonly IProfileRepository _profileRepository;

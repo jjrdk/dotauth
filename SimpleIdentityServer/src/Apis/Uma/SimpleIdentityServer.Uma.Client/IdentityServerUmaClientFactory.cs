@@ -22,13 +22,6 @@ namespace SimpleIdentityServer.Uma.Client
     using Policy;
     using ResourceSet;
 
-    public interface IIdentityServerUmaClientFactory
-    {
-        IPermissionClient GetPermissionClient();
-        IResourceSetClient GetResourceSetClient();
-        IPolicyClient GetPolicyClient();
-    }
-
     public class IdentityServerUmaClientFactory : IIdentityServerUmaClientFactory
     {
         private readonly IServiceProvider _serviceProvider;

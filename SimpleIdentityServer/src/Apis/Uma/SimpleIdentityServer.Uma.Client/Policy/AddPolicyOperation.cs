@@ -23,11 +23,6 @@ namespace SimpleIdentityServer.Uma.Client.Policy
     using Results;
     using SimpleIdentityServer.Common.Dtos.Responses;
 
-    public interface IAddPolicyOperation
-    {
-        Task<AddPolicyResult> ExecuteAsync(PostPolicy request, string url, string authorizationHeaderValue);
-    }
-
     internal class AddPolicyOperation : IAddPolicyOperation
     {
         private readonly HttpClient _httpClientFactory;

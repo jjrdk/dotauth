@@ -26,11 +26,6 @@ namespace SimpleIdentityServer.Client
     using System.Net.Http;
     using Errors;
 
-    public interface IIntrospectClient
-    {
-        Task<GetIntrospectionResult> ResolveAsync(string discoveryDocumentationUrl);
-    }
-
     internal class IntrospectClient : IIntrospectClient
     {
         private readonly HttpClient _client;

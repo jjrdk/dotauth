@@ -27,12 +27,6 @@ namespace SimpleIdentityServer.Client
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
 
-    public interface IRevokeTokenClient
-    {
-        Task<GetRevokeTokenResult> ExecuteAsync(Uri tokenUri);
-        Task<GetRevokeTokenResult> ResolveAsync(string discoveryDocumentationUrl);
-    }
-
     internal class RevokeTokenClient : IRevokeTokenClient
     {
         private readonly Dictionary<string, string> _form;

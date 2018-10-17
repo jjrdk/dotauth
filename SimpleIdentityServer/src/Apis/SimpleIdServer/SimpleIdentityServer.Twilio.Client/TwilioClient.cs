@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Twilio.Client
 {
-    public interface ITwilioClient
-    {
-        Task<bool> SendMessage(TwilioSmsCredentials credentials, string toPhoneNumber, string message);
-    }
-
     public class TwilioClient : ITwilioClient
     {
         private const string TwilioSmsEndpointFormat = "https://api.twilio.com/2010-04-01/Accounts/{0}/Messages.json";

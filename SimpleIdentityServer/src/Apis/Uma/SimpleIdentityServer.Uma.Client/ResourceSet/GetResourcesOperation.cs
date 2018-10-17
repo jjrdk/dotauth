@@ -22,11 +22,6 @@ namespace SimpleIdentityServer.Uma.Client.ResourceSet
     using Results;
     using SimpleIdentityServer.Common.Dtos.Responses;
 
-    public interface IGetResourcesOperation
-    {
-        Task<GetResourcesResult> ExecuteAsync(string resourceSetUrl, string authorizationHeaderValue);
-    }
-
     internal class GetResourcesOperation : IGetResourcesOperation
     {
         private readonly HttpClient _httpClientFactory;

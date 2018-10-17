@@ -30,11 +30,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization
     using Core.Common;
     using SimpleIdentityServer.Common.Dtos.Events.OAuth;
 
-    public interface IAuthorizationActions
-    {
-        Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal, string issuerName);
-    }
-
     public class AuthorizationActions : IAuthorizationActions
     {
         private readonly IGetAuthorizationCodeOperation _getAuthorizationCodeOperation;

@@ -21,11 +21,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
-    public interface IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction
-    {
-        Task<List<Dictionary<string, object>>> Execute();
-    }
-
     public class GetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction : IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction
     {
         private readonly IJsonWebKeyEnricher _jsonWebKeyEnricher;

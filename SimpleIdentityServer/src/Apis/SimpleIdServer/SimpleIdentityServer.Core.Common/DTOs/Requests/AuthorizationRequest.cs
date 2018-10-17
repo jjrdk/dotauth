@@ -12,60 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Core.Common.DTOs.Requests
 {
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum ResponseModes
-    {
-        [EnumMember(Value = ResponseModeNames.None)]
-        None,
-        [EnumMember(Value = ResponseModeNames.Query)]
-        Query,
-        [EnumMember(Value = ResponseModeNames.Fragment)]
-        Fragment,
-        [EnumMember(Value = ResponseModeNames.FormPost)]
-        FormPost
-    }
-
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum ResponseTypes
-    {
-        [EnumMember(Value = ResponseTypeNames.Code)]
-        Code,
-        [EnumMember(Value = ResponseTypeNames.Token)]
-        Token,
-        [EnumMember(Value = ResponseTypeNames.IdToken)]
-        IdToken
-    }
-
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum DisplayModes
-    {
-        [EnumMember(Value = PageNames.Page)]
-        Page,
-        [EnumMember(Value = PageNames.Popup)]
-        Popup,
-        [EnumMember(Value = PageNames.Touch)]
-        Touch,
-        [EnumMember(Value = PageNames.Wap)]
-        Wap
-    }
-
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum CodeChallengeMethods
-    {
-        [EnumMember(Value = CodeChallenges.Plain)]
-        Plain,
-        [EnumMember(Value = CodeChallenges.S256)]
-        S256
-    }
-
     [DataContract]
     public class AuthorizationRequest
     {

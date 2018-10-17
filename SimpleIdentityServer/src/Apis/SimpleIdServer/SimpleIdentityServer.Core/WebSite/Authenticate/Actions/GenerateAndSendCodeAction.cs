@@ -23,11 +23,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
-    public interface IGenerateAndSendCodeAction
-    {
-        Task<string> ExecuteAsync(string subject);
-    }
-
     internal class GenerateAndSendCodeAction : IGenerateAndSendCodeAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

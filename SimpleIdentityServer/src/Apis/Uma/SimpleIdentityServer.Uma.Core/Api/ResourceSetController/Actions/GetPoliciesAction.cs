@@ -20,11 +20,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
-    public interface IGetPoliciesAction
-    {
-        Task<IEnumerable<string>> Execute(string resourceId);
-    }
-
     internal class GetPoliciesAction : IGetPoliciesAction
     {
         private readonly IPolicyRepository _repository;

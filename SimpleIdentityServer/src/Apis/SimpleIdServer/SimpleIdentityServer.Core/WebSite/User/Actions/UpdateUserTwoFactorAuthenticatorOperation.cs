@@ -5,11 +5,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
-    public interface IUpdateUserTwoFactorAuthenticatorOperation
-    {
-        Task<bool> Execute(string subject, string twoFactorAuth);
-    }
-
     internal sealed class UpdateUserTwoFactorAuthenticatorOperation : IUpdateUserTwoFactorAuthenticatorOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

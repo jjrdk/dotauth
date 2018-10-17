@@ -20,12 +20,6 @@ using System.Text.RegularExpressions;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
-    public interface IFilterParser
-    {
-        Filter Parse(string path);
-        string GetTarget(string path);
-    }
-
     public class FilterParser : IFilterParser
     {
         private static IEnumerable<char> _openSign = new[]

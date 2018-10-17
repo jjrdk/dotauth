@@ -20,12 +20,6 @@ using System.Text;
 
 namespace SimpleIdentityServer.Client.Builders
 {
-    public class PKCE
-    {
-        public string CodeVerifier { get; set; }
-        public string CodeChallenge { get; set; }
-    }
-
     public class PkceBuilder
     {
         public PKCE Build(CodeChallengeMethods method)

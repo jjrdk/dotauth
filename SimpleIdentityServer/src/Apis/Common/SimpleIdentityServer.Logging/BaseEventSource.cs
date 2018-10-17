@@ -3,13 +3,6 @@ using System;
 
 namespace SimpleIdentityServer.Logging
 {
-    public interface IEventSource
-    {
-        void Info(string message);
-        void Failure(string message);
-        void Failure(Exception exception);
-    }
-
     public class BaseEventSource : IEventSource
     {
         protected readonly ILogger _logger;

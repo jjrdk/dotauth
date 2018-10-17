@@ -16,13 +16,6 @@ namespace SimpleIdentityServer.Core.Common.Models
 {
     using Newtonsoft.Json.Linq;
 
-    public enum PatchOperations
-    {
-        add,
-        remove,
-        replace
-    }
-
     public class PatchOperation
     {
         public PatchOperations Type { get; set; }

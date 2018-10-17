@@ -8,11 +8,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
-    public interface IRotateJsonWebKeysOperation
-    {
-        Task<bool> Execute();
-    }
-
     public class RotateJsonWebKeysOperation : IRotateJsonWebKeysOperation
     {
         private readonly IJsonWebKeyRepository _jsonWebKeyRepository;

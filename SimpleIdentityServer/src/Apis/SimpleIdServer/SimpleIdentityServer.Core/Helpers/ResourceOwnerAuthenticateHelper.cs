@@ -7,12 +7,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
-    public interface IResourceOwnerAuthenticateHelper
-    {
-        Task<ResourceOwner> Authenticate(string login, string password, IEnumerable<string> exceptedAmrValues);
-        IEnumerable<string> GetAmrs();
-    }
-
     internal class ResourceOwnerAuthenticateHelper : IResourceOwnerAuthenticateHelper
     {
         private readonly IEnumerable<IAuthenticateResourceOwnerService> _services;

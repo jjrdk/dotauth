@@ -31,11 +31,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
-    public interface IGetTokenByResourceOwnerCredentialsGrantTypeAction
-    {
-        Task<GrantedToken> Execute(ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
-    }
-
     public class GetTokenByResourceOwnerCredentialsGrantTypeAction : IGetTokenByResourceOwnerCredentialsGrantTypeAction
     {
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;

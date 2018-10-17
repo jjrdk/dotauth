@@ -19,11 +19,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
-    internal interface IGetResourceSetAction
-    {
-        Task<ResourceSet> Execute(string id);
-    }
-
     internal class GetResourceSetAction : IGetResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;

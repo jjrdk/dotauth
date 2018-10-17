@@ -9,11 +9,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Client.ResourceSet
 {
-    public interface ISearchResourcesOperation
-    {
-        Task<SearchResourceSetResult> ExecuteAsync(string url, SearchResourceSet parameter, string authorizationHeaderValue = null);
-    }
-
     internal sealed class SearchResourcesOperation : ISearchResourcesOperation
     {
         private readonly HttpClient _httpClientFactory;

@@ -21,12 +21,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
-    public interface IClientHelper
-    {
-        Task<string> GenerateIdTokenAsync(string clientId, JwsPayload jwsPayload);
-        Task<string> GenerateIdTokenAsync(Common.Models.Client client, JwsPayload jwsPayload);
-    }
-
     public sealed class ClientHelper : IClientHelper
     {
         private readonly IClientRepository _clientRepository;

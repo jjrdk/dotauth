@@ -23,11 +23,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
-    public interface IUpdateUserClaimsOperation
-    {
-        Task<bool> Execute(string subject, IEnumerable<ClaimAggregate> claims);
-    }
-
     internal class UpdateUserClaimsOperation : IUpdateUserClaimsOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

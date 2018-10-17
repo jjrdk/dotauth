@@ -22,11 +22,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
-    public interface IAuthenticateClient
-    {
-        Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction, string issuerName);
-    }
-
     public class AuthenticateClient : IAuthenticateClient
     {
         private readonly IClientSecretBasicAuthentication _clientSecretBasicAuthentication;

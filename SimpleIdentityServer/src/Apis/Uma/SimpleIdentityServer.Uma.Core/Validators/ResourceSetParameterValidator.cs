@@ -20,11 +20,6 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Core.Validators
 {
-    public interface IResourceSetParameterValidator
-    {
-        void CheckResourceSetParameter(ResourceSet resourceSet);
-    }
-
     internal class ResourceSetParameterValidator : IResourceSetParameterValidator
     {
         public void CheckResourceSetParameter(ResourceSet resourceSet)

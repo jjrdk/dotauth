@@ -19,12 +19,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PermissionController
 {
-    public interface IPermissionControllerActions
-    {
-        Task<string> Add(AddPermissionParameter addPermissionParameter, string clientId);
-        Task<string> Add(IEnumerable<AddPermissionParameter> addPermissionParameters, string clientId);
-    }
-
     internal class PermissionControllerActions : IPermissionControllerActions
     {
         private readonly IAddPermissionAction _addPermissionAction;

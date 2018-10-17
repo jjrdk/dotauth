@@ -17,12 +17,6 @@ using SimpleIdentityServer.Core.Results;
 
 namespace SimpleIdentityServer.Host.Parsers
 {
-    public interface IActionResultParser
-    {
-        ActionInformation GetControllerAndActionFromRedirectionActionResult(ActionResult actionResult);
-        RouteValueDictionary GetRedirectionParameters(ActionResult actionResult);
-    }
-
     public class ActionResultParser : IActionResultParser
     {
         private readonly IRedirectInstructionParser _redirectInstructionParser;

@@ -19,11 +19,6 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Core.Policies
 {
-    public interface ICustomAuthorizationPolicy
-    {
-
-    }
-
     internal class CustomAuthorizationPolicy : ICustomAuthorizationPolicy
     {
         public bool Execute(

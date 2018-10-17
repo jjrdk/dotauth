@@ -26,11 +26,6 @@ namespace SimpleIdentityServer.Client
     using Newtonsoft.Json;
     using System.Net.Http;
 
-    public interface IAuthorizationClient
-    {
-        Task<GetAuthorizationResult> ResolveAsync(string discoveryDocumentationUrl, AuthorizationRequest request);
-    }
-
     internal class AuthorizationClient : IAuthorizationClient
     {
         private readonly HttpClient _client;

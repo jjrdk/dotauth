@@ -17,12 +17,6 @@ using SimpleIdentityServer.Core.Parameters;
 
 namespace SimpleIdentityServer.Core.Results
 {
-    public class Parameter
-    {
-        public string Name { get; set; }
-        public string Value { get; set; }
-    }
-
     public class RedirectInstruction
     {
         public RedirectInstruction()

@@ -24,11 +24,6 @@ namespace SimpleIdentityServer.Core.Api.Discovery
     using Common.Models;
     using Common.Repositories;
 
-    public interface IDiscoveryActions
-    {
-        Task<DiscoveryInformation> CreateDiscoveryInformation(string issuer, string scimEndpoint = null);
-    }
-
     public class DiscoveryActions : IDiscoveryActions
     {
         private readonly IScopeRepository _scopeRepository;

@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
-    public interface ISearchAuthPoliciesAction
-    {
-        Task<SearchAuthPoliciesResult> Execute(SearchAuthPoliciesParameter parameter);
-    }
-
     internal sealed class SearchAuthPoliciesAction : ISearchAuthPoliciesAction
     {
         private readonly IPolicyRepository _policyRepository;

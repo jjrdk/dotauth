@@ -30,11 +30,6 @@ namespace SimpleIdentityServer.Scim.Core.Apis
     using SimpleIdentityServer.Core.Common;
     using SimpleIdentityServer.Core.Common.Models;
 
-    public interface IPatchRepresentationAction
-    {
-        Task<ApiActionResult> Execute(string id, JObject jObj, string schemaId, string locationPattern);
-    }
-
     internal class PatchRepresentationAction : IPatchRepresentationAction
     {
         private readonly IPatchRequestParser _patchRequestParser;
