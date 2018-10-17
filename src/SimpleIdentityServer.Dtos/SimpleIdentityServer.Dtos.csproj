@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>SimpleIdentityServer.Dtos Class Library</Description>
+    <Authors>thierry habart</Authors>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <AssemblyName>SimpleIdentityServer.Dtos</AssemblyName>
+    <PackageId>SimpleIdentityServer.Dtos</PackageId>
+  </PropertyGroup>
+
+</Project>
