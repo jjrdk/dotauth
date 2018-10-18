@@ -85,6 +85,12 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                     var tokenIdParameter = tokenRequest.ToTokenIdGrantTypeParameter();
                     result = await _umaTokenActions.GetTokenByTicketId(tokenIdParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
                     break;
+                case GrantTypes.validate_bearer:
+                    break;
+                case null:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             return new OkObjectResult(result.ToDto());
