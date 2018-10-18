@@ -63,7 +63,9 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             var query = Request.Query;
             if (query == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequestCode,
+                    "no parameter in body request",
+                    HttpStatusCode.BadRequest);
             }
 
             var originUrl = this.GetOriginUrl();
@@ -73,47 +75,60 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest).ConfigureAwait(false);
             authorizationRequest.OriginUrl = originUrl;
             authorizationRequest.SessionId = sessionId;
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.CookieName).ConfigureAwait(false);
+            var authenticatedUser = await _authenticationService
+                .GetAuthenticatedUser(this, Constants.CookieNames.CookieName)
+                .ConfigureAwait(false);
             var parameter = authorizationRequest.ToParameter();
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-            var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser, issuerName).ConfigureAwait(false);
-            if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
-            {
-                var redirectUrl = new Uri(authorizationRequest.RedirectUri);
-                return this.CreateRedirectHttpTokenResponse(redirectUrl,
-                    _actionResultParser.GetRedirectionParameters(actionResult), 
-                    actionResult.RedirectInstruction.ResponseMode);
-            }
+            var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser, issuerName)
+                .ConfigureAwait(false);
 
-            if (actionResult.Type == TypeActionResult.RedirectToAction)
+            switch (actionResult.Type)
             {
-                if (actionResult.RedirectInstruction.Action == IdentityServerEndPoints.AuthenticateIndex ||
-                    actionResult.RedirectInstruction.Action == IdentityServerEndPoints.ConsentIndex)
+                case TypeActionResult.RedirectToCallBackUrl:
                 {
-                    // Force the resource owner to be reauthenticated
-                    if (actionResult.RedirectInstruction.Action == IdentityServerEndPoints.AuthenticateIndex)
-                    {
-                        authorizationRequest.Prompt = Enum.GetName(typeof(PromptParameter), PromptParameter.login);
-                    }
-
-                    // Set the process id into the request.
-                    if (!string.IsNullOrWhiteSpace(actionResult.ProcessId))
-                    {
-                        authorizationRequest.ProcessId = actionResult.ProcessId;
-                    }
-
-                    // Add the encoded request into the query string
-                    var encryptedRequest = _dataProtector.Protect(authorizationRequest);
-                    actionResult.RedirectInstruction.AddParameter(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName, encryptedRequest);
+                    var redirectUrl = new Uri(authorizationRequest.RedirectUri);
+                    return this.CreateRedirectHttpTokenResponse(redirectUrl,
+                        _actionResultParser.GetRedirectionParameters(actionResult),
+                        actionResult.RedirectInstruction.ResponseMode);
                 }
+                case TypeActionResult.RedirectToAction:
+                {
+                    if (actionResult.RedirectInstruction.Action == IdentityServerEndPoints.AuthenticateIndex ||
+                        actionResult.RedirectInstruction.Action == IdentityServerEndPoints.ConsentIndex)
+                    {
+                        // Force the resource owner to be reauthenticated
+                        if (actionResult.RedirectInstruction.Action == IdentityServerEndPoints.AuthenticateIndex)
+                        {
+                            authorizationRequest.Prompt = Enum.GetName(typeof(PromptParameter), PromptParameter.login);
+                        }
 
-                var url = GetRedirectionUrl(Request, actionResult.Amr, actionResult.RedirectInstruction.Action);
-                var uri = new Uri(url);
-                var redirectionUrl = uri.AddParametersInQuery(_actionResultParser.GetRedirectionParameters(actionResult));
-                return new RedirectResult(redirectionUrl.AbsoluteUri);
+                        // Set the process id into the request.
+                        if (!string.IsNullOrWhiteSpace(actionResult.ProcessId))
+                        {
+                            authorizationRequest.ProcessId = actionResult.ProcessId;
+                        }
+
+                        // Add the encoded request into the query string
+                        var encryptedRequest = _dataProtector.Protect(authorizationRequest);
+                        actionResult.RedirectInstruction.AddParameter(
+                            Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName,
+                            encryptedRequest);
+                    }
+
+                    var url = GetRedirectionUrl(Request, actionResult.Amr, actionResult.RedirectInstruction.Action);
+                    var uri = new Uri(url);
+                    var redirectionUrl =
+                        uri.AddParametersInQuery(_actionResultParser.GetRedirectionParameters(actionResult));
+                    return new RedirectResult(redirectionUrl.AbsoluteUri);
+                }
+                case TypeActionResult.Output:
+                    break;
+                case TypeActionResult.None:
+                    break;
+                default:
+                    return null;
             }
-
-            return null;
         }
 
         private string GetSessionId()
@@ -137,12 +152,16 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             var jwsPayload = await _jwtParser.UnSignAsync(jwsToken, clientId).ConfigureAwait(false);
             return jwsPayload?.ToAuthorizationRequest();
         }
-        
-        private static string GetRedirectionUrl(Microsoft.AspNetCore.Http.HttpRequest request, string amr, IdentityServerEndPoints identityServerEndPoints)
+
+        private static string GetRedirectionUrl(Microsoft.AspNetCore.Http.HttpRequest request,
+            string amr,
+            IdentityServerEndPoints identityServerEndPoints)
         {
             var uri = request.GetAbsoluteUriWithVirtualPath();
             var partialUri = Constants.MappingIdentityServerEndPointToPartialUrl[identityServerEndPoints];
-            if (!string.IsNullOrWhiteSpace(amr) && identityServerEndPoints != IdentityServerEndPoints.ConsentIndex && identityServerEndPoints != IdentityServerEndPoints.FormIndex)
+            if (!string.IsNullOrWhiteSpace(amr) &&
+                identityServerEndPoints != IdentityServerEndPoints.ConsentIndex &&
+                identityServerEndPoints != IdentityServerEndPoints.FormIndex)
             {
                 partialUri = "/" + amr + partialUri;
             }
@@ -161,10 +180,14 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         {
             if (!string.IsNullOrWhiteSpace(authorizationRequest.Request))
             {
-                var result = await GetAuthorizationRequestFromJwt(authorizationRequest.Request, authorizationRequest.ClientId).ConfigureAwait(false);
+                var result =
+                    await GetAuthorizationRequestFromJwt(authorizationRequest.Request, authorizationRequest.ClientId)
+                        .ConfigureAwait(false);
                 if (result == null)
                 {
-                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode, ErrorDescriptions.TheRequestParameterIsNotCorrect, authorizationRequest.State);
+                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode,
+                        ErrorDescriptions.TheRequestParameterIsNotCorrect,
+                        authorizationRequest.State);
                 }
 
                 return result;
@@ -184,7 +207,8 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                         var httpResult = await httpClient.GetAsync(uri.AbsoluteUri).ConfigureAwait(false);
                         httpResult.EnsureSuccessStatusCode();
                         var request = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        var result = await GetAuthorizationRequestFromJwt(request, authorizationRequest.ClientId).ConfigureAwait(false);
+                        var result = await GetAuthorizationRequestFromJwt(request, authorizationRequest.ClientId)
+                            .ConfigureAwait(false);
                         if (result == null)
                         {
                             throw new IdentityServerExceptionWithState(
@@ -213,7 +237,6 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             return authorizationRequest;
         }
 
-
         /// <summary>
         /// Build the JSON error message.
         /// </summary>
@@ -230,7 +253,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             };
             return new JsonResult(error)
             {
-                StatusCode = (int)statusCode
+                StatusCode = (int) statusCode
             };
         }
     }

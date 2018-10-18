@@ -110,6 +110,12 @@ namespace SimpleIdentityServer.Host.Extensions
                 case ResponseMode.query:
                     uri = uri.AddParametersInQuery(parameters);
                     break;
+                case ResponseMode.None:
+                    break;
+                case ResponseMode.form_post:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(responseMode), responseMode, null);
             }
 
             return new RedirectResult(uri.AbsoluteUri);
