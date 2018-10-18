@@ -17,6 +17,7 @@ using System;
 
 namespace SimpleIdentityServer.Logging
 {
+    using Manager.Logging;
     using OAuth.Logging;
     using OpenId.Logging;
     using Uma.Logging;
@@ -64,6 +65,17 @@ namespace SimpleIdentityServer.Logging
             }
 
             services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();
+            return services;
+        }
+
+        public static IServiceCollection AddManagerLogging(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddTransient<IManagerEventSource, ManagerEventSource>();
             return services;
         }
     }
