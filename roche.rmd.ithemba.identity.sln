@@ -83,6 +83,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Ho
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Client", "src\SimpleIdentityServer.Uma.Client\SimpleIdentityServer.Uma.Client.csproj", "{435A378B-19E2-4FE2-8906-DEFB4D6E15D8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Manager.Common", "src\SimpleIdentityServer.Manager.Common\SimpleIdentityServer.Manager.Common.csproj", "{9281F705-DD4D-4B19-ABF9-D831905DA45C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Manager.Core", "src\SimpleIdentityServer.Manager.Core\SimpleIdentityServer.Manager.Core.csproj", "{768A2587-0209-4394-A61F-A1C12295908C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Manager.Host", "src\SimpleIdentityServer.Manager.Host\SimpleIdentityServer.Manager.Host.csproj", "{55DEE7D3-949E-4F65-BA18-A552B9E5FD2A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -312,6 +318,24 @@ Global
 		{435A378B-19E2-4FE2-8906-DEFB4D6E15D8}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{435A378B-19E2-4FE2-8906-DEFB4D6E15D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{435A378B-19E2-4FE2-8906-DEFB4D6E15D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9281F705-DD4D-4B19-ABF9-D831905DA45C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9281F705-DD4D-4B19-ABF9-D831905DA45C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9281F705-DD4D-4B19-ABF9-D831905DA45C}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{9281F705-DD4D-4B19-ABF9-D831905DA45C}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{9281F705-DD4D-4B19-ABF9-D831905DA45C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9281F705-DD4D-4B19-ABF9-D831905DA45C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{768A2587-0209-4394-A61F-A1C12295908C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{768A2587-0209-4394-A61F-A1C12295908C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{768A2587-0209-4394-A61F-A1C12295908C}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{768A2587-0209-4394-A61F-A1C12295908C}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{768A2587-0209-4394-A61F-A1C12295908C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{768A2587-0209-4394-A61F-A1C12295908C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55DEE7D3-949E-4F65-BA18-A552B9E5FD2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55DEE7D3-949E-4F65-BA18-A552B9E5FD2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55DEE7D3-949E-4F65-BA18-A552B9E5FD2A}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{55DEE7D3-949E-4F65-BA18-A552B9E5FD2A}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{55DEE7D3-949E-4F65-BA18-A552B9E5FD2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55DEE7D3-949E-4F65-BA18-A552B9E5FD2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -354,6 +378,9 @@ Global
 		{6AAFC575-3939-4914-AEDB-E352160F8915} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{DE4839BD-E57D-476D-B986-EF876CB8E526} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{435A378B-19E2-4FE2-8906-DEFB4D6E15D8} = {BFFECB1F-3326-4B55-9180-58674B3FF5D0}
+		{9281F705-DD4D-4B19-ABF9-D831905DA45C} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
+		{768A2587-0209-4394-A61F-A1C12295908C} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
+		{55DEE7D3-949E-4F65-BA18-A552B9E5FD2A} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}

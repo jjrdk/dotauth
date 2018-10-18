@@ -123,9 +123,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                     return new RedirectResult(redirectionUrl.AbsoluteUri);
                 }
                 case TypeActionResult.Output:
-                    break;
                 case TypeActionResult.None:
-                    break;
                 default:
                     return null;
             }
