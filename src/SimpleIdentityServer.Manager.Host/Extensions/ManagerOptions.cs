@@ -14,8 +14,6 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Services;
-
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
     public class ManagerOptions

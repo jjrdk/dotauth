@@ -15,11 +15,10 @@
 namespace SimpleIdentityServer.Core.Common
 {
     using System.Net;
-    using Newtonsoft.Json.Linq;
 
-    public class ScimResponse
+    public class ScimResponse<T>
     {
         public HttpStatusCode StatusCode { get; set; }
-        public JObject Content { get; set; }
+        public T Content { get; set; }
     }
 }

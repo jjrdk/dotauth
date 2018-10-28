@@ -18,7 +18,6 @@ using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Common.Parameters;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using System.Collections.Generic;

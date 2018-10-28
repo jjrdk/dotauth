@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Api.Profile.Actions;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;
@@ -32,92 +29,62 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
 
     public class AddUserOperation : IAddUserOperation
     {
-        private class ScimUser
-        {
-            public ScimUser(string id, string url)
-            {
-                Id = id;
-                Url = url;
-            }
-
-            public string Id { get; }
-            public string Url { get; }
-        }
-
-        private readonly IUsersClient _usersClient;
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IClaimRepository _claimRepository;
-        private readonly IAccessTokenStore _tokenStore;
         private readonly IEnumerable<IAccountFilter> _accountFilters;
-        private readonly ILinkProfileAction _linkProfileAction;
         private readonly IOpenIdEventSource _openidEventSource;
 
         public AddUserOperation(
-            IUsersClient usersClient,
             IResourceOwnerRepository resourceOwnerRepository,
             IClaimRepository claimRepository,
-            IAccessTokenStore tokenStore,
-            ILinkProfileAction linkProfileAction,
             IEnumerable<IAccountFilter> accountFilters,
             IOpenIdEventSource openIdEventSource)
         {
-            _usersClient = usersClient;
             _resourceOwnerRepository = resourceOwnerRepository;
             _claimRepository = claimRepository;
-            _tokenStore = tokenStore;
             _accountFilters = accountFilters;
-            _linkProfileAction = linkProfileAction;
             _openidEventSource = openIdEventSource;
         }
 
-        public async Task<bool> Execute(AddUserParameter addUserParameter, AuthenticationParameter authenticationParameter, string scimBaseUrl = null, bool addScimResource = false, string issuer = null)
+        public async Task<bool> Execute(ResourceOwner resourceOwner, Uri scimBaseUrl = null)
         {
-            if (addUserParameter == null)
+            if (resourceOwner == null)
             {
-                throw new ArgumentNullException(nameof(addUserParameter));
+                throw new ArgumentNullException(nameof(resourceOwner));
             }
 
-            if (string.IsNullOrEmpty(addUserParameter.Login))
+            if (string.IsNullOrEmpty(resourceOwner.Id))
             {
-                throw new ArgumentNullException(nameof(addUserParameter.Login));
+                throw new ArgumentNullException(nameof(resourceOwner.Id));
             }
 
-            if (string.IsNullOrWhiteSpace(addUserParameter.Password))
+            if (string.IsNullOrWhiteSpace(resourceOwner.Password))
             {
-                throw new ArgumentNullException(nameof(addUserParameter.Password));
-            }
-
-            if (addScimResource && authenticationParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authenticationParameter));
-            }
-
-            if (addScimResource && string.IsNullOrWhiteSpace(scimBaseUrl))
-            {
-                throw new ArgumentNullException(nameof(scimBaseUrl));
+                throw new ArgumentNullException(nameof(resourceOwner.Password));
             }
 
             // 1. Check the resource owner already exists.
-            if (await _resourceOwnerRepository.GetAsync(addUserParameter.Login).ConfigureAwait(false) != null)
+            if (await _resourceOwnerRepository.Get(resourceOwner.Id).ConfigureAwait(false) != null)
             {
-                throw new IdentityServerException(
-                    Errors.ErrorCodes.UnhandledExceptionCode,
-                    Errors.ErrorDescriptions.TheRoWithCredentialsAlreadyExists);
+                return false;
+                //throw new IdentityServerException(
+                //    Errors.ErrorCodes.UnhandledExceptionCode,
+                //    Errors.ErrorDescriptions.TheRoWithCredentialsAlreadyExists);
             }
 
             var newClaims = new List<Claim>
             {
                 new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()),
-                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, addUserParameter.Login)
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, resourceOwner.Id)
             };
 
             // 2. Populate the claims.
             var existedClaims = await _claimRepository.GetAllAsync().ConfigureAwait(false);
-            if (addUserParameter.Claims != null)
+            if (resourceOwner.Claims != null)
             {
-                foreach (var claim in addUserParameter.Claims)
+                foreach (var claim in resourceOwner.Claims)
                 {
-                    if (!newClaims.Any(nc => nc.Type == claim.Type) && existedClaims.Any(c => c.Code == claim.Type))
+                    if (newClaims.All(nc => nc.Type != claim.Type) && existedClaims.Any(c => c.Code == claim.Type))
                     {
                         newClaims.Add(claim);
                     }
@@ -133,15 +100,12 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                     if (!userFilterResult.IsValid)
                     {
                         isFilterValid = false;
-                        foreach (var ruleResult in userFilterResult.AccountFilterRules)
+                        foreach (var ruleResult in userFilterResult.AccountFilterRules.Where(x => !x.IsValid))
                         {
-                            if (!ruleResult.IsValid)
+                            _openidEventSource.Failure($"the filter rule '{ruleResult.RuleName}' failed");
+                            foreach (var errorMessage in ruleResult.ErrorMessages)
                             {
-                                _openidEventSource.Failure($"the filter rule '{ruleResult.RuleName}' failed");
-                                foreach (var errorMessage in ruleResult.ErrorMessages)
-                                {
-                                    _openidEventSource.Failure(errorMessage);
-                                }
+                                _openidEventSource.Failure(errorMessage);
                             }
                         }
                     }
@@ -149,73 +113,80 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
 
                 if (!isFilterValid)
                 {
-                    throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheUserIsNotAuthorized);
+                    return false;
+                    //throw new IdentityServerException(Errors.ErrorCodes.InternalError,
+                    //    Errors.ErrorDescriptions.TheUserIsNotAuthorized);
                 }
             }
 
             // 3. Add the scim resource.
-            if (addScimResource)
+            if (scimBaseUrl != null)
             {
-                var scimResource = await AddScimResource(authenticationParameter, scimBaseUrl, addUserParameter.Login).ConfigureAwait(false);
-                var scimUrl = newClaims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.ScimId);
-                var scimLocation = newClaims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.ScimLocation);
-                if (scimUrl != null)
-                {
-                    newClaims.Remove(scimUrl);
-                }
+                //var scimResource = await AddScimResource(authenticationParameter, scimBaseUrl, resourceOwner.Login).ConfigureAwait(false);
+                //var scimUrl = newClaims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.ScimId);
+                //var scimLocation = newClaims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.ScimLocation);
+                //if (scimUrl != null)
+                //{
+                //    newClaims.Remove(scimUrl);
+                //}
 
-                if (scimLocation != null)
-                {
-                    newClaims.Remove(scimLocation);
-                }
+                //if (scimLocation != null)
+                //{
+                //    newClaims.Remove(scimLocation);
+                //}
 
-                newClaims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.ScimId, scimResource.Id));
-                newClaims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.ScimLocation, scimResource.Url));
+                newClaims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.ScimId, resourceOwner.Id));
+                newClaims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.ScimLocation,
+                    $"{scimBaseUrl}/Users/{resourceOwner.Id}"));
             }
 
             // 4. Add the resource owner.
             var newResourceOwner = new ResourceOwner
             {
-                Id = addUserParameter.Login,
+                Id = resourceOwner.Id,
                 Claims = newClaims,
                 TwoFactorAuthentication = string.Empty,
                 IsLocalAccount = true,
-                Password = PasswordHelper.ComputeHash(addUserParameter.Password)
+                Password = resourceOwner.Password.ToSha256Hash(),
+                UserProfile = resourceOwner.UserProfile
             };
             if (!await _resourceOwnerRepository.InsertAsync(newResourceOwner).ConfigureAwait(false))
             {
-                throw new IdentityServerException(Errors.ErrorCodes.UnhandledExceptionCode,
-                    Errors.ErrorDescriptions.TheResourceOwnerCannotBeAdded);
+                return false;
+                //throw new IdentityServerException(Errors.ErrorCodes.UnhandledExceptionCode,
+                //    Errors.ErrorDescriptions.TheResourceOwnerCannotBeAdded);
             }
 
-            // 5. Link to a profile.
-            if (!string.IsNullOrWhiteSpace(issuer))
-            {
-                await _linkProfileAction.Execute(addUserParameter.Login, addUserParameter.ExternalLogin, issuer).ConfigureAwait(false);
-            }
+            //// 5. Link to a profile.
+            //if (!string.IsNullOrWhiteSpace(issuer))
+            //{
+            //    await _linkProfileAction.Execute(resourceOwner.Login, resourceOwner.ExternalLogin, issuer)
+            //        .ConfigureAwait(false);
+            //}
 
             _openidEventSource.AddResourceOwner(newResourceOwner.Id);
             return true;
         }
 
-        /// <summary>
-        /// Create the scim resource and the scim identifier.
-        /// </summary>
-        /// <param name="subject"></param>
-        /// <returns></returns>
-        private async Task<ScimUser> AddScimResource(AuthenticationParameter scimOpts, string scimBaseUrl, string subject)
-        {
-            var grantedToken = await _tokenStore.GetToken(scimOpts.WellKnownAuthorizationUrl, scimOpts.ClientId, scimOpts.ClientSecret, new[]
-            {
-                "scim_manage"
-            }).ConfigureAwait(false);
+        ///// <summary>
+        ///// Create the scim resource and the scim identifier.
+        ///// </summary>
+        ///// <param name="subject"></param>
+        ///// <returns></returns>
+        //private async Task<ScimUser> AddScimResource(AuthenticationParameter scimOpts, string scimBaseUrl, string subject)
+        //{
+        //    //var grantedToken = await _tokenStore.GetToken(scimOpts.WellKnownAuthorizationUrl, scimOpts.ClientId, scimOpts.ClientSecret, new[]
+        //    //{
+        //    //    ScimConstants.ScimPolicies.ScimManage
+        //    //}).ConfigureAwait(false);
 
-            var scimResponse = await _usersClient.AddUser(new Uri(scimBaseUrl), subject, grantedToken.AccessToken)
-                //.SetCommonAttributes(subject)
-                //.Execute()
-                .ConfigureAwait(false);
-            var scimId = scimResponse.Content["id"].ToString();
-            return new ScimUser(scimId, $"{scimBaseUrl}/Users/{scimId}");
-        }
+        //    var scimResponse = await _usersClient.AddUser(new AddUserParameter(), 
+        //            new Uri(scimBaseUrl), new ScimUser { ExternalId = subject })
+        //        //.SetCommonAttributes(subject)
+        //        //.Execute()
+        //        .ConfigureAwait(false);
+        //    var scimId = scimResponse.Content["id"].ToString();
+        //    return new ScimUser(scimId, $"{scimBaseUrl}/Users/{scimId}");
+        //}
     }
 }

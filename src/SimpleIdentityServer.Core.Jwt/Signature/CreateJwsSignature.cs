@@ -80,7 +80,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                     var bytesToBeSigned = ASCIIEncoding.ASCII.GetBytes(combinedJwsNotSigned);
                     rsa.FromXmlStringNetCore(serializedKeys);
                     var byteToBeConverted = rsa.SignData(bytesToBeSigned, hashMethod);
-                    return byteToBeConverted.Base64EncodeBytes();
+                    return byteToBeConverted.ToBase64Simplified();
                 }
             }
             else
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                     var bytesToBeSigned = ASCIIEncoding.ASCII.GetBytes(combinedJwsNotSigned);
                     rsa.FromXmlStringNetCore(serializedKeys);
                     var byteToBeConverted = rsa.SignData(bytesToBeSigned, 0, bytesToBeSigned.Length, hashMethod, RSASignaturePadding.Pkcs1);
-                    return byteToBeConverted.Base64EncodeBytes();
+                    return byteToBeConverted.ToBase64Simplified();
                 }
             }
         }
@@ -156,7 +156,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 return ec
                     .SignData(plainTextBytes, 0, plainTextBytes.Count())
                     .Base64EncodeBytes();
-                // return ec.SignData(plainTextBytes).Base64EncodeBytes();
+                // return ec.SignData(plainTextBytes).ToBase64Simplified();
             }
         }
 

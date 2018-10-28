@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
             }
 
 
-            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject).ConfigureAwait(false);
+            var resourceOwner = await _resourceOwnerRepository.Get(subject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheResourceOwnerDoesntExist);

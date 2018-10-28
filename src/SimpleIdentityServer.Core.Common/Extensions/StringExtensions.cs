@@ -26,10 +26,10 @@ namespace SimpleIdentityServer.Core.Common.Extensions
         public static string Base64Encode(this string plainText)
         {
             var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-            return Base64EncodeBytes(plainTextBytes);
+            return ToBase64Simplified(plainTextBytes);
         }
 
-        public static string Base64EncodeBytes(this byte[] bytes)
+        public static string ToBase64Simplified(this byte[] bytes)
         {
             return Convert.ToBase64String(bytes)
                 .Split('=')[0]

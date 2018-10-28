@@ -18,7 +18,6 @@ using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Parameters;
 using SimpleIdentityServer.Core.Common.Results;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Manager.Common.Requests;
 using SimpleIdentityServer.Manager.Common.Responses;
 using SimpleIdentityServer.Manager.Core.Parameters;
@@ -26,7 +25,6 @@ using SimpleIdentityServer.Manager.Core.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
@@ -60,7 +58,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 Count = request.NbResults,
                 ClaimKeys = request.Codes,
                 StartIndex = request.StartIndex,
-                Order = request.Order == null ? null : request.Order.ToParameter()
+                Order = request.Order?.ToParameter()
             };
         }
 
@@ -77,7 +75,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 ScopeNames = parameter.ScopeNames,
                 StartIndex = parameter.StartIndex,
                 Types = parameter.ScopeTypes,
-                Order = parameter.Order == null ? null : parameter.Order.ToParameter()
+                Order = parameter.Order?.ToParameter()
             };
         }
 
@@ -94,7 +92,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 ClientTypes = parameter.ClientTypes,
                 Count = parameter.NbResults,
                 StartIndex = parameter.StartIndex,
-                Order = parameter.Order == null ? null : parameter.Order.ToParameter()
+                Order = parameter.Order?.ToParameter()
             };
         }
 
@@ -147,7 +145,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 Count = request.NbResults,
                 StartIndex = request.StartIndex,
                 Subjects = request.Subjects,
-                Order = request.Order == null ? null : request.Order.ToParameter()
+                Order = request.Order?.ToParameter()
             };
         }
 
@@ -254,7 +252,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 UserInfoEncryptedResponseEnc = updateClientRequest.UserInfoEncryptedResponseEnc,
                 UserInfoSignedResponseAlg = updateClientRequest.UserInfoSignedResponseAlg,
                 PostLogoutRedirectUris = updateClientRequest.PostLogoutRedirectUris,
-                AllowedScopes = updateClientRequest.AllowedScopes == null ? new List<string>() : updateClientRequest.AllowedScopes
+                AllowedScopes = updateClientRequest.AllowedScopes ?? new List<string>()
             };
         }
 
@@ -320,8 +318,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                     var responseTypeSplitted = responseType.Split(' ');
                     foreach (var response in responseTypeSplitted)
                     {
-                        ResponseType responseTypeEnum;
-                        if (Enum.TryParse(response, out responseTypeEnum) &&
+                        if (Enum.TryParse(response, out ResponseType responseTypeEnum) &&
                             !responseTypes.Contains(responseTypeEnum))
                         {
                             responseTypes.Add(responseTypeEnum);
@@ -335,8 +332,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             {
                 foreach (var grantType in clientResponse.GrantTypes)
                 {
-                    GrantType grantTypeEnum;
-                    if (Enum.TryParse(grantType, out grantTypeEnum))
+                    if (Enum.TryParse(grantType, out GrantType grantTypeEnum))
                     {
                         grantTypes.Add(grantTypeEnum);
                     }
@@ -345,28 +341,20 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
             if (clientResponse.Secrets != null && clientResponse.Secrets.Any())
             {
-                foreach(var secret in clientResponse.Secrets)
-                {
-                    var record = new ClientSecret();
-                    record.Type = (ClientSecretTypes)secret.Type;
-                    record.Value = secret.Value;
-                    secrets.Add(record);
-                }
+                secrets.AddRange(clientResponse.Secrets.Select(secret => new ClientSecret {Type = secret.Type, Value = secret.Value}));
             }
 
-            ApplicationTypes appTypeEnum;
-            if (Enum.TryParse(clientResponse.ApplicationType, out appTypeEnum))
+            if (Enum.TryParse(clientResponse.ApplicationType, out ApplicationTypes appTypeEnum))
             {
                 applicationType = appTypeEnum;
             }
 
-            TokenEndPointAuthenticationMethods tokenEndPointAuthenticationMethod;
-            if (!Enum.TryParse(clientResponse.TokenEndPointAuthMethod, out tokenEndPointAuthenticationMethod))
+            if (!Enum.TryParse(clientResponse.TokenEndPointAuthMethod, out TokenEndPointAuthenticationMethods tokenEndPointAuthenticationMethod))
             {
                 tokenEndPointAuthenticationMethod = TokenEndPointAuthenticationMethods.client_secret_basic;
             }
 
-            return new SimpleIdentityServer.Core.Common.Models.Client
+            return new Client
             {
                 AllowedScopes = scopes,
                 GrantTypes = grantTypes,
@@ -414,7 +402,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
             return new ImportParameter
             {
-                Clients = export.Clients == null ? null : export.Clients.Select(c => c.ToModel())
+                Clients = export.Clients?.Select(c => c.ToModel())
             };
         }
 
@@ -517,7 +505,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
             return new ExportResponse
             {
-                Clients = export.Clients == null ? null : export.Clients.Select(c => c.ToDto())
+                Clients = export.Clients?.Select(c => c.ToDto())
             };
         }
 

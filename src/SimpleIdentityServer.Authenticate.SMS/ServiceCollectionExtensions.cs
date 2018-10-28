@@ -12,9 +12,13 @@ using System.Reflection;
 
 namespace SimpleIdentityServer.Authenticate.SMS
 {
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddSmsAuthentication(this IServiceCollection services,  IMvcBuilder mvcBuilder, SmsAuthenticationOptions smsAuthenticationOptions)
+        public static IServiceCollection AddSmsAuthentication(this IServiceCollection services, IMvcBuilder mvcBuilder, SmsAuthenticationOptions smsAuthenticationOptions)
         {
             if (services == null)
             {
@@ -43,6 +47,7 @@ namespace SimpleIdentityServer.Authenticate.SMS
                 };
             });
             services.AddSingleton(smsAuthenticationOptions);
+            services.AddSingleton<ISubjectBuilder, DefaultSubjectBuilder>();
             services.AddTransient<ITwilioClient, TwilioClient>();
             services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
             services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();

@@ -16,6 +16,12 @@ namespace SimpleIdentityServer.Core.Common
 {
     public static class ScimConstants
     {
+        public static class ScimPolicies
+        {
+            public const string ScimManage = "scim_manage";
+            public const string ScimRead = "scim_read";
+        }
+
         public static class MultiValueAttributeNames
         {
             public const string Type = "type";
@@ -27,16 +33,16 @@ namespace SimpleIdentityServer.Core.Common
 
         public static class ScimTypeValues
         {
-            public const string Mutability = "mutability";
-            public const string InvalidFilter = "invalidFilter";
-            public const string TooMany = "tooMany";
-            public const string Uniqueness = "uniqueness";
-            public const string InvalidSyntax = "invalidSyntax";
-            public const string InvalidPath = "invalidPath";
-            public const string NoTarget = "noTarget";
-            public const string InvalidValue = "invalidValue";
-            public const string InvalidVers = "invalidVers";
-            public const string Sensitive = "sensitive";
+            public static readonly string Mutability = "mutability";
+            public static readonly string InvalidFilter = "invalidFilter";
+            public static readonly string TooMany = "tooMany";
+            public static readonly string Uniqueness = "uniqueness";
+            public static readonly string InvalidSyntax = "invalidSyntax";
+            public static readonly string InvalidPath = "invalidPath";
+            public static readonly string NoTarget = "noTarget";
+            public static readonly string InvalidValue = "invalidValue";
+            public static readonly string InvalidVers = "invalidVers";
+            public static readonly string Sensitive = "sensitive";
         }
 
         public static class UserResourceResponseNames
@@ -54,7 +60,7 @@ namespace SimpleIdentityServer.Core.Common
             public const string Active = "active";
             public const string Password = "password";
             public const string Emails = "emails";
-            public const string Phones = "phones";
+            public const string PhoneNumbers = "phoneNumbers";
             public const string Ims = "ims";
             public const string Photos = "photos";
             public const string Addresses = "addresses";
@@ -82,7 +88,7 @@ namespace SimpleIdentityServer.Core.Common
 
         public static class GroupMembersResponseNames
         {
-            public const string Value = "value";
+            public static readonly string Value = "value";
         }
 
         public static class NameResponseNames
@@ -333,24 +339,24 @@ namespace SimpleIdentityServer.Core.Common
 
         public static class SchemaUrns
         {
-            public const string Group = "urn:ietf:params:scim:schemas:core:2.0:Group";
-            public const string User = "urn:ietf:params:scim:schemas:core:2.0:User";
-            public const string ServiceProvider = "urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig";
+            public static readonly string Group = "urn:ietf:params:scim:schemas:core:2.0:Group";
+            public static readonly string User = "urn:ietf:params:scim:schemas:core:2.0:User";
+            public static readonly string ServiceProvider = "urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig";
         }
 
         public static class Messages
         {
-            public const string Error = "urn:ietf:params:scim:api:messages:2.0:Error";
-            public const string PatchOp = "urn:ietf:params:scim:api:messages:2.0:PatchOp";
-            public const string ListResponse = "urn:ietf:params:scim:api:messages:2.0:ListResponse";
-            public const string Bulk = "urn:ietf:params:scim:api:messages:2.0:BulkRequest";
-            public const string BulkResponse = "urn:ietf:params:scim:api:messages:2.0:BulkResponse";
+            public static readonly string Error = "urn:ietf:params:scim:api:messages:2.0:Error";
+            public static readonly string PatchOp = "urn:ietf:params:scim:api:messages:2.0:PatchOp";
+            public static readonly string ListResponse = "urn:ietf:params:scim:api:messages:2.0:ListResponse";
+            public static readonly string Bulk = "urn:ietf:params:scim:api:messages:2.0:BulkRequest";
+            public static readonly string BulkResponse = "urn:ietf:params:scim:api:messages:2.0:BulkResponse";
         }
 
         public static class ResourceTypes
         {
-            public const string Group = "Group";
-            public const string User = "User";
+            public static readonly string Group = "Group";
+            public static readonly string User = "User";
         }
 
         public static class SortOrderNames

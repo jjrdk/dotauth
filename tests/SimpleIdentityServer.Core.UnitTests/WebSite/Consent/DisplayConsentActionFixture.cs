@@ -174,7 +174,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 claimsPrincipal, null).ConfigureAwait(false);
 
             // ASSERTS
-            Assert.True(scopes.Any(s => s.Name == scopeName));
+            Assert.Contains(scopes, s => s.Name == scopeName);
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithOutput());
         }
 

@@ -19,7 +19,6 @@ using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Logging;
-using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Providers;

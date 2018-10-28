@@ -23,11 +23,13 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
+    using System.Threading;
+
     public class UpdateUserCredentialsOperationFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
         private IUpdateUserCredentialsOperation _updateUserCredentialsOperation;
-        
+
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
@@ -44,7 +46,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         {
             // ARRANGE
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
@@ -55,13 +57,13 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             Assert.True(exception.Code == Errors.ErrorCodes.InternalError);
             Assert.True(exception.Message == Errors.ErrorDescriptions.TheRoDoesntExist);
         }
-                
+
         [Fact]
         public async Task When_Passing_Correct_Parameters_Then_ResourceOwnerIs_Updated()
         {
             // ARRANGE
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT

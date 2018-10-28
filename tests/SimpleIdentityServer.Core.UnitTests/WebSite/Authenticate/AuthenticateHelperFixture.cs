@@ -162,7 +162,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Action == IdentityServerEndPoints.ConsentIndex);
-            Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == code && p.Value == code));
+            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == code && p.Value == code);
         }
 
         private void InitializeFakeObjects()

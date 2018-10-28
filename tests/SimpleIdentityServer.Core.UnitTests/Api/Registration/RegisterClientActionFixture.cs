@@ -160,11 +160,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             _clientRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Client>()));
             _oauthEventSource.Verify(s => s.EndRegistration(It.IsAny<string>(), clientName));
             Assert.NotEmpty(result.ClientSecret);
-            Assert.True(client.AllowedScopes.Contains(Constants.StandardScopes.OpenId));
-            Assert.True(client.AllowedScopes.Contains(Constants.StandardScopes.Address));
-            Assert.True(client.AllowedScopes.Contains(Constants.StandardScopes.Email));
-            Assert.True(client.AllowedScopes.Contains(Constants.StandardScopes.Phone));
-            Assert.True(client.AllowedScopes.Contains(Constants.StandardScopes.ProfileScope));
+            Assert.Contains(Constants.StandardScopes.OpenId, client.AllowedScopes);
+            Assert.Contains(Constants.StandardScopes.Address, client.AllowedScopes);
+            Assert.Contains(Constants.StandardScopes.Email, client.AllowedScopes);
+            Assert.Contains(Constants.StandardScopes.Phone, client.AllowedScopes);
+            Assert.Contains(Constants.StandardScopes.ProfileScope, client.AllowedScopes);
         }
 
         private void InitializeFakeObjects()

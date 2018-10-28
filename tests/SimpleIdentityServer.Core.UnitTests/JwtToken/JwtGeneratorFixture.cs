@@ -423,8 +423,8 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 authorizationParameter,
                 claimsParameter, null)).ConfigureAwait(false);
 
-            Assert.True(result.Code.Equals(ErrorCodes.InvalidGrant));
-            Assert.True(result.Message.Equals(string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardResourceOwnerClaimNames.Subject)));
+            Assert.Equal(result.Code, ErrorCodes.InvalidGrant);
+            Assert.Equal(result.Message, string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
         }
 
         [Fact]
@@ -554,8 +554,8 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             Assert.NotNull(result);
             Assert.True(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
             Assert.True(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Name));
-            Assert.True(result[Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString().Equals(subject));
-            Assert.True(result[Jwt.Constants.StandardResourceOwnerClaimNames.Name].ToString().Equals(name));
+            Assert.Equal(result[Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString(), subject);
+            Assert.Equal(result[Jwt.Constants.StandardResourceOwnerClaimNames.Name].ToString(), name);
         }
 
         [Fact]

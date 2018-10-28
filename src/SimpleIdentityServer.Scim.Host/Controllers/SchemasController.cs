@@ -14,7 +14,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Scim.Core;
-using SimpleIdentityServer.Scim.Core.Stores;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Host.Controllers
@@ -22,23 +21,18 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
     [Route(Constants.RoutePaths.SchemasController)]
     public class SchemasController : Controller
     {
-        private readonly ISchemaStore _schemaStore;
-
-        public SchemasController(ISchemaStore schemaStore)
-        {
-            _schemaStore = schemaStore;
-        }
-
         [HttpGet("{id}")]
         public async Task<ActionResult> Get(string id)
         {
-            return new OkObjectResult(await _schemaStore.GetSchema(id).ConfigureAwait(false));
+            return NotFound();
+            //return new OkObjectResult(await _schemaStore.GetSchema(id).ConfigureAwait(false));
         }
 
         [HttpGet]
         public async Task<ActionResult> All()
         {
-            return new OkObjectResult(await _schemaStore.GetSchemas().ConfigureAwait(false));
+            return NotFound();
+            // return new OkObjectResult(await _schemaStore.GetSchemas().ConfigureAwait(false));
         }
     }
 }

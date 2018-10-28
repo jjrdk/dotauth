@@ -174,8 +174,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
 
             // ASSERT
-            Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Constants.StandardAuthorizationResponseNames.IdTokenName));
-            Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Value == idToken));
+            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == Constants.StandardAuthorizationResponseNames.IdTokenName);
+            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Value == idToken);
         }
 
         [Fact]
@@ -232,8 +232,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
 
             // ASSERTS
-            Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Constants.StandardAuthorizationResponseNames.AccessTokenName));
-            Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Value == grantedToken.AccessToken));
+            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == Constants.StandardAuthorizationResponseNames.AccessTokenName);
+            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Value == grantedToken.AccessToken);
             _grantedTokenRepositoryFake.Verify(g => g.AddToken(grantedToken));
             _oauthEventSource.Verify(e => e.GrantAccessToClient(clientId, grantedToken.AccessToken, scope));
         }
@@ -286,8 +286,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
 
             // ASSERTS
-            Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Constants.StandardAuthorizationResponseNames.AccessTokenName));
-            Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Value == grantedToken.AccessToken));
+            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == Constants.StandardAuthorizationResponseNames.AccessTokenName);
+            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Value == grantedToken.AccessToken);
         }
 
         [Fact]
@@ -331,7 +331,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
 
             // ASSERTS
-            Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
+            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == Constants.StandardAuthorizationResponseNames.AuthorizationCodeName);
             _authorizationCodeRepositoryFake.Verify(a => a.AddAuthorizationCode(It.IsAny<AuthorizationCode>()));
             _oauthEventSource.Verify(s => s.GrantAuthorizationCodeToClient(clientId, It.IsAny<string>(), scope));
         }

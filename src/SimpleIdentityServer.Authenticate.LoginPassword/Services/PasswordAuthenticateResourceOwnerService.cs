@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Services
                 throw new ArgumentNullException(nameof(password));
             }
 
-            return _resourceOwnerRepository.GetAsync(login, PasswordHelper.ComputeHash(password));
+            return _resourceOwnerRepository.Get(login, password.ToSha256Hash());
         }
     }
 }

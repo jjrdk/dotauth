@@ -1,9 +1,6 @@
 ﻿using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Models;
-using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace SimpleIdentityServer.Uma.Host.Tests.Stores
 {
@@ -117,16 +114,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Stores
                     }
 
             };
-        }
-
-        private static string ComputeHash(string entry)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var entryBytes = Encoding.UTF8.GetBytes(entry);
-                var hash = sha256.ComputeHash(entryBytes);
-                return BitConverter.ToString(hash).Replace("-", string.Empty);
-            }
         }
     }
 }

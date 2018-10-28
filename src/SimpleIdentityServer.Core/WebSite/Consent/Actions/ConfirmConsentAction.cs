@@ -112,7 +112,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     {
                         Id = Guid.NewGuid().ToString(),
                         Client = client,
-                        ResourceOwner = await _resourceOwnerRepository.GetAsync(subject).ConfigureAwait(false),
+                        ResourceOwner = await _resourceOwnerRepository.Get(subject).ConfigureAwait(false),
                         Claims = claimsParameter.GetClaimNames()
                     };
                 }
@@ -124,7 +124,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                         Id = Guid.NewGuid().ToString(),
                         Client = client,
                         GrantedScopes = (await GetScopes(authorizationParameter.Scope).ConfigureAwait(false)).ToList(),
-                        ResourceOwner = await _resourceOwnerRepository.GetAsync(subject).ConfigureAwait(false),
+                        ResourceOwner = await _resourceOwnerRepository.Get(subject).ConfigureAwait(false),
                     };
                 }
 

@@ -13,9 +13,7 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Extensions;
 using System;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace SimpleIdentityServer.Client.Builders
@@ -50,8 +48,9 @@ namespace SimpleIdentityServer.Client.Builders
                 return codeVerifier;
             }
 
-            var hashed = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes(codeVerifier));
-            return hashed.Base64EncodeBytes();
+            return codeVerifier.ToSha256SimplifiedBase64(Encoding.ASCII);
+            //var hashed = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes(codeVerifier));
+            //return hashed.ToBase64Simplified();
         }
     }
 }

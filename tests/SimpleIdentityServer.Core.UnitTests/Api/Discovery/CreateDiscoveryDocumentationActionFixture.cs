@@ -60,9 +60,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
             // ASSERT
             Assert.NotNull(discoveryInformation);
             Assert.True(discoveryInformation.ScopesSupported.Length == 2);
-            Assert.True(discoveryInformation.ScopesSupported.Contains(firstScopeName));
-            Assert.True(discoveryInformation.ScopesSupported.Contains(secondScopeName));
-            Assert.False(discoveryInformation.ScopesSupported.Contains(notExposedScopeName));
+            Assert.Contains(firstScopeName, discoveryInformation.ScopesSupported);
+            Assert.Contains(secondScopeName, discoveryInformation.ScopesSupported);
+            Assert.DoesNotContain(notExposedScopeName, discoveryInformation.ScopesSupported);
         }
 
         private void InitializeFakeObjects()

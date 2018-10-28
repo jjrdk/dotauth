@@ -73,9 +73,9 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
                     provider.FromXmlStringNetCore(jsonWebKey.SerializedKey);
                     var rsaParameters = provider.ExportParameters(false);
                     // Export the modulus
-                    var modulus = rsaParameters.Modulus.Base64EncodeBytes();
+                    var modulus = rsaParameters.Modulus.ToBase64Simplified();
                     // Export the exponent
-                    var exponent = rsaParameters.Exponent.Base64EncodeBytes();
+                    var exponent = rsaParameters.Exponent.ToBase64Simplified();
 
                     result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
                     result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
@@ -88,9 +88,9 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
                     provider.FromXmlStringNetCore(jsonWebKey.SerializedKey);
                     var rsaParameters = provider.ExportParameters(false);
                     // Export the modulus
-                    var modulus = rsaParameters.Modulus.Base64EncodeBytes();
+                    var modulus = rsaParameters.Modulus.ToBase64Simplified();
                     // Export the exponent
-                    var exponent = rsaParameters.Exponent.Base64EncodeBytes();
+                    var exponent = rsaParameters.Exponent.ToBase64Simplified();
 
                     result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
                     result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);

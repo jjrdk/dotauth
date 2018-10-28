@@ -47,7 +47,6 @@ using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
-using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Collections.Generic;
@@ -152,7 +151,6 @@ namespace SimpleIdentityServer.Core
             serviceCollection
                 .AddTransient<IGenerateClientFromRegistrationRequest, GenerateClientFromRegistrationRequest>();
             serviceCollection.AddTransient<IGetConsentsOperation, GetConsentsOperation>();
-            serviceCollection.AddTransient<IUserActions, UserActions>();
             serviceCollection.AddTransient<IRemoveConsentOperation, RemoveConsentOperation>();
             serviceCollection.AddTransient<IRevokeTokenAction, RevokeTokenAction>();
             serviceCollection.AddTransient<IGetUserOperation, GetUserOperation>();
@@ -186,7 +184,6 @@ namespace SimpleIdentityServer.Core
                 new DefaultResourceOwnerRepository(resourceOwners));
             serviceCollection.AddSingleton<IScopeRepository>(new DefaultScopeRepository(scopes));
             serviceCollection.AddSingleton<ITranslationRepository>(new DefaultTranslationRepository(translations));
-            serviceCollection.AddSingleton<ISubjectBuilder>(new DefaultSubjectBuilder());
             return serviceCollection;
         }
     }

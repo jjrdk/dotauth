@@ -51,7 +51,8 @@ namespace SimpleIdentityServer.OAuth2Introspection
                 var introspectionResult = await _client //factory.CreateAuthSelector()
                     //.UseClientSecretPostAuth(Options.ClientId, Options.ClientSecret)
                     //.Introspect(token, TokenType.AccessToken)
-                    .ResolveAsync(Options.WellKnownConfigurationUrl).ConfigureAwait(false);
+                    .ResolveAsync(Options.WellKnownConfigurationUrl)
+                    .ConfigureAwait(false);
                 if (introspectionResult.ContainsError || !introspectionResult.Content.Active)
                 {
                     return AuthenticateResult.NoResult();
@@ -60,7 +61,8 @@ namespace SimpleIdentityServer.OAuth2Introspection
                 var claims = new List<Claim>
                 {
                     new Claim(StandardClaimNames.ExpirationTime, introspectionResult.Content.Expiration.ToString()),
-                    new Claim(StandardClaimNames.Iat, introspectionResult.Content.IssuedAt.ToString(CultureInfo.InvariantCulture))
+                    new Claim(StandardClaimNames.Iat,
+                        introspectionResult.Content.IssuedAt.ToString(CultureInfo.InvariantCulture))
                 };
 
                 if (!string.IsNullOrWhiteSpace(introspectionResult.Content.Subject))

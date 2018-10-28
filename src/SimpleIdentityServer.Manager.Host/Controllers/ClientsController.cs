@@ -21,7 +21,6 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Manager.Common.Requests;
 using SimpleIdentityServer.Manager.Core.Api.Clients;
 using SimpleIdentityServer.Manager.Host.Extensions;
-using System;
 using System.Net;
 using System.Threading.Tasks;
 

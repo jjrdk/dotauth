@@ -1,8 +1,5 @@
 ﻿using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Core.WebSite.User;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -10,17 +7,24 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Actions
 {
+    using Core.Helpers;
     using Core.Jwt;
+    using Core.Services;
+    using Core.WebSite.User.Actions;
 
     internal sealed class SmsAuthenticationOperation : ISmsAuthenticationOperation
     {
         private readonly IGenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IUserActions _userActions; 
+        private readonly IAddUserOperation _userActions;
         private readonly SmsAuthenticationOptions _smsAuthenticationOptions;
         private readonly ISubjectBuilder _subjectBuilder;
 
-        public SmsAuthenticationOperation(IGenerateAndSendSmsCodeOperation generateAndSendSmsCodeOperation, IResourceOwnerRepository resourceOwnerRepository, IUserActions userActions, ISubjectBuilder subjectBuilder,
+        public SmsAuthenticationOperation(
+            IGenerateAndSendSmsCodeOperation generateAndSendSmsCodeOperation,
+            IResourceOwnerRepository resourceOwnerRepository,
+            IAddUserOperation userActions,
+            ISubjectBuilder subjectBuilder,
             SmsAuthenticationOptions smsAuthenticationOptions)
         {
             _generateAndSendSmsCodeOperation = generateAndSendSmsCodeOperation;
@@ -40,37 +44,44 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
             // 1. Send the confirmation code (SMS).
             await _generateAndSendSmsCodeOperation.Execute(phoneNumber).ConfigureAwait(false);
             // 2. Try to get the resource owner.
-            var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber).ConfigureAwait(false);
+            var resourceOwner = await _resourceOwnerRepository
+                .GetResourceOwnerByClaim(Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber)
+                .ConfigureAwait(false);
             if (resourceOwner != null)
             {
                 return resourceOwner;
             }
 
             // 3. Create a new resource owner.
-            var id = await _subjectBuilder.BuildSubject().ConfigureAwait(false);
             var claims = new List<Claim>
             {
                 new Claim(Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber),
                 new Claim(Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified, "false")
             };
-            var record = new AddUserParameter(id, Guid.NewGuid().ToString(), claims);
-            // 3.1 Add scim resource.
-            if (_smsAuthenticationOptions.IsScimResourceAutomaticallyCreated)
+            var id = await _subjectBuilder.BuildSubject(claims).ConfigureAwait(false);
+            var record = new ResourceOwner
             {
-                await _userActions.AddUser(record, new AuthenticationParameter
-                {
-                    ClientId = _smsAuthenticationOptions.AuthenticationOptions.ClientId,
-                    ClientSecret = _smsAuthenticationOptions.AuthenticationOptions.ClientSecret,
-                    WellKnownAuthorizationUrl = _smsAuthenticationOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration
-                }, _smsAuthenticationOptions.ScimBaseUrl, true).ConfigureAwait(false);
+                Id = id,
+                Password = Guid.NewGuid().ToString("N").ToSha256Hash(),
+                Claims = claims
+            };
+            // 3.1 Add scim resource.
+            if (_smsAuthenticationOptions.ScimBaseUrl != null)
+            {
+                await _userActions.Execute(
+                        record,
+                        _smsAuthenticationOptions.ScimBaseUrl)
+                    .ConfigureAwait(false);
             }
             else
             {
                 // 3.2 Add user.
-                await _userActions.AddUser(record, null, null, false).ConfigureAwait(false);
+                await _userActions.Execute(record).ConfigureAwait(false);
             }
-            
-            return await _resourceOwnerRepository.GetResourceOwnerByClaim(Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber).ConfigureAwait(false);
+
+            return await _resourceOwnerRepository
+                .GetResourceOwnerByClaim(Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber)
+                .ConfigureAwait(false);
         }
     }
 }

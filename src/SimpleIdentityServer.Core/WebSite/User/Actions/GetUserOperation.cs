@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                     Errors.ErrorDescriptions.TheSubjectCannotBeRetrieved);
             }
             
-            return _resourceOwnerRepository.GetAsync(subject);
+            return _resourceOwnerRepository.Get(subject);
         }
     }
 }

@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
