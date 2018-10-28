@@ -20,16 +20,23 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Common.Repositories
 {
+    using System;
+    using System.Linq.Expressions;
+    using System.Security.Claims;
+    using System.Threading;
+
     public interface IResourceOwnerRepository
     {
         Task<ResourceOwner> GetResourceOwnerByClaim(string key, string value);
-        Task<ResourceOwner> GetAsync(string id);
-        Task<ResourceOwner> GetAsync(string id, string password);
-        Task<ICollection<ResourceOwner>> GetAsync(IEnumerable<System.Security.Claims.Claim> claims);
+        Task<ResourceOwner> Get(string id, CancellationToken cancellationToken = default(CancellationToken));
+        Task<ResourceOwner> Get(string id, string password);
+        Task<ICollection<ResourceOwner>> Get(IEnumerable<Claim> claims);
+        Task<ICollection<ResourceOwner>> Get(Expression<Func<ResourceOwner, bool>> query, CancellationToken cancellationToken = default(CancellationToken));
         Task<ICollection<ResourceOwner>> GetAllAsync();
         Task<bool> InsertAsync(ResourceOwner resourceOwner);
         Task<bool> UpdateAsync(ResourceOwner resourceOwner);
-        Task<bool> DeleteAsync(string subject);
+        Task<bool> Delete(string subject);
+        Task<bool> DeleteProfile(string id);
         Task<SearchResourceOwnerResult> Search(SearchResourceOwnerParameter parameter);
     }
 }

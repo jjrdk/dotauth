@@ -41,8 +41,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
 
             // ASSERT
             Assert.NotNull(claimNames);
-            Assert.True(claimNames.Contains(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
-            Assert.False(claimNames.Contains(notStandardClaimName));
+            Assert.Contains(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, claimNames);
+            Assert.DoesNotContain(notStandardClaimName, claimNames);
         }
     }
 }

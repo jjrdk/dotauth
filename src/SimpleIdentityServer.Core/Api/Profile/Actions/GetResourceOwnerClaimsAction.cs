@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
                 return null;
             }
 
-            return await _resourceOwnerRepository.GetAsync(profile.ResourceOwnerId).ConfigureAwait(false);
+            return await _resourceOwnerRepository.Get(profile.ResourceOwnerId).ConfigureAwait(false);
         }
     }
 }

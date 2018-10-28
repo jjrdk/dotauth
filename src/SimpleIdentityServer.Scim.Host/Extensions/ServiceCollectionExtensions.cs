@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Scim.Core;
 using System;
 using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Host.Extensions
 {
+    using Core.Validators;
+    using SimpleIdentityServer.Core.Common;
+    using SimpleIdentityServer.Core.Common.DTOs;
+
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddScimHost(this IServiceCollection services, ScimServerConfiguration scimServerOptions)
@@ -15,7 +18,11 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddScimCore(scimServerOptions?.Representations, scimServerOptions?.Schemas);
+            services.AddTransient<IParametersValidator, ParametersValidator>();
+            services.AddSingleton(new InMemoryGroupsRepository());
+            services.AddSingleton<IProvide<GroupResource>>(sp => sp.GetService<InMemoryGroupsRepository>());
+            services.AddSingleton<IPersist<GroupResource>>(sp => sp.GetService<InMemoryGroupsRepository>());
+            services.AddSingleton<IStore<GroupResource>>(sp => sp.GetService<InMemoryGroupsRepository>());
             return services;
         }
 
@@ -26,9 +33,9 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
                 throw new ArgumentNullException(nameof(options));
             }
 
-            options.AddPolicy("scim_manage", policy =>
+            options.AddPolicy(ScimConstants.ScimPolicies.ScimManage, policy =>
             {
-				policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
                 policy.RequireAssertion(p =>
                 {
                     if (p.User?.Identity?.IsAuthenticated != true)
@@ -43,12 +50,12 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
                         return false;
                     }
 
-                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(c => c.Value == "scim_manage");
+                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(c => c.Value == ScimConstants.ScimPolicies.ScimManage);
                 });
             });
             options.AddPolicy("scim_read", policy =>
             {
-				policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
                 policy.RequireAssertion(p =>
                 {
                     if (p.User == null || p.User.Identity == null || !p.User.Identity.IsAuthenticated)

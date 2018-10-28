@@ -18,6 +18,8 @@ using System.Security.Claims;
 
 namespace SimpleIdentityServer.Core.Common.Models
 {
+    using DTOs;
+
     public class ResourceOwner
     {
         /// <summary>
@@ -31,7 +33,7 @@ namespace SimpleIdentityServer.Core.Common.Models
         /// <summary>
         /// Gets or sets the list of claims.
         /// </summary>
-        public IList<Claim> Claims { get; set; }
+        public IList<Claim> Claims { get; set; } = Array.Empty<Claim>();
         /// <summary>
         /// Gets or sets the two factor authentications
         /// </summary>
@@ -48,5 +50,11 @@ namespace SimpleIdentityServer.Core.Common.Models
         /// Gets or sets the update datetime.
         /// </summary>
         public DateTime UpdateDateTime { get; set; }
+
+        public bool ScimOnly { get; set; }
+
+        public ScimUser UserProfile { get; set; }
+
+        public string[] ExternalLogins { get; set; } = Array.Empty<string>();
     }
 }

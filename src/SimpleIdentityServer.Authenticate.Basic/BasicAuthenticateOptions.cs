@@ -2,11 +2,12 @@
 
 namespace SimpleIdentityServer.Authenticate.Basic
 {
+    using System;
+
     public class BasicAuthenticateOptions
     {
         public BasicAuthenticateOptions()
         {
-            IsScimResourceAutomaticallyCreated = false;
             ClaimsIncludedInUserCreation = new List<string>();
             AuthenticationOptions = new BasicAuthenticationOptions();
         }
@@ -19,14 +20,10 @@ namespace SimpleIdentityServer.Authenticate.Basic
         /// <summary>
         /// Base url of the SCIM server.
         /// </summary>
-        public string ScimBaseUrl { get; set; }
+        public Uri ScimBaseUrl { get; set; }
         /// <summary>
         /// Credentials used to get an access token.
         /// </summary>
         public BasicAuthenticationOptions AuthenticationOptions { get; set; }
-        /// <summary>
-        /// Enable / Disable the automatic creation of SCIM resource.
-        /// </summary>
-        public bool IsScimResourceAutomaticallyCreated { get; set; }
     }
 }

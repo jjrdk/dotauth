@@ -33,8 +33,6 @@ using SimpleIdentityServer.Host.Tests.MiddleWares;
 using SimpleIdentityServer.Host.Tests.Services;
 using SimpleIdentityServer.Host.Tests.Stores;
 using SimpleIdentityServer.Logging;
-using SimpleIdentityServer.OAuth.Logging;
-using SimpleIdentityServer.OpenId.Logging;
 using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Twilio.Client;
 using SimpleIdentityServer.UserManagement.Controllers;
@@ -151,7 +149,8 @@ namespace SimpleIdentityServer.Host.Tests
         {
             services.AddSingleton(new SmsAuthenticationOptions());
             services.AddTransient<IEventPublisher, DefaultEventPublisher>();
-            services.AddSingleton<ITwilioClient>(_context.TwilioClient.Object);
+            services.AddSingleton(_context.TwilioClient.Object);
+            services.AddSingleton<ISubjectBuilder>(new DefaultSubjectBuilder());
             services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
             services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();
             services.AddTransient<IAuthenticateResourceOwnerService, CustomAuthenticateResourceOwnerService>();
@@ -169,7 +168,11 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddSingleton<IFilterRepository>(new DefaultFilterRepository(null));
             services.AddSingleton(_context.ConfirmationCodeStore.Object);
             services.AddSingleton(sp => _context.Client);
-            services.AddSingleton<IUsersClient>(sp => new UsersClient(sp.GetService<HttpClient>()));
+            services.AddSingleton<IUsersClient>(sp =>
+            {
+                var baseUrl = _options.Scim.EndPoint;
+                return new UsersClient(new Uri(baseUrl), sp.GetService<HttpClient>());
+            });
             services.AddSingleton<IAccessTokenStore>(new TestAccessTokenStore());
         }
 

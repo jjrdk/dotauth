@@ -9,7 +9,6 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
-using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.UserManagement.ViewModels;
@@ -21,6 +20,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.UserManagement.Controllers
 {
+    using Core.WebSite.User.Actions;
     using Host;
 
     [Area("UserManagement")]
@@ -28,18 +28,36 @@ namespace SimpleIdentityServer.UserManagement.Controllers
     public class UserController : BaseController
     {
         private const string DefaultLanguage = "en";
-        private readonly IUserActions _userActions;
+        private readonly IGetUserOperation _getUserOperation;
+        private readonly IGetConsentsOperation _getConsentsOperation;
+        private readonly IUpdateUserTwoFactorAuthenticatorOperation _updateUserTwoFactorAuthenticatorOperation;
+        private readonly IUpdateUserCredentialsOperation _updateUserCredentialsOperation;
+        private readonly IRemoveConsentOperation _removeConsentOperation;
         private readonly IProfileActions _profileActions;
         private readonly ITranslationManager _translationManager;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
         private readonly IUrlHelper _urlHelper;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
 
-        public UserController(IUserActions userActions, IProfileActions profileActions, ITranslationManager translationManager, 
-            IAuthenticationService authenticationService, IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor, ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler) : base(authenticationService)
+        public UserController(
+            IGetUserOperation getUserOperation,
+            IGetConsentsOperation getConsentsOperation,
+            IUpdateUserTwoFactorAuthenticatorOperation updateUserTwoFactorAuthenticatorOperation,
+            IUpdateUserCredentialsOperation updateUserCredentialsOperation,
+            IRemoveConsentOperation removeConsentOperation,
+            IProfileActions profileActions,
+            ITranslationManager translationManager,
+            IAuthenticationService authenticationService,
+            IAuthenticationSchemeProvider authenticationSchemeProvider,
+            IUrlHelperFactory urlHelperFactory,
+            IActionContextAccessor actionContextAccessor,
+            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler) : base(authenticationService)
         {
-            _userActions = userActions;
+            _getUserOperation = getUserOperation;
+            _getConsentsOperation = getConsentsOperation;
+            _updateUserTwoFactorAuthenticatorOperation = updateUserTwoFactorAuthenticatorOperation;
+            _updateUserCredentialsOperation = updateUserCredentialsOperation;
+            _removeConsentOperation = removeConsentOperation;
             _profileActions = profileActions;
             _translationManager = translationManager;
             _authenticationSchemeProvider = authenticationSchemeProvider;
@@ -64,7 +82,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         [HttpPost]
         public async Task<ActionResult> Consent(string id)
         {
-            if (!await _userActions.DeleteConsent(id).ConfigureAwait(false))
+            if (!await _removeConsentOperation.Execute(id).ConfigureAwait(false))
             {
                 ViewBag.ErrorMessage = "the consent cannot be deleted";
                 return await GetConsents().ConfigureAwait(false);
@@ -93,7 +111,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             {
                 throw new ArgumentNullException(nameof(viewModel));
             }
-            
+
             // 1. Validate the view model.
             await TranslateUserEditView(DefaultLanguage).ConfigureAwait(false);
             var authenticatedUser = await SetUser().ConfigureAwait(false);
@@ -105,9 +123,9 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             }
 
             // 2. Create a new user if he doesn't exist or update the credentials.
-            var resourceOwner = await _userActions.GetUser(authenticatedUser).ConfigureAwait(false);
+            //var resourceOwner = await _getUserOperation.Execute(authenticatedUser).ConfigureAwait(false);
             var subject = authenticatedUser.GetSubject();
-            await _userActions.UpdateCredentials(subject, viewModel.Password).ConfigureAwait(false);
+            await _updateUserCredentialsOperation.Execute(subject, viewModel.Password).ConfigureAwait(false);
             ViewBag.IsUpdated = true;
             return await GetEditView(authenticatedUser).ConfigureAwait(false);
         }
@@ -120,12 +138,13 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             {
                 throw new ArgumentNullException(nameof(viewModel));
             }
-            
+
             await TranslateUserEditView(DefaultLanguage).ConfigureAwait(false);
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             ViewBag.IsUpdated = false;
             ViewBag.IsCreated = false;
-            await _userActions.UpdateTwoFactor(authenticatedUser.GetSubject(), viewModel.SelectedTwoFactorAuthType).ConfigureAwait(false);
+            await _updateUserTwoFactorAuthenticatorOperation.Execute(authenticatedUser.GetSubject(), viewModel.SelectedTwoFactorAuthType)
+                .ConfigureAwait(false);
             ViewBag.IsUpdated = true;
             return await GetEditView(authenticatedUser).ConfigureAwait(false);
         }
@@ -140,7 +159,9 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             var actualScheme = authenticatedUser.Identity.AuthenticationType;
             var profiles = await _profileActions.GetProfiles(authenticatedUser.GetSubject()).ConfigureAwait(false);
-            var authenticationSchemes = (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false)).Where(a => !string.IsNullOrWhiteSpace(a.DisplayName));
+            var authenticationSchemes =
+                (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false)).Where(a =>
+                    !string.IsNullOrWhiteSpace(a.DisplayName));
             var viewModel = new ProfileViewModel();
             if (profiles != null && profiles.Any())
             {
@@ -150,9 +171,11 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                     viewModel.LinkedIdentityProviders.Add(record);
                 }
             }
-            
-            viewModel.UnlinkedIdentityProviders = authenticationSchemes.Where(a => profiles != null && !profiles.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
-                .Select(p => new IdentityProviderViewModel(p.Name)).ToList();
+
+            viewModel.UnlinkedIdentityProviders = authenticationSchemes
+                .Where(a => profiles != null && !profiles.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
+                .Select(p => new IdentityProviderViewModel(p.Name))
+                .ToList();
             return View("Profile", viewModel);
         }
 
@@ -169,13 +192,16 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 throw new ArgumentNullException(nameof(provider));
             }
 
-            var redirectUrl = _urlHelper.AbsoluteAction("LinkCallback", "User", new { area = "UserManagement" });
-            await _authenticationService.ChallengeAsync(HttpContext, provider, new AuthenticationProperties()
-            {
-                RedirectUri = redirectUrl
-            }).ConfigureAwait(false);
+            var redirectUrl = _urlHelper.AbsoluteAction("LinkCallback", "User", new {area = "UserManagement"});
+            await _authenticationService.ChallengeAsync(HttpContext,
+                    provider,
+                    new AuthenticationProperties()
+                    {
+                        RedirectUri = redirectUrl
+                    })
+                .ConfigureAwait(false);
         }
-        
+
         /// <summary>
         /// Callback operation used to link an external account to the local one.
         /// </summary>
@@ -186,16 +212,25 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                    string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
             try
             {
                 var authenticatedUser = await SetUser().ConfigureAwait(false);
-                var externalClaims = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.ExternalCookieName).ConfigureAwait(false);                
-                var resourceOwner = await _profileActions.Link(authenticatedUser.GetSubject(), externalClaims.GetSubject(), externalClaims.Identity.AuthenticationType, false).ConfigureAwait(false);
-                await _authenticationService.SignOutAsync(HttpContext, Constants.CookieNames.ExternalCookieName, new AuthenticationProperties()).ConfigureAwait(false);
-                return RedirectToAction("Profile", "User", new { area = "UserManagement" });
+                var externalClaims = await _authenticationService
+                    .GetAuthenticatedUser(this, Constants.CookieNames.ExternalCookieName)
+                    .ConfigureAwait(false);
+                var resourceOwner = await _profileActions.Link(authenticatedUser.GetSubject(),
+                        externalClaims.GetSubject(),
+                        externalClaims.Identity.AuthenticationType,
+                        false)
+                    .ConfigureAwait(false);
+                await _authenticationService
+                    .SignOutAsync(HttpContext, Constants.CookieNames.ExternalCookieName, new AuthenticationProperties())
+                    .ConfigureAwait(false);
+                return RedirectToAction("Profile", "User", new {area = "UserManagement"});
             }
             catch (ProfileAssignedAnotherAccountException)
             {
@@ -203,7 +238,9 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             }
             catch (Exception)
             {
-                await _authenticationService.SignOutAsync(HttpContext, Constants.CookieNames.ExternalCookieName, new AuthenticationProperties()).ConfigureAwait(false);
+                await _authenticationService
+                    .SignOutAsync(HttpContext, Constants.CookieNames.ExternalCookieName, new AuthenticationProperties())
+                    .ConfigureAwait(false);
                 throw;
             }
         }
@@ -215,21 +252,23 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> LinkProfileConfirmation()
         {
-            var externalClaims = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.ExternalCookieName).ConfigureAwait(false);
+            var externalClaims = await _authenticationService
+                .GetAuthenticatedUser(this, Constants.CookieNames.ExternalCookieName)
+                .ConfigureAwait(false);
             if (externalClaims == null ||
                 externalClaims.Identity == null ||
                 !externalClaims.Identity.IsAuthenticated ||
                 !(externalClaims.Identity is ClaimsIdentity))
             {
-                return RedirectToAction("Profile", "User", new { area = "UserManagement" });
+                return RedirectToAction("Profile", "User", new {area = "UserManagement"});
             }
 
             await SetUser().ConfigureAwait(false);
-            var authenticationType = ((ClaimsIdentity)externalClaims.Identity).AuthenticationType;
+            var authenticationType = ((ClaimsIdentity) externalClaims.Identity).AuthenticationType;
             var viewModel = new LinkProfileConfirmationViewModel(authenticationType);
             return View(viewModel);
         }
-        
+
         /// <summary>
         /// Force to link the external account to the local one.
         /// </summary>
@@ -237,27 +276,35 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> ConfirmProfileLinking()
         {
-            var externalClaims = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.ExternalCookieName).ConfigureAwait(false);
+            var externalClaims = await _authenticationService
+                .GetAuthenticatedUser(this, Constants.CookieNames.ExternalCookieName)
+                .ConfigureAwait(false);
             if (externalClaims == null ||
                 externalClaims.Identity == null ||
                 !externalClaims.Identity.IsAuthenticated ||
                 !(externalClaims.Identity is ClaimsIdentity))
             {
-                return RedirectToAction("Profile", "User", new { area = "UserManagement" });
+                return RedirectToAction("Profile", "User", new {area = "UserManagement"});
             }
 
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             try
             {
-                await _profileActions.Link(authenticatedUser.GetSubject(), externalClaims.GetSubject(), externalClaims.Identity.AuthenticationType, true).ConfigureAwait(false);
-                return RedirectToAction("Profile", "User", new { area = "UserManagement" });
+                await _profileActions.Link(authenticatedUser.GetSubject(),
+                        externalClaims.GetSubject(),
+                        externalClaims.Identity.AuthenticationType,
+                        true)
+                    .ConfigureAwait(false);
+                return RedirectToAction("Profile", "User", new {area = "UserManagement"});
             }
             finally
             {
-                await _authenticationService.SignOutAsync(HttpContext, Constants.CookieNames.ExternalCookieName, new AuthenticationProperties()).ConfigureAwait(false);
+                await _authenticationService
+                    .SignOutAsync(HttpContext, Constants.CookieNames.ExternalCookieName, new AuthenticationProperties())
+                    .ConfigureAwait(false);
             }
         }
-        
+
         /// <summary>
         /// Unlink the external account.
         /// </summary>
@@ -270,7 +317,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             {
                 throw new ArgumentNullException(nameof(id));
             }
-            
+
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             try
             {
@@ -278,11 +325,13 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             }
             catch (IdentityServerException ex)
             {
-                return RedirectToAction("Index", "Error", new { code = ex.Code, message = ex.Message, area = "Shell" });
+                return RedirectToAction("Index", "Error", new {code = ex.Code, message = ex.Message, area = "Shell"});
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Index", "Error", new { code = ErrorCodes.InternalError, message = ex.Message, area = "Shell" });
+                return RedirectToAction("Index",
+                    "Error",
+                    new {code = ErrorCodes.InternalError, message = ex.Message, area = "Shell"});
             }
 
             return await Profile().ConfigureAwait(false);
@@ -290,15 +339,21 @@ namespace SimpleIdentityServer.UserManagement.Controllers
 
         private async Task<IActionResult> GetEditView(ClaimsPrincipal authenticatedUser)
         {
-            var resourceOwner = await _userActions.GetUser(authenticatedUser).ConfigureAwait(false);
+            var resourceOwner = await _getUserOperation.Execute(authenticatedUser).ConfigureAwait(false);
             UpdateResourceOwnerViewModel viewModel = null;
             if (resourceOwner == null)
             {
-                viewModel = BuildViewModel(resourceOwner.TwoFactorAuthentication, authenticatedUser.GetSubject(), authenticatedUser.Claims, false);
+                viewModel = BuildViewModel(resourceOwner.TwoFactorAuthentication,
+                    authenticatedUser.GetSubject(),
+                    authenticatedUser.Claims,
+                    false);
                 return View("Edit", viewModel);
             }
 
-            viewModel = BuildViewModel(resourceOwner.TwoFactorAuthentication, authenticatedUser.GetSubject(), resourceOwner.Claims, true);
+            viewModel = BuildViewModel(resourceOwner.TwoFactorAuthentication,
+                authenticatedUser.GetSubject(),
+                resourceOwner.Claims,
+                true);
             viewModel.IsLocalAccount = true;
             return View("Edit", viewModel);
         }
@@ -306,7 +361,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         private async Task<ActionResult> GetConsents()
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
-            var consents = await _userActions.GetConsents(authenticatedUser).ConfigureAwait(false);
+            var consents = await _getConsentsOperation.Execute(authenticatedUser).ConfigureAwait(false);
             var result = new List<ConsentViewModel>();
             if (consents != null)
             {
@@ -319,9 +374,9 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                     {
                         Id = consent.Id,
                         ClientDisplayName = client == null ? string.Empty : client.ClientName,
-                        AllowedScopeDescriptions = scopes == null || !scopes.Any() ?
-                            new List<string>() :
-                            scopes.Select(g => g.Description).ToList(),
+                        AllowedScopeDescriptions = scopes == null || !scopes.Any()
+                            ? new List<string>()
+                            : scopes.Select(g => g.Description).ToList(),
                         AllowedIndividualClaims = claims ?? new List<string>(),
                         LogoUri = client == null ? string.Empty : client.LogoUri,
                         PolicyUri = client == null ? string.Empty : client.PolicyUri,
@@ -337,39 +392,44 @@ namespace SimpleIdentityServer.UserManagement.Controllers
 
         private async Task TranslateUserEditView(string uiLocales)
         {
-            var translations = await _translationManager.GetTranslationsAsync(uiLocales, new List<string>
-            {
-                Core.Constants.StandardTranslationCodes.LoginCode,
-                Core.Constants.StandardTranslationCodes.EditResourceOwner,
-                Core.Constants.StandardTranslationCodes.NameCode,
-                Core.Constants.StandardTranslationCodes.YourName,
-                Core.Constants.StandardTranslationCodes.PasswordCode,
-                Core.Constants.StandardTranslationCodes.YourPassword,
-                Core.Constants.StandardTranslationCodes.Email,
-                Core.Constants.StandardTranslationCodes.YourEmail,
-                Core.Constants.StandardTranslationCodes.ConfirmCode,
-                Core.Constants.StandardTranslationCodes.TwoAuthenticationFactor,
-                Core.Constants.StandardTranslationCodes.UserIsUpdated,
-                Core.Constants.StandardTranslationCodes.Phone,
-                Core.Constants.StandardTranslationCodes.HashedPassword,
-                Core.Constants.StandardTranslationCodes.CreateResourceOwner,
-                Core.Constants.StandardTranslationCodes.Credentials,
-                Core.Constants.StandardTranslationCodes.RepeatPassword,
-                Core.Constants.StandardTranslationCodes.Claims,
-                Core.Constants.StandardTranslationCodes.UserIsCreated,
-                Core.Constants.StandardTranslationCodes.TwoFactor,
-                Core.Constants.StandardTranslationCodes.NoTwoFactorAuthenticator,
-                Core.Constants.StandardTranslationCodes.NoTwoFactorAuthenticatorSelected
-            }).ConfigureAwait(false);
+            var translations = await _translationManager.GetTranslationsAsync(uiLocales,
+                    new List<string>
+                    {
+                        Core.Constants.StandardTranslationCodes.LoginCode,
+                        Core.Constants.StandardTranslationCodes.EditResourceOwner,
+                        Core.Constants.StandardTranslationCodes.NameCode,
+                        Core.Constants.StandardTranslationCodes.YourName,
+                        Core.Constants.StandardTranslationCodes.PasswordCode,
+                        Core.Constants.StandardTranslationCodes.YourPassword,
+                        Core.Constants.StandardTranslationCodes.Email,
+                        Core.Constants.StandardTranslationCodes.YourEmail,
+                        Core.Constants.StandardTranslationCodes.ConfirmCode,
+                        Core.Constants.StandardTranslationCodes.TwoAuthenticationFactor,
+                        Core.Constants.StandardTranslationCodes.UserIsUpdated,
+                        Core.Constants.StandardTranslationCodes.Phone,
+                        Core.Constants.StandardTranslationCodes.HashedPassword,
+                        Core.Constants.StandardTranslationCodes.CreateResourceOwner,
+                        Core.Constants.StandardTranslationCodes.Credentials,
+                        Core.Constants.StandardTranslationCodes.RepeatPassword,
+                        Core.Constants.StandardTranslationCodes.Claims,
+                        Core.Constants.StandardTranslationCodes.UserIsCreated,
+                        Core.Constants.StandardTranslationCodes.TwoFactor,
+                        Core.Constants.StandardTranslationCodes.NoTwoFactorAuthenticator,
+                        Core.Constants.StandardTranslationCodes.NoTwoFactorAuthenticatorSelected
+                    })
+                .ConfigureAwait(false);
 
             ViewBag.Translations = translations;
         }
 
-        private UpdateResourceOwnerViewModel BuildViewModel(string twoFactorAuthType, string subject, IEnumerable<Claim> claims, bool isLocalAccount)
+        private UpdateResourceOwnerViewModel BuildViewModel(string twoFactorAuthType,
+            string subject,
+            IEnumerable<Claim> claims,
+            bool isLocalAccount)
         {
             var editableClaims = new Dictionary<string, string>();
             var notEditableClaims = new Dictionary<string, string>();
-            foreach(var claim in claims)
+            foreach (var claim in claims)
             {
                 if (Core.Jwt.Constants.NotEditableResourceOwnerClaimNames.Contains(claim.Type))
                 {
@@ -380,10 +440,12 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                     editableClaims.Add(claim.Type, claim.Value);
                 }
             }
-            
-            var result = new UpdateResourceOwnerViewModel(subject, editableClaims, notEditableClaims, isLocalAccount);
-            result.SelectedTwoFactorAuthType = twoFactorAuthType;
-            result.TwoFactorAuthTypes = _twoFactorAuthenticationHandler.GetAll().Select(s => s.Name).ToList();
+
+            var result = new UpdateResourceOwnerViewModel(subject, editableClaims, notEditableClaims, isLocalAccount)
+            {
+                SelectedTwoFactorAuthType = twoFactorAuthType,
+                TwoFactorAuthTypes = _twoFactorAuthenticationHandler.GetAll().Select(s => s.Name).ToList()
+            };
             return result;
         }
     }

@@ -33,9 +33,8 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         public string HonorificSuffix { get; set; }
     }
 
-    /*
     [DataContract]
-    public class Address : MultiValueAttrResponse
+    public class Address
     {
         [DataMember(Name = ScimConstants.AddressResponseNames.Formatted)]
         public string Formatted { get; set; }
@@ -50,5 +49,4 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         [DataMember(Name = ScimConstants.AddressResponseNames.Country)]
         public string Country { get; set; }
     }
-    */
 }

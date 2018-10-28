@@ -11,6 +11,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
 {
+    using System.Threading;
+
     public class GetUserProfilesActionFixture
     {
         private Mock<IProfileRepository> _profileRepositoryStub;
@@ -47,7 +49,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             const string subject = "subject";
             // ARRANGE
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwner()));
+            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
             await _getProfileAction.Execute(subject).ConfigureAwait(false);

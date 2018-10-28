@@ -90,10 +90,10 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
                 jweProtectedHeader);
 
             var base64EncodedjweProtectedHeaderSerialized = jweProtectedHeader.SerializeWithDataContract().Base64Encode();
-            var base64EncodedJweEncryptedKey = encryptionResult.EncryptedContentEncryptionKey.Base64EncodeBytes();
-            var base64EncodedIv = encryptionResult.Iv.Base64EncodeBytes();
-            var base64EncodedCipherText = encryptionResult.CipherText.Base64EncodeBytes();
-            var base64EncodedAuthenticationTag = encryptionResult.AuthenticationTag.Base64EncodeBytes();
+            var base64EncodedJweEncryptedKey = encryptionResult.EncryptedContentEncryptionKey.ToBase64Simplified();
+            var base64EncodedIv = encryptionResult.Iv.ToBase64Simplified();
+            var base64EncodedCipherText = encryptionResult.CipherText.ToBase64Simplified();
+            var base64EncodedAuthenticationTag = encryptionResult.AuthenticationTag.ToBase64Simplified();
 
             return base64EncodedjweProtectedHeaderSerialized + "." +
                    base64EncodedJweEncryptedKey + "." +

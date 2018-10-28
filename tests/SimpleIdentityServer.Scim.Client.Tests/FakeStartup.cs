@@ -23,7 +23,13 @@ using System.Reflection;
 
 namespace SimpleIdentityServer.Scim.Client.Tests
 {
+    using Logging;
+    using Moq;
+    using SimpleIdentityServer.Core;
     using SimpleIdentityServer.Core.Common;
+    using SimpleIdentityServer.Core.Common.Repositories;
+    using SimpleIdentityServer.Core.Services;
+    using SimpleIdentityServer.Core.WebSite.User.Actions;
 
     public class FakeStartup
     {
@@ -31,9 +37,11 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScimHost(new Host.ScimServerConfiguration
+            services.AddSimpleIdentityServerCore()
+                .AddOpenidLogging()
+                .AddScimHost(new Host.ScimServerConfiguration
             {
-                
+
             });
             services.AddAuthentication(opts =>
             {
@@ -42,15 +50,19 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             }).AddFakeCustomAuth(o => { });
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("scim_manage", policy => policy.RequireAssertion((ctx) => true));
-                options.AddPolicy("scim_read", policy => policy.RequireAssertion((ctx) => true));
+                options.AddPolicy(ScimConstants.ScimPolicies.ScimManage, policy => policy.RequireAssertion((ctx) => true));
+                options.AddPolicy(ScimConstants.ScimPolicies.ScimRead, policy => policy.RequireAssertion((ctx) => true));
                 options.AddPolicy("authenticated", (policy) =>
                 {
                     policy.AddAuthenticationSchemes(DefaultSchema);
                     policy.RequireAuthenticatedUser();
                 });
             });
+            services.AddTransient<IAddUserOperation, AddUserOperation>();
+            //services.AddSingleton(sp => new Mock<IResourceOwnerRepository>().Object);
+            //services.AddSingleton(sp => new Mock<IClaimRepository>().Object);
             services.AddTransient<IEventPublisher, DefaultEventPublisher>();
+            services.AddSingleton<ISubjectBuilder>(new DefaultSubjectBuilder());
             var mvc = services.AddMvc();
             var parts = mvc.PartManager.ApplicationParts;
             parts.Clear();

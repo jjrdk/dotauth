@@ -11,6 +11,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
 {
+    using System.Threading;
+
     public class LinkProfileActionFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
@@ -34,7 +36,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
         {
             // ARRANGE
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult((ResourceOwner)null));
+            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", false)).ConfigureAwait(false);
@@ -50,7 +52,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
         {
             // ARRANGE
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwner()));
+            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new ResourceOwner()));
             _profileRepositoryStub.Setup(p => p.Get(It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwnerProfile
             {
                 ResourceOwnerId = "otherSubject"
@@ -68,7 +70,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
         {
             // ARRANGE
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwner()));
+            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new ResourceOwner()));
             _profileRepositoryStub.Setup(p => p.Get(It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwnerProfile
             {
                 ResourceOwnerId = "localSubject"
@@ -88,7 +90,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
         {
             // ARRANGE
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwner()));
+            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new ResourceOwner()));
             _profileRepositoryStub.Setup(p => p.Get(It.IsAny<string>())).Returns(Task.FromResult((ResourceOwnerProfile)null));
 
             // ACT
@@ -103,7 +105,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
         {
             // ARRANGE
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwner()));
+            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new ResourceOwner()));
             _profileRepositoryStub.Setup(p => p.Get(It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwnerProfile
             {
                 ResourceOwnerId = "otherSubject"

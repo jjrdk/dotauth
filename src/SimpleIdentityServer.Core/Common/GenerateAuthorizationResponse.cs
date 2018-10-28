@@ -25,8 +25,6 @@ using SimpleIdentityServer.Store;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Common
@@ -233,32 +231,34 @@ namespace SimpleIdentityServer.Core.Common
             }
 
             var salt = Guid.NewGuid().ToString();
-            var bytes = Encoding.UTF8.GetBytes(clientId + originUrl + sessionId + salt);
-            byte[] hash;
-            using (var sha = SHA256.Create())
-            {
-                hash = sha.ComputeHash(bytes);
-            }
+            var s = $"{clientId}{originUrl}{sessionId}{salt}";
+            var hex = s.ToSha256Hash();
+            //var bytes = Encoding.UTF8.GetBytes(s);
+            //byte[] hash;
+            //using (var sha = SHA256.Create())
+            //{
+            //    hash = sha.ComputeHash(bytes);
+            //}
 
-            var hex = ToHexString(hash);
+            //var hex = ToHexString(hash);
             return hex.Base64Encode() + "==." + salt;
         }
 
-        public static string ToHexString(IEnumerable<byte> arr)
-        {
-            if (arr == null)
-            {
-                throw new ArgumentNullException(nameof(arr));
-            }
+        //public static string ToHexString(IEnumerable<byte> arr)
+        //{
+        //    if (arr == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(arr));
+        //    }
 
-            var sb = new StringBuilder();
-            foreach (var s in arr)
-            {
-                sb.Append(s.ToString("x2"));
-            }
+        //    var sb = new StringBuilder();
+        //    foreach (var s in arr)
+        //    {
+        //        sb.Append(s.ToString("x2"));
+        //    }
 
-            return sb.ToString();
-        }
+        //    return sb.ToString();
+        //}
 
         /// <summary>
         /// Generate the JWS payload for identity token.

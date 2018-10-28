@@ -19,6 +19,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 {
+    using System.Threading;
+
     public sealed class ConfirmConsentFixture
     {
         private Mock<IConsentRepository> _consentRepositoryFake;
@@ -88,7 +90,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(scopeNames);
-            _resourceOwnerRepositoryFake.Setup(r => r.GetAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryFake.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(resourceOwner));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
@@ -154,7 +156,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(new List<string>());
             _scopeRepositoryFake.Setup(s => s.SearchByNamesAsync(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
-            _resourceOwnerRepositoryFake.Setup(r => r.GetAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryFake.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(resourceOwner));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
@@ -218,7 +220,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(new List<string>());
             _scopeRepositoryFake.Setup(s => s.SearchByNamesAsync(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
-            _resourceOwnerRepositoryFake.Setup(r => r.GetAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryFake.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(resourceOwner));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);

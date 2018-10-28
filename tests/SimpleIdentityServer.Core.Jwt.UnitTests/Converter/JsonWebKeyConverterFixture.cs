@@ -275,8 +275,8 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
             {
                 var parameters = rsa.ExportParameters(false);
 
-                jsonWebKey.Add(Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, parameters.Modulus.Base64EncodeBytes());
-                jsonWebKey.Add(Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, parameters.Exponent.Base64EncodeBytes());
+                jsonWebKey.Add(Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, parameters.Modulus.ToBase64Simplified());
+                jsonWebKey.Add(Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, parameters.Exponent.ToBase64Simplified());
 
                 var expectedXml = RsaExtensions.ToXmlString(rsa, false);
 

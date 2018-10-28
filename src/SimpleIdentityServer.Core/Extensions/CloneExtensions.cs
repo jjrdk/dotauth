@@ -37,9 +37,9 @@ namespace SimpleIdentityServer.Core.Extensions
             {
                 Claims =  consent.Claims == null ? new List<string>() : consent.Claims.ToList(),
                 Client = consent.Client?.Copy(),
-                GrantedScopes = consent.GrantedScopes == null ? null : consent.GrantedScopes.Select(s => s.Copy()).ToList(),
+                GrantedScopes = consent.GrantedScopes?.Select(s => s.Copy()).ToList(),
                 Id =  consent.Id,
-                ResourceOwner = consent.ResourceOwner == null ? null : consent.ResourceOwner.Copy()
+                ResourceOwner = consent.ResourceOwner?.Copy()
             };
         }
 
@@ -63,7 +63,8 @@ namespace SimpleIdentityServer.Core.Extensions
                 IsLocalAccount = user.IsLocalAccount,
                 Password = user.Password,
                 TwoFactorAuthentication = user.TwoFactorAuthentication,
-                UpdateDateTime = user.UpdateDateTime
+                UpdateDateTime = user.UpdateDateTime,
+                UserProfile = user.UserProfile
             };
         }
 

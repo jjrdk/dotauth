@@ -18,7 +18,6 @@ using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
-using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.OpenId.Logging;
 using System;
@@ -29,7 +28,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
 {
+    using System.Collections.Generic;
     using Core.Common;
+    using Core.WebSite.User.Actions;
 
     [Area(Constants.AMR)]
     public class AuthenticateController : BaseAuthenticateController
@@ -47,30 +48,36 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
             IEventPublisher eventPublisher,
             IAuthenticationService authenticationService,
             IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IUserActions userActions,
+            IAddUserOperation userActions,
+            IGetUserOperation getUserOperation,
+            IUpdateUserClaimsOperation updateUserClaimsOperation,
             IPayloadSerializer payloadSerializer,
             IConfigurationService configurationService,
             IAuthenticateHelper authenticateHelper,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             ISubjectBuilder subjectBuilder,
-            BasicAuthenticateOptions basicAuthenticateOptions) : base(authenticateActions,
-            profileActions,
-            dataProtectionProvider,
-            translationManager,
-            simpleIdentityServerEventSource,
-            urlHelperFactory,
-            actionContextAccessor,
-            eventPublisher,
-            authenticationService,
-            authenticationSchemeProvider,
-            userActions,
-            payloadSerializer,
-            configurationService,
-            authenticateHelper,
-            twoFactorAuthenticationHandler,
-            subjectBuilder,
-            basicAuthenticateOptions)
+            BasicAuthenticateOptions basicAuthenticateOptions)
+            : base(
+                authenticateActions,
+                profileActions,
+                dataProtectionProvider,
+                translationManager,
+                simpleIdentityServerEventSource,
+                urlHelperFactory,
+                actionContextAccessor,
+                eventPublisher,
+                authenticationService,
+                authenticationSchemeProvider,
+                userActions,
+                getUserOperation,
+                updateUserClaimsOperation,
+                payloadSerializer,
+                configurationService,
+                authenticateHelper,
+                twoFactorAuthenticationHandler,
+                subjectBuilder,
+                basicAuthenticateOptions)
         {
             _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
         }

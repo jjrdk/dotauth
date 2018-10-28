@@ -2,20 +2,20 @@
 using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Core.WebSite.User;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
 {
+    using Core.Services;
+    using Core.WebSite.User.Actions;
+
     public class SmsAuthenticationOperationFixture
     {
         private Mock<IGenerateAndSendSmsCodeOperation> _generateAndSendSmsCodeOperationStub;
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private Mock<IUserActions> _userActionsStub;
+        private Mock<IAddUserOperation> _userActionsStub;
         private Mock<ISubjectBuilder> _subjectBuilderStub;
         private SmsAuthenticationOptions _smsAuthenticationOptions;
         private ISmsAuthenticationOperation _smsAuthenticationOperation;
@@ -57,27 +57,23 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
         {
             // ARRANGE
             const string phone = "phone";
-            var resourceOwner = new ResourceOwner
-            {
-                Id = "id"
-            };
+
             InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(p => p.GetResourceOwnerByClaim("phone", phone)).Returns(() => Task.FromResult((ResourceOwner)null));
-            _smsAuthenticationOptions.IsScimResourceAutomaticallyCreated = true;
             _smsAuthenticationOptions.AuthenticationOptions = new Basic.BasicAuthenticationOptions
             {
                 AuthorizationWellKnownConfiguration = "auth",
                 ClientId = "clientid",
                 ClientSecret = "clientsecret"
             };
-            _smsAuthenticationOptions.ScimBaseUrl = "scim";
+            _smsAuthenticationOptions.ScimBaseUrl = new Uri("https://scim");
 
             // ACT
             await _smsAuthenticationOperation.Execute(phone).ConfigureAwait(false);
 
             // ASSERT
             _generateAndSendSmsCodeOperationStub.Verify(s => s.Execute(phone));
-            _userActionsStub.Verify(u => u.AddUser(It.IsAny<AddUserParameter>(), It.IsAny<AuthenticationParameter>(), It.IsAny<string>(), true, null));
+            _userActionsStub.Verify(u => u.Execute(It.IsAny<ResourceOwner>(), It.IsAny<Uri>()));
         }
 
         [Fact]
@@ -85,13 +81,10 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
         {
             // ARRANGE
             const string phone = "phone";
-            var resourceOwner = new ResourceOwner
-            {
-                Id = "id"
-            };
+
             InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(p => p.GetResourceOwnerByClaim("phone", phone)).Returns(() => Task.FromResult((ResourceOwner)null));
-            _smsAuthenticationOptions.IsScimResourceAutomaticallyCreated = false;
+            _smsAuthenticationOptions.ScimBaseUrl = null;
             _smsAuthenticationOptions.AuthenticationOptions = new Basic.BasicAuthenticationOptions();
 
             // ACT
@@ -99,7 +92,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
 
             // ASSERT
             _generateAndSendSmsCodeOperationStub.Verify(s => s.Execute(phone));
-            _userActionsStub.Verify(u => u.AddUser(It.IsAny<AddUserParameter>(), null, null, false, null));
+            _userActionsStub.Verify(u => u.Execute(It.IsAny<ResourceOwner>(), null));
         }
 
         private void InitializeFakeObjects()
@@ -107,7 +100,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
             _generateAndSendSmsCodeOperationStub = new Mock<IGenerateAndSendSmsCodeOperation>();
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             _subjectBuilderStub = new Mock<ISubjectBuilder>();
-            _userActionsStub = new Mock<IUserActions>();
+            _userActionsStub = new Mock<IAddUserOperation>();
             _smsAuthenticationOptions = new SmsAuthenticationOptions();
             _smsAuthenticationOperation = new SmsAuthenticationOperation(
                 _generateAndSendSmsCodeOperationStub.Object,

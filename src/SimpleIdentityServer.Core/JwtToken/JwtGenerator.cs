@@ -716,7 +716,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             var hashingResultBytes = alg.ComputeHash(Encoding.UTF8.GetBytes(parameter));
             var split = ByteManipulator.SplitByteArrayInHalf(hashingResultBytes);
             var firstPart = split[0];
-            return firstPart.Base64EncodeBytes();
+            return firstPart.ToBase64Simplified();
         }
     }
 }

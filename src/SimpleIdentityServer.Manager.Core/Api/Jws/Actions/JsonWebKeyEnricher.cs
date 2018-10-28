@@ -16,7 +16,6 @@
 
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
@@ -117,9 +116,9 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
             }
 #endif
             // Export the modulus
-            var modulus = rsaParameters.Modulus.Base64EncodeBytes();
+            var modulus = rsaParameters.Modulus.ToBase64Simplified();
             // Export the exponent
-            var exponent = rsaParameters.Exponent.Base64EncodeBytes();
+            var exponent = rsaParameters.Exponent.ToBase64Simplified();
 
             result.Add(SimpleIdentityServer.Core.Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
             result.Add(SimpleIdentityServer.Core.Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);

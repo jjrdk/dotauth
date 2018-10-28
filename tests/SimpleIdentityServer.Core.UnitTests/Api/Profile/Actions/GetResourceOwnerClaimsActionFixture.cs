@@ -8,6 +8,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
 {
+    using System.Threading;
+
     public class GetResourceOwnerClaimsActionFixture
     {
         private Mock<IProfileRepository> _profileRepositoryStub;
@@ -45,7 +47,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             // INITIALIZE
             InitializeFakeObjects();
             _profileRepositoryStub.Setup(p => p.Get(It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwnerProfile()));
-            _resourceOwnerRepositoryStub.Setup(p => p.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwner
+            _resourceOwnerRepositoryStub.Setup(p => p.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new ResourceOwner
             {
                 Id = "id"
             }));

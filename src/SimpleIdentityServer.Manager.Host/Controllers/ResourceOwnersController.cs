@@ -16,41 +16,47 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Manager.Common.Requests;
-using SimpleIdentityServer.Manager.Core.Api.ResourceOwners;
 using SimpleIdentityServer.Manager.Host.Extensions;
-using System;
 using System.Net;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Host.Controllers
 {
+    using Core.Errors;
+    using Core.Exceptions;
+    using SimpleIdentityServer.Core.Common.Models;
+    using SimpleIdentityServer.Core.Common.Repositories;
+    using SimpleIdentityServer.Core.Helpers;
+    using SimpleIdentityServer.Core.WebSite.User.Actions;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using ErrorCodes = SimpleIdentityServer.Core.Errors.ErrorCodes;
+
     [Route(Constants.EndPoints.ResourceOwners)]
     public class ResourceOwnersController : Controller
     {
-        private readonly IResourceOwnerActions _resourceOwnerActions;
+        private readonly IResourceOwnerRepository _resourceOwnerRepository;
+        private readonly IClaimRepository _claimRepository;
+        private readonly IAddUserOperation _addUserOperation;
 
         public ResourceOwnersController(
-            IResourceOwnerActions resourceOwnerActions)
+            IResourceOwnerRepository resourceOwnerRepository,
+            IClaimRepository claimRepository,
+            IAddUserOperation addUserOperation)
         {
-            _resourceOwnerActions = resourceOwnerActions;
+            _resourceOwnerRepository = resourceOwnerRepository;
+            _claimRepository = claimRepository;
+            _addUserOperation = addUserOperation;
         }
 
         [HttpGet]
         [Authorize("manager")]
         public async Task<ActionResult> Get()
         {
-            //if (!await _representationManager.CheckRepresentationExistsAsync(this, StoreNames.GetResourceOwners))
-            //{
-            //    return new ContentResult
-            //    {
-            //        StatusCode = 412
-            //    };
-            //}
-
-            var content = (await _resourceOwnerActions.GetResourceOwners().ConfigureAwait(false)).ToDtos();
+            var content = (await _resourceOwnerRepository.GetAllAsync().ConfigureAwait(false)).ToDtos();
             //await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners);
             return new OkObjectResult(content);
         }
@@ -63,18 +69,14 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             {
                 return BuildError(ErrorCodes.InvalidRequestCode, "the id parameter must be specified", HttpStatusCode.BadRequest);
             }
-            
-            //if (!await _representationManager.CheckRepresentationExistsAsync(this, StoreNames.GetResourceOwner + id))
-            //{
-            //    return new ContentResult
-            //    {
-            //        StatusCode = 412
-            //    };
-            //}
 
-            var content = (await _resourceOwnerActions.GetResourceOwner(id).ConfigureAwait(false)).ToDto();
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + id);
-            return new OkObjectResult(content);
+            var resourceOwner = await _resourceOwnerRepository.Get(id).ConfigureAwait(false);
+            if (resourceOwner == null)
+            {
+                throw new IdentityServerManagerException(Core.Errors.ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, id));
+            }
+
+            return Ok(resourceOwner.ToDto());
         }
 
         [HttpDelete("{id}")]
@@ -86,37 +88,98 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "the id parameter must be specified", HttpStatusCode.BadRequest);
             }
 
-            await _resourceOwnerActions.Delete(id).ConfigureAwait(false);
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + id, false);
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners, false);
-            return new NoContentResult();
+            if (!await _resourceOwnerRepository.Delete(id).ConfigureAwait(false))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest);
+            }
+
+            return Ok();
         }
 
         [HttpPut("claims")]
         [Authorize("manager")]
-        public async Task<ActionResult> UpdateClaims([FromBody] UpdateResourceOwnerClaimsRequest updateResourceOwnerClaimsRequest)
+        public async Task<ActionResult> UpdateClaims([FromBody] UpdateResourceOwnerClaimsRequest request)
         {
-            if (updateResourceOwnerClaimsRequest == null)
+            if (request == null)
             {
                 return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
-            await _resourceOwnerActions.UpdateResourceOwnerClaims(updateResourceOwnerClaimsRequest.ToParameter()).ConfigureAwait(false);
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + updateResourceOwnerClaimsRequest.Login, false);
+            //await _resourceOwnerActions.UpdateResourceOwnerClaims(request.ToParameter()).ConfigureAwait(false);
+            //await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + request.Login, false);
+
+            var resourceOwner = await _resourceOwnerRepository.Get(request.Login).ConfigureAwait(false);
+            if (resourceOwner == null)
+            {
+                throw new IdentityServerManagerException(Core.Errors.ErrorCodes.InvalidParameterCode, string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Login));
+            }
+
+            resourceOwner.UpdateDateTime = DateTime.UtcNow;
+            var claims = new List<Claim>();
+            var existingClaims = (await _claimRepository.GetAllAsync().ConfigureAwait(false)).ToArray();
+            if (existingClaims != null && existingClaims.Any() && request.Claims != null && request.Claims.Any())
+            {
+                foreach (var claim in request.Claims)
+                {
+                    var cl = existingClaims.FirstOrDefault(c => c.Code == claim.Key);
+                    if (cl == null)
+                    {
+                        continue;
+                    }
+
+                    claims.Add(new Claim(claim.Key, claim.Value));
+                }
+            }
+
+            resourceOwner.Claims = claims;
+            Claim updatedClaim, subjectClaim;
+            if (((updatedClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt)) != null))
+            {
+                resourceOwner.Claims.Remove(updatedClaim);
+            }
+
+            if (((subjectClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject)) != null))
+            {
+                resourceOwner.Claims.Remove(subjectClaim);
+            }
+
+            resourceOwner.Claims.Add(new Claim(SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, request.Login));
+            resourceOwner.Claims.Add(new Claim(SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
+            var result = await _resourceOwnerRepository.UpdateAsync(resourceOwner).ConfigureAwait(false);
+            if (!result)
+            {
+                return BadRequest(ErrorDescriptions.TheClaimsCannotBeUpdated);
+                //throw new IdentityServerManagerException(Core.Errors.ErrorCodes.InternalErrorCode, ErrorDescriptions.TheClaimsCannotBeUpdated);
+            }
+
             return new OkResult();
         }
 
         [HttpPut("password")]
         [Authorize("manager")]
-        public async Task<IActionResult> UpdatePassword([FromBody] UpdateResourceOwnerPasswordRequest updateResourceOwnerPasswordRequest)
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdateResourceOwnerPasswordRequest request)
         {
-            if (updateResourceOwnerPasswordRequest == null)
+            if (request == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BadRequest("Parameter in request body not valid");
             }
 
-            await _resourceOwnerActions.UpdateResourceOwnerPassword(updateResourceOwnerPasswordRequest.ToParameter()).ConfigureAwait(false);
+            //await _resourceOwnerActions.UpdateResourceOwnerPassword(updateResourceOwnerPasswordRequest.ToParameter()).ConfigureAwait(false);
             //await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + updateResourceOwnerPasswordRequest.Login, false);
+            var resourceOwner = await _resourceOwnerRepository.Get(request.Login).ConfigureAwait(false);
+            if (resourceOwner == null)
+            {
+                throw new IdentityServerManagerException(Core.Errors.ErrorCodes.InvalidParameterCode, string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Login));
+            }
+
+            resourceOwner.Password = request.Password.ToSha256Hash();
+            var result = await _resourceOwnerRepository.UpdateAsync(resourceOwner).ConfigureAwait(false);
+            if (!result)
+            {
+                return BadRequest(ErrorDescriptions.ThePasswordCannotBeUpdated);
+                //throw new IdentityServerManagerException(Core.Errors.ErrorCodes.InternalErrorCode, ErrorDescriptions.ThePasswordCannotBeUpdated);
+            }
+
             return new OkResult();
         }
 
@@ -126,12 +189,21 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         {
             if (addResourceOwnerRequest == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BadRequest("Parameter in request body not valid");
             }
 
-            await _resourceOwnerActions.Add(addResourceOwnerRequest.ToParameter()).ConfigureAwait(false);
+            if (await _addUserOperation.Execute(
+                new ResourceOwner
+                {
+                    Id = addResourceOwnerRequest.Subject,
+                    Password = addResourceOwnerRequest.Password
+                }).ConfigureAwait(false))
+            {
+                NoContent();
+            }
+            //await _resourceOwnerActions.Add(addResourceOwnerRequest.ToParameter()).ConfigureAwait(false);
             //await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners, false);
-            return new NoContentResult();
+            return BadRequest();
         }
 
         [HttpPost(".search")]
@@ -140,13 +212,13 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         {
             if (searchResourceOwnersRequest == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequestCode, "Parameter in request body not valid", HttpStatusCode.BadRequest);
             }
 
-            var result = await _resourceOwnerActions.Search(searchResourceOwnersRequest.ToParameter()).ConfigureAwait(false);
+            var result = await _resourceOwnerRepository.Search(searchResourceOwnersRequest.ToParameter()).ConfigureAwait(false);
             return new OkObjectResult(result.ToDto());
         }
-        
+
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
             var error = new SimpleIdentityServer.Common.Dtos.Responses.ErrorResponse

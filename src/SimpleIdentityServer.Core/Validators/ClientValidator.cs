@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace SimpleIdentityServer.Core.Validators
 {
+    using Helpers;
+
     public class ClientValidator : IClientValidator
     {        
         public IEnumerable<string> GetRedirectionUrls(Client client, params string[] urls)
@@ -97,8 +97,9 @@ namespace SimpleIdentityServer.Core.Validators
                 return codeVerifier == code.CodeChallenge;
             }
 
-            var hashed = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes(codeVerifier));
-            var codeChallenge = hashed.Base64EncodeBytes();
+            var codeChallenge = codeVerifier.ToSha256SimplifiedBase64(Encoding.ASCII);
+            //var hashed = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes(codeVerifier));
+            //var codeChallenge = hashed.ToBase64Simplified();
             return code.CodeChallenge == codeChallenge;
         }
     }

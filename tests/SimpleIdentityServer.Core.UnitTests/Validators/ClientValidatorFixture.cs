@@ -245,7 +245,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             // ARRANGE
             InitializeMockingObjects();
             var hashed = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes("code"));
-            var codeChallenge = hashed.Base64EncodeBytes();
+            var codeChallenge = hashed.ToBase64Simplified();
 
             // ACT
             var result = _clientValidator.CheckPkce(new Client
@@ -261,7 +261,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             Assert.True(result);
         }
 
-        public void InitializeMockingObjects()
+        private void InitializeMockingObjects()
         {
             _clientValidator = new ClientValidator();
         }

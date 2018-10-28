@@ -1,10 +1,12 @@
 ﻿namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
-    using System.Threading.Tasks;
     using Parameters;
+    using System;
+    using System.Threading.Tasks;
+    using Common.Models;
 
     public interface IAddUserOperation
     {
-        Task<bool> Execute(AddUserParameter addUserParameter, AuthenticationParameter authenticationParameter, string scimBaseUrl = null, bool addScimResource = false, string issuer = null);
+        Task<bool> Execute(ResourceOwner resourceOwner, Uri scimBaseUrl = null);
     }
 }

@@ -1,10 +1,17 @@
 ﻿namespace SimpleIdentityServer.Core.Common.DTOs
 {
+    using System;
     using System.Runtime.Serialization;
 
     [DataContract]
-    public class UserResourceResponse : IdentifiedScimResource
+    public class ScimUser : IdentifiedScimResource
     {
+        public ScimUser()
+        {
+            Id = Guid.NewGuid().ToString("N");
+            Schemas = new[] { ScimConstants.SchemaUrns.User };
+        }
+
         [DataMember(Name = ScimConstants.UserResourceResponseNames.UserName)]
         public string UserName { get; set; }
         [DataMember(Name = ScimConstants.UserResourceResponseNames.Name)]
@@ -35,25 +42,24 @@
         public bool Active { get; set; }
         [DataMember(Name = ScimConstants.UserResourceResponseNames.Password)]
         public string Password { get; set; }
-        /*
+
         [DataMember(Name = ScimConstants.UserResourceResponseNames.Emails)]
-        public IEnumerable<MultiValueAttrResponse> Emails { get; set; }
-        [DataMember(Name = ScimConstants.UserResourceResponseNames.Phones)]
-        public IEnumerable<MultiValueAttrResponse> Phones { get; set; }
+        public TypedString[] Emails { get; set; }
+        [DataMember(Name = ScimConstants.UserResourceResponseNames.PhoneNumbers)]
+        public TypedString[] PhoneNumbers { get; set; }
         [DataMember(Name = ScimConstants.UserResourceResponseNames.Ims)]
-        public IEnumerable<MultiValueAttrResponse> Ims { get; set; }
+        public TypedString[] Ims { get; set; }
         [DataMember(Name = ScimConstants.UserResourceResponseNames.Photos)]
-        public IEnumerable<MultiValueAttrResponse> Photos { get; set; }
+        public TypedString[] Photos { get; set; }
         [DataMember(Name = ScimConstants.UserResourceResponseNames.Addresses)]
-        public IEnumerable<AddressResponse> Addresses { get; set; }
+        public Address[] Addresses { get; set; }
         [DataMember(Name = ScimConstants.UserResourceResponseNames.Groups)]
-        public IEnumerable<AddressResponse> Groups { get; set; }
+        public string[] Groups { get; set; }
         [DataMember(Name = ScimConstants.UserResourceResponseNames.Entitlements)]
-        public IEnumerable<MultiValueAttrResponse> Entitlements { get; set; }
+        public string Entitlements { get; set; }
         [DataMember(Name = ScimConstants.UserResourceResponseNames.Roles)]
-        public IEnumerable<MultiValueAttrResponse> Roles { get; set; }
+        public string Roles { get; set; }
         [DataMember(Name = ScimConstants.UserResourceResponseNames.X509Certificates)]
-        public IEnumerable<MultiValueAttrResponse> X509Certificates { get; set; }
-        */
+        public string[] X509Certificates { get; set; }
     }
 }

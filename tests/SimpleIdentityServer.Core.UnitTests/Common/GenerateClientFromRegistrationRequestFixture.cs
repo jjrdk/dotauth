@@ -58,8 +58,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
 
             // ASSERT
             _registrationParameterValidatorFake.Verify(r => r.Validate(registrationParameter));
-            Assert.True(client.ResponseTypes.Contains(ResponseType.code));
-            Assert.True(client.GrantTypes.Contains(GrantType.authorization_code));
+            Assert.Contains(ResponseType.code, client.ResponseTypes);
+            Assert.Contains(GrantType.authorization_code, client.GrantTypes);
             Assert.True(client.ApplicationType == ApplicationTypes.web);
             Assert.True(client.IdTokenSignedResponseAlg == Jwt.Constants.JwsAlgNames.RS256);
             Assert.True(client.IdTokenEncryptedResponseAlg == string.Empty);
@@ -200,8 +200,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             // ASSERT
             _registrationParameterValidatorFake.Verify(r => r.Validate(registrationParameter));
 
-            Assert.True(client.ResponseTypes.Contains(ResponseType.token));
-            Assert.True(client.GrantTypes.Contains(GrantType.@implicit));
+            Assert.Contains(ResponseType.token, client.ResponseTypes);
+            Assert.Contains(GrantType.@implicit, client.GrantTypes);
             Assert.True(client.ApplicationType == ApplicationTypes.native);
             Assert.True(client.ClientName == clientName);
             Assert.True(client.ClientUri == clientUri);

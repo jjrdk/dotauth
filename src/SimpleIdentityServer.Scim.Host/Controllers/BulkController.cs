@@ -16,39 +16,158 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core;
-using SimpleIdentityServer.Scim.Core.Apis;
 using SimpleIdentityServer.Scim.Host.Extensions;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Host.Controllers
 {
+    using Core.Results;
+    using SimpleIdentityServer.Core.Common;
+    using SimpleIdentityServer.Core.Common.DTOs;
+    using SimpleIdentityServer.Core.Common.Models;
+
     [Route(Constants.RoutePaths.BulkController)]
     public class BulkController : Controller
     {
-        private readonly IBulkAction _bulkAction;
+        private readonly BulkAction _bulkAction = new BulkAction();
 
-        public BulkController(IBulkAction bulkAction)
-        {
-            _bulkAction = bulkAction;
-        }
-
-        [Authorize("scim_manage")]
+        [Authorize(ScimConstants.ScimPolicies.ScimManage)]
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] JObject jObj)
+        public Task<IActionResult> Post([FromBody] BulkRequest bulk)
         {
-            if (jObj == null)
+            if (bulk == null)
             {
-                throw new ArgumentNullException(nameof(jObj));
+                throw new ArgumentNullException(nameof(bulk));
             }
 
-            var result = await _bulkAction.Execute(jObj, GetLocationPattern()).ConfigureAwait(false);
-            return this.GetActionResult(result);
+            return Task.FromResult(_bulkAction.Execute(bulk, GetLocationPattern()));
         }
 
         private string GetLocationPattern()
         {
             return Request.GetAbsoluteUriWithVirtualPath() + "/{rootPath}";
         }
+
+
+        internal class BulkAction
+        {
+            public IActionResult Execute(BulkRequest bulk, string baseUrl)
+            {
+                // 1. Check parameter.
+                if (bulk == null)
+                {
+                    throw new ArgumentNullException(nameof(bulk));
+                }
+
+                // 3. Execute bulk operation.
+                var numberOfErrors = 0;
+                var operationsResult = new JArray();
+                foreach (var operation in bulk.Operations)
+                {
+                    ApiActionResult operationResult = null;
+                    //if (operation.Method == HttpMethod.Post)
+                    //{
+                    //    operationResult = await _addRepresentationAction.Execute(operation.Data, operation.LocationPattern, operation.SchemaId, operation.ResourceType).ConfigureAwait(false);
+                    //}
+                    //else if (operation.Method == HttpMethod.Put)
+                    //{
+                    //    operationResult = await _updateRepresentationAction.Execute(operation.ResourceId, operation.Data, operation.SchemaId, operation.LocationPattern, operation.ResourceType).ConfigureAwait(false);
+                    //}
+                    //else if (operation.Method == HttpMethod.Delete)
+                    //{
+                    //    operationResult = await _deleteRepresentationAction.Execute(operation.ResourceId).ConfigureAwait(false);
+                    //}
+                    //else if (operation.Method.Method == "PATCH")
+                    //{
+                    //    operationResult = await _patchRepresentationAction.Execute(operation.ResourceId, operation.Data, operation.SchemaId, operation.LocationPattern).ConfigureAwait(false);
+                    //}
+
+                    // 3.2. If maximum number of errors has been reached then return an error.
+                    if (!operationResult.IsSucceed())
+                    {
+                        numberOfErrors++;
+                        //if (bulk.BulkResult.FailOnErrors.HasValue && numberOfErrors > bulk.BulkResult.FailOnErrors)
+                        //{
+                        //    return _apiResponseFactory.CreateError(HttpStatusCode.InternalServerError,
+                        //        _errorResponseFactory.CreateError(
+                        //            string.Format(ErrorMessages.TheMaximumNumberOfErrorHasBeenReached, bulk.BulkResult.FailOnErrors),
+                        //            HttpStatusCode.InternalServerError,
+                        //            ScimConstants.ScimTypeValues.TooMany));
+                        //}
+                    }
+
+                    operationsResult.Add(CreateOperationResponse(operationResult, operation));
+                }
+
+                var response = CreateResponse(operationsResult);
+                return new OkObjectResult(response);
+                //_apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK, response);
+            }
+
+            private JObject CreateResponse(JArray operationsResult)
+            {
+                var schemas = new JArray { ScimConstants.Messages.BulkResponse };
+                var result = new JObject
+                {
+                    {ScimConstants.ScimResourceNames.Schemas, schemas},
+                    {ScimConstants.PatchOperationsRequestNames.Operations, operationsResult}
+                };
+                return result;
+            }
+
+            private BulkOperationResponse CreateOperationResponse(ApiActionResult apiActionResult, BulkOperationRequest bulkOperation)
+            {
+                var response = new BulkOperationResponse
+                {
+                    Method = bulkOperation.Method,
+                    Status = apiActionResult.StatusCode
+                };
+
+                if (!string.IsNullOrWhiteSpace(bulkOperation.BulkId))
+                {
+                    response.BulkId = bulkOperation.BulkId;
+                }
+
+                if (!string.IsNullOrWhiteSpace(bulkOperation.Version))
+                {
+                    response.Version = bulkOperation.Version;
+                }
+
+                if (!string.IsNullOrWhiteSpace(bulkOperation.Path))
+                {
+                    response.Path = bulkOperation.Path;
+                }
+
+                if (!string.IsNullOrWhiteSpace(apiActionResult.Location))
+                {
+                    response.Location = apiActionResult.Location;
+                }
+
+                if (apiActionResult.Content != null)
+                {
+                    response.Response = JObject.FromObject(apiActionResult.Content);
+                }
+
+                return response;
+            }
+        }
+    }
+
+    public class BulkOperationResponse
+    {
+        public string Method { get; set; }
+
+        public int? Status { get; set; }
+
+        public string BulkId { get; set; }
+
+        public string Version { get; set; }
+
+        public string Path { get; set; }
+
+        public string Location { get; set; }
+
+        public object Response { get; set; }
     }
 }

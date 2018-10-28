@@ -18,7 +18,6 @@ using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using SimpleIdentityServer.OpenId.Logging;
 using System;
@@ -29,6 +28,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
+    using System.Threading;
     using Core.Common;
 
     public class AddUserOperationFixture
@@ -39,9 +39,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         //private Mock<IScimClientFactory> _scimClientFactoryStub;
         private Mock<ILinkProfileAction> _linkProfileActionStub;
         private Mock<IOpenIdEventSource> _openidEventSourceStub;
-        private Mock<ISubjectBuilder> _subjectBuilderStub;
         private IAddUserOperation _addResourceOwnerAction;
-        
+
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
@@ -49,61 +48,60 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(null, null)).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter(null, null), null)).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter("name", null), null)).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter("name", "password"), null, null, true)).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter("name", "password"), new AuthenticationParameter(), null, true)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new ResourceOwner())).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new ResourceOwner { Id = "test" })).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task When_ResourceOwner_With_Same_Credentials_Exists_Then_Exception_Is_Thrown()
+        public async Task When_ResourceOwner_With_Same_Credentials_Exists_Then_Returns_False()
         {
             // ARRANGE
             InitializeFakeObjects();
-            var parameter = new AddUserParameter("name", "password");
+            var parameter = new ResourceOwner { Id = "name", Password = "password" };
 
-            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new ResourceOwner()));
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _addResourceOwnerAction.Execute(parameter, null)).ConfigureAwait(false);
-
-            // ASSERTS
-            Assert.NotNull(exception);
-            Assert.True(exception.Code == Errors.ErrorCodes.UnhandledExceptionCode);
-            Assert.True(exception.Message == Errors.ErrorDescriptions.TheRoWithCredentialsAlreadyExists);
+            var result = await _addResourceOwnerAction.Execute(parameter).ConfigureAwait(false);
+            Assert.False(result);
         }
 
         [Fact]
-        public async Task When_ResourceOwner_Cannot_Be_Added_Then_Exception_Is_Thrown()
+        public async Task When_ResourceOwner_Cannot_Be_Added_Then_Returns_False()
         {
             // ARRANGE
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.InsertAsync(It.IsAny<ResourceOwner>())).Returns(Task.FromResult(false));
-            var parameter = new AddUserParameter("name", "password");
+            _resourceOwnerRepositoryStub.Setup(r => r.InsertAsync(It.IsAny<ResourceOwner>()))
+                .Returns(Task.FromResult(false));
+            var parameter = new ResourceOwner
+            {
+                Id = "name",
+                Password = "password"
+            };
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _addResourceOwnerAction.Execute(parameter, null)).ConfigureAwait(false);
-
-            // ASSERTS
-            Assert.NotNull(exception);
-            Assert.Equal("unhandled_exception", exception.Code);
-            Assert.Equal("An error occured while trying to insert the resource owner", exception.Message);
+            var result = await _addResourceOwnerAction.Execute(parameter).ConfigureAwait(false);
+            Assert.False(result);
         }
-        
+
         [Fact]
         public async Task When_Add_ResourceOwner_Then_Operation_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
-            var parameter = new AddUserParameter("name", "password", new List<Claim>());
-            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
+            //var parameter = new AddUserParameter("name", "password", new List<Claim>());
+            var parameter = new ResourceOwner
+            {
+                Id = "name",
+                Password = "password"
+            };
+
+            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
             _resourceOwnerRepositoryStub.Setup(r => r.InsertAsync(It.IsAny<ResourceOwner>())).Returns(Task.FromResult(true));
 
             // ACT
-            await _addResourceOwnerAction.Execute(parameter, null).ConfigureAwait(false);
+            await _addResourceOwnerAction.Execute(parameter).ConfigureAwait(false);
 
             // ASSERT
             _resourceOwnerRepositoryStub.Verify(r => r.InsertAsync(It.IsAny<ResourceOwner>()));
@@ -115,17 +113,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             _claimsRepositoryStub = new Mock<IClaimRepository>();
             _tokenStoreStub = new Mock<IAccessTokenStore>();
-           // _scimClientFactoryStub = new Mock<IScimClientFactory>();
             _linkProfileActionStub = new Mock<ILinkProfileAction>();
             _openidEventSourceStub = new Mock<IOpenIdEventSource>();
-            _subjectBuilderStub = new Mock<ISubjectBuilder>();
             _addResourceOwnerAction = new AddUserOperation(
-                new Mock<IUsersClient>().Object,
                 _resourceOwnerRepositoryStub.Object,
                 _claimsRepositoryStub.Object,
-                _tokenStoreStub.Object,
-                //_scimClientFactoryStub.Object,
-                _linkProfileActionStub.Object,
                 null,
                 _openidEventSourceStub.Object);
         }

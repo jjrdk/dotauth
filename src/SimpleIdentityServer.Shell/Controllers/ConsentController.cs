@@ -20,7 +20,6 @@ using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Consent;
-using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Shell.ViewModels;
@@ -51,7 +50,6 @@ namespace SimpleIdentityServer.Shell.Controllers
             ITranslationManager translationManager,
             IEventPublisher eventPublisher,
             IAuthenticationService authenticationService,
-            IUserActions usersAction,
             IPayloadSerializer payloadSerializer) : base(authenticationService)
         {
             _consentActions = consentActions;

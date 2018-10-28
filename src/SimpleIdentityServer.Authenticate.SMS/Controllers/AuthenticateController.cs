@@ -17,7 +17,6 @@ using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
-using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.OpenId.Logging;
 using System;
@@ -30,10 +29,12 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 {
     using Core.Common;
+    using Core.WebSite.User.Actions;
 
     [Area(Constants.AMR)]
     public class AuthenticateController : BaseAuthenticateController
     {
+        private readonly IGetUserOperation _getUserOperation;
         private readonly ISmsAuthenticationOperation _smsAuthenticationOperation;
         private readonly IGenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
 
@@ -48,7 +49,9 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             IEventPublisher eventPublisher,
             IAuthenticationService authenticationService,
             IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IUserActions userActions,
+            IAddUserOperation userActions,
+            IGetUserOperation getUserOperation,
+            IUpdateUserClaimsOperation updateUserClaimsOperation,
             IPayloadSerializer payloadSerializer,
             IConfigurationService configurationService,
             IAuthenticateHelper authenticateHelper,
@@ -56,11 +59,28 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             ISmsAuthenticationOperation smsAuthenticationOperation,
             IGenerateAndSendSmsCodeOperation generateAndSendSmsCodeOperation,
             ISubjectBuilder subjectBuilder,
-            SmsAuthenticationOptions basicAuthenticateOptions) : base(authenticateActions, profileActions, dataProtectionProvider,
-                translationManager, simpleIdentityServerEventSource, urlHelperFactory, actionContextAccessor, eventPublisher,
-                authenticationService, authenticationSchemeProvider, userActions, payloadSerializer, configurationService,
-                authenticateHelper, twoFactorAuthenticationHandler,subjectBuilder, basicAuthenticateOptions)
+            SmsAuthenticationOptions basicAuthenticateOptions)
+            : base(authenticateActions,
+                profileActions,
+                dataProtectionProvider,
+                translationManager,
+                simpleIdentityServerEventSource,
+                urlHelperFactory,
+                actionContextAccessor,
+                eventPublisher,
+                authenticationService,
+                authenticationSchemeProvider,
+                userActions,
+                getUserOperation,
+                updateUserClaimsOperation,
+                payloadSerializer,
+                configurationService,
+                authenticateHelper,
+                twoFactorAuthenticationHandler,
+                subjectBuilder,
+                basicAuthenticateOptions)
         {
+            _getUserOperation = getUserOperation;
             _smsAuthenticationOperation = smsAuthenticationOperation;
             _generateAndSendSmsCodeOperation = generateAndSendSmsCodeOperation;
         }
@@ -103,7 +123,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 ResourceOwner resourceOwner = null;
                 try
                 {
-                    resourceOwner = await _smsAuthenticationOperation.Execute(localAuthenticationViewModel.PhoneNumber).ConfigureAwait(false);
+                    resourceOwner = await _smsAuthenticationOperation.Execute(localAuthenticationViewModel.PhoneNumber)
+                        .ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -147,10 +168,15 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 return RedirectToAction("Index", "User", new { area = "UserManagement" });
             }
 
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.CookieNames.PasswordLessCookieName).ConfigureAwait(false);
-            if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
+            var authenticatedUser = await _authenticationService
+                .GetAuthenticatedUser(this, Host.Constants.CookieNames.PasswordLessCookieName)
+                .ConfigureAwait(false);
+            if (authenticatedUser == null ||
+                authenticatedUser.Identity == null ||
+                !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, "SMS authentication cannot be performed");
+                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                    "SMS authentication cannot be performed");
             }
 
             await TranslateView(DefaultLanguage).ConfigureAwait(false);
@@ -177,14 +203,22 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 return RedirectToAction("Index", "User", new { area = "UserManagement" });
             }
 
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.CookieNames.PasswordLessCookieName).ConfigureAwait(false);
-            if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
+            var authenticatedUser = await _authenticationService
+                .GetAuthenticatedUser(this, Host.Constants.CookieNames.PasswordLessCookieName)
+                .ConfigureAwait(false);
+            if (authenticatedUser == null ||
+                authenticatedUser.Identity == null ||
+                !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, "SMS authentication cannot be performed");
+                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                    "SMS authentication cannot be performed");
             }
 
-            var subject = authenticatedUser.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
-            var phoneNumber = authenticatedUser.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber);
+            var subject = authenticatedUser.Claims
+                .First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject)
+                .Value;
+            var phoneNumber = authenticatedUser.Claims.First(c =>
+                c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber);
             if (confirmCodeViewModel.Action == "resend") // Resend the confirmation code.
             {
                 var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value).ConfigureAwait(false);
@@ -192,15 +226,19 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 return View("ConfirmCode", confirmCodeViewModel);
             }
 
-            if (!await _authenticateActions.ValidateCode(confirmCodeViewModel.ConfirmationCode).ConfigureAwait(false)) // Check the confirmation code.
+            if (!await _authenticateActions.ValidateCode(confirmCodeViewModel.ConfirmationCode).ConfigureAwait(false)
+            ) // Check the confirmation code.
             {
                 ModelState.AddModelError("message_error", "Confirmation code is not valid");
                 await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 return View("ConfirmCode", confirmCodeViewModel);
             }
 
-            await _authenticationService.SignOutAsync(HttpContext, Host.Constants.CookieNames.PasswordLessCookieName, new AuthenticationProperties()).ConfigureAwait(false);
-            var resourceOwner = await _userActions.GetUser(authenticatedUser).ConfigureAwait(false);
+            await _authenticationService.SignOutAsync(HttpContext,
+                    Host.Constants.CookieNames.PasswordLessCookieName,
+                    new AuthenticationProperties())
+                .ConfigureAwait(false);
+            var resourceOwner = await _getUserOperation.Execute(authenticatedUser).ConfigureAwait(false);
             if (!string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication)) // Execute TWO Factor authentication
             {
                 try
@@ -213,7 +251,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 {
                     return RedirectToAction("SendCode", new { code = confirmCodeViewModel.Code });
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     ModelState.AddModelError("message_error", "Two factor authenticator is not properly configured");
                     await TranslateView(DefaultLanguage).ConfigureAwait(false);
@@ -227,7 +265,12 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 var request = _dataProtector.Unprotect<AuthorizationRequest>(confirmCodeViewModel.Code);
                 await SetLocalCookie(authenticatedUser.Claims, request.SessionId).ConfigureAwait(false);
                 var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-                var actionResult = await _authenticateHelper.ProcessRedirection(request.ToParameter(), confirmCodeViewModel.Code, subject, authenticatedUser.Claims.ToList(), issuerName).ConfigureAwait(false);
+                var actionResult = await _authenticateHelper.ProcessRedirection(request.ToParameter(),
+                        confirmCodeViewModel.Code,
+                        subject,
+                        authenticatedUser.Claims.ToList(),
+                        issuerName)
+                    .ConfigureAwait(false);
                 var result = this.CreateRedirectionFromActionResult(actionResult, request);
                 if (result != null)
                 {
@@ -236,10 +279,11 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 }
             }
 
-            await SetLocalCookie(authenticatedUser.Claims, Guid.NewGuid().ToString()).ConfigureAwait(false); // Authenticate the resource owner
+            await SetLocalCookie(authenticatedUser.Claims, Guid.NewGuid().ToString())
+                .ConfigureAwait(false); // Authenticate the resource owner
             return RedirectToAction("Index", "User", new { area = "UserManagement" });
         }
-        
+
         [HttpPost]
         public async Task<ActionResult> LocalLoginOpenId(OpenidLocalAuthenticationViewModel viewModel)
         {
@@ -263,7 +307,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 ResourceOwner resourceOwner = null;
                 try
                 {
-                    resourceOwner = await _smsAuthenticationOperation.Execute(viewModel.PhoneNumber).ConfigureAwait(false);
+                    resourceOwner = await _smsAuthenticationOperation.Execute(viewModel.PhoneNumber)
+                        .ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -299,11 +344,15 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
         {
             var identity = new ClaimsIdentity(claims, Host.Constants.CookieNames.PasswordLessCookieName);
             var principal = new ClaimsPrincipal(identity);
-            await _authenticationService.SignInAsync(HttpContext, Host.Constants.CookieNames.PasswordLessCookieName, principal, new AuthenticationProperties
-            {
-                ExpiresUtc = DateTime.UtcNow.AddMinutes(20),
-                IsPersistent = false
-            }).ConfigureAwait(false);
+            await _authenticationService.SignInAsync(HttpContext,
+                    Host.Constants.CookieNames.PasswordLessCookieName,
+                    principal,
+                    new AuthenticationProperties
+                    {
+                        ExpiresUtc = DateTime.UtcNow.AddMinutes(20),
+                        IsPersistent = false
+                    })
+                .ConfigureAwait(false);
         }
     }
 }

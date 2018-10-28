@@ -19,9 +19,6 @@ using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core;
-using SimpleIdentityServer.Manager.Logging;
-using SimpleIdentityServer.OAuth.Logging;
-using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Linq;
 

@@ -1,16 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Common.Models;
+﻿using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Parameters;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Common.Results;
 using SimpleIdentityServer.Core.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
+    using System.Linq.Expressions;
+    using System.Threading;
+
     internal sealed class DefaultResourceOwnerRepository : IResourceOwnerRepository
     {
         public ICollection<ResourceOwner> _users;
@@ -20,7 +23,7 @@ namespace SimpleIdentityServer.Core.Repositories
             _users = users ?? new List<ResourceOwner>();
         }
 
-        public Task<bool> DeleteAsync(string subject)
+        public Task<bool> Delete(string subject)
         {
             if (string.IsNullOrWhiteSpace(subject))
             {
@@ -37,13 +40,41 @@ namespace SimpleIdentityServer.Core.Repositories
             return Task.FromResult(true);
         }
 
+        public Task<bool> DeleteProfile(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var user = _users.FirstOrDefault(u => u.UserProfile?.Id == id);
+            if (user == null)
+            {
+                return Task.FromResult(false);
+            }
+
+            _users.Remove(user);
+            return Task.FromResult(true);
+        }
+
+        public Task<ICollection<ResourceOwner>> Get(Expression<Func<ResourceOwner, bool>> query, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var result = _users.Where(query.Compile()).ToArray();
+            return Task.FromResult<ICollection<ResourceOwner>>(result);
+        }
+
         public Task<ICollection<ResourceOwner>> GetAllAsync()
         {
             ICollection<ResourceOwner> res = _users.Select(u => u.Copy()).ToList();
             return Task.FromResult(res);
         }
 
-        public Task<ResourceOwner> GetAsync(string id)
+        public Task<ResourceOwner> Get(string id, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -59,7 +90,7 @@ namespace SimpleIdentityServer.Core.Repositories
             return Task.FromResult(user.Copy());
         }
 
-        public Task<ResourceOwner> GetAsync(string id, string password)
+        public Task<ResourceOwner> Get(string id, string password)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -80,7 +111,7 @@ namespace SimpleIdentityServer.Core.Repositories
             return Task.FromResult(user.Copy());
         }
 
-        public Task<ICollection<ResourceOwner>> GetAsync(IEnumerable<Claim> claims)
+        public Task<ICollection<ResourceOwner>> Get(IEnumerable<Claim> claims)
         {
             if (claims == null)
             {

@@ -14,12 +14,28 @@
 
 namespace SimpleIdentityServer.Core.Common.Models
 {
+    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
     public class PatchOperation
     {
+        [JsonProperty("op")]
         public PatchOperations Type { get; set; }
+        [JsonProperty("path")]
         public string Path { get; set; }
+        [JsonProperty("value")]
         public JToken Value { get; set; }
+    }
+
+    public class PatchRequest
+    {
+        public PatchRequest()
+        {
+            Schemas = new[] {ScimConstants.Messages.PatchOp};
+        }
+
+        public string[] Schemas { get; }
+
+        public PatchOperation[] Operations { get; set; }
     }
 }

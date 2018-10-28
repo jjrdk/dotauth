@@ -23,8 +23,6 @@ namespace SimpleIdentityServer.Host.Extensions
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
-    using OAuth.Logging;
-    using OpenId.Logging;
     using Parsers;
     using Store;
 
