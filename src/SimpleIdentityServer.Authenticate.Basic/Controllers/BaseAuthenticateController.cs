@@ -46,7 +46,6 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
     using Core.Common;
     using Core.WebSite.User.Actions;
     using System.Net;
-    using Constants = Constants;
 
     public abstract class BaseAuthenticateController : BaseController
     {
