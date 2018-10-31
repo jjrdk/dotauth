@@ -1,5 +1,4 @@
 ﻿using SimpleIdentityServer.AccountFilter.Basic.Aggregates;
-using SimpleIdentityServer.AccountFilter.Basic.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +24,20 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Repositories
 
             filter.Id = Guid.NewGuid().ToString();
             filter.CreateDateTime = filter.CreateDateTime;
-            _filters.Add(filter.Copy());
+            _filters.Add(new FilterAggregate
+            {
+                CreateDateTime = DateTime.UtcNow,
+                Id = filter.Id,
+                Name = filter.Name,
+                UpdateDateTime = DateTime.UtcNow,
+                Rules = filter.Rules.Select(r => new FilterAggregateRule
+                {
+                    ClaimKey = r.ClaimKey,
+                    ClaimValue = r.ClaimValue,
+                    Id = r.Id,
+                    Operation = r.Operation
+                }).ToArray()
+            });
             return Task.FromResult(filter.Id);
         }
 
@@ -59,12 +71,12 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Repositories
                 return Task.FromResult((FilterAggregate)null);
             }
 
-            return Task.FromResult(filter.Copy());
+            return Task.FromResult(filter);
         }
 
         public Task<IEnumerable<FilterAggregate>> GetAll()
         {
-            return Task.FromResult(_filters.Select(f => f.Copy()));
+            return Task.FromResult(_filters.Select(f => f));
         }
 
         public Task<bool> Update(FilterAggregate filter)

@@ -47,8 +47,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.UserIn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.OAuth2Introspection", "src\SimpleIdentityServer.OAuth2Introspection\SimpleIdentityServer.OAuth2Introspection.csproj", "{ED4C6A19-21F0-449B-8E43-5654EB54EC9A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.AccountFilter.Basic", "src\SimpleIdentityServer.AccountFilter.Basic\SimpleIdentityServer.AccountFilter.Basic.csproj", "{88A65354-68E2-4CF2-AA07-53C491A96258}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.AccountFilter.Basic.Tests", "tests\SimpleIdentityServer.AccountFilter.Basic.Tests\SimpleIdentityServer.AccountFilter.Basic.Tests.csproj", "{B32048DA-865B-408B-97E5-CAE7F46D3C20}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.UserManagement.Common", "src\SimpleIdentityServer.UserManagement.Common\SimpleIdentityServer.UserManagement.Common.csproj", "{9B798C0D-D70F-49EA-B99A-05A4AD08DDC9}"
@@ -91,7 +89,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Manage
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "reimers.scim.query", "src\reimers.scim.query\reimers.scim.query.csproj", "{6F15FD7D-5F77-4A5C-A5A2-98C87EADF802}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "reimers.scim.query.tests", "reimers.scim.query.tests\reimers.scim.query.tests.csproj", "{C759A4A0-9E20-49B9-B12E-7C8F5584C1C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "reimers.scim.query.tests", "reimers.scim.query.tests\reimers.scim.query.tests.csproj", "{C759A4A0-9E20-49B9-B12E-7C8F5584C1C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -220,12 +218,6 @@ Global
 		{ED4C6A19-21F0-449B-8E43-5654EB54EC9A}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{ED4C6A19-21F0-449B-8E43-5654EB54EC9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED4C6A19-21F0-449B-8E43-5654EB54EC9A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{88A65354-68E2-4CF2-AA07-53C491A96258}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{88A65354-68E2-4CF2-AA07-53C491A96258}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{88A65354-68E2-4CF2-AA07-53C491A96258}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
-		{88A65354-68E2-4CF2-AA07-53C491A96258}.Fake|Any CPU.Build.0 = Debug|Any CPU
-		{88A65354-68E2-4CF2-AA07-53C491A96258}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{88A65354-68E2-4CF2-AA07-53C491A96258}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B32048DA-865B-408B-97E5-CAE7F46D3C20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B32048DA-865B-408B-97E5-CAE7F46D3C20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B32048DA-865B-408B-97E5-CAE7F46D3C20}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
@@ -377,7 +369,6 @@ Global
 		{ABE7C90B-9016-4188-86E9-9A0041949CEE} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{7E02195C-5656-43F4-AFC0-DADD6AFC9214} = {BFFECB1F-3326-4B55-9180-58674B3FF5D0}
 		{ED4C6A19-21F0-449B-8E43-5654EB54EC9A} = {BFFECB1F-3326-4B55-9180-58674B3FF5D0}
-		{88A65354-68E2-4CF2-AA07-53C491A96258} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{B32048DA-865B-408B-97E5-CAE7F46D3C20} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{9B798C0D-D70F-49EA-B99A-05A4AD08DDC9} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{A1615F2E-5A5C-4DE6-8BBD-4312B8A7E522} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}

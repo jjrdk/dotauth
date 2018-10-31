@@ -15,11 +15,15 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.AccountFilter.Basic.Aggregates;
+using SimpleIdentityServer.AccountFilter.Basic.Repositories;
 using SimpleIdentityServer.Core;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
@@ -74,6 +78,18 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 			serviceCollection.AddManagerLogging();
 			serviceCollection.AddOAuthLogging();
 			serviceCollection.AddOpenidLogging();
+        }
+
+        public static IServiceCollection AddAccountFilter(this IServiceCollection services, List<FilterAggregate> filters = null)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddTransient<IAccountFilter, SimpleIdentityServer.AccountFilter.Basic.AccountFilter>();
+            services.AddSingleton<IFilterRepository>(new DefaultFilterRepository(filters));
+            return services;
         }
     }
 }
