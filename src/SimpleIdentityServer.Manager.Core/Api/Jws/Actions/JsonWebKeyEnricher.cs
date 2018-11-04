@@ -99,22 +99,15 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
             };
         }
 
-        public void SetRsaPublicKeyInformation(Dictionary<string, object> result, JsonWebKey jsonWebKey)
+        private void SetRsaPublicKeyInformation(Dictionary<string, object> result, JsonWebKey jsonWebKey)
         {
             RSAParameters rsaParameters;
-#if NET461
-            using (var provider = new RSACryptoServiceProvider())
-            {
-                provider.FromXmlString(jsonWebKey.SerializedKey);
-                rsaParameters = provider.ExportParameters(false);
-            }
-#else
             using (var provider = new RSAOpenSsl())
             {
                 provider.FromXmlString(jsonWebKey.SerializedKey);
                 rsaParameters = provider.ExportParameters(false);
             }
-#endif
+
             // Export the modulus
             var modulus = rsaParameters.Modulus.ToBase64Simplified();
             // Export the exponent

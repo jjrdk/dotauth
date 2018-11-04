@@ -1,12 +1,12 @@
-﻿using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Store;
-using SimpleIdentityServer.Twilio.Client;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Authenticate.SMS.Actions
+﻿namespace SimpleIdentityServer.Authenticate.SMS.Actions
 {
+    using SimpleIdentityServer.Core.Errors;
+    using SimpleIdentityServer.Core.Exceptions;
+    using SimpleIdentityServer.Store;
+    using SimpleIdentityServer.Twilio.Client;
+    using System;
+    using System.Threading.Tasks;
+
     using Logging;
 
     internal sealed class GenerateAndSendSmsCodeOperation : IGenerateAndSendSmsCodeOperation
