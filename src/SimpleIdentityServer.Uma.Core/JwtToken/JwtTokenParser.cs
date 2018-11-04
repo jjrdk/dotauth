@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
@@ -20,7 +19,8 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Core.JwtToken
 {
-    using SimpleIdentityServer.Core.Common.DTOs.Requests;
+    using Shared;
+    using Shared.Requests;
 
     internal class JwtTokenParser : IJwtTokenParser
     {

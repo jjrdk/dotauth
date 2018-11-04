@@ -16,10 +16,11 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.Protector
 {
+    using Shared;
+
     public class Compressor : ICompressor
     {
         public string Compress(string textToCompress)

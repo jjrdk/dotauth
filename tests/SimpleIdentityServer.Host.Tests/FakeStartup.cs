@@ -23,8 +23,6 @@ using SimpleIdentityServer.Authenticate.SMS.Controllers;
 using SimpleIdentityServer.Authenticate.SMS.Services;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Services;
@@ -33,7 +31,6 @@ using SimpleIdentityServer.Host.Tests.Services;
 using SimpleIdentityServer.Host.Tests.Stores;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Store;
-using SimpleIdentityServer.Twilio.Client;
 using SimpleIdentityServer.UserManagement.Controllers;
 using System;
 using System.Collections.Generic;
@@ -46,7 +43,10 @@ namespace SimpleIdentityServer.Host.Tests
     using Controllers.Api;
     using Extensions;
     using System.Net.Http;
-    using Core.Common.Repositories;
+    using Client;
+    using Shared;
+    using Shared.Repositories;
+    using Shared.Requests;
 
     public class FakeStartup : IStartup
     {

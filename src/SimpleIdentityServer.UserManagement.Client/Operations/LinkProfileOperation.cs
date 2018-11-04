@@ -1,14 +1,14 @@
-﻿using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Dtos.Responses;
-using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.UserManagement.Client.Operations
+﻿namespace SimpleIdentityServer.UserManagement.Client.Operations
 {
+    using Newtonsoft.Json;
+    using System;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
+
     using Common.Requests;
-    using Core.Common;
+    using Shared;
+    using Shared.Responses;
 
     internal sealed class LinkProfileOperation : ILinkProfileOperation
     {

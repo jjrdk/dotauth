@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +19,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Translation
 {
+    using Shared.Repositories;
+
     public class TranslationManager : ITranslationManager
     {
         private readonly OAuthConfigurationOptions _configurationService;

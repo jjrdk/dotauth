@@ -6,7 +6,6 @@ using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
@@ -16,7 +15,8 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
     using Logging;
-    using Client = Client;
+    using Shared.Models;
+    using Client = Shared.Models.Client;
 
     public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperationFixture
     {

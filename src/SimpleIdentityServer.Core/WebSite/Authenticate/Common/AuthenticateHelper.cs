@@ -1,7 +1,5 @@
 ﻿using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
@@ -16,6 +14,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     public sealed class AuthenticateHelper : IAuthenticateHelper
     {
         private readonly IParameterParserHelper _parameterParserHelper;

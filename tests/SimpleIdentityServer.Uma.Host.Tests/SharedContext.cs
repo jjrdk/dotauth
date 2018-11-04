@@ -1,8 +1,9 @@
-﻿using SimpleIdentityServer.Core.Common;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Uma.Host.Tests
 {
+    using Shared;
+
     public class SharedContext
     {
         public SharedContext()

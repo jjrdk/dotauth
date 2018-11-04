@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Host.Controllers.Website;
@@ -30,9 +29,11 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Shell.Controllers
 {
-    using Common.Dtos.Events.Openid;
-    using Core.Common;
     using Host;
+    using Shared;
+    using Shared.Events.Openid;
+    using Shared.Models;
+    using Shared.Requests;
 
     [Area("Shell")]
     [Authorize("Connected")]
@@ -62,7 +63,7 @@ namespace SimpleIdentityServer.Shell.Controllers
         public async Task<ActionResult> Index(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            var client = new Core.Common.Models.Client();
+            var client = new Client();
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _consentActions.DisplayConsent(request.ToParameter(),

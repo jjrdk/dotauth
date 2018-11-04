@@ -18,8 +18,10 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Manager.Core.Parameters
 {
+    using Shared.Models;
+
     public class ImportParameter
     {
-        public IEnumerable<SimpleIdentityServer.Core.Common.Models.Client> Clients { get; set; }
+        public IEnumerable<Client> Clients { get; set; }
     }
 }

@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Common.Serializers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Host.Extensions;
 using System.Collections.Generic;
@@ -13,6 +9,10 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
     using Microsoft.AspNetCore.Http;
+    using Shared;
+    using Shared.Repositories;
+    using Shared.Requests;
+    using Shared.Serializers;
 
     public class SessionController : Controller
     {
@@ -76,7 +76,8 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             RevokeSessionRequest request = null;
             if (query != null)
             {
-                request = serializer.Deserialize<RevokeSessionRequest>(query);
+                request = serializer.Deserialize<RevokeSessionRequest>(query.Select(x =>
+                    new KeyValuePair<string, string[]>(x.Key, x.Value)));
             }
 
             Response.Cookies.Delete(Core.Constants.SESSION_ID);

@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
@@ -26,6 +25,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
 {
+    using Shared;
+
     public interface ICreateJwsAction
     {
         Task<string> Execute(CreateJwsParameter createJwsParameter);

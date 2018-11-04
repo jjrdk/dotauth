@@ -14,8 +14,6 @@
 
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -31,6 +29,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     public class DisplayConsentAction : IDisplayConsentAction
     {
         private readonly IScopeRepository _scopeRepository;

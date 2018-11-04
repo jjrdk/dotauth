@@ -1,14 +1,13 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
 {
     using Core.Api.Discovery;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public class CreateDiscoveryDocumentationActionFixture
     {

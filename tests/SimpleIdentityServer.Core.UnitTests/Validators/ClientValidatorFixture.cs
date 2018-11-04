@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Collections.Generic;
@@ -24,6 +22,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
+    using Shared;
+    using Shared.Models;
+
     public class ClientValidatorFixture
     {
         private IClientValidator _clientValidator;

@@ -1,7 +1,5 @@
 ﻿using Moq;
 using SimpleIdentityServer.Authenticate.SMS.Services;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Store;
 using System;
@@ -10,6 +8,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Tests.Services
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     public class SmsAuthenticateResourceOwnerServiceFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;

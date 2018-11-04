@@ -20,8 +20,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo
 {
-    using Common;
-    using SimpleIdentityServer.Common.Dtos.Events.Openid;
+    using Shared;
+    using Shared.Events.Openid;
 
     public class UserInfoActions : IUserInfoActions
     {

@@ -1,7 +1,7 @@
 ﻿namespace SimpleIdentityServer.Authenticate.SMS.Actions
 {
     using System.Threading.Tasks;
-    using Core.Common.Models;
+    using Shared.Models;
 
     public interface ISmsAuthenticationOperation
     {

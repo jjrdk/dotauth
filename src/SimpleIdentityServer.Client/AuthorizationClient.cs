@@ -15,16 +15,16 @@
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Results;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client
 {
-    using Core.Common.DTOs.Responses;
-    using Core.Common.Serializers;
     using Newtonsoft.Json;
     using System.Net.Http;
+    using Shared.Requests;
+    using Shared.Responses;
+    using Shared.Serializers;
 
     internal class AuthorizationClient : IAuthorizationClient
     {

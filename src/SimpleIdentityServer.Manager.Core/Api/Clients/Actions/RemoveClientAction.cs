@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
@@ -23,6 +22,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 {
     using Logging;
+    using Shared.Repositories;
 
     public interface IRemoveClientAction
     {

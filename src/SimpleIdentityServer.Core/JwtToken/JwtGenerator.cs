@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -36,6 +32,10 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.JwtToken
 {
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
+
     public class JwtGenerator : IJwtGenerator
     {
         private readonly IClientValidator _clientValidator;

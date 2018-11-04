@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Http;
-using SimpleIdentityServer.Common.Dtos.Responses;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
@@ -24,6 +22,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.MiddleWare
 {
+    using Shared.Responses;
+
     public class ExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;

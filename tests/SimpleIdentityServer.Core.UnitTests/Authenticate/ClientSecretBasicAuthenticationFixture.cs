@@ -1,12 +1,13 @@
 ﻿using System;
 
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Common.Models;
 using Xunit;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 {
+    using Shared.Models;
+
     public sealed class ClientSecretBasicAuthenticationFixture
     {
         private IClientSecretBasicAuthentication _clientSecretBasicAuthentication;

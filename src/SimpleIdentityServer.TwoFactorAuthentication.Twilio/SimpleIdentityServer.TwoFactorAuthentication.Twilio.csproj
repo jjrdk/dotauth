@@ -14,8 +14,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Twilio.Client\SimpleIdentityServer.Twilio.Client.csproj" />
   </ItemGroup>

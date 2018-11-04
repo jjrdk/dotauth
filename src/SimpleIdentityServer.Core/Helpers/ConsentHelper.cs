@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Parameters;
 using System;
@@ -22,6 +20,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     public class ConsentHelper : IConsentHelper
     {
         private readonly IConsentRepository _consentRepository;

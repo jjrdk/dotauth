@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Core.Common;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -12,6 +11,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.OAuth2Introspection
 {
     using System.Globalization;
+    using Shared;
 
     public class OAuth2IntrospectionHandler : AuthenticationHandler<OAuth2IntrospectionOptions>
     {

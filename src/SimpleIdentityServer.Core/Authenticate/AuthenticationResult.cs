@@ -14,15 +14,17 @@
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
+    using Shared.Models;
+
     public class AuthenticationResult
     {
-        public AuthenticationResult(Common.Models.Client client, string errorMessage)
+        public AuthenticationResult(Client client, string errorMessage)
         {
             Client = client;
             ErrorMessage = errorMessage;
         }
 
-        public Common.Models.Client Client { get; set; }
+        public Client Client { get; set; }
         public string ErrorMessage { get; set; }
     }
 }

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Collections.Generic;
@@ -23,6 +22,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     public class GetConsentsOperationFixture
     {
         private Mock<IConsentRepository> _consentRepositoryStub;
@@ -48,9 +50,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             {
                 new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
-            IEnumerable<Core.Common.Models.Consent> consents = new List<Core.Common.Models.Consent>
+            IEnumerable<Consent> consents = new List<Consent>
             {
-                new Core.Common.Models.Consent
+                new Consent
                 {
                     Id = "consent_id"
                 }

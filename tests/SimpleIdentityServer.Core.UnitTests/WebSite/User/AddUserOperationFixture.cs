@@ -14,22 +14,18 @@
 
 using Moq;
 using SimpleIdentityServer.Core.Api.Profile.Actions;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
-using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
     using System.Threading;
-    using Core.Common;
     using Logging;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public class AddUserOperationFixture
     {

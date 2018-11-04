@@ -1,12 +1,13 @@
-﻿using SimpleIdentityServer.Core.Common.Parameters;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Manager.Core.Errors;
+﻿using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Claims.Actions
 {
+    using Shared.Parameters;
+    using Shared.Repositories;
+
     public interface IAddClaimAction
     {
         Task<bool> Execute(AddClaimParameter request);

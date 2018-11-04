@@ -1,11 +1,12 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Exceptions;
+﻿using SimpleIdentityServer.Core.Exceptions;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Profile.Actions
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     internal sealed class LinkProfileAction : ILinkProfileAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

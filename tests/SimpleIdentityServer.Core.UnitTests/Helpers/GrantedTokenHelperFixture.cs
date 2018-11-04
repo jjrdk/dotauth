@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Store;
@@ -24,6 +22,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
+    using Shared;
+    using Shared.Models;
+
     public class GrantedTokenHelperFixture
     {
         private Mock<ITokenStore> _grantedTokenRepositoryStub;

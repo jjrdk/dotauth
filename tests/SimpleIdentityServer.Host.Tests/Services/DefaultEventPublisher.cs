@@ -1,7 +1,6 @@
 ﻿namespace SimpleIdentityServer.Host.Tests.Services
 {
-    using Common.Dtos;
-    using Core.Common;
+    using Shared;
 
     public class DefaultEventPublisher : IEventPublisher
     {

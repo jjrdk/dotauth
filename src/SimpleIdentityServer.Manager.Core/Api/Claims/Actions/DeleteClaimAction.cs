@@ -1,11 +1,12 @@
-﻿using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Manager.Core.Errors;
+﻿using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Claims.Actions
 {
+    using Shared.Repositories;
+
     public interface IDeleteClaimAction
     {
         Task<bool> Execute(string claimCode);

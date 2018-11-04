@@ -1,7 +1,7 @@
-﻿using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Common.Dtos.Responses
+﻿namespace SimpleIdentityServer.Shared.Responses
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class ErrorResponse
     {

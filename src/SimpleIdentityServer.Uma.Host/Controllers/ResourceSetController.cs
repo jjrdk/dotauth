@@ -14,7 +14,6 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController;
@@ -25,6 +24,8 @@ using static SimpleIdentityServer.Uma.Host.Constants;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
+    using Shared.Responses;
+
     [Route(RouteValues.ResourceSet)]
     public class ResourceSetController : Controller
     {

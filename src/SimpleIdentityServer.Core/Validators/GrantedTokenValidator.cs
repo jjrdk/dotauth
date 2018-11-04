@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Store;
 using System;
@@ -20,6 +19,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Validators
 {
+    using Shared.Models;
+
     public class GrantedTokenValidator : IGrantedTokenValidator
     {
         private readonly ITokenStore _tokenStore;

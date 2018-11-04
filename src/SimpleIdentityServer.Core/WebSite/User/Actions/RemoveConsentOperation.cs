@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.Repositories;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     internal class RemoveConsentOperation : IRemoveConsentOperation
     {
         private readonly IConsentRepository _consentRepository;
@@ -34,7 +36,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 throw new ArgumentNullException(consentId);
             }
 
-            var consentToBeDeleted = new Common.Models.Consent
+            var consentToBeDeleted = new Consent
             {
                 Id = consentId
             };

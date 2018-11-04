@@ -1,6 +1,6 @@
 ﻿namespace SimpleIdentityServer.Core.Jwt.Signature
 {
-    using Common;
+    using Shared;
 
     public interface ICreateJwsSignature
     {

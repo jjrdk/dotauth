@@ -1,8 +1,8 @@
 ﻿namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
     using System.Collections.Generic;
-    using Common.Models;
     using Results;
+    using Shared.Models;
 
     public class DisplayContentResult
     {

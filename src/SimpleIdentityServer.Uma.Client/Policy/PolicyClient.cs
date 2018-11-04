@@ -18,9 +18,9 @@ namespace SimpleIdentityServer.Uma.Client.Policy
     using System.Threading.Tasks;
     using Common.DTOs;
     using Configuration;
-    using Core.Common;
     using Helpers;
     using Results;
+    using Shared;
 
     internal class PolicyClient : IPolicyClient
     {

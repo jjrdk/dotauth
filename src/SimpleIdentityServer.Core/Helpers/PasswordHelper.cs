@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
-    using Common.Extensions;
+    using Shared;
 
     public static class PasswordHelper
     {

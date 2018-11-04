@@ -13,18 +13,19 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Services;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     public class GrantedTokenGeneratorHelperFixture
     {
         private OAuthConfigurationOptions _simpleIdentityServerConfiguratorStub;
@@ -48,7 +49,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {
             // ARRANGE
             InitializeFakeObjects();
-            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult((Core.Common.Models.Client)null));
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult((Client)null));
 
             // ACTS & ASSERTS
             var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("invalid_client", null, null, null)).ConfigureAwait(false);
@@ -59,7 +60,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         [Fact]
         public async Task When_ExpirationTime_Is_Set_Then_ExpiresInProperty_Is_Set()
         {
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 ClientId = "client_id"
             };

@@ -2,7 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Common.DTOs.Requests;
+    using Shared.Requests;
 
     public interface IJwksClient
     {

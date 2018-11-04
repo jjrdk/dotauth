@@ -22,18 +22,18 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
-    using Common.Dtos.Responses;
     using Core;
     using Core.Api.Token;
-    using Core.Common;
-    using Core.Common.DTOs.Requests;
-    using Core.Common.Models;
-    using Core.Common.Serializers;
     using Core.Errors;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Primitives;
-    using GrantTypes = Core.Common.DTOs.Requests.GrantTypes;
+    using Shared;
+    using Shared.Models;
+    using Shared.Requests;
+    using Shared.Responses;
+    using Shared.Serializers;
+    using GrantTypes = Shared.Requests.GrantTypes;
 
     [Route(Core.Constants.EndPoints.Token)]
     public class TokenController : Controller
@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             }
 
             var serializer = new ParamSerializer();
-            var tokenRequest = serializer.Deserialize<TokenRequest>(Request.Form);
+            var tokenRequest = serializer.Deserialize<TokenRequest>(Request.Form.Select(x => new KeyValuePair<string, string[]>(x.Key, x.Value)));
             if (tokenRequest.GrantType == null)
             {
                 return BuildError(ErrorCodes.InvalidRequestCode,

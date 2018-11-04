@@ -20,12 +20,13 @@ using SimpleIdentityServer.Uma.Host.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using SimpleIdentityServer.Common.Dtos.Responses;
 using System.Threading.Tasks;
 using SimpleIdentityServer.Core.Errors;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
+    using Shared.Responses;
+
     [Route(Constants.RouteValues.Permission)]
     public class PermissionsController : Controller
     {

@@ -13,10 +13,11 @@
 // limitations under the License.
 
 using System;
-using SimpleIdentityServer.Core.Common;
 
 namespace SimpleIdentityServer.Core.Extensions
 {
+    using Shared;
+
     public static class AlgorithmExtensions
     {
         public static AllAlg ToAllAlg(this JwsAlg alg)

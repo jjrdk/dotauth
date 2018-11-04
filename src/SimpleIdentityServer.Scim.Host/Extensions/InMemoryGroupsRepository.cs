@@ -1,12 +1,12 @@
 ﻿namespace SimpleIdentityServer.Scim.Host.Extensions
 {
-    using SimpleIdentityServer.Core.Common;
-    using SimpleIdentityServer.Core.Common.DTOs;
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
+    using Shared;
+    using Shared.DTOs;
 
     internal class InMemoryGroupsRepository : IStore<GroupResource>
     {

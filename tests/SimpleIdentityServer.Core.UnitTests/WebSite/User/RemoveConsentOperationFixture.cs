@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Threading.Tasks;
@@ -21,6 +20,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     public class RemoveConsentOperationFixture
     {
         private Mock<IConsentRepository> _consentRepositoryStub;
@@ -43,7 +45,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             const bool isRemoved = true;
             const string consentId = "consent_id";
             InitializeFakeObjects();
-            _consentRepositoryStub.Setup(c => c.DeleteAsync(It.IsAny<Core.Common.Models.Consent>()))
+            _consentRepositoryStub.Setup(c => c.DeleteAsync(It.IsAny<Consent>()))
                 .Returns(Task.FromResult(isRemoved));
 
             // ACT

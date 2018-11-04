@@ -1,12 +1,11 @@
-﻿using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Dtos.Responses;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.UserManagement.Client.Operations
+﻿namespace SimpleIdentityServer.UserManagement.Client.Operations
 {
-    using Core.Common;
+    using Newtonsoft.Json;
+    using Shared;
+    using Shared.Responses;
+    using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
 
     internal sealed class UnlinkProfileOperation : IUnlinkProfileOperation
     {
@@ -28,7 +27,7 @@ namespace SimpleIdentityServer.UserManagement.Client.Operations
             {
                 throw new ArgumentNullException(nameof(externalSubject));
             }
-         
+
             if (string.IsNullOrWhiteSpace(currentSubject))
             {
                 throw new ArgumentNullException(nameof(currentSubject));
@@ -49,7 +48,7 @@ namespace SimpleIdentityServer.UserManagement.Client.Operations
             {
                 throw new ArgumentNullException(nameof(externalSubject));
             }
-            
+
             var url = requestUrl + $"/.me/{externalSubject}";
             return Delete(url, authorizationHeaderValue);
         }

@@ -1,8 +1,8 @@
 ﻿namespace SimpleIdentityServer.Client
 {
     using System.Threading.Tasks;
-    using Core.Common.DTOs.Requests;
     using Results;
+    using Shared.Requests;
 
     public interface IAuthorizationClient
     {

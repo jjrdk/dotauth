@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Common.Dtos
+﻿namespace SimpleIdentityServer.Shared
 {
     internal static class Constants
     {

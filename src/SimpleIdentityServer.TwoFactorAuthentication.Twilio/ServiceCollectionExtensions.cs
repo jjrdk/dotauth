@@ -3,7 +3,7 @@ using System;
 
 namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
 {
-    using Core.Common;
+    using Shared;
 
     public static class ServiceCollectionExtensions
     {

@@ -1,9 +1,10 @@
-﻿using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Store
 {
+    using Shared;
+    using Shared.Models;
+
     public interface ITokenStore
     {
         /// <summary>

@@ -15,8 +15,6 @@
 using Moq;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
@@ -31,6 +29,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
     using System.Collections.Generic;
     using Logging;
+    using Shared;
+    using Shared.Models;
 
     public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
     {

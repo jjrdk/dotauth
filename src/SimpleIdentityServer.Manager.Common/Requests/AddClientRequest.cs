@@ -1,11 +1,11 @@
-﻿using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Models;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Manager.Common.Requests
+﻿namespace SimpleIdentityServer.Manager.Common.Requests
 {
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+    using Shared;
+    using Shared.Models;
+    using Shared.Requests;
+
     [DataContract]
     public class AddClientRequest
     {

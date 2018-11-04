@@ -16,7 +16,6 @@ using Moq;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
@@ -24,7 +23,6 @@ using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Store;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -34,7 +32,9 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Common
 {
     using Logging;
-    using Client = Client;
+    using Shared;
+    using Shared.Models;
+    using Client = Shared.Models.Client;
 
     public sealed  class GenerateAuthorizationResponseFixture
     {

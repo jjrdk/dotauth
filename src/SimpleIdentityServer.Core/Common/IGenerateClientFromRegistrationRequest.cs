@@ -1,7 +1,7 @@
 ﻿namespace SimpleIdentityServer.Core.Common
 {
     using Core.Parameters;
-    using Models;
+    using Shared.Models;
 
     public interface IGenerateClientFromRegistrationRequest
     {

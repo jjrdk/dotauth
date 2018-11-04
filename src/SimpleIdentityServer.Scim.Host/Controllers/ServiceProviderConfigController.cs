@@ -18,8 +18,8 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
     using Core;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
-    using SimpleIdentityServer.Core.Common;
-    using SimpleIdentityServer.Core.Common.DTOs;
+    using Shared;
+    using Shared.DTOs;
 
     [Route(Constants.RoutePaths.ServiceProviderConfigController)]
     public class ServiceProviderConfigController : Controller

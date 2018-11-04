@@ -15,9 +15,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
-using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using System;
@@ -26,6 +23,10 @@ using System.Net.Http.Headers;
 
 namespace SimpleIdentityServer.Core
 {
+    using Shared;
+    using Shared.Models;
+    using Shared.Responses;
+
     public class PayloadSerializer : IPayloadSerializer
     {
         public string GetPayload(AuthorizationParameter parameter)

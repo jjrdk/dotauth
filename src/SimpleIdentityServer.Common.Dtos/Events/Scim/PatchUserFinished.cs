@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Common.Dtos.Events.Scim
+﻿namespace SimpleIdentityServer.Shared.Events.Scim
 {
     public class PatchUserFinished : Event
     {

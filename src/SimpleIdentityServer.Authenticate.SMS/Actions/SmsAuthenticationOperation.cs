@@ -1,6 +1,4 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -11,6 +9,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
     using Core.Jwt;
     using Core.Services;
     using Core.WebSite.User.Actions;
+    using Shared.Models;
+    using Shared.Repositories;
 
     internal sealed class SmsAuthenticationOperation : ISmsAuthenticationOperation
     {

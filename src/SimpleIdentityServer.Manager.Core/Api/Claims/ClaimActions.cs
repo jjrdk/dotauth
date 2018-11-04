@@ -1,12 +1,13 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Parameters;
-using SimpleIdentityServer.Core.Common.Results;
-using SimpleIdentityServer.Manager.Core.Api.Claims.Actions;
+﻿using SimpleIdentityServer.Manager.Core.Api.Claims.Actions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Claims
 {
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Results;
+
     public interface IClaimActions
     {
         Task<bool> Add(AddClaimParameter request);

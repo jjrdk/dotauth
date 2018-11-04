@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using Core.Parameters;
     using Core.Results;
-    using Models;
+    using Shared.Models;
 
     public interface IGenerateAuthorizationResponse
     {

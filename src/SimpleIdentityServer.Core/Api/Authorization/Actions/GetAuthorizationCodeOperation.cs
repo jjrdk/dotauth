@@ -14,7 +14,6 @@
 
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
@@ -28,6 +27,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
     using Logging;
+    using Shared.Models;
 
     public class GetAuthorizationCodeOperation : IGetAuthorizationCodeOperation
     {

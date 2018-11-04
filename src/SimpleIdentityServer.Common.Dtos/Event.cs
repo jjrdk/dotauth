@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Common.Dtos
+namespace SimpleIdentityServer.Shared
 {
     public class Event
     {

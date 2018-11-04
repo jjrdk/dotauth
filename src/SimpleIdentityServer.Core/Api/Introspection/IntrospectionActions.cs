@@ -23,8 +23,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Introspection
 {
-    using Common;
-    using SimpleIdentityServer.Common.Dtos.Events.OAuth;
+    using Shared;
+    using Shared.Events.OAuth;
 
     public class IntrospectionActions : IIntrospectionActions
     {

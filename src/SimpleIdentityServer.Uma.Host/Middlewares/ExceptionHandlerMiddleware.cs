@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Http;
-using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
@@ -22,6 +21,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Middlewares
 {
+    using Shared.Responses;
+
     internal class ExceptionHandlerMiddleware
     {
         private const string UnhandledExceptionCode = "unhandled_error";

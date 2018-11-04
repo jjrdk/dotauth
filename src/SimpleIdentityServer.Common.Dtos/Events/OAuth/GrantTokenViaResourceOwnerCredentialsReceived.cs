@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Common.Dtos.Events.OAuth
+namespace SimpleIdentityServer.Shared.Events.OAuth
 {
     using System.Net.Http.Headers;
 

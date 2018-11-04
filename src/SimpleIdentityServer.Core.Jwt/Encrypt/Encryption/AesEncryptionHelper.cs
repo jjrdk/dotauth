@@ -15,11 +15,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
-using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
 {
+    using Shared;
+
     public class AesEncryptionHelper : IAesEncryptionHelper
     {
         private readonly Dictionary<JweAlg, IAlgorithm> _mappingJweAlgToAlgorithms = new Dictionary<JweAlg, IAlgorithm>

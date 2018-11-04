@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-
 namespace SimpleIdentityServer.Scim.Core
 {
-    using SimpleIdentityServer.Core.Common;
+    using Shared;
+    using System.Collections.Generic;
 
     public static class Constants
     {

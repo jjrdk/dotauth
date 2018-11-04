@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Core.UnitTests.Fake
 {
+    using Shared;
+    using Shared.Models;
+
     public static class FakeOpenIdAssets
     {
         /// <summary>

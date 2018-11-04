@@ -1,10 +1,11 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Profile.Actions
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     internal sealed class GetResourceOwnerClaimsAction : IGetResourceOwnerClaimsAction
     {
         private readonly IProfileRepository _profileRepository;

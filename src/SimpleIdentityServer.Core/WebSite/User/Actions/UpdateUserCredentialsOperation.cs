@@ -1,11 +1,12 @@
-﻿using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Exceptions;
+﻿using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
+    using Shared.Repositories;
+
     internal sealed class UpdateUserCredentialsOperation : IUpdateUserCredentialsOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

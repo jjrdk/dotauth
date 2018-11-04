@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.UserManagement.Client.Results;
 using System;
 using System.Collections.Generic;
@@ -9,6 +8,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.UserManagement.Client.Operations
 {
     using Common.Responses;
+    using Shared.Responses;
 
     internal sealed class GetProfilesOperation : IGetProfilesOperation
     {

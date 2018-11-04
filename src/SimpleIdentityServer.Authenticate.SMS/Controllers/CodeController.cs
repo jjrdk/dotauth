@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Authenticate.SMS.Common.Requests;
-using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Exceptions;
 using System;
 using System.Net;
@@ -9,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 {
+    using Shared.Responses;
+
     [Route(Constants.CodeController)]
     public class CodeController : Controller
     {

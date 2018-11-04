@@ -14,14 +14,14 @@
 // limitations under the License.
 #endregion
 
-using Newtonsoft.Json;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-
 namespace SimpleIdentityServer.Manager.Common.Responses
 {
+    using Newtonsoft.Json;
+    using Shared;
+    using Shared.Requests;
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class JwsInformationResponse
     {

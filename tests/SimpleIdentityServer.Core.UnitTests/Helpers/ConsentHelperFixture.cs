@@ -1,6 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using System;
@@ -11,6 +9,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     public sealed class ConsentHelperFixture
     {
         private Mock<IConsentRepository> _consentRepositoryFake;

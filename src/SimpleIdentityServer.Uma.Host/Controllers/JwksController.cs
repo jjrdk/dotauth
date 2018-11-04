@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Api.Jwks;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
+    using Shared.Requests;
+
     [Route(Constants.RouteValues.Jwks)]
     public class JwksController : Controller
     {

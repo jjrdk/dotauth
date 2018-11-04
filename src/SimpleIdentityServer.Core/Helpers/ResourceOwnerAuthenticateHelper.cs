@@ -1,5 +1,4 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Services;
+﻿using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
+    using Shared.Models;
+
     internal class ResourceOwnerAuthenticateHelper : IResourceOwnerAuthenticateHelper
     {
         private readonly IEnumerable<IAuthenticateResourceOwnerService> _services;

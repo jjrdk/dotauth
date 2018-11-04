@@ -3,6 +3,6 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SimpleIdentityServer.Common.Dtos\SimpleIdentityServer.Common.Dtos.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Common.Dtos\SimpleIdentityServer.Shared.csproj" />
   </ItemGroup>
 </Project>

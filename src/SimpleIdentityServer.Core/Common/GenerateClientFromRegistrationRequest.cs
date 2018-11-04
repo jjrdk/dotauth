@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Jwt.Converter;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
 using System;
@@ -22,6 +21,8 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Common
 {
+    using Shared.Models;
+
     public class GenerateClientFromRegistrationRequest : IGenerateClientFromRegistrationRequest
     {
         private readonly IRegistrationParameterValidator _registrationParameterValidator;

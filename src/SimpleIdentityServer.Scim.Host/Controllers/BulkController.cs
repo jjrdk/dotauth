@@ -23,9 +23,8 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Scim.Host.Controllers
 {
     using Core.Results;
-    using SimpleIdentityServer.Core.Common;
-    using SimpleIdentityServer.Core.Common.DTOs;
-    using SimpleIdentityServer.Core.Common.Models;
+    using Shared;
+    using Shared.DTOs;
 
     [Route(Constants.RoutePaths.BulkController)]
     public class BulkController : Controller

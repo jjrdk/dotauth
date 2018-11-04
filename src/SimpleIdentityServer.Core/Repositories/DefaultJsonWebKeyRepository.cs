@@ -1,7 +1,4 @@
-﻿using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Extensions;
+﻿using SimpleIdentityServer.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +8,13 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
+    using Jwt.Extensions;
+    using Shared;
+    using Shared.Repositories;
+
     internal sealed class DefaultJsonWebKeyRepository : IJsonWebKeyRepository
     {
-        public ICollection<JsonWebKey> _jsonWebKeys;
+        public readonly ICollection<JsonWebKey> _jsonWebKeys;
 
         public DefaultJsonWebKeyRepository(IReadOnlyCollection<JsonWebKey> jsonWebKeys)
         {

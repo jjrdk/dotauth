@@ -1,5 +1,4 @@
 ﻿using SimpleIdentityServer.Core.Api.Profile.Actions;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using System.Collections.Generic;
@@ -7,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Profile
 {
+    using Shared.Models;
+
     internal sealed class ProfileActions : IProfileActions
     {
         private readonly IUnlinkProfileAction _unlinkProfileAction;

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Common.Dtos.Events.Openid
+namespace SimpleIdentityServer.Shared.Events.Openid
 {
     public class UserInformationReturned : Event
     {

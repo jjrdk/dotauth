@@ -2,8 +2,8 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Core.Common;
-    using Core.Common.DTOs.Responses;
+    using Shared;
+    using Shared.Responses;
 
     internal class TestAccessTokenStore : IAccessTokenStore
     {

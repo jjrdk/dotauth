@@ -1,8 +1,5 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
@@ -18,6 +15,11 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Shared.Requests;
+
     public sealed class JwtParserFixture
     {
         private Mock<IJweParser> _jweParserMock;
@@ -116,7 +118,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(() => null);
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
+                .Returns(() => Task.FromResult((Client)null));
 
             // ACT & ASSERT
             var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _jwtParser.DecryptAsync("jws", clientId)).ConfigureAwait(false);
@@ -128,7 +130,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             // ARRANGE
             InitializeFakeObjects();
-            var client = new Core.Common.Models.Client();
+            var client = new Client();
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(() => null);
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
@@ -151,7 +153,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 Alg = Jwt.JwtConstants.JwsAlgNames.PS256
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 ClientId = clientId,
                 JsonWebKeys = new List<JsonWebKey>()
@@ -187,7 +189,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 Alg = Jwt.JwtConstants.JweAlgNames.A128KW,
                 Kid = kid
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 ClientId = clientId,
                 JsonWebKeys = new List<JsonWebKey>
@@ -221,7 +223,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 Alg = Jwt.JwtConstants.JwsAlgNames.PS256
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 ClientId = clientId,
                 JsonWebKeys = new List<JsonWebKey>()
@@ -259,7 +261,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 Alg = Jwt.JwtConstants.JweAlgNames.A128KW,
                 Kid = kid
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 ClientId = clientId,
                 JsonWebKeys = new List<JsonWebKey>
@@ -359,7 +361,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string clientId = "client_id";
             InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
+                .Returns(() => Task.FromResult((Client)null));
 
             // ACT & ASSERTS
             var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _jwtParser.UnSignAsync("jws", clientId)).ConfigureAwait(false);
@@ -371,7 +373,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             // ARRANGE
             const string clientId = "client_id";
-            var client = new Core.Common.Models.Client();
+            var client = new Client();
             InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
@@ -395,7 +397,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 Alg = Jwt.JwtConstants.JwsAlgNames.PS256
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 JwksUri = "invalid_url",
                 ClientId = clientId
@@ -430,7 +432,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 Content = new StringContent(json)
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 JwksUri = "http://localhost",
                 ClientId = clientId
@@ -468,7 +470,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 Content = new StringContent(json)
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 JwksUri = "http://localhost",
                 ClientId = clientId
@@ -504,7 +506,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 Alg = Jwt.JwtConstants.JwsAlgNames.PS256
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 ClientId = clientId,
                 JsonWebKeys = new List<JsonWebKey>()
@@ -531,7 +533,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 Alg = Jwt.JwtConstants.JwsAlgNames.PS256
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 ClientId = clientId
             };
@@ -559,7 +561,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 Alg = Jwt.JwtConstants.JwsAlgNames.NONE
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 ClientId = clientId
             };
@@ -600,7 +602,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 Alg = Jwt.JwtConstants.JwsAlgNames.PS256,
                 Kid = kid
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 ClientId = clientId,
                 JwksUri = "http://localhost"
@@ -656,7 +658,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 Alg = Jwt.JwtConstants.JwsAlgNames.PS256,
                 Kid = kid
             };
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 ClientId = clientId,
                 JsonWebKeys = new List<JsonWebKey>

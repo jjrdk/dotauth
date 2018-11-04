@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
 using System;
 using System.Linq;
 
 namespace SimpleIdentityServer.Core.Jwt.Extensions
 {
+    using Shared;
+
     public static class StringExtensions
     {
         /// <summary>

@@ -15,9 +15,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.JwtToken;
@@ -29,6 +26,10 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
 {
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
+
     public sealed class GetJwsPayloadFixture
     {
         private Mock<IGrantedTokenValidator> _grantedTokenValidatorFake;

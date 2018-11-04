@@ -9,6 +9,5 @@
   <ItemGroup>
     <!--<ProjectReference Include="..\..\Common\SimpleIdentityServer.Common.Client\SimpleIdentityServer.Common.Client.csproj" />-->
     <ProjectReference Include="..\SimpleIdentityServer.Authenticate.SMS.Common\SimpleIdentityServer.Authenticate.SMS.Common.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj" />
   </ItemGroup>
 </Project>

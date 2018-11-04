@@ -1,6 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
@@ -10,6 +8,8 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
     using System.Threading;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public class UpdateUserTwoFactorAuthenticatorOperationFixture
     {

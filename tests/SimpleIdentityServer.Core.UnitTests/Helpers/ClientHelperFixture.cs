@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using System;
@@ -23,6 +21,10 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
+
     public sealed class ClientHelperFixture
     {
         private Mock<IClientStore> _clientRepositoryStub;
@@ -46,7 +48,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {
             // ARRANGE
             InitializeFakeObjects();
-            var client = new Core.Common.Models.Client();
+            var client = new Client();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
@@ -62,7 +64,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {
             // ARRANGE
             InitializeFakeObjects();
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
                 IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
@@ -83,7 +85,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {
             // ARRANGE
             InitializeFakeObjects();
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
                 IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,

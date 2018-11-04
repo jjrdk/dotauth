@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Services;
@@ -23,6 +22,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
+    using Shared.Repositories;
+
     internal class GenerateAndSendCodeAction : IGenerateAndSendCodeAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

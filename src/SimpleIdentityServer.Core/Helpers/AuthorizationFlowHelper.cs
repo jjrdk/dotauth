@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Api.Authorization;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using System.Collections.Generic;
@@ -21,6 +20,8 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
+    using Shared.Models;
+
     public class AuthorizationFlowHelper : IAuthorizationFlowHelper
     {
         public AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state)

@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.Uma.Client.Permission
     using Common.DTOs;
     using Newtonsoft.Json;
     using Results;
-    using SimpleIdentityServer.Common.Dtos.Responses;
+    using Shared.Responses;
 
     internal class AddPermissionsOperation : IAddPermissionsOperation
     {

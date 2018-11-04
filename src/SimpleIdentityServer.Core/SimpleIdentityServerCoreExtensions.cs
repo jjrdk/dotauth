@@ -31,8 +31,6 @@ using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt.Converter;
@@ -53,6 +51,10 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core
 {
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
+
     public static class SimpleIdentityServerCoreExtensions
     {
         public static IServiceCollection AddSimpleIdentityServerCore(
@@ -66,7 +68,7 @@ namespace SimpleIdentityServer.Core
             IReadOnlyCollection<ResourceOwnerProfile> profiles = null,
             IReadOnlyCollection<ResourceOwner> resourceOwners = null,
             IReadOnlyCollection<Scope> scopes = null,
-            IReadOnlyCollection<Common.Models.Translation> translations = null)
+            IReadOnlyCollection<Shared.Models.Translation> translations = null)
         {
             if (serviceCollection == null)
             {

@@ -15,11 +15,11 @@
 namespace SimpleIdentityServer.Core
 {
     using Api.Discovery;
-    using Common.DTOs.Requests;
     using Newtonsoft.Json;
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Shared.Requests;
 
     public class JwksClient : IJwksClient
     {

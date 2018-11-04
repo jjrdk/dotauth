@@ -15,9 +15,6 @@
 using Moq;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
@@ -34,6 +31,9 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
     using Logging;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
     {

@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Store;
@@ -28,6 +27,8 @@ using System.Security.Claims;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
+    using Shared.Models;
+
     public static class ServiceCollectionExtensions
     {
         private static readonly List<Scope> DEFAULT_SCOPES = new List<Scope>

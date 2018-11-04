@@ -3,7 +3,7 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using Core.Common;
+    using Shared;
 
     public class RevokeTokenRequest : IEnumerable<KeyValuePair<string, string>>
     {

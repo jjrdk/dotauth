@@ -1,7 +1,5 @@
 ﻿using Moq;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -10,6 +8,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
 {
     using Core.Services;
     using Core.WebSite.User.Actions;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public class SmsAuthenticationOperationFixture
     {

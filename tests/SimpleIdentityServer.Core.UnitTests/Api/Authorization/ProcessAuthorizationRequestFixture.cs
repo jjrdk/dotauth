@@ -1,6 +1,5 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
@@ -18,10 +17,11 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
-    using Core.Common.Models;
     using System.Net.Http;
     using Logging;
-    using IClientStore = Core.Common.Repositories.IClientStore;
+    using Shared.Models;
+    using Shared.Repositories;
+    using IClientStore = Shared.Repositories.IClientStore;
 
     public sealed class ProcessAuthorizationRequestFixture
     {

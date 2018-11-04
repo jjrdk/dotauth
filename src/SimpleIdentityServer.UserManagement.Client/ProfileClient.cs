@@ -1,11 +1,11 @@
-﻿using SimpleIdentityServer.UserManagement.Client.Operations;
-using SimpleIdentityServer.UserManagement.Client.Results;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.UserManagement.Client
+﻿namespace SimpleIdentityServer.UserManagement.Client
 {
+    using SimpleIdentityServer.UserManagement.Client.Operations;
+    using SimpleIdentityServer.UserManagement.Client.Results;
+    using System.Threading.Tasks;
+
     using Common.Requests;
-    using Core.Common;
+    using Shared;
 
     internal sealed class ProfileClient : IProfileClient
     {

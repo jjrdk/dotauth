@@ -1,9 +1,8 @@
 ﻿namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
-    using Parameters;
     using System;
     using System.Threading.Tasks;
-    using Common.Models;
+    using Shared.Models;
 
     public interface IAddUserOperation
     {

@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
@@ -22,6 +20,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 {
+    using Shared;
+    using Shared.Requests;
+
     public sealed class JwsGeneratorFixture
     {
         private Mock<ICreateJwsSignature> _createJwsSignatureFake;

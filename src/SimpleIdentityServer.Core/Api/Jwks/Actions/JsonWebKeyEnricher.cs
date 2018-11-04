@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +20,9 @@ using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
+    using Jwt.Extensions;
+    using Shared;
+
     public class JsonWebKeyEnricher : IJsonWebKeyEnricher
     {
         private readonly Dictionary<KeyType, Action<Dictionary<string, object>, JsonWebKey>> _mappingKeyTypeAndPublicKeyEnricher;

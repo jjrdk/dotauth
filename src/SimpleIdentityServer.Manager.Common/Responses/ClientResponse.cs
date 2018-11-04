@@ -14,17 +14,17 @@
 // limitations under the License.
 #endregion
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-
 namespace SimpleIdentityServer.Manager.Common.Responses
 {
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
+    using Shared;
+    using Shared.Models;
+    using Shared.Requests;
+    using System;
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class ResponseClientSecret
     {

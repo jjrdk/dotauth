@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Host.Middleware
 {
+    using Shared.Responses;
+
     public class ExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
@@ -51,7 +53,7 @@ namespace SimpleIdentityServer.Manager.Host.Middleware
                     code = idServerException.Code;
                 }
 
-                var errorResponse = new SimpleIdentityServer.Common.Dtos.Responses.ErrorResponse
+                var errorResponse = new ErrorResponse
                 {
                     Error = code,
                     ErrorDescription = exception.Message

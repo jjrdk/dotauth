@@ -19,9 +19,9 @@ namespace SimpleIdentityServer.Uma.Client.Policy
     using System.Text;
     using System.Threading.Tasks;
     using Common.DTOs;
-    using Core.Common;
     using Newtonsoft.Json;
-    using SimpleIdentityServer.Common.Dtos.Responses;
+    using Shared;
+    using Shared.Responses;
 
     internal class AddResourceToPolicyOperation : IAddResourceToPolicyOperation
     {

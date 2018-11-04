@@ -13,12 +13,13 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.DataProtection;
-using SimpleIdentityServer.Core.Common.Extensions;
 using System;
 using System.Text;
 
 namespace SimpleIdentityServer.Host.Extensions
 {
+    using Shared;
+
     public static class DataProtectorExtensions
     {
         public static T Unprotect<T>(this IDataProtector dataProtector, string encoded)

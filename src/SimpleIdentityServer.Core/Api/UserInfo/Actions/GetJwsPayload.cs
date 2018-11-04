@@ -16,8 +16,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -33,6 +31,8 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 {
     using Common.Extensions;
+    using Shared;
+    using Shared.Repositories;
 
     public class GetJwsPayload : IGetJwsPayload
     {

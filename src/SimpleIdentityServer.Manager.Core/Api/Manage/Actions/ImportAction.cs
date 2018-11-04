@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using System;
 using System.Threading.Tasks;
@@ -22,6 +21,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Manager.Core.Api.Manage.Actions
 {
     using Logging;
+    using Shared.Repositories;
 
     public interface IImportAction
     {

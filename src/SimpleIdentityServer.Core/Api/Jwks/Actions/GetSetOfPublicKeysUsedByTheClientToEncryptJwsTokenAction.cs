@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Extensions;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +19,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
+    using Shared;
+    using Shared.Repositories;
+
     public class GetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction : IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction
     {
         private readonly IJsonWebKeyEnricher _jsonWebKeyEnricher;

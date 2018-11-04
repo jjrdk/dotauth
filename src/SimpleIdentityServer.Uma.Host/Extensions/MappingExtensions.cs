@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
@@ -28,6 +25,10 @@ using DomainResponse = SimpleIdentityServer.Uma.Core.Responses;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
+    using Shared.Models;
+    using Shared.Requests;
+    using Shared.Responses;
+
     internal static class MappingExtensions
     {
         public static SearchResourceSetParameter ToParameter(this SearchResourceSet searchResourceSet)
@@ -411,9 +412,9 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
         }
 
 
-        public static SimpleIdentityServer.Core.Common.DTOs.Responses.IntrospectionResponse ToDto(this IntrospectionResult introspectionResult)
+        public static IntrospectionResponse ToDto(this IntrospectionResult introspectionResult)
         {
-            return new SimpleIdentityServer.Core.Common.DTOs.Responses.IntrospectionResponse
+            return new IntrospectionResponse
             {
                 Active = introspectionResult.Active,
                 Audience = introspectionResult.Audience,

@@ -14,8 +14,6 @@
 
 
 using Moq;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Services;
@@ -30,7 +28,9 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
     using System.Threading;
-    using Core.Common;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public class GenerateAndSendCodeActionFixture
     {

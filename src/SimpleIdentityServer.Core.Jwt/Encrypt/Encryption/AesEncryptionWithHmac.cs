@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Security.Cryptography;
-using System.Text;
-using SimpleIdentityServer.Core.Common.Extensions;
-using System;
-using SimpleIdentityServer.Core.Common;
-
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
 {
+    using Shared;
+    using System;
+    using System.Security.Cryptography;
+    using System.Text;
+    using Common.Extensions;
+
     public class AesEncryptionWithHmac : IEncryption
     {
         private readonly IAesEncryptionHelper _aesEncryptionHelper;
@@ -44,9 +44,9 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
         }
 
         public AesEncryptionResult EncryptWithSymmetricPassword(
-            string toEncrypt, 
-            JweAlg alg, 
-            JweProtectedHeader protectedHeader, 
+            string toEncrypt,
+            JweAlg alg,
+            JweProtectedHeader protectedHeader,
             JsonWebKey jsonWebKey,
             string password)
         {
@@ -68,8 +68,8 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
         }
 
         public string DecryptWithSymmetricPassword(
-            string toDecrypt, 
-            JweAlg alg, 
+            string toDecrypt,
+            JweAlg alg,
             JsonWebKey jsonWebKey,
             string password)
         {
@@ -131,8 +131,8 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
         }
 
         private string PerformDecryption(
-            string toDecrypt, 
-            JweAlg alg, 
+            string toDecrypt,
+            JweAlg alg,
             JsonWebKey jsonWebKey,
             Func<byte[][], byte[]> callback)
         {

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Twilio.Client;
 using System.Security.Cryptography;
@@ -21,6 +20,7 @@ using System.Security.Cryptography;
 namespace SimpleIdentityServer.Host.Tests
 {
     using System.Net.Http;
+    using Shared;
 
     public class SharedContext
     {

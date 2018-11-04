@@ -14,10 +14,6 @@
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using System;
@@ -26,6 +22,12 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Host.Extensions
 {
+    using Shared;
+    using Shared.Models;
+    using Shared.Requests;
+    using Shared.Responses;
+    using CodeChallengeMethods = Shared.Models.CodeChallengeMethods;
+
     public static class MappingExtensions
     {
         public static AuthorizationParameter ToParameter(this AuthorizationRequest request)
@@ -82,7 +84,7 @@ namespace SimpleIdentityServer.Host.Extensions
             if (!string.IsNullOrWhiteSpace(request.CodeChallenge) && request.CodeChallengeMethod != null)
             {
                 result.CodeChallenge = request.CodeChallenge;
-                result.CodeChallengeMethod = (Core.Common.Models.CodeChallengeMethods)request.CodeChallengeMethod;
+                result.CodeChallengeMethod = (CodeChallengeMethods)request.CodeChallengeMethod;
             }
 
             return result;

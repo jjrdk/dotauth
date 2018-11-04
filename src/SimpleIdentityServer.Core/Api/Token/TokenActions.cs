@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Api.Token.Actions;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
@@ -24,11 +23,12 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token
 {
-    using Common;
     using Errors;
     using Helpers;
     using Logging;
-    using SimpleIdentityServer.Common.Dtos.Events.OAuth;
+    using Shared;
+    using Shared.Events.OAuth;
+    using Shared.Models;
     using SimpleIdentityServer.Core.Authenticate;
     using Store;
 

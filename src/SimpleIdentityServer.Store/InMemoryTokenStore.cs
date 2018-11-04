@@ -1,12 +1,13 @@
-﻿using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Store
 {
+    using Shared;
+    using Shared.Models;
+
     internal sealed class InMemoryTokenStore : ITokenStore
     {
         private readonly Dictionary<string, GrantedToken> _tokens;

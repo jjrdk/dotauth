@@ -14,15 +14,16 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Parameters;
-using SimpleIdentityServer.Core.Common.Results;
 using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Scopes
 {
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Results;
+
     public interface IScopeActions
     {
         Task<bool> DeleteScope(string scopeName);

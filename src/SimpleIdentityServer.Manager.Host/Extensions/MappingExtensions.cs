@@ -14,9 +14,6 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Parameters;
-using SimpleIdentityServer.Core.Common.Results;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Manager.Common.Requests;
 using SimpleIdentityServer.Manager.Common.Responses;
@@ -28,6 +25,10 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Results;
+
     public static class MappingExtensions
     {
         #region To parameters
@@ -297,7 +298,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
-        public static SimpleIdentityServer.Core.Common.Models.Client ToModel(this ClientResponse clientResponse)
+        public static Client ToModel(this ClientResponse clientResponse)
         {
             var responseTypes = new List<ResponseType>();
             var grantTypes = new List<GrantType>();
@@ -532,7 +533,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
-        public static ClientResponse ToDto(this SimpleIdentityServer.Core.Common.Models.Client client)
+        public static ClientResponse ToDto(this Client client)
         {
             IEnumerable<ResponseClientSecret> secrets = null;
             if (client.Secrets != null)
@@ -621,7 +622,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
         #region To List of DTOs
 
-        public static List<ClientResponse> ToDtos(this IEnumerable<SimpleIdentityServer.Core.Common.Models.Client> clients)
+        public static List<ClientResponse> ToDtos(this IEnumerable<Client> clients)
         {
             return clients.Select(c => c.ToDto()).ToList();
         }

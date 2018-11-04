@@ -1,8 +1,8 @@
 ﻿namespace SimpleIdentityServer.Core.Helpers
 {
     using System.Threading.Tasks;
-    using Common;
-    using Common.Models;
+    using Shared;
+    using Shared.Models;
 
     public interface IGrantedTokenHelper 
     {

@@ -1,8 +1,9 @@
-﻿using SimpleIdentityServer.Core.Common.DTOs.Responses;
-using System.Net;
+﻿using System.Net;
 
 namespace SimpleIdentityServer.Client.Results
 {
+    using Shared.Responses;
+
     public class BaseSidResult
     {
         public bool ContainsError { get; set; }

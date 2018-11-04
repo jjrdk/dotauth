@@ -16,14 +16,14 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 {
     using Client;
     using Client.Operations;
-    using Core.Common.DTOs.Requests;
-    using Core.Common.DTOs.Responses;
     using Newtonsoft.Json;
     using System;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
+    using Shared.Requests;
+    using Shared.Responses;
     using Xunit;
     using TokenRequest = Client.TokenRequest;
 
