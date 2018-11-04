@@ -14,19 +14,18 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Jwt.Converter;
-using SimpleIdentityServer.Manager.Core.Errors;
-using SimpleIdentityServer.Manager.Core.Exceptions;
-using SimpleIdentityServer.Manager.Core.Factories;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace SimpleIdentityServer.Manager.Core.Helpers
 {
     using Shared;
     using Shared.Requests;
+    using SimpleIdentityServer.Core.Jwt.Converter;
+    using SimpleIdentityServer.Manager.Core.Errors;
+    using SimpleIdentityServer.Manager.Core.Exceptions;
+    using System;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using SimpleIdentityServer.Core.Common.Extensions;
 
     public interface IJsonWebKeyHelper
     {
@@ -36,11 +35,11 @@ namespace SimpleIdentityServer.Manager.Core.Helpers
     public class JsonWebKeyHelper : IJsonWebKeyHelper
     {
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClientFactory;
 
         public JsonWebKeyHelper(
             IJsonWebKeyConverter jsonWebKeyConverter,
-            IHttpClientFactory httpClientFactory)
+            HttpClient httpClientFactory)
         {
             _jsonWebKeyConverter = jsonWebKeyConverter;
             _httpClientFactory = httpClientFactory;
@@ -60,9 +59,7 @@ namespace SimpleIdentityServer.Manager.Core.Helpers
 
             try
             {
-                var httpClient = _httpClientFactory.GetHttpClient();
-                httpClient.BaseAddress = uri;
-                var request = await httpClient.GetAsync(uri.AbsoluteUri).ConfigureAwait(false);
+                var request = await _httpClientFactory.GetAsync(uri.AbsoluteUri).ConfigureAwait(false);
                 request.EnsureSuccessStatusCode();
                 var json = request.Content.ReadAsStringAsync().Result;
                 var jsonWebKeySet = json.DeserializeWithJavascript<JsonWebKeySet>();

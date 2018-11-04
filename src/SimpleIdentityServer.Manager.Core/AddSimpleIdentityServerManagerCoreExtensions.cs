@@ -28,7 +28,6 @@ using SimpleIdentityServer.Manager.Core.Api.Jws.Actions;
 using SimpleIdentityServer.Manager.Core.Api.Manage.Actions;
 using SimpleIdentityServer.Manager.Core.Api.Scopes;
 using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
-using SimpleIdentityServer.Manager.Core.Factories;
 using SimpleIdentityServer.Manager.Core.Helpers;
 using SimpleIdentityServer.Manager.Core.Validators;
 
@@ -47,7 +46,6 @@ namespace SimpleIdentityServer.Manager.Core
             serviceCollection.AddTransient<ICreateJweAction, CreateJweAction>();
             serviceCollection.AddTransient<ICreateJwsAction, CreateJwsAction>();
             serviceCollection.AddTransient<IJsonWebKeyHelper, JsonWebKeyHelper>();
-            serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
             serviceCollection.AddTransient<IJsonWebKeyEnricher, JsonWebKeyEnricher>();
             serviceCollection.AddTransient<IClientActions, ClientActions>();
             serviceCollection.AddTransient<IGetClientsAction, GetClientsAction>();
