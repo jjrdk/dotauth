@@ -53,8 +53,8 @@ namespace SimpleIdentityServer.Host.Tests
         public const string ScimEndPoint = "http://localhost:5555/";
         public const string DefaultSchema = "Cookies";
         private readonly IdentityServerOptions _options;
-        private IJsonWebKeyEnricher _jsonWebKeyEnricher;
-        private SharedContext _context;
+        private readonly IJsonWebKeyEnricher _jsonWebKeyEnricher;
+        private readonly SharedContext _context;
 
         public FakeStartup(SharedContext context)
         {

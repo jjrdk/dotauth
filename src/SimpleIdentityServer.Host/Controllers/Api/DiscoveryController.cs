@@ -19,6 +19,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
+    using Core;
 
     [Route(Core.Constants.EndPoints.DiscoveryAction)]
     public class DiscoveryController : Controller

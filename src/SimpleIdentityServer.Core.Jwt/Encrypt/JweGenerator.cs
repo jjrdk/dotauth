@@ -65,9 +65,9 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
             JsonWebKey jsonWebKey,
             Func<IEncryption, JweProtectedHeader, AesEncryptionResult> callback)
         {
-            var algo = Constants.MappingNameToJweAlgEnum
+            var algo = JwtConstants.MappingNameToJweAlgEnum
                 .SingleOrDefault(k => k.Value == alg);
-            var encryption = Constants.MappingNameToJweEncEnum
+            var encryption = JwtConstants.MappingNameToJweEncEnum
                 .SingleOrDefault(k => k.Value == enc);
             if (jsonWebKey == null ||
                 algo.IsDefault() ||

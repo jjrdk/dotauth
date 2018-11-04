@@ -17,7 +17,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
-using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Core.Jwt.Signature;
 
 namespace SimpleIdentityServer.Core.Jwt
@@ -30,7 +29,6 @@ namespace SimpleIdentityServer.Core.Jwt
             serviceCollection.AddTransient<IJweParser, JweParser>();
             serviceCollection.AddTransient<IAesEncryptionHelper, AesEncryptionHelper>();
             serviceCollection.AddTransient<IJweHelper, JweHelper>();
-            serviceCollection.AddTransient<IClaimsMapping, ClaimsMapping>();
             serviceCollection.AddTransient<IJwsGenerator, JwsGenerator>();
             serviceCollection.AddTransient<ICreateJwsSignature, CreateJwsSignature>();
             serviceCollection.AddTransient<IJwsParser, JwsParser>();

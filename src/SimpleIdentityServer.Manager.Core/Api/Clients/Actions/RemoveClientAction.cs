@@ -15,9 +15,9 @@
 #endregion
 
 using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Manager.Logging;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
+using SimpleIdentityServer.Manager.Logging;
 using System;
 using System.Threading.Tasks;
 
@@ -31,13 +31,16 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
     public class RemoveClientAction : IRemoveClientAction
     {
         private readonly IClientRepository _clientRepository;
+        private readonly IClientStore _clientStore;
         private readonly IManagerEventSource _managerEventSource;
 
         public RemoveClientAction(
             IClientRepository clientRepository,
+            IClientStore clientStore,
             IManagerEventSource managerEventSource)
         {
             _clientRepository = clientRepository;
+            _clientStore = clientStore;
             _managerEventSource = managerEventSource;
         }
 
@@ -49,7 +52,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
+            var client = await _clientStore.GetById(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,

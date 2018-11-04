@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.OAuth2Introspection
 
                 if (!string.IsNullOrWhiteSpace(introspectionResult.Content.Subject))
                 {
-                    claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                    claims.Add(new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject,
                         introspectionResult.Content.Subject));
                 }
 

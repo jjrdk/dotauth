@@ -18,7 +18,7 @@ using SimpleIdentityServer.Core.Results;
 
 namespace SimpleIdentityServer.Host
 {
-    public static class Constants
+    public static class HostConstants
     {
         public static class CookieNames
         {

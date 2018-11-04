@@ -49,16 +49,16 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
             return new Dictionary<string, object>
             {
                 {
-                    Jwt.Constants.JsonWebKeyParameterNames.KeyTypeName, Jwt.Constants.MappingKeyTypeEnumToName[jsonWebKey.Kty]
+                    Jwt.JwtConstants.JsonWebKeyParameterNames.KeyTypeName, Jwt.JwtConstants.MappingKeyTypeEnumToName[jsonWebKey.Kty]
                 },
                 {
-                    Jwt.Constants.JsonWebKeyParameterNames.UseName, Jwt.Constants.MappingUseEnumerationToName[jsonWebKey.Use]
+                    Jwt.JwtConstants.JsonWebKeyParameterNames.UseName, Jwt.JwtConstants.MappingUseEnumerationToName[jsonWebKey.Use]
                 },
                 {
-                    Jwt.Constants.JsonWebKeyParameterNames.AlgorithmName, Jwt.Constants.MappingNameToAllAlgEnum.SingleOrDefault(kp => kp.Value == jsonWebKey.Alg).Key
+                    Jwt.JwtConstants.JsonWebKeyParameterNames.AlgorithmName, Jwt.JwtConstants.MappingNameToAllAlgEnum.SingleOrDefault(kp => kp.Value == jsonWebKey.Alg).Key
                 },
                 {
-                    Jwt.Constants.JsonWebKeyParameterNames.KeyIdentifierName, jsonWebKey.Kid
+                    Jwt.JwtConstants.JsonWebKeyParameterNames.KeyIdentifierName, jsonWebKey.Kid
                 }
                 // TODO : we still need to support the other parameters x5u & x5c & x5t & x5t#S256
             };
@@ -77,8 +77,8 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
                     // Export the exponent
                     var exponent = rsaParameters.Exponent.ToBase64Simplified();
 
-                    result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
-                    result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
+                    result.Add(Jwt.JwtConstants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
+                    result.Add(Jwt.JwtConstants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
                 }
             }
             else
@@ -92,8 +92,8 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
                     // Export the exponent
                     var exponent = rsaParameters.Exponent.ToBase64Simplified();
 
-                    result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
-                    result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
+                    result.Add(Jwt.JwtConstants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
+                    result.Add(Jwt.JwtConstants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
                 }
             }
         }

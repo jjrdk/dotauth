@@ -14,13 +14,9 @@
 
 namespace SimpleIdentityServer.Core.Parameters
 {
-    public class RevokeTokenParameter
+    public class RevokeTokenParameter : GrantTypeParameter
     {
         public string Token { get; set; }
         public string TokenTypeHint { get; set; }
-        public string ClientId { get; set; }
-        public string ClientSecret { get; set; }
-        public string ClientAssertionType { get; set; }        
-        public string ClientAssertion { get; set; }
     }
 }

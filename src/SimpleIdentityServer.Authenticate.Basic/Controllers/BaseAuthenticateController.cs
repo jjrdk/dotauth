@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
         //protected readonly IUserActions _userActions;
         private readonly IPayloadSerializer _payloadSerializer;
-        private readonly IConfigurationService _configurationService;
+        private readonly OAuthConfigurationOptions _configurationService;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
         private readonly BasicAuthenticateOptions _basicAuthenticateOptions;
         private readonly ISubjectBuilder _subjectBuilder;
@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             IGetUserOperation getUserOperation,
             IUpdateUserClaimsOperation updateUserClaimsOperation,
             IPayloadSerializer payloadSerializer,
-            IConfigurationService configurationService,
+            OAuthConfigurationOptions configurationService,
             IAuthenticateHelper authenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             ISubjectBuilder subjectBuilder,
@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         {
             HttpContext.Response.Cookies.Delete(Constants.SESSION_ID);
             await _authenticationService
-                .SignOutAsync(HttpContext, Host.Constants.CookieNames.CookieName, new AuthenticationProperties())
+                .SignOutAsync(HttpContext, Host.HostConstants.CookieNames.CookieName, new AuthenticationProperties())
                 .ConfigureAwait(false);
             return RedirectToAction("Index", "Authenticate");
         }
@@ -150,7 +150,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
             // 1. Get the authenticated user.
             var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, Host.Constants.CookieNames.ExternalCookieName)
+                .GetAuthenticatedUser(this, Host.HostConstants.CookieNames.ExternalCookieName)
                 .ConfigureAwait(false);
             var resourceOwner =
                 await _profileActions.GetResourceOwner(authenticatedUser.GetSubject()).ConfigureAwait(false);
@@ -183,7 +183,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
             await _authenticationService
                 .SignOutAsync(HttpContext,
-                    Host.Constants.CookieNames.ExternalCookieName,
+                    Host.HostConstants.CookieNames.ExternalCookieName,
                     new AuthenticationProperties())
                 .ConfigureAwait(false);
 
@@ -207,7 +207,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             await SetLocalCookie(claims.ToOpenidClaims(), Guid.NewGuid().ToString()).ConfigureAwait(false);
             await _authenticationService
                 .SignOutAsync(HttpContext,
-                    Host.Constants.CookieNames.ExternalCookieName,
+                    Host.HostConstants.CookieNames.ExternalCookieName,
                     new AuthenticationProperties())
                 .ConfigureAwait(false);
 
@@ -220,7 +220,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         {
             // 1. Retrieve user
             var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, Host.Constants.CookieNames.TwoFactorCookieName)
+                .GetAuthenticatedUser(this, Host.HostConstants.CookieNames.TwoFactorCookieName)
                 .ConfigureAwait(false);
             if (authenticatedUser == null ||
                 authenticatedUser.Identity == null ||
@@ -268,7 +268,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
             // 1. Check user is authenticated
             var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, Host.Constants.CookieNames.TwoFactorCookieName)
+                .GetAuthenticatedUser(this, Host.HostConstants.CookieNames.TwoFactorCookieName)
                 .ConfigureAwait(false);
             if (authenticatedUser == null ||
                 authenticatedUser.Identity == null ||
@@ -319,7 +319,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             // 5. Authenticate the resource owner
             await _authenticationService
                 .SignOutAsync(HttpContext,
-                    Host.Constants.CookieNames.TwoFactorCookieName,
+                    Host.HostConstants.CookieNames.TwoFactorCookieName,
                     new AuthenticationProperties())
                 .ConfigureAwait(false);
 
@@ -447,7 +447,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
             // 4. Check if the user is authenticated
             var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, Host.Constants.CookieNames.ExternalCookieName)
+                .GetAuthenticatedUser(this, Host.HostConstants.CookieNames.ExternalCookieName)
                 .ConfigureAwait(false);
             if (authenticatedUser == null ||
                 !authenticatedUser.Identity.IsAuthenticated ||
@@ -509,7 +509,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             {
                 await SetLocalCookie(claims.ToOpenidClaims(), authorizationRequest.SessionId).ConfigureAwait(false);
                 await _authenticationService.SignOutAsync(HttpContext,
-                        Host.Constants.CookieNames.ExternalCookieName,
+                        Host.HostConstants.CookieNames.ExternalCookieName,
                         new AuthenticationProperties())
                     .ConfigureAwait(false);
                 LogAuthenticateUser(actionResult, authorizationRequest.ProcessId);
@@ -651,10 +651,9 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         protected async Task SetLocalCookie(IEnumerable<Claim> claims, string sessionId)
         {
             var cls = claims.ToList();
-            var tokenValidity =
-                await _configurationService.GetTokenValidityPeriodInSecondsAsync().ConfigureAwait(false);
+            var tokenValidity = _configurationService.TokenValidityPeriod;
             var now = DateTime.UtcNow;
-            var expires = now.AddSeconds(tokenValidity);
+            var expires = now.Add(tokenValidity);
             HttpContext.Response.Cookies.Append(Constants.SESSION_ID,
                 sessionId,
                 new CookieOptions
@@ -663,10 +662,10 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                     Expires = expires,
                     SameSite = SameSiteMode.None
                 });
-            var identity = new ClaimsIdentity(cls, Host.Constants.CookieNames.CookieName);
+            var identity = new ClaimsIdentity(cls, Host.HostConstants.CookieNames.CookieName);
             var principal = new ClaimsPrincipal(identity);
             await _authenticationService.SignInAsync(HttpContext,
-                    Host.Constants.CookieNames.CookieName,
+                    Host.HostConstants.CookieNames.CookieName,
                     principal,
                     new AuthenticationProperties
                     {
@@ -680,10 +679,10 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
         protected async Task SetTwoFactorCookie(IEnumerable<Claim> claims)
         {
-            var identity = new ClaimsIdentity(claims, Host.Constants.CookieNames.TwoFactorCookieName);
+            var identity = new ClaimsIdentity(claims, Host.HostConstants.CookieNames.TwoFactorCookieName);
             var principal = new ClaimsPrincipal(identity);
             await _authenticationService.SignInAsync(HttpContext,
-                    Host.Constants.CookieNames.TwoFactorCookieName,
+                    Host.HostConstants.CookieNames.TwoFactorCookieName,
                     principal,
                     new AuthenticationProperties
                     {

@@ -25,6 +25,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using System.Linq;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
+    using Core;
 
     [Route(Core.Constants.EndPoints.UserInfo)]
     public class UserInfoController : Controller

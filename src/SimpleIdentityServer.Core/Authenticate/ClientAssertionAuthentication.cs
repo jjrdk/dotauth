@@ -18,7 +18,6 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,19 +26,16 @@ namespace SimpleIdentityServer.Core.Authenticate
 {
     public class ClientAssertionAuthentication : IClientAssertionAuthentication
     {
-        private readonly IJwsParser _jwsParser;        
-        private readonly IConfigurationService _configurationService;
-        private readonly IClientRepository _clientRepository;
+        private readonly IJwsParser _jwsParser;
+        private readonly IClientStore _clientRepository;
         private readonly IJwtParser _jwtParser;
 
         public ClientAssertionAuthentication(
             IJwsParser jwsParser,
-            IConfigurationService configurationService,
-            IClientRepository clientRepository,
+            IClientStore clientRepository,
             IJwtParser jwtParser)
         {
             _jwsParser = jwsParser;
-            _configurationService = configurationService;
             _clientRepository = clientRepository;
             _jwtParser = jwtParser;
         }
@@ -84,7 +80,7 @@ namespace SimpleIdentityServer.Core.Authenticate
         {
             if (instruction == null)
             {
-                throw new ArgumentNullException("instruction");
+                throw new ArgumentNullException(nameof(instruction));
             }
 
             var clientAssertion = instruction.ClientAssertion;
@@ -110,7 +106,7 @@ namespace SimpleIdentityServer.Core.Authenticate
 
             return await ValidateJwsPayLoad(payload, expectedIssuer).ConfigureAwait(false);
         }
-        
+
         public async Task<AuthenticationResult> AuthenticateClientWithClientSecretJwtAsync(AuthenticateInstruction instruction, string clientSecret, string expectedIssuer)
         {
             if (instruction == null)
@@ -147,19 +143,19 @@ namespace SimpleIdentityServer.Core.Authenticate
 
             return await ValidateJwsPayLoad(jwsPayload, expectedIssuer).ConfigureAwait(false);
         }
-        
+
         private async Task<AuthenticationResult> ValidateJwsPayLoad(JwsPayload jwsPayload, string expectedIssuer)
         {
             // The checks are coming from this url : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
             var jwsIssuer = jwsPayload.Issuer;
-            var jwsSubject = jwsPayload.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+            var jwsSubject = jwsPayload.GetStringClaim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject);
             var jwsAudiences = jwsPayload.Audiences;
             var expirationDateTime = jwsPayload.ExpirationTime.ConvertFromUnixTimestamp();
             Common.Models.Client client = null;
             // 1. Check the issuer is correct.
             if (!string.IsNullOrWhiteSpace(jwsIssuer))
             {
-                client = await _clientRepository.GetClientByIdAsync(jwsIssuer).ConfigureAwait(false);
+                client = await _clientRepository.GetById(jwsIssuer).ConfigureAwait(false);
             }
 
             // 2. Check the client is correct.
@@ -169,8 +165,8 @@ namespace SimpleIdentityServer.Core.Authenticate
             }
 
             // 3. Check if the audience is correct
-            if (jwsAudiences == null || 
-                !jwsAudiences.Any() || 
+            if (jwsAudiences == null ||
+                !jwsAudiences.Any() ||
                 !jwsAudiences.Any(j => j.Contains(expectedIssuer)))
             {
                 return new AuthenticationResult(null, ErrorDescriptions.TheAudiencePassedInJwtIsNotCorrect);

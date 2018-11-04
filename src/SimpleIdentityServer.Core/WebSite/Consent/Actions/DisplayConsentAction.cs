@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
     public class DisplayConsentAction : IDisplayConsentAction
     {
         private readonly IScopeRepository _scopeRepository;
-        private readonly IClientRepository _clientRepository;
+        private readonly IClientStore _clientRepository;
         private readonly IConsentHelper _consentHelper;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
         private readonly IParameterParserHelper _parameterParserHelper;
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 
         public DisplayConsentAction(
             IScopeRepository scopeRepository,
-            IClientRepository clientRepository,
+            IClientStore clientRepository,
             IConsentHelper consentHelper,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
             IParameterParserHelper parameterParserHelper,
@@ -80,8 +80,8 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             {
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
-            
-            var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId).ConfigureAwait(false);
+
+            var client = await _clientRepository.GetById(authorizationParameter.ClientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode,

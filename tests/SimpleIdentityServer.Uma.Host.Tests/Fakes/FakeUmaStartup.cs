@@ -21,8 +21,6 @@ using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Uma.Core;
-using SimpleIdentityServer.Uma.Core.Providers;
-using SimpleIdentityServer.Uma.Host.Configuration;
 using SimpleIdentityServer.Uma.Host.Controllers;
 using SimpleIdentityServer.Uma.Host.Middlewares;
 using SimpleIdentityServer.Uma.Host.Tests.MiddleWares;
@@ -36,10 +34,10 @@ using System.Security.Claims;
 
 namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
 {
-    using System.Net.Http;
     using SimpleIdentityServer.Client.Operations;
     using SimpleIdentityServer.Core.Common;
     using Store;
+    using System.Net.Http;
 
     public class FakeUmaStartup : IStartup
     {
@@ -125,7 +123,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
         private void RegisterServices(IServiceCollection services)
         {
             // 1. Add CORE.
-            services.AddSimpleIdServerUmaCore(null, UmaStores.GetResources())
+            services.AddSimpleIdServerUmaCore(new UmaConfigurationOptions(), UmaStores.GetResources())
                 .AddSimpleIdentityServerCore(clients: OAuthStores.GetClients(),
                     jsonWebKeys: OAuthStores.GetJsonWebKeys(_context),
                     scopes: OAuthStores.GetScopes())
@@ -133,17 +131,14 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
                 //.AddIdServerClient()
                 //.AddDefaultSimpleBus()
                 .AddDefaultTokenStore();
-                //.AddConcurrency(opt => opt.UseInMemory());
+            //.AddConcurrency(opt => opt.UseInMemory());
 
             // 3. Enable logging.
             services.AddLogging();
             services.AddTechnicalLogging();
             services.AddOAuthLogging();
             services.AddUmaLogging();
-            // 4. Register the services.
-            services.AddTransient<SimpleIdentityServer.Core.Services.IConfigurationService, DefaultConfigurationService>();
             // 5. Register other classes.
-            services.AddTransient<IHostingProvider, HostingProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();
             services.AddTransient<IGetDiscoveryOperation, GetDiscoveryOperation>();

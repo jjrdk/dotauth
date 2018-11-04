@@ -33,6 +33,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Mvc;
     using Parsers;
+    using SimpleIdentityServer.Core;
 
     [Route(Core.Constants.EndPoints.Authorization)]
     public class AuthorizationController : Controller
@@ -76,7 +77,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             authorizationRequest.OriginUrl = originUrl;
             authorizationRequest.SessionId = sessionId;
             var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, Constants.CookieNames.CookieName)
+                .GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName)
                 .ConfigureAwait(false);
             var parameter = authorizationRequest.ToParameter();
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
@@ -156,7 +157,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             IdentityServerEndPoints identityServerEndPoints)
         {
             var uri = request.GetAbsoluteUriWithVirtualPath();
-            var partialUri = Constants.MappingIdentityServerEndPointToPartialUrl[identityServerEndPoints];
+            var partialUri = HostConstants.MappingIdentityServerEndPointToPartialUrl[identityServerEndPoints];
             if (!string.IsNullOrWhiteSpace(amr) &&
                 identityServerEndPoints != IdentityServerEndPoints.ConsentIndex &&
                 identityServerEndPoints != IdentityServerEndPoints.FormIndex)

@@ -94,8 +94,8 @@ namespace SimpleIdentityServer.Core.Extensions
 
         private static bool IsStandardClaim(string claimName)
         {
-            return Jwt.Constants.AllStandardResourceOwnerClaimNames.Contains(claimName) ||
-                Jwt.Constants.AllStandardClaimNames.Contains(claimName);
+            return Jwt.JwtConstants.AllStandardResourceOwnerClaimNames.Contains(claimName) ||
+                Jwt.JwtConstants.AllStandardClaimNames.Contains(claimName);
         }
     }
 }

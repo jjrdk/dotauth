@@ -18,6 +18,8 @@ using System.Text;
 
 namespace SimpleIdentityServer.Core.Common.Extensions
 {
+    using Newtonsoft.Json;
+
     public static class ObjectExtensions
     {
         public static string SerializeWithDataContract(this object parameter)
@@ -40,14 +42,14 @@ namespace SimpleIdentityServer.Core.Common.Extensions
             return (T)obj;
         }
 
-        public static string SerializeWithJavascript(this object parameter)
+        public static string SerializeWithJavascript(this object parameter, params JsonConverter[] converters)
         {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(parameter);
+            return JsonConvert.SerializeObject(parameter, converters);
         }
 
-        public static T DeserializeWithJavascript<T>(this string parameter)
+        public static T DeserializeWithJavascript<T>(this string parameter, params JsonConverter[] converters)
         {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(parameter);
+            return JsonConvert.DeserializeObject<T>(parameter, converters);
         }
     }
 }

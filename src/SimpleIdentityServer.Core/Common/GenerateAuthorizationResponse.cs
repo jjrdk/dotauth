@@ -110,8 +110,14 @@ namespace SimpleIdentityServer.Core.Common
                     userInformationPayload, idTokenPayload).ConfigureAwait(false);
                 if (grantedToken == null)
                 {
-                    grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes,
-                        issuerName, userInformationPayload, idTokenPayload).ConfigureAwait(false);
+                    grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(
+                            client,
+                            allowedTokenScopes,
+                            issuerName,
+                            null,
+                            userInformationPayload,
+                            idTokenPayload)
+                        .ConfigureAwait(false);
                     newAccessTokenGranted = true;
                 }
 

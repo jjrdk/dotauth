@@ -16,7 +16,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         private Mock<IClientSecretPostAuthentication> _clientSecretPostAuthenticationFake;
         private Mock<IClientAssertionAuthentication> _clientAssertionAuthenticationFake;
         private Mock<IClientTlsAuthentication> _clientTlsAuthenticationStub;
-        private Mock<IClientRepository> _clientRepositoryStub;
+        private Mock<IClientStore> _clientRepositoryStub;
         private Mock<IOAuthEventSource> _oauthEventSource;
         private IAuthenticateClient _authenticateClient;
 
@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             var authenticationInstruction = new AuthenticateInstruction();
             _clientAssertionAuthenticationFake.Setup(c => c.GetClientId(It.IsAny<AuthenticateInstruction>()))
                 .Returns("clientId");
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Client)null));
 
             // ACT
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 
             _clientAssertionAuthenticationFake.Setup(c => c.GetClientId(It.IsAny<AuthenticateInstruction>()))
                 .Returns(clientId);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _clientSecretBasicAuthenticationFake.Setup(
                 c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Client>()))
@@ -111,7 +111,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 
             _clientAssertionAuthenticationFake.Setup(c => c.GetClientId(It.IsAny<AuthenticateInstruction>()))
                 .Returns(clientId);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _clientSecretBasicAuthenticationFake.Setup(
                 c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Client>()))
@@ -132,7 +132,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientSecretPostAuthenticationFake = new Mock<IClientSecretPostAuthentication>();
             _clientAssertionAuthenticationFake = new Mock<IClientAssertionAuthentication>();
             _clientTlsAuthenticationStub = new Mock<IClientTlsAuthentication>();
-            _clientRepositoryStub = new Mock<IClientRepository>();
+            _clientRepositoryStub = new Mock<IClientStore>();
             _oauthEventSource = new Mock<IOAuthEventSource>();
             _authenticateClient = new AuthenticateClient(
                 _clientSecretBasicAuthenticationFake.Object,

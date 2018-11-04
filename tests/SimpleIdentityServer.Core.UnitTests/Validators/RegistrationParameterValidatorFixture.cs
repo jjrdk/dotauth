@@ -365,7 +365,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 {
                     "https://google.fr"
                 },
-                IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256
+                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
             };
 
             // ACT & ASSERTS
@@ -385,7 +385,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 {
                     "https://google.fr"
                 },
-                IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
+                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
                 IdTokenEncryptedResponseAlg = "not_correct"
             };
 
@@ -406,7 +406,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 {
                     "https://google.fr"
                 },
-                UserInfoEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256
+                UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
             };
 
             // ACT & ASSERTS
@@ -426,7 +426,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 {
                     "https://google.fr"
                 },
-                UserInfoEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
+                UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
                 UserInfoEncryptedResponseAlg = "user_info_encrypted_response_alg_not_correct"
             };
 
@@ -447,7 +447,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 {
                     "https://google.fr"
                 },
-                RequestObjectEncryptionEnc = Jwt.Constants.JweEncNames.A128CBC_HS256
+                RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
             };
 
             // ACT & ASSERTS
@@ -467,7 +467,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 {
                     "https://google.fr"
                 },
-                RequestObjectEncryptionEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
+                RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
                 RequestObjectEncryptionAlg = "request_object_encryption_alg_not_valid"
             };
 
@@ -553,12 +553,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 },
                 ApplicationType = ApplicationTypes.native,
                 Jwks = new JsonWebKeySet(),
-                IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.A128KW,
-                IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
-                UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.A128KW,
-                UserInfoEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
-                RequestObjectEncryptionAlg = Jwt.Constants.JweAlgNames.A128KW,
-                RequestObjectEncryptionEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
+                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.A128KW,
+                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
+                UserInfoEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.A128KW,
+                UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
+                RequestObjectEncryptionAlg = Jwt.JwtConstants.JweAlgNames.A128KW,
+                RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
                 RequestUris = new List<string>
                 {
                     "http://localhost"

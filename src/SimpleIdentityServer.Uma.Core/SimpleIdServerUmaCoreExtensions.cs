@@ -27,7 +27,6 @@ using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Policies;
 using SimpleIdentityServer.Uma.Core.Repositories;
-using SimpleIdentityServer.Uma.Core.Services;
 using SimpleIdentityServer.Uma.Core.Stores;
 using SimpleIdentityServer.Uma.Core.Validators;
 using System.Collections.Generic;
@@ -38,7 +37,7 @@ namespace SimpleIdentityServer.Uma.Core
 
     public static class SimpleIdServerUmaCoreExtensions
     {
-        public static IServiceCollection AddSimpleIdServerUmaCore(this IServiceCollection serviceCollection, UmaConfigurationOptions umaConfigurationOptions = null, ICollection<ResourceSet> resources = null, ICollection<Policy> policies = null)
+        public static IServiceCollection AddSimpleIdServerUmaCore(this IServiceCollection serviceCollection, UmaConfigurationOptions umaConfigurationOptions = null, IReadOnlyCollection<ResourceSet> resources = null, IReadOnlyCollection<Policy> policies = null)
         {
             serviceCollection.AddTransient<IResourceSetActions, ResourceSetActions>();
             serviceCollection.AddTransient<IAddResourceSetAction, AddResourceSetAction>();
@@ -68,7 +67,7 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<ISearchAuthPoliciesAction, SearchAuthPoliciesAction>();
             serviceCollection.AddTransient<ISearchResourceSetOperation, SearchResourceSetOperation>();
             serviceCollection.AddTransient<IUmaTokenActions, UmaTokenActions>();
-            serviceCollection.AddSingleton<IUmaConfigurationService>(new DefaultUmaConfigurationService(umaConfigurationOptions));
+            serviceCollection.AddSingleton(umaConfigurationOptions);
             serviceCollection.AddSingleton<IPolicyRepository>(new DefaultPolicyRepository(policies));
             serviceCollection.AddSingleton<IResourceSetRepository>(new DefaultResourceSetRepository(resources));
             serviceCollection.AddTransient<IJwksClient, JwksClient>();

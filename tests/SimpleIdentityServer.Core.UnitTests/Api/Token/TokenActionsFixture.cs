@@ -1,19 +1,23 @@
-﻿using System;
-using System.Net.Http.Headers;
-using Moq;
+﻿using Moq;
 using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Api.Token.Actions;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
-using Xunit;
-using System.Threading.Tasks;
-using System.Security.Cryptography.X509Certificates;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.OAuth.Logging;
+using System;
+using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
+    using Core.Authenticate;
     using Core.Common;
+    using Core.Helpers;
+    using Store;
+    using System.Collections.Generic;
 
     public sealed class TokenActionsFixture
     {
@@ -24,7 +28,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<IGetTokenByRefreshTokenGrantTypeAction> _getTokenByRefreshTokenGrantTypeActionFake;
         private Mock<IClientCredentialsGrantTypeParameterValidator> _clientCredentialsGrantTypeParameterValidatorStub;
         private Mock<IRevokeTokenParameterValidator> _revokeTokenParameterValidator;
-        private Mock<IGetTokenByClientCredentialsGrantTypeAction> _getTokenByClientCredentialsGrantTypeActionStub;
         private Mock<IRevokeTokenAction> _revokeTokenActionStub;
         private Mock<IPayloadSerializer> _payloadSerializerStub;
         private ITokenActions _tokenActions;
@@ -127,7 +130,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         [Fact]
         public async Task When_Passing_Request_To_Refresh_Token_Grant_Type_Then_Events_Are_Logged()
-        {            
+        {
             // ARRANGE
             InitializeFakeObjects();
             const string refreshToken = "refresh_token";
@@ -175,12 +178,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 Scope = scope
             };
-            var grantedToken = new GrantedToken
-            {
-                ClientId = clientId
-            };
-            _getTokenByClientCredentialsGrantTypeActionStub.Setup(g => g.Execute(It.IsAny<ClientCredentialsGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>(), It.IsAny<X509Certificate2>(), null))
-                .Returns(Task.FromResult(grantedToken));
+            //var grantedToken = new GrantedToken
+            //{
+            //    ClientId = clientId
+            //};
+            //_getTokenByClientCredentialsGrantTypeActionStub.Setup(g =>
+            //        g.Execute(It.IsAny<ClientCredentialsGrantTypeParameter>(),
+            //            It.IsAny<AuthenticationHeaderValue>(),
+            //            It.IsAny<X509Certificate2>(),
+            //            null))
+            //    .Returns(Task.FromResult(grantedToken));
 
             // ACT
             var result = await _tokenActions.GetTokenByClientCredentialsGrantType(parameter, null, null, null).ConfigureAwait(false);
@@ -227,21 +234,52 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _oauthEventSource = new Mock<IOAuthEventSource>();
             _getTokenByRefreshTokenGrantTypeActionFake = new Mock<IGetTokenByRefreshTokenGrantTypeAction>();
             _clientCredentialsGrantTypeParameterValidatorStub = new Mock<IClientCredentialsGrantTypeParameterValidator>();
-            _getTokenByClientCredentialsGrantTypeActionStub = new Mock<IGetTokenByClientCredentialsGrantTypeAction>();
             _revokeTokenParameterValidator = new Mock<IRevokeTokenParameterValidator>();
             var eventPublisher = new Mock<IEventPublisher>();
             _payloadSerializerStub = new Mock<IPayloadSerializer>();
             _revokeTokenActionStub = new Mock<IRevokeTokenAction>();
-            _tokenActions = new TokenActions(_getTokenByResourceOwnerCredentialsGrantTypeActionFake.Object,
+            const string scope = "valid_scope";
+            const string clientId = "valid_client_id";
+            var mock = new Mock<IAuthenticateClient>();
+            mock.Setup(x => x.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), It.IsAny<string>()))
+                .ReturnsAsync<AuthenticateInstruction, string, IAuthenticateClient, AuthenticationResult>((a, s) =>
+                    new AuthenticationResult(
+                        new Client
+                        {
+                            ClientId = clientId,
+                            AllowedScopes = new List<Scope> { new Scope { Name = scope } },
+                            ResponseTypes = new List<ResponseType> { ResponseType.token },
+                            GrantTypes = new List<GrantType> { GrantType.client_credentials }
+                        },
+                        null));
+            var scopeValidatorMock = new Mock<IScopeValidator>();
+            scopeValidatorMock.Setup(x => x.Check(It.IsAny<string>(), It.IsAny<Client>()))
+                .Returns(new ScopeValidationResult(new[] { scope }));
+            var grantedTokenHelperMock = new Mock<IGrantedTokenHelper>();
+            grantedTokenHelperMock.Setup(x => x.GetValidGrantedTokenAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<JwsPayload>(),
+                    It.IsAny<JwsPayload>()))
+                .ReturnsAsync(new GrantedToken
+                {
+                    ClientId = clientId
+                });
+            _tokenActions = new TokenActions(
+                _getTokenByResourceOwnerCredentialsGrantTypeActionFake.Object,
                 _getTokenByAuthorizationCodeGrantTypeActionFake.Object,
                 _getTokenByRefreshTokenGrantTypeActionFake.Object,
-                _getTokenByClientCredentialsGrantTypeActionStub.Object,
                 _clientCredentialsGrantTypeParameterValidatorStub.Object,
+                mock.Object,
+                new Mock<IGrantedTokenGeneratorHelper>().Object,
                 _revokeTokenParameterValidator.Object,
+                scopeValidatorMock.Object,
                 _oauthEventSource.Object,
                 _revokeTokenActionStub.Object,
                 eventPublisher.Object,
-                _payloadSerializerStub.Object);
+                _payloadSerializerStub.Object,
+                new Mock<ITokenStore>().Object,
+                grantedTokenHelperMock.Object);
         }
     }
 }

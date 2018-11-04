@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             {
                 UserInfo = new List<ClaimParameter>
                 {
-                    new ClaimParameter { Name = Jwt.Constants.StandardResourceOwnerClaimNames.Subject },
+                    new ClaimParameter { Name = Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject },
                     new ClaimParameter { Name = notStandardClaimName }
                 }
             };
@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
 
             // ASSERT
             Assert.NotNull(claimNames);
-            Assert.Contains(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, claimNames);
+            Assert.Contains(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, claimNames);
             Assert.DoesNotContain(notStandardClaimName, claimNames);
         }
     }

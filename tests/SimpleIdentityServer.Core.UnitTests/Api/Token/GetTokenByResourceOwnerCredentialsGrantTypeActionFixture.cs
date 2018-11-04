@@ -28,7 +28,6 @@ using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
@@ -43,8 +42,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IAuthenticateClient> _authenticateClientFake;
         private Mock<IJwtGenerator> _jwtGeneratorFake;
-        private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
-        private Mock<IClientRepository> _clientRepositoryStub;
+        private Mock<IClientStore> _clientRepositoryStub;
         private Mock<IClientHelper> _clientHelperStub;
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
         private Mock<ITokenStore> _tokenStoreStub;
@@ -76,11 +74,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = clientId,
                 ClientSecret = clientSecret
             };
-            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
-                .Returns(new AuthenticateInstruction());
+
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(null, "error")));
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Client)null));
 
             // ACT & ASSERTS
@@ -106,8 +103,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = clientId,
                 ClientSecret = clientSecret
             };
-            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
-                .Returns(new AuthenticateInstruction());
+
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(new Client
                 {
@@ -117,7 +113,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                         GrantType.authorization_code
                     }
                 }, null)));
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Client)null));
 
             // ACT & ASSERTS
@@ -142,8 +138,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = clientId,
                 ClientSecret = clientSecret
             };
-            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
-                .Returns(new AuthenticateInstruction());
+
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(new Client
                 {
@@ -153,7 +148,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                         GrantType.password
                     }
                 }, null)));
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Client)null));
 
             // ACT & ASSERTS
@@ -190,9 +185,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                     ResponseType.id_token,
                     ResponseType.token
                 }
-            }, null);            
-            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
-                .Returns(new AuthenticateInstruction());
+            }, null);
+
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(client));
             _resourceOwnerAuthenticateHelperFake.Setup(
@@ -237,16 +231,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 }
             }, null);
             var resourceOwner = new ResourceOwner();
-            
-            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
-                .Returns(new AuthenticateInstruction());
+
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(client));
             _resourceOwnerAuthenticateHelperFake.Setup(
                 r => r.Authenticate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>()))
                 .Returns(() => Task.FromResult(resourceOwner));
             _scopeValidatorFake.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Client>()))
-                .Returns(() => new ScopeValidationResult(false));
+                .Returns(() => new ScopeValidationResult("error"));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null, null, null)).ConfigureAwait(false);
@@ -293,18 +285,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 IdTokenPayLoad = new JwsPayload()
             };
 
-            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
-                .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(client));
             _resourceOwnerAuthenticateHelperFake.Setup(
                 r => r.Authenticate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>()))
                 .Returns(() => Task.FromResult(resourceOwner));
             _scopeValidatorFake.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Client>()))
-                .Returns(() => new ScopeValidationResult(true)
-                {
-                    Scopes = new List<string> { invalidScope }
-                });
+                .Returns(() => new ScopeValidationResult(new[] { invalidScope }));
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
                 .Returns(() => Task.FromResult(userInformationJwsPayload));
@@ -313,9 +300,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult((GrantedToken)null));
-            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateTokenAsync(It.IsAny<Client>(),
+            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateTokenAsync(
+                It.IsAny<Client>(),
                 It.IsAny<string>(),
                 It.IsAny<string>(),
+                It.IsAny<IDictionary<string, object>>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult(grantedToken));
@@ -337,8 +326,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _oauthEventSource = new Mock<IOAuthEventSource>();
             _authenticateClientFake = new Mock<IAuthenticateClient>();
             _jwtGeneratorFake = new Mock<IJwtGenerator>();
-            _authenticateInstructionGeneratorStub = new Mock<IAuthenticateInstructionGenerator>();
-            _clientRepositoryStub = new Mock<IClientRepository>();
+            _clientRepositoryStub = new Mock<IClientStore>();
             _clientHelperStub = new Mock<IClientHelper>();
             _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
             _tokenStoreStub = new Mock<ITokenStore>();
@@ -350,8 +338,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _oauthEventSource.Object,
                 _authenticateClientFake.Object,
                 _jwtGeneratorFake.Object,
-                _authenticateInstructionGeneratorStub.Object,
-                _clientRepositoryStub.Object,
                 _clientHelperStub.Object,
                 _tokenStoreStub.Object,
                 _grantedTokenHelperStub.Object);

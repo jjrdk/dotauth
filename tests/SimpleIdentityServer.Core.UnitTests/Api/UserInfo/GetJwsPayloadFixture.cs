@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
         private Mock<IGrantedTokenValidator> _grantedTokenValidatorFake;
         private Mock<ITokenStore> _tokenStoreFake;
         private Mock<IJwtGenerator> _jwtGeneratorFake;
-        private Mock<IClientRepository> _clientRepositoryFake;
+        private Mock<IClientStore> _clientRepositoryFake;
         private IGetJwsPayload _getJwsPayload;
         
         [Fact]
@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
             _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedToken { ClientId = "client_id" }));
-            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Client)null));
 
             // ACT & ASSERT
@@ -87,7 +87,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
             _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedToken { ClientId = "client_id" }));
-            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(new Client()));
 
             // ACT & ASSERT
@@ -108,13 +108,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             };
             var client = new Client
             {
-                UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.NONE
+                UserInfoSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.NONE
             };
             _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
             _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
-            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
@@ -141,7 +141,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
             _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
-            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
@@ -163,14 +163,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             };
             var client = new Client
             {
-                UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
-                UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
+                UserInfoSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
+                UserInfoEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
             };
             _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
             _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
-            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<string>(),
                 It.IsAny<JweAlg>(),
@@ -196,7 +196,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             _grantedTokenValidatorFake = new Mock<IGrantedTokenValidator>();
             _tokenStoreFake = new Mock<ITokenStore>();
             _jwtGeneratorFake = new Mock<IJwtGenerator>();
-            _clientRepositoryFake = new Mock<IClientRepository>();
+            _clientRepositoryFake = new Mock<IClientStore>();
             _getJwsPayload = new GetJwsPayload(
                 _grantedTokenValidatorFake.Object,
                 _jwtGeneratorFake.Object,

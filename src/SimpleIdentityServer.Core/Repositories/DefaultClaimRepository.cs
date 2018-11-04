@@ -16,34 +16,36 @@ namespace SimpleIdentityServer.Core.Repositories
 
         private readonly List<ClaimAggregate> DEFAULT_CLAIMS = new List<ClaimAggregate>
         {
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.Subject, IsIdentifier = true },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.Name },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.GivenName },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.MiddleName },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.NickName },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.PreferredUserName },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.Profile },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.Picture },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.WebSite },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.Gender },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.BirthDate },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.ZoneInfo },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.Locale },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.Email },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.Address },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.Role },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.ScimId },
-            new ClaimAggregate { Code = Jwt.Constants.StandardResourceOwnerClaimNames.ScimLocation }
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, IsIdentifier = true },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.Name },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.FamilyName },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.GivenName },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.MiddleName },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.NickName },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.PreferredUserName },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.Profile },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.Picture },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.WebSite },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.Gender },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.BirthDate },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.ZoneInfo },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.Locale },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.Email },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.EmailVerified },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.Address },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.PhoneNumberVerified },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.Role },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.ScimId },
+            new ClaimAggregate { Code = Jwt.JwtConstants.StandardResourceOwnerClaimNames.ScimLocation }
         };
 
-        public DefaultClaimRepository(ICollection<ClaimAggregate> claims)
+        public DefaultClaimRepository(IReadOnlyCollection<ClaimAggregate> claims = null)
         {
-            _claims = claims ?? DEFAULT_CLAIMS;
+            _claims = (claims == null || claims.Count == 0)
+            ? _claims = DEFAULT_CLAIMS
+            : _claims = claims.ToList();
         }
 
         public Task<bool> Delete(string code)
@@ -65,7 +67,7 @@ namespace SimpleIdentityServer.Core.Repositories
 
         public Task<IEnumerable<ClaimAggregate>> GetAllAsync()
         {
-            return Task.FromResult((IEnumerable<ClaimAggregate>)_claims.Select(c => c.Copy()));
+            return Task.FromResult(_claims.Select(c => c.Copy()));
         }
 
         public Task<ClaimAggregate> GetAsync(string name)

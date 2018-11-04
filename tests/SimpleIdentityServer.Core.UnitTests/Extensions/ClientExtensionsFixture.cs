@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             // ARRANGE
             var client = new Core.Common.Models.Client
             {
-                IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256
+                IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256
             };
 
             // ACT
@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             // ARRANGE
             var client = new Core.Common.Models.Client
             {
-                IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
+                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
             };
 
             // ACT
@@ -92,7 +92,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             // ARRANGE
             var client = new Core.Common.Models.Client
             {
-                IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256
+                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
             };
 
             // ACT
@@ -124,7 +124,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             // ARRANGE
             var client = new Core.Common.Models.Client
             {
-                UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256
+                UserInfoSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256
             };
 
             // ACT
@@ -156,7 +156,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             // ARRANGE
             var client = new Core.Common.Models.Client
             {
-                UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
+                UserInfoEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
             };
 
             // ACT
@@ -188,7 +188,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             // ARRANGE
             var client = new Core.Common.Models.Client
             {
-                UserInfoEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256
+                UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
             };
 
             // ACT
@@ -220,7 +220,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             // ARRANGE
             var client = new Core.Common.Models.Client
             {
-                RequestObjectSigningAlg = Jwt.Constants.JwsAlgNames.RS256
+                RequestObjectSigningAlg = Jwt.JwtConstants.JwsAlgNames.RS256
             };
 
             // ACT
@@ -252,7 +252,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             // ARRANGE
             var client = new Core.Common.Models.Client
             {
-                RequestObjectEncryptionAlg = Jwt.Constants.JweAlgNames.RSA1_5
+                RequestObjectEncryptionAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
             };
 
             // ACT
@@ -284,7 +284,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             // ARRANGE
             var client = new Core.Common.Models.Client
             {
-                RequestObjectEncryptionEnc = Jwt.Constants.JweEncNames.A128CBC_HS256
+                RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
             };
 
             // ACT

@@ -1,23 +1,22 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Services;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 {
+    using Core.Common.Repositories;
+
     public sealed class ClientAssertionAuthenticationFixture
     {
-        private Mock<IJwsParser> _jwsParserFake;        
-        private Mock<IConfigurationService> _simpleIdentityServerConfiguratorFake;
-        private Mock<IClientRepository> _clientRepositoryStub;
+        private Mock<IJwsParser> _jwsParserFake;
+        private Mock<IClientStore> _clientRepositoryStub;
         private Mock<IJwtParser> _jwtParserFake;
         private IClientAssertionAuthentication _clientAssertionAuthentication;
 
@@ -33,7 +32,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 
         [Fact]
         public async Task When_A_Not_Jws_Token_Is_Passed_To_AuthenticateClientWithPrivateKeyJwt_Then_Null_Is_Returned()
-        {            
+        {
             // ARRANGE
             InitializeFakeObjects();
             var instruction = new AuthenticateInstruction
@@ -53,7 +52,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 
         [Fact]
         public async Task When_A_Jws_Token_With_Not_Payload_Is_Passed_To_AuthenticateClientWithPrivateKeyJwt_Then_Null_Is_Returned()
-        {            
+        {
             // ARRANGE
             InitializeFakeObjects();
             var instruction = new AuthenticateInstruction
@@ -121,7 +120,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _jwtParserFake.Setup(j => j.UnSignAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
                 .Returns(Task.FromResult(jwsPayload));
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT
@@ -147,12 +146,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     StandardClaimNames.Issuer, "issuer"
                 },
                 {
-                    Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "issuer"
+                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, "issuer"
                 },
                 {
                     StandardClaimNames.Audiences, new []
                     {
-                        "audience"   
+                        "audience"
                     }
                 }
             };
@@ -164,7 +163,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _jwtParserFake.Setup(j => j.UnSignAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
                 .Returns(Task.FromResult(jwsPayload));
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
@@ -190,12 +189,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     StandardClaimNames.Issuer, "issuer"
                 },
                 {
-                    Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "issuer"
+                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, "issuer"
                 },
                 {
                     StandardClaimNames.Audiences, new []
                     {
-                        "audience"   
+                        "audience"
                     }
                 },
                 {
@@ -210,7 +209,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _jwtParserFake.Setup(j => j.UnSignAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
                 .Returns(Task.FromResult(jwsPayload));
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
@@ -236,12 +235,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     StandardClaimNames.Issuer, "issuer"
                 },
                 {
-                    Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "issuer"
+                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, "issuer"
                 },
                 {
                     StandardClaimNames.Audiences, new []
                     {
-                        "audience"   
+                        "audience"
                     }
                 },
                 {
@@ -256,7 +255,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _jwtParserFake.Setup(j => j.UnSignAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
                 .Returns(Task.FromResult(jwsPayload));
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
@@ -287,7 +286,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             };
             _jwtParserFake.Setup(j => j.IsJweToken(It.IsAny<string>()))
                 .Returns(false);
-            
+
             // ACT
             var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null).ConfigureAwait(false);
 
@@ -373,7 +372,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             Assert.Null(result.Client);
             Assert.True(result.ErrorMessage == ErrorDescriptions.TheJwsPayloadCannotBeExtracted);
         }
-        
+
         [Fact]
         public async Task When_Decrypt_Valid_Client_Secret_Jwt_Then_Client_Is_Returned()
         {
@@ -389,12 +388,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     StandardClaimNames.Issuer, "issuer"
                 },
                 {
-                    Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "issuer"
+                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, "issuer"
                 },
                 {
                     StandardClaimNames.Audiences, new []
                     {
-                        "audience"   
+                        "audience"
                     }
                 },
                 {
@@ -412,7 +411,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(true);
             _jwtParserFake.Setup(j => j.UnSignAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(jwsPayload));
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
@@ -425,12 +424,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         private void InitializeFakeObjects()
         {
             _jwsParserFake = new Mock<IJwsParser>();
-            _simpleIdentityServerConfiguratorFake = new Mock<IConfigurationService>();
-            _clientRepositoryStub = new Mock<IClientRepository>();
+            _clientRepositoryStub = new Mock<IClientStore>();
             _jwtParserFake = new Mock<IJwtParser>();
             _clientAssertionAuthentication = new ClientAssertionAuthentication(
                 _jwsParserFake.Object,
-                _simpleIdentityServerConfiguratorFake.Object,
                 _clientRepositoryStub.Object,
                 _jwtParserFake.Object);
         }

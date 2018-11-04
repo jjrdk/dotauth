@@ -125,8 +125,8 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
                 var audiencesArr = grantedToken.IdTokenPayLoad.GetArrayClaim(StandardClaimNames.Audiences);
                 var issuedAt = grantedToken.IdTokenPayLoad.Iat;
                 var issuer = grantedToken.IdTokenPayLoad.Issuer;
-                var subject = grantedToken.IdTokenPayLoad.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
-                var userName = grantedToken.IdTokenPayLoad.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Name);
+                var subject = grantedToken.IdTokenPayLoad.GetStringClaim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject);
+                var userName = grantedToken.IdTokenPayLoad.GetStringClaim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Name);
                 if (audiencesArr.Any())
                 {
                     audiences = string.Join(" ", audiencesArr);

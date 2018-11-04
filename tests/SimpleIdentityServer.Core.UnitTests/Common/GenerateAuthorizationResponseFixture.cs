@@ -222,10 +222,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult((GrantedToken)null));
             _grantedTokenGeneratorHelperFake.Setup(r => r.GenerateTokenAsync(It.IsAny<Client>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<JwsPayload>(),
-                It.IsAny<JwsPayload>()))
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<IDictionary<string, object>>(),
+                    It.IsAny<JwsPayload>(),
+                    It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
@@ -354,9 +355,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             };
             var client = new Client
             {
-                IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
-                IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
-                IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256
+                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
+                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
+                IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256
             };
             var actionResult = new ActionResult
             {
@@ -404,9 +405,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             };
             var client = new Client
             {
-                IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
-                IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
-                IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256
+                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
+                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
+                IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256
             };
             var actionResult = new ActionResult
             {

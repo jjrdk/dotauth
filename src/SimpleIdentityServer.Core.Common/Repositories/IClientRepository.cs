@@ -24,11 +24,15 @@ namespace SimpleIdentityServer.Core.Common.Repositories
     public interface IClientRepository
     {
         Task<SearchClientResult> Search(SearchClientParameter parameter);
-        Task<Client> GetClientByIdAsync(string clientId);
         Task<IEnumerable<Client>> GetAllAsync();
         Task<bool> UpdateAsync(Client client);
         Task<bool> RemoveAllAsync();
         Task<bool> InsertAsync(Client client);
         Task<bool> DeleteAsync(Client client);
+    }
+
+    public interface IClientStore
+    {
+        Task<Client> GetById(string clientId);
     }
 }

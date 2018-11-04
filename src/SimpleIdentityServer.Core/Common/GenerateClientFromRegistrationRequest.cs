@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Core.Common
             }
             else
             {
-                client.IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256;
+                client.IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256;
             }
 
             if (!string.IsNullOrWhiteSpace(registrationParameter.IdTokenEncryptedResponseAlg) &&
@@ -138,7 +138,7 @@ namespace SimpleIdentityServer.Core.Common
                 }
                 else
                 {
-                    client.IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256;
+                    client.IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256;
                 }
             }
 
@@ -149,7 +149,7 @@ namespace SimpleIdentityServer.Core.Common
             }
             else
             {
-                client.UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.NONE;
+                client.UserInfoSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.NONE;
             }
 
             if (!string.IsNullOrWhiteSpace(registrationParameter.UserInfoEncryptedResponseAlg) &&
@@ -171,7 +171,7 @@ namespace SimpleIdentityServer.Core.Common
                 }
                 else
                 {
-                    client.UserInfoEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256;
+                    client.UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256;
                 }
             }
 
@@ -204,7 +204,7 @@ namespace SimpleIdentityServer.Core.Common
                 }
                 else
                 {
-                    client.RequestObjectEncryptionEnc = Jwt.Constants.JweEncNames.A128CBC_HS256;
+                    client.RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256;
                 }
             }
 

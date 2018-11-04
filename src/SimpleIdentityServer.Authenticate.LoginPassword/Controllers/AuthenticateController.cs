@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
             IGetUserOperation getUserOperation,
             IUpdateUserClaimsOperation updateUserClaimsOperation,
             IPayloadSerializer payloadSerializer,
-            IConfigurationService configurationService,
+            OAuthConfigurationOptions configurationService,
             IAuthenticateHelper authenticateHelper,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
@@ -136,7 +136,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
                 claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
                     DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                     ClaimValueTypes.Integer));
-                var subject = claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject)
+                var subject = claims.First(c => c.Type == Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject)
                     .Value;
                 if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
                 {
@@ -218,7 +218,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
                         issuerName)
                     .ConfigureAwait(false);
                 var subject = actionResult.Claims
-                    .First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject)
+                    .First(c => c.Type == Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject)
                     .Value;
 
                 // 5. Two factor authentication.

@@ -14,27 +14,11 @@
 
 namespace SimpleIdentityServer.Core.Parameters
 {
-    public class ClientCredentialsGrantTypeParameter
+    public class ClientCredentialsGrantTypeParameter : GrantTypeParameter
     {
         /// <summary>
         /// Gets or sets the scope
         /// </summary>
         public string Scope { get; set; }
-        /// <summary>
-        /// Gets or sets the client identifier
-        /// </summary>
-        public string ClientId { get; set; }
-        /// <summary>
-        /// Gets or sets the client secret
-        /// </summary>
-        public string ClientSecret { get; set; }
-        /// <summary>
-        /// Gets or sets the client assertion type
-        /// </summary>
-        public string ClientAssertionType { get; set; }
-        /// <summary>
-        /// Gets or sets the client assertion
-        /// </summary>
-        public string ClientAssertion { get; set; }
     }
 }

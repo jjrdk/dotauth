@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
             await _generateAndSendSmsCodeOperation.Execute(phoneNumber).ConfigureAwait(false);
             // 2. Try to get the resource owner.
             var resourceOwner = await _resourceOwnerRepository
-                .GetResourceOwnerByClaim(Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber)
+                .GetResourceOwnerByClaim(JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber)
                 .ConfigureAwait(false);
             if (resourceOwner != null)
             {
@@ -55,8 +55,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
             // 3. Create a new resource owner.
             var claims = new List<Claim>
             {
-                new Claim(Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber),
-                new Claim(Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified, "false")
+                new Claim(JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber),
+                new Claim(JwtConstants.StandardResourceOwnerClaimNames.PhoneNumberVerified, "false")
             };
             var id = await _subjectBuilder.BuildSubject(claims).ConfigureAwait(false);
             var record = new ResourceOwner
@@ -80,7 +80,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
             }
 
             return await _resourceOwnerRepository
-                .GetResourceOwnerByClaim(Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber)
+                .GetResourceOwnerByClaim(JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber)
                 .ConfigureAwait(false);
         }
     }

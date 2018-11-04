@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
         private readonly IActionResultFactory _actionResultFactory;
         private readonly IConsentHelper _consentHelper;
         private readonly IJwtParser _jwtParser;
-        private readonly IConfigurationService _configurationService;
+        private readonly OAuthConfigurationOptions _configurationService;
         private readonly IOAuthEventSource _oauthEventSource;
 
         public ProcessAuthorizationRequest(
@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             IActionResultFactory actionResultFactory,
             IConsentHelper consentHelper,
             IJwtParser jwtParser,
-            IConfigurationService configurationService,
+            OAuthConfigurationOptions configurationService,
             IOAuthEventSource oauthEventSource)
         {
             _parameterParserHelper = parameterParserHelper;
@@ -254,7 +254,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 }
 
                 var currentSubject = string.Empty;
-                var expectedSubject = jwsPayload.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+                var expectedSubject = jwsPayload.GetStringClaim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject);
                 if (claimsPrincipal != null && claimsPrincipal.IsAuthenticated())
                 {
                     currentSubject = claimsPrincipal.GetSubject();

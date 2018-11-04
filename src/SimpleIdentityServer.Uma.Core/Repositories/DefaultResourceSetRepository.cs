@@ -12,9 +12,9 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
     {
         public ICollection<ResourceSet> _resources;
 
-        public DefaultResourceSetRepository(ICollection<ResourceSet> resources)
+        public DefaultResourceSetRepository(IReadOnlyCollection<ResourceSet> resources)
         {
-            _resources = resources ?? new List<ResourceSet>();
+            _resources = resources.ToList() ?? new List<ResourceSet>();
         }
 
         public Task<bool> Delete(string id)

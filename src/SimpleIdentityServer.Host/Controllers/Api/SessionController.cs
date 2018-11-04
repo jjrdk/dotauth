@@ -17,10 +17,12 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     public class SessionController : Controller
     {
         private readonly IAuthenticationService _authenticationService;
-        private readonly IClientRepository _clientRepository;
+        private readonly IClientStore _clientRepository;
         private readonly IJwtParser _jwtParser;
 
-        public SessionController(IAuthenticationService authenticationService, IClientRepository clientRepository,
+        public SessionController(
+            IAuthenticationService authenticationService,
+            IClientStore clientRepository,
             IJwtParser jwtParser)
         {
             _authenticationService = authenticationService;
@@ -40,7 +42,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         [HttpGet(Core.Constants.EndPoints.EndSession)]
         public async Task RevokeSession()
         {
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.CookieName).ConfigureAwait(false);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName).ConfigureAwait(false);
             if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.UserNotConnected.html").ConfigureAwait(false);
@@ -62,7 +64,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         [HttpGet(Core.Constants.EndPoints.EndSessionCallback)]
         public async Task RevokeSessionCallback()
         {
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.CookieName).ConfigureAwait(false);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName).ConfigureAwait(false);
             if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.UserNotConnected.html").ConfigureAwait(false);
@@ -78,16 +80,16 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             }
 
             Response.Cookies.Delete(Core.Constants.SESSION_ID);
-            await _authenticationService.SignOutAsync(HttpContext, Constants.CookieNames.CookieName, new AuthenticationProperties()).ConfigureAwait(false);
+            await _authenticationService.SignOutAsync(HttpContext, HostConstants.CookieNames.CookieName, new AuthenticationProperties()).ConfigureAwait(false);
             if (request != null && !string.IsNullOrWhiteSpace(request.PostLogoutRedirectUri) && !string.IsNullOrWhiteSpace(request.IdTokenHint))
             {
                 var jws = await _jwtParser.UnSignAsync(request.IdTokenHint).ConfigureAwait(false);
                 if (jws != null)
                 {
-                    var claim = jws.FirstOrDefault(c => c.Key == StandardClaimNames.Azp);
-                    if (!claim.Equals(default(KeyValuePair<string, object>)) && claim.Value != null)
+                    var claim = jws.GetStringClaim(StandardClaimNames.Azp);
+                    if (claim!= null)
                     {
-                        var client = await _clientRepository.GetClientByIdAsync(claim.Value.ToString()).ConfigureAwait(false);
+                        var client = await _clientRepository.GetById(claim).ConfigureAwait(false);
                         if (client?.PostLogoutRedirectUris != null && client.PostLogoutRedirectUris.Contains(request.PostLogoutRedirectUri))
                         {
                             var redirectUrl = request.PostLogoutRedirectUri;

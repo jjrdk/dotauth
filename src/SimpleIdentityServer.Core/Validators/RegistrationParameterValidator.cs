@@ -137,10 +137,10 @@ namespace SimpleIdentityServer.Core.Validators
             }
 
             if (!string.IsNullOrWhiteSpace(parameter.IdTokenEncryptedResponseEnc) &&
-                Jwt.Constants.MappingNameToJweEncEnum.Keys.Contains(parameter.IdTokenEncryptedResponseEnc))
+                Jwt.JwtConstants.MappingNameToJweEncEnum.Keys.Contains(parameter.IdTokenEncryptedResponseEnc))
             {
                 if (string.IsNullOrWhiteSpace(parameter.IdTokenEncryptedResponseAlg) ||
-                    !Jwt.Constants.MappingNameToJweAlgEnum.ContainsKey(parameter.IdTokenEncryptedResponseAlg))
+                    !Jwt.JwtConstants.MappingNameToJweAlgEnum.ContainsKey(parameter.IdTokenEncryptedResponseAlg))
                 {
                     throw new IdentityServerException(
                         ErrorCodes.InvalidClientMetaData,
@@ -149,10 +149,10 @@ namespace SimpleIdentityServer.Core.Validators
             }
 
             if (!string.IsNullOrWhiteSpace(parameter.UserInfoEncryptedResponseEnc) &&
-                Jwt.Constants.MappingNameToJweEncEnum.Keys.Contains(parameter.UserInfoEncryptedResponseEnc))
+                Jwt.JwtConstants.MappingNameToJweEncEnum.Keys.Contains(parameter.UserInfoEncryptedResponseEnc))
             {
                 if (string.IsNullOrWhiteSpace(parameter.UserInfoEncryptedResponseAlg) ||
-                    !Jwt.Constants.MappingNameToJweAlgEnum.ContainsKey(parameter.UserInfoEncryptedResponseAlg))
+                    !Jwt.JwtConstants.MappingNameToJweAlgEnum.ContainsKey(parameter.UserInfoEncryptedResponseAlg))
                 {
                     throw new IdentityServerException(
                         ErrorCodes.InvalidClientMetaData,
@@ -161,10 +161,10 @@ namespace SimpleIdentityServer.Core.Validators
             }
 
             if (!string.IsNullOrWhiteSpace(parameter.RequestObjectEncryptionEnc) &&
-                Jwt.Constants.MappingNameToJweEncEnum.Keys.Contains(parameter.RequestObjectEncryptionEnc))
+                Jwt.JwtConstants.MappingNameToJweEncEnum.Keys.Contains(parameter.RequestObjectEncryptionEnc))
             {
                 if (string.IsNullOrWhiteSpace(parameter.RequestObjectEncryptionAlg) ||
-                    !Jwt.Constants.MappingNameToJweAlgEnum.ContainsKey(parameter.RequestObjectEncryptionAlg))
+                    !Jwt.JwtConstants.MappingNameToJweAlgEnum.ContainsKey(parameter.RequestObjectEncryptionAlg))
                 {
                     throw new IdentityServerException(
                         ErrorCodes.InvalidClientMetaData,

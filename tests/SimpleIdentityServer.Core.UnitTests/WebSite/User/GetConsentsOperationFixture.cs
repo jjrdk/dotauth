@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
             var claims = new List<Claim>
             {
-                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             IEnumerable<Core.Common.Models.Consent> consents = new List<Core.Common.Models.Consent>
             {

@@ -25,7 +25,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
     public sealed class ClientHelperFixture
     {
-        private Mock<IClientRepository> _clientRepositoryStub;
+        private Mock<IClientStore> _clientRepositoryStub;
         private Mock<IJwtGenerator> _jwtGeneratorStub;
         private Mock<IJwtParser> _jwtParserStub;
         private IClientHelper _clientHelper;
@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             // ARRANGE
             InitializeFakeObjects();
             var client = new Core.Common.Models.Client();
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
@@ -64,10 +64,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             InitializeFakeObjects();
             var client = new Core.Common.Models.Client
             {
-                IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
-                IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
+                IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
+                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
             };
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
@@ -85,11 +85,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             InitializeFakeObjects();
             var client = new Core.Common.Models.Client
             {
-                IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
-                IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
-                IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256
+                IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
+                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
+                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
             };
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
@@ -102,7 +102,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
         private void InitializeFakeObjects()
         {
-            _clientRepositoryStub = new Mock<IClientRepository>();
+            _clientRepositoryStub = new Mock<IClientStore>();
             _jwtGeneratorStub = new Mock<IJwtGenerator>();
             _jwtParserStub = new Mock<IJwtParser>();
             _clientHelper = new ClientHelper(

@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
     public sealed class ConfirmConsentFixture
     {
         private Mock<IConsentRepository> _consentRepositoryFake;
-        private Mock<IClientRepository> _clientRepositoryFake;
+        private Mock<IClientStore> _clientRepositoryFake;
         private Mock<IScopeRepository> _scopeRepositoryFake;
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryFake;
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             };
             var claims = new List<Claim>
             {
-                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult((Core.Common.Models.Consent)null));
-            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(scopeNames);
@@ -122,7 +122,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                     {
                         new ClaimParameter
                         {
-                            Name = Jwt.Constants.StandardResourceOwnerClaimNames.Subject
+                            Name = Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject
                         }
                     }
                 },
@@ -130,7 +130,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             };
             var claims = new List<Claim>
             {
-                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -150,7 +150,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult((Core.Common.Models.Consent)null));
-            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(new List<string>());
@@ -170,7 +170,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
             // ASSERT
             Assert.NotNull(insertedConsent);
-            Assert.Contains(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, insertedConsent.Claims);
+            Assert.Contains(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, insertedConsent.Claims);
             Assert.True(insertedConsent.ResourceOwner.Id == subject);
             Assert.True(insertedConsent.Client.ClientId == clientId);
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl());
@@ -190,7 +190,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             };
             var claims = new List<Claim>
             {
-                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -214,7 +214,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult((Core.Common.Models.Consent)null));
-            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(new List<string>());
@@ -239,7 +239,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
         private void InitializeFakeObjects()
         {
             _consentRepositoryFake = new Mock<IConsentRepository>();
-            _clientRepositoryFake = new Mock<IClientRepository>();
+            _clientRepositoryFake = new Mock<IClientStore>();
             _scopeRepositoryFake = new Mock<IScopeRepository>();
             _resourceOwnerRepositoryFake = new Mock<IResourceOwnerRepository>();
             _parameterParserHelperFake = new Mock<IParameterParserHelper>();

@@ -27,12 +27,13 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using Store;
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Net;
     using System.Net.Http;
+    using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using Xunit;
@@ -768,7 +769,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             // ARRANGE
             InitializeFakeObjects();
 
-
             // ACT
             var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
@@ -785,9 +785,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             Assert.False(result.ContainsError);
             Assert.NotEmpty(result.Content.IdToken);
             var payload = jwsParser.GetPayload(result.Content.IdToken);
-            Assert.True(payload.ContainsKey("role"));
-            var roles = payload["role"] as JArray;
-            Assert.True(roles.Count == 2 && roles[0].ToString() == "administrator");
+            var roles = payload.GetArrayClaim("role");
+            Assert.True(roles.Length == 2 && roles[0] == "administrator");
         }
 
         [Fact]
@@ -939,21 +938,10 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             var payload = new JwsPayload
             {
-                {
-                    StandardClaimNames.Issuer, "jwt_client"
-                },
-                {
-                    Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "jwt_client"
-                },
-                {
-                    StandardClaimNames.Audiences, new []
-                    {
-                        "http://localhost:5000"
-                    }
-                },
-                {
-                    StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddHours(1).ConvertToUnixTimestamp()
-                }
+                {StandardClaimNames.Issuer, "jwt_client"},
+                {JwtConstants.StandardResourceOwnerClaimNames.Subject, "jwt_client"},
+                {StandardClaimNames.Audiences, "http://localhost:5000"},
+                {StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddHours(1).ConvertToUnixTimestamp()}
             };
             var jws = _jwsGenerator.Generate(payload, JwsAlg.RS256, _server.SharedCtx.ModelSignatureKey);
             var jwe = _jweGenerator.GenerateJweByUsingSymmetricPassword(jws, JweAlg.RSA1_5, JweEnc.A128CBC_HS256, _server.SharedCtx.ModelEncryptionKey, "jwt_client");
@@ -983,7 +971,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                     StandardClaimNames.Issuer, "private_key_client"
                 },
                 {
-                    Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "private_key_client"
+                    Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, "private_key_client"
                 },
                 {
                     StandardClaimNames.Audiences, new []

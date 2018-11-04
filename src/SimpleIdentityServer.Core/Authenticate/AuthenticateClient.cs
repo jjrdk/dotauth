@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Core.Authenticate
         private readonly IClientSecretPostAuthentication _clientSecretPostAuthentication;
         private readonly IClientAssertionAuthentication _clientAssertionAuthentication;
         private readonly IClientTlsAuthentication _clientTlsAuthentication;
-        private readonly IClientRepository _clientRepository;
+        private readonly IClientStore _clientRepository;
         private readonly IOAuthEventSource _oauthEventSource;
 
         public AuthenticateClient(
@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             IClientSecretPostAuthentication clientSecretPostAuthentication,
             IClientAssertionAuthentication clientAssertionAuthentication,
             IClientTlsAuthentication clientTlsAuthentication,
-            IClientRepository clientRepository,
+            IClientStore clientRepository,
             IOAuthEventSource oAuthEventSource)
         {
             _clientSecretBasicAuthentication = clientSecretBasicAuthentication;
@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             var clientId = TryGettingClientId(instruction);
             if (!string.IsNullOrWhiteSpace(clientId))
             {
-                client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
+                client = await _clientRepository.GetById(clientId).ConfigureAwait(false);
             }
 
             if (client == null)

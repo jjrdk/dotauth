@@ -19,7 +19,6 @@ using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
-using SimpleIdentityServer.Uma.Core.Services;
 using SimpleIdentityServer.Uma.Core.Stores;
 using SimpleIdentityServer.Uma.Logging;
 using System;
@@ -37,7 +36,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
         private Mock<ITicketStore> _ticketStoreStub;
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
         private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
-        private Mock<IUmaConfigurationService> _configurationServiceStub;
+        private UmaConfigurationOptions _configurationServiceStub;
         private IAddPermissionAction _addPermissionAction;
 
         [Fact]
@@ -148,7 +147,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
 
         [Fact]
         public async Task When_Adding_Permission_Then_TicketId_Is_Returned()
-        {           
+        {
             // ARRANGE
             const string clientId = "client_id";
             const string resourceSetId = "resource_set_id";
@@ -175,7 +174,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
             _ticketStoreStub.Setup(r => r.AddAsync(It.IsAny<Ticket>())).Returns(Task.FromResult(true));
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(It.IsAny<string>(), It.IsAny<Func<Task<IEnumerable<ResourceSet>>>>()))
                 .Returns(Task.FromResult(resources));
-            _configurationServiceStub.Setup(c => c.GetTicketLifeTime()).Returns(Task.FromResult(2));
 
             // ACT
             var result = await _addPermissionAction.Execute(clientId, addPermissionParameter).ConfigureAwait(false);
@@ -190,12 +188,12 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
             _ticketStoreStub = new Mock<ITicketStore>();
             _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
             _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
-            _configurationServiceStub = new Mock<IUmaConfigurationService>();
+            _configurationServiceStub = new UmaConfigurationOptions(ticketLifetime: TimeSpan.FromSeconds(2));
             _addPermissionAction = new AddPermissionAction(
                 _resourceSetRepositoryStub.Object,
                 _ticketStoreStub.Object,
                 _repositoryExceptionHelperStub.Object,
-                _configurationServiceStub.Object,
+                _configurationServiceStub,
                 _umaServerEventSourceStub.Object);
         }
     }

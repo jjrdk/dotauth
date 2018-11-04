@@ -12,9 +12,9 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
     {
         public ICollection<Policy> _policies;
 
-        public DefaultPolicyRepository(ICollection<Policy> policies)
+        public DefaultPolicyRepository(IReadOnlyCollection<Policy> policies = null)
         {
-            _policies = policies ?? new List<Policy>();
+            _policies = policies == null ? new List<Policy>() : policies.ToList();
         }
 
         public Task<bool> Add(Policy policy)

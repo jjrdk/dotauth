@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             // ARRANGE
             var claims = new List<Claim>
             {
-                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimsIdentity = new ClaimsIdentity(claims);
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);

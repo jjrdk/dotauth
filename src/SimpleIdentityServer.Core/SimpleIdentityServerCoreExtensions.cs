@@ -59,14 +59,14 @@ namespace SimpleIdentityServer.Core
             this IServiceCollection serviceCollection,
             OAuthConfigurationOptions configurationOptions = null,
             //IHttpClientFactory factory = null,
-            List<ClaimAggregate> claims = null,
-            List<Client> clients = null,
-            List<Consent> consents = null,
-            List<JsonWebKey> jsonWebKeys = null,
-            List<ResourceOwnerProfile> profiles = null,
-            List<ResourceOwner> resourceOwners = null,
-            List<Scope> scopes = null,
-            List<Common.Models.Translation> translations = null)
+            IReadOnlyCollection<ClaimAggregate> claims = null,
+            IReadOnlyCollection<Client> clients = null,
+            IReadOnlyCollection<Consent> consents = null,
+            IReadOnlyCollection<JsonWebKey> jsonWebKeys = null,
+            IReadOnlyCollection<ResourceOwnerProfile> profiles = null,
+            IReadOnlyCollection<ResourceOwner> resourceOwners = null,
+            IReadOnlyCollection<Scope> scopes = null,
+            IReadOnlyCollection<Common.Models.Translation> translations = null)
         {
             if (serviceCollection == null)
             {
@@ -107,9 +107,6 @@ namespace SimpleIdentityServer.Core
             serviceCollection
                 .AddTransient<IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation,
                     GetAuthorizationCodeAndTokenViaHybridWorkflowOperation>();
-            serviceCollection
-                .AddTransient<IGetTokenByClientCredentialsGrantTypeAction, GetTokenByClientCredentialsGrantTypeAction
-                >();
             serviceCollection.AddTransient<IConsentActions, ConsentActions>();
             serviceCollection.AddTransient<IConfirmConsentAction, ConfirmConsentAction>();
             serviceCollection.AddTransient<IDisplayConsentAction, DisplayConsentAction>();
@@ -133,7 +130,6 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IJwtParser, JwtParser>();
             serviceCollection.AddTransient<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>();
             serviceCollection.AddTransient<IAuthenticateClient, AuthenticateClient>();
-            serviceCollection.AddTransient<IAuthenticateInstructionGenerator, AuthenticateInstructionGenerator>();
             serviceCollection.AddTransient<IClientSecretBasicAuthentication, ClientSecretBasicAuthentication>();
             serviceCollection.AddTransient<IClientSecretPostAuthentication, ClientSecretPostAuthentication>();
             serviceCollection.AddTransient<IClientAssertionAuthentication, ClientAssertionAuthentication>();
@@ -173,10 +169,11 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IAmrHelper, AmrHelper>();
             serviceCollection.AddTransient<IRevokeTokenParameterValidator, RevokeTokenParameterValidator>();
             serviceCollection.AddSingleton<IClientPasswordService, DefaultClientPasswordService>();
-            serviceCollection.AddSingleton<IConfigurationService>(
-                new DefaultConfigurationService(configurationOptions));
+            serviceCollection.AddSingleton(configurationOptions ?? new OAuthConfigurationOptions());
             serviceCollection.AddSingleton<IClaimRepository>(new DefaultClaimRepository(claims));
-            serviceCollection.AddSingleton<IClientRepository>(new DefaultClientRepository(clients));
+            var defaultClientRepository = new DefaultClientRepository(clients);
+            serviceCollection.AddSingleton<IClientStore>(defaultClientRepository);
+            serviceCollection.AddSingleton<IClientRepository>(defaultClientRepository);
             serviceCollection.AddSingleton<IConsentRepository>(new DefaultConsentRepository(consents));
             serviceCollection.AddSingleton<IJsonWebKeyRepository>(new DefaultJsonWebKeyRepository(jsonWebKeys));
             serviceCollection.AddSingleton<IProfileRepository>(new DefaultProfileRepository(profiles));

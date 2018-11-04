@@ -220,7 +220,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             {
                 var authenticatedUser = await SetUser().ConfigureAwait(false);
                 var externalClaims = await _authenticationService
-                    .GetAuthenticatedUser(this, Constants.CookieNames.ExternalCookieName)
+                    .GetAuthenticatedUser(this, HostConstants.CookieNames.ExternalCookieName)
                     .ConfigureAwait(false);
                 var resourceOwner = await _profileActions.Link(authenticatedUser.GetSubject(),
                         externalClaims.GetSubject(),
@@ -228,7 +228,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                         false)
                     .ConfigureAwait(false);
                 await _authenticationService
-                    .SignOutAsync(HttpContext, Constants.CookieNames.ExternalCookieName, new AuthenticationProperties())
+                    .SignOutAsync(HttpContext, HostConstants.CookieNames.ExternalCookieName, new AuthenticationProperties())
                     .ConfigureAwait(false);
                 return RedirectToAction("Profile", "User", new {area = "UserManagement"});
             }
@@ -239,7 +239,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             catch (Exception)
             {
                 await _authenticationService
-                    .SignOutAsync(HttpContext, Constants.CookieNames.ExternalCookieName, new AuthenticationProperties())
+                    .SignOutAsync(HttpContext, HostConstants.CookieNames.ExternalCookieName, new AuthenticationProperties())
                     .ConfigureAwait(false);
                 throw;
             }
@@ -253,7 +253,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         public async Task<IActionResult> LinkProfileConfirmation()
         {
             var externalClaims = await _authenticationService
-                .GetAuthenticatedUser(this, Constants.CookieNames.ExternalCookieName)
+                .GetAuthenticatedUser(this, HostConstants.CookieNames.ExternalCookieName)
                 .ConfigureAwait(false);
             if (externalClaims == null ||
                 externalClaims.Identity == null ||
@@ -277,7 +277,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         public async Task<IActionResult> ConfirmProfileLinking()
         {
             var externalClaims = await _authenticationService
-                .GetAuthenticatedUser(this, Constants.CookieNames.ExternalCookieName)
+                .GetAuthenticatedUser(this, HostConstants.CookieNames.ExternalCookieName)
                 .ConfigureAwait(false);
             if (externalClaims == null ||
                 externalClaims.Identity == null ||
@@ -300,7 +300,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             finally
             {
                 await _authenticationService
-                    .SignOutAsync(HttpContext, Constants.CookieNames.ExternalCookieName, new AuthenticationProperties())
+                    .SignOutAsync(HttpContext, HostConstants.CookieNames.ExternalCookieName, new AuthenticationProperties())
                     .ConfigureAwait(false);
             }
         }
@@ -431,7 +431,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             var notEditableClaims = new Dictionary<string, string>();
             foreach (var claim in claims)
             {
-                if (Core.Jwt.Constants.NotEditableResourceOwnerClaimNames.Contains(claim.Type))
+                if (Core.Jwt.JwtConstants.NotEditableResourceOwnerClaimNames.Contains(claim.Type))
                 {
                     notEditableClaims.Add(claim.Type, claim.Value);
                 }

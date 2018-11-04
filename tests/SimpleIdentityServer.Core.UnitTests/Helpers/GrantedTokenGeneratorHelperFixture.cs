@@ -27,10 +27,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
     public class GrantedTokenGeneratorHelperFixture
     {
-        private Mock<IConfigurationService> _simpleIdentityServerConfiguratorStub;
+        private OAuthConfigurationOptions _simpleIdentityServerConfiguratorStub;
         private Mock<IJwtGenerator> _jwtGeneratorStub;
         private Mock<IClientHelper> _clientHelperStub;
-        private Mock<IClientRepository> _clientRepositoryStub;
+        private Mock<IClientStore> _clientRepositoryStub;
         private IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         
         [Fact]
@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(string.Empty, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(string.Empty, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -48,10 +48,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {
             // ARRANGE
             InitializeFakeObjects();
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).Returns(Task.FromResult((Core.Common.Models.Client)null));
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult((Core.Common.Models.Client)null));
 
             // ACTS & ASSERTS
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("invalid_client", null, null)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("invalid_client", null, null, null)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClient);
             Assert.True(ex.Message == ErrorDescriptions.TheClientIdDoesntExist);
         }
@@ -65,13 +65,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             };
             // ARRANGE
             InitializeFakeObjects();
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _simpleIdentityServerConfiguratorStub.Setup(c => c.GetTokenValidityPeriodInSecondsAsync())
-                .Returns(Task.FromResult((double)3700));
 
             // ACT
-            var result = await _grantedTokenGeneratorHelper.GenerateTokenAsync("client_id", "scope", "issuer").ConfigureAwait(false);
+            var result = await _grantedTokenGeneratorHelper.GenerateTokenAsync("client_id", "scope", "issuer", null).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -80,12 +78,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
         private void InitializeFakeObjects()
         {
-            _simpleIdentityServerConfiguratorStub = new Mock<IConfigurationService>();
+            _simpleIdentityServerConfiguratorStub = new OAuthConfigurationOptions(tokenValidity:TimeSpan.FromSeconds(3700));
             _jwtGeneratorStub = new Mock<IJwtGenerator>();
             _clientHelperStub = new Mock<IClientHelper>();
-            _clientRepositoryStub = new Mock<IClientRepository>();
+            _clientRepositoryStub = new Mock<IClientStore>();
             _grantedTokenGeneratorHelper = new GrantedTokenGeneratorHelper(
-                _simpleIdentityServerConfiguratorStub.Object,
+                _simpleIdentityServerConfiguratorStub,
                 _jwtGeneratorStub.Object,
                 _clientHelperStub.Object,
                 _clientRepositoryStub.Object);

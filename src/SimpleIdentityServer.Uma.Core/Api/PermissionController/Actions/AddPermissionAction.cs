@@ -19,7 +19,6 @@ using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
-using SimpleIdentityServer.Uma.Core.Services;
 using SimpleIdentityServer.Uma.Core.Stores;
 using SimpleIdentityServer.Uma.Logging;
 using System;
@@ -34,14 +33,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly ITicketStore _ticketStore;
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
-        private readonly IUmaConfigurationService _configurationService;
+        private readonly UmaConfigurationOptions _configurationService;
         private readonly IUmaServerEventSource _umaServerEventSource;
 
         public AddPermissionAction(
             IResourceSetRepository resourceSetRepository,
             ITicketStore ticketStore,
             IRepositoryExceptionHelper repositoryExceptionHelper,
-            IUmaConfigurationService configurationService,
+            UmaConfigurationOptions configurationService,
             IUmaServerEventSource umaServerEventSource)
         {
             _resourceSetRepository = resourceSetRepository;
@@ -69,31 +68,29 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
                 throw new ArgumentNullException(nameof(addPermissionParameters));
             }
 
-            var json = addPermissionParameters == null ? string.Empty : JsonConvert.SerializeObject(addPermissionParameters);
+            var json = JsonConvert.SerializeObject(addPermissionParameters);
             _umaServerEventSource.StartAddPermission(json);
             await CheckAddPermissionParameter(addPermissionParameters).ConfigureAwait(false);
-            var ticketLifetimeInSeconds = await _configurationService.GetTicketLifeTime().ConfigureAwait(false);
+            var ticketLifetimeInSeconds = _configurationService.TicketLifeTime;
             var ticket = new Ticket
             {
                 Id = Guid.NewGuid().ToString(),
                 ClientId = clientId,
                 CreateDateTime = DateTime.UtcNow,
-                ExpiresIn = ticketLifetimeInSeconds,
-                ExpirationDateTime = DateTime.UtcNow.AddSeconds(ticketLifetimeInSeconds)
+                ExpiresIn = (int)ticketLifetimeInSeconds.TotalSeconds,
+                ExpirationDateTime = DateTime.UtcNow.Add(ticketLifetimeInSeconds)
             };
-            var ticketLines = new List<TicketLine>();
-            foreach(var addPermissionParameter in addPermissionParameters) // TH : ONE TICKET FOR MULTIPLE PERMISSIONS.
+            // TH : ONE TICKET FOR MULTIPLE PERMISSIONS.
+            var ticketLines = addPermissionParameters.Select(addPermissionParameter => new TicketLine
             {
-                ticketLines.Add(new TicketLine
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Scopes = addPermissionParameter.Scopes,
-                    ResourceSetId = addPermissionParameter.ResourceSetId
-                });
-            }
+                Id = Guid.NewGuid().ToString(),
+                Scopes = addPermissionParameter.Scopes,
+                ResourceSetId = addPermissionParameter.ResourceSetId
+            })
+                .ToList();
 
             ticket.Lines = ticketLines;
-            if(!await _ticketStore.AddAsync(ticket).ConfigureAwait(false))
+            if (!await _ticketStore.AddAsync(ticket).ConfigureAwait(false))
             {
                 throw new BaseUmaException(ErrorCodes.InternalError, ErrorDescriptions.TheTicketCannotBeInserted);
             }

@@ -12,9 +12,11 @@ namespace SimpleIdentityServer.Core.Repositories
     {
         public ICollection<Consent> _consents;
 
-        public DefaultConsentRepository(ICollection<Consent> consents)
+        public DefaultConsentRepository(IReadOnlyCollection<Consent> consents)
         {
-            _consents = consents ?? new List<Consent>();
+            _consents = consents == null
+                ? new List<Consent>()
+                : consents.ToList();
         }
 
         public Task<bool> DeleteAsync(Consent record)

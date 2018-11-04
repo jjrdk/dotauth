@@ -12,7 +12,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
 {
     public sealed class TranslationManagerFixture
     {
-        private Mock<IConfigurationService> _simpleIdentityServerConfiguratorFake;
+        private OAuthConfigurationOptions _simpleIdentityServerConfiguratorFake;
         private Mock<ITranslationRepository> _translationRepositoryFake;
         private ITranslationManager _translationManager;
 
@@ -35,14 +35,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
             {
                 "translation_code"
             };
-            var defaultLanguage = "EN";
             var translation = new Core.Common.Models.Translation
             {
                 Code = "code",
                 Value = "value"
             };
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.DefaultLanguageAsync())
-                .Returns(Task.FromResult(defaultLanguage));
             _translationRepositoryFake.Setup(t => t.GetAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
                 .Returns(Task.FromResult(translation)); ;
@@ -64,9 +61,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
             {
                 "translation_code"
             };
-            var defaultLanguage = "EN";
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.DefaultLanguageAsync())
-                .Returns(Task.FromResult(defaultLanguage));
+
             _translationRepositoryFake.Setup(t => t.GetAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
                 .Returns(Task.FromResult((Core.Common.Models.Translation)null)); 
@@ -82,10 +77,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
 
         private void InitializeFakeObjects()
         {
-            _simpleIdentityServerConfiguratorFake = new Mock<IConfigurationService>();
+            _simpleIdentityServerConfiguratorFake = new OAuthConfigurationOptions();
             _translationRepositoryFake = new Mock<ITranslationRepository>();
             _translationManager = new TranslationManager(
-                _simpleIdentityServerConfiguratorFake.Object,
+                _simpleIdentityServerConfiguratorFake,
                 _translationRepositoryFake.Object);
         }
     }

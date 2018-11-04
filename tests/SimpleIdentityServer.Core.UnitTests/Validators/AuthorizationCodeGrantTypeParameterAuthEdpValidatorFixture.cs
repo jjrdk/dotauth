@@ -14,7 +14,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
     {
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
-        private Mock<IClientRepository> _clientRepository;
+        private Mock<IClientStore> _clientRepository;
         private Mock<IClientValidator> _clientValidatorFake;
         private IAuthorizationCodeGrantTypeParameterAuthEdpValidator
             _authorizationCodeGrantTypeParameterAuthEdpValidator;
@@ -228,7 +228,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 {
                     PromptParameter.none
                 });
-            _clientRepository.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepository.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT & ASSERT
@@ -261,7 +261,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 {
                     PromptParameter.none
                 });
-            _clientRepository.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepository.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string[]>()))
                 .Returns(() => new string[0]);
@@ -277,7 +277,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             _parameterParserHelperFake = new Mock<IParameterParserHelper>();
             _clientValidatorFake = new Mock<IClientValidator>();
-            _clientRepository = new Mock<IClientRepository>();
+            _clientRepository = new Mock<IClientStore>();
             _authorizationCodeGrantTypeParameterAuthEdpValidator = new AuthorizationCodeGrantTypeParameterAuthEdpValidator(
                 _parameterParserHelperFake.Object,
                 _clientRepository.Object,

@@ -14,7 +14,7 @@
 
 namespace SimpleIdentityServer.Core.Parameters
 {
-    public class AuthorizationCodeGrantTypeParameter
+    public class AuthorizationCodeGrantTypeParameter : GrantTypeParameter
     {
         /// <summary>
         /// Gets or sets the authorization code.
@@ -24,22 +24,6 @@ namespace SimpleIdentityServer.Core.Parameters
         /// Gets or sets the redirection url.
         /// </summary>
         public string RedirectUri { get; set; }
-        /// <summary>
-        /// Gets or sets the client id.
-        /// </summary>
-        public string ClientId { get; set; }
-        /// <summary>
-        /// Gets or sets the clients secret.
-        /// </summary>
-        public string ClientSecret { get; set; }
-        /// <summary>
-        /// Gets or sets the client assertion type
-        /// </summary>
-        public string ClientAssertionType { get; set; }
-        /// <summary>
-        /// Gets or sets the client assertion.
-        /// </summary>
-        public string ClientAssertion { get; set; }
         /// <summary>
         /// Gets or sets the code verifier.
         /// </summary>

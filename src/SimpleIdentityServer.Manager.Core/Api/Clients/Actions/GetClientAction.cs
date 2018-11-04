@@ -29,9 +29,9 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 
     public class GetClientAction : IGetClientAction
     {
-        private IClientRepository _clientRepository;
+        private IClientStore _clientRepository;
 
-        public GetClientAction(IClientRepository clientRepository)
+        public GetClientAction(IClientStore clientRepository)
         {
             _clientRepository = clientRepository;
         }
@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
+            var client = await _clientRepository.GetById(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,

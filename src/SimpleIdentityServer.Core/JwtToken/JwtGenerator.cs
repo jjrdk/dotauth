@@ -22,10 +22,8 @@ using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
-using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Collections.Generic;
@@ -40,13 +38,12 @@ namespace SimpleIdentityServer.Core.JwtToken
 {
     public class JwtGenerator : IJwtGenerator
     {
-        private readonly IConfigurationService _configurationService;
         private readonly IClientValidator _clientValidator;
-        private readonly IClaimsMapping _claimsMapping;
         private readonly IParameterParserHelper _parameterParserHelper;
         private readonly IJwsGenerator _jwsGenerator;
         private readonly IJweGenerator _jweGenerator;
         private readonly IScopeRepository _scopeRepository;
+        private readonly OAuthConfigurationOptions _configurationOptions;
         private readonly IClientRepository _clientRepository;
         private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
         private readonly Dictionary<JwsAlg, Func<string, string>> _mappingJwsAlgToHashingFunctions = new Dictionary<JwsAlg, Func<string, string>>
@@ -90,22 +87,20 @@ namespace SimpleIdentityServer.Core.JwtToken
         };
 
         public JwtGenerator(
-            IConfigurationService configurationService,
+            OAuthConfigurationOptions configurationOptions,
             IClientRepository clientRepository,
             IClientValidator clientValidator,
             IJsonWebKeyRepository jsonWebKeyRepository,
             IScopeRepository scopeRepository,
-            IClaimsMapping claimsMapping,
             IParameterParserHelper parameterParserHelper,
             IJwsGenerator jwsGenerator,
             IJweGenerator jweGenerator)
         {
-            _configurationService = configurationService;
+            _configurationOptions = configurationOptions;
             _clientRepository = clientRepository;
             _clientValidator = clientValidator;
             _jsonWebKeyRepository = jsonWebKeyRepository;
             _scopeRepository = scopeRepository;
-            _claimsMapping = claimsMapping;
             _parameterParserHelper = parameterParserHelper;
             _jwsGenerator = jwsGenerator;
             _jweGenerator = jweGenerator;
@@ -121,28 +116,12 @@ namespace SimpleIdentityServer.Core.JwtToken
             var timeKeyValuePair = await GetExpirationAndIssuedTime().ConfigureAwait(false);
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
-            if (jwsPayload.ContainsKey(StandardClaimNames.Iat))
-            {
-                jwsPayload[StandardClaimNames.Iat] = issuedAtTime;
-            }
-            else
-            {
-                jwsPayload.Add(StandardClaimNames.Iat, issuedAtTime);
-            }
-
-            if (jwsPayload.ContainsKey(StandardClaimNames.ExpirationTime))
-            {
-                jwsPayload[StandardClaimNames.ExpirationTime] = expirationInSeconds;
-            }
-            else
-            {
-                jwsPayload.Add(StandardClaimNames.ExpirationTime, expirationInSeconds);
-            }
-
+            jwsPayload.Set(StandardClaimNames.Iat, issuedAtTime);
+            jwsPayload.Set(StandardClaimNames.ExpirationTime, expirationInSeconds);
             return jwsPayload;
         }
 
-        public async Task<JwsPayload> GenerateAccessToken(Client client, IEnumerable<string> scopes, string issuerName)
+        public async Task<JwsPayload> GenerateAccessToken(Client client, IEnumerable<string> scopes, string issuerName, IDictionary<string, object> additionalClaims)
         {
             if (client == null)
             {
@@ -166,6 +145,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 {StandardClaimNames.Iat, issuedAtTime},
                 {StandardClaimNames.Scopes, scopes}
             };
+            jwsPayload.AddRange(additionalClaims);
             return jwsPayload;
         }
 
@@ -208,7 +188,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             FillInResourceOwnerClaimsByClaimsParameter(result, claimParameters, claimsPrincipal, authorizationParameter);
             return result;
         }
-        
+
         public async Task<JwsPayload> GenerateUserInfoPayloadForScopeAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
         {
             if (claimsPrincipal == null ||
@@ -263,7 +243,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             var signedAlg = client.GetIdTokenSignedResponseAlg();
-            if (signedAlg == null || 
+            if (signedAlg == null ||
                 signedAlg == JwsAlg.none)
             {
                 return;
@@ -281,7 +261,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 var hashingAuthorizationCode = callback(authorizationCode);
                 jwsPayload.Add(StandardClaimNames.CHash, hashingAuthorizationCode);
             }
-            
+
             if (!string.IsNullOrWhiteSpace(accessToken))
             {
                 var hashingAccessToken = callback(accessToken);
@@ -310,9 +290,9 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             return _jweGenerator.GenerateJwe(
-                jwe, 
-                jweAlg, 
-                jweEnc, 
+                jwe,
+                jweAlg,
+                jweEnc,
                 jsonWebKey);
         }
 
@@ -323,7 +303,7 @@ namespace SimpleIdentityServer.Core.JwtToken
         {
             // 1. Fill-in the subject claim
             var subject = claimsPrincipal.GetSubject();
-            jwsPayload.Add(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject);
+            jwsPayload.Add(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject);
 
             if (authorizationParameter == null ||
                 string.IsNullOrWhiteSpace(authorizationParameter.Scope))
@@ -336,12 +316,12 @@ namespace SimpleIdentityServer.Core.JwtToken
             var claims = await GetClaimsFromRequestedScopes(scopes, claimsPrincipal).ConfigureAwait(false);
             foreach (var claim in claims)
             {
-                if (claim.Key == Jwt.Constants.StandardResourceOwnerClaimNames.Subject)
+                if (claim.Type == Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject)
                 {
                     continue;
                 }
 
-                jwsPayload.Add(claim.Key, claim.Value);
+                jwsPayload.Add(claim.Type, claim.Value);
             }
         }
 
@@ -354,11 +334,11 @@ namespace SimpleIdentityServer.Core.JwtToken
             var state = authorizationParameter == null ? string.Empty : authorizationParameter.State;
 
             // 1. Fill-In the subject - set the subject as an essential claim
-            if (claimParameters.All(c => c.Name != Jwt.Constants.StandardResourceOwnerClaimNames.Subject))
+            if (claimParameters.All(c => c.Name != Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject))
             {
                 var essentialSubjectClaimParameter = new ClaimParameter
                 {
-                    Name = Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                    Name = Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject,
                     Parameters = new Dictionary<string, object>
                     {
                         {
@@ -379,16 +359,16 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             var resourceOwnerClaimParameters = claimParameters
-                .Where(c => Jwt.Constants.AllStandardResourceOwnerClaimNames.Contains(c.Name))
+                .Where(c => Jwt.JwtConstants.AllStandardResourceOwnerClaimNames.Contains(c.Name))
                 .ToList();
             if (resourceOwnerClaimParameters.Any())
             {
-                var requestedClaimNames = resourceOwnerClaimParameters.Select(r => r.Name);
+                var requestedClaimNames = resourceOwnerClaimParameters.Select(r => r.Name).ToArray();
                 var resourceOwnerClaims = GetClaims(requestedClaimNames, claimsPrincipal);
                 foreach (var resourceOwnerClaimParameter in resourceOwnerClaimParameters)
                 {
-                    var resourceOwnerClaim = resourceOwnerClaims.FirstOrDefault(c => c.Key == resourceOwnerClaimParameter.Name);
-                    var resourceOwnerClaimValue = resourceOwnerClaim.Equals(default(KeyValuePair<string, string>)) ? string.Empty : resourceOwnerClaim.Value;
+                    var resourceOwnerClaim = resourceOwnerClaims.FirstOrDefault(c => c.Type == resourceOwnerClaimParameter.Name);
+                    var resourceOwnerClaimValue = resourceOwnerClaim == null ? string.Empty : resourceOwnerClaim.Value;
                     var isClaimValid = ValidateClaimValue(resourceOwnerClaimValue, resourceOwnerClaimParameter);
                     if (!isClaimValid)
                     {
@@ -397,7 +377,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                             state);
                     }
 
-                    jwsPayload.Add(resourceOwnerClaim.Key, resourceOwnerClaim.Value);
+                    jwsPayload.Add(resourceOwnerClaim.Type, resourceOwnerClaim.Value);
                 }
             }
         }
@@ -430,7 +410,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
             var acrValues = Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
-            var amr = new []{ "password" };
+            var amr = new[] { "password" };
             if (amrValues != null)
             {
                 amr = amrValues.ToArray();
@@ -439,7 +419,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             var azp = string.Empty;
 
             var clients = await _clientRepository.GetAllAsync().ConfigureAwait(false);
-            foreach(var client in clients)
+            foreach (var client in clients)
             {
                 var isClientSupportIdTokenResponseType =
                     _clientValidator.CheckResponseTypes(client, ResponseType.id_token);
@@ -474,7 +454,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
             if (audiences.Count() > 1 ||
                 audiences.Count() == 1 &&
-                audiences.First() !=  clientId)
+                audiences.First() != clientId)
             {
                 azp = clientId;
             }
@@ -597,7 +577,7 @@ namespace SimpleIdentityServer.Core.JwtToken
         {
             if (claimParameter.EssentialParameterExist && (claimValue == null || string.IsNullOrWhiteSpace(claimValue.ToString())) && claimParameter.Essential)
             {
-                return false;                  
+                return false;
             }
 
             if (claimParameter.ValueParameterExist && claimValue.ToString() != claimParameter.Value)
@@ -619,8 +599,8 @@ namespace SimpleIdentityServer.Core.JwtToken
             string[] claimValues,
             ClaimParameter claimParameter)
         {
-            if (claimParameter.EssentialParameterExist && 
-                (claimValues == null || claimValues.Any()) 
+            if (claimParameter.EssentialParameterExist &&
+                (claimValues == null || claimValues.Any())
                 && claimParameter.Essential)
             {
                 return false;
@@ -642,9 +622,9 @@ namespace SimpleIdentityServer.Core.JwtToken
             return true;
         }
 
-         private async Task<Dictionary<string, object>> GetClaimsFromRequestedScopes(IEnumerable<string> scopes, ClaimsPrincipal claimsPrincipal)
+        private async Task<IList<Claim>> GetClaimsFromRequestedScopes(IEnumerable<string> scopes, ClaimsPrincipal claimsPrincipal)
         {
-            var result = new Dictionary<string, object>();
+            var result = new List<Claim>();
             var returnedScopes = await _scopeRepository.SearchByNamesAsync(scopes).ConfigureAwait(false);
             foreach (var returnedScope in returnedScopes)
             {
@@ -654,12 +634,20 @@ namespace SimpleIdentityServer.Core.JwtToken
             return result;
         }
 
-        private Dictionary<string, object> GetClaims(IEnumerable<string> claims, ClaimsPrincipal claimsPrincipal)
+        private IList<Claim> GetClaims(IReadOnlyCollection<string> claims, ClaimsPrincipal claimsPrincipal)
         {
-            var openIdClaims = _claimsMapping.MapToOpenIdClaims(claimsPrincipal.Claims);
-            return openIdClaims.Where(oc => claims.Contains(oc.Key))
-                .Select(oc => new { key = oc.Key, val = oc.Value })
-                .ToDictionary(r => r.key, r => r.val);
+            var openIdClaims = MapToOpenIdClaims(claimsPrincipal.Claims);
+            return openIdClaims.Where(oc => claims.Contains(oc.Type)).ToArray();
+        }
+
+        private IEnumerable<Claim> MapToOpenIdClaims(IEnumerable<Claim> claims)
+        {
+            return claims.Select(claim =>
+                new Claim(
+                    JwtConstants.MapWifClaimsToOpenIdClaims.ContainsKey(claim.Type)
+                        ? JwtConstants.MapWifClaimsToOpenIdClaims[claim.Type]
+                        : claim.Type,
+                    claim.Value));
         }
 
         private async Task<JsonWebKey> GetJsonWebKey(
@@ -680,13 +668,13 @@ namespace SimpleIdentityServer.Core.JwtToken
             return result;
         }
 
-        private async Task<KeyValuePair<double, double>> GetExpirationAndIssuedTime()
+        private Task<KeyValuePair<double, double>> GetExpirationAndIssuedTime()
         {
             var currentDateTime = DateTimeOffset.UtcNow;
-            var expiredDateTime = currentDateTime.AddSeconds(await _configurationService.GetTokenValidityPeriodInSecondsAsync().ConfigureAwait(false));
+            var expiredDateTime = currentDateTime.Add(_configurationOptions.TokenValidityPeriod);
             var expirationInSeconds = expiredDateTime.ConvertToUnixTimestamp();
             var iatInSeconds = currentDateTime.ConvertToUnixTimestamp();
-            return new KeyValuePair<double, double>(expirationInSeconds, iatInSeconds);
+            return Task.FromResult(new KeyValuePair<double, double>(expirationInSeconds, iatInSeconds));
         }
 
         private static string HashWithSha256(string parameter)
