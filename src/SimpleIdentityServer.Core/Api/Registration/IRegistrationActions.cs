@@ -1,8 +1,8 @@
 ﻿namespace SimpleIdentityServer.Core.Api.Registration
 {
     using System.Threading.Tasks;
-    using Common.DTOs.Responses;
     using Parameters;
+    using Shared.Responses;
 
     public interface IRegistrationActions
     {

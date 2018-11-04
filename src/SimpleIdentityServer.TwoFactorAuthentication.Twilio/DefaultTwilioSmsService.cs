@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Twilio.Client;
 using System;
 using System.Linq;
@@ -20,7 +19,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
 {
-    using Core.Common;
+    using Shared;
+    using Shared.Models;
 
     public class DefaultTwilioSmsService : ITwoFactorAuthenticationService
     {

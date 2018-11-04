@@ -1,7 +1,7 @@
 ﻿namespace SimpleIdentityServer.Core.Validators
 {
     using System.Collections.Generic;
-    using Common.Models;
+    using Shared.Models;
 
     public interface IClientValidator
     {

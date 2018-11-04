@@ -1,16 +1,15 @@
-﻿using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.AccountFilter.Basic.Tests
+﻿namespace SimpleIdentityServer.AccountFilter.Basic.Tests
 {
-    using Core.Common;
-    using Core.Common.AccountFiltering;
-    using Core.Common.Repositories;
+    using Moq;
+    using Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Shared;
+    using Shared.AccountFiltering;
+    using Xunit;
 
     public class AccountFilterFixture
     {

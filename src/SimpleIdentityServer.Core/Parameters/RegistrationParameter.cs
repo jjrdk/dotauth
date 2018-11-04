@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Models;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Parameters
 {
+    using Shared.Models;
+    using Shared.Requests;
+
     public class RegistrationParameter
     {
         public List<string> RedirectUris { get; set; }

@@ -2,7 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Core.Common.DTOs.Responses;
+    using Shared.Responses;
 
     public interface IDiscoveryClient
     {

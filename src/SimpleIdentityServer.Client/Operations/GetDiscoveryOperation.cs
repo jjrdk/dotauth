@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Threading.Tasks;
 
@@ -22,6 +21,7 @@ namespace SimpleIdentityServer.Client.Operations
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading;
+    using Shared.Responses;
 
     internal class GetDiscoveryOperation : IGetDiscoveryOperation
     {

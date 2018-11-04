@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
@@ -26,6 +24,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
+    using Shared.Models;
+
     internal class RevokeTokenAction : IRevokeTokenAction
     {
         private readonly IAuthenticateClient _authenticateClient;

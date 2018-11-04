@@ -1,7 +1,5 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Api.Profile.Actions;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -9,6 +7,8 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
 {
     using System.Threading;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public class GetResourceOwnerClaimsActionFixture
     {

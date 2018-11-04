@@ -26,6 +26,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Host.Controllers
 {
+    using Shared.Responses;
+
     [Route(Constants.EndPoints.Clients)]
     public class ClientsController : Controller
     {
@@ -152,7 +154,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
 
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new SimpleIdentityServer.Common.Dtos.Responses.ErrorResponse
+            var error = new ErrorResponse
             {
                 Error = code,
                 ErrorDescription = message

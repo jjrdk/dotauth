@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Extensions;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
 {
+    using Extensions;
+    using Shared;
+
     public class RsaAlgorithm : IAlgorithm
     {
         private readonly bool _oaep;

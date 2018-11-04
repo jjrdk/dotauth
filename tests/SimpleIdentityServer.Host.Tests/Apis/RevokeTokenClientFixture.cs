@@ -16,14 +16,14 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 {
     using Client;
     using Client.Operations;
-    using Common.Dtos.Responses;
-    using Core.Common;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Shared;
+    using Shared.Responses;
     using Xunit;
 
     public class RevokeTokenClientFixture : IClassFixture<TestOauthServerFixture>

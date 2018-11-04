@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Uma.Client.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
@@ -9,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Client.Policy
 {
+    using Shared.Responses;
+
     internal sealed class SearchPoliciesOperation : ISearchPoliciesOperation
     {
         private readonly HttpClient _httpClientFactory;

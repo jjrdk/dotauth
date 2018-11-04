@@ -18,8 +18,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Authenticate.SMS.Common.Requests;
     using Client;
     using Client.Operations;
-    using Core.Common;
-    using Core.Common.DTOs.Responses;
     using Core.Extensions;
     using Core.Jwt;
     using Core.Jwt.Encrypt;
@@ -30,12 +28,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Store;
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Net;
     using System.Net.Http;
-    using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using Shared;
+    using Shared.Responses;
     using Xunit;
 
     public class TokenClientFixture : IClassFixture<TestOauthServerFixture>

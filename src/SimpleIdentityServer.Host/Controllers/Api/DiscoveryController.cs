@@ -15,11 +15,11 @@
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
     using Core.Api.Discovery;
-    using Core.Common.DTOs.Responses;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
     using Core;
+    using Shared.Responses;
 
     [Route(Core.Constants.EndPoints.DiscoveryAction)]
     public class DiscoveryController : Controller

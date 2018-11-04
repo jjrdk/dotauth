@@ -1,9 +1,9 @@
 ﻿namespace SimpleIdentityServer.Client
 {
-    using Core.Common;
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using Shared;
 
     public class TokenRequest : IEnumerable<KeyValuePair<string, string>>
     {

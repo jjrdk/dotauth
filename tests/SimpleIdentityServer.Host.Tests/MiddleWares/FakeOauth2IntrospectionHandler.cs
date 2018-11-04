@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SimpleIdentityServer.Core.Common;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -12,6 +11,7 @@ namespace SimpleIdentityServer.Host.Tests.MiddleWares
 {
     using Client;
     using Client.Operations;
+    using Shared;
 
     public class FakeOauth2IntrospectionHandler : AuthenticationHandler<FakeOAuth2IntrospectionOptions>
     {

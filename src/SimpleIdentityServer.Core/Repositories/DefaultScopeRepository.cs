@@ -1,8 +1,4 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Parameters;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Common.Results;
-using SimpleIdentityServer.Core.Extensions;
+﻿using SimpleIdentityServer.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Repositories;
+    using Shared.Results;
+
     internal sealed class DefaultScopeRepository : IScopeRepository
     {
         public ICollection<Scope> _scopes;

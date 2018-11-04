@@ -1,7 +1,7 @@
 ﻿namespace SimpleIdentityServer.Core.Api.Jwks
 {
     using System.Threading.Tasks;
-    using Common.DTOs.Requests;
+    using Shared.Requests;
 
     public interface IJwksActions
     {

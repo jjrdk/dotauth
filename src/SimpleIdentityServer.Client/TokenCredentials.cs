@@ -1,11 +1,11 @@
 ﻿namespace SimpleIdentityServer.Client
 {
-    using Core.Common;
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
+    using Shared;
 
     public class TokenCredentials : IEnumerable<KeyValuePair<string, string>>
     {

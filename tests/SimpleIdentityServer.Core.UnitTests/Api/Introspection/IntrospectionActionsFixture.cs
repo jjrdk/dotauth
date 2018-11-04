@@ -24,7 +24,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
 {
-    using Core.Common;
+    using Shared;
 
     public class IntrospectionActionsFixture
     {

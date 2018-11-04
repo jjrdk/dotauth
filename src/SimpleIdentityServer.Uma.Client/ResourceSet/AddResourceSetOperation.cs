@@ -21,7 +21,7 @@ namespace SimpleIdentityServer.Uma.Client.ResourceSet
     using Common.DTOs;
     using Newtonsoft.Json;
     using Results;
-    using SimpleIdentityServer.Common.Dtos.Responses;
+    using Shared.Responses;
 
     public class AddResourceSetOperation : IAddResourceSetOperation
     {

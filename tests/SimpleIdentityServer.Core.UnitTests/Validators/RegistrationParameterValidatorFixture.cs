@@ -1,7 +1,4 @@
-﻿using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Common.Models;
+﻿using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
@@ -15,6 +12,10 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
+    using Shared;
+    using Shared.Models;
+    using Shared.Requests;
+
     public sealed class RegistrationParameterValidatorFixture
     {
         private HttpClient _httpClientFactoryFake;

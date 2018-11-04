@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
-using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Api.Token;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Serializers;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Api.Token;
 using SimpleIdentityServer.Uma.Host.Extensions;
@@ -18,6 +14,11 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
+    using Shared.Models;
+    using Shared.Requests;
+    using Shared.Responses;
+    using Shared.Serializers;
+
     [Route(Constants.RouteValues.Token)]
     public class TokenController : Controller
     {
@@ -59,7 +60,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var serializer = new ParamSerializer();
-            var tokenRequest = serializer.Deserialize<TokenRequest>(Request.Form);
+            var tokenRequest = serializer.Deserialize<TokenRequest>(Request.Form.Select(x => new KeyValuePair<string, string[]>(x.Key, x.Value)));
             GrantedToken result = null;
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
@@ -117,7 +118,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var serializer = new ParamSerializer();
-            var revocationRequest = serializer.Deserialize<RevocationRequest>(Request.Form);
+            var revocationRequest = serializer.Deserialize<RevocationRequest>(Request.Form.Select(x => new KeyValuePair<string, string[]>(x.Key, x.Value)));
             // 1. Fetch the authorization header
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +21,9 @@ using System.Text;
 
 namespace SimpleIdentityServer.Core.Jwt.Signature
 {
+    using Extensions;
+    using Shared;
+
     public class CreateJwsSignature : ICreateJwsSignature
     {
         private readonly IEnumerable<JwsAlg> _supportedAlgs = new List<JwsAlg>

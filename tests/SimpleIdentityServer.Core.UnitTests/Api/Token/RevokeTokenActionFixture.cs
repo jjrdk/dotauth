@@ -15,7 +15,6 @@
 using Moq;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
@@ -26,6 +25,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
+    using Shared.Models;
+
     public class RevokeTokenActionFixture
     {
         private Mock<IAuthenticateClient> _authenticateClientStub;

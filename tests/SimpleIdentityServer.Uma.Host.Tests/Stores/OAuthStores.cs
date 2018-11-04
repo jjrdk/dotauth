@@ -1,9 +1,10 @@
-﻿using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Host.Tests.Stores
 {
+    using Shared;
+    using Shared.Models;
+
     public static class OAuthStores
     {
         public static List<Scope> GetScopes()
@@ -43,12 +44,12 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Stores
             };
         }
 
-        public static List<SimpleIdentityServer.Core.Common.Models.Client> GetClients()
+        public static List<Client> GetClients()
         {
-            return new List<SimpleIdentityServer.Core.Common.Models.Client>
+            return new List<Client>
             {
                     // Resource server.
-                    new SimpleIdentityServer.Core.Common.Models.Client
+                    new Client
                     {
                         ClientId = "resource_server",
                         ClientName = "Resource server",
@@ -86,7 +87,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Stores
                         ApplicationType = ApplicationTypes.native
                     },
                     // Anonymous.
-                    new SimpleIdentityServer.Core.Common.Models.Client
+                    new Client
                     {
                         ClientId = "anonymous",
                         ClientName = "Anonymous",

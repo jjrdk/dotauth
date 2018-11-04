@@ -13,12 +13,13 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Common.Extensions;
 using System.Net.Http.Headers;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 {
+    using Shared;
+
     public class AuthenticateInstructionGeneratorFixture
     {
         [Fact]

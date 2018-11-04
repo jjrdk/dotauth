@@ -13,10 +13,7 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Api.Introspection;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Serializers;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Host.Extensions;
 using System;
@@ -30,6 +27,9 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
     using Core;
+    using Shared.Requests;
+    using Shared.Responses;
+    using Shared.Serializers;
 
     [Route(Core.Constants.EndPoints.Introspection)]
     public class IntrospectionController : Controller

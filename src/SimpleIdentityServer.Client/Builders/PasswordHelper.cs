@@ -2,7 +2,7 @@
 {
     using System.Security.Cryptography;
     using System.Text;
-    using Core.Common.Extensions;
+    using Shared;
 
     public static class PasswordHelper
     {

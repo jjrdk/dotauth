@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.JwtToken;
 using System;
@@ -21,6 +19,10 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
+
     public sealed class ClientHelper : IClientHelper
     {
         private readonly IClientStore _clientRepository;
@@ -53,7 +55,7 @@ namespace SimpleIdentityServer.Core.Helpers
             return await GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
         }
 
-        public async Task<string> GenerateIdTokenAsync(Common.Models.Client client, JwsPayload jwsPayload)
+        public async Task<string> GenerateIdTokenAsync(Client client, JwsPayload jwsPayload)
         {
             if (client == null)
             {

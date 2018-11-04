@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
-
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
 {
+    using Shared;
+
     public interface IAlgorithm
     {
         byte[] Encrypt(

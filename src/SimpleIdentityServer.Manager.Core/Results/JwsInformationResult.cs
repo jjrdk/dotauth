@@ -14,12 +14,13 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Manager.Core.Results
 {
+    using Shared;
+    using Shared.Requests;
+
     public class JwsInformationResult
     {
         public JwsProtectedHeader Header { get; set; }

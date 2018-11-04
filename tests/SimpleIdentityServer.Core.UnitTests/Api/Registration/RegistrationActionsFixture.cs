@@ -22,7 +22,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 {
-    using Core.Common;
+    using Shared;
 
     public sealed class RegistrationActionsFixture
     {

@@ -1,5 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
@@ -11,6 +10,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
     {
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
@@ -229,7 +231,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                     PromptParameter.none
                 });
             _clientRepository.Setup(c => c.GetById(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
+                .Returns(() => Task.FromResult((Client)null));
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter)).ConfigureAwait(false);
@@ -255,7 +257,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 ResponseType = "code",
                 Prompt = "none"
             };
-            var client = new Core.Common.Models.Client();
+            var client = new Client();
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(new List<PromptParameter>
                 {
@@ -263,7 +265,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 });
             _clientRepository.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string[]>()))
+            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<string[]>()))
                 .Returns(() => new string[0]);
 
             // ACT & ASSERT

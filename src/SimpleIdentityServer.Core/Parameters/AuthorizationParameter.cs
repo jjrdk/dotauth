@@ -13,10 +13,11 @@
 // limitations under the License.
 
 using System.Collections.Generic;
-using SimpleIdentityServer.Core.Common.Models;
 
 namespace SimpleIdentityServer.Core.Parameters
 {
+    using Shared.Models;
+
     public sealed class AuthorizationParameter
     {
         public string ClientId { get; set; }

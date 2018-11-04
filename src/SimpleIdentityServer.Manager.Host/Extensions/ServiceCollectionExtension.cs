@@ -16,7 +16,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core;
@@ -26,8 +25,9 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
-    using SimpleIdentityServer.Core.Common.AccountFiltering;
-    using SimpleIdentityServer.Core.Common.Repositories;
+    using Shared;
+    using Shared.AccountFiltering;
+    using Shared.Repositories;
 
     public static class ServiceCollectionExtension
     {

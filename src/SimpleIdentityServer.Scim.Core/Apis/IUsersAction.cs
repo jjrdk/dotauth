@@ -1,11 +1,5 @@
 ﻿namespace SimpleIdentityServer.Scim.Core.Apis
 {
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
-    using Newtonsoft.Json.Linq;
-    using Results;
-    using SimpleIdentityServer.Core.Common.DTOs;
-
     //public interface IUsersAction
     //{
     //    Task<ApiActionResult> AddUser(ScimUser jObj, string locationPattern);

@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using System;
 using System.Text;
 
 namespace SimpleIdentityServer.Client.Builders
 {
+    using Shared.Requests;
+
     public class PkceBuilder
     {
         public PKCE Build(CodeChallengeMethods method)

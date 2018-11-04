@@ -21,8 +21,6 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using SimpleIdentityServer.Authenticate.Basic.ViewModels;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Profile;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -41,11 +39,13 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 {
-    using Common.Dtos.Events.Openid;
-    using Core.Common;
     using Core.WebSite.User.Actions;
     using System.Net;
     using Logging;
+    using Shared;
+    using Shared.Events.Openid;
+    using Shared.Models;
+    using Shared.Requests;
 
     public abstract class BaseAuthenticateController : BaseController
     {

@@ -18,13 +18,13 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Client.Operations;
     using Core;
     using Core.Api.Discovery;
-    using Core.Common.Models;
     using Core.Jwt;
     using Core.Repositories;
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Shared.Models;
     using Xunit;
 
     public class JwksClientFixture : IClassFixture<TestOauthServerFixture>

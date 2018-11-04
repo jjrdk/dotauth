@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
 using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace SimpleIdentityServer.Core.Jwt
 {
+    using Shared;
+
     public class JwtConstants
     {
         public static class StandardResourceOwnerClaimNames

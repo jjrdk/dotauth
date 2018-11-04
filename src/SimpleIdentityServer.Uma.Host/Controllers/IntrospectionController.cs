@@ -13,10 +13,7 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Api.Introspection;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Serializers;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
@@ -27,6 +24,11 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
+    using System.Collections.Generic;
+    using Shared.Requests;
+    using Shared.Responses;
+    using Shared.Serializers;
+
     [Route(Constants.RouteValues.Introspection)]
     public class IntrospectionController : Controller
     {
@@ -54,7 +56,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var serializer = new ParamSerializer();
-            var introspectionRequest = serializer.Deserialize<IntrospectionRequest>(Request.Form);
+            var introspectionRequest = serializer.Deserialize<IntrospectionRequest>(Request.Form.Select(x => new KeyValuePair<string, string[]>(x.Key, x.Value)));
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
             {

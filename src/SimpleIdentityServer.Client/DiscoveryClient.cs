@@ -13,12 +13,13 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client
 {
+    using Shared.Responses;
+
     internal class DiscoveryClient : IDiscoveryClient
     {
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;

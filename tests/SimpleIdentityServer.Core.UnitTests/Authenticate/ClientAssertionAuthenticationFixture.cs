@@ -1,6 +1,5 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt.Signature;
@@ -11,7 +10,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 {
-    using Core.Common.Repositories;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public sealed class ClientAssertionAuthenticationFixture
     {
@@ -121,7 +122,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 It.IsAny<string>()))
                 .Returns(Task.FromResult(jwsPayload));
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
+                .Returns(() => Task.FromResult((Client)null));
 
             // ACT
             var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null).ConfigureAwait(false);
@@ -155,7 +156,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     }
                 }
             };
-            var client = new Core.Common.Models.Client();
+            var client = new Client();
             _jwtParserFake.Setup(j => j.IsJwsToken(It.IsAny<string>()))
                 .Returns(true);
             _jwsParserFake.Setup(j => j.GetPayload(It.IsAny<string>()))
@@ -201,7 +202,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     StandardClaimNames.ExpirationTime, DateTime.Now.AddDays(-2)
                 }
             };
-            var client = new Core.Common.Models.Client();
+            var client = new Client();
             _jwtParserFake.Setup(j => j.IsJwsToken(It.IsAny<string>()))
                 .Returns(true);
             _jwsParserFake.Setup(j => j.GetPayload(It.IsAny<string>()))
@@ -247,7 +248,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddDays(2).ConvertToUnixTimestamp()
                 }
             };
-            var client = new Core.Common.Models.Client();
+            var client = new Client();
             _jwtParserFake.Setup(j => j.IsJwsToken(It.IsAny<string>()))
                 .Returns(true);
             _jwsParserFake.Setup(j => j.GetPayload(It.IsAny<string>()))
@@ -400,7 +401,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     StandardClaimNames.ExpirationTime, DateTime.Now.AddDays(2).ConvertToUnixTimestamp()
                 }
             };
-            var client = new Core.Common.Models.Client();
+            var client = new Client();
             _jwtParserFake.Setup(j => j.IsJweToken(It.IsAny<string>()))
                 .Returns(true);
             _jwtParserFake.Setup(j => j.DecryptWithPasswordAsync(It.IsAny<string>(),

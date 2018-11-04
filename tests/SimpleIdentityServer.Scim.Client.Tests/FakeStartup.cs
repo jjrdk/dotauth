@@ -24,10 +24,8 @@ using System.Reflection;
 namespace SimpleIdentityServer.Scim.Client.Tests
 {
     using Logging;
-    using Moq;
+    using Shared;
     using SimpleIdentityServer.Core;
-    using SimpleIdentityServer.Core.Common;
-    using SimpleIdentityServer.Core.Common.Repositories;
     using SimpleIdentityServer.Core.Services;
     using SimpleIdentityServer.Core.WebSite.User.Actions;
 

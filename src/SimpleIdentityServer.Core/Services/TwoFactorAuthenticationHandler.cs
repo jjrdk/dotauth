@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +19,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Services
 {
-    using Common;
+    using Shared;
+    using Shared.Models;
 
     internal class TwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandler
     {

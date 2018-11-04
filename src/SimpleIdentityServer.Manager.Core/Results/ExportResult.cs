@@ -18,8 +18,10 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Manager.Core.Results
 {
+    using Shared.Models;
+
     public class ExportResult
     {
-        public IEnumerable<SimpleIdentityServer.Core.Common.Models.Client> Clients { get; set; }
+        public IEnumerable<Client> Clients { get; set; }
     }
 }

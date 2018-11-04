@@ -22,8 +22,9 @@ using Xunit;
 namespace SimpleIdentityServer.Scim.Client.Tests
 {
     using Core.Extensions;
-    using SimpleIdentityServer.Core.Common;
-    using SimpleIdentityServer.Core.Common.DTOs;
+    using Shared;
+    using Shared.DTOs;
+    using SimpleIdentityServer.Client;
 
     public class UsersClientFixture : IClassFixture<TestScimServerFixture>
     {

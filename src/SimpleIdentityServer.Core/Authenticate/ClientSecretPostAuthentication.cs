@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.Models;
 using System;
 using System.Linq;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
+    using Shared.Models;
+
     public class ClientSecretPostAuthentication : IClientSecretPostAuthentication
     {
         public Client AuthenticateClient(AuthenticateInstruction instruction, Client client)

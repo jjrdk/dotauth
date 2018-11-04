@@ -1,7 +1,7 @@
 ﻿namespace SimpleIdentityServer.Core.Jwt.Encrypt
 {
-    using Common;
     using Encryption;
+    using Shared;
 
     public interface IJweHelper
     {

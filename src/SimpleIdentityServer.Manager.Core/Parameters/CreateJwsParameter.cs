@@ -14,10 +14,10 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common;
-
 namespace SimpleIdentityServer.Manager.Core.Parameters
 {
+    using Shared;
+
     public class CreateJwsParameter
     {
         /// <summary>

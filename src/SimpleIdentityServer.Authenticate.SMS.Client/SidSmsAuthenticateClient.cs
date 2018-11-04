@@ -1,14 +1,13 @@
-﻿using SimpleIdentityServer.Authenticate.SMS.Common.Requests;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Authenticate.SMS.Client
+﻿namespace SimpleIdentityServer.Authenticate.SMS.Client
 {
+    using Newtonsoft.Json;
+    using Shared;
+    using Shared.Responses;
+    using SimpleIdentityServer.Authenticate.SMS.Common.Requests;
+    using System;
     using System.Net.Http;
     using System.Net.Http.Headers;
-    using Core.Common;
-    using Newtonsoft.Json;
-    using SimpleIdentityServer.Common.Dtos.Responses;
+    using System.Threading.Tasks;
 
     internal sealed class SidSmsAuthenticateClient : ISidSmsAuthenticateClient
     {

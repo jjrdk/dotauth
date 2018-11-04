@@ -14,7 +14,6 @@
 
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Results;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Threading.Tasks;
 
@@ -25,6 +24,7 @@ namespace SimpleIdentityServer.Client
     using System.Linq;
     using System.Net.Http;
     using Errors;
+    using Shared.Responses;
 
     internal class IntrospectClient : IIntrospectClient
     {

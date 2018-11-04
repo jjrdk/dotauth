@@ -25,14 +25,15 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
 {
     using Core.Errors;
     using Core.Exceptions;
-    using SimpleIdentityServer.Core.Common.Models;
-    using SimpleIdentityServer.Core.Common.Repositories;
     using SimpleIdentityServer.Core.Helpers;
     using SimpleIdentityServer.Core.WebSite.User.Actions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Shared.Responses;
     using ErrorCodes = SimpleIdentityServer.Core.Errors.ErrorCodes;
 
     [Route(Constants.EndPoints.ResourceOwners)]
@@ -221,7 +222,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
 
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new SimpleIdentityServer.Common.Dtos.Responses.ErrorResponse
+            var error = new ErrorResponse
             {
                 Error = code,
                 ErrorDescription = message

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
@@ -27,8 +26,9 @@ using Xunit;
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 {
     using Moq;
+    using Shared;
+    using Shared.Requests;
     using SimpleIdentityServer.Core;
-    using SimpleIdentityServer.Core.Common.DTOs.Requests;
     using Constants = Core.Constants;
 
     public class BasicAuthorizationPolicyFixture

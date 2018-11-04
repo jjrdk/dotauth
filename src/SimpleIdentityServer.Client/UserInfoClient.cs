@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Errors;
-using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Client.Results;
-using System;
-using System.Threading.Tasks;
-
 namespace SimpleIdentityServer.Client
 {
-    using Core.Common;
-    using Core.Common.DTOs.Responses;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
+    using Shared;
+    using Shared.Responses;
+    using SimpleIdentityServer.Client.Errors;
+    using SimpleIdentityServer.Client.Operations;
+    using SimpleIdentityServer.Client.Results;
+    using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using System.Threading.Tasks;
 
     internal class UserInfoClient : IUserInfoClient
     {

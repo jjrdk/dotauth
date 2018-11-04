@@ -2,8 +2,8 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Common;
-    using Common.Models;
+    using Shared;
+    using Shared.Models;
 
     public interface IGrantedTokenGeneratorHelper
     {

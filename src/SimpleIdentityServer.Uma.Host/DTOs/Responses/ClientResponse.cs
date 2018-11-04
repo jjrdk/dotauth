@@ -1,8 +1,9 @@
-﻿using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
 {
+    using Shared.Requests;
+
     public class ClientResponse
     {
         public string[] redirect_uris { get; set; }

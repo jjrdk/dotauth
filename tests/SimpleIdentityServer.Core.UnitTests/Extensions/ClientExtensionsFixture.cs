@@ -1,16 +1,18 @@
 ﻿using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Common;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Extensions
 {
+    using Shared;
+    using Shared.Models;
+
     public sealed class ClientExtensionsFixture
     {
         [Fact]
         public void When_Passing_Not_Supported_Alg_To_GetIdTokenSignedResponseAlg_Then_Null_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 IdTokenSignedResponseAlg = "not_supported"
             };
@@ -26,7 +28,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetIdTokenSignedResponseAlg_Then_RS256_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256
             };
@@ -42,7 +44,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Not_Supported_Alg_To_GetIdTokenEncryptedResponseAlg_Then_Null_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 IdTokenEncryptedResponseAlg = "not_supported"
             };
@@ -58,7 +60,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetIdTokenEncryptedResponseAlg_Then_RSA1_5_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
             };
@@ -74,7 +76,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Not_Supported_Alg_To_GetIdTokenEncryptedResponseEnc_Then_Null_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 IdTokenEncryptedResponseEnc = "not_supported"
             };
@@ -90,7 +92,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetIdTokenEncryptedResponseEnc_Then_A128CBC_HS256_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
             };
@@ -106,7 +108,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Not_Supported_Alg_To_GetUserInfoSignedResponseAlg_Then_Null_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 UserInfoSignedResponseAlg = "not_supported"
             };
@@ -122,7 +124,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetUserInfoSignedResponseAlg_Then_RS256_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 UserInfoSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256
             };
@@ -138,7 +140,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Not_Supported_Alg_To_GetUserInfoEncryptedResponseAlg_Then_Null_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 UserInfoEncryptedResponseAlg = "not_supported"
             };
@@ -154,7 +156,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetUserInfoEncryptedResponseAlg_Then_RSA1_5_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 UserInfoEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
             };
@@ -170,7 +172,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Not_Supported_Alg_To_GetUserInfoEncryptedResponseEnc_Then_Null_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 UserInfoEncryptedResponseEnc = "not_supported"
             };
@@ -186,7 +188,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetUserInfoEncryptedResponseEnc_Then_A128CBC_HS256_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
             };
@@ -202,7 +204,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Not_Supported_Alg_To_GetRequestObjectSigningAlg_Then_Null_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 RequestObjectSigningAlg = "not_supported"
             };
@@ -218,7 +220,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetRequestObjectSigningAlg_Then_RS256_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 RequestObjectSigningAlg = Jwt.JwtConstants.JwsAlgNames.RS256
             };
@@ -234,7 +236,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Not_Supported_Alg_To_GetRequestObjectEncryptionAlg_Then_Null_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 RequestObjectEncryptionAlg = "not_supported"
             };
@@ -250,7 +252,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetRequestObjectEncryptionAlg_Then_RSA1_5_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 RequestObjectEncryptionAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
             };
@@ -266,7 +268,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Not_Supported_Alg_To_GetRequestObjectEncryptionEnc_Then_Null_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 RequestObjectEncryptionEnc = "not_supported"
             };
@@ -282,7 +284,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetRequestObjectEncryptionEnc_Then_A128CBC_HS256_Is_Returned()
         {
             // ARRANGE
-            var client = new Core.Common.Models.Client
+            var client = new Client
             {
                 RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
             };

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
@@ -21,6 +20,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 {
+    using Shared.Models;
+
     public class ClientTlsAuthenticationFixture
     {
         private IClientTlsAuthentication _clientTlsAuthentication;

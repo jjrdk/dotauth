@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj" />
+    <ProjectReference Include="..\..\src\SimpleIdentityServer.Common.Dtos\SimpleIdentityServer.Shared.csproj" />
   </ItemGroup>
 
 </Project>

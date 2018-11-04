@@ -17,7 +17,6 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Core.Api.UserInfo;
     using Core.Errors;
     using Core.Exceptions;
-    using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Primitives;
     using System;

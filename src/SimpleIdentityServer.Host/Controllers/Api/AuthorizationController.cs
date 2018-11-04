@@ -15,13 +15,12 @@
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Common.Dtos.Responses;
     using Core.Api.Authorization;
-    using Core.Common.DTOs.Requests;
-    using Core.Common.Serializers;
     using Core.Errors;
     using Core.Exceptions;
     using Core.JwtToken;
@@ -33,6 +32,9 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Mvc;
     using Parsers;
+    using Shared.Requests;
+    using Shared.Responses;
+    using Shared.Serializers;
     using SimpleIdentityServer.Core;
 
     [Route(Core.Constants.EndPoints.Authorization)]
@@ -72,7 +74,9 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             var originUrl = this.GetOriginUrl();
             var sessionId = GetSessionId();
             var serializer = new ParamSerializer();
-            var authorizationRequest = serializer.Deserialize<AuthorizationRequest>(query);
+            var authorizationRequest =
+                serializer.Deserialize<AuthorizationRequest>(query.Select(x =>
+                    new KeyValuePair<string, string[]>(x.Key, x.Value)));
             authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest).ConfigureAwait(false);
             authorizationRequest.OriginUrl = originUrl;
             authorizationRequest.SessionId = sessionId;

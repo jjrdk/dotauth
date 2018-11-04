@@ -1,7 +1,7 @@
 ﻿namespace SimpleIdentityServer.Core.Jwt.Signature
 {
-    using Common;
-    using Common.DTOs.Requests;
+    using Shared;
+    using Shared.Requests;
 
     public interface IJwsParser
     {

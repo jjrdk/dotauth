@@ -20,12 +20,12 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client
 {
-    using Core.Common.DTOs.Responses;
     using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
+    using Shared.Responses;
 
     public class TokenClient : ITokenClient
     {

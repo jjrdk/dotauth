@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Host.Tests.Stores
 {
+    using Shared;
+    using Shared.Models;
+
     public static class DefaultStores
     {
         public static List<Consent> Consents()
@@ -29,7 +30,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                 new Consent
                 {
                     Id = "1",
-                    Client = new Core.Common.Models.Client
+                    Client = new Client
                     {
                         ClientId = "authcode_client"
                     },
@@ -52,7 +53,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                 new Consent
                 {
                     Id = "2",
-                    Client = new Core.Common.Models.Client
+                    Client = new Client
                     {
                         ClientId = "implicit_client"
                     },
@@ -75,7 +76,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                 new Consent
                 {
                     Id = "3",
-                    Client = new Core.Common.Models.Client
+                    Client = new Client
                     {
                         ClientId = "hybrid_client"
                     },
@@ -98,7 +99,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                 new Consent
                 {
                     Id = "4",
-                    Client = new Core.Common.Models.Client
+                    Client = new Client
                     {
                         ClientId = "pkce_client"
                     },
@@ -177,11 +178,11 @@ namespace SimpleIdentityServer.Host.Tests.Stores
             };
         }
 
-        public static List<Core.Common.Models.Client> Clients(SharedContext sharedCtx)
+        public static List<Client> Clients(SharedContext sharedCtx)
         {
-            return new List<Core.Common.Models.Client>
+            return new List<Client>
             {
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "client",
                     ClientName = "client",
@@ -238,7 +239,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         "https://localhost:4200/callback"
                     }
                 },
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "client_userinfo_sig_rs256",
                     ClientName = "client_userinfo_sig_rs256",
@@ -289,7 +290,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     ApplicationType = ApplicationTypes.web,
                     RedirectionUrls = new List<string> { "https://localhost:4200/callback" }
                 },
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "client_userinfo_enc_rsa15",
                     ClientName = "client_userinfo_enc_rsa15",
@@ -342,7 +343,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     ApplicationType = ApplicationTypes.web,
                     RedirectionUrls = new List<string> { "https://localhost:4200/callback" }
                 },
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "clientWithWrongResponseType",
                     ClientName = "clientWithWrongResponseType",
@@ -390,7 +391,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     ApplicationType = ApplicationTypes.web,
                     RedirectionUrls = new List<string> { "https://localhost:4200/callback" }
                 },
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "clientCredentials",
                     ClientName = "clientCredentials",
@@ -426,7 +427,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     ApplicationType = ApplicationTypes.web,
                     RedirectionUrls = new List<string> { "https://localhost:4200/callback" }
                 },
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "basic_client",
                     ClientName = "basic_client",
@@ -461,7 +462,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     ApplicationType = ApplicationTypes.web,
                     RedirectionUrls = new List<string> { "https://localhost:4200/callback" }
                 },
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "post_client",
                     ClientName = "post_client",
@@ -496,7 +497,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     ApplicationType = ApplicationTypes.web,
                     RedirectionUrls = new List<string> { "https://localhost:4200/callback" }
                 },
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "jwt_client",
                     ClientName = "jwt_client",
@@ -536,7 +537,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         sharedCtx.ModelEncryptionKey
                     }
                 },
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "private_key_client",
                     ClientName = "private_key_client",
@@ -572,7 +573,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     RedirectionUrls = new List<string> { "https://localhost:4200/callback" },
                     JwksUri = "http://localhost:5000/jwks_client"
                 },
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "authcode_client",
                     ClientName = "authcode_client",
@@ -613,7 +614,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     ApplicationType = ApplicationTypes.web,
                     RedirectionUrls = new List<string> { "http://localhost:5000/callback" }
                 },
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "incomplete_authcode_client",
                     ClientName = "incomplete_authcode_client",
@@ -652,7 +653,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     ApplicationType = ApplicationTypes.web,
                     RedirectionUrls = new List<string> { "http://localhost:5000/callback" }
                 },
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "implicit_client",
                     ClientName = "implicit_client",
@@ -692,7 +693,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     ApplicationType = ApplicationTypes.web,
                     RedirectionUrls = new List<string> { "http://localhost:5000/callback" }
                 },
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "pkce_client",
                     ClientName = "pkce_client",
@@ -734,7 +735,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     RedirectionUrls = new List<string> { "http://localhost:5000/callback" },
                     RequirePkce = true
                 },
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "hybrid_client",
                     ClientName = "hybrid_client",
@@ -777,7 +778,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     RedirectionUrls = new List<string> { "http://localhost:5000/callback" },
                 },
                 // Certificate test client.
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "certificate_client",
                     ClientName = "Certificate test client",
@@ -816,7 +817,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     ApplicationType = ApplicationTypes.native
                 },
                 // Client credentials + stateless access token.
-                new Core.Common.Models.Client
+                new Client
                 {
                     ClientId = "stateless_client",
                     ClientName = "Stateless client",

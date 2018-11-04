@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Uma.Client.Policy;
@@ -14,6 +13,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 {
     using Client.Configuration;
     using Client.Permission;
+    using Shared;
     using SimpleIdentityServer.Client;
 
     public class TokenFixture : IClassFixture<TestUmaServerFixture>

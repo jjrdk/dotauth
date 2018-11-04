@@ -14,8 +14,6 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Manager.Core.Errors;
@@ -27,6 +25,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Helpers
 {
+    using Shared;
+    using Shared.Requests;
+
     public interface IJsonWebKeyHelper
     {
         Task<JsonWebKey> GetJsonWebKey(string kid, Uri uri);

@@ -1,8 +1,8 @@
 ﻿namespace SimpleIdentityServer.Core.Jwt.Converter
 {
     using System.Collections.Generic;
-    using Common;
-    using Common.DTOs.Requests;
+    using Shared;
+    using Shared.Requests;
 
     public interface IJsonWebKeyConverter
     {

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
@@ -28,6 +27,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     using Logging;
+    using Shared.Models;
 
     public sealed class GetTokenByRefreshTokenGrantTypeAction : IGetTokenByRefreshTokenGrantTypeAction
     {

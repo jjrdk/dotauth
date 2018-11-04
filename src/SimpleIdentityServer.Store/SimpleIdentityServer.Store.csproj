@@ -9,7 +9,6 @@
   </PropertyGroup>  
 
   <ItemGroup>
-    <ProjectReference Include="..\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj" />
   </ItemGroup>
 

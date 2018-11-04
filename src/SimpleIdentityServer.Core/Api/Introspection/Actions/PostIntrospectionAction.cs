@@ -13,9 +13,6 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
@@ -30,6 +27,8 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 {
     using Logging;
+    using Shared;
+    using Shared.Models;
 
     public class PostIntrospectionAction : IPostIntrospectionAction
     {

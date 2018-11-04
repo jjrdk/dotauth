@@ -2,10 +2,9 @@
 {
     using System;
     using System.Threading.Tasks;
-
-    using Common.DTOs;
     using System.Collections.Generic;
     using System.Security.Claims;
+    using Shared.DTOs;
 
     public interface ISubjectBuilder
     {

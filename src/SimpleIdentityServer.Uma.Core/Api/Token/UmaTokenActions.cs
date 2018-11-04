@@ -1,5 +1,4 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Uma.Core.Parameters;
+﻿using SimpleIdentityServer.Uma.Core.Parameters;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -20,9 +19,9 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
     using Stores;
     using System;
     using System.Collections.Generic;
-    using System.Security.Claims;
     using System.Text;
     using Logging;
+    using Shared.Models;
 
     internal sealed class UmaTokenActions : IUmaTokenActions
     {

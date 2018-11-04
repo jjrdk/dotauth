@@ -1,5 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
@@ -13,6 +12,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
+    using Shared.Models;
+
     public sealed class LocalOpenIdUserAuthenticationActionFixture
     {
         private Mock<IResourceOwnerAuthenticateHelper> _resourceOwnerAuthenticateHelperStub;

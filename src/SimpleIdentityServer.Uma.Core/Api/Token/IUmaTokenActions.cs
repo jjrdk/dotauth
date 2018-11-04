@@ -4,7 +4,7 @@
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using Parameters;
-    using SimpleIdentityServer.Core.Common.Models;
+    using Shared.Models;
 
     public interface IUmaTokenActions
     {

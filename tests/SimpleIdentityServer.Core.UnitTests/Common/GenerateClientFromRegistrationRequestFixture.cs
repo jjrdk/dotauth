@@ -14,8 +14,6 @@
 
 using Moq;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
@@ -26,6 +24,10 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Common
 {
+    using Shared;
+    using Shared.Models;
+    using Shared.Requests;
+
     public class GenerateClientFromRegistrationRequestFixture
     {
         private Mock<IRegistrationParameterValidator> _registrationParameterValidatorFake;

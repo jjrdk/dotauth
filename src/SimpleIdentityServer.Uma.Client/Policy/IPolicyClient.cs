@@ -2,8 +2,8 @@
 {
     using System.Threading.Tasks;
     using Common.DTOs;
-    using Core.Common;
     using Results;
+    using Shared;
 
     public interface IPolicyClient
     {

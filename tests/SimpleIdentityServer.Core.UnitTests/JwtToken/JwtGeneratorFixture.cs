@@ -13,9 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -37,7 +34,10 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
-    using Client = Client;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Client = Shared.Models.Client;
 
     public class JwtGeneratorFixture
     {

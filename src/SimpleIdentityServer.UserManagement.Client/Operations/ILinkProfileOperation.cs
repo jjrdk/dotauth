@@ -2,7 +2,7 @@
 {
     using System.Threading.Tasks;
     using Common.Requests;
-    using Core.Common;
+    using Shared;
 
     public interface ILinkProfileOperation
     {

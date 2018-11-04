@@ -9,8 +9,6 @@ using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Authenticate.SMS.ViewModels;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Profile;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Services;
@@ -27,9 +25,11 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 {
-    using Core.Common;
     using Core.WebSite.User.Actions;
     using Logging;
+    using Shared;
+    using Shared.Models;
+    using Shared.Requests;
 
     [Area(Constants.AMR)]
     public class AuthenticateController : BaseAuthenticateController

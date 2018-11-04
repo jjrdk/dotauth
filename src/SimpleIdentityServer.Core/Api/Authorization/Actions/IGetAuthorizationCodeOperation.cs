@@ -2,9 +2,9 @@
 {
     using System.Security.Principal;
     using System.Threading.Tasks;
-    using Core.Common.Models;
     using Parameters;
     using Results;
+    using Shared.Models;
 
     public interface IGetAuthorizationCodeOperation
     {

@@ -1,6 +1,4 @@
-﻿using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Store;
+﻿using SimpleIdentityServer.Store;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -8,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
+    using Jwt.Extensions;
+    using Shared.Repositories;
+
     public class RotateJsonWebKeysOperation : IRotateJsonWebKeysOperation
     {
         private readonly IJsonWebKeyRepository _jsonWebKeyRepository;

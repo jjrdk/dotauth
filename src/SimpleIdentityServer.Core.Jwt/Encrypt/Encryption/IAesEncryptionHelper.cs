@@ -1,6 +1,6 @@
 ﻿namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
 {
-    using Common;
+    using Shared;
 
     public interface IAesEncryptionHelper
     {

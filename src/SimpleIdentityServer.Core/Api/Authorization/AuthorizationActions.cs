@@ -26,9 +26,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Authorization
 {
-    using Core.Common;
     using Logging;
-    using SimpleIdentityServer.Common.Dtos.Events.OAuth;
+    using Shared;
+    using Shared.Events.OAuth;
 
     public class AuthorizationActions : IAuthorizationActions
     {

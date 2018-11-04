@@ -2,7 +2,7 @@
 {
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Common.Models;
+    using Shared.Models;
 
     public interface IGetUserOperation
     {

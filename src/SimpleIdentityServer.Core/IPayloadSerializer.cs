@@ -1,10 +1,10 @@
 ﻿namespace SimpleIdentityServer.Core
 {
     using System.Net.Http.Headers;
-    using Common.DTOs.Responses;
-    using Common.Models;
     using Parameters;
     using Results;
+    using Shared.Models;
+    using Shared.Responses;
 
     public interface IPayloadSerializer
     {

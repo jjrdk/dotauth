@@ -17,9 +17,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Client;
     using Client.Builders;
     using Client.Operations;
-    using Core.Common;
-    using Core.Common.DTOs.Requests;
-    using Core.Common.DTOs.Responses;
     using Core.Jwt;
     using Core.Jwt.Encrypt;
     using Core.Jwt.Signature;
@@ -28,6 +25,9 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Newtonsoft.Json;
     using System;
     using System.Threading.Tasks;
+    using Shared;
+    using Shared.Requests;
+    using Shared.Responses;
     using Xunit;
     using TokenRequest = Client.TokenRequest;
 

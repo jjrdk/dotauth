@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
@@ -24,7 +23,6 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Uma.Core.Policies
 {
     using SimpleIdentityServer.Core;
-    using SimpleIdentityServer.Core.Jwt;
     using Constants = Core.Constants;
 
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy

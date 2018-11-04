@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Discovery
@@ -21,8 +20,9 @@ namespace SimpleIdentityServer.Core.Api.Discovery
     using System.Collections.Generic;
     using System.Linq;
     using Authorization;
-    using Common.Models;
-    using Common.Repositories;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Shared.Responses;
 
     public class DiscoveryActions : IDiscoveryActions
     {

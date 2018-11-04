@@ -9,7 +9,6 @@ using SimpleIdentityServer.Authenticate.Basic.ViewModels;
 using SimpleIdentityServer.Authenticate.LoginPassword.ViewModels;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Profile;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
@@ -27,10 +26,10 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
 {
-    using System.Collections.Generic;
-    using Core.Common;
     using Core.WebSite.User.Actions;
     using Logging;
+    using Shared;
+    using Shared.Requests;
 
     [Area(Constants.AMR)]
     public class AuthenticateController : BaseAuthenticateController

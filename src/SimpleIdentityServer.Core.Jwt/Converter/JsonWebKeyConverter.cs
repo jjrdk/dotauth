@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Exceptions;
 using SimpleIdentityServer.Core.Jwt.Serializer;
 using System;
@@ -27,6 +24,10 @@ using System.Xml.Serialization;
 
 namespace SimpleIdentityServer.Core.Jwt.Converter
 {
+    using Extensions;
+    using Shared;
+    using Shared.Requests;
+
     public class JsonWebKeyConverter : IJsonWebKeyConverter
     {
         public IEnumerable<JsonWebKey> ExtractSerializedKeys(JsonWebKeySet jsonWebKeySet)

@@ -1,10 +1,11 @@
-﻿using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Exceptions;
+﻿using SimpleIdentityServer.Core.Exceptions;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Profile.Actions
 {
+    using Shared.Repositories;
+
     internal sealed class UnlinkProfileAction : IUnlinkProfileAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

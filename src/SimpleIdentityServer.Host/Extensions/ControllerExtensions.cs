@@ -14,7 +14,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Host.Parsers;
 using System;
@@ -27,6 +26,8 @@ using ResponseMode = SimpleIdentityServer.Core.Parameters.ResponseMode;
 
 namespace SimpleIdentityServer.Host.Extensions
 {
+    using Shared.Requests;
+
     public static class ControllerExtensions
     {
         public static string GetOriginUrl(this Controller controller)

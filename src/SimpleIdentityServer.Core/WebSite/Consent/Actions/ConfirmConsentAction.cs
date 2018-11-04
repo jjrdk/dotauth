@@ -14,8 +14,6 @@
 
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -32,6 +30,8 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
     using Logging;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public class ConfirmConsentAction : IConfirmConsentAction
     {
@@ -100,7 +100,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
 
             var subject = claimsPrincipal.GetSubject();
-            Common.Models.Consent assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
+            Consent assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
             // Insert a new consent.
             if (assignedConsent == null)
             {
@@ -109,7 +109,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     claimsParameter.IsAnyUserInfoClaimParameter())
                 {
                     // A consent can be given to a set of claims
-                    assignedConsent = new Common.Models.Consent
+                    assignedConsent = new Consent
                     {
                         Id = Guid.NewGuid().ToString(),
                         Client = client,
@@ -120,7 +120,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                 else
                 {
                     // A consent can be given to a set of scopes
-                    assignedConsent = new Common.Models.Consent
+                    assignedConsent = new Consent
                     {
                         Id = Guid.NewGuid().ToString(),
                         Client = client,

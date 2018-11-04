@@ -1,7 +1,5 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using System;
 using System.Threading.Tasks;
@@ -10,6 +8,8 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 {
     using Logging;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public sealed class AuthenticateClientFixture
     {

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -22,7 +21,6 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Collections.Generic;
@@ -33,6 +31,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Api.Authorization.Common
 {
     using Logging;
+    using Shared.Models;
 
     public class ProcessAuthorizationRequest : IProcessAuthorizationRequest
     {

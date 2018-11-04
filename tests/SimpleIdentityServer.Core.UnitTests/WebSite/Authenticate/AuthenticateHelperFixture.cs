@@ -1,6 +1,5 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
@@ -15,6 +14,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     public sealed class AuthenticateHelperFixture
     {
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
@@ -40,7 +42,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             // ARRANGE
             InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
-                .Returns(Task.FromResult((Core.Common.Models.Client)null));
+                .Returns(Task.FromResult((Client)null));
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = "client_id"
@@ -69,7 +71,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
             var claims = new List<Claim>();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
-                .Returns(Task.FromResult(new Core.Common.Models.Client()));
+                .Returns(Task.FromResult(new Client()));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirection())
                 .Returns(actionResult);
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
@@ -101,14 +103,14 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 RedirectInstruction = new RedirectInstruction()
             };
-            var consent = new Core.Common.Models.Consent();
+            var consent = new Consent();
             var authorizationParameter = new AuthorizationParameter
             {
                 ResponseMode = ResponseMode.form_post
             };
             var claims = new List<Claim>();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
-                .Returns(Task.FromResult(new Core.Common.Models.Client()));
+                .Returns(Task.FromResult(new Client()));
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(prompts);
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
@@ -145,13 +147,13 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
             var claims = new List<Claim>();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
-                .Returns(Task.FromResult(new Core.Common.Models.Client()));
+                .Returns(Task.FromResult(new Client()));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirection())
                 .Returns(actionResult);
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(prompts);
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
-                It.IsAny<AuthorizationParameter>())).Returns(() => Task.FromResult((Core.Common.Models.Consent)null));
+                It.IsAny<AuthorizationParameter>())).Returns(() => Task.FromResult((Consent)null));
 
             // ACT
             actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,

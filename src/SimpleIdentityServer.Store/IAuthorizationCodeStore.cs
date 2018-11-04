@@ -1,8 +1,9 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Store
 {
+    using Shared.Models;
+
     public interface IAuthorizationCodeStore
     {
         Task<AuthorizationCode> GetAuthorizationCode(string code);

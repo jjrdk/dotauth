@@ -1,6 +1,4 @@
-﻿using SimpleIdentityServer.Core.Common.Parameters;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Extensions;
+﻿using SimpleIdentityServer.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,20 +6,23 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
-    using Common.Results;
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Repositories;
+    using Shared.Results;
 
     internal sealed class DefaultClientRepository : IClientRepository, IClientStore
     {
-        private readonly ICollection<Common.Models.Client> _clients;
+        private readonly ICollection<Client> _clients;
 
-        public DefaultClientRepository(IReadOnlyCollection<Common.Models.Client> clients)
+        public DefaultClientRepository(IReadOnlyCollection<Client> clients)
         {
             _clients = clients == null
-                ? new List<Common.Models.Client>()
+                ? new List<Client>()
                 : clients.ToList();
         }
 
-        public Task<bool> DeleteAsync(Common.Models.Client newClient)
+        public Task<bool> DeleteAsync(Client newClient)
         {
             if (newClient == null)
             {
@@ -38,12 +39,12 @@ namespace SimpleIdentityServer.Core.Repositories
             return Task.FromResult(true);
         }
 
-        public Task<IEnumerable<Common.Models.Client>> GetAllAsync()
+        public Task<IEnumerable<Client>> GetAllAsync()
         {
-            return Task.FromResult((IEnumerable<Common.Models.Client>)_clients.Select(c => c.Copy()));
+            return Task.FromResult((IEnumerable<Client>)_clients.Select(c => c.Copy()));
         }
 
-        public Task<Common.Models.Client> GetById(string clientId)
+        public Task<Client> GetById(string clientId)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -53,13 +54,13 @@ namespace SimpleIdentityServer.Core.Repositories
             var res = _clients.FirstOrDefault(c => c.ClientId == clientId);
             if (res == null)
             {
-                return Task.FromResult((Common.Models.Client)null);
+                return Task.FromResult((Client)null);
             }
             
             return Task.FromResult(res.Copy());
         }
 
-        public Task<bool> InsertAsync(Common.Models.Client newClient)
+        public Task<bool> InsertAsync(Client newClient)
         {
             if (newClient == null)
             {
@@ -85,7 +86,7 @@ namespace SimpleIdentityServer.Core.Repositories
             }
 
 
-            IEnumerable<Common.Models.Client> result = _clients;
+            IEnumerable<Client> result = _clients;
             if (parameter.ClientIds != null && parameter.ClientIds.Any())
             {
                 result = result.Where(c => parameter.ClientIds.Any(i => c.ClientId.Contains(i)));
@@ -98,7 +99,7 @@ namespace SimpleIdentityServer.Core.Repositories
 
             if (parameter.ClientTypes != null && parameter.ClientTypes.Any())
             {
-                var clientTypes = parameter.ClientTypes.Select(t => (Common.Models.ApplicationTypes)t);
+                var clientTypes = parameter.ClientTypes.Select(t => (ApplicationTypes)t);
                 result = result.Where(c => clientTypes.Contains(c.ApplicationType));
             }
 
@@ -138,7 +139,7 @@ namespace SimpleIdentityServer.Core.Repositories
             });
         }
 
-        public Task<bool> UpdateAsync(Common.Models.Client newClient)
+        public Task<bool> UpdateAsync(Client newClient)
         {
             if (newClient == null)
             {

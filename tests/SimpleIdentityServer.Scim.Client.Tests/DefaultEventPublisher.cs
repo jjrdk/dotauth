@@ -1,7 +1,6 @@
 ﻿namespace SimpleIdentityServer.Scim.Client.Tests
 {
-    using Common.Dtos;
-    using SimpleIdentityServer.Core.Common;
+    using Shared;
 
     public class DefaultEventPublisher : IEventPublisher
     {

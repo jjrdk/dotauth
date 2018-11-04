@@ -1,8 +1,8 @@
 ﻿namespace SimpleIdentityServer.Core.Helpers
 {
     using System.Collections.Generic;
-    using Common.Models;
     using Parameters;
+    using Shared.Models;
 
     public interface IParameterParserHelper
     {

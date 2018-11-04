@@ -1,8 +1,5 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Api.Profile.Actions;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Parameters;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using System;
 using System.Linq;
@@ -12,6 +9,9 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
 {
     using System.Threading;
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Repositories;
 
     public class GetUserProfilesActionFixture
     {

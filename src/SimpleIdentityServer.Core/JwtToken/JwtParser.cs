@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
@@ -27,6 +24,10 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.JwtToken
 {
     using System.Net.Http;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Shared.Requests;
 
     public class JwtParser : IJwtParser
     {
@@ -196,7 +197,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             return jsonWebKey;
         }
         
-        private async Task<JsonWebKey> GetJsonWebKeyFromClient(Common.Models.Client client, string kid)
+        private async Task<JsonWebKey> GetJsonWebKeyFromClient(Client client, string kid)
         {
             JsonWebKey result = null;
             // Fetch the json web key from the jwks_uri

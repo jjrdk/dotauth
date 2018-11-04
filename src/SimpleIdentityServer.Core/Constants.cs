@@ -13,12 +13,13 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Api.Authorization;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core
 {
+    using Shared.Models;
+
     public static class Constants
     {
         public const string SESSION_ID = "session_id";

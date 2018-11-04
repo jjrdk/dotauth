@@ -1,6 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
 using System;
 using System.Collections.Generic;
@@ -10,6 +8,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Translation
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     public sealed class TranslationManagerFixture
     {
         private OAuthConfigurationOptions _simpleIdentityServerConfiguratorFake;
@@ -35,7 +36,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
             {
                 "translation_code"
             };
-            var translation = new Core.Common.Models.Translation
+            var translation = new Translation
             {
                 Code = "code",
                 Value = "value"
@@ -64,7 +65,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
 
             _translationRepositoryFake.Setup(t => t.GetAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns(Task.FromResult((Core.Common.Models.Translation)null)); 
+                .Returns(Task.FromResult((Translation)null)); 
 
             // ACT
             var result = await _translationManager.GetTranslationsAsync(string.Empty, translationCodes).ConfigureAwait(false);

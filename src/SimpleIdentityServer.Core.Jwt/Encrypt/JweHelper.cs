@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt
 {
+    using Shared;
+
     public class JweHelper : IJweHelper
     {
         private readonly Dictionary<JweEnc, IEncryption> _mappingJweEncToKeySize;

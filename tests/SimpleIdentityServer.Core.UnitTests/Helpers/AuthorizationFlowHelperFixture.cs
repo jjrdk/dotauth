@@ -1,5 +1,4 @@
 ﻿using SimpleIdentityServer.Core.Api.Authorization;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
@@ -8,6 +7,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
+    using Shared.Models;
+
     public sealed class AuthorizationFlowHelperFixture
     {
         private IAuthorizationFlowHelper _authorizationFlowHelper;

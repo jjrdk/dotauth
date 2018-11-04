@@ -19,6 +19,8 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Validators
 {
+    using Shared.Models;
+
     internal class ScopeValidator : IScopeValidator
     {
         private readonly IParameterParserHelper _parameterParserHelper;
@@ -28,7 +30,7 @@ namespace SimpleIdentityServer.Core.Validators
             _parameterParserHelper = parameterParserHelper;
         }
 
-        public ScopeValidationResult Check(string scope, Common.Models.Client client)
+        public ScopeValidationResult Check(string scope, Client client)
         {
             var emptyList = new List<string>();
             var scopes = _parameterParserHelper.ParseScopes(scope);

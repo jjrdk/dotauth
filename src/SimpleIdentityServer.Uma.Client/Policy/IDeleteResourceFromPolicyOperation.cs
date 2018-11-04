@@ -1,7 +1,7 @@
 ﻿namespace SimpleIdentityServer.Uma.Client.Policy
 {
     using System.Threading.Tasks;
-    using Core.Common;
+    using Shared;
 
     public interface IDeleteResourceFromPolicyOperation
     {

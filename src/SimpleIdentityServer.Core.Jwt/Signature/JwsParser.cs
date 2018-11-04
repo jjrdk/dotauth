@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using System;
@@ -22,7 +20,8 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Jwt.Signature
 {
-    using Newtonsoft.Json;
+    using Shared;
+    using Shared.Requests;
 
     public class JwsParser : IJwsParser
     {

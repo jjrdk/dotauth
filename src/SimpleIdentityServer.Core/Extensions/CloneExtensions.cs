@@ -1,10 +1,12 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
 namespace SimpleIdentityServer.Core.Extensions
 {
+    using Shared;
+    using Shared.Models;
+
     internal static class CloneExtensions
     {
         public static ResourceOwnerProfile Copy(this ResourceOwnerProfile profile)
@@ -43,9 +45,9 @@ namespace SimpleIdentityServer.Core.Extensions
             };
         }
 
-        public static Common.Models.Translation Copy(this Common.Models.Translation translation)
+        public static Translation Copy(this Translation translation)
         {
-            return new Common.Models.Translation
+            return new Translation
             {
                 Code = translation.Code,
                 LanguageTag = translation.LanguageTag,
@@ -91,7 +93,7 @@ namespace SimpleIdentityServer.Core.Extensions
                 IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
                 IdTokenSignedResponseAlg = client.IdTokenSignedResponseAlg,
                 InitiateLoginUri = client.InitiateLoginUri,
-                JsonWebKeys = client.JsonWebKeys == null ? new List<Common.JsonWebKey>() : client.JsonWebKeys.Select(j => j.Copy()).ToList(),
+                JsonWebKeys = client.JsonWebKeys == null ? new List<JsonWebKey>() : client.JsonWebKeys.Select(j => j.Copy()).ToList(),
                 JwksUri = client.JwksUri,
                 LogoUri = client.LogoUri,
                 PolicyUri = client.PolicyUri,
@@ -143,12 +145,12 @@ namespace SimpleIdentityServer.Core.Extensions
             };
         }
 
-        public static Common.JsonWebKey Copy(this Common.JsonWebKey jsonWebKey)
+        public static JsonWebKey Copy(this JsonWebKey jsonWebKey)
         {
-            return new Common.JsonWebKey
+            return new JsonWebKey
             {
                 Alg = jsonWebKey.Alg,
-                KeyOps = jsonWebKey.KeyOps == null ? new Common.KeyOperations[0] : jsonWebKey.KeyOps.ToList().ToArray(),
+                KeyOps = jsonWebKey.KeyOps == null ? new KeyOperations[0] : jsonWebKey.KeyOps.ToList().ToArray(),
                 Kid = jsonWebKey.Kid,
                 Kty = jsonWebKey.Kty,
                 SerializedKey = jsonWebKey.SerializedKey,

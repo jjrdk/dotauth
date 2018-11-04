@@ -14,13 +14,14 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Common.Models;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Manager.Common.Requests
 {
+    using Shared.Models;
+    using Shared.Requests;
+
     [DataContract]
     public class UpdateClientRequest
     {

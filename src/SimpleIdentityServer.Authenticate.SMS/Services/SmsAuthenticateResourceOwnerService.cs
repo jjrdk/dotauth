@@ -1,12 +1,13 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Services;
+﻿using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Services
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     internal sealed class SmsAuthenticateResourceOwnerService : IAuthenticateResourceOwnerService
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

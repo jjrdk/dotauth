@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Uma.Client.Policy
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using Results;
-    using SimpleIdentityServer.Common.Dtos.Responses;
+    using Shared.Responses;
 
     internal class GetPoliciesOperation : IGetPoliciesOperation
     {

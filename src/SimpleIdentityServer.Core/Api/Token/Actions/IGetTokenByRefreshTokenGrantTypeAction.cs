@@ -3,8 +3,8 @@
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
-    using Common.Models;
     using Parameters;
+    using Shared.Models;
 
     public interface IGetTokenByRefreshTokenGrantTypeAction
     {

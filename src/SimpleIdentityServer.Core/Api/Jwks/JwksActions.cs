@@ -15,10 +15,11 @@
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
 
 namespace SimpleIdentityServer.Core.Api.Jwks
 {
+    using Shared.Requests;
+
     public class JwksActions : IJwksActions
     {
         private readonly IGetSetOfPublicKeysUsedToValidateJwsAction _getSetOfPublicKeysUsedToValidateJwsAction;

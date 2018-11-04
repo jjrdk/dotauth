@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using System;
 using System.Collections.Generic;
@@ -24,8 +21,10 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
-    using Common;
     using Logging;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public class AddUserOperation : IAddUserOperation
     {

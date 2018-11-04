@@ -2,8 +2,8 @@
 {
     using System;
     using Core.Models;
-    using SimpleIdentityServer.Core.Common.Models;
     using System.Collections.Generic;
+    using Shared.Models;
 
     public class AuthorizationServerConfiguration
     {

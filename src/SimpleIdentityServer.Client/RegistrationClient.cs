@@ -20,10 +20,11 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client
 {
-    using Core.Common.DTOs.Responses;
     using Newtonsoft.Json;
     using System.Net.Http;
     using System.Net.Http.Headers;
+    using Shared.Requests;
+    using Shared.Responses;
 
     internal class RegistrationClient : IRegistrationClient
     {
@@ -36,7 +37,7 @@ namespace SimpleIdentityServer.Client
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
-        public async Task<GetRegisterClientResult> ResolveAsync(Core.Common.DTOs.Requests.ClientRequest client, string configurationUrl, string accessToken)
+        public async Task<GetRegisterClientResult> ResolveAsync(ClientRequest client, string configurationUrl, string accessToken)
         {
             if (string.IsNullOrWhiteSpace(configurationUrl))
             {

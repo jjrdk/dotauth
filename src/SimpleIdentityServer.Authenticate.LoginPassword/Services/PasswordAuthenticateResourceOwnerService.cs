@@ -1,12 +1,13 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Helpers;
+﻿using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Services;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.LoginPassword.Services
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     internal sealed class PasswordAuthenticateResourceOwnerService : IAuthenticateResourceOwnerService
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

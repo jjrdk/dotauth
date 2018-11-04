@@ -34,9 +34,9 @@ using System.Security.Claims;
 namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
 {
     using SimpleIdentityServer.Client.Operations;
-    using SimpleIdentityServer.Core.Common;
     using Store;
     using System.Net.Http;
+    using Shared;
 
     public class FakeUmaStartup : IStartup
     {

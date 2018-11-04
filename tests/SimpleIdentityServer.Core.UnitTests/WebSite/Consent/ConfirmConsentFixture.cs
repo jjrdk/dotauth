@@ -1,7 +1,5 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
@@ -20,6 +18,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 {
     using System.Threading;
     using Logging;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public sealed class ConfirmConsentFixture
     {
@@ -85,7 +85,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             ICollection<Scope> scopes = new List<Scope>();
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult((Core.Common.Models.Consent)null));
+                .Returns(Task.FromResult((Consent)null));
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
@@ -149,7 +149,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             ICollection<Scope> scopes = new List<Scope>();
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult((Core.Common.Models.Consent)null));
+                .Returns(Task.FromResult((Consent)null));
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
@@ -160,9 +160,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(Task.FromResult(resourceOwner));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
-            Core.Common.Models.Consent insertedConsent = null;
-            _consentRepositoryFake.Setup(co => co.InsertAsync(It.IsAny<Core.Common.Models.Consent>()))
-                .Callback<Core.Common.Models.Consent>(consent => insertedConsent = consent)
+            Consent insertedConsent = null;
+            _consentRepositoryFake.Setup(co => co.InsertAsync(It.IsAny<Consent>()))
+                .Callback<Consent>(consent => insertedConsent = consent)
                 .Returns(Task.FromResult(true));
 
             // ACT
@@ -213,7 +213,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             ICollection<Scope> scopes = new List<Scope>();
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult((Core.Common.Models.Consent)null));
+                .Returns(Task.FromResult((Consent)null));
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
@@ -231,7 +231,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             var result = await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null).ConfigureAwait(false);
 
             // ASSERT
-            _consentRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Core.Common.Models.Consent>()));
+            _consentRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Consent>()));
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl());
             Assert.True(result.RedirectInstruction.ResponseMode == ResponseMode.query);
         }

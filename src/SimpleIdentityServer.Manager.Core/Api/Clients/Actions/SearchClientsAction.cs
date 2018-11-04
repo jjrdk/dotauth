@@ -1,11 +1,11 @@
-﻿using SimpleIdentityServer.Core.Common.Parameters;
-using SimpleIdentityServer.Core.Common.Repositories;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 {
-    using SimpleIdentityServer.Core.Common.Results;
+    using Shared.Parameters;
+    using Shared.Repositories;
+    using Shared.Results;
 
     public interface ISearchClientsAction
     {

@@ -17,9 +17,9 @@ namespace SimpleIdentityServer.Uma.Client.ResourceSet
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Core.Common;
     using Newtonsoft.Json;
-    using SimpleIdentityServer.Common.Dtos.Responses;
+    using Shared;
+    using Shared.Responses;
 
     internal class DeleteResourceSetOperation : IDeleteResourceSetOperation
     {

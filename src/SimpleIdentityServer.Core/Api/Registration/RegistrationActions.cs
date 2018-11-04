@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Api.Registration.Actions;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using System;
@@ -21,8 +20,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Registration
 {
-    using Common;
-    using SimpleIdentityServer.Common.Dtos.Events.OAuth;
+    using Shared;
+    using Shared.Events.OAuth;
+    using Shared.Responses;
 
     public class RegistrationActions : IRegistrationActions
     {

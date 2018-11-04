@@ -32,9 +32,6 @@ namespace SimpleIdentityServer.Core.Jwt
             serviceCollection.AddTransient<IJwsGenerator, JwsGenerator>();
             serviceCollection.AddTransient<ICreateJwsSignature, CreateJwsSignature>();
             serviceCollection.AddTransient<IJwsParser, JwsParser>();
-#if NET461
-            serviceCollection.AddTransient<ICngKeySerializer, CngKeySerializer>();
-#endif
             serviceCollection.AddTransient<IJsonWebKeyConverter, JsonWebKeyConverter>();
             return serviceCollection;
         }

@@ -3,9 +3,10 @@
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Shared.Models;
 
     public interface IGetConsentsOperation
     {
-        Task<IEnumerable<Common.Models.Consent>> Execute(ClaimsPrincipal claimsPrincipal);
+        Task<IEnumerable<Consent>> Execute(ClaimsPrincipal claimsPrincipal);
     }
 }

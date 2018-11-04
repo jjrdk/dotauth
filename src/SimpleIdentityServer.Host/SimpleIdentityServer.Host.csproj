@@ -31,7 +31,6 @@
 
     <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj" />
   </ItemGroup>
 
   <ItemGroup>

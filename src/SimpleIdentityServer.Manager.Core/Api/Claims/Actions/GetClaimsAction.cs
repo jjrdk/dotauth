@@ -1,10 +1,11 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Claims.Actions
 {
+    using Shared.Models;
+    using Shared.Repositories;
+
     public interface IGetClaimsAction
     {
         Task<IEnumerable<ClaimAggregate>> Execute();

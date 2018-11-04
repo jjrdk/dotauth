@@ -1,7 +1,6 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Api.Token.Actions;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
 using System;
@@ -13,11 +12,12 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
     using Core.Authenticate;
-    using Core.Common;
     using Core.Helpers;
     using Store;
     using System.Collections.Generic;
     using Logging;
+    using Shared;
+    using Shared.Models;
 
     public sealed class TokenActionsFixture
     {

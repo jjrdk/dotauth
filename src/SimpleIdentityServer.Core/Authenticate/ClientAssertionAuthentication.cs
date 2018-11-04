@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt.Signature;
@@ -24,6 +22,10 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
+
     public class ClientAssertionAuthentication : IClientAssertionAuthentication
     {
         private readonly IJwsParser _jwsParser;
@@ -151,7 +153,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             var jwsSubject = jwsPayload.GetStringClaim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject);
             var jwsAudiences = jwsPayload.Audiences;
             var expirationDateTime = jwsPayload.ExpirationTime.ConvertFromUnixTimestamp();
-            Common.Models.Client client = null;
+            Client client = null;
             // 1. Check the issuer is correct.
             if (!string.IsNullOrWhiteSpace(jwsIssuer))
             {
