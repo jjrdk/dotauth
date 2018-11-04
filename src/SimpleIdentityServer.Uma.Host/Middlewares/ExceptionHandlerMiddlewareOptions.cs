@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Logging;
-
 namespace SimpleIdentityServer.Uma.Host.Middlewares
 {
+    using Logging;
+
     public class ExceptionHandlerMiddlewareOptions
     {
         public IUmaServerEventSource UmaEventSource { get; set; }

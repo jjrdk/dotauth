@@ -1,7 +1,5 @@
-﻿namespace SimpleIdentityServer.Uma.Logging
+﻿namespace SimpleIdentityServer.Logging
 {
-    using SimpleIdentityServer.Logging;
-
     public interface IUmaServerEventSource : IEventSource
     {
         void StartGettingAuthorization(string request);

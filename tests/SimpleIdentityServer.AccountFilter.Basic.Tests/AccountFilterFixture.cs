@@ -1,6 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.AccountFilter.Basic.Aggregates;
-using SimpleIdentityServer.AccountFilter.Basic.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +9,12 @@ using Xunit;
 namespace SimpleIdentityServer.AccountFilter.Basic.Tests
 {
     using Core.Common;
+    using Core.Common.AccountFiltering;
+    using Core.Common.Repositories;
 
     public class AccountFilterFixture
     {
-        private Mock<IFilterRepository> _filterRepositoryStub;
+        private Mock<IFilterStore> _filterRepositoryStub;
         private IAccountFilter _accountFilter;
 
         [Fact]
@@ -32,13 +32,13 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            IEnumerable<FilterAggregate> filters = new List<FilterAggregate>
+            IEnumerable<Filter> filters = new List<Filter>
             {
-                new FilterAggregate
+                new Filter
                 {
-                    Rules = new List<FilterAggregateRule>
+                    Rules = new List<FilterRule>
                     {
-                        new FilterAggregateRule
+                        new FilterRule
                         {
                             ClaimKey = "key",
                             ClaimValue = "val",
@@ -67,13 +67,13 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            IEnumerable<FilterAggregate> filters = new List<FilterAggregate>
+            IEnumerable<Filter> filters = new List<Filter>
             {
-                new FilterAggregate
+                new Filter
                 {
-                    Rules = new List<FilterAggregateRule>
+                    Rules = new List<FilterRule>
                     {
-                        new FilterAggregateRule
+                        new FilterRule
                         {
                             ClaimKey = "key",
                             ClaimValue = "val",
@@ -102,13 +102,13 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            IEnumerable<FilterAggregate> filters = new List<FilterAggregate>
+            IEnumerable<Filter> filters = new List<Filter>
             {
-                new FilterAggregate
+                new Filter
                 {
-                    Rules = new List<FilterAggregateRule>
+                    Rules = new List<FilterRule>
                     {
-                        new FilterAggregateRule
+                        new FilterRule
                         {
                             ClaimKey = "key",
                             ClaimValue = "val",
@@ -137,13 +137,13 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            IEnumerable<FilterAggregate> filters = new List<FilterAggregate>
+            IEnumerable<Filter> filters = new List<Filter>
             {
-                new FilterAggregate
+                new Filter
                 {
-                    Rules = new List<FilterAggregateRule>
+                    Rules = new List<FilterRule>
                     {
-                        new FilterAggregateRule
+                        new FilterRule
                         {
                             ClaimKey = "key",
                             ClaimValue = "^[0-9]{1}$",
@@ -172,13 +172,13 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            IEnumerable<FilterAggregate> filters = new List<FilterAggregate>
+            IEnumerable<Filter> filters = new List<Filter>
             {
-                new FilterAggregate
+                new Filter
                 {
-                    Rules = new List<FilterAggregateRule>
+                    Rules = new List<FilterRule>
                     {
-                        new FilterAggregateRule
+                        new FilterRule
                         {
                             ClaimKey = "key",
                             ClaimValue = "val",
@@ -205,13 +205,13 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Tests
         {
             // ARRANGE
             InitializeFakeObjects();
-            IEnumerable<FilterAggregate> filters = new List<FilterAggregate>
+            IEnumerable<Filter> filters = new List<Filter>
             {
-                new FilterAggregate
+                new Filter
                 {
-                    Rules = new List<FilterAggregateRule>
+                    Rules = new List<FilterRule>
                     {
-                        new FilterAggregateRule
+                        new FilterRule
                         {
                             ClaimKey = "key",
                             ClaimValue = "val",
@@ -219,11 +219,11 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Tests
                         }
                     }
                 },
-                new FilterAggregate
+                new Filter
                 {
-                    Rules = new List<FilterAggregateRule>
+                    Rules = new List<FilterRule>
                     {
-                        new FilterAggregateRule
+                        new FilterRule
                         {
                             ClaimKey = "key",
                             ClaimValue = "val",
@@ -247,7 +247,7 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Tests
 
         private void InitializeFakeObjects()
         {
-            _filterRepositoryStub = new Mock<IFilterRepository>();
+            _filterRepositoryStub = new Mock<IFilterStore>();
             _accountFilter = new AccountFilter(_filterRepositoryStub.Object);
         }
     }

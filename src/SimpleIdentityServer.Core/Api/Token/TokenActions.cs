@@ -17,7 +17,6 @@ using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
@@ -28,6 +27,7 @@ namespace SimpleIdentityServer.Core.Api.Token
     using Common;
     using Errors;
     using Helpers;
+    using Logging;
     using SimpleIdentityServer.Common.Dtos.Events.OAuth;
     using SimpleIdentityServer.Core.Authenticate;
     using Store;

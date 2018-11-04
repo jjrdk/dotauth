@@ -14,14 +14,14 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Manager.Core.Api.Manage.Actions;
-using SimpleIdentityServer.Manager.Core.Parameters;
-using SimpleIdentityServer.Manager.Core.Results;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Core.Manage
+namespace SimpleIdentityServer.Manager.Core.Api.Manage
 {
+    using System;
+    using System.Threading.Tasks;
+    using Actions;
+    using Parameters;
+    using Results;
+
     public interface IManageActions
     {
         Task<ExportResult> Export();

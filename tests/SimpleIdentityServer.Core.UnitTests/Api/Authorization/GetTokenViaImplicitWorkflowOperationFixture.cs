@@ -12,10 +12,10 @@ using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using Xunit;
 using System.Threading.Tasks;
-using SimpleIdentityServer.OAuth.Logging;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
+    using Logging;
     using Client = Client;
 
     public class GetTokenViaImplicitWorkflowOperationFixture

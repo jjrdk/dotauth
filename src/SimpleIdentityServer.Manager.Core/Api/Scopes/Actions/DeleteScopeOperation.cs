@@ -15,7 +15,6 @@
 #endregion
 
 using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Manager.Logging;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
@@ -23,6 +22,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
 {
+    using Logging;
+
     public interface IDeleteScopeOperation
     {
         Task<bool> Execute(string scopeName);

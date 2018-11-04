@@ -19,7 +19,6 @@ using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -31,6 +30,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
     using System.Collections.Generic;
     using Core.Common;
     using Core.WebSite.User.Actions;
+    using Logging;
 
     [Area(Constants.AMR)]
     public class AuthenticateController : BaseAuthenticateController

@@ -16,7 +16,6 @@
 
 namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 {
-    using Logging;
     using Newtonsoft.Json;
     using SimpleIdentityServer.Core.Common;
     using SimpleIdentityServer.Core.Common.Models;
@@ -29,6 +28,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Logging;
 
     public interface IUpdateClientAction
     {

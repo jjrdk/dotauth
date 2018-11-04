@@ -1,8 +1,8 @@
 ﻿namespace SimpleIdentityServer.UserManagement.Client
 {
     using System.Threading.Tasks;
+    using Common.Requests;
     using Core.Common;
-    using Requests;
     using Results;
 
     public interface IProfileClient

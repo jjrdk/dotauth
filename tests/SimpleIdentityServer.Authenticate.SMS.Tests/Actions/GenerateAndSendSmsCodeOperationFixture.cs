@@ -1,7 +1,6 @@
 ﻿using Moq;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.OpenId.Logging;
 using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Twilio.Client;
 using System;
@@ -10,6 +9,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
 {
+    using Logging;
+
     public class GenerateAndSendSmsCodeOperationFixture
     {
         private const string _message = "Message {0}";

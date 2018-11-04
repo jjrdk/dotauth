@@ -22,7 +22,6 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
@@ -31,6 +30,7 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
     using System.Collections.Generic;
+    using Logging;
 
     public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
     {

@@ -20,7 +20,6 @@ using Newtonsoft.Json;
 using SimpleIdentityServer.Manager.Common.Responses;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
-using SimpleIdentityServer.Manager.Core.Manage;
 using SimpleIdentityServer.Manager.Host.Extensions;
 using System;
 using System.IO;
@@ -31,6 +30,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Host.Controllers
 {
+    using Core.Api.Manage;
+
     [Route(Constants.EndPoints.Manage)]
     public class ManageController : Controller
     {

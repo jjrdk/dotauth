@@ -15,13 +15,14 @@
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
+    using Logging;
+
     public class AuthenticateClient : IAuthenticateClient
     {
         private readonly IClientSecretBasicAuthentication _clientSecretBasicAuthentication;

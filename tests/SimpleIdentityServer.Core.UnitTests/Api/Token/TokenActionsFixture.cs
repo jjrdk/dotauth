@@ -4,7 +4,6 @@ using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
@@ -18,6 +17,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
     using Core.Helpers;
     using Store;
     using System.Collections.Generic;
+    using Logging;
 
     public sealed class TokenActionsFixture
     {

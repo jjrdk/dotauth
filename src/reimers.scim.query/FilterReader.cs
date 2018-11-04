@@ -1,9 +1,9 @@
-namespace reimers.scim.query.tests
+namespace Reimers.Scim.Query
 {
-    using Antlr4.Runtime;
-    using Reimers.Scim.Query;
     using System.IO;
     using System.Linq.Expressions;
+    using Antlr4.Runtime;
+    using reimers.scim.query;
 
     public class FilterReader<T>
     {

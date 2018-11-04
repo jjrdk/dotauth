@@ -14,11 +14,10 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.Logging;
-
-namespace SimpleIdentityServer.Manager.Logging
+namespace SimpleIdentityServer.Logging
 {
+    using Microsoft.Extensions.Logging;
+
     public interface IManagerEventSource : IEventSource
     {		
         #region Events linked to client

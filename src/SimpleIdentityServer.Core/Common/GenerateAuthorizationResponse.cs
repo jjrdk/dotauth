@@ -20,7 +20,6 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Collections.Generic;
@@ -29,6 +28,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Common
 {
+    using Logging;
+
     public class GenerateAuthorizationResponse : IGenerateAuthorizationResponse
     {
         private readonly IAuthorizationCodeStore _authorizationCodeStore;

@@ -21,7 +21,6 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Collections.Generic;
@@ -34,6 +33,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Common
 {
+    using Logging;
     using Client = Client;
 
     public sealed  class GenerateAuthorizationResponseFixture

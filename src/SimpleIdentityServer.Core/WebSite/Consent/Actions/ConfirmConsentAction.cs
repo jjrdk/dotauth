@@ -23,7 +23,6 @@ using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +31,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
+    using Logging;
+
     public class ConfirmConsentAction : IConfirmConsentAction
     {
         private readonly IConsentRepository _consentRepository;

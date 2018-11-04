@@ -26,7 +26,6 @@ using SimpleIdentityServer.Uma.Host.Middlewares;
 using SimpleIdentityServer.Uma.Host.Tests.MiddleWares;
 using SimpleIdentityServer.Uma.Host.Tests.Services;
 using SimpleIdentityServer.Uma.Host.Tests.Stores;
-using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Reflection;

@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.Logging;
-
-namespace SimpleIdentityServer.OpenId.Logging
+﻿namespace SimpleIdentityServer.Logging
 {
+    using Microsoft.Extensions.Logging;
+
     public class OpenIdEventSource : BaseEventSource, IOpenIdEventSource
     {
         private static class Tasks

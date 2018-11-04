@@ -24,7 +24,6 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +32,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Common
 {
+    using Logging;
+
     public class ProcessAuthorizationRequest : IProcessAuthorizationRequest
     {
         private readonly IParameterParserHelper _parameterParserHelper;

@@ -37,7 +37,6 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
-    using System.Security.Cryptography.Algorithms.Extensions;
     using Client = Client;
 
     public class JwtGeneratorFixture

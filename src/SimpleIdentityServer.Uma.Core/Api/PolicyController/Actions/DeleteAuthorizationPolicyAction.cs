@@ -15,12 +15,13 @@
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Repositories;
-using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
+    using Logging;
+
     internal class DeleteAuthorizationPolicyAction : IDeleteAuthorizationPolicyAction
     {
         private readonly IPolicyRepository _policyRepository;

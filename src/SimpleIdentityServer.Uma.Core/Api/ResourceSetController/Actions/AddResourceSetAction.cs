@@ -19,12 +19,13 @@ using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
-using SimpleIdentityServer.Uma.Logging;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
+    using Logging;
+
     internal class AddResourceSetAction : IAddResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;

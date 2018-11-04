@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.AccountFilter.Basic.Aggregates
+﻿namespace SimpleIdentityServer.Core.Common.AccountFiltering
 {
     public enum ComparisonOperations
     {

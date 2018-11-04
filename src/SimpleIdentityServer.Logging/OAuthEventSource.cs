@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.Logging;
-
-namespace SimpleIdentityServer.OAuth.Logging
+namespace SimpleIdentityServer.Logging
 {
+    using Microsoft.Extensions.Logging;
+
     public class OAuthEventSource : BaseEventSource, IOAuthEventSource
     {
         private static class Tasks

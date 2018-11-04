@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 {
-    using Jwt.Signature;
+    using Common.Extensions;
 
     public class GetJwsPayload : IGetJwsPayload
     {
@@ -81,8 +81,8 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                 throw new IdentityServerException(ErrorCodes.InvalidToken, ErrorDescriptions.TheTokenIsNotAValidResourceOwnerToken);
             }
 
-            if (signedResponseAlg == null ||
-                signedResponseAlg.Value == JwsAlg.none)
+            if (signedResponseAlg == null
+                || signedResponseAlg.Value == JwsAlg.none)
             {
                 var objectResult = new ObjectResult(grantedToken.UserInfoPayLoad)
                 {
@@ -113,7 +113,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                     encryptedResponseAlg.Value,
                     encryptedResponseEnc.Value).ConfigureAwait(false);
             }
-            
+
             return new UserInfoResult
             {
                 Content = new ContentResult

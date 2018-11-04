@@ -14,10 +14,10 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Manager.Logging;
-
 namespace SimpleIdentityServer.Manager.Host.Middleware
 {
+    using Logging;
+
     public class ExceptionHandlerMiddlewareOptions
     {
         public IManagerEventSource ManagerEventSource { get; set; }

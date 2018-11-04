@@ -44,9 +44,6 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             // ARRANGE
             InitializeFakeObjects();
             const JwsAlg jwsAlg = JwsAlg.none;
-            const KeyType keyType = KeyType.RSA;
-            const string kid = "kid";
-            const string serializedKey = "serializedKey";
             const string signature = "signature";
 
             var jwsPayload = new JwsPayload();
@@ -61,7 +58,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
                 .Returns(signature);
             var serializedJwsProtectedHeader = jwsProtectedHeader.SerializeWithDataContract();
             var base64SerializedJwsProtectedHeader = serializedJwsProtectedHeader.Base64Encode();
-            var serializedJwsPayload = jwsPayload.SerializeWithJavascript(new JwsPayloadConverter());
+            var serializedJwsPayload = jwsPayload.SerializeWithJavascript();
             var base64SerializedJwsPayload = serializedJwsPayload.Base64Encode();
             var combined = string.Format("{0}.{1}",
                 base64SerializedJwsProtectedHeader,
@@ -108,7 +105,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
                 .Returns(signature);
             var serializedJwsProtectedHeader = jwsProtectedHeader.SerializeWithDataContract();
             var base64SerializedJwsProtectedHeader = serializedJwsProtectedHeader.Base64Encode();
-            var serializedJwsPayload = jwsPayload.SerializeWithJavascript(new JwsPayloadConverter());
+            var serializedJwsPayload = jwsPayload.SerializeWithJavascript();
             var base64SerializedJwsPayload = serializedJwsPayload.Base64Encode();
             var combined = string.Format("{0}.{1}",
                 base64SerializedJwsProtectedHeader,
@@ -154,7 +151,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
                 .Returns(signature);
             var serializedJwsProtectedHeader = jwsProtectedHeader.SerializeWithDataContract();
             var base64SerializedJwsProtectedHeader = serializedJwsProtectedHeader.Base64Encode();
-            var serializedJwsPayload = jwsPayload.SerializeWithJavascript(new JwsPayloadConverter());
+            var serializedJwsPayload = jwsPayload.SerializeWithJavascript();
             var base64SerializedJwsPayload = serializedJwsPayload.Base64Encode();
             var combined = string.Format("{0}.{1}",
                 base64SerializedJwsProtectedHeader,

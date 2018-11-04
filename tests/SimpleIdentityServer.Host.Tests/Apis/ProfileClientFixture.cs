@@ -8,7 +8,7 @@ using Xunit;
 namespace SimpleIdentityServer.Host.Tests.Apis
 {
     using Client;
-    using UserManagement.Requests;
+    using UserManagement.Common.Requests;
 
     public class ProfileClientFixture : IClassFixture<TestOauthServerFixture>
     {

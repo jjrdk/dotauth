@@ -14,7 +14,6 @@
 
 namespace SimpleIdentityServer.Scim.Host.Controllers
 {
-    using Core.EF;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;

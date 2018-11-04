@@ -15,12 +15,13 @@
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Repositories;
-using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
+    using Logging;
+
     internal class DeleteResourceSetAction : IDeleteResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;

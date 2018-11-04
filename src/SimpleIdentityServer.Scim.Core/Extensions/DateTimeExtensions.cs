@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace SimpleIdentityServer.Scim.Core.EF.Extensions
+﻿namespace SimpleIdentityServer.Scim.Core.Extensions
 {
+    using System;
+
     public static class DateTimeExtensions
     {
         public static double ToUnix(this DateTime dateTime)

@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.UserManagement.Requests
+﻿namespace SimpleIdentityServer.UserManagement.Common.Requests
 {
     using System.Runtime.Serialization;
     using Common;

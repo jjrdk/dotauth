@@ -14,7 +14,6 @@
 
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Client.Tests.MiddleWares;
-using SimpleIdentityServer.Scim.Core.EF.Extensions;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -22,6 +21,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Scim.Client.Tests
 {
+    using Core.Extensions;
     using SimpleIdentityServer.Core.Common;
     using SimpleIdentityServer.Core.Common.DTOs;
 

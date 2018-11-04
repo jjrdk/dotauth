@@ -21,7 +21,6 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Linq;
@@ -30,6 +29,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 {
+    using Logging;
+
     public class PostIntrospectionAction : IPostIntrospectionAction
     {
         private readonly IOAuthEventSource _oauthEventSource;

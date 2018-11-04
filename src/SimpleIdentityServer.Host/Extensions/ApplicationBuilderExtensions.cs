@@ -15,12 +15,12 @@
 namespace SimpleIdentityServer.Host.Extensions
 {
     using System;
+    using Logging;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using MiddleWare;
-    using OpenId.Logging;
 
     public static class ApplicationBuilderExtensions 
     {        

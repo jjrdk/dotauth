@@ -15,13 +15,14 @@
 #endregion
 
 using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Manager.Logging;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Manage.Actions
 {
+    using Logging;
+
     public interface IImportAction
     {
         Task<bool> Execute(ImportParameter importParameter);

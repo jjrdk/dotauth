@@ -23,7 +23,6 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.OAuth.Logging;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -32,6 +31,7 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
     using Core.Common;
+    using Logging;
 
     public sealed class AuthorizationActionsFixture
     {

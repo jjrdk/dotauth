@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Manager.Logging;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Results;
 using System;
@@ -22,6 +21,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Manage.Actions
 {
+    using Logging;
+
     public interface IExportAction
     {
         Task<ExportResult> Execute();

@@ -1,8 +1,7 @@
-﻿namespace SimpleIdentityServer.AccountFilter.Basic.Aggregates
+﻿namespace SimpleIdentityServer.Core.Common.AccountFiltering
 {
-    public sealed class FilterAggregateRule
+    public sealed class FilterRule
     {
-        public string Id { get; set; }
         public string ClaimKey { get; set; }
         public string ClaimValue { get; set; }
         public ComparisonOperations Operation { get; set; }
