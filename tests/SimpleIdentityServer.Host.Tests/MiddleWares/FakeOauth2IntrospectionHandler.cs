@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Host.Tests.MiddleWares
 
                 if (!string.IsNullOrWhiteSpace(introspectionResult.Content.Subject))
                 {
-                    claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, introspectionResult.Content.Subject));
+                    claims.Add(new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, introspectionResult.Content.Subject));
                 }
 
                 if (!string.IsNullOrWhiteSpace(introspectionResult.Content.ClientId))

@@ -14,12 +14,8 @@
 
 namespace SimpleIdentityServer.Core.Parameters
 {
-    public sealed class RefreshTokenGrantTypeParameter
+    public sealed class RefreshTokenGrantTypeParameter : GrantTypeParameter
     {
         public string RefreshToken { get; set; }
-        public string ClientAssertion { get; set; }
-        public string ClientAssertionType { get; set; }
-        public string ClientId { get; set; }
-        public string ClientSecret { get; set; }
     }
 }

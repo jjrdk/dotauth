@@ -16,13 +16,11 @@ using Moq;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Store;
 using System;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -30,10 +28,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
     public class RevokeTokenActionFixture
     {
-        private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
         private Mock<IAuthenticateClient> _authenticateClientStub;
         private Mock<ITokenStore> _grantedTokenRepositoryStub;
-        private Mock<IClientRepository> _clientRepositoryStub;
         private IRevokeTokenAction _revokeTokenAction;
 
         [Fact]
@@ -56,12 +52,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 Token = "access_token"
             };
-            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
-                .Returns(new AuthenticateInstruction());
+
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Client)null));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
@@ -78,8 +71,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 Token = "access_token"
             };
-            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
-                .Returns(new AuthenticateInstruction());
+
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(new Client(), null)));
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
@@ -113,8 +105,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 Token = "refresh_token"
             };
-            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
-                .Returns(new AuthenticateInstruction());
+
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(new Client(), null)));
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
@@ -144,8 +135,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 Token = "access_token"
             };
-            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
-                .Returns(new AuthenticateInstruction());
+
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(new Client(), null)));
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
@@ -164,15 +154,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         private void InitializeFakeObjects()
         {
-            _authenticateInstructionGeneratorStub = new Mock<IAuthenticateInstructionGenerator>();
             _authenticateClientStub = new Mock<IAuthenticateClient>();
             _grantedTokenRepositoryStub = new Mock<ITokenStore>();
-            _clientRepositoryStub = new Mock<IClientRepository>();
             _revokeTokenAction = new RevokeTokenAction(
-                _authenticateInstructionGeneratorStub.Object,
                 _authenticateClientStub.Object,
-                _grantedTokenRepositoryStub.Object,
-                _clientRepositoryStub.Object);
+                _grantedTokenRepositoryStub.Object);
         }
     }
 }

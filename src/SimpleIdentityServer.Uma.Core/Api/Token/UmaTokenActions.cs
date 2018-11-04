@@ -14,7 +14,6 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Policies;
-    using Services;
     using SimpleIdentityServer.Core.Authenticate;
     using SimpleIdentityServer.Core.Helpers;
     using SimpleIdentityServer.Core.JwtToken;
@@ -22,25 +21,24 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
     using Stores;
     using System;
     using System.Collections.Generic;
+    using System.Security.Claims;
     using System.Text;
 
     internal sealed class UmaTokenActions : IUmaTokenActions
     {
         private readonly ITicketStore _ticketStore;
-        private readonly IUmaConfigurationService _configurationService;
+        private readonly UmaConfigurationOptions _configurationService;
         private readonly IUmaServerEventSource _umaServerEventSource;
         private readonly IAuthorizationPolicyValidator _authorizationPolicyValidator;
-        private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
         private readonly IAuthenticateClient _authenticateClient;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly IClientHelper _clientHelper;
         private readonly ITokenStore _tokenStore;
 
         public UmaTokenActions(ITicketStore ticketStore,
-            IUmaConfigurationService configurationService,
+            UmaConfigurationOptions configurationService,
             IUmaServerEventSource umaServerEventSource,
             IAuthorizationPolicyValidator authorizationPolicyValidator,
-            IAuthenticateInstructionGenerator authenticateInstructionGenerator,
             IAuthenticateClient authenticateClient,
             IJwtGenerator jwtGenerator,
             IClientHelper clientHelper,
@@ -50,7 +48,6 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
             _configurationService = configurationService;
             _umaServerEventSource = umaServerEventSource;
             _authorizationPolicyValidator = authorizationPolicyValidator;
-            _authenticateInstructionGenerator = authenticateInstructionGenerator;
             _authenticateClient = authenticateClient;
             _jwtGenerator = jwtGenerator;
             _clientHelper = clientHelper;
@@ -80,7 +77,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
             }
 
             // 2. Try to authenticate the client.
-            var instruction = CreateAuthenticateInstruction(parameter, authenticationHeaderValue, certificate);
+            var instruction = authenticationHeaderValue.GetAuthenticateInstruction(parameter, certificate);
             var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
@@ -138,21 +135,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
             return grantedToken;
         }
 
-        private AuthenticateInstruction CreateAuthenticateInstruction(
-            GetTokenViaTicketIdParameter authorizationCodeGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate)
-        {
-            var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
-            result.ClientAssertion = authorizationCodeGrantTypeParameter.ClientAssertion;
-            result.ClientAssertionType = authorizationCodeGrantTypeParameter.ClientAssertionType;
-            result.ClientIdFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientId;
-            result.ClientSecretFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientSecret;
-            result.Certificate = certificate;
-            return result;
-        }
-
-        public async Task<GrantedToken> GenerateTokenAsync(SimpleIdentityServer.Core.Common.Models.Client client,
+        public async Task<GrantedToken> GenerateTokenAsync(Client client,
             IEnumerable<TicketLine> ticketLines,
             string scope,
             string issuerName)
@@ -172,10 +155,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            var expiresIn =
-                await _configurationService.GetRptLifeTime()
-                    .ConfigureAwait(false); // 1. Retrieve the expiration time of the granted token.
-            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName)
+            var expiresIn = _configurationService.RptLifeTime;// 1. Retrieve the expiration time of the granted token.
+            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName, null)
                 .ConfigureAwait(false); // 2. Construct the JWT token (client).
             var jArr = new JArray();
             foreach (var ticketLine in ticketLines)
@@ -195,7 +176,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
             {
                 AccessToken = accessToken,
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
-                ExpiresIn = expiresIn,
+                ExpiresIn = (int)expiresIn.TotalSeconds,
                 TokenType = SimpleIdentityServer.Core.Constants.StandardTokenTypes.Bearer,
                 CreateDateTime = DateTime.UtcNow,
                 Scope = scope,

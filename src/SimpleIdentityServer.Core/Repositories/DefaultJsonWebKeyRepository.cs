@@ -15,11 +15,11 @@ namespace SimpleIdentityServer.Core.Repositories
     {
         public ICollection<JsonWebKey> _jsonWebKeys;
 
-        public DefaultJsonWebKeyRepository(ICollection<JsonWebKey> jsonWebKeys)
+        public DefaultJsonWebKeyRepository(IReadOnlyCollection<JsonWebKey> jsonWebKeys)
         {
             if (jsonWebKeys != null)
             {
-                _jsonWebKeys = jsonWebKeys;
+                _jsonWebKeys = jsonWebKeys.ToList();
                 return;
             }
 

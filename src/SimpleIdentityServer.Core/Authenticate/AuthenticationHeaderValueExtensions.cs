@@ -18,11 +18,27 @@ using System.Net.Http.Headers;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
-    internal class AuthenticateInstructionGenerator : IAuthenticateInstructionGenerator
+    using Parameters;
+    using System.Security.Cryptography.X509Certificates;
+
+    public static class AuthenticationHeaderValueExtensions
     {
-        public AuthenticateInstruction GetAuthenticateInstruction(AuthenticationHeaderValue authenticationHeaderValue)
+        public static AuthenticateInstruction GetAuthenticateInstruction(this AuthenticationHeaderValue authenticationHeaderValue, GrantTypeParameter grantTypeParameter, X509Certificate2 certificate = null)
         {
-            var result = new AuthenticateInstruction();
+            var result = grantTypeParameter == null
+                ? new AuthenticateInstruction {Certificate = certificate}
+                : new AuthenticateInstruction
+                {
+                    ClientAssertion = grantTypeParameter.ClientAssertion,
+                    ClientAssertionType = grantTypeParameter.ClientAssertionType,
+                    ClientIdFromHttpRequestBody = grantTypeParameter.ClientId,
+                    ClientSecretFromHttpRequestBody = grantTypeParameter.ClientSecret,
+                    Certificate = certificate
+                };
+            if (authenticationHeaderValue == null)
+            {
+                return result;
+            }
             if (authenticationHeaderValue != null
                 && !string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter))
             {

@@ -21,12 +21,11 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Uma.Core;
-using SimpleIdentityServer.Uma.Core.Providers;
-using SimpleIdentityServer.Uma.Host.Configuration;
 using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
@@ -41,8 +40,8 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 IsOpenIdScope = false,
                 IsDisplayedInConsent = false,
                 Type = ScopeType.ProtectedApi,
-                UpdateDateTime = DateTime.UtcNow,
-                CreateDateTime = DateTime.UtcNow
+                UpdateDateTime = DateTime.MinValue,
+                CreateDateTime = DateTime.MinValue
             }
         };
 
@@ -66,8 +65,8 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             }
 
             authorizationOptions.AddPolicy("UmaProtection", policy =>
-            {				
-				policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+            {
+                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
                 policy.RequireAssertion(p =>
                 {
                     if (p.User == null || p.User.Identity == null || !p.User.Identity.IsAuthenticated)
@@ -75,14 +74,14 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                         return false;
                     }
 
-                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
+                    var claimRole = p.User.Claims.Where(c => c.Type == ClaimTypes.Role);
                     var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
                     if (claimRole == null && !claimScopes.Any())
                     {
                         return false;
                     }
 
-                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(s => s.Value == "uma_protection");
+                    return claimRole != null && claimRole.Any(role => role.Value == "administrator") || claimScopes.Any(s => s.Value == "uma_protection");
                 });
             });
             return authorizationOptions;
@@ -90,10 +89,12 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 
         private static void RegisterServices(IServiceCollection services, AuthorizationServerOptions authorizationServerOptions)
         {
-            services.AddSimpleIdServerUmaCore(authorizationServerOptions.UmaConfigurationOptions,
+            services.AddSimpleIdServerUmaCore(
+                authorizationServerOptions.UmaConfigurationOptions,
                     authorizationServerOptions.Configuration?.Resources,
                     authorizationServerOptions.Configuration?.Policies)
-                .AddSimpleIdentityServerCore(authorizationServerOptions.OAuthConfigurationOptions,
+                .AddSimpleIdentityServerCore(
+                authorizationServerOptions.OAuthConfigurationOptions,
                     clients: authorizationServerOptions.Configuration?.Clients,
                     scopes: authorizationServerOptions.Configuration == null
                         ? DEFAULT_SCOPES
@@ -102,12 +103,11 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 .AddSimpleIdentityServerJwt()
                 //.AddIdServerClient()
                 .AddDefaultTokenStore();
-                //.AddDefaultSimpleBus()
-                //.AddConcurrency(opt => opt.UseInMemory());
+            //.AddDefaultSimpleBus()
+            //.AddConcurrency(opt => opt.UseInMemory());
             services.AddTechnicalLogging();
             services.AddOAuthLogging();
             services.AddUmaLogging();
-            services.AddTransient<IHostingProvider, HostingProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();
         }

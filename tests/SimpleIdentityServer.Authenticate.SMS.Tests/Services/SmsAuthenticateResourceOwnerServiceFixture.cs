@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Services
             await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(login, "password").ConfigureAwait(false);
 
             // ASSERT
-            _resourceOwnerRepositoryStub.Verify(r => r.GetResourceOwnerByClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, login));
+            _resourceOwnerRepositoryStub.Verify(r => r.GetResourceOwnerByClaim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber, login));
             _confirmationCodeStoreStub.Verify(c => c.Remove("password"));
         }
 

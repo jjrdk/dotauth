@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
     public class ConfirmConsentAction : IConfirmConsentAction
     {
         private readonly IConsentRepository _consentRepository;
-        private readonly IClientRepository _clientRepository;
+        private readonly IClientStore _clientRepository;
         private readonly IScopeRepository _scopeRepository;
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IParameterParserHelper _parameterParserHelper;
@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 
         public ConfirmConsentAction(
             IConsentRepository consentRepository,
-            IClientRepository clientRepository,
+            IClientStore clientRepository,
             IScopeRepository scopeRepository,
             IResourceOwnerRepository resourceOwnerRepository,
             IParameterParserHelper parameterParserHelper,
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId).ConfigureAwait(false);
+            var client = await _clientRepository.GetById(authorizationParameter.ClientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new InvalidOperationException(string.Format("the client id {0} doesn't exist",

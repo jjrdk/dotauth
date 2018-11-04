@@ -19,13 +19,18 @@ using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Core.Common
 {
+    using System;
+    using System.Collections;
+
     /// <summary>
     /// Represents a JSON Web Token
     /// </summary>
     [KnownType(typeof(object[]))]
     [KnownType(typeof(string[]))]
-    public class JwsPayload : Dictionary<string, object>
+    public class JwsPayload : IEnumerable<KeyValuePair<string, object>>
     {
+        private readonly Dictionary<string, object> _values = new Dictionary<string, object>();
+
         /// <summary>
         /// Gets or sets the issuer.
         /// </summary>
@@ -78,36 +83,25 @@ namespace SimpleIdentityServer.Core.Common
         [DataMember(Name = "azp")]
         public string Azp => GetStringClaim(StandardClaimNames.Azp);
 
-        public string GetClaimValue(string claimName)
+        public string GetStringClaim(string claimName)
         {
-            if (!ContainsKey(claimName) || this[claimName] == null)
+            if (!_values.ContainsKey(claimName))
             {
                 return null;
             }
 
-            return this[claimName].ToString();
-        }
-
-        private string GetStringClaim(string claimName)
-        {
-            if (!ContainsKey(claimName))
-            {
-                return null;
-            }
-
-            return this[claimName].ToString();
+            return _values[claimName].ToString();
         }
 
         public double GetDoubleClaim(string claimName)
         {
-            if (!ContainsKey(claimName))
+            if (!_values.ContainsKey(claimName))
             {
                 return default(double);
             }
 
-            double result;
-            var claim = this[claimName].ToString();
-            if (double.TryParse(claim, out result))
+            var claim = _values[claimName].ToString();
+            if (double.TryParse(claim, out double result))
             {
                 return result;
             }
@@ -117,25 +111,78 @@ namespace SimpleIdentityServer.Core.Common
 
         public string[] GetArrayClaim(string claimName)
         {
-            if (!ContainsKey(claimName))
+            if (!_values.ContainsKey(claimName))
             {
                 return new string[0];
             }
 
-            var claim = this[claimName];
-            var arr = claim as object[];
-            var jArr = claim as JArray;
-            if (arr != null)
-            {
-                return arr.Select(c => c.ToString()).ToArray();
-            }
+            var claim = _values[claimName];
 
-            if (jArr != null)
+            switch (claim)
             {
-                return jArr.Select(c => c.ToString()).ToArray();
+                case null:
+                    return Array.Empty<string>();
+                case string[] strings:
+                    return strings;
+                case object[] arr:
+                    return arr.Select(c => c.ToString()).ToArray();
+                case JArray jArr:
+                    return jArr.Select(c => c.ToString()).ToArray();
+                default:
+                    return new[] { claim.ToString() };
             }
+        }
 
-            return new string[0];
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            return _values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)_values).GetEnumerator();
+        }
+
+        public void Add(string key, object value)
+        {
+            if (_values.ContainsKey(key))
+            {
+                var item = _values[key];
+                if (item is object[] arr)
+                {
+                    _values[key] = arr.Concat(new[] {value}).ToArray();
+                }
+                else
+                {
+                    _values[key] = new[] {item, value};
+                }
+            }
+            else
+            {
+                _values.Add(key, value);
+            }
+        }
+
+        public void AddRange(IEnumerable<KeyValuePair<string, object>> additionalClaims)
+        {
+            if (additionalClaims == null)
+            {
+                return;
+            }
+            foreach (var additionalClaim in additionalClaims)
+            {
+                _values.Add(additionalClaim.Key, additionalClaim.Value);
+            }
+        }
+
+        public void Set(string key, object value)
+        {
+            _values[key] = value;
+        }
+
+        public bool HasClaim(string key)
+        {
+            return _values.ContainsKey(key);
         }
     }
 }

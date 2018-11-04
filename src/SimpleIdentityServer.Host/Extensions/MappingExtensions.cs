@@ -125,7 +125,7 @@ namespace SimpleIdentityServer.Host.Extensions
                 ClientAssertion = request.ClientAssertion,
                 ClientAssertionType = request.ClientAssertionType,
                 ClientSecret = request.ClientSecret,
-                AmrValues = string.IsNullOrWhiteSpace(request.AmrValues) ? new string[0] : request.AmrValues.Split(' ') 
+                AmrValues = string.IsNullOrWhiteSpace(request.AmrValues) ? new string[0] : request.AmrValues.Split(' ')
             };
         }
 
@@ -169,41 +169,39 @@ namespace SimpleIdentityServer.Host.Extensions
 
         public static AuthorizationRequest ToAuthorizationRequest(this JwsPayload jwsPayload)
         {
-            DisplayModes displayEnum;
-            ResponseModes responseModeEnum;
             var displayVal =
-                jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.DisplayName);
+                jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.DisplayName);
             var responseMode =
-                jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ResponseModeName);
-            if (string.IsNullOrWhiteSpace(displayVal) || !Enum.TryParse(displayVal, out displayEnum))
+                jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.ResponseModeName);
+            if (string.IsNullOrWhiteSpace(displayVal) || !Enum.TryParse(displayVal, out DisplayModes displayEnum))
             {
                 displayEnum = DisplayModes.Page;
             }
 
-            if (string.IsNullOrWhiteSpace(responseMode) || !Enum.TryParse(responseMode, out responseModeEnum))
+            if (string.IsNullOrWhiteSpace(responseMode) || !Enum.TryParse(responseMode, out ResponseModes responseModeEnum))
             {
                 responseModeEnum = ResponseModes.None;
             }
 
             var result = new AuthorizationRequest
             {
-                AcrValues = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.AcrValuesName),
-                Claims = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ClaimsName),
-                ClientId = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ClientIdName),
+                AcrValues = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.AcrValuesName),
+                Claims = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.ClaimsName),
+                ClientId = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.ClientIdName),
                 Display = displayEnum,
-                Prompt = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.PromptName),
-                IdTokenHint= jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.IdTokenHintName),
+                Prompt = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.PromptName),
+                IdTokenHint = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.IdTokenHintName),
                 MaxAge = jwsPayload.GetDoubleClaim(Core.Constants.StandardAuthorizationRequestParameterNames.MaxAgeName),
-                Nonce = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.NonceName),
-                ResponseType = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
-                State = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.StateName),
-                LoginHint = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.LoginHintName),
-                RedirectUri = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.RedirectUriName),
-                Request = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.RequestName),
-                RequestUri = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.RequestUriName),
-                Scope = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ScopeName),
+                Nonce = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.NonceName),
+                ResponseType = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
+                State = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.StateName),
+                LoginHint = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.LoginHintName),
+                RedirectUri = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.RedirectUriName),
+                Request = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.RequestName),
+                RequestUri = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.RequestUriName),
+                Scope = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.ScopeName),
                 ResponseMode = responseModeEnum,
-                UiLocales = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.UiLocalesName),
+                UiLocales = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.UiLocalesName),
             };
 
             return result;
@@ -281,8 +279,7 @@ namespace SimpleIdentityServer.Host.Extensions
             {
                 foreach (var responseType in clientRequest.ResponseTypes)
                 {
-                    ResponseType responseTypeEnum;
-                    if (Enum.TryParse(responseType, out responseTypeEnum) &&
+                    if (Enum.TryParse(responseType, out ResponseType responseTypeEnum) &&
                         !responseTypes.Contains(responseTypeEnum))
                     {
                         responseTypes.Add(responseTypeEnum);
@@ -290,20 +287,18 @@ namespace SimpleIdentityServer.Host.Extensions
                 }
             }
 
-            if(clientRequest.GrantTypes != null && clientRequest.GrantTypes.Any())
+            if (clientRequest.GrantTypes != null && clientRequest.GrantTypes.Any())
             {
                 foreach (var grantType in clientRequest.GrantTypes)
                 {
-                    GrantType grantTypeEnum;
-                    if (Enum.TryParse(grantType, out grantTypeEnum))
+                    if (Enum.TryParse(grantType, out GrantType grantTypeEnum))
                     {
                         grantTypes.Add(grantTypeEnum);
                     }
                 }
             }
 
-            ApplicationTypes appTypeEnum;
-            if (Enum.TryParse(clientRequest.ApplicationType, out appTypeEnum))
+            if (Enum.TryParse(clientRequest.ApplicationType, out ApplicationTypes appTypeEnum))
             {
                 applicationType = appTypeEnum;
             }

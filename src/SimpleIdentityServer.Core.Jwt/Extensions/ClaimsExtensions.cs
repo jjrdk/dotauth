@@ -1,22 +1,23 @@
 ﻿using System;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace SimpleIdentityServer.Core.Jwt.Extensions
 {
+    using System.Linq;
+
     public static class ClaimsExtensions
     {
         private static readonly Dictionary<string, string> _mappingToOpenidClaims = new Dictionary<string, string>
         {
-            { ClaimTypes.NameIdentifier, Constants.StandardResourceOwnerClaimNames.Subject },
-            { ClaimTypes.DateOfBirth, Constants.StandardResourceOwnerClaimNames.BirthDate },
-            { ClaimTypes.Email, Constants.StandardResourceOwnerClaimNames.Email },
-            { ClaimTypes.Name, Constants.StandardResourceOwnerClaimNames.Name },
-            { ClaimTypes.GivenName, Constants.StandardResourceOwnerClaimNames.GivenName },
-            { ClaimTypes.Surname, Constants.StandardResourceOwnerClaimNames.FamilyName },
-            { ClaimTypes.Gender, Constants.StandardResourceOwnerClaimNames.Gender },
-            { ClaimTypes.Locality, Constants.StandardResourceOwnerClaimNames.Locale }
+            { ClaimTypes.NameIdentifier, JwtConstants.StandardResourceOwnerClaimNames.Subject },
+            { ClaimTypes.DateOfBirth, JwtConstants.StandardResourceOwnerClaimNames.BirthDate },
+            { ClaimTypes.Email, JwtConstants.StandardResourceOwnerClaimNames.Email },
+            { ClaimTypes.Name, JwtConstants.StandardResourceOwnerClaimNames.Name },
+            { ClaimTypes.GivenName, JwtConstants.StandardResourceOwnerClaimNames.GivenName },
+            { ClaimTypes.Surname, JwtConstants.StandardResourceOwnerClaimNames.FamilyName },
+            { ClaimTypes.Gender, JwtConstants.StandardResourceOwnerClaimNames.Gender },
+            { ClaimTypes.Locality, JwtConstants.StandardResourceOwnerClaimNames.Locale }
         };
 
         public static IEnumerable<Claim> ToOpenidClaims(this IEnumerable<Claim> claims)
@@ -26,31 +27,10 @@ namespace SimpleIdentityServer.Core.Jwt.Extensions
                 throw new ArgumentNullException(nameof(claims));
             }
 
-            var result = new List<Claim>();
-            foreach(var claim in claims)
-            {
-                if (_mappingToOpenidClaims.ContainsKey(claim.Type))
-                {
-                    result.Add(new Claim(_mappingToOpenidClaims[claim.Type], claim.Value));
-                }
-                else
-                {
-                    result.Add(claim);
-                }
-            }
-
-            return result;
-        }
-		
-		public static object GetClaimValue(this Claim claim)
-        {
-            try
-            {
-                return JsonConvert.DeserializeObject(claim.Value);
-            }
-            catch { }
-			
-             return claim.Value;
+            return claims.Select(claim => _mappingToOpenidClaims.ContainsKey(claim.Type)
+                    ? new Claim(_mappingToOpenidClaims[claim.Type], claim.Value)
+                    : claim)
+                .ToList();
         }
     }
 }

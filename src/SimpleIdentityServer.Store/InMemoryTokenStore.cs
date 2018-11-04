@@ -161,28 +161,7 @@ namespace SimpleIdentityServer.Store
 
         private static bool CompareJwsPayload(JwsPayload firstJwsPayload, JwsPayload secondJwsPayload)
         {
-            foreach (var record in firstJwsPayload)
-            {
-                if (!Core.Jwt.Constants.AllStandardResourceOwnerClaimNames.Contains(record.Key))
-                {
-                    continue;
-                }
-
-                if (!secondJwsPayload.ContainsKey(record.Key))
-                {
-                    return false;
-                }
-
-                if (!string.Equals(
-                    record.Value.ToString(),
-                    secondJwsPayload[record.Key].ToString(),
-                    StringComparison.CurrentCultureIgnoreCase))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return firstJwsPayload.All(secondJwsPayload.Contains);
         }
     }
 }

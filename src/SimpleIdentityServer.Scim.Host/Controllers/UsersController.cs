@@ -295,7 +295,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
         //{
         //    return new Uri(
         //        new Uri(Request.GetAbsoluteUriWithVirtualPath()),
-        //        Core.Constants.RoutePaths.UsersController);
+        //        Core.JwtConstants.RoutePaths.UsersController);
 
         //    //+"/{id}";
         //}

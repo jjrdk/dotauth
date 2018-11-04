@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Core.JwtToken
         private readonly IJweParser _jweParser;
         private readonly IJwsParser _jwsParser;        
         private readonly HttpClient _httpClientFactory;
-        private readonly IClientRepository _clientRepository;
+        private readonly IClientStore _clientRepository;
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
         private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
 
@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             IJweParser jweParser,
             IJwsParser jwsParser,
             HttpClient httpClientFactory,
-            IClientRepository clientRepository,
+            IClientStore clientRepository,
             IJsonWebKeyConverter jsonWebKeyConverter,
             IJsonWebKeyRepository jsonWebKeyRepository)
         {
@@ -136,7 +136,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
+            var client = await _clientRepository.GetById(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
@@ -155,12 +155,12 @@ namespace SimpleIdentityServer.Core.JwtToken
         private JwsPayload UnSignWithJsonWebKey(JsonWebKey jsonWebKey, JwsProtectedHeader jwsProtectedHeader, string jws)
         {
             if (jsonWebKey == null
-                && jwsProtectedHeader.Alg != Jwt.Constants.JwsAlgNames.NONE)
+                && jwsProtectedHeader.Alg != Jwt.JwtConstants.JwsAlgNames.NONE)
             {
                 return null;
             }
 
-            if (jwsProtectedHeader.Alg == Jwt.Constants.JwsAlgNames.NONE)
+            if (jwsProtectedHeader.Alg == Jwt.JwtConstants.JwsAlgNames.NONE)
             {
                 return _jwsParser.GetPayload(jws);
             }
@@ -180,7 +180,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
+            var client = await _clientRepository.GetById(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorDescriptions.ClientIsNotValid, clientId));

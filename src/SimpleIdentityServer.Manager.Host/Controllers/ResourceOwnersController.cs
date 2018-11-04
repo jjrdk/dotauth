@@ -133,18 +133,18 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
 
             resourceOwner.Claims = claims;
             Claim updatedClaim, subjectClaim;
-            if (((updatedClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt)) != null))
+            if (((updatedClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == SimpleIdentityServer.Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt)) != null))
             {
                 resourceOwner.Claims.Remove(updatedClaim);
             }
 
-            if (((subjectClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject)) != null))
+            if (((subjectClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == SimpleIdentityServer.Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject)) != null))
             {
                 resourceOwner.Claims.Remove(subjectClaim);
             }
 
-            resourceOwner.Claims.Add(new Claim(SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, request.Login));
-            resourceOwner.Claims.Add(new Claim(SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
+            resourceOwner.Claims.Add(new Claim(SimpleIdentityServer.Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, request.Login));
+            resourceOwner.Claims.Add(new Claim(SimpleIdentityServer.Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
             var result = await _resourceOwnerRepository.UpdateAsync(resourceOwner).ConfigureAwait(false);
             if (!result)
             {

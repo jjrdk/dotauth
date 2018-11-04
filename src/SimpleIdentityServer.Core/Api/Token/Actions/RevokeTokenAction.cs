@@ -28,21 +28,15 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     internal class RevokeTokenAction : IRevokeTokenAction
     {
-        private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
         private readonly IAuthenticateClient _authenticateClient;
         private readonly ITokenStore _tokenStore;
-        private readonly IClientRepository _clientRepository;
 
         public RevokeTokenAction(
-            IAuthenticateInstructionGenerator authenticateInstructionGenerator,
             IAuthenticateClient authenticateClient,
-            ITokenStore tokenStore,
-            IClientRepository clientRepository)
+            ITokenStore tokenStore)
         {
-            _authenticateInstructionGenerator = authenticateInstructionGenerator;
             _authenticateClient = authenticateClient;
             _tokenStore = tokenStore;
-            _clientRepository = clientRepository;
         }
 
         public async Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
@@ -58,7 +52,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
             
             // 1. Check the client credentials
-            var instruction = CreateAuthenticateInstruction(revokeTokenParameter, authenticationHeaderValue, certificate);
+            var instruction = authenticationHeaderValue.GetAuthenticateInstruction(revokeTokenParameter, certificate);
             var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
@@ -93,19 +87,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             return await _tokenStore.RemoveRefreshToken(grantedToken.RefreshToken).ConfigureAwait(false);
-        }
-
-        private AuthenticateInstruction CreateAuthenticateInstruction(
-            RevokeTokenParameter revokeTokenParameter,
-            AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate)
-        {
-            var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
-            result.ClientAssertion = revokeTokenParameter.ClientAssertion;
-            result.ClientAssertionType = revokeTokenParameter.ClientAssertionType;
-            result.ClientIdFromHttpRequestBody = revokeTokenParameter.ClientId;
-            result.ClientSecretFromHttpRequestBody = revokeTokenParameter.ClientSecret;
-            result.Certificate = certificate;
-            return result;
         }
     }
 }

@@ -1,16 +1,16 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Parameters;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Common.Results;
-using SimpleIdentityServer.Core.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Repositories
+﻿namespace SimpleIdentityServer.Core.Repositories
 {
+    using SimpleIdentityServer.Core.Common.Models;
+    using SimpleIdentityServer.Core.Common.Parameters;
+    using SimpleIdentityServer.Core.Common.Repositories;
+    using SimpleIdentityServer.Core.Common.Results;
+    using SimpleIdentityServer.Core.Extensions;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+
     using System.Linq.Expressions;
     using System.Threading;
 
@@ -18,9 +18,11 @@ namespace SimpleIdentityServer.Core.Repositories
     {
         public ICollection<ResourceOwner> _users;
 
-        public DefaultResourceOwnerRepository(ICollection<ResourceOwner> users)
+        public DefaultResourceOwnerRepository(IReadOnlyCollection<ResourceOwner> users)
         {
-            _users = users ?? new List<ResourceOwner>();
+            _users = users == null
+                ? new List<ResourceOwner>()
+                : users.ToList();
         }
 
         public Task<bool> Delete(string subject)

@@ -19,7 +19,6 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
@@ -39,10 +38,9 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             public Client Client { get; set; }
         }
 
-        private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
         private readonly IClientValidator _clientValidator;
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
-        private readonly IConfigurationService _configurationService;
+        private readonly OAuthConfigurationOptions _configurationService;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly IAuthenticateClient _authenticateClient;
         private readonly IClientHelper _clientHelper;
@@ -54,12 +52,11 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         public GetTokenByAuthorizationCodeGrantTypeAction(
             IClientValidator clientValidator,
             IAuthorizationCodeStore authorizationCodeStore,
-            IConfigurationService configurationService,
+            OAuthConfigurationOptions configurationService,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IAuthenticateClient authenticateClient,
             IClientHelper clientHelper,
             IOAuthEventSource oauthEventSource,
-            IAuthenticateInstructionGenerator authenticateInstructionGenerator,
             ITokenStore tokenStore,
             IGrantedTokenHelper grantedTokenHelper,
             IJwtGenerator jwtGenerator)
@@ -71,7 +68,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _authenticateClient = authenticateClient;
             _clientHelper = clientHelper;
             _oauthEventSource = oauthEventSource;
-            _authenticateInstructionGenerator = authenticateInstructionGenerator;
             _tokenStore = tokenStore;
             _grantedTokenHelper = grantedTokenHelper;
             _jwtGenerator = jwtGenerator;
@@ -93,7 +89,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 result.AuthCode.UserInfoPayLoad).ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(result.Client, result.AuthCode.Scopes, issuerName, result.AuthCode.UserInfoPayLoad, result.AuthCode.IdTokenPayload).ConfigureAwait(false);
+                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(
+                        result.Client,
+                        result.AuthCode.Scopes,
+                        issuerName,
+                        null,
+                        result.AuthCode.UserInfoPayLoad,
+                        result.AuthCode.IdTokenPayload)
+                    .ConfigureAwait(false);
                 _oauthEventSource.GrantAccessToClient(
                     result.AuthCode.ClientId,
                     grantedToken.AccessToken,
@@ -124,7 +127,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             string issuerName)
         {
             // 1. Authenticate the client
-            var instruction = CreateAuthenticateInstruction(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate);
+            var instruction = authenticationHeaderValue.GetAuthenticateInstruction(authorizationCodeGrantTypeParameter, certificate);
             var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
@@ -175,8 +178,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 5. Ensure the authorization code is still valid.
-            var authCodeValidity = await _configurationService.GetAuthorizationCodeValidityPeriodInSecondsAsync().ConfigureAwait(false);
-            var expirationDateTime = authorizationCode.CreateDateTime.AddSeconds(authCodeValidity);
+            var authCodeValidity = _configurationService.AuthorizationCodeValidityPeriod;
+            var expirationDateTime = authorizationCode.CreateDateTime.Add(authCodeValidity);
             var currentDateTime = DateTime.UtcNow;
             if (currentDateTime > expirationDateTime)
             {
@@ -198,20 +201,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 Client = client,
                 AuthCode = authorizationCode
             };
-        }
-
-        private AuthenticateInstruction CreateAuthenticateInstruction(
-            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate)
-        {
-            var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
-            result.ClientAssertion = authorizationCodeGrantTypeParameter.ClientAssertion;
-            result.ClientAssertionType = authorizationCodeGrantTypeParameter.ClientAssertionType;
-            result.ClientIdFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientId;
-            result.ClientSecretFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientSecret;
-            result.Certificate = certificate;
-            return result;
         }
     }
 }

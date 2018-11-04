@@ -16,15 +16,11 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Parameters
 {
-    public sealed class ResourceOwnerGrantTypeParameter
+    public sealed class ResourceOwnerGrantTypeParameter : GrantTypeParameter
     {
         public string Scope { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
-        public string ClientId { get; set; }
-        public string ClientAssertion { get; set; }
-        public string ClientAssertionType { get; set; }
-        public string ClientSecret { get; set; }
         public IEnumerable<string> AmrValues { get; set; }
     }
 }

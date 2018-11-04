@@ -74,8 +74,8 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
 
             var newClaims = new List<Claim>
             {
-                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()),
-                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, resourceOwner.Id)
+                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()),
+                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, resourceOwner.Id)
             };
 
             // 2. Populate the claims.
@@ -123,8 +123,8 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             if (scimBaseUrl != null)
             {
                 //var scimResource = await AddScimResource(authenticationParameter, scimBaseUrl, resourceOwner.Login).ConfigureAwait(false);
-                //var scimUrl = newClaims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.ScimId);
-                //var scimLocation = newClaims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.ScimLocation);
+                //var scimUrl = newClaims.FirstOrDefault(c => c.Type == Jwt.JwtConstants.StandardResourceOwnerClaimNames.ScimId);
+                //var scimLocation = newClaims.FirstOrDefault(c => c.Type == Jwt.JwtConstants.StandardResourceOwnerClaimNames.ScimLocation);
                 //if (scimUrl != null)
                 //{
                 //    newClaims.Remove(scimUrl);
@@ -135,8 +135,8 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 //    newClaims.Remove(scimLocation);
                 //}
 
-                newClaims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.ScimId, resourceOwner.Id));
-                newClaims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.ScimLocation,
+                newClaims.Add(new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.ScimId, resourceOwner.Id));
+                newClaims.Add(new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.ScimLocation,
                     $"{scimBaseUrl}/Users/{resourceOwner.Id}"));
             }
 

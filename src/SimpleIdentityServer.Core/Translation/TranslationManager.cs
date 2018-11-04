@@ -23,11 +23,11 @@ namespace SimpleIdentityServer.Core.Translation
 {
     public class TranslationManager : ITranslationManager
     {
-        private readonly IConfigurationService _configurationService;
+        private readonly OAuthConfigurationOptions _configurationService;
         private readonly ITranslationRepository _translationRepository;
 
         public TranslationManager(
-            IConfigurationService configurationService,
+            OAuthConfigurationOptions configurationService,
             ITranslationRepository translationRepository)
         {
             _configurationService = configurationService;
@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Core.Translation
         {
             if (string.IsNullOrWhiteSpace(concatenateListOfCodeLanguages))
             {
-                return await _configurationService.DefaultLanguageAsync().ConfigureAwait(false);
+                return _configurationService.DefaultLanguage.TwoLetterISOLanguageName;
             }
 
             var listOfCodeLanguages = concatenateListOfCodeLanguages.Split(' ');
@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Core.Translation
             if (listOfCodeLanguages == null || !listOfCodeLanguages.Any() ||
                 supportedCodeLanguages == null || !supportedCodeLanguages.Any())
             {
-                return await _configurationService.DefaultLanguageAsync().ConfigureAwait(false);
+                return _configurationService.DefaultLanguage.TwoLetterISOLanguageName;
             }
 
             foreach (var codeLanguage in listOfCodeLanguages)
@@ -87,7 +87,7 @@ namespace SimpleIdentityServer.Core.Translation
                 }
             }
 
-            return await _configurationService.DefaultLanguageAsync().ConfigureAwait(false);
+            return _configurationService.DefaultLanguage.TwoLetterISOLanguageName;
         }
     }
 }

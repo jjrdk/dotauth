@@ -158,9 +158,11 @@ namespace SimpleIdentityServer.Core.Repositories
             }
         };
 
-        public DefaultTranslationRepository(ICollection<Common.Models.Translation> translations)
+        public DefaultTranslationRepository(IReadOnlyCollection<Common.Models.Translation> translations)
         {
-            _translations = translations ?? DEFAULT_TRANSLATIONS;
+            _translations = translations == null || translations.Count == 0
+                ? DEFAULT_TRANSLATIONS
+                : translations.ToList();
         }
 
         public Task<Common.Models.Translation> GetAsync(string languageTag, string code)

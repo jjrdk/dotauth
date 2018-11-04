@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             // ARRANGE
             InitializeFakeObjects();
             var claimsIdentity = new ClaimsIdentity("test");
-            claimsIdentity.AddClaim(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "subject"));
+            claimsIdentity.AddClaim(new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, "subject"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new ResourceOwner()));

@@ -35,7 +35,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly ITokenStore _tokenStore;
         private readonly IJwtGenerator _jwtGenerator;
-        private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
         private readonly IAuthenticateClient _authenticateClient;
 
         public GetTokenByRefreshTokenGrantTypeAction(
@@ -44,7 +43,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             ITokenStore tokenStore,
             IJwtGenerator jwtGenerator,
-            IAuthenticateInstructionGenerator authenticateInstructionGenerator,
             IAuthenticateClient authenticateClient)
         {
             _clientHelper = clientHelper;
@@ -52,7 +50,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _tokenStore = tokenStore;
             _jwtGenerator = jwtGenerator;
-            _authenticateInstructionGenerator = authenticateInstructionGenerator;
             _authenticateClient = authenticateClient;
         }
 
@@ -64,7 +61,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 1. Try to authenticate the client
-            var instruction = CreateAuthenticateInstruction(refreshTokenGrantTypeParameter, authenticationHeaderValue, certificate);
+            var instruction = authenticationHeaderValue.GetAuthenticateInstruction(refreshTokenGrantTypeParameter, certificate);
             var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (authResult.Client == null)
@@ -92,6 +89,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 grantedToken.ClientId,
                 grantedToken.Scope,
                 issuerName,
+                null,
                 grantedToken.UserInfoPayLoad,
                 grantedToken.IdTokenPayLoad).ConfigureAwait(false);
             generatedToken.ParentTokenId = grantedToken.Id;
@@ -121,17 +119,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             return grantedToken;
-        }
-
-        private AuthenticateInstruction CreateAuthenticateInstruction(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate)
-        {
-            var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
-            result.ClientAssertion = refreshTokenGrantTypeParameter.ClientAssertion;
-            result.ClientAssertionType = refreshTokenGrantTypeParameter.ClientAssertionType;
-            result.ClientIdFromHttpRequestBody = refreshTokenGrantTypeParameter.ClientId;
-            result.ClientSecretFromHttpRequestBody = refreshTokenGrantTypeParameter.ClientSecret;
-            result.Certificate = certificate;
-            return result;
         }
     }
 }

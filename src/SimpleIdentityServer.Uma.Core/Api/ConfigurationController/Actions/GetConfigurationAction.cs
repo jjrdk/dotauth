@@ -12,15 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.Core.Responses;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
 {
+    using Microsoft.AspNetCore.Http;
+    using SimpleIdentityServer.Core;
+
     public class GetConfigurationAction : IGetConfigurationAction
     {
+        private readonly IHttpContextAccessor _hostingProvider;
+
         private readonly List<string> _umaProfilesSupported = new List<string>
         {
             "https://docs.kantarainitiative.org/uma/profiles/uma-token-bearer-1.0"
@@ -28,16 +32,15 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
         private const string ResourceSetApi = "/rs/resource_set";
         private const string PermissionApi = "/perm";
         // OAUTH2.0
-        private const string AuthorizationApi = "/authorization";
+        //private const string AuthorizationApi = "/authorization";
         private const string TokenApi = "/token";
         private const string JwksApi = "/jwks";
         private const string RegistrationApi = "/registration";
         private const string IntrospectionApi = "/introspect";
         private const string PolicyApi = "/policies";
         private const string RevocationApi = "/token/revoke";
-        private readonly IHostingProvider _hostingProvider;
 
-        public GetConfigurationAction(IHostingProvider hostingProvider)
+        public GetConfigurationAction(IHttpContextAccessor hostingProvider)
         {
             _hostingProvider = hostingProvider;
         }

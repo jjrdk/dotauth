@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Uma.Core.Policies
 {
     using SimpleIdentityServer.Core;
+    using SimpleIdentityServer.Core.Jwt;
     using Constants = Core.Constants;
 
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy
@@ -193,26 +194,9 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                     };
                 }
 
-                if (claim.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role)
+                if (payload.Value is IEnumerable<string> strings)
                 {
-                    IEnumerable<string> roles = null;
-                    if (payload.Value is string)
-                    {
-                        roles = payload.Value.ToString().Split(',');
-                    }
-                    else
-                    {
-                        if (payload.Value is object[] arr)
-                        {
-                            roles = arr.Select(c => c.ToString());
-                        }
-                        else if (payload.Value is JArray jArr)
-                        {
-                            roles = jArr.Select(c => c.ToString());
-                        }
-                    }
-
-                    if (roles == null || roles.All(v => claim.Value != v))
+                    if (!strings.Any(s => string.Equals(s, claim.Value)))
                     {
                         return new AuthorizationPolicyResult
                         {
@@ -220,6 +204,34 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                         };
                     }
                 }
+
+                //if (claim.Type == JwtConstants.StandardResourceOwnerClaimNames.Role)
+                //{
+                //    IEnumerable<string> roles = null;
+                //    if (payload.Value is string)
+                //    {
+                //        roles = payload.Value.ToString().Split(',');
+                //    }
+                //    else
+                //    {
+                //        if (payload.Value is object[] arr)
+                //        {
+                //            roles = arr.Select(c => c.ToString());
+                //        }
+                //        else if (payload.Value is JArray jArr)
+                //        {
+                //            roles = jArr.Select(c => c.ToString());
+                //        }
+                //    }
+
+                //    if (roles == null || roles.All(v => claim.Value != v))
+                //    {
+                //        return new AuthorizationPolicyResult
+                //        {
+                //            Type = AuthorizationPolicyResultEnum.NotAuthorized
+                //        };
+                //    }
+                //}
                 else
                 {
                     if (payload.Value.ToString() != claim.Value)

@@ -71,7 +71,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             }
 
             var claims = resourceOwner.Claims == null ? new List<Claim>() : resourceOwner.Claims.ToList();
-            claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
+            claims.Add(new Claim(
+                ClaimTypes.AuthenticationInstant,
                 DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                 ClaimValueTypes.Integer));
             return new LocalOpenIdAuthenticationResult

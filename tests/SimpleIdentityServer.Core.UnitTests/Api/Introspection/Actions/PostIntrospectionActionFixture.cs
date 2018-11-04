@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
         }
-        
+
         [Fact]
         public async Task When_AccessToken_Cannot_Be_Extracted_Then_Exception_Is_Thrown()
         {
@@ -112,20 +112,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
             {
                 ClientId = clientId
             }, null);
+            var idtp = new JwsPayload
+            {
+                { Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject },
+                { StandardClaimNames.Audiences, audiences }
+            };
             var grantedToken = new GrantedToken
             {
                 ClientId = clientId,
-                IdTokenPayLoad = new JwsPayload
-                {
-                    {
-                        Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
-                        subject
-                    },
-                    {
-                        StandardClaimNames.Audiences,
-                        audiences
-                    }
-                },
+                IdTokenPayLoad = idtp,
                 CreateDateTime = DateTime.UtcNow.AddDays(-2),
                 ExpiresIn = 2
             };
@@ -174,7 +169,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 IdTokenPayLoad = new JwsPayload
                 {
                     {
-                        Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                        Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject,
                         subject
                     },
                     {

@@ -38,12 +38,24 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             {
                 if (Request.Form == null)
                 {
-                    return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                    return StatusCode(
+                        (int)HttpStatusCode.BadRequest,
+                        new ErrorResponse
+                        {
+                            Error = ErrorCodes.InvalidRequestCode,
+                            ErrorDescription = "no parameter in body request"
+                        });
                 }
             }
             catch (Exception)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                return StatusCode(
+                           (int)HttpStatusCode.BadRequest,
+                           new ErrorResponse
+                           {
+                               Error = ErrorCodes.InvalidRequestCode,
+                               ErrorDescription = "no parameter in body request"
+                           });
             }
 
             var serializer = new ParamSerializer();
@@ -144,19 +156,6 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             {
                 return null;
             }
-        }
-
-        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
-        {
-            var error = new ErrorResponse
-            {
-                Error = code,
-                ErrorDescription = message
-            };
-            return new JsonResult(error)
-            {
-                StatusCode = (int)statusCode
-            };
         }
     }
 }

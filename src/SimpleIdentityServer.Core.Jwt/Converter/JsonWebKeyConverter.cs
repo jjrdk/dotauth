@@ -45,22 +45,22 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
             var result = new List<JsonWebKey>();
             foreach (var jsonWebKey in jsonWebKeySet.Keys)
             {
-                var keyType = jsonWebKey.FirstOrDefault(j => j.Key == Constants.JsonWebKeyParameterNames.KeyTypeName);
-                var use = jsonWebKey.FirstOrDefault(j => j.Key == Constants.JsonWebKeyParameterNames.UseName);
+                var keyType = jsonWebKey.FirstOrDefault(j => j.Key == JwtConstants.JsonWebKeyParameterNames.KeyTypeName);
+                var use = jsonWebKey.FirstOrDefault(j => j.Key == JwtConstants.JsonWebKeyParameterNames.UseName);
                 var kid =
-                    jsonWebKey.FirstOrDefault(j => j.Key == Constants.JsonWebKeyParameterNames.KeyIdentifierName);
+                    jsonWebKey.FirstOrDefault(j => j.Key == JwtConstants.JsonWebKeyParameterNames.KeyIdentifierName);
                 if (keyType.Equals(default(KeyValuePair<string, object>)) ||
                     use.Equals(default(KeyValuePair<string, object>)) ||
                     kid.Equals(default(KeyValuePair<string, object>)) ||
-                    !Constants.MappingKeyTypeEnumToName.Values.Contains(keyType.Value) ||
-                    !Constants.MappingUseEnumerationToName.Values.Contains(use.Value))
+                    !JwtConstants.MappingKeyTypeEnumToName.Values.Contains(keyType.Value) ||
+                    !JwtConstants.MappingUseEnumerationToName.Values.Contains(use.Value))
                 {
                     throw new InvalidOperationException(ErrorDescriptions.JwkIsInvalid);
                 }
 
-                var useEnum = Constants.MappingUseEnumerationToName
+                var useEnum = JwtConstants.MappingUseEnumerationToName
                     .FirstOrDefault(m => m.Value == use.Value.ToString()).Key;
-                var keyTypeEnum = Constants.MappingKeyTypeEnumToName
+                var keyTypeEnum = JwtConstants.MappingKeyTypeEnumToName
                     .FirstOrDefault(k => k.Value == keyType.Value.ToString()).Key;
 
                 var jsonWebKeyInformation = new JsonWebKey
@@ -75,10 +75,10 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
                 var serializedKey = string.Empty;
                 switch (keyType.Value.ToString())
                 {
-                    case Constants.KeyTypeValues.RsaName:
+                    case JwtConstants.KeyTypeValues.RsaName:
                         serializedKey = ExtractRsaKeyInformation(jsonWebKey);
                         break;
-                    case Constants.KeyTypeValues.EcName:
+                    case JwtConstants.KeyTypeValues.EcName:
                         serializedKey = ExtractEcKeyInformation(jsonWebKey);
                         break;
                 }
@@ -92,8 +92,8 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
 
         private static string ExtractRsaKeyInformation(Dictionary<string, object> information)
         {
-            var modulusKeyPair = information.FirstOrDefault(i => i.Key == Constants.JsonWebKeyParameterNames.RsaKey.ModulusName);
-            var exponentKeyPair = information.FirstOrDefault(i => i.Key == Constants.JsonWebKeyParameterNames.RsaKey.ExponentName);
+            var modulusKeyPair = information.FirstOrDefault(i => i.Key == JwtConstants.JsonWebKeyParameterNames.RsaKey.ModulusName);
+            var exponentKeyPair = information.FirstOrDefault(i => i.Key == JwtConstants.JsonWebKeyParameterNames.RsaKey.ExponentName);
             if (modulusKeyPair.Equals(default(KeyValuePair<string, object>)) ||
                 exponentKeyPair.Equals(default(KeyValuePair<string, object>)))
             {
@@ -125,8 +125,8 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
 
         private string ExtractEcKeyInformation(Dictionary<string, object> information)
         {
-            var xCoordinate = information.FirstOrDefault(i => i.Key == Constants.JsonWebKeyParameterNames.EcKey.XCoordinateName);
-            var yCoordinate = information.FirstOrDefault(i => i.Key == Constants.JsonWebKeyParameterNames.EcKey.YCoordinateName);
+            var xCoordinate = information.FirstOrDefault(i => i.Key == JwtConstants.JsonWebKeyParameterNames.EcKey.XCoordinateName);
+            var yCoordinate = information.FirstOrDefault(i => i.Key == JwtConstants.JsonWebKeyParameterNames.EcKey.YCoordinateName);
             if (xCoordinate.Equals(default(KeyValuePair<string, object>)) ||
                 yCoordinate.Equals(default(KeyValuePair<string, object>)))
             {

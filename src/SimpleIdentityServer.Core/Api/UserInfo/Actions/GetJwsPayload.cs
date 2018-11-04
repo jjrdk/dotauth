@@ -32,17 +32,19 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 {
+    using Jwt.Signature;
+
     public class GetJwsPayload : IGetJwsPayload
     {
         private readonly IGrantedTokenValidator _grantedTokenValidator;
         private readonly IJwtGenerator _jwtGenerator;
-        private readonly IClientRepository _clientRepository;
+        private readonly IClientStore _clientRepository;
         private readonly ITokenStore _tokenStore;
 
         public GetJwsPayload(
             IGrantedTokenValidator grantedTokenValidator,
             IJwtGenerator jwtGenerator,
-            IClientRepository clientRepository,
+            IClientStore clientRepository,
             ITokenStore tokenStore)
         {
             _grantedTokenValidator = grantedTokenValidator;
@@ -66,7 +68,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
             }
 
             var grantedToken = await _tokenStore.GetAccessToken(accessToken).ConfigureAwait(false);
-            var client = await _clientRepository.GetClientByIdAsync(grantedToken.ClientId).ConfigureAwait(false);
+            var client = await _clientRepository.GetById(grantedToken.ClientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidToken, string.Format(ErrorDescriptions.TheClientIdDoesntExist, grantedToken.ClientId));
@@ -87,7 +89,9 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                     StatusCode = (int)HttpStatusCode.OK
                 };
                 objectResult.ContentTypes.Add(new MediaTypeHeaderValue("application/json"));
-                objectResult.Formatters.Add(new JsonOutputFormatter(new JsonSerializerSettings(), ArrayPool<char>.Shared));
+                var serializerSettings = new JsonSerializerSettings();
+                serializerSettings.Converters.Add(new JwsPayloadConverter());
+                objectResult.Formatters.Add(new JsonOutputFormatter(serializerSettings, ArrayPool<char>.Shared));
                 return new UserInfoResult
                 {
                     Content = objectResult

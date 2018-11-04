@@ -21,31 +21,25 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 {
     public class AuthenticateInstructionGeneratorFixture
     {
-        private IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
-
         [Fact]
         public void When_Passing_No_Parameter_Then_Empty_Result_Is_Returned()
         {
-            // ARRANGE
-            InitializeFakeObjects();
-
             // ACT
-            var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(null);
+            var header = (AuthenticationHeaderValue)null;
+            var result = header.GetAuthenticateInstruction(null);
 
             // ASSERT
             Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
             Assert.True(string.IsNullOrWhiteSpace(result.ClientSecretFromAuthorizationHeader));
         }
-        
+
         [Fact]
         public void When_Passing_Empty_AuthenticationHeaderParameter_Then_Empty_Result_Is_Returned()
         {
-            // ARRANGE
-            InitializeFakeObjects();
             var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", string.Empty);
 
             // ACT
-            var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
+            var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 
             // ASSERT
             Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
@@ -55,14 +49,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         [Fact]
         public void When_Passing_Not_Valid_Parameter_Then_Empty_Result_Is_Returned()
         {
-            // ARRANGE
-            InitializeFakeObjects();
             var parameter = "parameter";
             var encodedParameter = parameter.Base64Encode();
             var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", encodedParameter);
 
             // ACT
-            var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
+            var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 
             // ASSERT
             Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
@@ -72,8 +64,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         [Fact]
         public void When_Passing_Valid_Parameter_Then_Valid_AuthenticateInstruction_Is_Returned()
         {
-            // ARRANGE
-            InitializeFakeObjects();
             const string clientId = "clientId";
             const string clientSecret = "clientSecret";
             var parameter = string.Format("{0}:{1}", clientId, clientSecret);
@@ -81,16 +71,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", encodedParameter);
 
             // ACT
-            var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
+            var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 
             // ASSERT
             Assert.True(result.ClientIdFromAuthorizationHeader == clientId);
             Assert.True(result.ClientSecretFromAuthorizationHeader == clientSecret);
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _authenticateInstructionGenerator = new AuthenticateInstructionGenerator();
         }
     }
 }

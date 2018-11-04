@@ -78,9 +78,9 @@ namespace SimpleIdentityServer.Core.Extensions
         {
             JweAlg? algEnum = null;
             if (!string.IsNullOrWhiteSpace(algName) &&
-                Jwt.Constants.MappingNameToJweAlgEnum.Keys.Contains(algName))
+                Jwt.JwtConstants.MappingNameToJweAlgEnum.Keys.Contains(algName))
             {
-                algEnum = Jwt.Constants.MappingNameToJweAlgEnum[algName];
+                algEnum = Jwt.JwtConstants.MappingNameToJweAlgEnum[algName];
             }
 
             return algEnum;
@@ -90,9 +90,9 @@ namespace SimpleIdentityServer.Core.Extensions
         {
             JweEnc? encEnum = null;
             if (!string.IsNullOrWhiteSpace(encName) &&
-                Jwt.Constants.MappingNameToJweEncEnum.Keys.Contains(encName))
+                Jwt.JwtConstants.MappingNameToJweEncEnum.Keys.Contains(encName))
             {
-                encEnum = Jwt.Constants.MappingNameToJweEncEnum[encName];
+                encEnum = Jwt.JwtConstants.MappingNameToJweEncEnum[encName];
             }
 
             return encEnum;

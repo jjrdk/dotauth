@@ -29,6 +29,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
+    using Core;
+
     [Route(Core.Constants.EndPoints.Introspection)]
     public class IntrospectionController : Controller
     {

@@ -18,7 +18,7 @@ using System.Security.Claims;
 
 namespace SimpleIdentityServer.Core.Jwt
 {
-    public class Constants
+    public class JwtConstants
     {
         public static class StandardResourceOwnerClaimNames
         {

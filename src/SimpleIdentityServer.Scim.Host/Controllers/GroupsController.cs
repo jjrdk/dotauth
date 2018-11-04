@@ -38,7 +38,7 @@
 //    using SearchParameter = SimpleIdentityServer.Core.Common.SearchParameter;
 //    using SortOrders = SimpleIdentityServer.Core.Common.SortOrders;
 
-//    [Route(Core.Constants.RoutePaths.GroupsController)]
+//    [Route(Core.JwtConstants.RoutePaths.GroupsController)]
 //    public class GroupsController : Controller
 //    {
 //        private readonly IProvide<GroupResource> _groupRepository;
@@ -157,7 +157,7 @@
 
 //        private string GetLocationPattern()
 //        {
-//            return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Core.Constants.RoutePaths.GroupsController).AbsoluteUri + "/{id}";
+//            return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Core.JwtConstants.RoutePaths.GroupsController).AbsoluteUri + "/{id}";
 //        }
 
 //        private class GroupsAction

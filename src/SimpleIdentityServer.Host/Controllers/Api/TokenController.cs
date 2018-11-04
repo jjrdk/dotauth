@@ -23,6 +23,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using Common.Dtos.Responses;
+    using Core;
     using Core.Api.Token;
     using Core.Common;
     using Core.Common.DTOs.Requests;

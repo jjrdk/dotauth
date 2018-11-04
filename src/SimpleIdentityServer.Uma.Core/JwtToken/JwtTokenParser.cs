@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
             }
 
             var jsonWebKey = jsonWebKeys.First(j => j.Kid == protectedHeader.Kid);
-            if (protectedHeader.Alg == SimpleIdentityServer.Core.Jwt.Constants.JwsAlgNames.NONE)
+            if (protectedHeader.Alg == SimpleIdentityServer.Core.Jwt.JwtConstants.JwsAlgNames.NONE)
             {
                 return _jwsParser.GetPayload(jws);
             }

@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Shell.Controllers
 {
     using Common.Dtos.Events.Openid;
     using Core.Common;
-    using Constants = Host.Constants;
+    using Host;
 
     [Area("Shell")]
     [Authorize("Connected")]
@@ -92,7 +92,7 @@ namespace SimpleIdentityServer.Shell.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.CookieName).ConfigureAwait(false);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName).ConfigureAwait(false);
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _consentActions.ConfirmConsent(parameter,
                 authenticatedUser, issuerName).ConfigureAwait(false);
@@ -107,11 +107,13 @@ namespace SimpleIdentityServer.Shell.Controllers
         /// </summary>
         /// <param name="code">Encrypted & signed authorization request</param>
         /// <returns>Redirect to the callback url.</returns>
-        public async Task<ActionResult> Cancel(string code)
+        public Task<IActionResult> Cancel(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             LogConsentRejected(request.ProcessId);
-            return Redirect(request.RedirectUri);
+            var result = Redirect(request.RedirectUri);
+
+            return Task.FromResult<IActionResult>(result);
         }
 
         private async Task TranslateConsentScreen(string uiLocales)

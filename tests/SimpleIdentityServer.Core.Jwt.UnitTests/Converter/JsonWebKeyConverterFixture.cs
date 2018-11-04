@@ -55,8 +55,8 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
                     new Dictionary<string, object>
                     {
                         {
-                            Constants.JsonWebKeyParameterNames.KeyTypeName,
-                            Constants.KeyTypeValues.RsaName
+                            JwtConstants.JsonWebKeyParameterNames.KeyTypeName,
+                            JwtConstants.KeyTypeValues.RsaName
                         }
                     }
                 }
@@ -79,16 +79,16 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
                     new Dictionary<string, object>
                     {
                         {
-                            Constants.JsonWebKeyParameterNames.KeyTypeName,
+                            JwtConstants.JsonWebKeyParameterNames.KeyTypeName,
                             "not_supported"
                         },
                         {
-                            Constants.JsonWebKeyParameterNames.KeyIdentifierName,
+                            JwtConstants.JsonWebKeyParameterNames.KeyIdentifierName,
                             "kid"
                         },
                         {
-                            Constants.JsonWebKeyParameterNames.UseName,
-                            Constants.UseValues.Encryption
+                            JwtConstants.JsonWebKeyParameterNames.UseName,
+                            JwtConstants.UseValues.Encryption
                         }
                     }
                 }
@@ -111,15 +111,15 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
                     new Dictionary<string, object>
                     {
                         {
-                            Constants.JsonWebKeyParameterNames.KeyTypeName,
-                            Constants.KeyTypeValues.RsaName
+                            JwtConstants.JsonWebKeyParameterNames.KeyTypeName,
+                            JwtConstants.KeyTypeValues.RsaName
                         },
                         {
-                            Constants.JsonWebKeyParameterNames.KeyIdentifierName,
+                            JwtConstants.JsonWebKeyParameterNames.KeyIdentifierName,
                             "kid"
                         },
                         {
-                            Constants.JsonWebKeyParameterNames.UseName,
+                            JwtConstants.JsonWebKeyParameterNames.UseName,
                             "invalid_usage"
                         }
                     }
@@ -141,16 +141,16 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
             var jsonWebKey = new Dictionary<string, object>
             {
                 {
-                    Constants.JsonWebKeyParameterNames.KeyTypeName,
-                    Constants.KeyTypeValues.RsaName
+                    JwtConstants.JsonWebKeyParameterNames.KeyTypeName,
+                    JwtConstants.KeyTypeValues.RsaName
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.KeyIdentifierName,
+                    JwtConstants.JsonWebKeyParameterNames.KeyIdentifierName,
                     "kid"
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.UseName,
-                    Constants.UseValues.Signature
+                    JwtConstants.JsonWebKeyParameterNames.UseName,
+                    JwtConstants.UseValues.Signature
                 }
             };
             var jsonWebKeySet = new JsonWebKeySet
@@ -175,16 +175,16 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
             var jsonWebKey = new Dictionary<string, object>
             {
                 {
-                    Constants.JsonWebKeyParameterNames.KeyTypeName,
-                    Constants.KeyTypeValues.EcName
+                    JwtConstants.JsonWebKeyParameterNames.KeyTypeName,
+                    JwtConstants.KeyTypeValues.EcName
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.KeyIdentifierName,
+                    JwtConstants.JsonWebKeyParameterNames.KeyIdentifierName,
                     "kid"
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.UseName,
-                    Constants.UseValues.Signature
+                    JwtConstants.JsonWebKeyParameterNames.UseName,
+                    JwtConstants.UseValues.Signature
                 }
             };
             var jsonWebKeySet = new JsonWebKeySet
@@ -209,23 +209,23 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
             var jsonWebKey = new Dictionary<string, object>
             {
                 {
-                    Constants.JsonWebKeyParameterNames.KeyTypeName,
-                    Constants.KeyTypeValues.EcName
+                    JwtConstants.JsonWebKeyParameterNames.KeyTypeName,
+                    JwtConstants.KeyTypeValues.EcName
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.KeyIdentifierName,
+                    JwtConstants.JsonWebKeyParameterNames.KeyIdentifierName,
                     "kid"
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.UseName,
-                    Constants.UseValues.Signature
+                    JwtConstants.JsonWebKeyParameterNames.UseName,
+                    JwtConstants.UseValues.Signature
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.EcKey.XCoordinateName,
+                    JwtConstants.JsonWebKeyParameterNames.EcKey.XCoordinateName,
                     "-%-!è'x_coordinate"
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.EcKey.YCoordinateName,
+                    JwtConstants.JsonWebKeyParameterNames.EcKey.YCoordinateName,
                     "y_coordinate"
                 }
             };
@@ -251,16 +251,16 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
             var jsonWebKey = new Dictionary<string, object>
             {
                 {
-                    Constants.JsonWebKeyParameterNames.KeyTypeName,
-                    Constants.KeyTypeValues.RsaName
+                    JwtConstants.JsonWebKeyParameterNames.KeyTypeName,
+                    JwtConstants.KeyTypeValues.RsaName
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.KeyIdentifierName,
+                    JwtConstants.JsonWebKeyParameterNames.KeyIdentifierName,
                     "kid"
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.UseName,
-                    Constants.UseValues.Signature
+                    JwtConstants.JsonWebKeyParameterNames.UseName,
+                    JwtConstants.UseValues.Signature
                 }
             };
             var jsonWebKeySet = new JsonWebKeySet
@@ -275,8 +275,8 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
             {
                 var parameters = rsa.ExportParameters(false);
 
-                jsonWebKey.Add(Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, parameters.Modulus.ToBase64Simplified());
-                jsonWebKey.Add(Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, parameters.Exponent.ToBase64Simplified());
+                jsonWebKey.Add(JwtConstants.JsonWebKeyParameterNames.RsaKey.ModulusName, parameters.Modulus.ToBase64Simplified());
+                jsonWebKey.Add(JwtConstants.JsonWebKeyParameterNames.RsaKey.ExponentName, parameters.Exponent.ToBase64Simplified());
 
                 var expectedXml = RsaExtensions.ToXmlString(rsa, false);
 
@@ -298,23 +298,23 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
             var jsonWebKey = new Dictionary<string, object>
             {
                 {
-                    Constants.JsonWebKeyParameterNames.KeyTypeName,
-                    Constants.KeyTypeValues.EcName
+                    JwtConstants.JsonWebKeyParameterNames.KeyTypeName,
+                    JwtConstants.KeyTypeValues.EcName
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.KeyIdentifierName,
+                    JwtConstants.JsonWebKeyParameterNames.KeyIdentifierName,
                     "kid"
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.UseName,
-                    Constants.UseValues.Signature
+                    JwtConstants.JsonWebKeyParameterNames.UseName,
+                    JwtConstants.UseValues.Signature
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.EcKey.XCoordinateName,
+                    JwtConstants.JsonWebKeyParameterNames.EcKey.XCoordinateName,
                     xCoordinate
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.EcKey.YCoordinateName,
+                    JwtConstants.JsonWebKeyParameterNames.EcKey.YCoordinateName,
                     yCoordinate
                 }
             };

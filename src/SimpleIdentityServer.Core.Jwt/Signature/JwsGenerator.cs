@@ -23,11 +23,13 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
     {
         private const string JwsType = "JWT";
         private readonly ICreateJwsSignature _createJwsSignature;
+        private readonly JwsPayloadConverter _jwsPayloadConverter;
 
         public JwsGenerator(
             ICreateJwsSignature createJwsSignature)
         {
             _createJwsSignature = createJwsSignature;
+            _jwsPayloadConverter = new JwsPayloadConverter();
         }
         
         public string Generate(
@@ -54,12 +56,10 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
             var serializedProtectedHeader = protectedHeader.SerializeWithDataContract();
             var base64EncodedSerializedProtectedHeader = serializedProtectedHeader.Base64Encode();
-            var serializedPayload = jwsPayload.SerializeWithJavascript();
+            var serializedPayload = jwsPayload.SerializeWithJavascript(_jwsPayloadConverter);
             var base64EncodedSerializedPayload = serializedPayload.Base64Encode();
-            var combinedProtectedHeaderAndPayLoad = string.Format(
-                "{0}.{1}", 
-                base64EncodedSerializedProtectedHeader, 
-                base64EncodedSerializedPayload);
+            var combinedProtectedHeaderAndPayLoad =
+                $"{base64EncodedSerializedProtectedHeader}.{base64EncodedSerializedPayload}";
 
             var signedJws = string.Empty;
             if (jwsAlg != JwsAlg.none)

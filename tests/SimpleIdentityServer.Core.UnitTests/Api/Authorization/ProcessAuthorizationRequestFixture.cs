@@ -8,11 +8,9 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
-using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.OAuth.Logging;
 using System;
@@ -21,13 +19,14 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
-    using System.Net.Http;
     using Core.Common.Models;
+    using System.Net.Http;
+    using IClientStore = Core.Common.Repositories.IClientStore;
 
     public sealed class ProcessAuthorizationRequestFixture
     {
         private ProcessAuthorizationRequest _processAuthorizationRequest;
-        private Mock<IConfigurationService> _simpleIdentityServerConfiguratorStub;
+        private OAuthConfigurationOptions _simpleIdentityServerConfiguratorStub;
         private Mock<IOAuthEventSource> _oauthEventSource;
         private JwtGenerator _jwtGenerator;
 
@@ -41,7 +40,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(null, null, null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(new AuthorizationParameter(), null, null, null)).ConfigureAwait(false);
         }
-        
+
         [Fact]
         public async Task When_Passing_NotValidRedirectUrl_To_AuthorizationParameter_Then_Exception_Is_Thrown()
         {
@@ -89,7 +88,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 Assert.Throws<IdentityServerExceptionWithState>(
                     () => _processAuthorizationRequest.Process(authorizationParameter, null));
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidScope));
-            Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, Core.Constants.StandardScopes.OpenId.Name)));
+            Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, Core.JwtConstants.StandardScopes.OpenId.Name)));
             Assert.True(exception.State.Equals(state));
         }
 
@@ -116,7 +115,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     () => _processAuthorizationRequest.Process(authorizationParameter, null));
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
             Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.MissingParameter
-                , Core.Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName)));
+                , Core.JwtConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName)));
             Assert.True(exception.State.Equals(state));
         }
 
@@ -246,7 +245,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
             var claims = new List<Claim>
             {
-                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -291,7 +290,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 Prompt = "none",
             };
 
-            var subjectClaim = new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject);
+            var subjectClaim = new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject);
             var claims = new List<Claim>
             {
                 subjectClaim
@@ -348,7 +347,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 Prompt = "none",
             };
 
-            var subjectClaim = new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject);
+            var subjectClaim = new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject);
             var claims = new List<Claim>
             {
                 subjectClaim
@@ -361,7 +360,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     subjectClaim.Type, "wrong subjet"
                 },
                 {
-                    Jwt.Constants.StandardClaimNames.Audiences, new [] {  issuerName }
+                    Jwt.JwtConstants.StandardClaimNames.Audiences, new [] {  issuerName }
                 }
             };
             _simpleIdentityServerConfiguratorStub.Setup(s => s.GetIssuerName()).Returns(issuerName);
@@ -557,7 +556,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
             var claims = new List<Claim>
             {
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -621,10 +620,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         private void InitializeMockingObjects()
         {
             var clientValidator = new ClientValidator();
-            _simpleIdentityServerConfiguratorStub = new Mock<IConfigurationService>();
+            _simpleIdentityServerConfiguratorStub = new OAuthConfigurationOptions();
             _oauthEventSource = new Mock<IOAuthEventSource>();
             var scopeRepository = new Mock<IScopeRepository>();
             var clientRepository = new Mock<IClientRepository>();
+            var clientStore = new Mock<IClientStore>();
             var consentRepository = new Mock<IConsentRepository>();
             var jsonWebKeyRepository = new Mock<IJsonWebKeyRepository>();
             var parameterParserHelper = new ParameterParserHelper();
@@ -639,13 +639,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var jsonWebKeyConverter = new JsonWebKeyConverter();
             var httpClientFactory = new HttpClient(); //HttpClientFactory();
             var jwtParser = new JwtParser(
-                jweParser, 
-                jwsParser, 
+                jweParser,
+                jwsParser,
                 httpClientFactory,
-                clientRepository.Object,
+                clientStore.Object,
                 jsonWebKeyConverter,
                 jsonWebKeyRepository.Object);
-            var claimsMapping = new ClaimsMapping();
             var jwsGenerator = new JwsGenerator(createJwsSignature);
             var jweGenerator = new JweGenerator(jweHelper);
 
@@ -656,14 +655,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 actionResultFactory,
                 consentHelper,
                 jwtParser,
-                _simpleIdentityServerConfiguratorStub.Object,
+                _simpleIdentityServerConfiguratorStub,
                 _oauthEventSource.Object);
-            _jwtGenerator = new JwtGenerator(_simpleIdentityServerConfiguratorStub.Object,
+            _jwtGenerator = new JwtGenerator(
+                _simpleIdentityServerConfiguratorStub,
                 clientRepository.Object,
                 clientValidator,
                 jsonWebKeyRepository.Object,
                 scopeRepository.Object,
-                claimsMapping,
                 parameterParserHelper,
                 jwsGenerator,
                 jweGenerator);

@@ -47,14 +47,14 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
 
             var algorithmName = header.Alg;
             var encryptionName = header.Enc;
-            if (!Constants.MappingNameToJweAlgEnum.Keys.Contains(algorithmName)
-                || !Constants.MappingNameToJweEncEnum.Keys.Contains(encryptionName))
+            if (!JwtConstants.MappingNameToJweAlgEnum.Keys.Contains(algorithmName)
+                || !JwtConstants.MappingNameToJweEncEnum.Keys.Contains(encryptionName))
             {
                 return emptyResult;
             }
 
-            var algorithmEnum = Constants.MappingNameToJweAlgEnum[algorithmName];
-            var encryptionEnum = Constants.MappingNameToJweEncEnum[encryptionName];
+            var algorithmEnum = JwtConstants.MappingNameToJweAlgEnum[algorithmName];
+            var encryptionEnum = JwtConstants.MappingNameToJweEncEnum[encryptionName];
 
             var algorithm = _jweHelper.GetEncryptor(encryptionEnum);
             return algorithm.Decrypt(jwe, algorithmEnum, jsonWebKey);
@@ -88,14 +88,14 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
 
             var algorithmName = header.Alg;
             var encryptionName = header.Enc;
-            if (!Constants.MappingNameToJweAlgEnum.Keys.Contains(algorithmName)
-                || !Constants.MappingNameToJweEncEnum.Keys.Contains(encryptionName))
+            if (!JwtConstants.MappingNameToJweAlgEnum.Keys.Contains(algorithmName)
+                || !JwtConstants.MappingNameToJweEncEnum.Keys.Contains(encryptionName))
             {
                 return emptyResult;
             }
 
-            var algorithmEnum = Constants.MappingNameToJweAlgEnum[algorithmName];
-            var encryptionEnum = Constants.MappingNameToJweEncEnum[encryptionName];
+            var algorithmEnum = JwtConstants.MappingNameToJweAlgEnum[algorithmName];
+            var encryptionEnum = JwtConstants.MappingNameToJweEncEnum[encryptionName];
 
             var algorithm = _jweHelper.GetEncryptor(encryptionEnum);
             return algorithm.DecryptWithSymmetricPassword(jwe, algorithmEnum, jsonWebKey, password);

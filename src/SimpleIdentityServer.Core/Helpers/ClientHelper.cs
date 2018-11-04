@@ -23,10 +23,10 @@ namespace SimpleIdentityServer.Core.Helpers
 {
     public sealed class ClientHelper : IClientHelper
     {
-        private readonly IClientRepository _clientRepository;
+        private readonly IClientStore _clientRepository;
         private readonly IJwtGenerator _jwtGenerator;
 
-        public ClientHelper(IClientRepository clientRepository, IJwtGenerator jwtGenerator)
+        public ClientHelper(IClientStore clientRepository, IJwtGenerator jwtGenerator)
         {
             _clientRepository = clientRepository;
             _jwtGenerator = jwtGenerator;
@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(jwsPayload));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
+            var client = await _clientRepository.GetById(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 return null;

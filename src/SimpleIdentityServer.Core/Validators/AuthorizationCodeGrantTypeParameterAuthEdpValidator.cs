@@ -27,11 +27,12 @@ namespace SimpleIdentityServer.Core.Validators
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator : IAuthorizationCodeGrantTypeParameterAuthEdpValidator
     {
         private readonly IParameterParserHelper _parameterParserHelper;
-        private readonly IClientRepository _clientRepository;
+        private readonly IClientStore _clientRepository;
         private readonly IClientValidator _clientValidator;
 
         public AuthorizationCodeGrantTypeParameterAuthEdpValidator(
-            IParameterParserHelper parameterParserHelper, IClientRepository clientRepository,
+            IParameterParserHelper parameterParserHelper,
+            IClientStore clientRepository,
             IClientValidator clientValidator)
         {
             _parameterParserHelper = parameterParserHelper;
@@ -88,7 +89,7 @@ namespace SimpleIdentityServer.Core.Validators
                     parameter.State);
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(parameter.ClientId).ConfigureAwait(false);
+            var client = await _clientRepository.GetById(parameter.ClientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new IdentityServerExceptionWithState(
@@ -115,7 +116,7 @@ namespace SimpleIdentityServer.Core.Validators
         /// <param name="responseType"></param>
         /// <param name="state"></param>
         private void ValidateResponseTypeParameter(
-            string responseType, 
+            string responseType,
             string state)
         {
             if (string.IsNullOrWhiteSpace(responseType))
@@ -149,7 +150,7 @@ namespace SimpleIdentityServer.Core.Validators
                 return;
             }
 
-            var promptNames = Enum.GetNames(typeof (PromptParameter));
+            var promptNames = Enum.GetNames(typeof(PromptParameter));
             var atLeastOnePromptIsNotSupported = prompt.Split(' ')
                 .Any(r => !string.IsNullOrWhiteSpace(r) && !promptNames.Contains(r));
             if (atLeastOnePromptIsNotSupported)

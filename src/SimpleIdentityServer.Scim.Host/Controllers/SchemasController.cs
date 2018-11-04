@@ -22,16 +22,18 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
     public class SchemasController : Controller
     {
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(string id)
+        public Task<IActionResult> Get(string id)
         {
-            return NotFound();
+            var result = NotFound();
+            return Task.FromResult<IActionResult>(result);
             //return new OkObjectResult(await _schemaStore.GetSchema(id).ConfigureAwait(false));
         }
 
         [HttpGet]
-        public async Task<ActionResult> All()
+        public Task<IActionResult> All()
         {
-            return NotFound();
+            var result = NotFound();
+            return Task.FromResult<IActionResult>(result);
             // return new OkObjectResult(await _schemaStore.GetSchemas().ConfigureAwait(false));
         }
     }

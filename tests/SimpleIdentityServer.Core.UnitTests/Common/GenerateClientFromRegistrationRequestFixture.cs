@@ -61,9 +61,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             Assert.Contains(ResponseType.code, client.ResponseTypes);
             Assert.Contains(GrantType.authorization_code, client.GrantTypes);
             Assert.True(client.ApplicationType == ApplicationTypes.web);
-            Assert.True(client.IdTokenSignedResponseAlg == Jwt.Constants.JwsAlgNames.RS256);
+            Assert.True(client.IdTokenSignedResponseAlg == Jwt.JwtConstants.JwsAlgNames.RS256);
             Assert.True(client.IdTokenEncryptedResponseAlg == string.Empty);
-            Assert.True(client.UserInfoSignedResponseAlg == Jwt.Constants.JwsAlgNames.NONE);
+            Assert.True(client.UserInfoSignedResponseAlg == Jwt.JwtConstants.JwsAlgNames.NONE);
             Assert.True(client.UserInfoEncryptedResponseAlg == string.Empty);
             Assert.True(client.RequestObjectSigningAlg == string.Empty);
             Assert.True(client.RequestObjectEncryptionAlg == string.Empty);
@@ -80,14 +80,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             var registrationParameter = new RegistrationParameter
             {
                 ClientName = clientName,
-                IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
+                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
             };
 
             // ACT
             var client = _generateClientFromRegistrationRequest.Execute(registrationParameter);
 
             // ASSERT
-            Assert.True(client.IdTokenEncryptedResponseEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
+            Assert.True(client.IdTokenEncryptedResponseEnc == Jwt.JwtConstants.JweEncNames.A128CBC_HS256);
 
         }
 
@@ -100,14 +100,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             var registrationParameter = new RegistrationParameter
             {
                 ClientName = clientName,
-                UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
+                UserInfoEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
             };
 
             // ACT
             var client = _generateClientFromRegistrationRequest.Execute(registrationParameter);
 
             // ASSERT
-            Assert.True(client.UserInfoEncryptedResponseEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
+            Assert.True(client.UserInfoEncryptedResponseEnc == Jwt.JwtConstants.JweEncNames.A128CBC_HS256);
         }
 
         [Fact]
@@ -119,14 +119,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             var registrationParameter = new RegistrationParameter
             {
                 ClientName = clientName,
-                RequestObjectEncryptionAlg = Jwt.Constants.JweAlgNames.RSA1_5
+                RequestObjectEncryptionAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
             };
 
             // ACT
             var client = _generateClientFromRegistrationRequest.Execute(registrationParameter);
 
             // ASSERT
-            Assert.True(client.RequestObjectEncryptionEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
+            Assert.True(client.RequestObjectEncryptionEnc == Jwt.JwtConstants.JweEncNames.A128CBC_HS256);
         }
 
         [Fact]
@@ -164,17 +164,17 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 JwksUri = jwksUri,
                 Jwks = new JsonWebKeySet(),
                 SectorIdentifierUri = sectorIdentifierUri,
-                IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
-                IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
-                IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
-                UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
-                UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
-                UserInfoEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
-                RequestObjectSigningAlg = Jwt.Constants.JwsAlgNames.RS256,
-                RequestObjectEncryptionAlg = Jwt.Constants.JweAlgNames.RSA1_5,
-                RequestObjectEncryptionEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
+                IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
+                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
+                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
+                UserInfoSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
+                UserInfoEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
+                UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
+                RequestObjectSigningAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
+                RequestObjectEncryptionAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
+                RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
                 TokenEndPointAuthMethod = "client_secret_post",
-                TokenEndPointAuthSigningAlg = Jwt.Constants.JwsAlgNames.RS256,
+                TokenEndPointAuthSigningAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
                 DefaultMaxAge = defaultMaxAge,
                 DefaultAcrValues = defaultAcrValues,
                 RequireAuthTime = requireAuthTime,
@@ -210,17 +210,17 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             Assert.True(client.JwksUri == jwksUri);
             Assert.NotNull(client.JsonWebKeys);
             Assert.True(client.JsonWebKeys.First().Kid == kid);
-            Assert.True(client.IdTokenSignedResponseAlg == Jwt.Constants.JwsAlgNames.RS256);
-            Assert.True(client.IdTokenEncryptedResponseAlg == Jwt.Constants.JweAlgNames.RSA1_5);
-            Assert.True(client.IdTokenEncryptedResponseEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
-            Assert.True(client.UserInfoSignedResponseAlg == Jwt.Constants.JwsAlgNames.RS256);
-            Assert.True(client.UserInfoEncryptedResponseAlg == Jwt.Constants.JweAlgNames.RSA1_5);
-            Assert.True(client.UserInfoEncryptedResponseEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
-            Assert.True(client.RequestObjectSigningAlg == Jwt.Constants.JwsAlgNames.RS256);
-            Assert.True(client.RequestObjectEncryptionAlg == Jwt.Constants.JweAlgNames.RSA1_5);
-            Assert.True(client.RequestObjectEncryptionEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
+            Assert.True(client.IdTokenSignedResponseAlg == Jwt.JwtConstants.JwsAlgNames.RS256);
+            Assert.True(client.IdTokenEncryptedResponseAlg == Jwt.JwtConstants.JweAlgNames.RSA1_5);
+            Assert.True(client.IdTokenEncryptedResponseEnc == Jwt.JwtConstants.JweEncNames.A128CBC_HS256);
+            Assert.True(client.UserInfoSignedResponseAlg == Jwt.JwtConstants.JwsAlgNames.RS256);
+            Assert.True(client.UserInfoEncryptedResponseAlg == Jwt.JwtConstants.JweAlgNames.RSA1_5);
+            Assert.True(client.UserInfoEncryptedResponseEnc == Jwt.JwtConstants.JweEncNames.A128CBC_HS256);
+            Assert.True(client.RequestObjectSigningAlg == Jwt.JwtConstants.JwsAlgNames.RS256);
+            Assert.True(client.RequestObjectEncryptionAlg == Jwt.JwtConstants.JweAlgNames.RSA1_5);
+            Assert.True(client.RequestObjectEncryptionEnc == Jwt.JwtConstants.JweEncNames.A128CBC_HS256);
             Assert.True(client.TokenEndPointAuthMethod == TokenEndPointAuthenticationMethods.client_secret_post);
-            Assert.True(client.TokenEndPointAuthSigningAlg == Jwt.Constants.JwsAlgNames.RS256);
+            Assert.True(client.TokenEndPointAuthSigningAlg == Jwt.JwtConstants.JwsAlgNames.RS256);
             Assert.True(client.DefaultMaxAge == defaultMaxAge);
             Assert.True(client.DefaultAcrValues == defaultAcrValues);
             Assert.True(client.RequireAuthTime == requireAuthTime);

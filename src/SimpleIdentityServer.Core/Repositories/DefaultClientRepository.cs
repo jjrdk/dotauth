@@ -10,13 +10,15 @@ namespace SimpleIdentityServer.Core.Repositories
 {
     using Common.Results;
 
-    internal sealed class DefaultClientRepository : IClientRepository
+    internal sealed class DefaultClientRepository : IClientRepository, IClientStore
     {
-        public ICollection<Common.Models.Client> _clients;
+        private readonly ICollection<Common.Models.Client> _clients;
 
-        public DefaultClientRepository(ICollection<Common.Models.Client> clients)
+        public DefaultClientRepository(IReadOnlyCollection<Common.Models.Client> clients)
         {
-            _clients = clients ?? new List<Common.Models.Client>();
+            _clients = clients == null
+                ? new List<Common.Models.Client>()
+                : clients.ToList();
         }
 
         public Task<bool> DeleteAsync(Common.Models.Client newClient)
@@ -41,7 +43,7 @@ namespace SimpleIdentityServer.Core.Repositories
             return Task.FromResult((IEnumerable<Common.Models.Client>)_clients.Select(c => c.Copy()));
         }
 
-        public Task<Common.Models.Client> GetClientByIdAsync(string clientId)
+        public Task<Common.Models.Client> GetById(string clientId)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {

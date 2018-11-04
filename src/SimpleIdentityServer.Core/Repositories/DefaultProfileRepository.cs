@@ -13,9 +13,11 @@ namespace SimpleIdentityServer.Core.Repositories
     {
         public List<ResourceOwnerProfile> _profiles;
 
-        public DefaultProfileRepository(List<ResourceOwnerProfile> profiles)
+        public DefaultProfileRepository(IReadOnlyCollection<ResourceOwnerProfile> profiles = null)
         {
-            _profiles = profiles ?? new List<ResourceOwnerProfile>();
+            _profiles = profiles == null
+                ? new List<ResourceOwnerProfile>()
+                : profiles.ToList();
         }
 
         public Task<bool> Add(IEnumerable<ResourceOwnerProfile> profiles)
@@ -25,7 +27,7 @@ namespace SimpleIdentityServer.Core.Repositories
                 throw new ArgumentNullException(nameof(profiles));
             }
 
-            foreach(var profile in profiles)
+            foreach (var profile in profiles)
             {
                 profile.CreateDateTime = DateTime.UtcNow;
             }
@@ -58,7 +60,7 @@ namespace SimpleIdentityServer.Core.Repositories
             }
 
             var lstIndexToBeRemoved = _profiles.Where(p => subjects.Contains(p.Subject)).Select(p => _profiles.IndexOf(p)).OrderByDescending(p => p);
-            foreach(var index in lstIndexToBeRemoved)
+            foreach (var index in lstIndexToBeRemoved)
             {
                 _profiles.RemoveAt(index);
             }
@@ -68,7 +70,7 @@ namespace SimpleIdentityServer.Core.Repositories
 
         public Task<IEnumerable<ResourceOwnerProfile>> Search(SearchProfileParameter parameter)
         {
-            if(parameter == null)
+            if (parameter == null)
             {
                 throw new ArgumentNullException(nameof(parameter));
             }

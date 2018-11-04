@@ -34,10 +34,7 @@ namespace SimpleIdentityServer.Core.Validators
             var scopes = _parameterParserHelper.ParseScopes(scope);
             if (!scopes.Any())
             {
-                return new ScopeValidationResult(false)
-                {
-                    ErrorMessage = string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, scope)
-                };
+                return new ScopeValidationResult(string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, scope));
             }
 
             var duplicates = scopes.GroupBy(p => p)
@@ -46,10 +43,9 @@ namespace SimpleIdentityServer.Core.Validators
                 .ToList();
             if (duplicates.Any())
             {
-                return new ScopeValidationResult(false)
-                {
-                    ErrorMessage = string.Format(ErrorDescriptions.DuplicateScopeValues, string.Join(",", duplicates))
-                };
+                return new ScopeValidationResult(
+                    string.Format(ErrorDescriptions.DuplicateScopeValues,
+                    string.Join(",", duplicates)));
             }
 
             var scopeAllowed = client.AllowedScopes.Select(a => a.Name).ToList();
@@ -58,16 +54,12 @@ namespace SimpleIdentityServer.Core.Validators
                 .ToList();
             if (scopesNotAllowedOrInvalid.Any())
             {
-                return new ScopeValidationResult(false)
-                {
-                    ErrorMessage = string.Format(ErrorDescriptions.ScopesAreNotAllowedOrInvalid, string.Join(",", scopesNotAllowedOrInvalid))
-                };
+                return new ScopeValidationResult(
+                    string.Format(ErrorDescriptions.ScopesAreNotAllowedOrInvalid,
+                    string.Join(",", scopesNotAllowedOrInvalid)));
             }
 
-            return new ScopeValidationResult(true)
-            {
-                Scopes = scopes
-            };
+            return new ScopeValidationResult(scopes);
         }
     }
 }

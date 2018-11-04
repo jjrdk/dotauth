@@ -10,7 +10,7 @@
     public interface IJwtGenerator
     {
         Task<JwsPayload> UpdatePayloadDate(JwsPayload jwsPayload);
-        Task<JwsPayload> GenerateAccessToken(Client client, IEnumerable<string> scopes, string issuerName);
+        Task<JwsPayload> GenerateAccessToken(Client client, IEnumerable<string> scopes, string issuerName, IDictionary<string, object> additionalClaims);
         Task<JwsPayload> GenerateIdTokenPayloadForScopesAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, string issuerName);
         Task<JwsPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters, string issuerName);
         Task<JwsPayload> GenerateUserInfoPayloadForScopeAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);

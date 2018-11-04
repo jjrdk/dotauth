@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         private Mock<IJweParser> _jweParserMock;
         private Mock<IJwsParser> _jwsParserMock;
         private HttpClient _httpClientFactoryMock;
-        private Mock<IClientRepository> _clientRepositoryStub;
+        private Mock<IClientStore> _clientRepositoryStub;
         private Mock<IJsonWebKeyConverter> _jsonWebKeyConverterMock;
         private Mock<IJsonWebKeyRepository> _jsonWebKeyRepositoryMock;
         private IJwtParser _jwtParser;
@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             InitializeFakeObjects();
             var jwsProtectedHeader = new JweProtectedHeader
             {
-                Alg = Jwt.Constants.JwsAlgNames.PS256
+                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
             };
             _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             InitializeFakeObjects();
             var jwsProtectedHeader = new JweProtectedHeader
             {
-                Alg = Jwt.Constants.JwsAlgNames.PS256
+                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
             };
             var jsonWebKey = new JsonWebKey();
             _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
@@ -115,7 +115,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string clientId = "client_id";
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(() => null);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT & ASSERT
@@ -131,7 +131,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var client = new Core.Common.Models.Client();
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(() => null);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
@@ -149,7 +149,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string clientId = "client_id";
             var jwsProtectedHeader = new JweProtectedHeader
             {
-                Alg = Jwt.Constants.JwsAlgNames.PS256
+                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
             };
             var client = new Core.Common.Models.Client
             {
@@ -158,7 +158,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
@@ -184,7 +184,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var payLoad = new JwsPayload();
             var jwsProtectedHeader = new JweProtectedHeader
             {
-                Alg = Jwt.Constants.JweAlgNames.A128KW,
+                Alg = Jwt.JwtConstants.JweAlgNames.A128KW,
                 Kid = kid
             };
             var client = new Core.Common.Models.Client
@@ -198,7 +198,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _jwsParserMock.Setup(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()))
                 .Returns(payLoad);
@@ -219,7 +219,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string password = "password";
             var jwsProtectedHeader = new JweProtectedHeader
             {
-                Alg = Jwt.Constants.JwsAlgNames.PS256
+                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
             };
             var client = new Core.Common.Models.Client
             {
@@ -228,7 +228,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
@@ -256,7 +256,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var payLoad = new JwsPayload();
             var jwsProtectedHeader = new JweProtectedHeader
             {
-                Alg = Jwt.Constants.JweAlgNames.A128KW,
+                Alg = Jwt.JwtConstants.JweAlgNames.A128KW,
                 Kid = kid
             };
             var client = new Core.Common.Models.Client
@@ -270,7 +270,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _jwsParserMock.Setup(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()))
                 .Returns(payLoad);
@@ -322,7 +322,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var payLoad = new JwsPayload();
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.Constants.JwsAlgNames.PS256,
+                Alg = Jwt.JwtConstants.JwsAlgNames.PS256,
                 Kid = kid
             };
 
@@ -358,7 +358,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ARRANGE
             const string clientId = "client_id";
             InitializeFakeObjects();
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT & ASSERTS
@@ -373,7 +373,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string clientId = "client_id";
             var client = new Core.Common.Models.Client();
             InitializeFakeObjects();
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(() => null);
@@ -393,7 +393,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string clientId = "client_id";
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.Constants.JwsAlgNames.PS256
+                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
             };
             var client = new Core.Common.Models.Client
             {
@@ -403,7 +403,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var jsonWebKeys = new List<JsonWebKey>();
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _jsonWebKeyConverterMock.Setup(j => j.ExtractSerializedKeys(It.IsAny<JsonWebKeySet>()))
                 .Returns(jsonWebKeys);
@@ -424,7 +424,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string json = "json";
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.Constants.JwsAlgNames.PS256
+                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
             };
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest)
             {
@@ -437,7 +437,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             var handler = new FakeHttpMessageHandler(httpResponseMessage);
             var httpClientFake = new HttpClient(handler);
@@ -462,7 +462,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var json = jsonWebKeySet.SerializeWithDataContract();
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.Constants.JwsAlgNames.PS256
+                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
             };
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.Accepted)
             {
@@ -476,7 +476,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var jsonWebKeys = new List<JsonWebKey>();
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             var handler = new FakeHttpMessageHandler(httpResponseMessage);
             var httpClientFake = new HttpClient(handler);
@@ -502,7 +502,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string clientId = "client_id";
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.Constants.JwsAlgNames.PS256
+                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
             };
             var client = new Core.Common.Models.Client
             {
@@ -511,7 +511,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
@@ -529,7 +529,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string clientId = "client_id";
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.Constants.JwsAlgNames.PS256
+                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
             };
             var client = new Core.Common.Models.Client
             {
@@ -537,7 +537,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
@@ -557,7 +557,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var payLoad = new JwsPayload();
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.Constants.JwsAlgNames.NONE
+                Alg = Jwt.JwtConstants.JwsAlgNames.NONE
             };
             var client = new Core.Common.Models.Client
             {
@@ -566,7 +566,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _jwsParserMock.Setup(j => j.GetPayload(It.IsAny<string>()))
                 .Returns(payLoad);
@@ -597,7 +597,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var payLoad = new JwsPayload();
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.Constants.JwsAlgNames.PS256,
+                Alg = Jwt.JwtConstants.JwsAlgNames.PS256,
                 Kid = kid
             };
             var client = new Core.Common.Models.Client
@@ -618,7 +618,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _jwsParserMock.Setup(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()))
                 .Returns(payLoad);
@@ -653,7 +653,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var payLoad = new JwsPayload();
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.Constants.JwsAlgNames.PS256,
+                Alg = Jwt.JwtConstants.JwsAlgNames.PS256,
                 Kid = kid
             };
             var client = new Core.Common.Models.Client
@@ -667,7 +667,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _jwsParserMock.Setup(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()))
                 .Returns(payLoad);
@@ -685,7 +685,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             _jweParserMock = new Mock<IJweParser>();
             _jwsParserMock = new Mock<IJwsParser>();
             _httpClientFactoryMock = new HttpClient();// new Mock<IHttpClientFactory>();
-            _clientRepositoryStub = new Mock<IClientRepository>();
+            _clientRepositoryStub = new Mock<IClientStore>();
             _jsonWebKeyConverterMock = new Mock<IJsonWebKeyConverter>();
             _jsonWebKeyRepositoryMock = new Mock<IJsonWebKeyRepository>();
             _jwtParser = BuildParser();

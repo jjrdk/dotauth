@@ -9,7 +9,6 @@ using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
@@ -22,7 +21,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         private Mock<IActionResultFactory> _actionResultFactoryFake;
         private Mock<IConsentHelper> _consentHelperFake;
         private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
-        private Mock<IClientRepository> _clientRepositoryStub;
+        private Mock<IClientStore> _clientRepositoryStub;
         private IAuthenticateHelper _authenticateHelper;
 
         [Fact]
@@ -30,7 +29,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            
+
             // ACT & ASSERT
             await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateHelper.ProcessRedirection(null, null, null, null, null)).ConfigureAwait(false);
         }
@@ -40,7 +39,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult((Core.Common.Models.Client)null));
             var authorizationParameter = new AuthorizationParameter
             {
@@ -69,7 +68,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             };
             var authorizationParameter = new AuthorizationParameter();
             var claims = new List<Claim>();
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(new Core.Common.Models.Client()));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirection())
                 .Returns(actionResult);
@@ -108,7 +107,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 ResponseMode = ResponseMode.form_post
             };
             var claims = new List<Claim>();
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(new Core.Common.Models.Client()));
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(prompts);
@@ -145,7 +144,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             };
             var authorizationParameter = new AuthorizationParameter();
             var claims = new List<Claim>();
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(new Core.Common.Models.Client()));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirection())
                 .Returns(actionResult);
@@ -171,7 +170,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _actionResultFactoryFake = new Mock<IActionResultFactory>();
             _consentHelperFake = new Mock<IConsentHelper>();
             _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
-            _clientRepositoryStub = new Mock<IClientRepository>();
+            _clientRepositoryStub = new Mock<IClientStore>();
             _authenticateHelper = new AuthenticateHelper(
                 _parameterParserHelperFake.Object,
                 _actionResultFactoryFake.Object,

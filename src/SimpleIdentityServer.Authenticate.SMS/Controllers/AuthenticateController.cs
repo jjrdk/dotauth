@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             IGetUserOperation getUserOperation,
             IUpdateUserClaimsOperation updateUserClaimsOperation,
             IPayloadSerializer payloadSerializer,
-            IConfigurationService configurationService,
+            OAuthConfigurationOptions configurationService,
             IAuthenticateHelper authenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             ISmsAuthenticationOperation smsAuthenticationOperation,
@@ -169,7 +169,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             }
 
             var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, Host.Constants.CookieNames.PasswordLessCookieName)
+                .GetAuthenticatedUser(this, Host.HostConstants.CookieNames.PasswordLessCookieName)
                 .ConfigureAwait(false);
             if (authenticatedUser == null ||
                 authenticatedUser.Identity == null ||
@@ -204,7 +204,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             }
 
             var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, Host.Constants.CookieNames.PasswordLessCookieName)
+                .GetAuthenticatedUser(this, Host.HostConstants.CookieNames.PasswordLessCookieName)
                 .ConfigureAwait(false);
             if (authenticatedUser == null ||
                 authenticatedUser.Identity == null ||
@@ -215,10 +215,10 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             }
 
             var subject = authenticatedUser.Claims
-                .First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject)
+                .First(c => c.Type == Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject)
                 .Value;
             var phoneNumber = authenticatedUser.Claims.First(c =>
-                c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber);
+                c.Type == Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber);
             if (confirmCodeViewModel.Action == "resend") // Resend the confirmation code.
             {
                 var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value).ConfigureAwait(false);
@@ -235,7 +235,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             }
 
             await _authenticationService.SignOutAsync(HttpContext,
-                    Host.Constants.CookieNames.PasswordLessCookieName,
+                    Host.HostConstants.CookieNames.PasswordLessCookieName,
                     new AuthenticationProperties())
                 .ConfigureAwait(false);
             var resourceOwner = await _getUserOperation.Execute(authenticatedUser).ConfigureAwait(false);
@@ -342,10 +342,10 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 
         private async Task SetPasswordLessCookie(IEnumerable<Claim> claims)
         {
-            var identity = new ClaimsIdentity(claims, Host.Constants.CookieNames.PasswordLessCookieName);
+            var identity = new ClaimsIdentity(claims, Host.HostConstants.CookieNames.PasswordLessCookieName);
             var principal = new ClaimsPrincipal(identity);
             await _authenticationService.SignInAsync(HttpContext,
-                    Host.Constants.CookieNames.PasswordLessCookieName,
+                    Host.HostConstants.CookieNames.PasswordLessCookieName,
                     principal,
                     new AuthenticationProperties
                     {

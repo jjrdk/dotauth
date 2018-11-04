@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             }
 
             var supportedClaims = await _claimRepository.GetAllAsync().ConfigureAwait(false);
-            claims = claims.Where(c => supportedClaims.Any(sp => sp.Code == c.Code && !Jwt.Constants.NotEditableResourceOwnerClaimNames.Contains(c.Code)));
+            claims = claims.Where(c => supportedClaims.Any(sp => sp.Code == c.Code && !Jwt.JwtConstants.NotEditableResourceOwnerClaimNames.Contains(c.Code)));
             var claimsToBeRemoved = resourceOwner.Claims
                 .Where(cl => claims.Any(c => c.Code == cl.Type))
                 .Select(cl => resourceOwner.Claims.IndexOf(cl))
@@ -77,12 +77,12 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             }
 
             Claim updatedClaim;
-            if (((updatedClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt)) != null))
+            if (((updatedClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == Jwt.JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt)) != null))
             {
                 resourceOwner.Claims.Remove(updatedClaim);
             }
 
-            resourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
+            resourceOwner.Claims.Add(new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
             return await _resourceOwnerRepository.UpdateAsync(resourceOwner).ConfigureAwait(false);
         }
     }
