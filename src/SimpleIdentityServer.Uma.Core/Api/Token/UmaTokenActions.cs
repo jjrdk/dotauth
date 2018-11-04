@@ -9,7 +9,6 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
     using Common;
     using Errors;
     using Exceptions;
-    using Logging;
     using Models;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -23,6 +22,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Text;
+    using Logging;
 
     internal sealed class UmaTokenActions : IUmaTokenActions
     {

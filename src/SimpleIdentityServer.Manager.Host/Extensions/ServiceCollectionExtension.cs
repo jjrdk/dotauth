@@ -15,8 +15,6 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.AccountFilter.Basic.Aggregates;
-using SimpleIdentityServer.AccountFilter.Basic.Repositories;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt;
@@ -28,6 +26,9 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
+    using SimpleIdentityServer.Core.Common.AccountFiltering;
+    using SimpleIdentityServer.Core.Common.Repositories;
+
     public static class ServiceCollectionExtension
     {
         public static void AddSimpleIdentityServerManager(this IServiceCollection serviceCollection, ManagerOptions managerOptions)
@@ -80,15 +81,15 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 			serviceCollection.AddOpenidLogging();
         }
 
-        public static IServiceCollection AddAccountFilter(this IServiceCollection services, List<FilterAggregate> filters = null)
+        public static IServiceCollection AddAccountFilter(this IServiceCollection services, List<Filter> filters = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddTransient<IAccountFilter, SimpleIdentityServer.AccountFilter.Basic.AccountFilter>();
-            services.AddSingleton<IFilterRepository>(new DefaultFilterRepository(filters));
+            services.AddTransient<IAccountFilter, AccountFilter>();
+            services.AddSingleton<IFilterStore>(new DefaultFilterStore(filters));
             return services;
         }
     }

@@ -20,7 +20,6 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -28,6 +27,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Api.Authorization
 {
     using Core.Common;
+    using Logging;
     using SimpleIdentityServer.Common.Dtos.Events.OAuth;
 
     public class AuthorizationActions : IAuthorizationActions

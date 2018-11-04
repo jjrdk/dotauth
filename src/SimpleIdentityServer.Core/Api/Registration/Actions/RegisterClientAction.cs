@@ -19,7 +19,6 @@ using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -28,6 +27,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Registration.Actions
 {
+    using Logging;
+
     public class RegisterClientAction : IRegisterClientAction
     {
         private readonly IOAuthEventSource _oauthEventSource;

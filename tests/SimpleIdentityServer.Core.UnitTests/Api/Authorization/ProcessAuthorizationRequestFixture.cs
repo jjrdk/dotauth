@@ -12,7 +12,6 @@ using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -21,6 +20,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
     using Core.Common.Models;
     using System.Net.Http;
+    using Logging;
     using IClientStore = Core.Common.Repositories.IClientStore;
 
     public sealed class ProcessAuthorizationRequestFixture

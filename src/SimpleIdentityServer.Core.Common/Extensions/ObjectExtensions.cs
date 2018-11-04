@@ -22,6 +22,8 @@ namespace SimpleIdentityServer.Core.Common.Extensions
 
     public static class ObjectExtensions
     {
+        private static readonly JsonConverter[] Converters = { new JwsPayloadConverter() };
+
         public static string SerializeWithDataContract(this object parameter)
         {
             var serializer = new DataContractJsonSerializer(parameter.GetType());
@@ -42,14 +44,14 @@ namespace SimpleIdentityServer.Core.Common.Extensions
             return (T)obj;
         }
 
-        public static string SerializeWithJavascript(this object parameter, params JsonConverter[] converters)
+        public static string SerializeWithJavascript(this object parameter)
         {
-            return JsonConvert.SerializeObject(parameter, converters);
+            return JsonConvert.SerializeObject(parameter, Converters);
         }
 
-        public static T DeserializeWithJavascript<T>(this string parameter, params JsonConverter[] converters)
+        public static T DeserializeWithJavascript<T>(this string parameter)
         {
-            return JsonConvert.DeserializeObject<T>(parameter, converters);
+            return JsonConvert.DeserializeObject<T>(parameter, Converters);
         }
     }
 }

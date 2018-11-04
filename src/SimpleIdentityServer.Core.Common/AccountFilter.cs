@@ -1,23 +1,21 @@
-﻿using SimpleIdentityServer.AccountFilter.Basic.Aggregates;
-using SimpleIdentityServer.AccountFilter.Basic.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.AccountFilter.Basic
+﻿namespace SimpleIdentityServer.Core.Common
 {
-    using Core.Common;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
+    using AccountFiltering;
+    using Repositories;
 
     public class AccountFilter : IAccountFilter
     {
-        private readonly IFilterRepository _filterRepository;
+        private readonly IFilterStore _filterStore;
 
-        public AccountFilter(IFilterRepository filterRepository)
+        public AccountFilter(IFilterStore filterStore)
         {
-            _filterRepository = filterRepository;
+            _filterStore = filterStore;
         }
 
         public async Task<AccountFilterResult> Check(IEnumerable<Claim> claims)
@@ -28,7 +26,7 @@ namespace SimpleIdentityServer.AccountFilter.Basic
             }
 
             var accountFilterRules = new List<AccountFilterRuleResult>();
-            var filters = await _filterRepository.GetAll().ConfigureAwait(false);
+            var filters = await _filterStore.GetAll().ConfigureAwait(false);
             if (filters != null)
             {
                 foreach (var filter in filters)

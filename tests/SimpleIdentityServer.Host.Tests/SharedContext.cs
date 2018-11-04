@@ -21,7 +21,6 @@ using System.Security.Cryptography;
 namespace SimpleIdentityServer.Host.Tests
 {
     using System.Net.Http;
-    using System.Security.Cryptography.Algorithms.Extensions;
 
     public class SharedContext
     {

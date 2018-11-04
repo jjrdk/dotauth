@@ -9,7 +9,6 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -17,6 +16,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
+    using Logging;
     using Client = Client;
 
     public sealed class GetAuthorizationCodeOperationFixture

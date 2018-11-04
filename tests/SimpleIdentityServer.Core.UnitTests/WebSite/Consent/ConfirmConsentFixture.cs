@@ -10,7 +10,6 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
-using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -20,6 +19,7 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 {
     using System.Threading;
+    using Logging;
 
     public sealed class ConfirmConsentFixture
     {

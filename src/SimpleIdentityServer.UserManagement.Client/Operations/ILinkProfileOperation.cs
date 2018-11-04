@@ -1,8 +1,8 @@
 ﻿namespace SimpleIdentityServer.UserManagement.Client.Operations
 {
     using System.Threading.Tasks;
+    using Common.Requests;
     using Core.Common;
-    using Requests;
 
     public interface ILinkProfileOperation
     {

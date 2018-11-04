@@ -17,11 +17,6 @@ using System;
 
 namespace SimpleIdentityServer.Logging
 {
-    using Manager.Logging;
-    using OAuth.Logging;
-    using OpenId.Logging;
-    using Uma.Logging;
-
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddTechnicalLogging(this IServiceCollection services)

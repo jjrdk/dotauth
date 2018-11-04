@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using SimpleIdentityServer.AccountFilter.Basic.Repositories;
 using SimpleIdentityServer.Authenticate.SMS;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Authenticate.SMS.Controllers;
@@ -47,6 +46,7 @@ namespace SimpleIdentityServer.Host.Tests
     using Controllers.Api;
     using Extensions;
     using System.Net.Http;
+    using Core.Common.Repositories;
 
     public class FakeStartup : IStartup
     {
@@ -164,8 +164,8 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddOAuthLogging()
                 .AddLogging()
                 //.AddDefaultAccessTokenStore()
-                .AddTransient<IAccountFilter, AccountFilter.Basic.AccountFilter>()
-                .AddSingleton<IFilterRepository>(new DefaultFilterRepository(null));
+                .AddTransient<IAccountFilter, AccountFilter>()
+                .AddSingleton<IFilterStore>(new DefaultFilterStore(null));
             services.AddSingleton(_context.ConfirmationCodeStore.Object);
             services.AddSingleton(sp => _context.Client);
             services.AddSingleton<IUsersClient>(sp =>

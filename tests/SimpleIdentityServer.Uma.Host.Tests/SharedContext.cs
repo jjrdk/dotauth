@@ -3,8 +3,6 @@ using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Uma.Host.Tests
 {
-    using System.Security.Cryptography.Algorithms.Extensions;
-
     public class SharedContext
     {
         public SharedContext()

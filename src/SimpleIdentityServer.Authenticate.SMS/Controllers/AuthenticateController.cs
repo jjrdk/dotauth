@@ -18,7 +18,6 @@ using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -30,6 +29,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 {
     using Core.Common;
     using Core.WebSite.User.Actions;
+    using Logging;
 
     [Area(Constants.AMR)]
     public class AuthenticateController : BaseAuthenticateController

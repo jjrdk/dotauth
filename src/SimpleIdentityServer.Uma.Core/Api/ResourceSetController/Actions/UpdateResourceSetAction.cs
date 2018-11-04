@@ -19,12 +19,13 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
-using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
+    using Logging;
+
     internal class UpdateResourceSetAction : IUpdateResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;

@@ -20,7 +20,6 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Stores;
-using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +27,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
 {
+    using Logging;
+
     internal class AddPermissionAction : IAddPermissionAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;

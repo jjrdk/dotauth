@@ -30,11 +30,12 @@ using SimpleIdentityServer.Manager.Core.Api.Scopes;
 using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
 using SimpleIdentityServer.Manager.Core.Factories;
 using SimpleIdentityServer.Manager.Core.Helpers;
-using SimpleIdentityServer.Manager.Core.Manage;
 using SimpleIdentityServer.Manager.Core.Validators;
 
 namespace SimpleIdentityServer.Manager.Core
 {
+    using Api.Manage;
+
     public static class AddSimpleIdentityServerManagerCoreExtensions
     {
         public static IServiceCollection AddSimpleIdentityServerManagerCore(this IServiceCollection serviceCollection)

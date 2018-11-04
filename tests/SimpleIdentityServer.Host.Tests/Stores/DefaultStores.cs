@@ -20,8 +20,6 @@ using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Host.Tests.Stores
 {
-    using System.Security.Cryptography.Algorithms.Extensions;
-
     public static class DefaultStores
     {
         public static List<Consent> Consents()

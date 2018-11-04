@@ -1,5 +1,6 @@
 namespace reimers.scim.query.tests
 {
+    using Reimers.Scim.Query;
     using SimpleIdentityServer.Core.Common.DTOs;
     using Xunit;
     using Xunit.Abstractions;

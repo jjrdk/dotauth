@@ -22,11 +22,11 @@ using SimpleIdentityServer.Uma.Core.Validators;
 using System;
 using System.Collections.Generic;
 using Xunit;
-using SimpleIdentityServer.Uma.Logging;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
 {
+    using Logging;
     using Moq;
 
     public class AddResourceSetActionFixture

@@ -16,7 +16,6 @@ using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +25,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
     using Common;
+    using Logging;
 
     public class AddUserOperation : IAddUserOperation
     {

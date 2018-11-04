@@ -17,12 +17,13 @@
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
-using SimpleIdentityServer.Manager.Logging;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 {
+    using Logging;
+
     public interface IRemoveClientAction
     {
         Task<bool> Execute(string clientId);

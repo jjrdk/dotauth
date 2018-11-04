@@ -27,7 +27,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 {
-    using System.Security.Cryptography.Algorithms.Extensions;
+    using Common;
 
     public sealed class JsonWebKeyConverterFixture
     {

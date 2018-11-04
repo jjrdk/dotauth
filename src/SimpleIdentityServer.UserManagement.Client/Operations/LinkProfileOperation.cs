@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.UserManagement.Client.Operations
 {
+    using Common.Requests;
     using Core.Common;
-    using Requests;
 
     internal sealed class LinkProfileOperation : ILinkProfileOperation
     {

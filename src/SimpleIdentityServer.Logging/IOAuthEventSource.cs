@@ -1,7 +1,5 @@
-﻿namespace SimpleIdentityServer.OAuth.Logging
+﻿namespace SimpleIdentityServer.Logging
 {
-    using SimpleIdentityServer.Logging;
-
     public interface IOAuthEventSource : IEventSource
     {
         void StartAuthorization(

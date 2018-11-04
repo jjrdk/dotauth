@@ -19,7 +19,6 @@ using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
-using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -30,6 +29,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
     using System.Threading;
     using Core.Common;
+    using Logging;
 
     public class AddUserOperationFixture
     {

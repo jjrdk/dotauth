@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace System.Security.Cryptography.Algorithms.Extensions
+namespace SimpleIdentityServer.Core.Common
 {
-    using Text;
+    using System;
+    using System.Security.Cryptography;
+    using System.Text;
 
     public static class RsaExtensions
     {

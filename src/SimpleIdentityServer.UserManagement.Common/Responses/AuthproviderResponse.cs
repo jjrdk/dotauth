@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.UserManagement.Responses
+﻿namespace SimpleIdentityServer.UserManagement.Common.Responses
 {
     using System.Runtime.Serialization;
 

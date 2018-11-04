@@ -17,13 +17,14 @@ using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
-using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Policies
 {
+    using Logging;
+
     internal class AuthorizationPolicyValidator : IAuthorizationPolicyValidator
     {
         private readonly IBasicAuthorizationPolicy _basicAuthorizationPolicy;

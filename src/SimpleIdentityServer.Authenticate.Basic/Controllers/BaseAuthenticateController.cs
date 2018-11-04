@@ -33,7 +33,6 @@ using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +45,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
     using Core.Common;
     using Core.WebSite.User.Actions;
     using System.Net;
+    using Logging;
 
     public abstract class BaseAuthenticateController : BaseController
     {

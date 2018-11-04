@@ -20,7 +20,6 @@ using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -28,6 +27,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 {
+    using Logging;
+
     public sealed class RegisterClientActionFixture
     {
         private Mock<IOAuthEventSource> _oauthEventSource;

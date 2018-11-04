@@ -24,7 +24,6 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Collections.Generic;
@@ -34,6 +33,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
+    using Logging;
+
     public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
     {
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;

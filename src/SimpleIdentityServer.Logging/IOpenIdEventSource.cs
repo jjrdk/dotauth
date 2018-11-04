@@ -1,7 +1,5 @@
-﻿namespace SimpleIdentityServer.OpenId.Logging
+﻿namespace SimpleIdentityServer.Logging
 {
-    using SimpleIdentityServer.Logging;
-
     public interface IOpenIdEventSource : IEventSource
     {
         void GiveConsent(string subject, string clientId, string consentId);

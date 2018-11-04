@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.UserManagement.Client
 {
+    using Common.Requests;
     using Core.Common;
-    using Requests;
 
     internal sealed class ProfileClient : IProfileClient
     {
