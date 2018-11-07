@@ -3,9 +3,6 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using SimpleIdentityServer.Authenticate.Basic;
-using SimpleIdentityServer.Authenticate.Basic.Controllers;
-using SimpleIdentityServer.Authenticate.Basic.ViewModels;
 using SimpleIdentityServer.Authenticate.LoginPassword.ViewModels;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Profile;
@@ -27,9 +24,13 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
 {
     using Core.WebSite.User.Actions;
+    using Host;
+    using Host.Controllers;
+    using Host.ViewModels;
     using Logging;
     using Shared;
     using Shared.Requests;
+    using Constants = LoginPassword.Constants;
 
     [Area(Constants.AMR)]
     public class AuthenticateController : BaseAuthenticateController

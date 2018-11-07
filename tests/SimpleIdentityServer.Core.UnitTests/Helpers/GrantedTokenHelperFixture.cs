@@ -15,13 +15,13 @@
 using Moq;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
+    using Jwt;
     using Shared;
     using Shared.Models;
 

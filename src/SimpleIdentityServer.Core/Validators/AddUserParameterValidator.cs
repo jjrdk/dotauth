@@ -1,10 +1,9 @@
-﻿using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Manager.Core.Exceptions;
-using System;
-
-namespace SimpleIdentityServer.Manager.Core.Validators
+﻿namespace SimpleIdentityServer.Core.Validators
 {
-    using SimpleIdentityServer.Core.Errors;
+    using System;
+    using Errors;
+    using Exceptions;
+    using Parameters;
 
     internal sealed class AddUserParameterValidator
     {

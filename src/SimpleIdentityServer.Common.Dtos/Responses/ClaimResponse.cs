@@ -1,8 +1,7 @@
-﻿using System;
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Manager.Common.Responses
+﻿namespace SimpleIdentityServer.Shared.Responses
 {
+    using System;
+    using System.Runtime.Serialization;
     using Shared;
 
     [DataContract]

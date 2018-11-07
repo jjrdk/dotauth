@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IO;
-using System.Runtime.Serialization.Json;
-using System.Text;
-
-namespace SimpleIdentityServer.Core.Common.Extensions
+namespace SimpleIdentityServer.Json
 {
+    using System.IO;
+    using System.Runtime.Serialization.Json;
+    using System.Text;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
 

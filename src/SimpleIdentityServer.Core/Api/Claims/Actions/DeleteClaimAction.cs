@@ -1,11 +1,10 @@
-﻿namespace SimpleIdentityServer.Manager.Core.Api.Claims.Actions
+﻿namespace SimpleIdentityServer.Core.Api.Claims.Actions
 {
-    using SimpleIdentityServer.Manager.Core.Exceptions;
     using System;
     using System.Threading.Tasks;
-
+    using Errors;
+    using Exceptions;
     using Shared.Repositories;
-    using SimpleIdentityServer.Core.Errors;
 
     public interface IDeleteClaimAction
     {

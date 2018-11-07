@@ -16,7 +16,6 @@ using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Store;
 using System;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
@@ -24,6 +23,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
+    using Jwt;
     using Shared.Models;
 
     internal class RevokeTokenAction : IRevokeTokenAction

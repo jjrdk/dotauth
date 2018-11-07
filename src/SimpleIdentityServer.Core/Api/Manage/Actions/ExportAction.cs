@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
-using SimpleIdentityServer.Manager.Core.Results;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Core.Api.Manage.Actions
+namespace SimpleIdentityServer.Core.Api.Manage.Actions
 {
+    using System;
+    using System.Threading.Tasks;
+    using Clients.Actions;
     using Logging;
+    using Results;
 
     public interface IExportAction
     {

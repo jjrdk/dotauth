@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-
-namespace SimpleIdentityServer.Manager.Host.Middleware
+namespace SimpleIdentityServer.Host.MiddleWare
 {
-    using SimpleIdentityServer.Host.MiddleWare;
+    using Microsoft.AspNetCore.Builder;
 
     public static class UseExceptionHandlerExtensions
     {

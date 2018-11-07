@@ -15,8 +15,8 @@ namespace SimpleIdentityServer.Authenticate.SMS
             
             routeBuilder.MapRoute("BasicAuthentication",
                 "Authenticate/{action}/{id?}",
-                new { controller = "Authenticate", action = "Index", area = Constants.AMR },
-                constraints: new { area = Constants.AMR });
+                new { controller = "Authenticate", action = "Index", area = SmsConstants.AMR },
+                constraints: new { area = SmsConstants.AMR });
             return routeBuilder;
         }
     }

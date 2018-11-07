@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
-using System.Net.Http.Headers;
-
-namespace SimpleIdentityServer.Core.Authenticate
+namespace SimpleIdentityServer.Core
 {
-    using Parameters;
+    using System.Linq;
+    using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
+    using Authenticate;
+    using Parameters;
     using Shared;
 
     public static class AuthenticationHeaderValueExtensions

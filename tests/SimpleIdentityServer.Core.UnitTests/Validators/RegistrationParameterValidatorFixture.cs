@@ -1,5 +1,4 @@
-﻿using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Errors;
+﻿using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.UnitTests.Fake;
@@ -12,6 +11,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
+    using Json;
     using Shared;
     using Shared.Models;
     using Shared.Requests;

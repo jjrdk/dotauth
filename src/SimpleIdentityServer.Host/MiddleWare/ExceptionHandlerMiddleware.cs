@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Http;
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using System;
@@ -22,6 +21,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.MiddleWare
 {
+    using Json;
     using Shared.Responses;
 
     public class ExceptionHandlerMiddleware

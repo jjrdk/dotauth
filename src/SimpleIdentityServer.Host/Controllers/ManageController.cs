@@ -12,23 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using SimpleIdentityServer.Manager.Common.Responses;
-using SimpleIdentityServer.Manager.Core.Exceptions;
-using System;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Host.Controllers
+namespace SimpleIdentityServer.Host.Controllers
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Net;
+    using System.Text;
+    using System.Threading.Tasks;
     using Core.Api.Manage;
-    using SimpleIdentityServer.Core.Errors;
-    using SimpleIdentityServer.Host.Extensions;
+    using Core.Errors;
+    using Core.Exceptions;
+    using Extensions;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Newtonsoft.Json;
+    using Shared.Responses;
 
     [Route(Constants.EndPoints.Manage)]
     public class ManageController : Controller

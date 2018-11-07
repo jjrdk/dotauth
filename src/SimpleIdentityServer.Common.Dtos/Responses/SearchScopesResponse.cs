@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Manager.Common.Responses
+﻿namespace SimpleIdentityServer.Shared.Responses
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;

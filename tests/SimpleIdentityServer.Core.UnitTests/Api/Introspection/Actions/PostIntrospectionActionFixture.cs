@@ -19,7 +19,6 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Store;
 using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -27,6 +26,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
 {
+    using Jwt;
     using Logging;
     using Shared;
     using Shared.Models;

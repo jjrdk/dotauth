@@ -10,7 +10,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 {
     using Shared.Responses;
 
-    [Route(Constants.CodeController)]
+    [Route(SmsConstants.CodeController)]
     public class CodeController : Controller
     {
         private readonly ISmsAuthenticationOperation _smsAuthenticationOperation;

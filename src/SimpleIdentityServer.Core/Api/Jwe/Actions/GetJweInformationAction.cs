@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Jwt.Encrypt;
-using SimpleIdentityServer.Core.Jwt.Signature;
-using SimpleIdentityServer.Manager.Core.Exceptions;
-using SimpleIdentityServer.Manager.Core.Helpers;
-using SimpleIdentityServer.Manager.Core.Parameters;
-using SimpleIdentityServer.Manager.Core.Results;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Core.Api.Jwe.Actions
+namespace SimpleIdentityServer.Core.Api.Jwe.Actions
 {
-    using SimpleIdentityServer.Core.Errors;
+    using System;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Helpers;
+    using Jwt.Encrypt;
+    using Jwt.Signature;
+    using Parameters;
+    using Results;
 
     public interface IGetJweInformationAction
     {

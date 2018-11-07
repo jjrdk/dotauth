@@ -18,6 +18,15 @@ namespace SimpleIdentityServer.Core.Extensions
 {
     public static class CollectionExtensions
     {
+        public static void AddRange<T, TZ>(this Dictionary<T, TZ> firstDictionary,
+            Dictionary<T, TZ> secondDictionary)
+        {
+            foreach (var keyPair in secondDictionary)
+            {
+                firstDictionary.Add(keyPair.Key, keyPair.Value);
+            }
+        }
+
         public static void AddRange<T, TZ>(this IDictionary<T, TZ> firstDictionary,
             IDictionary<T, TZ> secondDictionary)
         {

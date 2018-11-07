@@ -25,12 +25,12 @@ namespace SimpleIdentityServer.Core.Api.Token
 {
     using Errors;
     using Helpers;
+    using Jwt;
     using Logging;
     using Shared;
     using Shared.Events.OAuth;
     using Shared.Models;
     using SimpleIdentityServer.Core.Authenticate;
-    using Store;
 
     public class TokenActions : ITokenActions
     {

@@ -16,7 +16,6 @@ namespace SimpleIdentityServer.Host.Extensions
 {
     using System;
     using Logging;
-    using Manager.Host.Middleware;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;

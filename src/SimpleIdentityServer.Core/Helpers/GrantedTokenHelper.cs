@@ -13,12 +13,12 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
+    using Jwt;
     using Shared;
     using Shared.Models;
 

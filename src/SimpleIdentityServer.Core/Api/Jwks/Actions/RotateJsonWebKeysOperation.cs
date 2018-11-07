@@ -1,11 +1,11 @@
-﻿using SimpleIdentityServer.Store;
-using System.Linq;
+﻿using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
+    using Jwt;
     using Jwt.Extensions;
     using Shared.Repositories;
 

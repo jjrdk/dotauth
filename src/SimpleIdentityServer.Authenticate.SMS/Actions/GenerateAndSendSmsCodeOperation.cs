@@ -2,11 +2,10 @@
 {
     using SimpleIdentityServer.Core.Errors;
     using SimpleIdentityServer.Core.Exceptions;
-    using SimpleIdentityServer.Store;
     using SimpleIdentityServer.Twilio.Client;
     using System;
     using System.Threading.Tasks;
-
+    using Core.Jwt;
     using Logging;
 
     internal sealed class GenerateAndSendSmsCodeOperation : IGenerateAndSendSmsCodeOperation

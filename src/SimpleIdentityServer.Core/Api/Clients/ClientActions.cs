@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Api.Registration.Actions;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
-using SimpleIdentityServer.Manager.Core.Parameters;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Core.Api.Clients
+namespace SimpleIdentityServer.Core.Api.Clients
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Actions;
+    using Parameters;
+    using Registration.Actions;
     using Shared.Models;
     using Shared.Parameters;
     using Shared.Responses;

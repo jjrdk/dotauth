@@ -12,21 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
+namespace SimpleIdentityServer.Core.Api.Clients.Actions
 {
-    using Newtonsoft.Json;
-    using SimpleIdentityServer.Core.Common;
-    using SimpleIdentityServer.Core.Exceptions;
-    using SimpleIdentityServer.Manager.Core.Exceptions;
-    using SimpleIdentityServer.Manager.Core.Parameters;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Common;
+    using Errors;
+    using Exceptions;
     using Logging;
+    using Newtonsoft.Json;
+    using Parameters;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleIdentityServer.Core.Errors;
 
     public interface IUpdateClientAction
     {

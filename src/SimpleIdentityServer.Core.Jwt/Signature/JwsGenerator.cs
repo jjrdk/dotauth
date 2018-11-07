@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.Extensions;
 using System;
 
 namespace SimpleIdentityServer.Core.Jwt.Signature
 {
+    using Json;
     using Shared;
     using Shared.Requests;
 

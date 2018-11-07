@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Jwt.Signature;
-using SimpleIdentityServer.Manager.Core.Exceptions;
-using SimpleIdentityServer.Manager.Core.Extensions;
-using SimpleIdentityServer.Manager.Core.Helpers;
-using SimpleIdentityServer.Manager.Core.Parameters;
-using SimpleIdentityServer.Manager.Core.Results;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
+namespace SimpleIdentityServer.Core.Api.Jws.Actions
 {
+    using System;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Extensions;
+    using Helpers;
+    using Jwt;
+    using Jwt.Signature;
+    using Parameters;
+    using Results;
     using Shared;
-    using SimpleIdentityServer.Core.Errors;
 
     public interface IGetJwsInformationAction
     {

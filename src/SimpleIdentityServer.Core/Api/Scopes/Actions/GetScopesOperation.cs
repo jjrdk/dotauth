@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
+namespace SimpleIdentityServer.Core.Api.Scopes.Actions
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Shared.Models;
     using Shared.Repositories;
 

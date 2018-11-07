@@ -14,13 +14,13 @@
 
 using Moq;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
-using SimpleIdentityServer.Store;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks.Operations
 {
+    using Jwt;
     using Shared;
     using Shared.Repositories;
 

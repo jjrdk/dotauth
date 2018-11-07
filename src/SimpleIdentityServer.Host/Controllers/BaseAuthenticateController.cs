@@ -12,9 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Authenticate.Basic.Controllers
+namespace SimpleIdentityServer.Host.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Core;
+    using Core.Api.Profile;
+    using Core.Errors;
+    using Core.Exceptions;
+    using Core.Extensions;
+    using Core.Jwt.Extensions;
+    using Core.Services;
+    using Core.Translation;
+    using Core.WebSite.Authenticate;
+    using Core.WebSite.Authenticate.Common;
     using Core.WebSite.User.Actions;
+    using Extensions;
     using Logging;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
@@ -26,25 +43,8 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
     using Shared.Events.Openid;
     using Shared.Models;
     using Shared.Requests;
-    using SimpleIdentityServer.Authenticate.Basic.ViewModels;
-    using SimpleIdentityServer.Core;
-    using SimpleIdentityServer.Core.Api.Profile;
-    using SimpleIdentityServer.Core.Errors;
-    using SimpleIdentityServer.Core.Exceptions;
-    using SimpleIdentityServer.Core.Extensions;
-    using SimpleIdentityServer.Core.Jwt.Extensions;
-    using SimpleIdentityServer.Core.Services;
-    using SimpleIdentityServer.Core.Translation;
-    using SimpleIdentityServer.Core.WebSite.Authenticate;
-    using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
-    using SimpleIdentityServer.Host.Controllers.Website;
-    using SimpleIdentityServer.Host.Extensions;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
+    using ViewModels;
+    using Website;
 
     public abstract class BaseAuthenticateController : BaseController
     {
@@ -323,7 +323,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             {
                 var request = _dataProtector.Unprotect<AuthorizationRequest>(codeViewModel.AuthRequestCode);
                 await SetLocalCookie(authenticatedUser.Claims, request.SessionId).ConfigureAwait(false);
-                var issuerName = Request.GetAbsoluteUriWithVirtualPath();
+                var issuerName = HttpRequestsExtensions.GetAbsoluteUriWithVirtualPath(Request);
                 var actionResult = await _authenticateHelper.ProcessRedirection(request.ToParameter(),
                         codeViewModel.AuthRequestCode,
                         authenticatedUser.GetSubject(),
@@ -353,7 +353,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
+            var issuerName = HttpRequestsExtensions.GetAbsoluteUriWithVirtualPath(Request);
             var actionResult = await _authenticateActions.AuthenticateResourceOwnerOpenId(
                     request.ToParameter(),
                     authenticatedUser,
@@ -494,7 +494,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
             // 6. Try to authenticate the resource owner & returns the claims.
             var authorizationRequest = _dataProtector.Unprotect<AuthorizationRequest>(request);
-            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
+            var issuerName = HttpRequestsExtensions.GetAbsoluteUriWithVirtualPath(Request);
             var actionResult = await _authenticateHelper
                 .ProcessRedirection(authorizationRequest.ToParameter(), request, subject, claims, issuerName)
                 .ConfigureAwait(false);

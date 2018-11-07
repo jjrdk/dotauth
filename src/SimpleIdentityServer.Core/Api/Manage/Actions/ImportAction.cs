@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Manager.Core.Parameters;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Core.Api.Manage.Actions
+namespace SimpleIdentityServer.Core.Api.Manage.Actions
 {
+    using System;
+    using System.Threading.Tasks;
     using Logging;
+    using Parameters;
     using Shared.Repositories;
 
     public interface IImportAction

@@ -1,8 +1,9 @@
-﻿using SimpleIdentityServer.Authenticate.Basic;
-using SimpleIdentityServer.Twilio.Client;
+﻿using SimpleIdentityServer.Twilio.Client;
 
 namespace SimpleIdentityServer.Authenticate.SMS
 {
+    using Host;
+
     public class SmsAuthenticationOptions : BasicAuthenticateOptions
     {
         public SmsAuthenticationOptions()

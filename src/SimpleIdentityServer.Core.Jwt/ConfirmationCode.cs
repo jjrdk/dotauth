@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace SimpleIdentityServer.Store
+﻿namespace SimpleIdentityServer.Core.Jwt
 {
+    using System;
+
     public class ConfirmationCode
     {
         public string Value { get; set; }

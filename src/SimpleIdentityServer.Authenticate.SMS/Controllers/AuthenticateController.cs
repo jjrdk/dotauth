@@ -1,37 +1,36 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-using SimpleIdentityServer.Authenticate.Basic.Controllers;
-using SimpleIdentityServer.Authenticate.Basic.ViewModels;
-using SimpleIdentityServer.Authenticate.SMS.Actions;
-using SimpleIdentityServer.Authenticate.SMS.ViewModels;
-using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Api.Profile;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Core.Translation;
-using SimpleIdentityServer.Core.WebSite.Authenticate;
-using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
-using SimpleIdentityServer.Host.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Authenticate.SMS.Controllers
+﻿namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 {
     using Core.WebSite.User.Actions;
+    using Host.Controllers;
+    using Host.ViewModels;
     using Logging;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.DataProtection;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.AspNetCore.Mvc.Routing;
     using Shared;
     using Shared.Models;
     using Shared.Requests;
+    using SimpleIdentityServer.Authenticate.SMS.Actions;
+    using SimpleIdentityServer.Authenticate.SMS.ViewModels;
+    using SimpleIdentityServer.Core;
+    using SimpleIdentityServer.Core.Api.Profile;
+    using SimpleIdentityServer.Core.Exceptions;
+    using SimpleIdentityServer.Core.Extensions;
+    using SimpleIdentityServer.Core.Services;
+    using SimpleIdentityServer.Core.Translation;
+    using SimpleIdentityServer.Core.WebSite.Authenticate;
+    using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
+    using SimpleIdentityServer.Host.Extensions;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
 
-    [Area(Constants.AMR)]
+    [Area(SimpleIdentityServer.Authenticate.SMS.SmsConstants.AMR)]
     public class AuthenticateController : BaseAuthenticateController
     {
         private readonly IGetUserOperation _getUserOperation;

@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Manager.Core.Parameters
+﻿namespace SimpleIdentityServer.Core.Parameters
 {
+    using System.Collections.Generic;
+
     public class UpdateResourceOwnerClaimsParameter
     {
         public string Login { get; set; }

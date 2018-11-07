@@ -24,7 +24,6 @@ namespace SimpleIdentityServer.Host.Extensions
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
     using Parsers;
-    using Store;
 
     public static class ServiceCollectionExtensions 
     {

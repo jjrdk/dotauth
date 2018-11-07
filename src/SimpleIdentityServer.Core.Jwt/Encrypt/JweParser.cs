@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using System.Linq;
-using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt
 {
+    using Json;
     using Shared;
 
     public class JweParser : IJweParser

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Manager.Core.Api.Manage
+namespace SimpleIdentityServer.Core.Api.Manage
 {
     using System;
     using System.Threading.Tasks;

@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Common.Extensions
+﻿namespace SimpleIdentityServer.Json
 {
     using System;
     using System.Collections.Generic;

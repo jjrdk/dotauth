@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,16 +11,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
-namespace SimpleIdentityServer.Manager.Common.Responses
+namespace SimpleIdentityServer.Shared.Responses
 {
-    using Shared;
-    using Shared.Models;
-    using Shared.Requests;
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using Models;
+    using Requests;
+    using Shared;
 
     [DataContract]
     public class ResponseClientSecret
@@ -77,8 +75,6 @@ namespace SimpleIdentityServer.Manager.Common.Responses
         [DataMember(Name = Constants.ClientNames.TosUri)]
         public string TosUri { get; set; }
 
-        #region Encryption mechanism for ID TOKEN
-
         /// <summary>
         /// Gets or sets the JWS alg algorithm for signing the ID token issued to this client.
         /// The default is RS256. The public key for validating the signature is provided by retrieving the JWK Set referenced by the JWKS_URI
@@ -99,8 +95,6 @@ namespace SimpleIdentityServer.Manager.Common.Responses
         /// </summary>
         [DataMember(Name = Constants.ClientNames.IdTokenEncryptedResponseEnc)]
         public string IdTokenEncryptedResponseEnc { get; set; }
-
-        #endregion
 
         /// <summary>
         /// Gets or sets the client authentication method for the Token Endpoint. 

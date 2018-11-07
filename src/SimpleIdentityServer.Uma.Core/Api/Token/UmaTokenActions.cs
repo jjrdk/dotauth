@@ -15,13 +15,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
     using SimpleIdentityServer.Core.Authenticate;
     using SimpleIdentityServer.Core.Helpers;
     using SimpleIdentityServer.Core.JwtToken;
-    using Store;
     using Stores;
     using System;
     using System.Collections.Generic;
     using System.Text;
     using Logging;
     using Shared.Models;
+    using SimpleIdentityServer.Core.Jwt;
+    using AuthenticationHeaderValueExtensions = SimpleIdentityServer.Core.AuthenticationHeaderValueExtensions;
 
     internal sealed class UmaTokenActions : IUmaTokenActions
     {
@@ -76,7 +77,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
             }
 
             // 2. Try to authenticate the client.
-            var instruction = authenticationHeaderValue.GetAuthenticateInstruction(parameter, certificate);
+            var instruction = AuthenticationHeaderValueExtensions.GetAuthenticateInstruction(authenticationHeaderValue, parameter, certificate);
             var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)

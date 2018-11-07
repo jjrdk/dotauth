@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
-namespace SimpleIdentityServer.Manager.Core.Exceptions
+namespace SimpleIdentityServer.Core.Exceptions
 {
+    using System;
+
     public class IdentityServerManagerException : Exception
     {
         public IdentityServerManagerException(string code, string message) : base(message)

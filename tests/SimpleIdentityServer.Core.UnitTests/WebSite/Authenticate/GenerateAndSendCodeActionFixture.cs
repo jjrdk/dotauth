@@ -18,7 +18,6 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
-using SimpleIdentityServer.Store;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -28,6 +27,7 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
     using System.Threading;
+    using Jwt;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;

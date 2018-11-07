@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Manager.Common.Requests
+﻿namespace SimpleIdentityServer.Shared.Requests
 {
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
     using Shared;
 
     [DataContract]

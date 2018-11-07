@@ -1,7 +1,6 @@
-﻿using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Manager.Common.Requests
+﻿namespace SimpleIdentityServer.Shared.Requests
 {
+    using System.Runtime.Serialization;
     using Shared;
 
     [DataContract]

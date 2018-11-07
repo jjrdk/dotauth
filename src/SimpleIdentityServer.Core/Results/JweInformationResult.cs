@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Manager.Core.Results
+namespace SimpleIdentityServer.Core.Results
 {
     public class JweInformationResult
     {

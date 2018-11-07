@@ -20,7 +20,6 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Store;
 using System;
 using System.Buffers;
 using System.Net;
@@ -28,7 +27,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 {
-    using Common.Extensions;
+    using Json;
+    using Jwt;
     using Microsoft.AspNetCore.Mvc;
     using Shared;
     using Shared.Repositories;

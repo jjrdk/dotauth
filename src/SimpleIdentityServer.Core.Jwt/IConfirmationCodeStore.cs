@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Store
+﻿namespace SimpleIdentityServer.Core.Jwt
 {
+    using System.Threading.Tasks;
+
     public interface IConfirmationCodeStore
     {
         Task<ConfirmationCode> Get(string code);

@@ -19,13 +19,13 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
 {
+    using Jwt;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;

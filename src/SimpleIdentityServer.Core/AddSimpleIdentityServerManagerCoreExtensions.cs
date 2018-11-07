@@ -12,26 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Core.Api.Registration.Actions;
-using SimpleIdentityServer.Core.WebSite.User.Actions;
-using SimpleIdentityServer.Manager.Core.Api.Claims;
-using SimpleIdentityServer.Manager.Core.Api.Claims.Actions;
-using SimpleIdentityServer.Manager.Core.Api.Clients;
-using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
-using SimpleIdentityServer.Manager.Core.Api.Jwe;
-using SimpleIdentityServer.Manager.Core.Api.Jwe.Actions;
-using SimpleIdentityServer.Manager.Core.Api.Jws;
-using SimpleIdentityServer.Manager.Core.Api.Jws.Actions;
-using SimpleIdentityServer.Manager.Core.Api.Manage.Actions;
-using SimpleIdentityServer.Manager.Core.Api.Scopes;
-using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
-using SimpleIdentityServer.Manager.Core.Helpers;
-using SimpleIdentityServer.Manager.Core.Validators;
-
-namespace SimpleIdentityServer.Manager.Core
+namespace SimpleIdentityServer.Core
 {
+    using Api.Claims;
+    using Api.Claims.Actions;
+    using Api.Clients;
+    using Api.Clients.Actions;
+    using Api.Jwe;
+    using Api.Jwe.Actions;
+    using Api.Jws;
+    using Api.Jws.Actions;
     using Api.Manage;
+    using Api.Manage.Actions;
+    using Api.Registration.Actions;
+    using Api.Scopes;
+    using Api.Scopes.Actions;
+    using Helpers;
+    using Microsoft.Extensions.DependencyInjection;
+    using Validators;
+    using WebSite.User.Actions;
 
     public static class AddSimpleIdentityServerManagerCoreExtensions
     {

@@ -12,26 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace SimpleIdentityServer.Host.Extensions
 {
-    using Manager.Common.Requests;
-    using Manager.Common.Responses;
-    using Manager.Core.Parameters;
-    using Manager.Core.Results;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using Shared;
     using Shared.Models;
     using Shared.Parameters;
     using Shared.Requests;
     using Shared.Responses;
     using Shared.Results;
+    using SimpleIdentityServer.Core.Parameters;
+    using SimpleIdentityServer.Core.Results;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using CodeChallengeMethods = Shared.Models.CodeChallengeMethods;
 
     public static class MappingExtensions

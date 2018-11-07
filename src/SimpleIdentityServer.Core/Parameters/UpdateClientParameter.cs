@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Parameters;
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Manager.Core.Parameters
+namespace SimpleIdentityServer.Core.Parameters
 {
+    using System.Collections.Generic;
+
     public class UpdateClientParameter : RegistrationParameter
     {
         public string ClientId { get; set; }
