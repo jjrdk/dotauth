@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         private const string baseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
         private readonly HttpClient _httpClientFactoryStub;
-        private IJwksClient _jwksClient;
+        private readonly IJwksClient _jwksClient;
 
         public JwksClientFixture(TestOauthServerFixture server)
         {

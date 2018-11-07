@@ -1,6 +1,7 @@
 ﻿namespace SimpleIdentityServer.Core
 {
     using System.Net.Http.Headers;
+    using Microsoft.AspNetCore.Mvc;
     using Parameters;
     using Results;
     using Shared.Models;
@@ -14,7 +15,7 @@
         string GetPayload(RegistrationParameter parameter);
         string GetPayload(ClientRegistrationResponse parameter);
         string GetPayload(string accessToken);
-        string GetPayload(UserInfoResult parameter);
+        string GetPayload(IActionResult parameter);
         string GetPayload(AuthorizationCodeGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue);
         string GetPayload(ClientCredentialsGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue);
         string GetPayload(RefreshTokenGrantTypeParameter parameter);

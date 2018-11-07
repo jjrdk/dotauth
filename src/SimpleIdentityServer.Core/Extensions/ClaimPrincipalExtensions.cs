@@ -27,8 +27,7 @@ namespace SimpleIdentityServer.Core.Extensions
         /// <returns>The user is authenticated</returns>
         public static bool IsAuthenticated(this ClaimsPrincipal principal)
         {
-            if (principal == null ||
-                principal.Identity == null)
+            if (principal?.Identity == null)
             {
                 return false;
             }
@@ -44,8 +43,7 @@ namespace SimpleIdentityServer.Core.Extensions
         /// <returns>User's subject</returns>
         public static string GetSubject(this ClaimsPrincipal principal)
         {
-            if (principal == null ||
-                principal.Identity == null)
+            if (principal?.Identity == null)
             {
                 return null;
             }
@@ -171,8 +169,7 @@ namespace SimpleIdentityServer.Core.Extensions
 
         private static string GetClaimValue(ClaimsPrincipal principal, string claimName)
         {
-            if (principal == null ||
-                principal.Identity == null)
+            if (principal?.Identity == null)
             {
                 return null;
             }

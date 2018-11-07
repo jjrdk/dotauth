@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.CodeAnalysis;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Authenticate.SMS.Controllers;
 using SimpleIdentityServer.Authenticate.SMS.Services;
@@ -12,6 +9,10 @@ using System.Reflection;
 
 namespace SimpleIdentityServer.Authenticate.SMS
 {
+    using Microsoft.AspNetCore.Mvc.Razor;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.Extensions.FileProviders;
+
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddSmsAuthentication(this IServiceCollection services, IMvcBuilder mvcBuilder, SmsAuthenticationOptions smsAuthenticationOptions)

@@ -26,10 +26,7 @@ namespace SimpleIdentityServer.Core.Validators
     {        
         public IEnumerable<string> GetRedirectionUrls(Client client, params string[] urls)
         {
-            if (urls == null ||
-                client == null || 
-                client.RedirectionUrls == null || 
-                !client.RedirectionUrls.Any())
+            if (urls == null || client?.RedirectionUrls == null || !client.RedirectionUrls.Any())
             {
                 return new string[0];
             }

@@ -110,7 +110,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpPost("revoke")]
-        public async Task<ActionResult> PostRevoke()
+        public async Task<IActionResult> PostRevoke()
         {
             if (Request.Form == null)
             {

@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpGet("{id}")]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult> GetPolicy(string id)
+        public async Task<IActionResult> GetPolicy(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpGet]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult> GetPolicies()
+        public async Task<IActionResult> GetPolicies()
         {
             //if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetPoliciesStoreName))
             //{
@@ -99,7 +99,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         // Partial update
         [HttpPut]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult> PutPolicy([FromBody] PutPolicy putPolicy)
+        public async Task<IActionResult> PutPolicy([FromBody] PutPolicy putPolicy)
         {
             if (putPolicy == null)
             {
@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         
         [HttpPost("{id}/resources")]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult> PostAddResourceSet(string id, [FromBody] PostAddResourceSet postAddResourceSet)
+        public async Task<IActionResult> PostAddResourceSet(string id, [FromBody] PostAddResourceSet postAddResourceSet)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -146,7 +146,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpDelete("{id}/resources/{resourceId}")]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult> DeleteResourceSet(string id, string resourceId)
+        public async Task<IActionResult> DeleteResourceSet(string id, string resourceId)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -170,7 +170,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpPost]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult> PostPolicy([FromBody] PostPolicy postPolicy)
+        public async Task<IActionResult> PostPolicy([FromBody] PostPolicy postPolicy)
         {
             if (postPolicy == null)
             {
@@ -192,7 +192,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpDelete("{id}")]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult> DeletePolicy(string id)
+        public async Task<IActionResult> DeletePolicy(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {

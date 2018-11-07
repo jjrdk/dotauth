@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetConfiguration()
+        public async Task<IActionResult> GetConfiguration()
         {
             var result = (await _configurationActions.GetConfiguration().ConfigureAwait(false)).ToResponse();
             return new OkObjectResult(result);

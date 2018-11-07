@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.FileProviders;
 using SimpleIdentityServer.Shell.Controllers;
 using System;
 
 namespace SimpleIdentityServer.Shell
 {
+    using Microsoft.Extensions.FileProviders;
+
     public static class ApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseShellStaticFiles(this IApplicationBuilder app)

@@ -37,18 +37,18 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         }
 
         [HttpGet]
-        public async Task<ActionResult> Get()
+        public async Task<IActionResult> Get()
         {
             return await ProcessRequest().ConfigureAwait(false);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post()
+        public async Task<IActionResult> Post()
         {
             return await ProcessRequest().ConfigureAwait(false);
         }
 
-        private async Task<ActionResult> ProcessRequest()
+        private async Task<IActionResult> ProcessRequest()
         {
             var accessToken = await TryToGetTheAccessToken().ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(accessToken))
@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             }
 
             var result = await _userInfoActions.GetUserInformation(accessToken).ConfigureAwait(false);
-            return result.Content;
+            return result;
         }
 
         private async Task<string> TryToGetTheAccessToken()

@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpPost]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult> PostPermission([FromBody] PostPermission postPermission)
+        public async Task<IActionResult> PostPermission([FromBody] PostPermission postPermission)
         {
             if (postPermission == null)
             {
@@ -66,7 +66,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpPost("bulk")]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult> PostPermissions([FromBody] IEnumerable<PostPermission> postPermissions)
+        public async Task<IActionResult> PostPermissions([FromBody] IEnumerable<PostPermission> postPermissions)
         {
             if (postPermissions == null)
             {

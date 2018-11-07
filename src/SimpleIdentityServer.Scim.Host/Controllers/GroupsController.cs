@@ -54,7 +54,7 @@
 
 //        [Authorize(ScimConstants.ScimPolicies.ScimManage)]
 //        [HttpPost]
-//        public async Task<ActionResult> AddGroup([FromBody] GroupResource group)
+//        public async Task<IActionResult> AddGroup([FromBody] GroupResource group)
 //        {
 //            if (@group == null)
 //            {
@@ -68,7 +68,7 @@
 
 //        [Authorize(ScimConstants.ScimPolicies.ScimRead)]
 //        [HttpGet("{id}")]
-//        public async Task<ActionResult> GetGroup(string id)
+//        public async Task<IActionResult> GetGroup(string id)
 //        {
 //            if (string.IsNullOrWhiteSpace(id))
 //            {
@@ -83,7 +83,7 @@
 
 //        [Authorize(ScimConstants.ScimPolicies.ScimRead)]
 //        [HttpGet]
-//        public async Task<ActionResult> SearchGroups()
+//        public async Task<IActionResult> SearchGroups()
 //        {
 //            var result = await _groupsAction.SearchGroups(Request.Query, GetLocationPattern()).ConfigureAwait(false);
 
@@ -92,7 +92,7 @@
 
 //        [Authorize(ScimConstants.ScimPolicies.ScimRead)]
 //        [HttpPost(".search")]
-//        public async Task<ActionResult> SearchGroups([FromBody] JObject jObj)
+//        public async Task<IActionResult> SearchGroups([FromBody] JObject jObj)
 //        {
 //            var result = await _groupsAction.SearchGroups(jObj, GetLocationPattern()).ConfigureAwait(false);
 

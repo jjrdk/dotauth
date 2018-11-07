@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.CodeAnalysis;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.Authenticate.LoginPassword.Controllers;
 using SimpleIdentityServer.Authenticate.LoginPassword.Services;
@@ -11,6 +8,11 @@ using System.Reflection;
 
 namespace SimpleIdentityServer.Authenticate.LoginPassword
 {
+    using Host;
+    using Microsoft.AspNetCore.Mvc.Razor;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.Extensions.FileProviders;
+
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddLoginPasswordAuthentication(this IServiceCollection services, IMvcBuilder mvcBuilder, BasicAuthenticateOptions basicAuthenticateOptions)
@@ -37,8 +39,8 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword
                 opts.FileProviders.Add(embeddedFileProvider);
                 opts.CompilationCallback = (context) =>
                 {
-                    var assm = MetadataReference.CreateFromFile(Assembly.Load("SimpleIdentityServer.Authenticate.Basic").Location);
-                    context.Compilation = context.Compilation.AddReferences(assm);
+                    var asm = MetadataReference.CreateFromFile(Assembly.Load(typeof(HostConstants).Assembly.GetName()).Location);
+                    context.Compilation = context.Compilation.AddReferences(asm);
                 };
             });
             services.AddSingleton(basicAuthenticateOptions);

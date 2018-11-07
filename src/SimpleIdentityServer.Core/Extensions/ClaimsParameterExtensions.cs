@@ -53,9 +53,7 @@ namespace SimpleIdentityServer.Core.Extensions
         /// <returns></returns>
         public static bool IsAnyUserInfoClaimParameter(this ClaimsParameter parameter)
         {
-            return parameter != null &&
-                parameter.UserInfo != null &&
-                parameter.UserInfo.Any();
+            return parameter?.UserInfo != null && parameter.UserInfo.Any();
         }
 
         /// <summary>
@@ -65,9 +63,7 @@ namespace SimpleIdentityServer.Core.Extensions
         /// <returns></returns>
         public static bool IsAnyIdentityTokenClaimParameter(this ClaimsParameter parameter)
         {
-            return parameter != null &&
-                parameter.IdToken != null &&
-                parameter.IdToken.Any();
+            return parameter?.IdToken != null && parameter.IdToken.Any();
         }
 
         public static List<string> GetAllClaimsNames(this ClaimsParameter parameter)

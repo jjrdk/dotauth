@@ -96,14 +96,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 }
                 else
                 {
-                    if (confirmedConsent == null)
-                    {
-                        prompts.Add(PromptParameter.consent);
-                    }
-                    else
-                    {
-                        prompts.Add(PromptParameter.none);
-                    }
+                    prompts.Add(confirmedConsent == null ? PromptParameter.consent : PromptParameter.none);
                 }
             }
 
@@ -343,7 +336,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
 
         private static bool IsAuthenticated(ClaimsPrincipal principal)
         {
-            return principal == null || principal.Identity == null ?
+            return principal?.Identity == null ?
                 false :
                 principal.Identity.IsAuthenticated;
         }

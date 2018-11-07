@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
@@ -20,7 +19,6 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Store;
 using System;
@@ -31,6 +29,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 {
     using Common.Extensions;
+    using Microsoft.AspNetCore.Mvc;
     using Shared;
     using Shared.Repositories;
 
@@ -53,7 +52,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
             _tokenStore = tokenStore;
         }
 
-        public async Task<UserInfoResult> Execute(string accessToken)
+        public async Task<IActionResult> Execute(string accessToken)
         {
             if (string.IsNullOrWhiteSpace(accessToken))
             {
@@ -92,10 +91,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                 var serializerSettings = new JsonSerializerSettings();
                 serializerSettings.Converters.Add(new JwsPayloadConverter());
                 objectResult.Formatters.Add(new JsonOutputFormatter(serializerSettings, ArrayPool<char>.Shared));
-                return new UserInfoResult
-                {
-                    Content = objectResult
-                };
+                return objectResult;
             }
 
             var jwt = await _jwtGenerator.SignAsync(userInformationPayload,
@@ -114,14 +110,11 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                     encryptedResponseEnc.Value).ConfigureAwait(false);
             }
 
-            return new UserInfoResult
+            return new ContentResult
             {
-                Content = new ContentResult
-                {
-                    Content = jwt,
-                    StatusCode = (int)HttpStatusCode.OK,
-                    ContentType = "application/jwt",
-                }
+                Content = jwt,
+                StatusCode = (int) HttpStatusCode.OK,
+                ContentType = "application/jwt",
             };
         }
     }

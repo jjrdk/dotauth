@@ -16,6 +16,30 @@ namespace SimpleIdentityServer.Core.Errors
 {
     public static class ErrorDescriptions
     {
+        public const string TheParameterIsMissing = "the parameter {0} is missing";
+        public const string TheUrlIsNotWellFormed = "the url {0} is not well formed";
+        public const string TheTokenIsNotAValidJws = "the token is not a valid JWS";
+        public const string TheTokenIsNotAValidJwe = "the token is not a valid JWE";
+        public const string TheJsonWebKeyCannotBeFound = "the json web key {0} cannot be found {1}";
+        public const string TheSignatureCannotBeChecked = "the signature cannot be checked if the URI is not specified";
+        public const string TheJwsCannotBeGeneratedBecauseMissingParameters = "the jws cannot be generated because either the Url or Kid is not specified";
+        public const string TheKtyIsNotSupported = "the kty '{0}' is not supported";
+        public const string TheContentCannotBeExtractedFromJweToken = "the content cannot be extracted from the jwe token";
+        public const string TheScopeDoesntExist = "the scope '{0}' doesn't exist";
+        public const string TheScopesDontExist = "the scopes '{0}' don't exist";
+        public const string TheResourceOwnerMustBeConfirmed = "the account must be confirmed";
+        public const string TheScopeAlreadyExists = "The scope {0} already exists";
+        public const string TheFileExtensionIsNotCorrect = "the file extension is not correct";
+        public const string TheFileIsNotWellFormed = "the file is not well formed";
+        public const string ClaimExists = "a claim already exists with the same name";
+        public const string ClaimDoesntExist = "the claim doesn't exist";
+        public const string CannotInsertClaimIdentifier = "cannot insert claim identifier";
+        public const string CannotRemoveClaimIdentifier = "cannot remove claim identifier";
+        public const string ThePasswordCannotBeUpdated = "the password cannot be updated";
+        public const string TheClaimsCannotBeUpdated = "the claims cannot be updated";
+        public const string TheResourceOwnerCannotBeRemoved = "the resource owner cannot be removed";
+        public const string TheClientCannotBeUpdated = "an error occured while trying to update the client";
+        public const string TheClientCannotBeRemoved = "an error occured while trying to remove the client";
         public const string MissingParameter = "the parameter {0} is missing";
         public const string RequestIsNotValid =  "the request is not valid";
         public const string ClientIsNotValid = "the client id parameter {0} doesn't exist or is not valid";

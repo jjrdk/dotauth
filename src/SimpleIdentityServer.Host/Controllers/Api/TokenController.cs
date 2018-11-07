@@ -140,7 +140,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         }
 
         [HttpPost("revoke")]
-        public async Task<ActionResult> PostRevoke()
+        public async Task<IActionResult> PostRevoke()
         {
             try
             {

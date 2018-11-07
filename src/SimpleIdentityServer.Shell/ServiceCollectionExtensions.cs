@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Shell.Controllers;
 using System;
 
 namespace SimpleIdentityServer.Shell
 {
+    using Microsoft.AspNetCore.Mvc.Razor;
+    using Microsoft.Extensions.FileProviders;
+
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddBasicShell(this IServiceCollection services, IMvcBuilder mvcBuilder)

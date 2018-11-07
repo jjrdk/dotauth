@@ -12,52 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Common.Extensions
 {
     internal static class DictionaryExtensions
     {
-        public static void SetObject(
-            this Dictionary<string, object> dic,
-            string name,
-            object value)
-        {
-            if (!dic.ContainsKey(name))
-            {
-                var serializedObject = JsonConvert.SerializeObject(value);
-                dic.Add(name, serializedObject);
-                return;
-            }
-
-            dic[name] = value;
-        }
-
-        public static void SetValue(
-            this Dictionary<string, object> dic,
-            string name,
-            object value)
-        {
-            if (!dic.ContainsKey(name))
-            {
-                dic.Add(name, value.ToString());
-                return;
-            }
-
-            dic[name] = value;
-        }
-
-        public static T GetObject<T>(this Dictionary<string, object> dic, string name)
-        {
-            if (!dic.ContainsKey(name))
-            {
-                return default(T);
-            }
-
-            return JsonConvert.DeserializeObject<T>(dic[name].ToString());
-        }
-
         public static bool GetBoolean(
             this Dictionary<string, object> dic,
             string name)

@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpGet]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult> GetResourceSets()
+        public async Task<IActionResult> GetResourceSets()
         {
             //if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetResourcesStoreName))
             //{
@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpGet("{id}")]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult> GetResourceSet(string id)
+        public async Task<IActionResult> GetResourceSet(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -98,7 +98,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpPost]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult> AddResourceSet([FromBody] PostResourceSet postResourceSet)
+        public async Task<IActionResult> AddResourceSet([FromBody] PostResourceSet postResourceSet)
         {
             if (postResourceSet == null)
             {
@@ -120,7 +120,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpPut]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult> UpdateResourceSet([FromBody] PutResourceSet putResourceSet)
+        public async Task<IActionResult> UpdateResourceSet([FromBody] PutResourceSet putResourceSet)
         {
             if (putResourceSet == null)
             {
@@ -148,7 +148,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpDelete("{id}")]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult> DeleteResourceSet(string id)
+        public async Task<IActionResult> DeleteResourceSet(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {

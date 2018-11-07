@@ -27,7 +27,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         [Authorize("connected_user")]
         public Task<IActionResult> GetProfiles()
         {
-            if (User == null || User.Identity == null || !User.Identity.IsAuthenticated)
+            if (User?.Identity == null || !User.Identity.IsAuthenticated)
             {
                 return Task.FromResult((IActionResult)new StatusCodeResult((int)HttpStatusCode.Unauthorized));
             }

@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
                 policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
                 policy.RequireAssertion(p =>
                 {
-                    if (p.User == null || p.User.Identity == null || !p.User.Identity.IsAuthenticated)
+                    if (p.User?.Identity == null || !p.User.Identity.IsAuthenticated)
                     {
                         return false;
                     }

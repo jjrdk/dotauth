@@ -1,11 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>  
-    <ProjectReference Include="..\SimpleIdentityServer.Authenticate.Basic\SimpleIdentityServer.Authenticate.Basic.csproj" />  
     <ProjectReference Include="..\SimpleIdentityServer.Authenticate.SMS.Common\SimpleIdentityServer.Authenticate.SMS.Common.csproj" />  
+    <ProjectReference Include="..\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />  
     <ProjectReference Include="..\SimpleIdentityServer.Twilio.Client\SimpleIdentityServer.Twilio.Client.csproj" />  
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="microsoft.extensions.fileproviders.embedded" Version="2.1.1"/>
+    <PackageReference Include="microsoft.aspnetcore.mvc.razor" Version="2.1.1"/>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Areas\**\*.cshtml" />

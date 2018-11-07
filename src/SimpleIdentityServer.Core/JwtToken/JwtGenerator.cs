@@ -156,9 +156,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 throw new ArgumentNullException("authorizationParameter");
             }
 
-            if (claimsPrincipal == null ||
-                claimsPrincipal.Identity == null ||
-                !claimsPrincipal.IsAuthenticated())
+            if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
             {
                 throw new ArgumentNullException("claimsPrincipal");
             }
@@ -171,9 +169,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         public async Task<JwsPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters, string issuerName)
         {
-            if (claimsPrincipal == null ||
-                claimsPrincipal.Identity == null ||
-                !claimsPrincipal.IsAuthenticated())
+            if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
             {
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
@@ -191,9 +187,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         public async Task<JwsPayload> GenerateUserInfoPayloadForScopeAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
         {
-            if (claimsPrincipal == null ||
-                claimsPrincipal.Identity == null ||
-                !claimsPrincipal.IsAuthenticated())
+            if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
             {
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
@@ -210,9 +204,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         public JwsPayload GenerateFilteredUserInfoPayload(List<ClaimParameter> claimParameters, ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
         {
-            if (claimsPrincipal == null ||
-                claimsPrincipal.Identity == null ||
-                !claimsPrincipal.IsAuthenticated())
+            if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
             {
                 throw new ArgumentNullException(nameof(claimParameters));
             }

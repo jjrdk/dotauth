@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,24 +11,17 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 namespace SimpleIdentityServer.Logging
 {
     using Microsoft.Extensions.Logging;
 
     public interface IManagerEventSource : IEventSource
-    {		
-        #region Events linked to client
-
+    {
         void StartToRemoveClient(string clientId);
         void FinishToRemoveClient(string clientId);
         void StartToUpdateClient(string request);
         void FinishToUpdateClient(string request);
-
-        #endregion
-
-        #region Events linked to resource owner
 
         void StartToRemoveResourceOwner(string subject);
         void FinishToRemoveResourceOwner(string subject);
@@ -40,33 +32,19 @@ namespace SimpleIdentityServer.Logging
         void StartToAddResourceOwner(string subject);
         void FinishToAddResourceOwner(string subject);
 
-        #endregion
-
-        #region Events linked to Scopes
-
         void StartToRemoveScope(string scope);
 
         void FinishToRemoveScope(string scope);
 
-        #endregion
-
-        #region Events linked to export
-
         void StartToExport();
 
         void FinishToExport();
-
-        #endregion
-
-        #region Events linked to import
 
         void StartToImport();
 
         void RemoveAllClients();
 
         void FinishToImport();
-
-        #endregion
     }
 
     public class ManagerEventSource : BaseEventSource, IManagerEventSource
@@ -81,15 +59,9 @@ namespace SimpleIdentityServer.Logging
             public const string Import = "Import";
         }
 
-        #region Constructor
-
         public ManagerEventSource(ILoggerFactory loggerFactory) : base(loggerFactory.CreateLogger<ManagerEventSource>())
         {
         }
-
-		#endregion		
-		
-        #region Events linked to client
 
         public void StartToRemoveClient(string clientId)
         {
@@ -138,10 +110,6 @@ namespace SimpleIdentityServer.Logging
 
             LogInformation(evt);
         }
-
-        #endregion
-
-        #region Events linked to resource owner
 
         public void StartToRemoveResourceOwner(string subject)
         {
@@ -239,10 +207,6 @@ namespace SimpleIdentityServer.Logging
             LogInformation(evt);
         }
 
-        #endregion
-
-        #region Events linked to Scopes
-
         public void StartToRemoveScope(string scope)
         {
             var evt = new Event
@@ -267,10 +231,6 @@ namespace SimpleIdentityServer.Logging
             LogInformation(evt);
         }
 
-        #endregion
-
-        #region Events linked to export operations
-
         public void StartToExport()
         {
             var evt = new Event
@@ -294,10 +254,6 @@ namespace SimpleIdentityServer.Logging
 
             LogInformation(evt);
         }
-
-        #endregion
-
-        #region Events linked to import
 
         public void StartToImport()
         {
@@ -335,7 +291,5 @@ namespace SimpleIdentityServer.Logging
 
             LogInformation(evt);
         }
-
-        #endregion
     }
 }

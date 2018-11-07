@@ -89,9 +89,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
         public async Task<IActionResult> Index()
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
-            if (authenticatedUser == null ||
-                authenticatedUser.Identity == null ||
-                !authenticatedUser.Identity.IsAuthenticated)
+            if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 var viewModel = new AuthorizeViewModel();
@@ -106,9 +104,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
         public async Task<IActionResult> LocalLogin(LocalAuthenticationViewModel localAuthenticationViewModel)
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
-            if (authenticatedUser != null &&
-                authenticatedUser.Identity != null &&
-                authenticatedUser.Identity.IsAuthenticated)
+            if (authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "User", new { area = "UserManagement" });
             }
@@ -161,9 +157,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
         public async Task<IActionResult> ConfirmCode(string code)
         {
             var user = await SetUser().ConfigureAwait(false);
-            if (user != null &&
-                user.Identity != null &&
-                user.Identity.IsAuthenticated)
+            if (user?.Identity != null && user.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "User", new { area = "UserManagement" });
             }
@@ -171,9 +165,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             var authenticatedUser = await _authenticationService
                 .GetAuthenticatedUser(this, Host.HostConstants.CookieNames.PasswordLessCookieName)
                 .ConfigureAwait(false);
-            if (authenticatedUser == null ||
-                authenticatedUser.Identity == null ||
-                !authenticatedUser.Identity.IsAuthenticated)
+            if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode,
                     "SMS authentication cannot be performed");
@@ -196,9 +188,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             }
 
             var user = await SetUser().ConfigureAwait(false);
-            if (user != null &&
-                user.Identity != null &&
-                user.Identity.IsAuthenticated)
+            if (user?.Identity != null && user.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "User", new { area = "UserManagement" });
             }
@@ -206,9 +196,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             var authenticatedUser = await _authenticationService
                 .GetAuthenticatedUser(this, Host.HostConstants.CookieNames.PasswordLessCookieName)
                 .ConfigureAwait(false);
-            if (authenticatedUser == null ||
-                authenticatedUser.Identity == null ||
-                !authenticatedUser.Identity.IsAuthenticated)
+            if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode,
                     "SMS authentication cannot be performed");
@@ -285,7 +273,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> LocalLoginOpenId(OpenidLocalAuthenticationViewModel viewModel)
+        public async Task<IActionResult> LocalLoginOpenId(OpenidLocalAuthenticationViewModel viewModel)
         {
             if (viewModel == null)
             {

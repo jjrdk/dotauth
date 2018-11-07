@@ -16,6 +16,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
 {
     using Shared.Models;
     using Shared.Repositories;
+    using ActionResult = Results.ActionResult;
 
     public sealed class AuthenticateHelper : IAuthenticateHelper
     {

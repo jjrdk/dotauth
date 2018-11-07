@@ -1,10 +1,10 @@
 ﻿namespace SimpleIdentityServer.Core.Api.UserInfo
 {
     using System.Threading.Tasks;
-    using Results;
+    using Microsoft.AspNetCore.Mvc;
 
     public interface IUserInfoActions
     {
-        Task<UserInfoResult> GetUserInformation(string accessToken);
+        Task<IActionResult> GetUserInformation(string accessToken);
     }
 }

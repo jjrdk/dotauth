@@ -186,7 +186,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             _jwtGeneratorFake.Verify(j => j.EncryptAsync(It.IsAny<string>(),
                 It.IsAny<JweAlg>(),
                 JweEnc.A128CBC_HS256));
-            var actionResult = (ContentResult)result.Content;
+            var actionResult = (ContentResult)result;
             var contentType = actionResult.ContentType;
             Assert.NotNull(contentType);
             Assert.True(contentType == "application/jwt");
