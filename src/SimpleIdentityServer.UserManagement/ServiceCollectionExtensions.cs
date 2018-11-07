@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.UserManagement.Controllers;
 using System;
 
 namespace SimpleIdentityServer.UserManagement
 {
+    using Microsoft.AspNetCore.Mvc.Razor;
+    using Microsoft.Extensions.FileProviders;
+
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddUserManagement(this IServiceCollection services, IMvcBuilder mvcBuilder)

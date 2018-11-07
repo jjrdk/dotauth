@@ -14,12 +14,12 @@
 
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Results;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo
 {
+    using Microsoft.AspNetCore.Mvc;
     using Shared;
     using Shared.Events.Openid;
 
@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo
             _payloadSerializer = payloadSerializer;
         }
 
-        public async Task<UserInfoResult> GetUserInformation(string accessToken)
+        public async Task<IActionResult> GetUserInformation(string accessToken)
         {
             var processId = Guid.NewGuid().ToString();
             try

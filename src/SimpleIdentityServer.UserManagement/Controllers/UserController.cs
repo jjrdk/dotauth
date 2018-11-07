@@ -66,21 +66,21 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Index()
+        public async Task<IActionResult> Index()
         {
             await SetUser().ConfigureAwait(false);
             return View();
         }
 
         [HttpGet]
-        public async Task<ActionResult> Consent()
+        public async Task<IActionResult> Consent()
         {
             await SetUser().ConfigureAwait(false);
             return await GetConsents().ConfigureAwait(false);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Consent(string id)
+        public async Task<IActionResult> Consent(string id)
         {
             if (!await _removeConsentOperation.Execute(id).ConfigureAwait(false))
             {
@@ -255,10 +255,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             var externalClaims = await _authenticationService
                 .GetAuthenticatedUser(this, HostConstants.CookieNames.ExternalCookieName)
                 .ConfigureAwait(false);
-            if (externalClaims == null ||
-                externalClaims.Identity == null ||
-                !externalClaims.Identity.IsAuthenticated ||
-                !(externalClaims.Identity is ClaimsIdentity))
+            if (externalClaims?.Identity == null || !externalClaims.Identity.IsAuthenticated || !(externalClaims.Identity is ClaimsIdentity))
             {
                 return RedirectToAction("Profile", "User", new {area = "UserManagement"});
             }
@@ -279,10 +276,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             var externalClaims = await _authenticationService
                 .GetAuthenticatedUser(this, HostConstants.CookieNames.ExternalCookieName)
                 .ConfigureAwait(false);
-            if (externalClaims == null ||
-                externalClaims.Identity == null ||
-                !externalClaims.Identity.IsAuthenticated ||
-                !(externalClaims.Identity is ClaimsIdentity))
+            if (externalClaims?.Identity == null || !externalClaims.Identity.IsAuthenticated || !(externalClaims.Identity is ClaimsIdentity))
             {
                 return RedirectToAction("Profile", "User", new {area = "UserManagement"});
             }
@@ -358,7 +352,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             return View("Edit", viewModel);
         }
 
-        private async Task<ActionResult> GetConsents()
+        private async Task<IActionResult> GetConsents()
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             var consents = await _getConsentsOperation.Execute(authenticatedUser).ConfigureAwait(false);

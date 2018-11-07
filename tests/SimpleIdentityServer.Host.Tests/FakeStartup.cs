@@ -44,6 +44,7 @@ namespace SimpleIdentityServer.Host.Tests
     using Extensions;
     using System.Net.Http;
     using Client;
+    using Manager.Host.Extensions;
     using Shared;
     using Shared.Repositories;
     using Shared.Requests;
@@ -163,6 +164,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddOpenidLogging()
                 .AddOAuthLogging()
                 .AddLogging()
+                .AddSimpleIdentityServerManager()
                 //.AddDefaultAccessTokenStore()
                 .AddTransient<IAccountFilter, AccountFilter>()
                 .AddSingleton<IFilterStore>(new DefaultFilterStore(null));

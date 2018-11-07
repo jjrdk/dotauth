@@ -1,10 +1,10 @@
 ﻿namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 {
     using System.Threading.Tasks;
-    using Results;
+    using Microsoft.AspNetCore.Mvc;
 
     public interface IGetJwsPayload
     {
-        Task<UserInfoResult> Execute(string accessToken);
+        Task<IActionResult> Execute(string accessToken);
     }
 }

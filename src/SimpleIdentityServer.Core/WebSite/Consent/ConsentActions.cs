@@ -41,8 +41,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
                 throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
-            if (claimsPrincipal == null ||
-                claimsPrincipal.Identity == null)
+            if (claimsPrincipal?.Identity == null)
             {
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
@@ -57,8 +56,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
                 throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
-            if (claimsPrincipal == null ||
-                claimsPrincipal.Identity == null)
+            if (claimsPrincipal?.Identity == null)
             {
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }

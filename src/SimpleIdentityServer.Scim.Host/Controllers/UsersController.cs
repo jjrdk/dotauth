@@ -99,7 +99,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
         //[Authorize(ScimConstants.ScimPolicies.ScimManage)]
         //[HttpPatch("{id}")]
-        //public Task<ActionResult> Patch(string id, [FromBody] JObject jObj)
+        //public Task<IActionResult> Patch(string id, [FromBody] JObject jObj)
         //{
         //    if (string.IsNullOrWhiteSpace(id))
         //    {
@@ -133,7 +133,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
         [Authorize(ScimConstants.ScimPolicies.ScimManage)]
         [HttpDelete("{id}")]
-        public Task<ActionResult> Delete(string id)
+        public Task<IActionResult> Delete(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -205,7 +205,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
         //[HttpPatch("Me")]
         //[Authorize("authenticated")]
-        //public Task<ActionResult> PatchAuthenticatedUser([FromBody] JObject scimUser)
+        //public Task<IActionResult> PatchAuthenticatedUser([FromBody] JObject scimUser)
         //{
         //    var scimId = GetScimIdentifier(User);
         //    if (string.IsNullOrWhiteSpace(scimId))
@@ -223,7 +223,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             var scimId = GetScimIdentifier(User);
             if (string.IsNullOrWhiteSpace(scimId))
             {
-                return Task.FromResult<IActionResult>(GetMissingScimIdentifierError());
+                return Task.FromResult(GetMissingScimIdentifierError());
             }
 
             return UpdateUser(scimId, scimUser, cancellationToken);
@@ -231,7 +231,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
         [HttpDelete("Me")]
         [Authorize("authenticated")]
-        public Task<ActionResult> DeleteAuthenticatedUser()
+        public Task<IActionResult> DeleteAuthenticatedUser()
         {
             var scimId = GetScimIdentifier(User);
             if (string.IsNullOrWhiteSpace(scimId))
@@ -242,7 +242,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             return DeleteUser(scimId);
         }
 
-        //private async Task<ActionResult> CreateUser(ScimUser scimUser)
+        //private async Task<IActionResult> CreateUser(ScimUser scimUser)
         //{
         //    var result = await _addUserOperation.Execute(scimUser).ConfigureAwait(false);
 
@@ -258,7 +258,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
                 : new OkObjectResult(result.UserProfile);
         }
 
-        //private async Task<ActionResult> PatchUser(string id, JObject scimUser)
+        //private async Task<IActionResult> PatchUser(string id, JObject scimUser)
         //{
         //    var result = await _usersAction.PatchUser(id, scimUser, GetLocationPattern()).ConfigureAwait(false);
         //    //if (result.IsSucceed())
@@ -283,7 +283,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             return new OkObjectResult(user);
         }
 
-        private async Task<ActionResult> DeleteUser(string id)
+        private async Task<IActionResult> DeleteUser(string id)
         {
             var result = await _userStore.DeleteProfile(id).ConfigureAwait(false);
 
@@ -337,7 +337,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             };
         }
 
-        private static ActionResult GetMissingScimIdentifierError()
+        private static IActionResult GetMissingScimIdentifierError()
         {
             var error = new ScimErrorResponse
             {

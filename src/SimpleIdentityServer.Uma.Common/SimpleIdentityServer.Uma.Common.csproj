@@ -8,10 +8,6 @@
     <PackageId>SimpleIdentityServer.Uma.Common</PackageId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-  </ItemGroup>
-
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="1.0.2" />
     <Reference Include="System.Runtime.Serialization" />

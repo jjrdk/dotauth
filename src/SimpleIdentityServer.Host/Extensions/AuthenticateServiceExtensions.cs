@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Host.Extensions
             }
 
             var authResult = await authenticateService.AuthenticateAsync(controller.HttpContext, scheme).ConfigureAwait(false);
-            if (authResult == null || authResult.Principal == null)
+            if (authResult?.Principal == null)
             {
                 return new ClaimsPrincipal(new ClaimsIdentity());
             }

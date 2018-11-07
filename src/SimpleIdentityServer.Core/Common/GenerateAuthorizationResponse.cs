@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Core.Common
 
         public async Task ExecuteAsync(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName)
         {
-            if (actionResult == null || actionResult.RedirectInstruction == null)
+            if (actionResult?.RedirectInstruction == null)
             {
                 throw new ArgumentNullException(nameof(actionResult));
             }

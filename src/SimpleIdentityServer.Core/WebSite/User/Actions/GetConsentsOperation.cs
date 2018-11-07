@@ -34,8 +34,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
         
         public async Task<IEnumerable<Consent>> Execute(ClaimsPrincipal claimsPrincipal)
         {
-            if (claimsPrincipal == null ||
-                claimsPrincipal.Identity == null)
+            if (claimsPrincipal?.Identity == null)
             {
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }

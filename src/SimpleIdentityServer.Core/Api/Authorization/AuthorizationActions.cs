@@ -29,6 +29,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
     using Logging;
     using Shared;
     using Shared.Events.OAuth;
+    using ActionResult = Results.ActionResult;
 
     public class AuthorizationActions : IAuthorizationActions
     {
@@ -103,7 +104,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                         actionResult = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(parameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
                         break;
                 }
-
+                
                 if (actionResult != null)
                 {
                     var actionTypeName = Enum.GetName(typeof(TypeActionResult), actionResult.Type);
@@ -114,7 +115,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                         actionName = Enum.GetName(typeof(IdentityServerEndPoints), actionEnum);
                     }
 
-                    var serializedParameters = actionResult.RedirectInstruction == null || actionResult.RedirectInstruction.Parameters == null ? string.Empty :
+                    var serializedParameters = actionResult.RedirectInstruction?.Parameters == null ? string.Empty :
                         actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
                     _oauthEventSource.EndAuthorization(actionTypeName,
                         actionName,

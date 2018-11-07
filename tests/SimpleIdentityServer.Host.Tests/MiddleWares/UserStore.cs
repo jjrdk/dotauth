@@ -5,7 +5,7 @@
     public class UserStore
     {
         private static UserStore _instance;
-        private static string _defaultSubject = "administrator";
+        private static readonly string _defaultSubject = "administrator";
 
         private UserStore()
         {

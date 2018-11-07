@@ -16,6 +16,7 @@ namespace SimpleIdentityServer.Host.Extensions
 {
     using System;
     using Logging;
+    using Manager.Host.Middleware;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +24,21 @@ namespace SimpleIdentityServer.Host.Extensions
     using MiddleWare;
 
     public static class ApplicationBuilderExtensions 
-    {        
+    {
+        public static IApplicationBuilder UseManagerApi(this IApplicationBuilder app)
+        {
+            if (app == null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            app.UseSimpleIdentityServerManagerExceptionHandler(new ExceptionHandlerMiddlewareOptions
+            {
+               // ManagerEventSource = (IManagerEventSource)app.ApplicationServices.GetService(typeof(IManagerEventSource))
+            });
+            return app;
+        }
+
         public static void UseOpenIdApi(this IApplicationBuilder app, Action<IdentityServerOptions> optionsCallback, ILoggerFactory loggerFactory) 
         {
             if (optionsCallback == null) 

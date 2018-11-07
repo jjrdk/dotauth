@@ -84,9 +84,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
         public async Task<IActionResult> Index()
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
-            if (authenticatedUser == null ||
-                authenticatedUser.Identity == null ||
-                !authenticatedUser.Identity.IsAuthenticated)
+            if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 var viewModel = new AuthorizeViewModel();
@@ -98,12 +96,10 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> LocalLogin(LocalAuthenticationViewModel authorizeViewModel)
+        public async Task<IActionResult> LocalLogin(LocalAuthenticationViewModel authorizeViewModel)
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
-            if (authenticatedUser != null &&
-                authenticatedUser.Identity != null &&
-                authenticatedUser.Identity.IsAuthenticated)
+            if (authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "User", new {area = "UserManagement"});
             }
@@ -174,7 +170,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> LocalLoginOpenId(OpenidLocalAuthenticationViewModel viewModel)
+        public async Task<IActionResult> LocalLoginOpenId(OpenidLocalAuthenticationViewModel viewModel)
         {
             if (viewModel == null)
             {

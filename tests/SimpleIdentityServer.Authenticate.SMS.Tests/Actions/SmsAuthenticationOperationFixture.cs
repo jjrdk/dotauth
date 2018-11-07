@@ -60,12 +60,9 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
 
             InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(p => p.GetResourceOwnerByClaim("phone", phone)).Returns(() => Task.FromResult((ResourceOwner)null));
-            _smsAuthenticationOptions.AuthenticationOptions = new Basic.BasicAuthenticationOptions
-            {
-                AuthorizationWellKnownConfiguration = "auth",
-                ClientId = "clientid",
-                ClientSecret = "clientsecret"
-            };
+            _smsAuthenticationOptions.AuthorizationWellKnownConfiguration = "auth";
+            _smsAuthenticationOptions.ClientId = "clientid";
+            _smsAuthenticationOptions.ClientSecret = "clientsecret";
             _smsAuthenticationOptions.ScimBaseUrl = new Uri("https://scim");
 
             // ACT
@@ -85,7 +82,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
             InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(p => p.GetResourceOwnerByClaim("phone", phone)).Returns(() => Task.FromResult((ResourceOwner)null));
             _smsAuthenticationOptions.ScimBaseUrl = null;
-            _smsAuthenticationOptions.AuthenticationOptions = new Basic.BasicAuthenticationOptions();
+            //_smsAuthenticationOptions.AuthenticationOptions = new Basic.BasicAuthenticationOptions();
 
             // ACT
             await _smsAuthenticationOperation.Execute(phone).ConfigureAwait(false);

@@ -23,10 +23,12 @@ namespace SimpleIdentityServer.Twilio.Client
             }
 
             var client = new HttpClient();
-            var keyValues = new List<KeyValuePair<string, string>>();
-            keyValues.Add(new KeyValuePair<string, string>("To", toPhoneNumber));
-            keyValues.Add(new KeyValuePair<string, string>("From", credentials.FromNumber));
-            keyValues.Add(new KeyValuePair<string, string>("Body", message));
+            var keyValues = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("To", toPhoneNumber),
+                new KeyValuePair<string, string>("From", credentials.FromNumber),
+                new KeyValuePair<string, string>("Body", message)
+            };
             var content = new FormUrlEncodedContent(keyValues);
             var postUrl = string.Format(CultureInfo.InvariantCulture, TwilioSmsEndpointFormat, credentials.AccountSid);
             var httpRequest = new HttpRequestMessage

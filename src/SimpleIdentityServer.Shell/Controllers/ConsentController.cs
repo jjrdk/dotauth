@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Shell.Controllers
             _payloadSerializer = payloadSerializer;
         }
         
-        public async Task<ActionResult> Index(string code)
+        public async Task<IActionResult> Index(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var client = new Client();
@@ -89,7 +89,7 @@ namespace SimpleIdentityServer.Shell.Controllers
             return View(viewModel);
         }
         
-        public async Task<ActionResult> Confirm(string code)
+        public async Task<IActionResult> Confirm(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();

@@ -33,18 +33,8 @@ namespace SimpleIdentityServer.Host.MiddleWare
             RequestDelegate next,
             ExceptionHandlerMiddlewareOptions options)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException(nameof(next));
-            }
-
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            _next = next;
-            _options = options;
+            _next = next ?? throw new ArgumentNullException(nameof(next));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         public async Task Invoke(HttpContext context)
