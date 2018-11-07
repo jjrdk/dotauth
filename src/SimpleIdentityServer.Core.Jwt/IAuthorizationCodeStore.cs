@@ -1,7 +1,6 @@
-﻿using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Store
+﻿namespace SimpleIdentityServer.Core.Jwt
 {
+    using System.Threading.Tasks;
     using Shared.Models;
 
     public interface IAuthorizationCodeStore

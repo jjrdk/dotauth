@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Authenticate.Basic
+﻿namespace SimpleIdentityServer.Host
 {
     using System;
     using System.Collections.Generic;

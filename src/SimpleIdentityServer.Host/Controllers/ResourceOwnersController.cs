@@ -12,27 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Manager.Host.Controllers
+namespace SimpleIdentityServer.Host.Controllers
 {
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using SimpleIdentityServer.Manager.Common.Requests;
-    using System.Net;
-    using System.Threading.Tasks;
-
-    using Core.Exceptions;
-    using SimpleIdentityServer.Core.Helpers;
-    using SimpleIdentityServer.Core.WebSite.User.Actions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Core.Errors;
+    using Core.Exceptions;
+    using Core.Helpers;
+    using Core.WebSite.User.Actions;
+    using Extensions;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
     using Shared.Models;
     using Shared.Repositories;
+    using Shared.Requests;
     using Shared.Responses;
-    using SimpleIdentityServer.Core.Errors;
-    using SimpleIdentityServer.Host.Extensions;
-    using ErrorCodes = SimpleIdentityServer.Core.Errors.ErrorCodes;
+    using ErrorCodes = Core.Errors.ErrorCodes;
 
     [Route(Constants.EndPoints.ResourceOwners)]
     public class ResourceOwnersController : Controller

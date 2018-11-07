@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Manager.Core.Exceptions;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
+namespace SimpleIdentityServer.Core.Api.Scopes.Actions
 {
+    using System;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleIdentityServer.Core.Errors;
 
     public interface IUpdateScopeOperation
     {

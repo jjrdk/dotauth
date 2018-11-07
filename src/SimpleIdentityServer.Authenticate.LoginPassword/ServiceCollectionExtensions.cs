@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.Authenticate.LoginPassword.Controllers;
 using SimpleIdentityServer.Authenticate.LoginPassword.Services;
 using SimpleIdentityServer.Core.Services;

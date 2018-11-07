@@ -1,10 +1,9 @@
-﻿namespace SimpleIdentityServer.Manager.Common.Requests
+﻿namespace SimpleIdentityServer.Shared.Requests
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using Models;
     using Shared;
-    using Shared.Models;
-    using Shared.Requests;
 
     [DataContract]
     public class AddClientRequest
@@ -39,8 +38,6 @@
         [DataMember(Name = Constants.ClientNames.TosUri)]
         public string TosUri { get; set; }
 
-        #region Encryption mechanism for ID TOKEN
-
         /// <summary>
         /// Gets or sets the JWS alg algorithm for signing the ID token issued to this client.
         /// The default is RS256. The public key for validating the signature is provided by retrieving the JWK Set referenced by the JWKS_URI
@@ -61,8 +58,6 @@
         /// </summary>
         [DataMember(Name = Constants.ClientNames.IdTokenEncryptedResponseEnc)]
         public string IdTokenEncryptedResponseEnc { get; set; }
-
-        #endregion
 
         /// <summary>
         /// Gets or sets the client authentication method for the Token Endpoint. 

@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Manager.Host.Controllers
+namespace SimpleIdentityServer.Host.Controllers
 {
+    using System;
+    using System.Threading.Tasks;
+    using Core.Api.Scopes;
+    using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using SimpleIdentityServer.Manager.Common.Requests;
-    using SimpleIdentityServer.Manager.Common.Responses;
-    using SimpleIdentityServer.Manager.Core.Api.Scopes;
-    using System;
-    using System.Threading.Tasks;
-    using SimpleIdentityServer.Host.Extensions;
+    using Shared.Requests;
+    using Shared.Responses;
 
     [Route(Constants.EndPoints.Scopes)]
     public class ScopesController : Controller

@@ -1,15 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Manager.Common.Requests;
-using SimpleIdentityServer.Manager.Common.Responses;
-using SimpleIdentityServer.Manager.Core.Api.Claims;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Host.Controllers
+﻿namespace SimpleIdentityServer.Host.Controllers
 {
-    using SimpleIdentityServer.Host.Extensions;
+    using System;
+    using System.Threading.Tasks;
+    using Core.Api.Claims;
+    using Extensions;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Shared.Requests;
+    using Shared.Responses;
 
     [Route(Constants.EndPoints.Claims)]
     public class ClaimsController : Controller

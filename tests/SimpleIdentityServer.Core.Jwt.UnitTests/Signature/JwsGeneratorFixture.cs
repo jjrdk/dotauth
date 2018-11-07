@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 {
+    using Json;
     using Shared;
     using Shared.Requests;
 

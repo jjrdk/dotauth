@@ -19,7 +19,7 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt
 {
-    using Common.Extensions;
+    using Json;
     using Shared;
 
     public class JweGenerator : IJweGenerator

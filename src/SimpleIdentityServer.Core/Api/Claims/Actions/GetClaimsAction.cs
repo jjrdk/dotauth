@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Core.Api.Claims.Actions
+﻿namespace SimpleIdentityServer.Core.Api.Claims.Actions
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Shared.Models;
     using Shared.Repositories;
 

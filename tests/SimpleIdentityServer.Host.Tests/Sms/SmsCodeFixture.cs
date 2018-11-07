@@ -5,10 +5,10 @@
     using Core.Errors;
     using Core.Exceptions;
     using Moq;
-    using Store;
     using System;
     using System.Net;
     using System.Threading.Tasks;
+    using Core.Jwt;
     using Twilio.Client;
     using Xunit;
 

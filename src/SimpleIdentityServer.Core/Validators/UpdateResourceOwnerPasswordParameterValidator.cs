@@ -1,10 +1,9 @@
-﻿using SimpleIdentityServer.Manager.Core.Exceptions;
-using SimpleIdentityServer.Manager.Core.Parameters;
-using System;
-
-namespace SimpleIdentityServer.Manager.Core.Validators
+﻿namespace SimpleIdentityServer.Core.Validators
 {
-    using SimpleIdentityServer.Core.Errors;
+    using System;
+    using Errors;
+    using Exceptions;
+    using Parameters;
 
     public interface IUpdateResourceOwnerPasswordParameterValidator
     {

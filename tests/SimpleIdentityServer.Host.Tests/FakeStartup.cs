@@ -12,39 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using SimpleIdentityServer.Authenticate.SMS;
-using SimpleIdentityServer.Authenticate.SMS.Actions;
-using SimpleIdentityServer.Authenticate.SMS.Controllers;
-using SimpleIdentityServer.Authenticate.SMS.Services;
-using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Api.Jwks.Actions;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Host.Tests.MiddleWares;
-using SimpleIdentityServer.Host.Tests.Services;
-using SimpleIdentityServer.Host.Tests.Stores;
-using SimpleIdentityServer.Logging;
-using SimpleIdentityServer.Store;
-using SimpleIdentityServer.UserManagement.Controllers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-
 namespace SimpleIdentityServer.Host.Tests
 {
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Mvc.ApplicationParts;
+    using Microsoft.Extensions.DependencyInjection;
+    using Newtonsoft.Json;
+    using SimpleIdentityServer.Authenticate.SMS;
+    using SimpleIdentityServer.Authenticate.SMS.Actions;
+    using SimpleIdentityServer.Authenticate.SMS.Controllers;
+    using SimpleIdentityServer.Authenticate.SMS.Services;
+    using SimpleIdentityServer.Core;
+    using SimpleIdentityServer.Core.Api.Jwks.Actions;
+    using SimpleIdentityServer.Core.Extensions;
+    using SimpleIdentityServer.Core.Jwt;
+    using SimpleIdentityServer.Core.Services;
+    using SimpleIdentityServer.Host.Tests.MiddleWares;
+    using SimpleIdentityServer.Host.Tests.Services;
+    using SimpleIdentityServer.Host.Tests.Stores;
+    using SimpleIdentityServer.Logging;
+    using SimpleIdentityServer.UserManagement.Controllers;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using System.Text;
+
     using Controllers.Api;
     using Extensions;
     using System.Net.Http;
     using Client;
-    using Manager.Host.Extensions;
     using Shared;
     using Shared.Repositories;
     using Shared.Requests;

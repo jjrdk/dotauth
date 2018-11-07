@@ -1,5 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
@@ -15,6 +14,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
+    using Json;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;

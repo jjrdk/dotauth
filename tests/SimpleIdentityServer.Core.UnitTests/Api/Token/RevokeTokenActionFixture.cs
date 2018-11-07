@@ -18,13 +18,13 @@ using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
+    using Jwt;
     using Shared.Models;
 
     public class RevokeTokenActionFixture

@@ -1,13 +1,13 @@
 ﻿using Moq;
 using SimpleIdentityServer.Authenticate.SMS.Services;
 using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Tests.Services
 {
+    using Core.Jwt;
     using Shared.Models;
     using Shared.Repositories;
 

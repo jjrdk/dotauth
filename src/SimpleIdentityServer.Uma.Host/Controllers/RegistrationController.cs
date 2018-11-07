@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Api.Registration;
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System.Net;
 using System.Threading.Tasks;
@@ -9,6 +8,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
     using Shared.Responses;
+    using ClientResponse = DTOs.Responses.ClientResponse;
 
     [Route(Constants.RouteValues.Registration)]
     public class RegistrationController : Controller

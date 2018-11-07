@@ -19,7 +19,6 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Store;
 using System;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -28,6 +27,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
+    using Jwt;
     using Logging;
     using Shared.Models;
 

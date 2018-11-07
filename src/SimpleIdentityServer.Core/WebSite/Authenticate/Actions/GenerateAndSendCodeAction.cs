@@ -15,13 +15,13 @@
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Store;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
+    using Jwt;
     using Shared.Repositories;
 
     internal class GenerateAndSendCodeAction : IGenerateAndSendCodeAction

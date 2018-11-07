@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
@@ -26,6 +25,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Authorization
 {
+    using Json;
     using Logging;
     using Shared;
     using Shared.Events.OAuth;

@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Manager.Common.Responses
+namespace SimpleIdentityServer.Shared.Responses
 {
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
     using Shared;
 
     [DataContract]

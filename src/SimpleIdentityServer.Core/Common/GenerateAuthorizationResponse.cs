@@ -13,13 +13,11 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Api.Authorization;
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Store;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -27,6 +25,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Common
 {
+    using Json;
+    using Jwt;
     using Logging;
     using Shared;
     using Shared.Models;

@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Manager.Core.Helpers
+namespace SimpleIdentityServer.Core.Helpers
 {
-    using Shared;
-    using Shared.Requests;
-    using SimpleIdentityServer.Core.Jwt.Converter;
-    using SimpleIdentityServer.Manager.Core.Exceptions;
     using System;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using SimpleIdentityServer.Core.Common.Extensions;
-    using SimpleIdentityServer.Core.Errors;
+    using Errors;
+    using Exceptions;
+    using Json;
+    using Jwt.Converter;
+    using Shared;
+    using Shared.Requests;
 
     public interface IJsonWebKeyHelper
     {

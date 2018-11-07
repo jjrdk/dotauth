@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Manager.Common.Requests
+namespace SimpleIdentityServer.Shared.Requests
 {
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+    using Models;
     using Shared;
-    using Shared.Models;
-    using Shared.Requests;
 
     [DataContract]
     public class UpdateClientRequest

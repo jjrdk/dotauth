@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Manager.Core.Exceptions;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
+namespace SimpleIdentityServer.Core.Api.Clients.Actions
 {
+    using System;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
     using Logging;
     using Shared.Repositories;
-    using SimpleIdentityServer.Core.Errors;
 
     public interface IRemoveClientAction
     {

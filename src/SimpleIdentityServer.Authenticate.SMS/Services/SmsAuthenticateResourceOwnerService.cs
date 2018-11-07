@@ -1,10 +1,10 @@
 ﻿using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Services
 {
+    using Core.Jwt;
     using Shared.Models;
     using Shared.Repositories;
 
@@ -19,7 +19,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Services
             _confirmationCodeStore = confirmationCodeStore;
         }
 
-        public string Amr => Constants.AMR;
+        public string Amr => SmsConstants.AMR;
 
         public async Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password)
         {

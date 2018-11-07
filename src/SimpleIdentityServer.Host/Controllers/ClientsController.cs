@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Manager.Common.Requests;
-using SimpleIdentityServer.Manager.Core.Api.Clients;
-using System.Net;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Host.Controllers
+namespace SimpleIdentityServer.Host.Controllers
 {
+    using System.Net;
+    using System.Threading.Tasks;
+    using Core.Api.Clients;
+    using Core.Errors;
+    using Extensions;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Shared.Requests;
     using Shared.Responses;
-    using SimpleIdentityServer.Host.Extensions;
 
     [Route(Constants.EndPoints.Clients)]
     public class ClientsController : Controller

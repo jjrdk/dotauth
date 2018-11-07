@@ -15,12 +15,10 @@
 using Moq;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Store;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -31,6 +29,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Common
 {
+    using Json;
+    using Jwt;
     using Logging;
     using Shared;
     using Shared.Models;

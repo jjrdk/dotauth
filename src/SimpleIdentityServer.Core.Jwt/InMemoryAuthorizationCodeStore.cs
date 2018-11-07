@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Store
+﻿namespace SimpleIdentityServer.Core.Jwt
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Shared.Models;
 
     internal sealed class InMemoryAuthorizationCodeStore : IAuthorizationCodeStore

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Exceptions;
 using SimpleIdentityServer.Core.Jwt.Serializer;
@@ -26,6 +25,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 {
+    using Json;
     using Shared;
     using Shared.Requests;
 

@@ -13,12 +13,12 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Validators
 {
+    using Jwt;
     using Shared.Models;
 
     public class GrantedTokenValidator : IGrantedTokenValidator

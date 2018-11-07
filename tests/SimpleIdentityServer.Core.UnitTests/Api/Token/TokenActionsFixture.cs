@@ -13,8 +13,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
     using Core.Authenticate;
     using Core.Helpers;
-    using Store;
     using System.Collections.Generic;
+    using Jwt;
     using Logging;
     using Shared;
     using Shared.Models;

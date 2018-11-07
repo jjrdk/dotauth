@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Manager.Common.Requests;
-using SimpleIdentityServer.Manager.Common.Responses;
-using SimpleIdentityServer.Manager.Core.Api.Jws;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Host.Controllers
+namespace SimpleIdentityServer.Host.Controllers
 {
-    using SimpleIdentityServer.Host.Extensions;
+    using System;
+    using System.Threading.Tasks;
+    using Core.Api.Jws;
+    using Extensions;
+    using Microsoft.AspNetCore.Mvc;
+    using Shared.Requests;
+    using Shared.Responses;
 
     [Route(Constants.EndPoints.Jws)]
     public class JwsController : Controller

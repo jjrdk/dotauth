@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Manager.Common.Responses;
-using SimpleIdentityServer.Manager.Host.Extensions;
-
-namespace SimpleIdentityServer.Manager.Host.Controllers
+﻿namespace SimpleIdentityServer.Host.Controllers
 {
-    [Route(Constants.EndPoints.Configuration)]
+    using Core;
+    using Microsoft.AspNetCore.Mvc;
+    using Shared.Responses;
+    using Constants = Host.Constants;
+
+    [Route(Host.Constants.EndPoints.Configuration)]
     public class ConfigurationController : Controller
     {
         [HttpGet]

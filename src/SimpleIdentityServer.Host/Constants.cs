@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Manager.Host
+﻿namespace SimpleIdentityServer.Host
 {
     public static class Constants
     {

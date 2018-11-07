@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Manager.Common.Requests
+﻿namespace SimpleIdentityServer.Shared.Requests
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;

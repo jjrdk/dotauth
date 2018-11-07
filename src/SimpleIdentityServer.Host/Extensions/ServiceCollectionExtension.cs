@@ -12,20 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Logging;
-using SimpleIdentityServer.Manager.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace SimpleIdentityServer.Manager.Host.Extensions
+namespace SimpleIdentityServer.Host.Extensions
 {
+    using Core;
+    using Microsoft.Extensions.DependencyInjection;
     using Shared;
     using Shared.AccountFiltering;
     using Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public static class ServiceCollectionExtension
     {
@@ -41,7 +37,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             {
                 options.AddPolicy("manager", policy =>
                 {
-					policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                    policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
                     policy.RequireAssertion(p =>
                     {
                         if (p.User?.Identity?.IsAuthenticated != true)

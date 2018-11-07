@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
@@ -24,6 +23,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.JwtToken
 {
     using System.Net.Http;
+    using Json;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;

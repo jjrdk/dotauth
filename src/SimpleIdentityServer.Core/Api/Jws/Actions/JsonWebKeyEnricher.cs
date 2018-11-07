@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Manager.Core.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-
-namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
+namespace SimpleIdentityServer.Core.Api.Jws.Actions
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Cryptography;
+    using Errors;
+    using Exceptions;
     using Shared;
-    using SimpleIdentityServer.Core.Errors;
 
     public interface IJsonWebKeyEnricher
     {

@@ -17,7 +17,6 @@ using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
-using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +27,8 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
     using Shared.Models;
     using Shared.Requests;
     using Shared.Responses;
+    using ClientResponse = DTOs.Responses.ClientResponse;
+    using ConfigurationResponse = Common.DTOs.ConfigurationResponse;
 
     internal static class MappingExtensions
     {
@@ -346,8 +347,7 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                     var responseTypeSplitted = responseType.Split(' ');
                     foreach (var response in responseTypeSplitted)
                     {
-                        ResponseType responseTypeEnum;
-                        if (Enum.TryParse(response, out responseTypeEnum) &&
+                        if (Enum.TryParse(response, out ResponseType responseTypeEnum) &&
                             !responseTypes.Contains(responseTypeEnum))
                         {
                             responseTypes.Add(responseTypeEnum);
@@ -361,16 +361,14 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             {
                 foreach (var grantType in clientResponse.grant_types)
                 {
-                    GrantType grantTypeEnum;
-                    if (Enum.TryParse(grantType, out grantTypeEnum))
+                    if (Enum.TryParse(grantType, out GrantType grantTypeEnum))
                     {
                         grantTypes.Add(grantTypeEnum);
                     }
                 }
             }
 
-            ApplicationTypes appTypeEnum;
-            if (Enum.TryParse(clientResponse.application_type, out appTypeEnum))
+            if (Enum.TryParse(clientResponse.application_type, out ApplicationTypes appTypeEnum))
             {
                 applicationType = appTypeEnum;
             }

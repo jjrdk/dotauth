@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Manager.Core.Parameters
+﻿namespace SimpleIdentityServer.Core.Parameters
 {
     public class UpdateResourceOwnerPasswordParameter
     {

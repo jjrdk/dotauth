@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Manager.Core.Api.Jws.Actions;
-using SimpleIdentityServer.Manager.Core.Parameters;
-using SimpleIdentityServer.Manager.Core.Results;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Core.Api.Jws
+namespace SimpleIdentityServer.Core.Api.Jws
 {
+    using System;
+    using System.Threading.Tasks;
+    using Actions;
+    using Parameters;
+    using Results;
+
     public interface IJwsActions
     {
         Task<JwsInformationResult> GetJwsInformation(GetJwsParameter getJwsParameter);

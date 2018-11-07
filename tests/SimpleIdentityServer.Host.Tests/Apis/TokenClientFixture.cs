@@ -25,7 +25,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using Newtonsoft.Json;
-    using Store;
     using System;
     using System.Collections.Generic;
     using System.Net;
