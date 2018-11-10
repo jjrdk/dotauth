@@ -30,7 +30,7 @@
     using System.Security.Claims;
     using System.Threading.Tasks;
 
-    [Area(SimpleIdentityServer.Authenticate.SMS.SmsConstants.AMR)]
+    [Area(SmsConstants.AMR)]
     public class AuthenticateController : BaseAuthenticateController
     {
         private readonly IGetUserOperation _getUserOperation;
