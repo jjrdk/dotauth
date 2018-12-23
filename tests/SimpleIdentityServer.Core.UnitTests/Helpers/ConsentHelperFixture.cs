@@ -22,38 +22,29 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _consentHelper.GetConfirmedConsentsAsync("subject", null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _consentHelper.GetConfirmedConsentsAsync("subject", null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_No_Consent_Has_Been_Given_By_The_Resource_Owner_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string subject = "subject";
             var authorizationParameter = new AuthorizationParameter();
 
             _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((IEnumerable<Consent>)null));
 
-            // ACT
-            var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
+                        var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
                 authorizationParameter).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Null(result);
+                        Assert.Null(result);
         }
 
         [Fact]
         public async Task When_A_Consent_Has_Been_Given_For_Claim_Name_Then_Consent_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string subject = "subject";
             const string claimName = "name";
             const string clientId = "clientId";
@@ -89,21 +80,17 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(consents));
 
-            // ACT
-            var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
+                        var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
                 authorizationParameter).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
             Assert.True(result.Claims.Count == 1);
             Assert.True(result.Claims.First() == claimName);
         }
 
         [Fact]
         public async Task When_A_Consent_Has_Been_Given_For_Scope_Profile_Then_Consent_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string subject = "subject";
             const string scope = "profile";
             const string clientId = "clientId";
@@ -136,21 +123,17 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>())).Returns(scopes);
             _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>())).Returns(Task.FromResult(consents));
 
-            // ACT
-            var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
+                        var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
                 authorizationParameter).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
             Assert.True(result.GrantedScopes.Count == 1);
             Assert.True(result.GrantedScopes.First().Name == scope);
         }
         
         [Fact]
         public async Task When_Consent_Has_Been_Assigned_To_OpenId_Profile_And_Request_Consent_For_Scope_OpenId_Profile_Email_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string subject = "subject";
             const string openIdScope = "openid";
             const string profileScope = "profile";
@@ -194,12 +177,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(consents));
 
-            // ACT
-            var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
+                        var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
                 authorizationParameter).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Null(result);
+                        Assert.Null(result);
         }
 
         private void InitializeFakeObjects()

@@ -38,21 +38,16 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _confirmConsentAction.Execute(null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _confirmConsentAction.Execute(null, null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _confirmConsentAction.Execute(authorizationParameter, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_No_Consent_Has_Been_Given_And_ResponseMode_Is_No_Correct_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string subject = "subject";
             const string state = "state";
             var authorizationParameter = new AuthorizationParameter
@@ -76,7 +71,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             {
                 Id = subject
             };
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 Type = TypeActionResult.RedirectToCallBackUrl,
                 RedirectInstruction = new RedirectInstruction()
@@ -94,13 +89,12 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(Task.FromResult(resourceOwner));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
-            _scopeRepositoryFake.Setup(s => s.SearchByNamesAsync(It.IsAny<IEnumerable<string>>()))
+            _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(new List<ResponseType> { ResponseType.id_token, ResponseType.id_token });
 
-            // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
@@ -109,9 +103,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
         [Fact]
         public async Task When_No_Consent_Has_Been_Given_For_The_Claims_Then_Create_And_Insert_A_New_One()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string subject = "subject";
             const string clientId = "clientId";
             var authorizationParameter = new AuthorizationParameter
@@ -142,7 +134,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             {
                 Id = subject
             };
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction()
             };
@@ -154,7 +146,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(new List<string>());
-            _scopeRepositoryFake.Setup(s => s.SearchByNamesAsync(It.IsAny<IEnumerable<string>>()))
+            _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
             _resourceOwnerRepositoryFake.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(resourceOwner));
@@ -165,11 +157,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Callback<Consent>(consent => insertedConsent = consent)
                 .Returns(Task.FromResult(true));
 
-            // ACT
-            await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null).ConfigureAwait(false);
+                        await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(insertedConsent);
+                        Assert.NotNull(insertedConsent);
             Assert.Contains(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, insertedConsent.Claims);
             Assert.True(insertedConsent.ResourceOwner.Id == subject);
             Assert.True(insertedConsent.Client.ClientId == clientId);
@@ -178,9 +168,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
         [Fact]
         public async Task When_No_Consent_Has_Been_Given_Then_Create_And_Insert_A_New_One()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string subject = "subject";
             var authorizationParameter = new AuthorizationParameter
             {
@@ -202,7 +190,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             {
                 Id = subject
             };
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 Type = TypeActionResult.RedirectToCallBackUrl,
                 RedirectInstruction = new RedirectInstruction
@@ -218,7 +206,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(new List<string>());
-            _scopeRepositoryFake.Setup(s => s.SearchByNamesAsync(It.IsAny<IEnumerable<string>>()))
+            _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
             _resourceOwnerRepositoryFake.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(resourceOwner));
@@ -227,11 +215,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(new List<ResponseType> {  ResponseType.code });
 
-            // ACT
-            var result = await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null).ConfigureAwait(false);
+                        var result = await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null).ConfigureAwait(false);
 
-            // ASSERT
-            _consentRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Consent>()));
+                        _consentRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Consent>()));
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl());
             Assert.True(result.RedirectInstruction.ResponseMode == ResponseMode.query);
         }

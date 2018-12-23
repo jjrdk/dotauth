@@ -32,12 +32,9 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Ticket_Id_Doesnt_Exist_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT
-            var token = await new TokenClient(
+                        var token = await new TokenClient(
                     TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
                     TokenRequest.FromTicketId("ticket_id", ""),
                     _server.Client,
@@ -46,8 +43,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(token);
+                        Assert.NotNull(token);
             Assert.True(token.ContainsError);
             Assert.Equal("invalid_ticket", token.Error.Error);
             Assert.Equal("the ticket ticket_id doesn't exist", token.Error.ErrorDescription);
@@ -55,12 +51,9 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Using_ClientCredentials_Grant_Type_Then_AccessToken_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT
-            var result = await new TokenClient(
+                        var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
                     TokenRequest.FromScopes("uma_protection", "uma_authorization"),
                     _server.Client,
@@ -68,16 +61,13 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
                 .ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
             Assert.NotEmpty(result.Content.AccessToken);
         }
 
         [Fact]
         public async Task When_Using_TicketId_Grant_Type_Then_AccessToken_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             var jwsPayload = new JwsPayload
             {
@@ -90,8 +80,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             };
             var jwt = _jwsGenerator.Generate(jwsPayload, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
 
-            // ACT
-            var result = await new TokenClient(
+                        var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("resource_server", "resource_server"), // Get PAT.
                     TokenRequest.FromScopes("uma_protection", "uma_authorization"),
                     _server.Client,

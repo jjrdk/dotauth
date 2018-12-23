@@ -34,51 +34,39 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         [Fact]
         public async Task When_Passing_Null_AuthorizationParameter_To_The_Action_AuthenticateResourceOwner_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.AuthenticateResourceOwnerOpenId(null, null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.AuthenticateResourceOwnerOpenId(null, null, null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.AuthenticateResourceOwnerOpenId(authorizationParameter, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Passing_Null_LocalAuthenticateParameter_To_The_Action_LocalUserAuthentication_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var localAuthenticationParameter = new LocalAuthenticationParameter();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.LocalOpenIdUserAuthentication(null, null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.LocalOpenIdUserAuthentication(null, null, null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.LocalOpenIdUserAuthentication(localAuthenticationParameter, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Passing_Parameters_Needed_To_The_Action_AuthenticateResourceOwner_Then_The_Action_Is_Called()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = "clientId"
             };
             var claimsPrincipal = new ClaimsPrincipal();
 
-            // ACT
-            await _authenticateActions.AuthenticateResourceOwnerOpenId(authorizationParameter, claimsPrincipal, null, null).ConfigureAwait(false);
+                        await _authenticateActions.AuthenticateResourceOwnerOpenId(authorizationParameter, claimsPrincipal, null, null).ConfigureAwait(false);
 
-            // ASSERT
-            _authenticateResourceOwnerActionFake.Verify(a => a.Execute(authorizationParameter, claimsPrincipal, null, null));
+                        _authenticateResourceOwnerActionFake.Verify(a => a.Execute(authorizationParameter, claimsPrincipal, null, null));
         }
 
         [Fact]
         public async Task When_Passing_Parameters_Needed_To_The_Action_LocalUserAuthentication_Then_The_Action_Is_Called()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = "clientId"
@@ -89,11 +77,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             };
 
 
-            // ACT
-            await _authenticateActions.LocalOpenIdUserAuthentication(localUserAuthentication, authorizationParameter, null, null).ConfigureAwait(false);
+                        await _authenticateActions.LocalOpenIdUserAuthentication(localUserAuthentication, authorizationParameter, null, null).ConfigureAwait(false);
 
-            // ASSERT
-            _localOpenIdUserAuthenticationActionFake.Verify(a => a.Execute(localUserAuthentication, 
+                        _localOpenIdUserAuthenticationActionFake.Verify(a => a.Execute(localUserAuthentication, 
                 authorizationParameter,
                 null, null));
         }

@@ -89,14 +89,14 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     authorizationParameter.State);
             }
 
-            ActionResult actionResult;
+            EndpointResult endpointResult;
             var subject = claimsPrincipal.GetSubject();
             var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
             // If there's already a consent then redirect to the callback
             if (assignedConsent != null)
             {
-                actionResult = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-                await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
+                endpointResult = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
+                await _generateAuthorizationResponse.ExecuteAsync(endpointResult, authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {
@@ -105,10 +105,10 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     responseMode = GetResponseMode(authorizationFlow);
                 }
 
-                actionResult.RedirectInstruction.ResponseMode = responseMode;
+                endpointResult.RedirectInstruction.ResponseMode = responseMode;
                 return new DisplayContentResult
                 {
-                    ActionResult = actionResult
+                    EndpointResult = endpointResult
                 };
             }
 
@@ -127,12 +127,12 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     .ToList();
             }
 
-            actionResult = _actionResultFactory.CreateAnEmptyActionResultWithOutput();
+            endpointResult = _actionResultFactory.CreateAnEmptyActionResultWithOutput();
             return new DisplayContentResult
             {
                 AllowedClaims = allowedClaims,
                 Scopes = allowedScopes,
-                ActionResult = actionResult,
+                EndpointResult = endpointResult,
                 Client = client
             };
         }
@@ -146,7 +146,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         {
             var result = new List<Scope>();
             var scopeNames = concatenateListOfScopes.Split(' ');
-            return await _scopeRepository.SearchByNamesAsync(scopeNames).ConfigureAwait(false);
+            return await _scopeRepository.SearchByNames(scopeNames).ConfigureAwait(false);
         }
 
         private static AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state)
@@ -159,7 +159,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     state);
             }
 
-            var record = Constants.MappingResponseTypesToAuthorizationFlows.Keys
+            var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys
                 .SingleOrDefault(k => k.Count == responseTypes.Count && k.All(key => responseTypes.Contains(key)));
             if (record == null)
             {
@@ -169,12 +169,12 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     state);
             }
 
-            return Constants.MappingResponseTypesToAuthorizationFlows[record];
+            return CoreConstants.MappingResponseTypesToAuthorizationFlows[record];
         }
 
         private static ResponseMode GetResponseMode(AuthorizationFlow authorizationFlow)
         {
-            return Constants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
+            return CoreConstants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
         }
     }
 }

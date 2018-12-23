@@ -28,9 +28,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 
         [Fact]
         public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACTS & ASSERTS
             Assert.Throws<ArgumentNullException>(() => _clientTlsAuthentication.AuthenticateClient(null, null));
@@ -39,9 +37,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 
         [Fact]
         public void When_Passing_NoSecret_Or_Certificate_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACTS & ASSERTS
             Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction(), new Client()));
@@ -53,9 +49,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 
         [Fact]
         public void When_Client_Doesnt_Contain_ThumbprintAndName_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
             {
@@ -69,9 +63,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         /*
         [Fact]
         public void When_ThumbPrint_Is_Not_Correct_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var certificate = new X509Certificate2("testCert.pfx", "testPassword");
 
             Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
@@ -92,9 +84,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 
         [Fact]
         public void When_Name_Is_Not_Correct_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var certificate = new X509Certificate2("testCert.pfx", "testPassword");
 
             Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
@@ -115,13 +105,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 
         [Fact]
         public void When_Client_Is_Authenticated_Then_Client_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var certificate = new X509Certificate2("testCert.pfx", "testPassword");
 
-            // ACT
-            var result = _clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
+                        var result = _clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
             {
                 Certificate = certificate
             }, new Client
@@ -141,8 +128,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 }
             });
 
-            // ASSERTS
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
         }
         */
 

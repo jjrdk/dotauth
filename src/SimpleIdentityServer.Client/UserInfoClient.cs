@@ -18,9 +18,9 @@ namespace SimpleIdentityServer.Client
     using Newtonsoft.Json.Linq;
     using Shared;
     using Shared.Responses;
-    using SimpleIdentityServer.Client.Errors;
-    using SimpleIdentityServer.Client.Operations;
-    using SimpleIdentityServer.Client.Results;
+    using Errors;
+    using Operations;
+    using Results;
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
-            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out Uri uri))
+            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out var uri))
             {
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
             }

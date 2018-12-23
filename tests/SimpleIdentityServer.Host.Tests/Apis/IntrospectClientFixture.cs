@@ -46,12 +46,10 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 RequestUri = new Uri($"{baseUrl}/introspect")
             };
 
-            // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+                        var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
+                        Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
             Assert.NotNull(error);
             Assert.Equal("invalid_request", error.Error);
@@ -73,12 +71,10 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 RequestUri = new Uri($"{baseUrl}/introspect")
             };
 
-            // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+                        var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            // ASSERT
-            var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
+                        var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
             Assert.NotNull(error);
             Assert.Equal("invalid_request", error.Error);
             Assert.Equal("the parameter token is missing", error.ErrorDescription);
@@ -87,8 +83,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Introspect_And_Client_Not_Authenticated_Then_Error_Is_Returned()
         {
-            // ACT
-            var introspection = await new IntrospectClient(
+                        var introspection = await new IntrospectClient(
                     TokenCredentials.FromClientCredentials("invalid_client", "invalid_client"),
                     IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken),
                     _server.Client,
@@ -96,8 +91,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(introspection);
+                        Assert.NotNull(introspection);
             Assert.True(introspection.ContainsError);
             Assert.Equal("invalid_client", introspection.Error.Error);
             Assert.Equal("the client doesn't exist", introspection.Error.ErrorDescription);
@@ -106,8 +100,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Introspect_And_Token_Doesnt_Exist_Then_Error_Is_Returned()
         {
-            // ACT
-            var introspection = await new IntrospectClient(
+                        var introspection = await new IntrospectClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken),
                     _server.Client,
@@ -115,8 +108,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(introspection);
+                        Assert.NotNull(introspection);
             Assert.True(introspection.ContainsError);
             Assert.Equal("invalid_token", introspection.Error.Error);
             Assert.Equal("the token is not valid", introspection.Error.ErrorDescription);
@@ -125,8 +117,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Introspecting_AccessToken_Then_Information_Are_Returned()
         {
-            // ACT
-            var result = await new TokenClient(
+                        var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
@@ -141,8 +132,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(introspection);
+                        Assert.NotNull(introspection);
             Assert.NotNull(introspection.Content.Scope);
             Assert.True(introspection.Content.Scope.Count() == 1);
             Assert.True(introspection.Content.Scope.First() == "scim");
@@ -151,8 +141,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Introspecting_RefreshToken_Then_Information_Are_Returned()
         {
-            // ACT
-            var result = await new TokenClient(
+                        var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
@@ -167,8 +156,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(introspection);
+                        Assert.NotNull(introspection);
             Assert.NotNull(introspection.Content.Scope);
             Assert.True(introspection.Content.Scope.Count() == 1 && introspection.Content.Scope.First() == "scim");
         }

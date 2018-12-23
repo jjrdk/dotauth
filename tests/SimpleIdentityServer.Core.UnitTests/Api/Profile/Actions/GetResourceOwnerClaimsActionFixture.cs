@@ -18,9 +18,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
 
         [Fact]
         public async Task WhenPassNullParameterThenExceptionIsThrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACTS & ASSERTS
             await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceOwnerClaimsAction.Execute(null)).ConfigureAwait(false);
@@ -34,11 +32,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             InitializeFakeObjects();
             _profileRepositoryStub.Setup(p => p.Get(It.IsAny<string>())).Returns(Task.FromResult((ResourceOwnerProfile)null));
 
-            // ACT
-            var result = await _getResourceOwnerClaimsAction.Execute("externalSubject").ConfigureAwait(false);
+                        var result = await _getResourceOwnerClaimsAction.Execute("externalSubject").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Null(result);
+                        Assert.Null(result);
         }
 
         [Fact]
@@ -52,11 +48,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
                 Id = "id"
             }));
 
-            // ACT
-            var result = await _getResourceOwnerClaimsAction.Execute("externalSubject").ConfigureAwait(false);
+                        var result = await _getResourceOwnerClaimsAction.Execute("externalSubject").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
             Assert.Equal("id", result.Id);
         }
 

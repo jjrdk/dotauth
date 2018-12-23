@@ -36,9 +36,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         
         [Fact]
         public async Task When_Passing_NullOrWhiteSpace_Then_Exceptions_Are_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACTS & ASSERTS
             await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(string.Empty, null, null, null)).ConfigureAwait(false);
@@ -46,9 +44,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
         [Fact]
         public async Task When_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult((Client)null));
 
             // ACTS & ASSERTS
@@ -63,17 +59,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             var client = new Client
             {
                 ClientId = "client_id"
-            };
-            // ARRANGE
-            InitializeFakeObjects();
+            };            InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
-            // ACT
-            var result = await _grantedTokenGeneratorHelper.GenerateTokenAsync("client_id", "scope", "issuer", null).ConfigureAwait(false);
+                        var result = await _grantedTokenGeneratorHelper.GenerateTokenAsync("client_id", "scope", "issuer", null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
             Assert.True(result.ExpiresIn == 3700);
         }
 

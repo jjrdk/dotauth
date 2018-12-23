@@ -16,7 +16,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
 {
     using Shared.Models;
     using Shared.Repositories;
-    using ActionResult = Results.ActionResult;
 
     public sealed class AuthenticateHelper : IAuthenticateHelper
     {
@@ -39,7 +38,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
             _clientRepository = clientRepository;
         }
 
-        public async Task<ActionResult> ProcessRedirection(
+        public async Task<EndpointResult> ProcessRedirection(
             AuthorizationParameter authorizationParameter,
             string code,
             string subject,
@@ -59,7 +58,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
             }
 
             // Redirect to the consent page if the prompt parameter contains "consent"
-            ActionResult result;
+            EndpointResult result;
             var prompts = _parameterParserHelper.ParsePrompts(authorizationParameter.Prompt);
             if (prompts != null &&
                 prompts.Contains(PromptParameter.consent))
@@ -111,7 +110,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
                     state);
             }
 
-            var record = Constants.MappingResponseTypesToAuthorizationFlows.Keys
+            var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys
                 .SingleOrDefault(k => k.Count == responseTypes.Count && k.All(key => responseTypes.Contains(key)));
             if (record == null)
             {
@@ -121,12 +120,12 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
                     state);
             }
 
-            return Constants.MappingResponseTypesToAuthorizationFlows[record];
+            return CoreConstants.MappingResponseTypesToAuthorizationFlows[record];
         }
 
         private static ResponseMode GetResponseMode(AuthorizationFlow authorizationFlow)
         {
-            return Constants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
+            return CoreConstants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
         }
     }
 }

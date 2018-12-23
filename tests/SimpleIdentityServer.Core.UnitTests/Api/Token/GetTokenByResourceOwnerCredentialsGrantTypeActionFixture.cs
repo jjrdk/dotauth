@@ -51,19 +51,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         [Fact]
         public async Task When_Passing_No_Request_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(null, null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Client_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string clientAssertion = "clientAssertion";
             const string clientAssertionType = "clientAssertionType";
             const string clientId = "clientId";
@@ -81,8 +76,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Client)null));
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null, null, null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             _oauthEventSource.Verify(s => s.Info("error"));
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
             Assert.True(exception.Message == "error");
@@ -90,9 +84,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         [Fact]
         public async Task When_Client_GrantType_Is_Not_Valid_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string clientAssertion = "clientAssertion";
             const string clientAssertionType = "clientAssertionType";
             const string clientId = "clientId";
@@ -117,17 +109,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Client)null));
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null, null, null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, "id", GrantType.password));
         }
 
         [Fact]
         public async Task When_Client_ResponseTypes_Are_Not_Valid_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string clientAssertion = "clientAssertion";
             const string clientAssertionType = "clientAssertionType";
             const string clientId = "clientId";
@@ -152,17 +141,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Client)null));
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null, null, null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, "id", "token id_token"));
         }
 
         [Fact]
         public async Task When_The_Resource_Owner_Is_Not_Valid_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string clientAssertion = "clientAssertion";
             const string clientAssertionType = "clientAssertionType";
             const string clientId = "clientId";
@@ -194,17 +180,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 r => r.Authenticate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>()))
                 .Returns(() => Task.FromResult((ResourceOwner)null));
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null, null, null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
             Assert.True(exception.Message == ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
         }
 
         [Fact]
         public async Task When_Passing_A_Not_Allowed_Scopes_Then_Exception_Is_Throw()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string clientAssertion = "clientAssertion";
             const string clientAssertionType = "clientAssertionType";
             const string clientId = "clientId";
@@ -241,16 +224,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _scopeValidatorFake.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Client>()))
                 .Returns(() => new ScopeValidationResult("error"));
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null, null, null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidScope);
         }
 
         [Fact]
         public async Task When_Requesting_An_AccessToken_For_An_Authenticated_User_Then_AccessToken_Is_Granted()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string clientAssertion = "clientAssertion";
             const string clientAssertionType = "clientAssertionType";
             const string clientId = "clientId";
@@ -310,11 +290,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult(grantedToken));
 
-            // ACT
-            await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null, null, null).ConfigureAwait(false);
+                        await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null, null, null).ConfigureAwait(false);
 
-            // ASSERT
-            _tokenStoreStub.Verify(g => g.AddToken(grantedToken));
+                        _tokenStoreStub.Verify(g => g.AddToken(grantedToken));
             _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, invalidScope));
             _clientHelperStub.Verify(c => c.GenerateIdTokenAsync(It.IsAny<Client>(), It.IsAny<JwsPayload>()));
         }

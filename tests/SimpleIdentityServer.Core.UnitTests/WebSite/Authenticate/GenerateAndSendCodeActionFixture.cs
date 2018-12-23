@@ -41,24 +41,18 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAndSendCodeAction.ExecuteAsync(null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAndSendCodeAction.ExecuteAsync(null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_ResourceOwner_Doesnt_Exist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
             Assert.True(exception.Message == ErrorDescriptions.TheRoDoesntExist);
@@ -66,17 +60,14 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         [Fact]
         public async Task When_Two_Factor_Auth_Is_Not_Enabled_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
                     TwoFactorAuthentication = string.Empty
                 }));
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
             Assert.True(exception.Message == ErrorDescriptions.TwoFactorAuthenticationIsNotEnabled);
@@ -84,9 +75,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         [Fact]
         public async Task When_ResourceOwner_Doesnt_Have_The_Required_Claim_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
@@ -101,18 +90,14 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("claim");
             _twoFactorAuthenticationHandlerStub.Setup(t => t.Get(It.IsAny<string>())).Returns(fakeAuthService.Object);
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<ClaimRequiredException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<ClaimRequiredException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(exception);
+                        Assert.NotNull(exception);
         }
 
         [Fact]
         public async Task When_Code_Cannot_Be_Inserted_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
@@ -130,20 +115,16 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _confirmationCodeStoreStub.Setup(r => r.Add(It.IsAny<ConfirmationCode>()))
                 .Returns(Task.FromResult(false));
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(exception);
+                        Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
             Assert.True(exception.Message == ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
         }
 
         [Fact]
         public async Task When_Code_Is_Generated_And_Inserted_Then_Handler_Is_Called()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
@@ -161,11 +142,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _confirmationCodeStoreStub.Setup(r => r.Add(It.IsAny<ConfirmationCode>()))
                 .Returns(Task.FromResult(true));
 
-            // ACT
-            await _generateAndSendCodeAction.ExecuteAsync("subject").ConfigureAwait(false);
+                        await _generateAndSendCodeAction.ExecuteAsync("subject").ConfigureAwait(false);
 
-            // ASSERTS
-            _twoFactorAuthenticationHandlerStub.Verify(t => t.SendCode(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ResourceOwner>()));
+                        _twoFactorAuthenticationHandlerStub.Verify(t => t.SendCode(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ResourceOwner>()));
         }
 
         private void InitializeFakeObjects()

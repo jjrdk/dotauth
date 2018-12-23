@@ -11,52 +11,38 @@ namespace SimpleIdentityServer.Core.UnitTests.Protector
 
         [Fact]
         public void When_Passing_Empty_Parameter_To_Compress_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _compressor.Compress(null));
+                        Assert.Throws<ArgumentNullException>(() => _compressor.Compress(null));
         }
 
         [Fact]
         public void When_Passing_String_To_Compress_Then_Compressed_String_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var toCompress = RandomString(300);
 
-            // ACT
-            var result = _compressor.Compress(toCompress);
+                        var result = _compressor.Compress(toCompress);
 
-            // ASSERT
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
             Assert.True(result.Length < toCompress.Length);
         }
 
         [Fact]
         public void When_Passing_EmptryString_To_Decompress_Then_Exceptin_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _compressor.Decompress(null));
+                        Assert.Throws<ArgumentNullException>(() => _compressor.Decompress(null));
         }
 
         [Fact]
         public void When_Decompressing_Then_DecompressedResult_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var toCompress = RandomString(300);
             var compressed = _compressor.Compress(toCompress);
 
-            // ACT
-            var result = _compressor.Decompress(compressed);
+                        var result = _compressor.Decompress(compressed);
 
-            // ASSERT
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
             Assert.True(result == toCompress);
         }
 

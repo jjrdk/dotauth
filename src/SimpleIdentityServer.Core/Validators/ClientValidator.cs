@@ -24,14 +24,14 @@ namespace SimpleIdentityServer.Core.Validators
 
     public class ClientValidator : IClientValidator
     {        
-        public IEnumerable<string> GetRedirectionUrls(Client client, params string[] urls)
+        public IEnumerable<Uri> GetRedirectionUrls(Client client, params Uri[] urls)
         {
             if (urls == null || client?.RedirectionUrls == null || !client.RedirectionUrls.Any())
             {
-                return new string[0];
+                return new Uri[0];
             }
 
-            return client.RedirectionUrls.Where(r => urls.Contains(r));
+            return client.RedirectionUrls.Where(urls.Contains);
         }
 
         public bool CheckGrantTypes(Client client, params GrantType[] grantTypes)

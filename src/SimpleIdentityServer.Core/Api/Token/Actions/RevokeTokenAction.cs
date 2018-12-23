@@ -61,8 +61,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 2. Retrieve the granted token & check if it exists
-            GrantedToken grantedToken = await _tokenStore.GetAccessToken(revokeTokenParameter.Token).ConfigureAwait(false);
-            bool isAccessToken = true;
+            var grantedToken = await _tokenStore.GetAccessToken(revokeTokenParameter.Token).ConfigureAwait(false);
+            var isAccessToken = true;
             if (grantedToken == null)
             {
                 grantedToken = await _tokenStore.GetRefreshToken(revokeTokenParameter.Token).ConfigureAwait(false);

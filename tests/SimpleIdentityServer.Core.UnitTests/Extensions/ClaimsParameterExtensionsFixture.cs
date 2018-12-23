@@ -10,23 +10,17 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
     {
         [Fact]
         public void When_Trying_To_Retrieve_Standard_Claim_Names_From_EmptyList_Then_Empty_List_Is_Returned()
-        {
-            // ARRANGE
-            var claimsParameter = new ClaimsParameter();
+        {            var claimsParameter = new ClaimsParameter();
 
-            // ACT
-            var claimNames = claimsParameter.GetClaimNames();
+                        var claimNames = claimsParameter.GetClaimNames();
 
-            // ASSERT
-            Assert.NotNull(claimNames);
+                        Assert.NotNull(claimNames);
             Assert.False(claimNames.Any());
         }
 
         [Fact]
         public void When_Passing_Standard_Claims_In_UserInfo_And_Trying_To_Retrieve_The_Names_Then_Names_Are_Returned()
-        {
-            // ARRANGE
-            const string notStandardClaimName = "not_standard";
+        {            const string notStandardClaimName = "not_standard";
             var claimsParameter = new ClaimsParameter
             {
                 UserInfo = new List<ClaimParameter>
@@ -36,11 +30,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
                 }
             };
 
-            // ACT
-            var claimNames = claimsParameter.GetClaimNames();
+                        var claimNames = claimsParameter.GetClaimNames();
 
-            // ASSERT
-            Assert.NotNull(claimNames);
+                        Assert.NotNull(claimNames);
             Assert.Contains(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, claimNames);
             Assert.DoesNotContain(notStandardClaimName, claimNames);
         }

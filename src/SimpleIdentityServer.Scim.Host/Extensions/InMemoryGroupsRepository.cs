@@ -26,7 +26,7 @@
 
         public Task<bool> Delete<TKey>(TKey key, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var result = _groups.FindAll(x => string.Equals(x.Id, key));
+            var result = _groups.FindAll(x => Equals(x.Id, key));
             if (result.Count == 1)
             {
                 var removed = _groups.Remove(result[0]);

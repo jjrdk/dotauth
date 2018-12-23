@@ -33,9 +33,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACTS & ASSERTS
             await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync(null, null, null, null)).ConfigureAwait(false);
@@ -44,24 +42,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
         [Fact]
         public async Task When_Valid_Token_Doesnt_Exist_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult((GrantedToken)null));
 
-            // ACT
-            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
+                        var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Null(result);
+                        Assert.Null(result);
         }
 
         [Fact]
         public async Task When_GrantedToken_Is_Expired_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult(new GrantedToken()));
 
@@ -71,18 +63,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                     IsValid = false
                 });
 
-            // ACT
-            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
+                        var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Null(result);
+                        Assert.Null(result);
         }
 
         [Fact]
         public async Task When_Token_Exists_Then_GrantedToken_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult(new GrantedToken()));
             _grantedTokenValidatorStub.Setup(g => g.CheckGrantedToken(It.IsAny<GrantedToken>()))
@@ -91,11 +79,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                     IsValid = true
                 });
 
-            // ACT
-            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
+                        var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
         }
 
         private void InitializeFakeObjects()

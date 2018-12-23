@@ -33,17 +33,13 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Retrieving_DiscoveryInformation_Then_No_Exception_Is_Thrown()
         {
-            const string baseUrl = "http://localhost:5000";
-            // ARRANGE
-            InitializeFakeObjects();
+            const string baseUrl = "http://localhost:5000";            InitializeFakeObjects();
 
-            // ACT
-            var discovery =
+                        var discovery =
                 await _discoveryClient.GetDiscoveryInformationAsync(
                     new Uri(baseUrl + "/.well-known/openid-configuration")).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(discovery);
+                        Assert.NotNull(discovery);
             Assert.True(discovery.ScimEndpoint == FakeStartup.ScimEndPoint);
         }
 

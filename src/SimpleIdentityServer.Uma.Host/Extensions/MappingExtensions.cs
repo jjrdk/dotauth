@@ -27,8 +27,7 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
     using Shared.Models;
     using Shared.Requests;
     using Shared.Responses;
-    using ClientResponse = DTOs.Responses.ClientResponse;
-    using ConfigurationResponse = Common.DTOs.ConfigurationResponse;
+    using ConfigurationResponse = ConfigurationResponse;
 
     internal static class MappingExtensions
     {
@@ -90,58 +89,12 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             };
         }
 
-        public static AddScopeParameter ToParameter(this PostScope postScope)
-        {
-            return new AddScopeParameter
-            {
-                Id = postScope.Id,
-                Name = postScope.Name,
-                IconUri = postScope.IconUri
-            };
-        }
-
-        public static UpdateScopeParameter ToParameter(this PutScope putScope)
-        {
-            return new UpdateScopeParameter
-            {
-                Id = putScope.Id,
-                Name = putScope.Name,
-                IconUri = putScope.IconUri
-            };
-        }
-
         public static AddPermissionParameter ToParameter(this PostPermission postPermission)
         {
             return new AddPermissionParameter
             {
                 ResourceSetId = postPermission.ResourceSetId,
                 Scopes = postPermission.Scopes
-            };
-        }
-
-        public static GetAuthorizationActionParameter ToParameter(this PostAuthorization postAuthorization)
-        {
-            var tokens = new List<ClaimTokenParameter>();
-            if (postAuthorization.ClaimTokens != null &&
-                postAuthorization.ClaimTokens.Any())
-            {
-                tokens = postAuthorization.ClaimTokens.Select(ct => ct.ToParameter()).ToList();
-            }
-
-            return new GetAuthorizationActionParameter
-            {
-                Rpt = postAuthorization.Rpt,
-                TicketId = postAuthorization.TicketId,
-                ClaimTokenParameters = tokens
-            };
-        }
-
-        public static ClaimTokenParameter ToParameter(this PostClaimToken postClaimToken)
-        {
-            return new ClaimTokenParameter
-            {
-                Format = postClaimToken.Format,
-                Token = postClaimToken.Token
             };
         }
 
@@ -246,7 +199,7 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 Name = resourceSet.Name,
                 Scopes = resourceSet.Scopes,
                 Type = resourceSet.Type,
-                Uri = resourceSet.Uri 
+                Uri = resourceSet.Uri
             };
         }
 
@@ -331,85 +284,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             };
         }
 
-        public static RegistrationParameter ToParameter(this ClientResponse clientResponse)
-        {
-            var responseTypes = new List<ResponseType>();
-            var redirectUris = clientResponse.redirect_uris == null
-                ? new List<string>()
-                : clientResponse.redirect_uris.ToList();
-            var grantTypes = new List<GrantType>();
-            ApplicationTypes? applicationType = null;
-            if (clientResponse.response_types != null &&
-                clientResponse.response_types.Any())
-            {
-                foreach (var responseType in clientResponse.response_types)
-                {
-                    var responseTypeSplitted = responseType.Split(' ');
-                    foreach (var response in responseTypeSplitted)
-                    {
-                        if (Enum.TryParse(response, out ResponseType responseTypeEnum) &&
-                            !responseTypes.Contains(responseTypeEnum))
-                        {
-                            responseTypes.Add(responseTypeEnum);
-                        }
-                    }
-                }
-            }
-
-            if (clientResponse.grant_types != null &&
-                clientResponse.grant_types.Any())
-            {
-                foreach (var grantType in clientResponse.grant_types)
-                {
-                    if (Enum.TryParse(grantType, out GrantType grantTypeEnum))
-                    {
-                        grantTypes.Add(grantTypeEnum);
-                    }
-                }
-            }
-
-            if (Enum.TryParse(clientResponse.application_type, out ApplicationTypes appTypeEnum))
-            {
-                applicationType = appTypeEnum;
-            }
-
-            return new RegistrationParameter
-            {
-                ApplicationType = applicationType,
-                ClientName = clientResponse.client_name,
-                ClientUri = clientResponse.client_uri,
-                Contacts = clientResponse.contacts == null ? new List<string>() : clientResponse.contacts.ToList(),
-                DefaultAcrValues = clientResponse.default_acr_values,
-                DefaultMaxAge = clientResponse.default_max_age,
-                GrantTypes = grantTypes,
-                IdTokenEncryptedResponseAlg = clientResponse.id_token_encrypted_response_alg,
-                IdTokenEncryptedResponseEnc = clientResponse.id_token_encrypted_response_enc,
-                IdTokenSignedResponseAlg = clientResponse.id_token_signed_response_alg,
-                InitiateLoginUri = clientResponse.initiate_login_uri,
-                Jwks = clientResponse.jwks,
-                JwksUri = clientResponse.jwks_uri,
-                LogoUri = clientResponse.logo_uri,
-                PolicyUri = clientResponse.policy_uri,
-                RedirectUris = redirectUris,
-                RequestObjectEncryptionAlg = clientResponse.request_object_encryption_alg,
-                RequestObjectEncryptionEnc = clientResponse.request_object_encryption_enc,
-                RequestObjectSigningAlg = clientResponse.request_object_signing_alg,
-                RequestUris = clientResponse.request_uris,
-                RequireAuthTime = clientResponse.require_auth_time,
-                ResponseTypes = responseTypes,
-                SectorIdentifierUri = clientResponse.sector_identifier_uri,
-                SubjectType = clientResponse.subject_type,
-                TokenEndPointAuthMethod = clientResponse.token_endpoint_auth_method,
-                TokenEndPointAuthSigningAlg = clientResponse.token_endpoint_auth_signing_alg,
-                TosUri = clientResponse.tos_uri,
-                UserInfoEncryptedResponseAlg = clientResponse.userinfo_encrypted_response_alg,
-                UserInfoEncryptedResponseEnc = clientResponse.userinfo_encrypted_response_enc,
-                UserInfoSignedResponseAlg = clientResponse.userinfo_signed_response_alg,
-                ScimProfile = clientResponse.scim_profile
-            };
-        }
-
-
         public static IntrospectionResponse ToDto(this IntrospectionResult introspectionResult)
         {
             return new IntrospectionResponse
@@ -492,7 +366,7 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 Ticket = request.Ticket
             };
         }
-        
+
         public static IntrospectionParameter ToParameter(this IntrospectionRequest viewModel)
         {
             return new IntrospectionParameter

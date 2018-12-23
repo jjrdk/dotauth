@@ -192,7 +192,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 throw new ArgumentNullException(nameof(provider));
             }
 
-            var redirectUrl = _urlHelper.AbsoluteAction("LinkCallback", "User", new {area = "UserManagement"});
+            var redirectUrl = _urlHelper.AbsoluteAction("LinkCallback", "User", new { area = "UserManagement" });
             await _authenticationService.ChallengeAsync(HttpContext,
                     provider,
                     new AuthenticationProperties()
@@ -212,8 +212,8 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                    string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                    string.Format(ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
             try
@@ -230,7 +230,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 await _authenticationService
                     .SignOutAsync(HttpContext, HostConstants.CookieNames.ExternalCookieName, new AuthenticationProperties())
                     .ConfigureAwait(false);
-                return RedirectToAction("Profile", "User", new {area = "UserManagement"});
+                return RedirectToAction("Profile", "User", new { area = "UserManagement" });
             }
             catch (ProfileAssignedAnotherAccountException)
             {
@@ -257,11 +257,11 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 .ConfigureAwait(false);
             if (externalClaims?.Identity == null || !externalClaims.Identity.IsAuthenticated || !(externalClaims.Identity is ClaimsIdentity))
             {
-                return RedirectToAction("Profile", "User", new {area = "UserManagement"});
+                return RedirectToAction("Profile", "User", new { area = "UserManagement" });
             }
 
             await SetUser().ConfigureAwait(false);
-            var authenticationType = ((ClaimsIdentity) externalClaims.Identity).AuthenticationType;
+            var authenticationType = ((ClaimsIdentity)externalClaims.Identity).AuthenticationType;
             var viewModel = new LinkProfileConfirmationViewModel(authenticationType);
             return View(viewModel);
         }
@@ -278,7 +278,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 .ConfigureAwait(false);
             if (externalClaims?.Identity == null || !externalClaims.Identity.IsAuthenticated || !(externalClaims.Identity is ClaimsIdentity))
             {
-                return RedirectToAction("Profile", "User", new {area = "UserManagement"});
+                return RedirectToAction("Profile", "User", new { area = "UserManagement" });
             }
 
             var authenticatedUser = await SetUser().ConfigureAwait(false);
@@ -289,7 +289,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                         externalClaims.Identity.AuthenticationType,
                         true)
                     .ConfigureAwait(false);
-                return RedirectToAction("Profile", "User", new {area = "UserManagement"});
+                return RedirectToAction("Profile", "User", new { area = "UserManagement" });
             }
             finally
             {
@@ -319,13 +319,13 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             }
             catch (IdentityServerException ex)
             {
-                return RedirectToAction("Index", "Error", new {code = ex.Code, message = ex.Message, area = "Shell"});
+                return RedirectToAction("Index", "Error", new { code = ex.Code, message = ex.Message, area = "Shell" });
             }
             catch (Exception ex)
             {
                 return RedirectToAction("Index",
                     "Error",
-                    new {code = ErrorCodes.InternalError, message = ex.Message, area = "Shell"});
+                    new { code = ErrorCodes.InternalError, message = ex.Message, area = "Shell" });
             }
 
             return await Profile().ConfigureAwait(false);
@@ -359,26 +359,22 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             var result = new List<ConsentViewModel>();
             if (consents != null)
             {
-                foreach (var consent in consents)
-                {
-                    var client = consent.Client;
-                    var scopes = consent.GrantedScopes;
-                    var claims = consent.Claims;
-                    var viewModel = new ConsentViewModel
-                    {
-                        Id = consent.Id,
-                        ClientDisplayName = client == null ? string.Empty : client.ClientName,
-                        AllowedScopeDescriptions = scopes == null || !scopes.Any()
-                            ? new List<string>()
-                            : scopes.Select(g => g.Description).ToList(),
-                        AllowedIndividualClaims = claims ?? new List<string>(),
-                        LogoUri = client == null ? string.Empty : client.LogoUri,
-                        PolicyUri = client == null ? string.Empty : client.PolicyUri,
-                        TosUri = client == null ? string.Empty : client.TosUri
-                    };
-
-                    result.Add(viewModel);
-                }
+                result.AddRange(from consent in consents
+                                let client = consent.Client
+                                let scopes = consent.GrantedScopes
+                                let claims = consent.Claims
+                                select new ConsentViewModel
+                                {
+                                    Id = consent.Id,
+                                    ClientDisplayName = client == null ? string.Empty : client.ClientName,
+                                    AllowedScopeDescriptions = scopes?.Any() != true
+                                        ? new List<string>()
+                                        : scopes.Select(g => g.Description).ToList(),
+                                    AllowedIndividualClaims = claims ?? new List<string>(),
+                                    LogoUri = client?.LogoUri?.AbsoluteUri,
+                                    PolicyUri = client?.PolicyUri?.AbsoluteUri,
+                                    TosUri = client?.TosUri?.AbsoluteUri
+                                });
             }
 
             return View(result);
@@ -389,27 +385,27 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             var translations = await _translationManager.GetTranslationsAsync(uiLocales,
                     new List<string>
                     {
-                        Core.Constants.StandardTranslationCodes.LoginCode,
-                        Core.Constants.StandardTranslationCodes.EditResourceOwner,
-                        Core.Constants.StandardTranslationCodes.NameCode,
-                        Core.Constants.StandardTranslationCodes.YourName,
-                        Core.Constants.StandardTranslationCodes.PasswordCode,
-                        Core.Constants.StandardTranslationCodes.YourPassword,
-                        Core.Constants.StandardTranslationCodes.Email,
-                        Core.Constants.StandardTranslationCodes.YourEmail,
-                        Core.Constants.StandardTranslationCodes.ConfirmCode,
-                        Core.Constants.StandardTranslationCodes.TwoAuthenticationFactor,
-                        Core.Constants.StandardTranslationCodes.UserIsUpdated,
-                        Core.Constants.StandardTranslationCodes.Phone,
-                        Core.Constants.StandardTranslationCodes.HashedPassword,
-                        Core.Constants.StandardTranslationCodes.CreateResourceOwner,
-                        Core.Constants.StandardTranslationCodes.Credentials,
-                        Core.Constants.StandardTranslationCodes.RepeatPassword,
-                        Core.Constants.StandardTranslationCodes.Claims,
-                        Core.Constants.StandardTranslationCodes.UserIsCreated,
-                        Core.Constants.StandardTranslationCodes.TwoFactor,
-                        Core.Constants.StandardTranslationCodes.NoTwoFactorAuthenticator,
-                        Core.Constants.StandardTranslationCodes.NoTwoFactorAuthenticatorSelected
+                        Core.CoreConstants.StandardTranslationCodes.LoginCode,
+                        Core.CoreConstants.StandardTranslationCodes.EditResourceOwner,
+                        Core.CoreConstants.StandardTranslationCodes.NameCode,
+                        Core.CoreConstants.StandardTranslationCodes.YourName,
+                        Core.CoreConstants.StandardTranslationCodes.PasswordCode,
+                        Core.CoreConstants.StandardTranslationCodes.YourPassword,
+                        Core.CoreConstants.StandardTranslationCodes.Email,
+                        Core.CoreConstants.StandardTranslationCodes.YourEmail,
+                        Core.CoreConstants.StandardTranslationCodes.ConfirmCode,
+                        Core.CoreConstants.StandardTranslationCodes.TwoAuthenticationFactor,
+                        Core.CoreConstants.StandardTranslationCodes.UserIsUpdated,
+                        Core.CoreConstants.StandardTranslationCodes.Phone,
+                        Core.CoreConstants.StandardTranslationCodes.HashedPassword,
+                        Core.CoreConstants.StandardTranslationCodes.CreateResourceOwner,
+                        Core.CoreConstants.StandardTranslationCodes.Credentials,
+                        Core.CoreConstants.StandardTranslationCodes.RepeatPassword,
+                        Core.CoreConstants.StandardTranslationCodes.Claims,
+                        Core.CoreConstants.StandardTranslationCodes.UserIsCreated,
+                        Core.CoreConstants.StandardTranslationCodes.TwoFactor,
+                        Core.CoreConstants.StandardTranslationCodes.NoTwoFactorAuthenticator,
+                        Core.CoreConstants.StandardTranslationCodes.NoTwoFactorAuthenticatorSelected
                     })
                 .ConfigureAwait(false);
 

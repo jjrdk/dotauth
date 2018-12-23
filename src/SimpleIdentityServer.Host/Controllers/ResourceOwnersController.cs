@@ -14,12 +14,6 @@
 
 namespace SimpleIdentityServer.Host.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Core.Errors;
     using Core.Exceptions;
     using Core.Helpers;
@@ -31,9 +25,14 @@ namespace SimpleIdentityServer.Host.Controllers
     using Shared.Repositories;
     using Shared.Requests;
     using Shared.Responses;
-    using ErrorCodes = Core.Errors.ErrorCodes;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
 
-    [Route(Constants.EndPoints.ResourceOwners)]
+    [Route(HostEnpoints.ResourceOwners)]
     public class ResourceOwnersController : Controller
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
@@ -88,7 +87,11 @@ namespace SimpleIdentityServer.Host.Controllers
 
             if (!await _resourceOwnerRepository.Delete(id).ConfigureAwait(false))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest);
+                return BadRequest(new ErrorResponse
+                {
+                    Error = ErrorCodes.UnhandledExceptionCode,
+                    ErrorDescription = ErrorDescriptions.TheResourceOwnerCannotBeRemoved
+                });
             }
 
             return Ok();
@@ -115,7 +118,7 @@ namespace SimpleIdentityServer.Host.Controllers
             resourceOwner.UpdateDateTime = DateTime.UtcNow;
             var claims = new List<Claim>();
             var existingClaims = (await _claimRepository.GetAllAsync().ConfigureAwait(false)).ToArray();
-            if (existingClaims != null && existingClaims.Any() && request.Claims != null && request.Claims.Any())
+            if (existingClaims.Any() && request.Claims != null && request.Claims.Any())
             {
                 foreach (var claim in request.Claims)
                 {
@@ -131,18 +134,18 @@ namespace SimpleIdentityServer.Host.Controllers
 
             resourceOwner.Claims = claims;
             Claim updatedClaim, subjectClaim;
-            if (((updatedClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == SimpleIdentityServer.Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt)) != null))
+            if (((updatedClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt)) != null))
             {
                 resourceOwner.Claims.Remove(updatedClaim);
             }
 
-            if (((subjectClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == SimpleIdentityServer.Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject)) != null))
+            if (((subjectClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject)) != null))
             {
                 resourceOwner.Claims.Remove(subjectClaim);
             }
 
-            resourceOwner.Claims.Add(new Claim(SimpleIdentityServer.Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, request.Login));
-            resourceOwner.Claims.Add(new Claim(SimpleIdentityServer.Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
+            resourceOwner.Claims.Add(new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, request.Login));
+            resourceOwner.Claims.Add(new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
             var result = await _resourceOwnerRepository.UpdateAsync(resourceOwner).ConfigureAwait(false);
             if (!result)
             {
@@ -162,8 +165,6 @@ namespace SimpleIdentityServer.Host.Controllers
                 return BadRequest("Parameter in request body not valid");
             }
 
-            //await _resourceOwnerActions.UpdateResourceOwnerPassword(updateResourceOwnerPasswordRequest.ToParameter()).ConfigureAwait(false);
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + updateResourceOwnerPasswordRequest.Login, false);
             var resourceOwner = await _resourceOwnerRepository.Get(request.Login).ConfigureAwait(false);
             if (resourceOwner == null)
             {
@@ -175,7 +176,6 @@ namespace SimpleIdentityServer.Host.Controllers
             if (!result)
             {
                 return BadRequest(ErrorDescriptions.ThePasswordCannotBeUpdated);
-                //throw new IdentityServerManagerException(Core.Errors.ErrorCodes.InternalErrorCode, ErrorDescriptions.ThePasswordCannotBeUpdated);
             }
 
             return new OkResult();
@@ -197,11 +197,15 @@ namespace SimpleIdentityServer.Host.Controllers
                     Password = addResourceOwnerRequest.Password
                 }).ConfigureAwait(false))
             {
-                NoContent();
+                return NoContent();
             }
             //await _resourceOwnerActions.Add(addResourceOwnerRequest.ToParameter()).ConfigureAwait(false);
             //await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners, false);
-            return BadRequest();
+            return BadRequest(new ErrorResponse
+            {
+                Error = ErrorCodes.UnhandledExceptionCode,
+                ErrorDescription = "a resource owner with same credentials already exists"
+            });
         }
 
         [HttpPost(".search")]

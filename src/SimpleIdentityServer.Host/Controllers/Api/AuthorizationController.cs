@@ -35,9 +35,9 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Shared.Requests;
     using Shared.Responses;
     using Shared.Serializers;
-    using SimpleIdentityServer.Core;
+    using Core;
 
-    [Route(Core.Constants.EndPoints.Authorization)]
+    [Route(Core.CoreConstants.EndPoints.Authorization)]
     public class AuthorizationController : Controller
     {
         private readonly IAuthorizationActions _authorizationActions;
@@ -92,8 +92,9 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             {
                 case TypeActionResult.RedirectToCallBackUrl:
                 {
-                    var redirectUrl = new Uri(authorizationRequest.RedirectUri);
-                    return this.CreateRedirectHttpTokenResponse(redirectUrl,
+                    //var redirectUrl = new Uri();
+                    return this.CreateRedirectHttpTokenResponse(
+                        authorizationRequest.RedirectUri,
                         _actionResultParser.GetRedirectionParameters(actionResult),
                         actionResult.RedirectInstruction.ResponseMode);
                 }
@@ -117,7 +118,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                         // Add the encoded request into the query string
                         var encryptedRequest = _dataProtector.Protect(authorizationRequest);
                         actionResult.RedirectInstruction.AddParameter(
-                            Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName,
+                            Core.CoreConstants.StandardAuthorizationResponseNames.AuthorizationCodeName,
                             encryptedRequest);
                     }
 
@@ -136,12 +137,12 @@ namespace SimpleIdentityServer.Host.Controllers.Api
 
         private string GetSessionId()
         {
-            if (!Request.Cookies.ContainsKey(Core.Constants.SESSION_ID))
+            if (!Request.Cookies.ContainsKey(Core.CoreConstants.SESSION_ID))
             {
                 return Guid.NewGuid().ToString();
             }
 
-            return Request.Cookies[Core.Constants.SESSION_ID].ToString();
+            return Request.Cookies[Core.CoreConstants.SESSION_ID].ToString();
         }
 
         private async Task<AuthorizationRequest> GetAuthorizationRequestFromJwt(string token, string clientId)

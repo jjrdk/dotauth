@@ -177,7 +177,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
                 AccessToken = accessToken,
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
                 ExpiresIn = (int)expiresIn.TotalSeconds,
-                TokenType = SimpleIdentityServer.Core.Constants.StandardTokenTypes.Bearer,
+                TokenType = SimpleIdentityServer.Core.CoreConstants.StandardTokenTypes.Bearer,
                 CreateDateTime = DateTime.UtcNow,
                 Scope = scope,
                 ClientId = client.ClientId

@@ -40,31 +40,23 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
         
         [Fact]
         public async Task When_Pass_Empty_Access_Token_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getJwsPayload.Execute(null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _getJwsPayload.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Access_Token_Is_Not_Valid_Then_Authorization_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = false }));
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<AuthorizationException>(() => _getJwsPayload.Execute("access_token")).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<AuthorizationException>(() => _getJwsPayload.Execute("access_token")).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
             _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
@@ -72,8 +64,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Client)null));
 
-            // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getJwsPayload.Execute("access_token")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getJwsPayload.Execute("access_token")).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidToken);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientIdDoesntExist, "client_id"));
@@ -81,9 +72,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
 
         [Fact]
         public async Task When_Not_ResourceOwner_Token_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
             _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
@@ -91,8 +80,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(new Client()));
 
-            // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getJwsPayload.Execute("access_token")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getJwsPayload.Execute("access_token")).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidToken);
             Assert.True(exception.Message == ErrorDescriptions.TheTokenIsNotAValidResourceOwnerToken);
@@ -100,16 +88,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
 
         [Fact]
         public async Task When_None_Is_Specified_Then_JwsPayload_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var grantedToken = new GrantedToken
             {
                 UserInfoPayLoad = new JwsPayload()
             };
             var client = new Client
             {
-                UserInfoSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.NONE
+                UserInfoSignedResponseAlg = JwtConstants.JwsAlgNames.NONE
             };
             _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
@@ -118,18 +104,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
-            // ACT
-            var result = await _getJwsPayload.Execute("access_token").ConfigureAwait(false);
+                        var result = await _getJwsPayload.Execute("access_token").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
         }
 
         [Fact]
         public async Task When_There_Is_No_Algorithm_Specified_Then_JwsPayload_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var grantedToken = new GrantedToken
             {
                 UserInfoPayLoad = new JwsPayload()
@@ -145,18 +127,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
-            // ACT
-            var result = await _getJwsPayload.Execute("access_token").ConfigureAwait(false);
+                        var result = await _getJwsPayload.Execute("access_token").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
         }
 
         [Fact]
         public async Task When_Algorithms_For_Sign_And_Encrypt_Are_Specified_Then_Functions_Are_Called()
-        {            
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string jwt = "jwt";
             var grantedToken = new GrantedToken
             {
@@ -164,8 +142,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             };
             var client = new Client
             {
-                UserInfoSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
-                UserInfoEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
+                UserInfoSignedResponseAlg = JwtConstants.JwsAlgNames.RS256,
+                UserInfoEncryptedResponseAlg = JwtConstants.JweAlgNames.RSA1_5
             };
             _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
@@ -178,11 +156,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
                 It.IsAny<JweEnc>()))
                 .Returns(Task.FromResult(jwt));
 
-            // ACT
-            var result = await _getJwsPayload.Execute("access_token").ConfigureAwait(false);
+                        var result = await _getJwsPayload.Execute("access_token").ConfigureAwait(false);
 
-            // ASSERT
-            _jwtGeneratorFake.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), It.IsAny<JwsAlg>()));
+                        _jwtGeneratorFake.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), It.IsAny<JwsAlg>()));
             _jwtGeneratorFake.Verify(j => j.EncryptAsync(It.IsAny<string>(),
                 It.IsAny<JweAlg>(),
                 JweEnc.A128CBC_HS256));

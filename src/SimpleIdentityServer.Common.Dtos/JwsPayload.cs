@@ -99,7 +99,7 @@ namespace SimpleIdentityServer.Shared
             }
 
             var claim = _values[claimName].ToString();
-            if (double.TryParse(claim, out double result))
+            if (double.TryParse(claim, out var result))
             {
                 return result;
             }

@@ -8,6 +8,6 @@
 
     public interface IGetTokenViaImplicitWorkflowOperation
     {
-        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client, string issuerName);
+        Task<EndpointResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client, string issuerName);
     }
 }

@@ -8,10 +8,10 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
 {
-    using System.Threading;
     using Shared.Models;
     using Shared.Parameters;
     using Shared.Repositories;
+    using System.Threading;
 
     public class GetUserProfilesActionFixture
     {
@@ -22,7 +22,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
         [Fact]
         public async Task WhenPassingNullParameterThenExceptionIsThrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
@@ -33,28 +32,22 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
         [Fact]
         public async Task When_User_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            
-            // ACT & ASSERT
+
             var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _getProfileAction.Execute("subject")).ConfigureAwait(false);
-            Assert.NotNull(ex);
+            
             Assert.Equal("internal_error", ex.Code);
-            Assert.Equal("the resource owner doesn't exist", ex.Message);
+            Assert.Equal("The resource owner subject doesn't exist", ex.Message);
         }
 
         [Fact]
         public async Task WhenGetProfileThenOperationIsCalled()
         {
-            const string subject = "subject";
-            // ARRANGE
-            InitializeFakeObjects();
+            const string subject = "subject"; InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new ResourceOwner()));
 
-            // ACT
             await _getProfileAction.Execute(subject).ConfigureAwait(false);
 
-            // ASSERT
             _profileRepositoryStub.Verify(p => p.Search(It.Is<SearchProfileParameter>(r => r.ResourceOwnerIds.Contains(subject))));
         }
 

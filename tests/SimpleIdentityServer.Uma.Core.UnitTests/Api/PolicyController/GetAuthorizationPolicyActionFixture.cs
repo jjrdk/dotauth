@@ -33,19 +33,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
 
         [Fact]
         public async Task When_Passing_Empty_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationPolicyAction.Execute(null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationPolicyAction.Execute(null)).ConfigureAwait(false);
         }
         
         [Fact]
         public async Task When_Getting_Policy_Then_Policy_Is_Returned()
-        {
-            // ARRANGE
-            const string policyId = "policy_id";
+        {            const string policyId = "policy_id";
             var policy = new Policy
             {
                 Id = policyId
@@ -56,11 +51,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 It.IsAny<Func<Task<Policy>>>()))
                 .Returns(Task.FromResult(policy));
 
-            // ACT
-            var result = await _getAuthorizationPolicyAction.Execute(policyId).ConfigureAwait(false);
+                        var result = await _getAuthorizationPolicyAction.Execute(policyId).ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
             Assert.True(result.Id == policyId);
         }
 

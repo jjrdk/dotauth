@@ -5,11 +5,6 @@
     using Shared.Models;
     using Shared.Repositories;
 
-    public interface IGetClaimsAction
-    {
-        Task<IEnumerable<ClaimAggregate>> Execute();
-    }
-
     internal sealed class GetClaimsAction : IGetClaimsAction
     {
         private readonly IClaimRepository _claimRepository;

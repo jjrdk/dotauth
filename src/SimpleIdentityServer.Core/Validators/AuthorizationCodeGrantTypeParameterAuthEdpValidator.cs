@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.Validators
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.ScopeName),
+                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName),
                     parameter.State);
             }
 
@@ -56,15 +56,15 @@ namespace SimpleIdentityServer.Core.Validators
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.ClientIdName),
+                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName),
                     parameter.State);
             }
 
-            if (string.IsNullOrWhiteSpace(parameter.RedirectUrl))
+            if (parameter.RedirectUrl == null)
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.RedirectUriName),
+                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName),
                     parameter.State);
             }
 
@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Core.Validators
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
+                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
                     parameter.State);
             }
 
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.Validators
 
             // With this instruction
             // The redirect_uri is considered well-formed according to the RFC-3986
-            var redirectUrlIsCorrect = Uri.IsWellFormedUriString(parameter.RedirectUrl, UriKind.Absolute);
+            var redirectUrlIsCorrect = parameter.RedirectUrl.IsAbsoluteUri;
             if (!redirectUrlIsCorrect)
             {
                 throw new IdentityServerExceptionWithState(

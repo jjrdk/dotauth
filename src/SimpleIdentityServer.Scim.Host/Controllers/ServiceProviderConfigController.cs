@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
         private string GetLocationPattern()
         {
-            return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Core.Constants.RoutePaths.ServiceProviderConfigController).AbsoluteUri;
+            return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Constants.RoutePaths.ServiceProviderConfigController).AbsoluteUri;
         }
     }
 }

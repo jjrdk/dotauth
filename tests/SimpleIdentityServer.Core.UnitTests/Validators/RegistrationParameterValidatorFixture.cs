@@ -1,336 +1,310 @@
-﻿using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.UnitTests.Fake;
-using SimpleIdentityServer.Core.Validators;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Validators
+﻿namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
     using Json;
+    using Repositories;
     using Shared;
     using Shared.Models;
-    using Shared.Requests;
+    using SimpleIdentityServer.Core.Errors;
+    using SimpleIdentityServer.Core.Exceptions;
+    using SimpleIdentityServer.Core.UnitTests.Fake;
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using Xunit;
 
-    public sealed class RegistrationParameterValidatorFixture
+    public sealed class ClientFactoryFixture
     {
         private HttpClient _httpClientFactoryFake;
-        private IRegistrationParameterValidator _registrationParameterValidator;
+        private ClientFactory _factory;
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
 
-            // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _registrationParameterValidator.Validate(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _factory.Build(null)).ConfigureAwait(false);
         }
 
         [Fact]
-        public void When_There_Is_No_Request_Uri_Then_Exception_Is_Thrown()
+        public async Task When_There_Is_No_Request_Uri_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = null
+                RedirectionUrls = new[]{new Uri("https://localhost"), },
+                AllowedScopes = new[] { new Scope { Name = "test" } },
+                RequestUris = null
             };
 
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
-            Assert.True(ex.Code == ErrorCodes.InvalidRedirectUri);
-            Assert.True(ex.Message == string.Format(ErrorDescriptions.MissingParameter, ClientNames.RequestUris));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            Assert.Equal(ErrorCodes.InvalidRequestUriCode, ex.Code);
+            Assert.Equal(string.Format(ErrorDescriptions.MissingParameter, ClientNames.RequestUris), ex.Message);
         }
 
+        //[Fact(Skip = "No longer valid test case")]
+        //public async Task When_One_Request_Uri_Is_Not_Valid_Then_Exception_Is_Thrown()
+        //{
+        //    InitializeFakeObjects();
+        //    var httpsInvalid = "https://invalid/";
+        //    var parameter = new Client
+        //    {
+        //        RedirectionUrls = new List<Uri>
+        //        {
+        //            new Uri(httpsInvalid)
+        //        }
+        //    };
+
+        //    var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+        //    Assert.True(ex.Code == ErrorCodes.InvalidRedirectUri);
+        //    Assert.True(ex.Message == string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, httpsInvalid));
+        //}
+
         [Fact]
-        public void When_One_Request_Uri_Is_Not_Valid_Then_Exception_Is_Thrown()
+        public async Task When_One_Request_Uri_Contains_A_Fragment_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var localhost = "http://localhost/#localhost";
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "invalid"
-                }
+                    new Uri(localhost)
+                },
+                AllowedScopes = new[] { new Scope { Name = "test" } },
+                RequestUris = new[] { new Uri("https://localhost"), }
             };
 
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
-            Assert.True(ex.Code == ErrorCodes.InvalidRedirectUri);
-            Assert.True(ex.Message == string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, "invalid"));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            Assert.Equal(ErrorCodes.InvalidRedirectUri, ex.Code);
+            Assert.Equal(string.Format(ErrorDescriptions.TheRedirectUrlCannotContainsFragment, localhost), ex.Message);
         }
 
         [Fact]
-        public void When_One_Request_Uri_Contains_A_Fragment_Then_Exception_Is_Thrown()
+        public async Task When_ResponseType_Is_Not_Defined_Then_Set_To_Code()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "http://localhost#localhost"
-                }
+                    new Uri("https://google.fr")
+                },
+                AllowedScopes = new[] { new Scope { Name = "test" } },
+                RequestUris = new[] { new Uri("https://localhost"), }
             };
 
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
-            Assert.True(ex.Code == ErrorCodes.InvalidRedirectUri);
-            Assert.True(ex.Message == string.Format(ErrorDescriptions.TheRedirectUrlCannotContainsFragment, "http://localhost#localhost"));
-        }
+            parameter = await _factory.Build(parameter).ConfigureAwait(false);
 
-        [Fact]
-        public void When_ResponseType_Is_Not_Defined_Then_Set_To_Code()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var parameter = new RegistrationParameter
-            {
-                RedirectUris = new List<string>
-                {
-                    "https://google.fr"
-                }
-            };
-
-            // ACT
-            _registrationParameterValidator.Validate(parameter);
-
-            // ASSERT
-            Assert.NotNull(parameter);
             Assert.True(parameter.ResponseTypes.Count == 1);
             Assert.Contains(ResponseType.code, parameter.ResponseTypes);
         }
 
         [Fact]
-        public void When_GrantType_Is_Not_Defined_Then_Set_To_Authorization_Code()
+        public async Task When_GrantType_Is_Not_Defined_Then_Set_To_Authorization_Code()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "https://google.fr"
-                }
+                    new Uri("https://google.fr")
+                },
+                AllowedScopes = new[] { new Scope { Name = "test" } },
+                RequestUris = new[] { new Uri("https://localhost"), }
             };
 
-            // ACT
-            _registrationParameterValidator.Validate(parameter);
+            parameter = await _factory.Build(parameter).ConfigureAwait(false);
 
-            // ASSERT
             Assert.NotNull(parameter);
             Assert.True(parameter.GrantTypes.Count == 1);
             Assert.Contains(GrantType.authorization_code, parameter.GrantTypes);
         }
 
         [Fact]
-        public void When_Application_Type_Is_Not_Defined_Then_Set_To_Web_Application()
+        public async Task When_Application_Type_Is_Not_Defined_Then_Set_To_Web_Application()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "https://google.fr"
-                }
+                    new Uri("https://google.fr")
+                },
+                AllowedScopes = new[] { new Scope { Name = "test" } },
+                RequestUris = new[]{new Uri("https://localhost"), }
             };
 
-            // ACT
-            _registrationParameterValidator.Validate(parameter);
+            parameter = await _factory.Build(parameter).ConfigureAwait(false);
 
-            // ASSERT
             Assert.NotNull(parameter);
-            Assert.True(parameter.ApplicationType == ApplicationTypes.web);
+            Assert.Equal(ApplicationTypes.web, parameter.ApplicationType);
+        }
+
+        //[Fact(Skip = "No longer valid test case")]
+        //public async Task When_Logo_Uri_Is_Not_Valid_Then_Exception_Is_Thrown()
+        //{
+        //    InitializeFakeObjects();
+        //    var parameter = new Client
+        //    {
+        //        RedirectionUrls = new List<Uri>
+        //        {
+        //            new Uri("https://google.fr")
+        //        },
+        //        LogoUri = new Uri("https://logo_uri")
+        //    };
+
+        //    var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+        //    Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
+        //    Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.LogoUri));
+        //}
+
+        //[Fact(Skip = "No longer valid test case")]
+        //public async Task When_Client_Uri_Is_Not_Valid_Then_Exception_Is_Thrown()
+        //{
+        //    InitializeFakeObjects();
+        //    var parameter = new Client
+        //    {
+        //        RedirectionUrls = new List<Uri>
+        //        {
+        //            new Uri("https://google.fr")
+        //        },
+        //        ClientUri = new Uri("https://client_uri")
+        //    };
+
+        //    var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+        //    Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
+        //    Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.ClientUri));
+        //}
+
+        //[Fact(Skip = "No longer valid test case")]
+        //public async Task When_Tos_Uri_Is_Not_Valid_Then_Exception_Is_Thrown()
+        //{
+        //    InitializeFakeObjects();
+        //    var parameter = new Client
+        //    {
+        //        RedirectionUrls = new List<Uri>
+        //        {
+        //            new Uri("https://google.fr")
+        //        },
+        //        TosUri = new Uri("https://tos_uri/")
+        //    };
+
+        //    var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+        //    Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
+        //    Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.TosUri));
+        //}
+
+        [Fact]
+        public async Task When_Jwks_Uri_Is_Not_Valid_Then_Exception_Is_Thrown()
+        {
+            InitializeFakeObjects();
+            var parameter = new Client
+            {
+                RedirectionUrls = new List<Uri>
+                {
+                    new Uri("https://google.fr")
+                },
+                JwksUri = new Uri("https://jwks_uri"),
+                RequestUris = new[] { new Uri("https://localhost"), }
+            };
+
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
+            Assert.Equal(string.Format(ErrorDescriptions.TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed, ClientNames.JwksUri), ex.Message);
         }
 
         [Fact]
-        public void When_Logo_Uri_Is_Not_Valid_Then_Exception_Is_Thrown()
+        public async Task When_Set_Jwks_And_Jwks_Uri_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "https://google.fr"
+                    new Uri("https://google.fr")
                 },
-                LogoUri = "logo_uri"
+                JwksUri = new Uri("http://localhost/identity"),
+                JsonWebKeys = new List<JsonWebKey>(),
+                RequestUris = new[] { new Uri("https://localhost"), }
             };
 
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
-            Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-            Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.LogoUri));
-        }
-
-        [Fact]
-        public void When_Client_Uri_Is_Not_Valid_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var parameter = new RegistrationParameter
-            {
-                RedirectUris = new List<string>
-                {
-                    "https://google.fr"
-                },
-                ClientUri = "client_uri"
-            };
-
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
-            Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-            Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.ClientUri));
-        }
-
-        [Fact]
-        public void When_Tos_Uri_Is_Not_Valid_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var parameter = new RegistrationParameter
-            {
-                RedirectUris = new List<string>
-                {
-                    "https://google.fr"
-                },
-                TosUri = "tos_uri"
-            };
-
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
-            Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-            Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.TosUri));
-        }
-
-        [Fact]
-        public void When_Jwks_Uri_Is_Not_Valid_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var parameter = new RegistrationParameter
-            {
-                RedirectUris = new List<string>
-                {
-                    "https://google.fr"
-                },
-                JwksUri = "jwks_uri"
-            };
-
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
-            Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-            Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.JwksUri));
-        }
-
-        [Fact]
-        public void When_Set_Jwks_And_Jwks_Uri_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var parameter = new RegistrationParameter
-            {
-                RedirectUris = new List<string>
-                {
-                    "https://google.fr"
-                },
-                JwksUri = "http://localhost/identity",
-                Jwks = new JsonWebKeySet()
-            };
-
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed);
         }
 
         [Fact]
-        public void When_SectorIdentifierUri_Is_Not_Valid_Then_Exception_Is_Thrown()
+        public async Task When_SectorIdentifierUri_Is_Not_Valid_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "https://google.fr"
+                    new Uri("https://google.fr")
                 },
-                SectorIdentifierUri = "sector_identifier_uri"
+                SectorIdentifierUri = new Uri("https://sector_identifier_uri/")
             };
 
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
+            Assert.Equal(ErrorDescriptions.TheSectorIdentifierUrisCannotBeRetrieved, ex.Message);
+        }
+
+        [Fact]
+        public async Task When_SectorIdentifierUri_Doesnt_Have_Https_Scheme_Then_Exception_Is_Thrown()
+        {
+            InitializeFakeObjects();
+            var parameter = new Client
+            {
+                RedirectionUrls = new List<Uri>
+                {
+                    new Uri("https://google.fr")
+                },
+                SectorIdentifierUri = new Uri("http://localhost/identity")
+            };
+
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.SectorIdentifierUri));
         }
 
         [Fact]
-        public void When_SectorIdentifierUri_Doesnt_Have_Https_Scheme_Then_Exception_Is_Thrown()
+        public async Task When_SectorIdentifierUri_Cannot_Be_Retrieved_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "https://google.fr"
+                    new Uri("https://google.fr")
                 },
-                SectorIdentifierUri = "http://localhost/identity"
-            };
-
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
-            Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-            Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.SectorIdentifierUri));
-        }
-
-        [Fact]
-        public void When_SectorIdentifierUri_Cannot_Be_Retrieved_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var parameter = new RegistrationParameter
-            {
-                RedirectUris = new List<string>
-                {
-                    "https://google.fr"
-                },
-                SectorIdentifierUri = "https://localhost/identity"
+                SectorIdentifierUri = new Uri("https://localhost/identity")
             };
 
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest);
             var handler = new FakeHttpMessageHandler(httpResponseMessage);
             var httpClientFake = new HttpClient(handler);
             _httpClientFactoryFake = httpClientFake;
-            //.Setup(h => h.GetHttpClient())
-            //.Returns(httpClientFake);
 
-
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheSectorIdentifierUrisCannotBeRetrieved);
         }
 
         [Fact]
-        public void When_SectorIdentifierUri_Is_Not_A_Redirect_Uri_Then_Exception_Is_Thrown()
+        public async Task When_SectorIdentifierUri_Is_Not_A_Redirect_Uri_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "https://google.fr"
+                    new Uri("https://google.fr")
                 },
-                SectorIdentifierUri = "https://localhost/identity"
+                SectorIdentifierUri = new Uri("https://localhost/identity")
             };
 
             var sectorIdentifierUris = new List<string>
@@ -344,227 +318,205 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             };
             var handler = new FakeHttpMessageHandler(httpResponseMessage);
             var httpClientFake = new HttpClient(handler);
-            _registrationParameterValidator = new RegistrationParameterValidator(httpClientFake);
-            //.Setup(h => h.GetHttpClient())
-            //.Returns(httpClientFake);
+            _factory = new ClientFactory(httpClientFake, new DefaultScopeRepository());
 
-
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.OneOrMoreSectorIdentifierUriIsNotARedirectUri);
         }
 
         [Fact]
-        public void When_IdTokenEncryptedResponseEnc_Is_Specified_But_Not_IdTokenEncryptedResponseAlg_Then_Exception_Is_Thrown()
+        public async Task When_IdTokenEncryptedResponseEnc_Is_Specified_But_Not_IdTokenEncryptedResponseAlg_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "https://google.fr"
+                    new Uri("https://google.fr")
                 },
                 IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
             };
 
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
         }
 
         [Fact]
-        public void When_IdToken_Encrypted_Response_Enc_Is_Specified_And_Id_Token_Encrypted_Response_Alg_Is_Not_Correct_Then_Exception_Is_Thrown()
+        public async Task When_IdToken_Encrypted_Response_Enc_Is_Specified_And_Id_Token_Encrypted_Response_Alg_Is_Not_Correct_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "https://google.fr"
+                    new Uri("https://google.fr")
                 },
                 IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
                 IdTokenEncryptedResponseAlg = "not_correct"
             };
 
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
         }
 
         [Fact]
-        public void When_User_Info_Encrypted_Response_Enc_Is_Specified_And_User_Info_Encrypted_Alg_Is_Not_Set_Then_Exception_Is_Thrown()
+        public async Task When_User_Info_Encrypted_Response_Enc_Is_Specified_And_User_Info_Encrypted_Alg_Is_Not_Set_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "https://google.fr"
+                    new Uri("https://google.fr")
                 },
                 UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
             };
 
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified);
         }
 
         [Fact]
-        public void When_User_Info_Encrypted_Response_Enc_Is_Specified_And_User_Info_Encrypted_Alg_Is_Not_Correct_Then_Exception_Is_Thrown()
+        public async Task When_User_Info_Encrypted_Response_Enc_Is_Specified_And_User_Info_Encrypted_Alg_Is_Not_Correct_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "https://google.fr"
+                    new Uri("https://google.fr")
                 },
                 UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
                 UserInfoEncryptedResponseAlg = "user_info_encrypted_response_alg_not_correct"
             };
 
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified);
         }
 
         [Fact]
-        public void When_Request_Object_Encryption_Enc_Is_Specified_And_Request_Object_Encryption_Alg_Is_Not_Set_Then_Exception_Is_Thrown()
+        public async Task When_Request_Object_Encryption_Enc_Is_Specified_And_Request_Object_Encryption_Alg_Is_Not_Set_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "https://google.fr"
+                    new Uri("https://google.fr")
                 },
                 RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
             };
 
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheParameterRequestObjectEncryptionAlgMustBeSpecified);
         }
 
         [Fact]
-        public void When_Request_Object_Encryption_Enc_Is_Specified_And_Request_Object_Encryption_Alg_Is_Not_Valid_Then_Exception_Is_Thrown()
+        public async Task When_Request_Object_Encryption_Enc_Is_Specified_And_Request_Object_Encryption_Alg_Is_Not_Valid_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "https://google.fr"
+                    new Uri("https://google.fr")
                 },
                 RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
                 RequestObjectEncryptionAlg = "request_object_encryption_alg_not_valid"
             };
 
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheParameterRequestObjectEncryptionAlgMustBeSpecified);
         }
 
+        //[Fact(Skip = "No longer valid test case")]
+        //public async Task When_InitiateLoginUri_Is_Not_Valid_Then_Exception_Is_Thrown()
+        //{
+        //    InitializeFakeObjects();
+        //    var parameter = new Client
+        //    {
+        //        RedirectionUrls = new List<Uri>
+        //        {
+        //            new Uri("https://google.fr")
+        //        },
+        //        InitiateLoginUri = new Uri("https://sector_identifier_uri")
+        //    };
+
+        //    var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+        //    Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
+        //    Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.InitiateLoginUri));
+        //}
+
         [Fact]
-        public void When_InitiateLoginUri_Is_Not_Valid_Then_Exception_Is_Thrown()
+        public async Task When_InitiateLoginUri_Doesnt_Have_Https_Scheme_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "https://google.fr"
+                    new Uri("https://google.fr")
                 },
-                InitiateLoginUri = "sector_identifier_uri"
+                InitiateLoginUri = new Uri("http://localhost/identity")
             };
 
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.InitiateLoginUri));
         }
 
-        [Fact]
-        public void When_InitiateLoginUri_Doesnt_Have_Https_Scheme_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var parameter = new RegistrationParameter
-            {
-                RedirectUris = new List<string>
-                {
-                    "https://google.fr"
-                },
-                InitiateLoginUri = "http://localhost/identity"
-            };
+        //[Fact(Skip = "No longer valid test case")]
+        //public async Task When_Passing_One_Not_Valid_Request_Uri_Then_Exception_Is_Thrown()
+        //{
+        //    InitializeFakeObjects();
+        //    var parameter = new Client
+        //    {
+        //        RedirectionUrls = new List<Uri>
+        //        {
+        //            new Uri("https://google.fr")
+        //        },
+        //        RequestUris = new List<Uri>
+        //        {
+        //            new Uri("https://not_valid_uri")
+        //        }
+        //    };
 
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
-            Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-            Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.InitiateLoginUri));
-        }
-
-        [Fact]
-        public void When_Passing_One_Not_Valid_Request_Uri_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var parameter = new RegistrationParameter
-            {
-                RedirectUris = new List<string>
-                {
-                    "https://google.fr"
-                },
-                RequestUris = new List<string>
-                {
-                    "not_valid_uri"
-                }
-            };
-
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
-            Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-            Assert.True(ex.Message == ErrorDescriptions.OneOfTheRequestUriIsNotValid);
-        }
+        //    var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+        //    Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
+        //    Assert.True(ex.Message == ErrorDescriptions.OneOfTheRequestUriIsNotValid);
+        //}
 
         [Fact]
-        public void When_Passing_Valid_Request_Then_No_Exception_Is_Thrown()
+        public async Task When_Passing_Valid_Request_Then_No_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            var parameter = new RegistrationParameter
+            var parameter = new Client
             {
-                RedirectUris = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
-                    "http://localhost"
+                    new Uri("http://localhost")
                 },
+                AllowedScopes = new[] { new Scope { Name = "openid" } },
                 ApplicationType = ApplicationTypes.native,
-                Jwks = new JsonWebKeySet(),
+                JsonWebKeys = new List<JsonWebKey>(), //new JsonWebKeySet(),
                 IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.A128KW,
                 IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
                 UserInfoEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.A128KW,
                 UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
                 RequestObjectEncryptionAlg = Jwt.JwtConstants.JweAlgNames.A128KW,
                 RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
-                RequestUris = new List<string>
+                RequestUris = new List<Uri>
                 {
-                    "http://localhost"
+                    new Uri("http://localhost")
                 },
-                SectorIdentifierUri = "https://localhost"
+                SectorIdentifierUri = new Uri("https://localhost")
             };
 
             var sectorIdentifierUris = new List<string>
@@ -579,19 +531,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             var handler = new FakeHttpMessageHandler(httpResponseMessage);
             var httpClientFake = new HttpClient(handler);
 
-            _registrationParameterValidator = new RegistrationParameterValidator(httpClientFake);
-            //.Setup(h => h.GetHttpClient())
-            //.Returns(httpClientFake);
+            _factory = new ClientFactory(httpClientFake, new DefaultScopeRepository());
 
-            // ACT & ASSERTS
-            var ex = Record.Exception(() => _registrationParameterValidator.Validate(parameter));
+            var ex = await Record.ExceptionAsync(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.Null(ex);
         }
 
         private void InitializeFakeObjects()
         {
-            _httpClientFactoryFake = new HttpClient(); //new Mock<IHttpClientFactory>();
-            _registrationParameterValidator = new RegistrationParameterValidator(_httpClientFactoryFake);
+            _httpClientFactoryFake = new HttpClient();
+            _factory = new ClientFactory(
+                _httpClientFactoryFake,
+                new DefaultScopeRepository(new[] { new Scope { Name = "test" } }));
         }
     }
 }

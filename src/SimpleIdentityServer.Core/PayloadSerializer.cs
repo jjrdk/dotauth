@@ -12,21 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
-using System;
-using System.Linq;
-using System.Net.Http.Headers;
-
 namespace SimpleIdentityServer.Core
 {
-    using System.Collections.Generic;
+    using Microsoft.AspNetCore.Mvc;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using SimpleIdentityServer.Core.Parameters;
+    using SimpleIdentityServer.Core.Results;
+    using System;
+    using System.Linq;
+    using System.Net.Http.Headers;
+
     using Shared;
     using Shared.Models;
-    using Shared.Responses;
+    using System.Collections.Generic;
 
     public class PayloadSerializer : IPayloadSerializer
     {
@@ -89,33 +88,17 @@ namespace SimpleIdentityServer.Core
             return JsonConvert.SerializeObject(result);
         }
 
-        public string GetPayload(RegistrationParameter parameter)
+        public string GetPayload(Client parameter)
         {
             if (parameter == null)
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
-            
+
             var result = new Payload
             {
                 Content = parameter
             };
-            return JsonConvert.SerializeObject(result);
-        }
-
-        public string GetPayload(ClientRegistrationResponse parameter)
-        {
-            if (parameter == null)
-            {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-            
-            var result = new Payload
-            {
-                ClientId = parameter.ClientId,
-                Content = parameter
-            };
-
             return JsonConvert.SerializeObject(result);
         }
 
@@ -126,7 +109,7 @@ namespace SimpleIdentityServer.Core
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
-            var jObj = new JObject {{"access_token", accessToken}};
+            var jObj = new JObject { { "access_token", accessToken } };
             var result = new Payload
             {
                 Content = jObj
@@ -171,7 +154,7 @@ namespace SimpleIdentityServer.Core
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
-            
+
             var clientId = GetClientId(authenticationHeaderValue);
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -194,7 +177,7 @@ namespace SimpleIdentityServer.Core
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
-            
+
             var clientId = GetClientId(authenticationHeaderValue);
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -217,12 +200,12 @@ namespace SimpleIdentityServer.Core
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
-            
+
             var result = new Payload
             {
                 Content = parameter
             };
-            
+
             return JsonConvert.SerializeObject(result);
         }
 
@@ -232,7 +215,7 @@ namespace SimpleIdentityServer.Core
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
-            
+
             var clientId = GetClientId(authenticationHeaderValue);
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -255,7 +238,7 @@ namespace SimpleIdentityServer.Core
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
-            
+
             var clientId = GetClientId(authenticationHeaderValue);
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -278,7 +261,7 @@ namespace SimpleIdentityServer.Core
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
-            
+
             var result = new Payload
             {
                 Content = parameter
@@ -287,7 +270,7 @@ namespace SimpleIdentityServer.Core
             return JsonConvert.SerializeObject(result);
         }
 
-        public string GetPayload(Results.ActionResult parameter)
+        public string GetPayload(Results.EndpointResult parameter)
         {
             if (parameter == null)
             {
@@ -334,7 +317,7 @@ namespace SimpleIdentityServer.Core
                 {"scheme", auth.Scheme},
                 { "value", auth.Parameter}
             };
-            return result; 
+            return result;
         }
 
         private static string GetClientId(AuthenticationHeaderValue auth)

@@ -16,6 +16,7 @@ namespace SimpleIdentityServer.Shared.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class Client
     {
@@ -27,26 +28,26 @@ namespace SimpleIdentityServer.Shared.Models
         /// <summary>
         /// Gets or sets the client secrets.
         /// </summary>
-        public ICollection<ClientSecret> Secrets { get; set; }
+        public ICollection<ClientSecret> Secrets { get; set; } = new List<ClientSecret>();
 
         public string ClientName { get; set; }
 
-        public string LogoUri { get; set; }
+        public Uri LogoUri { get; set; }
 
         /// <summary>
         /// Gets or sets the home page of the client.
         /// </summary>
-        public string ClientUri { get; set; }
+        public Uri ClientUri { get; set; }
 
         /// <summary>
         /// Gets or sets the URL that the RP provides to the End-User to read about the how the profile data will be used.
         /// </summary>
-        public string PolicyUri { get; set; }
+        public Uri PolicyUri { get; set; }
 
         /// <summary>
         /// Gets or sets the URL that the RP provides to the End-User to read about the RP's terms of service.
         /// </summary>
-        public string TosUri { get; set; }
+        public Uri TosUri { get; set; }
 
         /// <summary>
         /// Gets or sets the JWS alg algorithm for signing the ID token issued to this client.
@@ -74,47 +75,47 @@ namespace SimpleIdentityServer.Shared.Models
         /// <summary>
         /// Gets or sets an array containing a list of OAUTH2.0 response_type values
         /// </summary>
-        public List<ResponseType> ResponseTypes { get; set; }
+        public IList<ResponseType> ResponseTypes { get; set; } = new List<ResponseType>();
 
         /// <summary>
         /// Gets or sets an array containing a list of OAUTH2.0 grant types
         /// </summary>
-        public List<GrantType> GrantTypes { get; set; }
+        public IList<GrantType> GrantTypes { get; set; } = new List<GrantType>();
 
         /// <summary>
         /// Gets or sets a list of OAUTH2.0 grant_types.
         /// </summary>
-        public List<Scope> AllowedScopes { get; set; }
+        public IList<Scope> AllowedScopes { get; set; } = new List<Scope>();
 
         /// <summary>
         /// Gets or sets an array of Redirection URI values used by the client.
         /// </summary>
-        public List<string> RedirectionUrls { get; set; }
+        public IList<Uri> RedirectionUrls { get; set; } = new List<Uri>();
 
         /// <summary>
         /// Gets or sets the type of application
         /// </summary>
-        public ApplicationTypes ApplicationType { get; set; }
+        public ApplicationTypes ApplicationType { get; set; } = ApplicationTypes.web;
 
         /// <summary>
         /// Url for the Client's JSON Web Key Set document
         /// </summary>
-        public string JwksUri { get; set; }
+        public Uri JwksUri { get; set; }
 
         /// <summary>
         /// Gets or sets the list of json web keys
         /// </summary>
-        public List<JsonWebKey> JsonWebKeys { get; set; }
+        public IList<JsonWebKey> JsonWebKeys { get; set; } = new List<JsonWebKey>();
 
         /// <summary>
         /// Gets or sets the list of contacts
         /// </summary>
-        public List<string> Contacts { get; set; }
+        public IList<string> Contacts { get; set; } = new List<string>();
 
         /// <summary>
         /// Get or set the sector identifier uri
         /// </summary>
-        public string SectorIdentifierUri { get; set; }
+        public Uri SectorIdentifierUri { get; set; }
 
         /// <summary>
         /// Gets or sets the subject type
@@ -174,12 +175,12 @@ namespace SimpleIdentityServer.Shared.Models
         /// <summary>
         /// Gets or sets the initiate login uri
         /// </summary>
-        public string InitiateLoginUri { get; set; }
+        public Uri InitiateLoginUri { get; set; }
 
         /// <summary>
         /// Gets or sets the list of request uris
         /// </summary>
-        public List<string> RequestUris { get; set; } 
+        public IList<Uri> RequestUris { get; set; } = new List<Uri>();
 
         /// <summary>
         /// Gets or sets use SCIM protocol to access user information.
@@ -194,9 +195,6 @@ namespace SimpleIdentityServer.Shared.Models
         /// <summary>
         /// Get or sets the post logout redirect uris.
         /// </summary>
-        public List<string> PostLogoutRedirectUris { get; set; }
-
-        public DateTime CreateDateTime { get; set; }
-        public DateTime UpdateDateTime { get; set; }
+        public IList<Uri> PostLogoutRedirectUris { get; set; } = new List<Uri>();
     }
 }

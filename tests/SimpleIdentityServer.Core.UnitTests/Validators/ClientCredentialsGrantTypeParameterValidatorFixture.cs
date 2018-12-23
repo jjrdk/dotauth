@@ -27,26 +27,20 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _clientCredentialsGrantTypeParameterValidator.Validate(null));
+                        Assert.Throws<ArgumentNullException>(() => _clientCredentialsGrantTypeParameterValidator.Validate(null));
         }
 
         [Fact]
         public void When_Scope_Is_Empty_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var parameter = new ClientCredentialsGrantTypeParameter();
 
-            // ACT & ASSERT
-            var exception = Assert.Throws<IdentityServerException>(() => _clientCredentialsGrantTypeParameterValidator.Validate(parameter));
+                        var exception = Assert.Throws<IdentityServerException>(() => _clientCredentialsGrantTypeParameterValidator.Validate(parameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.ScopeName));
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardTokenRequestParameterNames.ScopeName));
         }
 
         private void InitializeFakeObjects()

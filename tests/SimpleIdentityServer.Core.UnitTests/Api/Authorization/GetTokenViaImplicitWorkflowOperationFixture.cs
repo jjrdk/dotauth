@@ -28,37 +28,29 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
         [Fact]
         public async Task When_Passing_No_Authorization_Request_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenViaImplicitWorkflowOperation.Execute(null, null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenViaImplicitWorkflowOperation.Execute(null, null, null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenViaImplicitWorkflowOperation.Execute(new AuthorizationParameter(), null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Passing_No_Nonce_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter
             {
                 State = "state"
             };
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.NonceName));
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.NonceName));
             Assert.True(exception.State == authorizationParameter.State);
         }
 
         [Fact]
         public async Task When_Implicit_Flow_Is_Not_Supported_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter
             {
                 Nonce = "nonce",
@@ -68,8 +60,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(false);
 
-            // ACT & ASSERTS
-            var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
+                        var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(ex.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
@@ -79,9 +70,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
         [Fact]
         public async Task When_Requesting_Authorization_With_Valid_Request_Then_Events_Are_Logged()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string clientId = "clientId";
             const string scope = "openid";
             var authorizationParameter = new AuthorizationParameter
@@ -92,7 +81,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 Scope = scope,
                 Claims = null
             };
-            var actionResult = new ActionResult()
+            var actionResult = new EndpointResult()
             {
                 Type = TypeActionResult.RedirectToAction,
                 RedirectInstruction = new RedirectInstruction
@@ -106,11 +95,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
-            // ACT
-            await _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
+                        await _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
 
-            // ASSERTS
-            _oauthEventSource.Verify(s => s.StartImplicitFlow(clientId, scope, string.Empty));
+                        _oauthEventSource.Verify(s => s.StartImplicitFlow(clientId, scope, string.Empty));
             _oauthEventSource.Verify(s => s.EndImplicitFlow(clientId, "RedirectToAction", "ConsentIndex"));
         }
 

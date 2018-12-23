@@ -9,6 +9,6 @@
     public interface IConsentActions
     {
         Task<DisplayContentResult> DisplayConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName);
-        Task<ActionResult> ConfirmConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName);
+        Task<EndpointResult> ConfirmConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName);
     }
 }

@@ -8,6 +8,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
 {
+    using Core.Errors;
     using Core.Jwt;
     using Logging;
 
@@ -22,64 +23,46 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
 
         [Fact]
         public async Task When_Pass_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAndSendSmsCodeOperation.Execute(null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAndSendSmsCodeOperation.Execute(null)).ConfigureAwait(false);
             Assert.NotNull(exception);
         }
 
         [Fact]
         public async Task When_TwilioSendException_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _twilioClientStub.Setup(s => s.SendMessage(It.IsAny<TwilioSmsCredentials>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback(() =>
-                {
-                    throw new TwilioException("problem");
-                });
+                .Callback(() => throw new TwilioException("problem"));
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber")).ConfigureAwait(false);
 
-            // ACT
-            _eventSourceStub.Verify(e => e.Failure(It.Is<Exception>((f) => f.Message == "problem")));
+                        _eventSourceStub.Verify(e => e.Failure(It.Is<Exception>((f) => f.Message == "problem")));
             Assert.NotNull(exception);
-            Assert.Equal("unhandled_exception", exception.Code);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
             Assert.Equal("the twilio account is not properly configured", exception.Message);
         }
 
         [Fact]
         public async Task When_CannotInsert_ConfirmationCode_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _confirmationCodeStoreStub.Setup(c => c.Add(It.IsAny<ConfirmationCode>())).Returns(() => Task.FromResult(false));
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber")).ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(exception);
-            Assert.Equal("unhandled_exception", exception.Code);
+                        Assert.NotNull(exception);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
             Assert.Equal("the confirmation code cannot be saved", exception.Message);
         }
 
         [Fact]
         public async Task When_GenerateAndSendConfirmationCode_Then_Code_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _confirmationCodeStoreStub.Setup(c => c.Add(It.IsAny<ConfirmationCode>())).Returns(() => Task.FromResult(true));
 
-            // ACT
-            var confirmationCode = await _generateAndSendSmsCodeOperation.Execute("phoneNumber").ConfigureAwait(false);
+                        var confirmationCode = await _generateAndSendSmsCodeOperation.Execute("phoneNumber").ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(confirmationCode);
+                        Assert.NotNull(confirmationCode);
             _eventSourceStub.Verify(e => e.GetConfirmationCode(It.IsAny<string>()));
         }
 

@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             _clientValidator = clientValidator;
         }
 
-        public async Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client, string issuerName)
+        public async Task<EndpointResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client, string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.NonceName),
+                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
                     authorizationParameter.State);
             }
 

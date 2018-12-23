@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Shell.Controllers
             var actionResult = await _consentActions.DisplayConsent(request.ToParameter(),
                 authenticatedUser, issuerName).ConfigureAwait(false);
 
-            var result = this.CreateRedirectionFromActionResult(actionResult.ActionResult, request);
+            var result = this.CreateRedirectionFromActionResult(actionResult.EndpointResult, request);
             if (result != null)
             {
                 return result;
@@ -79,11 +79,13 @@ namespace SimpleIdentityServer.Shell.Controllers
             var viewModel = new ConsentViewModel
             {
                 ClientDisplayName = client.ClientName,
-                AllowedScopeDescriptions = actionResult.Scopes == null ? new List<string>() : actionResult.Scopes.Select(s => s.Description).ToList(),
+                AllowedScopeDescriptions = actionResult.Scopes == null
+                    ? new List<string>()
+                    : actionResult.Scopes.Select(s => s.Description).ToList(),
                 AllowedIndividualClaims = actionResult.AllowedClaims ?? new List<string>(),
-                LogoUri = client.LogoUri,
-                PolicyUri = client.PolicyUri,
-                TosUri = client.TosUri,
+                LogoUri = client?.LogoUri?.AbsoluteUri,
+                PolicyUri = client?.PolicyUri?.AbsoluteUri,
+                TosUri = client?.TosUri?.AbsoluteUri,
                 Code = code
             };
             return View(viewModel);
@@ -112,7 +114,7 @@ namespace SimpleIdentityServer.Shell.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             LogConsentRejected(request.ProcessId);
-            var result = Redirect(request.RedirectUri);
+            var result = Redirect(request.RedirectUri.AbsoluteUri);
 
             return Task.FromResult<IActionResult>(result);
         }
@@ -122,18 +124,18 @@ namespace SimpleIdentityServer.Shell.Controllers
             // Retrieve the translation and store them in a ViewBag
             var translations = await _translationManager.GetTranslationsAsync(uiLocales, new List<string>
             {
-                Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
-                Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
-                Core.Constants.StandardTranslationCodes.ScopesCode,
-                Core.Constants.StandardTranslationCodes.CancelCode,
-                Core.Constants.StandardTranslationCodes.ConfirmCode,
-                Core.Constants.StandardTranslationCodes.LinkToThePolicy,
-                Core.Constants.StandardTranslationCodes.Tos
+                Core.CoreConstants.StandardTranslationCodes.ApplicationWouldLikeToCode,
+                Core.CoreConstants.StandardTranslationCodes.IndividualClaimsCode,
+                Core.CoreConstants.StandardTranslationCodes.ScopesCode,
+                Core.CoreConstants.StandardTranslationCodes.CancelCode,
+                Core.CoreConstants.StandardTranslationCodes.ConfirmCode,
+                Core.CoreConstants.StandardTranslationCodes.LinkToThePolicy,
+                Core.CoreConstants.StandardTranslationCodes.Tos
             }).ConfigureAwait(false);
             ViewBag.Translations = translations;
         }
 
-        private void LogConsentAccepted(Core.Results.ActionResult act, string processId)
+        private void LogConsentAccepted(Core.Results.EndpointResult act, string processId)
         {
             if (string.IsNullOrWhiteSpace(processId))
             {

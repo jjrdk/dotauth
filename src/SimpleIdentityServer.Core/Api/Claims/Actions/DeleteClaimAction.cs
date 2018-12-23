@@ -6,11 +6,6 @@
     using Exceptions;
     using Shared.Repositories;
 
-    public interface IDeleteClaimAction
-    {
-        Task<bool> Execute(string claimCode);
-    }
-
     internal sealed class DeleteClaimAction : IDeleteClaimAction
     {
         private readonly IClaimRepository _claimRepository;

@@ -35,19 +35,14 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _jsonWebKeyConverter.ExtractSerializedKeys(null));
+                        Assert.Throws<ArgumentNullException>(() => _jsonWebKeyConverter.ExtractSerializedKeys(null));
         }
 
         [Fact]
         public void When_Passing_JsonWeb_Key_With_Missing_Kid_Then_An_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var jsonWebKeySet = new JsonWebKeySet
             {
                 Keys = new List<Dictionary<string, object>>
@@ -69,9 +64,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 
         [Fact]
         public void When_Passing_JsonWeb_Key_With_Not_Supported_Key_Type_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var jsonWebKeySet = new JsonWebKeySet
             {
                 Keys = new List<Dictionary<string, object>>
@@ -101,9 +94,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 
         [Fact]
         public void When_Passing_JsonWeb_Key_With_Not_Supported_Usage_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var jsonWebKeySet = new JsonWebKeySet
             {
                 Keys = new List<Dictionary<string, object>>
@@ -135,9 +126,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 
         [Fact]
         public void When_Passing_JsonWeb_Key_Used_For_The_Signature_With_Rsa_Key_But_Wich_Doesnt_Contain_Modulus_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var jsonWebKey = new Dictionary<string, object>
             {
                 {
@@ -169,9 +158,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 
         [Fact]
         public void When_Passing_JsonWeb_Key_Used_For_The_Signature_With_Ec_Key_But_Which_Doesnt_Contains_XCoordinate_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var jsonWebKey = new Dictionary<string, object>
             {
                 {
@@ -203,9 +190,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 
         [Fact]
         public void When_Passing_JsonWeb_Key_Used_For_The_Signature_With_Ec_Key_Which_Contains_Invalid_XCoordinate_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var jsonWebKey = new Dictionary<string, object>
             {
                 {
@@ -245,9 +230,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 
         [Fact]
         public void When_Passing_JsonWeb_Key_Used_For_The_Signature_With_Rsa_Key_Then_JsonWeb_Key_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var jsonWebKey = new Dictionary<string, object>
             {
                 {
@@ -290,9 +273,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 
         [Fact]
         public void When_Passing_JsonWeb_Key_Used_For_The_Signature_With_Ec_Key_Then_JsonWeb_Key_Is_Returned()
-        {
-            // ARRANGE
-            var xCoordinate = "x_coordinate".Base64Encode();
+        {            var xCoordinate = "x_coordinate".Base64Encode();
             var yCoordinate = "y_coordinate".Base64Encode();
             InitializeFakeObjects();
             var jsonWebKey = new Dictionary<string, object>

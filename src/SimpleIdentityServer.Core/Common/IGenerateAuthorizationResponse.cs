@@ -2,12 +2,12 @@
 {
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Core.Parameters;
-    using Core.Results;
+    using Parameters;
+    using Results;
     using Shared.Models;
 
     public interface IGenerateAuthorizationResponse
     {
-        Task ExecuteAsync(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName);
+        Task ExecuteAsync(EndpointResult endpointResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName);
     }
 }

@@ -6,15 +6,15 @@
     <AssemblyName>SimpleIdentityServer.Manager.Core.Tests</AssemblyName>
     <PackageId>SimpleIdentityServer.Manager.Core.Tests</PackageId>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Manager.Core\SimpleIdentityServer.Manager.Core.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <PackageReference Include="Moq" Version="4.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
   </ItemGroup>
 </Project>

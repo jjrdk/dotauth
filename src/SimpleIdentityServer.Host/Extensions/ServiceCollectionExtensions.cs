@@ -14,8 +14,6 @@
 
 namespace SimpleIdentityServer.Host.Extensions
 {
-    using System;
-    using System.Linq;
     using Core;
     using Core.Jwt;
     using Logging;
@@ -24,8 +22,11 @@ namespace SimpleIdentityServer.Host.Extensions
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
     using Parsers;
+    using System;
+    using System.Linq;
+    using System.Net.Http;
 
-    public static class ServiceCollectionExtensions 
+    public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddOpenIdApi(this IServiceCollection serviceCollection, Action<IdentityServerOptions> optionsCallback)
         {
@@ -38,13 +39,13 @@ namespace SimpleIdentityServer.Host.Extensions
             {
                 throw new ArgumentNullException(nameof(optionsCallback));
             }
-            
+
             var options = new IdentityServerOptions();
             optionsCallback(options);
             serviceCollection.AddOpenIdApi(options);
             return serviceCollection;
         }
-        
+
         /// <summary>
         /// Add the OPENID API.
         /// </summary>
@@ -62,9 +63,9 @@ namespace SimpleIdentityServer.Host.Extensions
             {
                 throw new ArgumentNullException(nameof(options));
             }
-            
+
             ConfigureSimpleIdentityServer(
-                serviceCollection, 
+                serviceCollection,
                 options);
             return serviceCollection;
         }
@@ -138,11 +139,12 @@ namespace SimpleIdentityServer.Host.Extensions
             IServiceCollection services,
             IdentityServerOptions options)
         {
-            services.AddSimpleIdentityServerCore(options.OAuthConfigurationOptions, 
-                clients: options.Configuration?.Clients,
-                resourceOwners: options.Configuration?.Users,
-                translations:options.Configuration?.Translations,
-                jsonWebKeys: options.Configuration?.JsonWebKeys)
+            services.AddSimpleIdentityServerCore(
+                    options.OAuthConfigurationOptions,
+                    clients: options.Configuration?.Clients,
+                    resourceOwners: options.Configuration?.Users,
+                    translations: options.Configuration?.Translations,
+                    jsonWebKeys: options.Configuration?.JsonWebKeys)
                 .AddSimpleIdentityServerJwt()
                 .AddHostIdentityServer(options)
                 //.AddIdServerClient()

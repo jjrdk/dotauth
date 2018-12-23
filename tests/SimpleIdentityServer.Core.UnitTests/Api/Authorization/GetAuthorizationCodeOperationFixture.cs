@@ -29,20 +29,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(null, null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(null, null, null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(new AuthorizationParameter(), null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_The_Client_Grant_Type_Is_Not_Supported_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string clientId = "clientId";
             const string scope = "scope";
             var authorizationParameter = new AuthorizationParameter
@@ -54,8 +49,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(false);
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
 
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
@@ -67,15 +61,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
         [Fact]
         public async Task When_Redirected_To_Callback_And_Resource_Owner_Is_Not_Authenticated_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter
             {
                 State = "state"
             };
 
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 Type = TypeActionResult.RedirectToCallBackUrl
             };
@@ -86,8 +78,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
-            // ACT & ASSERT
-            var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+                        var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
                 () => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(ex.Message ==
@@ -97,12 +88,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
         [Fact]
         public async Task When_Passing_Valid_Request_Then_Events_Are_Logged()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string clientId = "clientId";
             const string scope = "scope";
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 Type = TypeActionResult.RedirectToAction,
                 RedirectInstruction = new RedirectInstruction
@@ -124,11 +113,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
-            // ACT
-            await _getAuthorizationCodeOperation.Execute(authorizationParameter, null, client, null).ConfigureAwait(false);
+                        await _getAuthorizationCodeOperation.Execute(authorizationParameter, null, client, null).ConfigureAwait(false);
 
-            // ASSERTS
-            _oauthEventSource.Verify(s => s.StartAuthorizationCodeFlow(clientId, scope, string.Empty));
+                        _oauthEventSource.Verify(s => s.StartAuthorizationCodeFlow(clientId, scope, string.Empty));
             _oauthEventSource.Verify(s => s.EndAuthorizationCodeFlow(clientId, "RedirectToAction", "FormIndex"));
         }
 

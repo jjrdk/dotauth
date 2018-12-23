@@ -10,12 +10,10 @@ namespace SimpleIdentityServer.Manager.Host.Tests
     {
         public TestServer Server { get; }
         public HttpClient Client { get; }
-        public SharedContext SharedCtx { get; }
 
         public TestManagerServerFixture()
         {
-            SharedCtx = new SharedContext();
-            var startup = new FakeStartup(SharedCtx);
+            var startup = new FakeStartup();
             Server = new TestServer(new WebHostBuilder()
                 .UseUrls("http://localhost:5000")
                 .ConfigureServices(services =>
@@ -24,7 +22,6 @@ namespace SimpleIdentityServer.Manager.Host.Tests
                 })
                 .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeStartup).GetType().Assembly.FullName));
             Client = Server.CreateClient();
-            SharedCtx.HttpClientFactory.Set(Server);
         }
 
         public void Dispose()

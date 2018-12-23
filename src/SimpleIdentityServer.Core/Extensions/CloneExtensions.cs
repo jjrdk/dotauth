@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Core.Extensions
             return new Consent
             {
                 Claims =  consent.Claims == null ? new List<string>() : consent.Claims.ToList(),
-                Client = consent.Client?.Copy(),
+                Client = consent.Client,
                 GrantedScopes = consent.GrantedScopes?.Select(s => s.Copy()).ToList(),
                 Id =  consent.Id,
                 ResourceOwner = consent.ResourceOwner?.Copy()
@@ -73,51 +73,6 @@ namespace SimpleIdentityServer.Core.Extensions
         public static Claim Copy(this Claim claim)
         {
             return new Claim(claim.Type, claim.Value);
-        }
-
-        public static Client Copy(this Client client)
-        {
-            return new Client
-            {
-                AllowedScopes = client.AllowedScopes == null ? new List<Scope>() : client.AllowedScopes.Select(s => s.Copy()).ToList(),
-                ApplicationType = client.ApplicationType,
-                ClientId = client.ClientId,
-                ClientName = client.ClientName,
-                ClientUri = client.ClientUri,
-                Contacts = client.Contacts == null ? new List<string>() : client.Contacts.ToList(),
-                CreateDateTime = client.CreateDateTime,
-                DefaultAcrValues = client.DefaultAcrValues,
-                DefaultMaxAge = client.DefaultMaxAge,
-                GrantTypes = client.GrantTypes == null ? new List<GrantType>() : client.GrantTypes.ToList(),
-                IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg,
-                IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
-                IdTokenSignedResponseAlg = client.IdTokenSignedResponseAlg,
-                InitiateLoginUri = client.InitiateLoginUri,
-                JsonWebKeys = client.JsonWebKeys == null ? new List<JsonWebKey>() : client.JsonWebKeys.Select(j => j.Copy()).ToList(),
-                JwksUri = client.JwksUri,
-                LogoUri = client.LogoUri,
-                PolicyUri = client.PolicyUri,
-                PostLogoutRedirectUris = client.PostLogoutRedirectUris == null ? new List<string>() : client.PostLogoutRedirectUris.ToList(),
-                RedirectionUrls = client.RedirectionUrls == null ? new List<string>() : client.RedirectionUrls.ToList(),
-                RequestObjectEncryptionAlg = client.RequestObjectEncryptionAlg,
-                RequestObjectEncryptionEnc = client.RequestObjectEncryptionEnc,
-                RequestObjectSigningAlg = client.RequestObjectSigningAlg,
-                RequestUris = client.RequestUris == null  ? new List<string>() : client.RequestUris.ToList(),
-                RequireAuthTime = client.RequireAuthTime,
-                RequirePkce = client.RequirePkce,
-                ResponseTypes = client.ResponseTypes == null ? new List<ResponseType>() : client.ResponseTypes.ToList(),
-                ScimProfile = client.ScimProfile,
-                Secrets = client.Secrets == null ? new List<ClientSecret>() : client.Secrets.Select(s => s.Copy()).ToList(),
-                SectorIdentifierUri = client.SectorIdentifierUri,
-                SubjectType = client.SubjectType,
-                TokenEndPointAuthMethod = client.TokenEndPointAuthMethod,
-                TokenEndPointAuthSigningAlg = client.TokenEndPointAuthSigningAlg,
-                TosUri = client.TosUri,
-                UpdateDateTime = client.UpdateDateTime,
-                UserInfoEncryptedResponseAlg = client.UserInfoEncryptedResponseAlg,
-                UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc,
-                UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg
-            };
         }
 
         public static ClientSecret Copy(this ClientSecret clientSecret)

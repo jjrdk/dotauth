@@ -27,43 +27,33 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _introspectionParameterValidator.Validate(null));
+                        Assert.Throws<ArgumentNullException>(() => _introspectionParameterValidator.Validate(null));
         }
 
 
         [Fact]
         public void When_No_Token_Is_Specified_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var parameter = new IntrospectionParameter();
 
-            // ACT & ASSERT
-            var exception = Assert.Throws<IdentityServerException>(() => _introspectionParameterValidator.Validate(parameter));
+                        var exception = Assert.Throws<IdentityServerException>(() => _introspectionParameterValidator.Validate(parameter));
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, Constants.IntrospectionRequestNames.Token));
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, CoreConstants.IntrospectionRequestNames.Token));
         }
 
         [Fact]
         public void When_Passing_Valid_Parameter_Then_No_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var parameter = new IntrospectionParameter
             {
                 Token = "token"
             };
 
-            // ACT
-            var exception = Record.Exception(() => _introspectionParameterValidator.Validate(parameter));
+                        var exception = Record.Exception(() => _introspectionParameterValidator.Validate(parameter));
 
-            // ASSERT
-            Assert.Null(exception);
+                        Assert.Null(exception);
         }
 
         private void InitializeFakeObjects()

@@ -9,6 +9,6 @@
         public Client Client { get; set; }
         public ICollection<Scope> Scopes { get; set; }
         public ICollection<string> AllowedClaims { get; set; }
-        public ActionResult ActionResult { get; set; }
+        public EndpointResult EndpointResult { get; set; }
     }
 }

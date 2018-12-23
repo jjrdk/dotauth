@@ -29,25 +29,18 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _removeConfirmationCodeAction.Execute(null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _removeConfirmationCodeAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Code_Is_Removed_Then_Operation_Is_Called()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT
-            await _removeConfirmationCodeAction.Execute("code").ConfigureAwait(false);
+                        await _removeConfirmationCodeAction.Execute("code").ConfigureAwait(false);
 
-            // ASSERT
-            _confirmationCodeStoreStub.Verify(c => c.Remove("code"));
+                        _confirmationCodeStoreStub.Verify(c => c.Remove("code"));
         }
 
         private void InitializeFakeObjects()

@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheClientCannotBeUpdated = "an error occured while trying to update the client";
         public const string TheClientCannotBeRemoved = "an error occured while trying to remove the client";
         public const string MissingParameter = "the parameter {0} is missing";
-        public const string RequestIsNotValid =  "the request is not valid";
+        public const string RequestIsNotValid =  "The request is not valid";
         public const string ClientIsNotValid = "the client id parameter {0} doesn't exist or is not valid";
         public const string RedirectUrlIsNotValid = "the redirect url {0} doesn't exist or is not valid";
         public const string ResourceOwnerCredentialsAreNotValid = "resource owner credentials are not valid";
@@ -111,7 +111,7 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated =
             "the response cannot be generated because the resource owner needs to be authenticated";
         public const string TheRedirectUrlIsNotValid = "the redirect_uri {0} is not well formed";
-        public const string TheRedirectUrlCannotContainsFragment = "the redirect_uri {0} cannot contains fragment";
+        public const string TheRedirectUrlCannotContainsFragment = "The redirect_uri {0} cannot contain fragment";
         public const string TheRedirectUriParameterIsNotValid = "one or more redirect_uri values are invalid";
         public const string TheRedirectUriContainsAFragment = "one or more redirect_uri contains a fragment";
         public const string TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed =
@@ -151,7 +151,7 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheClientRequiresPkce = "the client {0} requires PKCE";
         public const string TheCodeVerifierIsNotCorrect = "the code verifier is not correct";
         public const string TheBulkPublicClaimsIsNotWorking = "the bulk operation is not working ...";
-        public const string TheResourceOwnerDoesntExist = "the resource owner doesn't exist";
+        public const string TheResourceOwnerDoesntExist = "The resource owner {0} doesn't exist";
         public const string TheProfileAlreadyLinked = "the profile is already linked to your account";
         public const string NotAuthorizedToRemoveTheProfile = "not authorized to remove the profile";
         public const string TheScimConfigurationMustBeSpecified = "the scim configuration is not correct";

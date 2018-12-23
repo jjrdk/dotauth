@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,97 +11,59 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Manager.Logging;
-using SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions;
-using SimpleIdentityServer.Manager.Core.Errors;
-using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
 {
+    using System.Collections.Generic;
+    using System.Threading;
+    using Shared.Models;
+    using Shared.Repositories;
+    using SimpleIdentityServer.Core.Errors;
+    using SimpleIdentityServer.Core.Exceptions;
+    using SimpleIdentityServer.Core.Repositories;
+
     public class DeleteResourceOwnerActionFixture
     {
-        private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private IDeleteResourceOwnerAction _deleteResourceOwnerAction;
+        private IResourceOwnerRepository _resourceOwnerRepositoryStub;
+
+        //[Fact]
+        //public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        //{
+        //        //    InitializeFakeObjects();
+
+        //            //    await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourceOwnerAction.Execute(null)).ConfigureAwait(false);
+        //}
 
         [Fact]
-        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_ResourceOwner_Doesnt_Exist_Then_ReturnsFalse()
         {
-            // ARRANGE
-            InitializeFakeObjects();
-
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourceOwnerAction.Execute(null));
-        }
-
-        [Fact]
-        public async Task When_ResourceOwner_Doesnt_Exist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
             const string subject = "invalid_subject";
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult((ResourceOwner)null));
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _deleteResourceOwnerAction.Execute(subject));
+            var result = await  _resourceOwnerRepositoryStub.Delete(subject).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, subject));
+            Assert.False(result);
         }
 
         [Fact]
-        public async Task When_Cannot_Delete_Resource_Owner_Then_Exception_Is_Thrown()
+        public async Task When_Cannot_Delete_Resource_Owner_Then_ReturnsFalse()
         {
-            // ARRANGE
             const string subject = "subject";
-            InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new ResourceOwner()));
-            _resourceOwnerRepositoryStub.Setup(r => r.DeleteAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(false));
+            InitializeFakeObjects(new ResourceOwner());
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _deleteResourceOwnerAction.Execute(subject));
+            var result = await  _resourceOwnerRepositoryStub.Delete(subject).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(exception);
-            Assert.Equal("internal_error", exception.Code);
-            Assert.Equal("the resource owner cannot be removed", exception.Message);
+            Assert.False(result);
         }
 
-        [Fact]
-        public async Task When_Delete_Resource_Owner_Then_Operation_Is_Called()
-        {   
-            // ARRANGE
-            const string subject = "subject";
-            InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new ResourceOwner()));
-            _resourceOwnerRepositoryStub.Setup(r => r.DeleteAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(true));
-
-            // ACT
-            await _deleteResourceOwnerAction.Execute(subject);
-
-            // ASSERT
-            _resourceOwnerRepositoryStub.Verify(r => r.DeleteAsync(subject));
-        }
-
-        private void InitializeFakeObjects()
+        private void InitializeFakeObjects(params ResourceOwner[] resourceOwners)
         {
-            _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _deleteResourceOwnerAction = new DeleteResourceOwnerAction(
-                _resourceOwnerRepositoryStub.Object);
+            _resourceOwnerRepositoryStub = new DefaultResourceOwnerRepository(resourceOwners);
         }
     }
 }

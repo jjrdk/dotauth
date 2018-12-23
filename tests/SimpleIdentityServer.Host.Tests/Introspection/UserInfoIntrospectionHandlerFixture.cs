@@ -26,8 +26,7 @@ namespace SimpleIdentityServer.Host.Tests.Introspection
         [Fact]
         public async Task When_Introspect_Identity_Token_Then_Claims_Are_Returned()
         {
-            // ACT
-            var result = await new TokenClient(
+                        var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     TokenRequest.FromPassword("superuser", "password", new[] { "role" }),
                     _server.Client,
@@ -47,8 +46,7 @@ namespace SimpleIdentityServer.Host.Tests.Introspection
                 .HandleAuthenticate(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken)
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(authResult.Succeeded);
+                        Assert.True(authResult.Succeeded);
         }
     }
 }

@@ -19,11 +19,6 @@ namespace SimpleIdentityServer.Core.Api.Scopes.Actions
     using Shared.Models;
     using Shared.Repositories;
 
-    public interface IGetScopesOperation
-    {
-        Task<ICollection<Scope>> Execute();
-    }
-
     internal class GetScopesOperation : IGetScopesOperation
     {
         private readonly IScopeRepository _scopeRepository;
@@ -35,7 +30,7 @@ namespace SimpleIdentityServer.Core.Api.Scopes.Actions
         
         public Task<ICollection<Scope>> Execute()
         {
-            return _scopeRepository.GetAllAsync();
+            return _scopeRepository.GetAll();
         }
     }
 }

@@ -191,8 +191,7 @@ namespace SimpleIdentityServer.Core.Extensions
                 return false;
             }
 
-            bool res = false;
-            if (!bool.TryParse(result, out res))
+            if (!bool.TryParse(result, out var res))
             {
                 return false;
             }

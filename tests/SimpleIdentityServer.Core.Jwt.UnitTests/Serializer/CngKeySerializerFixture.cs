@@ -31,18 +31,15 @@
 //        [Fact]
 //        public void When_Passing_Null_To_Serialize_With_Private_Key_Then_Exception_Is_Thrown()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
-//            // ACT & ASSERT
-//            Assert.Throws<ArgumentNullException>(() => _cngKeySerializer.SerializeCngKeyWithPrivateKey(null));
+//            //            Assert.Throws<ArgumentNullException>(() => _cngKeySerializer.SerializeCngKeyWithPrivateKey(null));
 //        }
 
 //        [Fact]
 //        public void When_Private_Key_Cannot_Be_Extracted_Then_Exception_Is_Thrown()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 //            var keyCreationParameter = new CngKeyCreationParameters
 //            {
 //                ExportPolicy = CngExportPolicies.None
@@ -52,23 +49,20 @@
 //            var isExceptionRaised = false;
 //            try
 //            {
-//                // ACT
-//                _cngKeySerializer.SerializeCngKeyWithPrivateKey(cnk);
+//                //                _cngKeySerializer.SerializeCngKeyWithPrivateKey(cnk);
 //            }
 //            catch (CryptographicException)
 //            {
 //                isExceptionRaised = true;
 //            }
 
-//            // ASSERT
-//            Assert.True(isExceptionRaised);
+//            //            Assert.True(isExceptionRaised);
 //        }
 
 //        [Fact]
 //        public void When_Serialize_The_CngKey_With_Private_Key_Then_String_Is_Returned()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 //            var keyCreationParameter = new CngKeyCreationParameters
 //            {
 //                ExportPolicy = CngExportPolicies.AllowPlaintextExport
@@ -76,11 +70,9 @@
 
 //            var cnk = CngKey.Create(CngAlgorithm.ECDsaP256, null, keyCreationParameter);
 
-//            // ACT
-//            var result = _cngKeySerializer.SerializeCngKeyWithPrivateKey(cnk);
+//            //            var result = _cngKeySerializer.SerializeCngKeyWithPrivateKey(cnk);
 
-//            // ASSERT
-//            Assert.NotNull(result);
+//            //            Assert.NotNull(result);
 //        }
 
 //#endregion
@@ -90,18 +82,15 @@
 //        [Fact]
 //        public void When_Passing_Null_To_Deserialize_Function_With_Private_Key_Then_Exception_Is_Thrown()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
-//            // ACT & ASSERT
-//            Assert.Throws<ArgumentNullException>(() => _cngKeySerializer.DeserializeCngKeyWithPrivateKey(null));
+//            //            Assert.Throws<ArgumentNullException>(() => _cngKeySerializer.DeserializeCngKeyWithPrivateKey(null));
 //        }
 
 //        [Fact]
 //        public void When_Deserialize_Xml_With_Private_Key_Then_CngKey_Is_Returned()
 //        {            
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 //            var keyCreationParameter = new CngKeyCreationParameters
 //            {
 //                ExportPolicy = CngExportPolicies.AllowPlaintextExport
@@ -110,11 +99,9 @@
 //            var cnk = CngKey.Create(CngAlgorithm.ECDsaP256, null, keyCreationParameter);
 //            var serializedXml = _cngKeySerializer.SerializeCngKeyWithPrivateKey(cnk);
 
-//            // ACT
-//            var result = _cngKeySerializer.DeserializeCngKeyWithPrivateKey(serializedXml);
+//            //            var result = _cngKeySerializer.DeserializeCngKeyWithPrivateKey(serializedXml);
 
-//            // ASSERT
-//            Assert.NotNull(result);
+//            //            Assert.NotNull(result);
 //        }
 
 //#endregion
@@ -124,18 +111,15 @@
 //        [Fact]
 //        public void When_Passing_Null_To_Serialize_With_Public_Key_Then_Exception_Is_Thrown()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
-//            // ACT & ASSERT
-//            Assert.Throws<ArgumentNullException>(() => _cngKeySerializer.SerializeCngKeyWithPublicKey(null));
+//            //            Assert.Throws<ArgumentNullException>(() => _cngKeySerializer.SerializeCngKeyWithPublicKey(null));
 //        }
 
 //        [Fact]
 //        public void When_Serialize_The_CngKey_With_Public_Key_Then_String_Is_Returned()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 //            var keyCreationParameter = new CngKeyCreationParameters
 //            {
 //                ExportPolicy = CngExportPolicies.AllowPlaintextExport
@@ -143,11 +127,9 @@
 
 //            var cnk = CngKey.Create(CngAlgorithm.ECDsaP256, null, keyCreationParameter);
 
-//            // ACT
-//            var result = _cngKeySerializer.SerializeCngKeyWithPublicKey(cnk);
+//            //            var result = _cngKeySerializer.SerializeCngKeyWithPublicKey(cnk);
 
-//            // ASSERT
-//            Assert.NotNull(result);
+//            //            Assert.NotNull(result);
 //        }
 
 //#endregion
@@ -157,18 +139,15 @@
 //        [Fact]
 //        public void When_Passing_Null_Parameter_To_Deserialize_With_Public_Key_Then_Exception_Is_Thrown()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
-//            // ACT & ASSERT
-//            Assert.Throws<ArgumentNullException>(() => _cngKeySerializer.DeserializeCngKeyWithPublicKey(null));
+//            //            Assert.Throws<ArgumentNullException>(() => _cngKeySerializer.DeserializeCngKeyWithPublicKey(null));
 //        }
 
 //        [Fact]
 //        public void When_Deserialize_With_Public_Key_Then_String_Is_Returned()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
             
 //            var keyCreationParameter = new CngKeyCreationParameters
 //            {
@@ -179,11 +158,9 @@
 
 //            var serialized = _cngKeySerializer.SerializeCngKeyWithPublicKey(cnk);
 
-//            // ACT
-//            var result = _cngKeySerializer.DeserializeCngKeyWithPublicKey(serialized);
+//            //            var result = _cngKeySerializer.DeserializeCngKeyWithPublicKey(serialized);
 
-//            // ASSERT
-//            Assert.NotNull(result);
+//            //            Assert.NotNull(result);
 //        }
 
 //#endregion

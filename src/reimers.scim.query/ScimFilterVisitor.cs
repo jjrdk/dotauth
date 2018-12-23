@@ -90,8 +90,8 @@
 
             if (attrPathExpression.ReturnType != typeof(TResource))
             {
-                Type childFilterType = attrPathExpression.ReturnType;
-                bool isEnumerable = childFilterType.IsNonStringEnumerable();
+                var childFilterType = attrPathExpression.ReturnType;
+                var isEnumerable = childFilterType.IsNonStringEnumerable();
 
                 if (isEnumerable)
                 {
@@ -335,7 +335,7 @@
 
         public override LambdaExpression VisitAttrPath(ScimFilterParser.AttrPathContext context)
         {
-            string schemaToken = GetSchema(context);
+            var schemaToken = GetSchema(context);
 
             if (!string.IsNullOrEmpty(schemaToken))// && ServerConfiguration.ResourceExtensionExists(schemaToken))
             {
@@ -344,7 +344,7 @@
 
             if (!string.IsNullOrEmpty(schemaToken)) // fully qualified property
             {
-                string schemaIdentifierForResourceType = "";// ServerConfiguration.GetSchemaIdentifierForResourceType(typeof(TResource));
+                var schemaIdentifierForResourceType = "";// ServerConfiguration.GetSchemaIdentifierForResourceType(typeof(TResource));
                 // swallow correct namespace but validate
 
                 if (!string.Equals(schemaToken, schemaIdentifierForResourceType, StringComparison.OrdinalIgnoreCase))
@@ -353,9 +353,9 @@
                 }
             }
 
-            string propNameToken = context.ATTRNAME(0).GetText();
+            var propNameToken = context.ATTRNAME(0).GetText();
             var argument = Expression.Parameter(typeof(TResource));
-            PropertyInfo propertyInfo = GetPropertyInfoFromCache(typeof(TResource), propNameToken);
+            var propertyInfo = GetPropertyInfoFromCache(typeof(TResource), propNameToken);
 
             return Expression.Lambda(Expression.Property(argument, propertyInfo), argument);
         }
@@ -371,11 +371,11 @@
              */
 
             var argument = Expression.Parameter(typeof(TResource));
-            string propNameToken = context.ATTRNAME(0).GetText();
-            string schemaToken = GetSchema(context);
-            Type extensionType = typeof(string);//ServerConfiguration.ResourceExtensionSchemas[schemaToken];
+            var propNameToken = context.ATTRNAME(0).GetText();
+            var schemaToken = GetSchema(context);
+            var extensionType = typeof(string);//ServerConfiguration.ResourceExtensionSchemas[schemaToken];
 
-            PropertyInfo extensionsPropInfo = GetPropertyInfoFromCache(typeof(TResource), "Extensions");
+            var extensionsPropInfo = GetPropertyInfoFromCache(typeof(TResource), "Extensions");
             var extensionPropertyExpression = Expression.Property(argument, extensionsPropInfo);
             var keyValuePairArgument = Expression.Parameter(typeof(KeyValuePair<string, ResourceExtension>));
 
@@ -400,7 +400,7 @@
                 },
                 selectExtensionExpression);
 
-            PropertyInfo propertyInfo = GetPropertyInfoFromCache(extensionType, propNameToken);
+            var propertyInfo = GetPropertyInfoFromCache(extensionType, propNameToken);
             var extensionArgument = Expression.Parameter(extensionType);
 
             var selectTypedExtensionPropertyExpression = Expression.Call(
@@ -430,7 +430,7 @@
         protected Expression CreateBinaryExpression(Expression left, string operatorToken, string valueToken)
         {
             // Equal
-            Type propertyType = left.Type;
+            var propertyType = left.Type;
 
             if (operatorToken.Equals("eq"))
             {
@@ -467,14 +467,12 @@
             // Not Equal
             if (operatorToken.Equals("ne"))
             {
-                int intValue;
-                if (propertyType == typeof(int) && int.TryParse(valueToken, out intValue))
+                if (propertyType == typeof(int) && int.TryParse(valueToken, out var intValue))
                 {
                     return Expression.NotEqual(left, Expression.Constant(intValue));
                 }
 
-                bool boolValue;
-                if (propertyType == typeof(bool) && bool.TryParse(valueToken, out boolValue))
+                if (propertyType == typeof(bool) && bool.TryParse(valueToken, out var boolValue))
                 {
                     return Expression.NotEqual(left, Expression.Constant(boolValue));
                 }
@@ -554,14 +552,12 @@
             // Greater Than
             if (operatorToken.Equals("gt"))
             {
-                int intValue;
-                if (propertyType == typeof(int) && int.TryParse(valueToken, out intValue))
+                if (propertyType == typeof(int) && int.TryParse(valueToken, out var intValue))
                 {
                     return Expression.GreaterThan(left, Expression.Constant(intValue));
                 }
 
-                bool boolValue;
-                if (propertyType == typeof(bool) && bool.TryParse(valueToken, out boolValue))
+                if (propertyType == typeof(bool) && bool.TryParse(valueToken, out var boolValue))
                 {
                     return Expression.GreaterThan(left, Expression.Constant(boolValue));
                 }
@@ -586,14 +582,12 @@
             // Greater Than or Equal
             if (operatorToken.Equals("ge"))
             {
-                int intValue;
-                if (propertyType == typeof(int) && int.TryParse(valueToken, out intValue))
+                if (propertyType == typeof(int) && int.TryParse(valueToken, out var intValue))
                 {
                     return Expression.GreaterThanOrEqual(left, Expression.Constant(intValue));
                 }
 
-                bool boolValue;
-                if (propertyType == typeof(bool) && bool.TryParse(valueToken, out boolValue))
+                if (propertyType == typeof(bool) && bool.TryParse(valueToken, out var boolValue))
                 {
                     return Expression.GreaterThanOrEqual(left, Expression.Constant(boolValue));
                 }
@@ -618,14 +612,12 @@
             // Less Than
             if (operatorToken.Equals("lt"))
             {
-                int intValue;
-                if (propertyType == typeof(int) && int.TryParse(valueToken, out intValue))
+                if (propertyType == typeof(int) && int.TryParse(valueToken, out var intValue))
                 {
                     return Expression.LessThan(left, Expression.Constant(intValue));
                 }
 
-                bool boolValue;
-                if (propertyType == typeof(bool) && bool.TryParse(valueToken, out boolValue))
+                if (propertyType == typeof(bool) && bool.TryParse(valueToken, out var boolValue))
                 {
                     return Expression.LessThan(left, Expression.Constant(boolValue));
                 }
@@ -650,14 +642,12 @@
             // Less Than or Equal
             if (operatorToken.Equals("le"))
             {
-                int intValue;
-                if (propertyType == typeof(int) && int.TryParse(valueToken, out intValue))
+                if (propertyType == typeof(int) && int.TryParse(valueToken, out var intValue))
                 {
                     return Expression.LessThanOrEqual(left, Expression.Constant(intValue));
                 }
 
-                bool boolValue;
-                if (propertyType == typeof(bool) && bool.TryParse(valueToken, out boolValue))
+                if (propertyType == typeof(bool) && bool.TryParse(valueToken, out var boolValue))
                 {
                     return Expression.LessThanOrEqual(left, Expression.Constant(boolValue));
                 }
@@ -689,7 +679,7 @@
 
         protected static PropertyInfo GetPropertyInfoFromCache(Type type, string propertyName)
         {
-            IDictionary<string, PropertyInfo> typeProperties = PropertyCache.GetOrAdd(
+            var typeProperties = PropertyCache.GetOrAdd(
                 type,
                 t => t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
                       .ToDictionary(pi => pi.Name, pi => pi, StringComparer.OrdinalIgnoreCase));
@@ -704,7 +694,7 @@
 
         protected LambdaExpression MakeLambdaExpression(Type argType, Type returnType, Expression body, ParameterExpression argument)
         {
-            Type @delegate = typeof(Func<,>).MakeGenericType(argType, returnType);
+            var @delegate = typeof(Func<,>).MakeGenericType(argType, returnType);
 
             return (LambdaExpression)typeof(Expression)
                     .GetMethods(BindingFlags.Public | BindingFlags.Static)
@@ -731,38 +721,47 @@
 
         private static IDictionary<string, MethodInfo> CreateMethodCache()
         {
-            var methodCache = new Dictionary<string, MethodInfo>();
-
-            methodCache.Add("eq",
-                            typeof(string).GetMethod(
-                                "Equals",
-                                BindingFlags.Public | BindingFlags.Static,
-                                null,
-                                new[] { typeof(string), typeof(string), typeof(StringComparison) },
-                                new ParameterModifier[0]));
-            methodCache.Add("compareto",
-                            typeof(string).GetMethod("CompareTo", new[] { typeof(string) }));
-            methodCache.Add("any",
-                            typeof(Enumerable).GetMethods(BindingFlags.Public | BindingFlags.Static)
-                                              .Single(mi => mi.Name.Equals("Any") && mi.GetParameters().Length == 2));
-            methodCache.Add("sw",
-                            typeof(FilterHelpers).GetMethod("StartsWith", BindingFlags.Public | BindingFlags.Static,
-                                                            null,
-                                                            new[] { typeof(string), typeof(string) },
-                                                            new ParameterModifier[0]));
-            methodCache.Add("ew",
-                            typeof(FilterHelpers).GetMethod("EndsWith", BindingFlags.Public | BindingFlags.Static,
-                                                            null,
-                                                            new[] { typeof(string), typeof(string) },
-                                                            new ParameterModifier[0]));
-            methodCache.Add("co",
-                            typeof(FilterHelpers).GetMethod("Contains", BindingFlags.Public | BindingFlags.Static,
-                                                            null,
-                                                            new[] { typeof(string), typeof(string) },
-                                                            new ParameterModifier[0]));
-            methodCache.Add("pr",
-                            typeof(FilterHelpers).GetMethods(BindingFlags.Public | BindingFlags.Static)
-                                                  .Single(mi => mi.Name.Equals("IsPresent")));
+            var methodCache = new Dictionary<string, MethodInfo>
+            {
+                {
+                    "eq", typeof(string).GetMethod(
+                        "Equals",
+                        BindingFlags.Public | BindingFlags.Static,
+                        null,
+                        new[] {typeof(string), typeof(string), typeof(StringComparison)},
+                        new ParameterModifier[0])
+                },
+                {"compareto", typeof(string).GetMethod("CompareTo", new[] {typeof(string)})},
+                {
+                    "any", typeof(Enumerable).GetMethods(BindingFlags.Public | BindingFlags.Static)
+                        .Single(mi => mi.Name.Equals("Any") && mi.GetParameters().Length == 2)
+                },
+                {
+                    "sw", typeof(FilterHelpers).GetMethod("StartsWith",
+                        BindingFlags.Public | BindingFlags.Static,
+                        null,
+                        new[] {typeof(string), typeof(string)},
+                        new ParameterModifier[0])
+                },
+                {
+                    "ew", typeof(FilterHelpers).GetMethod("EndsWith",
+                        BindingFlags.Public | BindingFlags.Static,
+                        null,
+                        new[] {typeof(string), typeof(string)},
+                        new ParameterModifier[0])
+                },
+                {
+                    "co", typeof(FilterHelpers).GetMethod("Contains",
+                        BindingFlags.Public | BindingFlags.Static,
+                        null,
+                        new[] {typeof(string), typeof(string)},
+                        new ParameterModifier[0])
+                },
+                {
+                    "pr", typeof(FilterHelpers).GetMethods(BindingFlags.Public | BindingFlags.Static)
+                        .Single(mi => mi.Name.Equals("IsPresent"))
+                }
+            };
 
             return methodCache;
         }

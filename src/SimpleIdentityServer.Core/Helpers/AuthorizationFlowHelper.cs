@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Core.Helpers
                     state);
             }
 
-            var record = Constants.MappingResponseTypesToAuthorizationFlows.Keys
+            var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys
                 .SingleOrDefault(k => k.Count == responseTypes.Count && k.All(key => responseTypes.Contains(key)));
             if (record == null)
             {
@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Core.Helpers
                     state);
             }
 
-            return Constants.MappingResponseTypesToAuthorizationFlows[record];
+            return CoreConstants.MappingResponseTypesToAuthorizationFlows[record];
         }
     }
 }

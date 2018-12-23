@@ -29,35 +29,24 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _validateConfirmationCodeAction.Execute(null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _validateConfirmationCodeAction.Execute(null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _validateConfirmationCodeAction.Execute(string.Empty)).ConfigureAwait(false);
         }
         
         [Fact]
         public async Task When_Code_Doesnt_Exist_Then_False_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult((ConfirmationCode)null));
 
-            // ACT
-            var result = await _validateConfirmationCodeAction.Execute("code").ConfigureAwait(false);
-
-            // ARRANGE
-            Assert.False(result);
+                        var result = await _validateConfirmationCodeAction.Execute("code").ConfigureAwait(false);            Assert.False(result);
         }
 
         [Fact]
         public async Task When_Code_Is_Expired_Then_False_Is_Returned()
-        {
-            // ARRANGE
-            var confirmationCode = new ConfirmationCode
+        {            var confirmationCode = new ConfirmationCode
             {
                 ExpiresIn = 10,
                 IssueAt = DateTime.UtcNow.AddDays(-2)
@@ -66,18 +55,14 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult(confirmationCode));
 
-            // ACT
-            var result = await _validateConfirmationCodeAction.Execute("code").ConfigureAwait(false);
+                        var result = await _validateConfirmationCodeAction.Execute("code").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.False(result);
+                        Assert.False(result);
         }
 
         [Fact]
         public async Task When_Code_Is_Not_Expired_Then_True_Is_Returned()
-        {
-            // ARRANGE
-            var confirmationCode = new ConfirmationCode
+        {            var confirmationCode = new ConfirmationCode
             {
                 ExpiresIn = 200,
                 IssueAt = DateTime.UtcNow
@@ -86,11 +71,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult(confirmationCode));
 
-            // ACT
-            var result = await _validateConfirmationCodeAction.Execute("code").ConfigureAwait(false);
+                        var result = await _validateConfirmationCodeAction.Execute("code").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result);
+                        Assert.True(result);
         }
 
         private void InitializeFakeObjects()

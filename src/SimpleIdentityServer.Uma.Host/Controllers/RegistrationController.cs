@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Core.Api.Registration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System.Net;
@@ -7,28 +6,29 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
+    using Shared.Models;
+    using Shared.Repositories;
     using Shared.Responses;
-    using ClientResponse = DTOs.Responses.ClientResponse;
 
     [Route(Constants.RouteValues.Registration)]
     public class RegistrationController : Controller
     {
-        private readonly IRegistrationActions _registerActions;
+        private readonly IClientRepository _repository;
 
-        public RegistrationController(IRegistrationActions registerActions)
+        public RegistrationController(IClientRepository repository)
         {
-            _registerActions = registerActions;
+            _repository = repository;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] ClientResponse client)
+        public async Task<IActionResult> Post([FromBody] Client client)
         {
             if (client == null)
             {
                 return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
-            var result = await _registerActions.PostRegistration(client.ToParameter()).ConfigureAwait(false);
+            var result = await _repository.Insert(client).ConfigureAwait(false);
             return new OkObjectResult(result);
         }
 

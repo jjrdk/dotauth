@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             _oAuthEventSource = oAuthEventSource;
         }
 
-        public async Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client, string issuerName)
+        public async Task<EndpointResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client, string issuerName)
         {
             if (authorizationParameter == null)
             {

@@ -37,19 +37,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
 
         [Fact]
         public async Task When_Passing_No_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateResourceSetAction.Execute(null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _updateResourceSetAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_ResourceSet_Cannot_Be_Updated_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string id = "id";
             var udpateResourceSetParameter = new UpdateResourceSetParameter
             {
@@ -64,8 +59,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<ResourceSet>()))
                 .Returns(() => Task.FromResult(false));
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updateResourceSetAction.Execute(udpateResourceSetParameter)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updateResourceSetAction.Execute(udpateResourceSetParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, udpateResourceSetParameter.Id));
@@ -73,9 +67,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
 
         [Fact]
         public async Task When_A_ResourceSet_Is_Updated_Then_True_Is_Returned()
-        {
-            // ARRANGE
-            const string id = "id";
+        {            const string id = "id";
             InitializeFakeObjects();
             var udpateResourceSetParameter = new UpdateResourceSetParameter
             {
@@ -90,11 +82,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<ResourceSet>()))
                 .Returns(Task.FromResult(true));
 
-            // ACT
-            var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter).ConfigureAwait(false);
+                        var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter).ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.True(result);
+                        Assert.True(result);
 
         }
 

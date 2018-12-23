@@ -35,26 +35,19 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
 
         [Fact]
         public async Task When_Passing_Null_Parameter_To_PostIntrospection_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _introspectionActions.PostIntrospection(null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _introspectionActions.PostIntrospection(null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public void When_Passing_Valid_Parameter_To_PostIntrospection_Then_Operation_Is_Called()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var parameter = new IntrospectionParameter();
 
-            // ACT
-            _introspectionActions.PostIntrospection(parameter, null, null);
+                        _introspectionActions.PostIntrospection(parameter, null, null);
 
-            // ASSERT
-            _postIntrospectionActionStub.Verify(p => p.Execute(It.IsAny<IntrospectionParameter>(),
+                        _postIntrospectionActionStub.Verify(p => p.Execute(It.IsAny<IntrospectionParameter>(),
                 It.IsAny<AuthenticationHeaderValue>(), null));
         }
 

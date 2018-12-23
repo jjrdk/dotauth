@@ -16,10 +16,10 @@ namespace SimpleIdentityServer.Core.Errors
 {
     public static class ErrorCodes
     {
-        public const string InternalErrorCode = "internal_error";
-        public const string InvalidParameterCode = "invalid_parameter";
+        public static string UnhandledExceptionCode = "unhandled_error";
+        public static string InternalErrorCode = "internal_error";
+        public static string InvalidParameterCode = "invalid_parameter";
         public static string TheSectorIdentifierUrisCannotBeRetrieved = "the sector identifier uris cannot be retrieved";
-        public static string UnhandledExceptionCode = "unhandled_exception";
         public static string InvalidRequestCode = "invalid_request";
         public static string InvalidClient = "invalid_client";
         public static string InvalidGrant = "invalid_grant";

@@ -21,6 +21,10 @@ namespace SimpleIdentityServer.Shared.Serializers
     using System.Reflection;
     using System.Runtime.Serialization;
 
+    internal class SharedErrorDescriptions{
+        public const string TheRedirectionUriIsNotWellFormed = "Based on the RFC-3986 the redirection-uri is not well formed";
+    }
+
     public class ParamSerializer
     {
         public string Serialize(object obj)
@@ -55,10 +59,24 @@ namespace SimpleIdentityServer.Shared.Serializers
                             type = type.GetGenericArguments()[0];
                         }
 
-                        var value = type.IsEnum
-                            ? Enum.Parse(type, (string)stringValue, true)
-                            : stringValue;
-
+                        object value = stringValue;
+                        if (typeof(Uri) == type)
+                        {
+                            try
+                            {
+                                value = new Uri(stringValue.ToString());
+                            }
+                            catch (Exception e)
+                            {
+                                throw new Exception(
+                                    SharedErrorDescriptions.TheRedirectionUriIsNotWellFormed,
+                                    e);
+                            }
+                        }
+                        else if (type.IsEnum)
+                        {
+                            value = Enum.Parse(type, (string) stringValue, true);
+                        }
 
                         property.SetValue(
                             instance,

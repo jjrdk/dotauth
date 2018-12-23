@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,24 +11,24 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
-
-using Moq;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
-using SimpleIdentityServer.Core.Jwt.Encrypt;
-using SimpleIdentityServer.Core.Jwt.Signature;
-using SimpleIdentityServer.Manager.Core.Api.Jwe.Actions;
-using SimpleIdentityServer.Manager.Core.Errors;
-using SimpleIdentityServer.Manager.Core.Exceptions;
-using SimpleIdentityServer.Manager.Core.Helpers;
-using SimpleIdentityServer.Manager.Core.Parameters;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
 {
+    using Moq;
+    using SimpleIdentityServer.Core.Jwt.Encrypt;
+    using SimpleIdentityServer.Core.Jwt.Signature;
+    using System;
+    using System.Threading.Tasks;
+    using Xunit;
+
+    using Shared;
+    using Shared.Requests;
+    using SimpleIdentityServer.Core.Api.Jwe.Actions;
+    using SimpleIdentityServer.Core.Errors;
+    using SimpleIdentityServer.Core.Exceptions;
+    using SimpleIdentityServer.Core.Helpers;
+    using SimpleIdentityServer.Core.Parameters;
+
     public class GetJweInformationActionFixture
     {
         private Mock<IJweParser> _jweParserStub;
@@ -39,9 +38,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Are_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var getJweParameter = new GetJweParameter();
             var getJweParameterWithJwe = new GetJweParameter
             {
@@ -56,9 +53,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
 
         [Fact]
         public async Task When_Url_Is_Not_Well_Formed_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string url = "not_well_formed";
             var getJweParameter = new GetJweParameter
             {
@@ -67,16 +62,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
             };
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _getJweInformationAction.ExecuteAsync(getJweParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _getJweInformationAction.ExecuteAsync(getJweParameter).ConfigureAwait(false)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, url));
         }
 
         [Fact]
         public async Task When_Header_Is_Not_Correct_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var getJweParameter = new GetJweParameter
             {
                 Jwe = "jwe",
@@ -86,16 +79,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
                 .Returns(() => null);
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _getJweInformationAction.ExecuteAsync(getJweParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _getJweInformationAction.ExecuteAsync(getJweParameter).ConfigureAwait(false)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheTokenIsNotAValidJwe);
         }
 
         [Fact]
         public async Task When_JsonWebKey_Cannot_Be_Extracted_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var jweProtectedHeader = new JweProtectedHeader
             {
                 Kid = "kid"
@@ -111,16 +102,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
                 .Returns(Task.FromResult<JsonWebKey>(null));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _getJweInformationAction.ExecuteAsync(getJweParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _getJweInformationAction.ExecuteAsync(getJweParameter).ConfigureAwait(false)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, jweProtectedHeader.Kid, getJweParameter.Url));
         }
 
         [Fact]
         public async Task When_No_Content_Can_Be_Extracted_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var jweProtectedHeader = new JweProtectedHeader
             {
                 Kid = "kid"
@@ -139,16 +128,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
                 .Returns(string.Empty);
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _getJweInformationAction.ExecuteAsync(getJweParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _getJweInformationAction.ExecuteAsync(getJweParameter).ConfigureAwait(false)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheContentCannotBeExtractedFromJweToken);
         }
 
         [Fact]
         public async Task When_Decrypting_Jwe_With_Symmetric_Key_Then_Result_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string content = "jws";
             var jweProtectedHeader = new JweProtectedHeader
             {
@@ -172,7 +159,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
                 .Returns(jwsProtectedHeader);
 
             // ACT & ASSERTS
-            var result = await _getJweInformationAction.ExecuteAsync(getJweParameter);
+            var result = await _getJweInformationAction.ExecuteAsync(getJweParameter).ConfigureAwait(false);
             Assert.True(result.IsContentJws);
             Assert.True(result.Content == content);
         }

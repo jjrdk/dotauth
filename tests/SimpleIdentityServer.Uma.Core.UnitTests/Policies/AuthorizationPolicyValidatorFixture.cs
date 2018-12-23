@@ -37,9 +37,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 
         [Fact]
         public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACTS & ASSERTS
             Assert.ThrowsAsync<ArgumentNullException>(() => _authorizationPolicyValidator.IsAuthorized(null, null, null));
@@ -48,9 +46,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 
         [Fact]
         public async Task When_ResourceSet_Doesnt_Exist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            var ticket = new Ticket
+        {            var ticket = new Ticket
             {
                 Lines = new List<TicketLine>
                 {
@@ -65,8 +61,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((ResourceSet)null));
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.SomeResourcesDontExist);
@@ -74,9 +69,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 
         [Fact]
         public async Task When_Policy_Doesnt_Exist_Then_Authorized_Is_Returned()
-        {
-            // ARRANGE
-            var ticket = new Ticket
+        {            var ticket = new Ticket
             {
                 Lines = new List<TicketLine>
                 {
@@ -97,18 +90,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(resourceSet));
 
-            // ACT
-            var result = await _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null).ConfigureAwait(false);
+                        var result = await _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.Authorized);
+                        Assert.True(result.Type == AuthorizationPolicyResultEnum.Authorized);
         }
 
         [Fact]
         public async Task When_AuthorizationPolicy_Is_Correct_Then_Authorized_Is_Returned()
-        {
-            // ARRANGE
-            var ticket = new Ticket
+        {            var ticket = new Ticket
             {
                 Lines = new List<TicketLine>
                 {
@@ -139,11 +128,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                     Type = AuthorizationPolicyResultEnum.Authorized
                 }));
 
-            // ACT
-            var result = await _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null).ConfigureAwait(false);
+                        var result = await _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.Authorized);
+                        Assert.True(result.Type == AuthorizationPolicyResultEnum.Authorized);
         }
 
         private void InitializeFakeObjects()

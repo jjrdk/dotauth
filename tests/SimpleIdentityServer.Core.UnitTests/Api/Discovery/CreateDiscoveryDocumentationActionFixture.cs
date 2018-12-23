@@ -17,9 +17,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
 
         [Fact]
         public async Task When_Expose_Two_Scopes_Then_DiscoveryDocument_Is_Correct()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string firstScopeName = "firstScopeName";
             const string secondScopeName = "secondScopeName";
             const string notExposedScopeName = "notExposedScopeName";
@@ -48,16 +46,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
                     Code = "claim"
                 }
             };
-            _scopeRepositoryStub.Setup(s => s.GetAllAsync())
+            _scopeRepositoryStub.Setup(s => s.GetAll())
                 .Returns(Task.FromResult(scopes));
             _claimRepositoryStub.Setup(c => c.GetAllAsync())
                 .Returns(() => Task.FromResult(claims));
 
-            // ACT
-            var discoveryInformation = await _createDiscoveryDocumentationAction.CreateDiscoveryInformation("http://test").ConfigureAwait(false);
+                        var discoveryInformation = await _createDiscoveryDocumentationAction.CreateDiscoveryInformation("http://test").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(discoveryInformation);
+                        Assert.NotNull(discoveryInformation);
             Assert.True(discoveryInformation.ScopesSupported.Length == 2);
             Assert.Contains(firstScopeName, discoveryInformation.ScopesSupported);
             Assert.Contains(secondScopeName, discoveryInformation.ScopesSupported);

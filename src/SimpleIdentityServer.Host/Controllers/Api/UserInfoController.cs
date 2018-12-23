@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using System.Threading.Tasks;
     using Core;
 
-    [Route(Core.Constants.EndPoints.UserInfo)]
+    [Route(CoreConstants.EndPoints.UserInfo)]
     public class UserInfoController : Controller
     {
         private readonly IUserInfoActions _userInfoActions;
@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         {
             const string contentTypeName = "Content-Type";
             const string contentTypeValue = "application/x-www-form-urlencoded";
-            string accessTokenName = Core.Constants.StandardAuthorizationResponseNames.AccessTokenName;
+            var accessTokenName = CoreConstants.StandardAuthorizationResponseNames.AccessTokenName;
             var emptyResult = string.Empty;
             if (Request.Headers == null
                 || !Request.Headers.TryGetValue(contentTypeName, out var values))
@@ -139,7 +139,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         /// <returns></returns>
         private string GetAccessTokenFromQueryString()
         {
-            string accessTokenName = Core.Constants.StandardAuthorizationResponseNames.AccessTokenName;
+            var accessTokenName = CoreConstants.StandardAuthorizationResponseNames.AccessTokenName;
             var query = Request.Query;
             var record = query.FirstOrDefault(q => q.Key == accessTokenName);
             if (record.Equals(default(KeyValuePair<string, StringValues>)))

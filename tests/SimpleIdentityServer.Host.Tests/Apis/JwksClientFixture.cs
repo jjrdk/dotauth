@@ -47,12 +47,10 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Requesting_JWKS_Then_List_Is_Returned()
         {
-            // ACT 
-            var jwks = await _jwksClient.ResolveAsync(new Uri(baseUrl + "/.well-known/openid-configuration"))
+                        var jwks = await _jwksClient.ResolveAsync(new Uri(baseUrl + "/.well-known/openid-configuration"))
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(jwks);
+                        Assert.NotNull(jwks);
         }
 
         [Fact]
@@ -61,8 +59,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             //_httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var jwsParser = new JwsParserFactory().BuildJwsParser();
 
-            // ACT
-            var result =
+                        var result =
                 await new TokenClient(
                         TokenCredentials.FromClientCredentials("client", "client"),
                         TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
@@ -74,8 +71,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var jwks = await _jwksClient.ResolveAsync(new Uri(baseUrl + "/.well-known/openid-configuration"))
                 .ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
             Assert.False(result.ContainsError);
             Assert.NotEmpty(result.Content.AccessToken);
             var accessToken = result.Content.AccessToken;
@@ -85,12 +81,9 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
         [Fact]
         public async Task When_Get_Access_Token_And_Rotate_JsonWebKeySet_Then_Signature_Is_Not_Correct()
-        {
-            // ARRANGE
-            var jwsParser = new JwsParserFactory().BuildJwsParser();
+        {            var jwsParser = new JwsParserFactory().BuildJwsParser();
 
-            // ACT
-            var result = await new TokenClient(
+                        var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _httpClientFactoryStub,
@@ -107,8 +100,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var jwks = await _jwksClient.ResolveAsync(new Uri(baseUrl + "/.well-known/openid-configuration"))
                 .ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
             Assert.False(result.ContainsError);
             Assert.NotEmpty(result.Content.AccessToken);
             var accessToken = result.Content.AccessToken;

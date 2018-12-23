@@ -33,7 +33,7 @@
                 return false;
             }
 
-            Type valueType = typeof(T);
+            var valueType = typeof(T);
 
             if (valueType == typeof(string))
             {

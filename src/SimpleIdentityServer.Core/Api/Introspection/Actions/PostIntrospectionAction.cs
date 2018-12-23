@@ -75,15 +75,15 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
             }
 
             // 3. Retrieve the token type hint
-            var tokenTypeHint = Constants.StandardTokenTypeHintNames.AccessToken;
-            if (Constants.AllStandardTokenTypeHintNames.Contains(introspectionParameter.TokenTypeHint))
+            var tokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken;
+            if (CoreConstants.AllStandardTokenTypeHintNames.Contains(introspectionParameter.TokenTypeHint))
             {
                 tokenTypeHint = introspectionParameter.TokenTypeHint;
             }
 
             // 4. Trying to fetch the information about the access_token  || refresh_token
             GrantedToken grantedToken = null;
-            if (tokenTypeHint == Constants.StandardTokenTypeHintNames.AccessToken)
+            if (tokenTypeHint == CoreConstants.StandardTokenTypeHintNames.AccessToken)
             {
                 grantedToken = await _tokenStore.GetAccessToken(introspectionParameter.Token).ConfigureAwait(false);
                 if (grantedToken == null)
@@ -125,8 +125,8 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
                 var audiencesArr = grantedToken.IdTokenPayLoad.GetArrayClaim(StandardClaimNames.Audiences);
                 var issuedAt = grantedToken.IdTokenPayLoad.Iat;
                 var issuer = grantedToken.IdTokenPayLoad.Issuer;
-                var subject = grantedToken.IdTokenPayLoad.GetStringClaim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject);
-                var userName = grantedToken.IdTokenPayLoad.GetStringClaim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Name);
+                var subject = grantedToken.IdTokenPayLoad.GetStringClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject);
+                var userName = grantedToken.IdTokenPayLoad.GetStringClaim(JwtConstants.StandardResourceOwnerClaimNames.Name);
                 if (audiencesArr.Any())
                 {
                     audiences = string.Join(" ", audiencesArr);

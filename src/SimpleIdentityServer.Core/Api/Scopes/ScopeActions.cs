@@ -21,16 +21,6 @@ namespace SimpleIdentityServer.Core.Api.Scopes
     using Shared.Parameters;
     using Shared.Results;
 
-    public interface IScopeActions
-    {
-        Task<bool> DeleteScope(string scopeName);
-        Task<Scope> GetScope(string scopeName);
-        Task<ICollection<Scope>> GetScopes();
-        Task<bool> AddScope(Scope scope);
-        Task<bool> UpdateScope(Scope scope);
-        Task<SearchScopeResult> Search(SearchScopesParameter parameter);
-    }
-
     internal class ScopeActions : IScopeActions
     {
         private readonly IDeleteScopeOperation _deleteScopeOperation;

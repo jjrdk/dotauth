@@ -19,19 +19,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
 
         [Fact]
         public async Task When_Passing_No_Translation_Codes_Then_Exception_Is_Raised()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _translationManager.GetTranslationsAsync(string.Empty, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _translationManager.GetTranslationsAsync(string.Empty, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Passing_No_Preferred_Language_Then_Codes_Are_Translated_And_Default_Language_Is_Used()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var translationCodes = new List<string>
             {
                 "translation_code"
@@ -45,19 +40,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
                 It.IsAny<string>()))
                 .Returns(Task.FromResult(translation)); ;
 
-            // ACT
-            var result = await _translationManager.GetTranslationsAsync(string.Empty, translationCodes).ConfigureAwait(false);
+                        var result = await _translationManager.GetTranslationsAsync(string.Empty, translationCodes).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.Count == 1);
+                        Assert.True(result.Count == 1);
             Assert.True(result.First().Key == translation.Code && result.First().Value == translation.Value);
         }
 
         [Fact]
         public async Task When_Passing_No_Preferred_Language_And_There_Is_No_Translation_Then_Codes_Are_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var translationCodes = new List<string>
             {
                 "translation_code"
@@ -67,11 +58,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
                 It.IsAny<string>()))
                 .Returns(Task.FromResult((Translation)null)); 
 
-            // ACT
-            var result = await _translationManager.GetTranslationsAsync(string.Empty, translationCodes).ConfigureAwait(false);
+                        var result = await _translationManager.GetTranslationsAsync(string.Empty, translationCodes).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.Count == 1);
+                        Assert.True(result.Count == 1);
             Assert.True(result.First().Key == "translation_code" 
                 && result.First().Value == "[translation_code]");
         }

@@ -1,6 +1,6 @@
 ﻿namespace SimpleIdentityServer.Core.Repositories
 {
-    using SimpleIdentityServer.Core.Extensions;
+    using Extensions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -80,7 +80,7 @@
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(id), "The parameter login is missing");
             }
 
             var user = _users.FirstOrDefault(u => u.Id == id);

@@ -54,12 +54,12 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
 
             if (string.IsNullOrEmpty(resourceOwner.Id))
             {
-                throw new ArgumentNullException(nameof(resourceOwner.Id));
+                throw new ArgumentNullException(nameof(resourceOwner.Id), "The parameter login is missing");
             }
 
             if (string.IsNullOrWhiteSpace(resourceOwner.Password))
             {
-                throw new ArgumentNullException(nameof(resourceOwner.Password));
+                throw new ArgumentNullException(nameof(resourceOwner.Password), "The parameter password is missing");
             }
 
             // 1. Check the resource owner already exists.

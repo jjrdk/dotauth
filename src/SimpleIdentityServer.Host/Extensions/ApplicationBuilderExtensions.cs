@@ -14,15 +14,15 @@
 
 namespace SimpleIdentityServer.Host.Extensions
 {
-    using System;
     using Logging;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using MiddleWare;
+    using System;
 
-    public static class ApplicationBuilderExtensions 
+    public static class ApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseManagerApi(this IApplicationBuilder app)
         {
@@ -33,25 +33,26 @@ namespace SimpleIdentityServer.Host.Extensions
 
             app.UseSimpleIdentityServerManagerExceptionHandler(new ExceptionHandlerMiddlewareOptions
             {
-               // ManagerEventSource = (IManagerEventSource)app.ApplicationServices.GetService(typeof(IManagerEventSource))
+                SimpleIdentityServerEventSource = app.ApplicationServices.GetService<IOpenIdEventSource>()
+                // ManagerEventSource = (IManagerEventSource)app.ApplicationServices.GetService(typeof(IManagerEventSource))
             });
             return app;
         }
 
-        public static void UseOpenIdApi(this IApplicationBuilder app, Action<IdentityServerOptions> optionsCallback, ILoggerFactory loggerFactory) 
+        public static void UseOpenIdApi(this IApplicationBuilder app, Action<IdentityServerOptions> optionsCallback, ILoggerFactory loggerFactory)
         {
-            if (optionsCallback == null) 
+            if (optionsCallback == null)
             {
-                throw new ArgumentNullException(nameof(optionsCallback));    
+                throw new ArgumentNullException(nameof(optionsCallback));
             }
-            
+
             var hostingOptions = new IdentityServerOptions();
             optionsCallback(hostingOptions);
             app.UseOpenIdApi(hostingOptions,
                 loggerFactory);
         }
 
-        public static void UseOpenIdApi(this IApplicationBuilder app, IdentityServerOptions options, ILoggerFactory loggerFactory) 
+        public static void UseOpenIdApi(this IApplicationBuilder app, IdentityServerOptions options, ILoggerFactory loggerFactory)
         {
             UseOpenIdApi(app, options);
         }

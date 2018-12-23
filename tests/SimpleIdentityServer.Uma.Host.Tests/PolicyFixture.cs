@@ -38,18 +38,14 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Add_Policy_And_Pass_No_ResourceIds_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT
-            var response = await _policyClient.AddByResolution(new PostPolicy
+                        var response = await _policyClient.AddByResolution(new PostPolicy
             {
                 ResourceSetIds = null
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(response);
+                        Assert.NotNull(response);
             Assert.True(response.ContainsError);
             Assert.Equal("invalid_request", response.Error.Error);
             Assert.Equal("the parameter resource_set_ids needs to be specified", response.Error.ErrorDescription);
@@ -57,13 +53,10 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Add_Policy_And_Pass_No_Rules_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
 
-            // ACT
-            var response = await _policyClient.AddByResolution(new PostPolicy
+                        var response = await _policyClient.AddByResolution(new PostPolicy
             {
                 ResourceSetIds = new List<string>
                     {
@@ -71,8 +64,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(response);
+                        Assert.NotNull(response);
             Assert.True(response.ContainsError);
             Assert.Equal("invalid_request", response.Error.Error);
             Assert.Equal("the parameter rules needs to be specified", response.Error.ErrorDescription);
@@ -80,13 +72,10 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Add_Policy_And_ResourceOwner_Doesnt_Exists_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
 
-            // ACT
-            var response = await _policyClient.AddByResolution(new PostPolicy
+                        var response = await _policyClient.AddByResolution(new PostPolicy
             {
                 ResourceSetIds = new List<string>
                     {
@@ -101,8 +90,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(response);
+                        Assert.NotNull(response);
             Assert.True(response.ContainsError);
             Assert.Equal("invalid_resource_set_id", response.Error.Error);
             Assert.Equal("resource set resource_id doesn't exist", response.Error.ErrorDescription);
@@ -110,9 +98,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Add_Policy_And_Scope_Doesnt_Exists_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             var addResponse = await _resourceSetClient.AddByResolution(new PostResourceSet
             {
@@ -123,8 +109,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ACT
-            var response = await _policyClient.AddByResolution(new PostPolicy
+                        var response = await _policyClient.AddByResolution(new PostPolicy
             {
                 ResourceSetIds = new List<string>
                     {
@@ -142,8 +127,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(response);
+                        Assert.NotNull(response);
             Assert.True(response.ContainsError);
             Assert.Equal("invalid_scope", response.Error.Error);
             Assert.Equal("one or more scopes don't belong to a resource set", response.Error.ErrorDescription);
@@ -151,16 +135,12 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Get_Unknown_Policy_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
 
-            // ACT
-            var response = await _policyClient.GetByResolution("unknown", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        var response = await _policyClient.GetByResolution("unknown", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(response);
+                        Assert.NotNull(response);
             Assert.True(response.ContainsError);
             Assert.Equal("not_found", response.Error.Error);
             Assert.Equal("policy cannot be found", response.Error.ErrorDescription);
@@ -168,19 +148,15 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Update_Policy_And_No_Id_Is_Passed_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
 
-            // ACT
-            var response = await _policyClient.UpdateByResolution(new PutPolicy
+                        var response = await _policyClient.UpdateByResolution(new PutPolicy
             {
 
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(response);
+                        Assert.NotNull(response);
             Assert.True(response.ContainsError);
             Assert.Equal("invalid_request", response.Error.Error);
             Assert.Equal("the parameter id needs to be specified", response.Error.ErrorDescription);
@@ -188,19 +164,15 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Update_Policy_And_No_Rules_Is_Passed_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
 
-            // ACT
-            var response = await _policyClient.UpdateByResolution(new PutPolicy
+                        var response = await _policyClient.UpdateByResolution(new PutPolicy
             {
                 PolicyId = "policy"
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(response);
+                        Assert.NotNull(response);
             Assert.True(response.ContainsError);
             Assert.Equal("invalid_request", response.Error.Error);
             Assert.Equal("the parameter rules needs to be specified", response.Error.ErrorDescription);
@@ -208,13 +180,10 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Update_Unknown_Policy_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
 
-            // ACT
-            var response = await _policyClient.UpdateByResolution(new PutPolicy
+                        var response = await _policyClient.UpdateByResolution(new PutPolicy
             {
                 PolicyId = "policy",
                 Rules = new List<PutPolicyRule>
@@ -226,8 +195,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(response);
+                        Assert.NotNull(response);
             Assert.True(response.ContainsError);
             Assert.Equal("not_found", response.Error.Error);
             Assert.Equal("policy cannot be found", response.Error.ErrorDescription);
@@ -235,9 +203,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Update_Policy_And_Scope_Doesnt_Exist_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
             {
@@ -274,8 +240,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ACT
-            var response = await _policyClient.UpdateByResolution(new PutPolicy
+                        var response = await _policyClient.UpdateByResolution(new PutPolicy
             {
                 PolicyId = addResponse.Content.PolicyId,
                 Rules = new List<PutPolicyRule>
@@ -290,8 +255,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(response);
+                        Assert.NotNull(response);
             Assert.True(response.ContainsError);
             Assert.Equal("invalid_scope", response.Error.Error);
             Assert.Equal("one or more scopes don't belong to a resource set", response.Error.ErrorDescription);
@@ -299,16 +263,12 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Remove_Unknown_Policy_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
 
-            // ACT
-            var response = await _policyClient.DeleteByResolution("unknown", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        var response = await _policyClient.DeleteByResolution("unknown", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(response);
+                        Assert.NotNull(response);
             Assert.True(response.ContainsError);
             Assert.Equal("not_found", response.Error.Error);
             Assert.Equal("policy cannot be found", response.Error.ErrorDescription);
@@ -316,19 +276,15 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Add_Resource_And_Pass_No_Resources_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
 
-            // ACT
-            var response = await _policyClient.AddResourceByResolution("id", new PostAddResourceSet
+                        var response = await _policyClient.AddResourceByResolution("id", new PostAddResourceSet
             {
                 ResourceSets = null
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(response);
+                        Assert.NotNull(response);
             Assert.True(response.ContainsError);
             Assert.Equal("invalid_request", response.Error.Error);
             Assert.Equal("the parameter resources needs to be specified", response.Error.ErrorDescription);
@@ -336,13 +292,10 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Add_Resource_And_Pass_Unknown_Policy_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
 
-            // ACT
-            var response = await _policyClient.AddResourceByResolution("id", new PostAddResourceSet
+                        var response = await _policyClient.AddResourceByResolution("id", new PostAddResourceSet
             {
                 ResourceSets = new List<string>
                     {
@@ -350,17 +303,14 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(response.ContainsError);
+                        Assert.True(response.ContainsError);
             Assert.Equal("not_found", response.Error.Error);
             Assert.Equal("policy cannot be found", response.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task When_Add_Resource_And_ResourceSet_Is_Unknown_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
             {
@@ -389,8 +339,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ACT
-            var response = await _policyClient.AddResourceByResolution(addPolicy.Content.PolicyId, new PostAddResourceSet
+                        var response = await _policyClient.AddResourceByResolution(addPolicy.Content.PolicyId, new PostAddResourceSet
             {
                 ResourceSets = new List<string>
                     {
@@ -398,24 +347,19 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.True(response.ContainsError);
+                        Assert.True(response.ContainsError);
             Assert.Equal("invalid_resource_set_id", response.Error.Error);
             Assert.Equal("resource set resource doesn't exist", response.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task When_Remove_Resource_And_Pass_Unknown_Policy_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
 
-            // ACT
-            var response = await _policyClient.DeleteResourceByResolution("unknown", "resource_id", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        var response = await _policyClient.DeleteResourceByResolution("unknown", "resource_id", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(response);
+                        Assert.NotNull(response);
             Assert.True(response.ContainsError);
             Assert.Equal("not_found", response.Error.Error);
             Assert.Equal("policy cannot be found", response.Error.ErrorDescription);
@@ -423,9 +367,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Remove_Resource_And_Pass_Unknown_Resource_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             var addResponse = await _resourceSetClient.AddByResolution(new PostResourceSet
             {
@@ -454,11 +396,9 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ACT
-            var response = await _policyClient.DeleteResourceByResolution(addPolicy.Content.PolicyId, "resource_id", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        var response = await _policyClient.DeleteResourceByResolution(addPolicy.Content.PolicyId, "resource_id", baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(response);
+                        Assert.NotNull(response);
             Assert.True(response.ContainsError);
             Assert.Equal("invalid_resource_set_id", response.Error.Error);
             Assert.Equal("resource set resource_id doesn't exist", response.Error.ErrorDescription);
@@ -466,9 +406,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Adding_Policy_Then_Information_Can_Be_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             var addResponse = await _resourceSetClient.AddByResolution(new PostResourceSet
             {
@@ -479,8 +417,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ACT
-            var response = await _policyClient.AddByResolution(new PostPolicy
+                        var response = await _policyClient.AddByResolution(new PostPolicy
             {
                 Rules = new List<PostPolicyRule>
                     {
@@ -508,8 +445,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var information = await _policyClient.GetByResolution(response.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(response);
+                        Assert.NotNull(response);
             Assert.False(string.IsNullOrWhiteSpace(response.Content.PolicyId));
             Assert.NotNull(information);
             Assert.True(information.Content.Rules.Count() == 1);
@@ -522,9 +458,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Getting_All_Policies_Then_Identifiers_Are_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
             {
@@ -561,19 +495,15 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ACT
-            var response = await _policyClient.GetAllByResolution(baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        var response = await _policyClient.GetAllByResolution(baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(response);
+                        Assert.NotNull(response);
             Assert.Contains(response.Content, r => r == addPolicy.Content.PolicyId);
         }
 
         [Fact]
         public async Task When_Removing_Policy_Then_Information_Doesnt_Exist()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
             {
@@ -610,21 +540,17 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ACT
-            var isRemoved = await _policyClient.DeleteByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        var isRemoved = await _policyClient.DeleteByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var ex = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.False(isRemoved.ContainsError);
+                        Assert.False(isRemoved.ContainsError);
             Assert.True(ex.ContainsError);
             Assert.NotNull(ex);
         }
 
         [Fact]
         public async Task When_Adding_Resource_To_Policy_Then_Changes_Are_Persisted()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             var firstResource = await _resourceSetClient.AddByResolution(new PostResourceSet
             {
@@ -669,8 +595,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ACT
-            var isUpdated = await _policyClient.AddResourceByResolution(addPolicy.Content.PolicyId, new PostAddResourceSet
+                        var isUpdated = await _policyClient.AddResourceByResolution(addPolicy.Content.PolicyId, new PostAddResourceSet
             {
                 ResourceSets = new List<string>
                     {
@@ -679,17 +604,14 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var information = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.False(isUpdated.ContainsError);
+                        Assert.False(isUpdated.ContainsError);
             Assert.NotNull(information);
             Assert.True(information.Content.ResourceSetIds.Count() == 2 && information.Content.ResourceSetIds.All(r => r == firstResource.Content.Id || r == secondResource.Content.Id));
         }
 
         [Fact]
         public async Task When_Removing_Resource_From_Policy_Then_Changes_Are_Persisted()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             var firstResource = await _resourceSetClient.AddByResolution(new PostResourceSet
             {
@@ -735,21 +657,17 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     }
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ACT
-            var isUpdated = await _policyClient.DeleteResourceByResolution(addPolicy.Content.PolicyId, secondResource.Content.Id, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        var isUpdated = await _policyClient.DeleteResourceByResolution(addPolicy.Content.PolicyId, secondResource.Content.Id, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var information = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.False(isUpdated.ContainsError);
+                        Assert.False(isUpdated.ContainsError);
             Assert.NotNull(information);
             Assert.True(information.Content.ResourceSetIds.Count() == 1 && information.Content.ResourceSetIds.First() == firstResource.Content.Id);
         }
 
         [Fact]
         public async Task When_Updating_Policy_Then_Changes_Are_Persisted()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             var firstResource = await _resourceSetClient.AddByResolution(new PostResourceSet
             {
@@ -798,8 +716,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var firstInfo = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ACT
-            var isUpdated = await _policyClient.UpdateByResolution(new PutPolicy
+                        var isUpdated = await _policyClient.UpdateByResolution(new PutPolicy
             {
                 PolicyId = firstInfo.Content.Id,
                 Rules = new List<PutPolicyRule>
@@ -831,8 +748,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             var updatedInformation = await _policyClient.GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
 
-            // ASSERTS
-            Assert.False(isUpdated.ContainsError);
+                        Assert.False(isUpdated.ContainsError);
             Assert.NotNull(updatedInformation);
             Assert.True(updatedInformation.Content.Rules.Count() == 1);
             var rule = updatedInformation.Content.Rules.First();

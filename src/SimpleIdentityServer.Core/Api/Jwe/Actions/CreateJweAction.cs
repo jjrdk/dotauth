@@ -22,11 +22,6 @@ namespace SimpleIdentityServer.Core.Api.Jwe.Actions
     using Jwt.Encrypt;
     using Parameters;
 
-    public interface ICreateJweAction
-    {
-        Task<string> ExecuteAsync(CreateJweParameter createJweParameter);
-    }
-
     public class CreateJweAction : ICreateJweAction
     {
         private readonly IJweGenerator _jweGenerator;

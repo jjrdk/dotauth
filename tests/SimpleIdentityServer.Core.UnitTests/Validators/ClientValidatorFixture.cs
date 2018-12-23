@@ -32,64 +32,55 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         [Fact]
         public void When_Client_Doesnt_Contain_RedirectionUri_Then_EmptyArray_Is_Returned()
         {
-            // ARRANGE
             InitializeMockingObjects();
 
             // ACTS & ASSERTS
             Assert.Empty(_clientValidator.GetRedirectionUrls(null, null));
             Assert.Empty(_clientValidator.GetRedirectionUrls(new Client(), null));
-            Assert.Empty(_clientValidator.GetRedirectionUrls(new Client(), "url"));
+            Assert.Empty(_clientValidator.GetRedirectionUrls(new Client(), new Uri("https://url")));
             Assert.Empty(_clientValidator.GetRedirectionUrls(new Client
-            {
-                RedirectionUrls = new List<string>()
-            }, "url"));
+                {
+                    RedirectionUrls = new List<Uri>()
+                },
+                new Uri("https://url")));
         }
 
         [Fact]
         public void When_Checking_RedirectionUri_Then_Uri_Is_Returned()
         {
-            // ARRANGE
-            const string url = "url";
+            var url = new Uri("https://url/");
             var client = new Client
             {
-                RedirectionUrls = new List<string>
+                RedirectionUrls = new List<Uri>
                 {
                     url
                 }
             };
             InitializeMockingObjects();
 
-            // ACT
             var result = _clientValidator.GetRedirectionUrls(client, url);
 
-            // ASSERT
-            Assert.True(result.First() == url);
+            Assert.Equal(url, result.First());
         }
 
         [Fact]
         public void When_Passing_Null_Parameter_To_ValidateGrantType_Then_False_Is_Returned()
         {
-            // ARRANGE
             InitializeMockingObjects();
 
-            // ACT
             var result = _clientValidator.CheckGrantTypes(null, GrantType.authorization_code);
 
-            // ASSERTS
             Assert.False(result);
         }
 
         [Fact]
         public void When_Client_Doesnt_Have_GrantType_Then_AuthorizationCode_Is_Assigned()
         {
-            // ARRANGE
             InitializeMockingObjects();
             var client = new Client();
 
-            // ACT
             var result = _clientValidator.CheckGrantTypes(client, GrantType.authorization_code);
 
-            // ASSERTS
             Assert.True(result);
             Assert.Contains(GrantType.authorization_code, client.GrantTypes);
         }
@@ -97,7 +88,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         [Fact]
         public void When_Checking_Client_Has_Implicit_Grant_Type_Then_True_Is_Returned()
         {
-            // ARRANGE
             InitializeMockingObjects();
             var client = new Client
             {
@@ -107,17 +97,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 }
             };
 
-            // ACT
             var result = _clientValidator.CheckGrantTypes(client, GrantType.@implicit);
 
-            // ASSERTS
             Assert.True(result);
         }
 
         [Fact]
         public void When_Passing_Null_Client_Then_False_Is_Returned()
         {
-            // ARRANGE
             InitializeMockingObjects();
 
             // ACTS & ASSERTS
@@ -127,7 +114,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         [Fact]
         public void When_Passing_Null_GrantTypes_Then_True_Is_Returned()
         {
-            // ARRANGE
             InitializeMockingObjects();
 
             // ACTS & ASSERTS
@@ -137,7 +123,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         [Fact]
         public void When_Checking_Client_Grant_Types_Then_True_Is_Returned()
         {
-            // ARRANGE
             InitializeMockingObjects();
             var client = new Client
             {
@@ -156,7 +141,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         [Fact]
         public void When_Checking_Client_Grant_Types_Then_False_Is_Returned()
         {
-            // ARRANGE
             InitializeMockingObjects();
             var client = new Client
             {
@@ -175,7 +159,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         [Fact]
         public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
-            // ARRANGE
             InitializeMockingObjects();
 
             // ACTS & ASSERTS
@@ -186,16 +169,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         [Fact]
         public void When_RequirePkce_Is_False_Then_True_Is_Returned()
         {
-            // ARRANGE
             InitializeMockingObjects();
 
-            // ACT
             var result = _clientValidator.CheckPkce(new Client
             {
                 RequirePkce = false
             }, null, new AuthorizationCode());
 
-            // ASSERT
             Assert.True(result);
 
         }
@@ -203,10 +183,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         [Fact]
         public void When_Plain_CodeChallenge_Is_Not_Correct_Then_False_Is_Returned()
         {
-            // ARRANGE
             InitializeMockingObjects();
 
-            // ACT
             var result = _clientValidator.CheckPkce(new Client
             {
                 RequirePkce = true
@@ -216,17 +194,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 CodeChallengeMethod = CodeChallengeMethods.Plain
             });
 
-            // ASSERT
             Assert.False(result);
         }
 
         [Fact]
         public void When_RS256_CodeChallenge_Is_Not_Correct_Then_False_Is_Returned()
         {
-            // ARRANGE
             InitializeMockingObjects();
 
-            // ACT
             var result = _clientValidator.CheckPkce(new Client
             {
                 RequirePkce = true
@@ -236,19 +211,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 CodeChallengeMethod = CodeChallengeMethods.RS256
             });
 
-            // ASSERT
             Assert.False(result);
         }
 
         [Fact]
         public void When_RS256_CodeChallenge_Is_Correct_Then_True_Is_Returned()
         {
-            // ARRANGE
             InitializeMockingObjects();
             var hashed = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes("code"));
             var codeChallenge = hashed.ToBase64Simplified();
 
-            // ACT
             var result = _clientValidator.CheckPkce(new Client
             {
                 RequirePkce = true
@@ -258,7 +230,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 CodeChallengeMethod = CodeChallengeMethods.RS256
             });
 
-            // ASSERT
             Assert.True(result);
         }
 

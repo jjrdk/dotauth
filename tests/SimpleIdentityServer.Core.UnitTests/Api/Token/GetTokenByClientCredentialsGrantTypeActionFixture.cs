@@ -49,18 +49,15 @@
 //        [Fact]
 //        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
-//            // ACT & ASSERT
-//            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(null, null, null, null)).ConfigureAwait(false);
+//            //            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(null, null, null, null)).ConfigureAwait(false);
 //        }
 
 //        [Fact]
 //        public async Task When_Client_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 //            var clientCredentialsGrantTypeParameter = new ClientCredentialsGrantTypeParameter
 //            {
 //                Scope = "scope"
@@ -71,8 +68,7 @@
 //            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
 //                .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
 
-//            // ACT & ASSERT
-//            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
+//            //            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
 //            Assert.True(exception.Code == ErrorCodes.InvalidClient);
 //        }
@@ -80,8 +76,7 @@
 //        [Fact]
 //        public async Task When_ClientCredentialGrantType_Is_Not_Supported_Then_Exception_Is_Thrown()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 //            var clientCredentialsGrantTypeParameter = new ClientCredentialsGrantTypeParameter
 //            {
 //                Scope = "scope"
@@ -99,8 +94,7 @@
 //            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
 //                .Returns(Task.FromResult(client));
 
-//            // ACT & ASSERT
-//            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
+//            //            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
 //            Assert.True(exception.Code == ErrorCodes.InvalidClient);
 //            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.Client.ClientId, GrantType.client_credentials));
@@ -109,8 +103,7 @@
 //        [Fact]
 //        public async Task When_TokenResponseType_Is_Not_Supported_Then_Exception_Is_Thrown()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 //            var clientCredentialsGrantTypeParameter = new ClientCredentialsGrantTypeParameter
 //            {
 //                Scope = "scope"
@@ -132,8 +125,7 @@
 //            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
 //                .Returns(Task.FromResult(client));
 
-//            // ACT & ASSERT
-//            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
+//            //            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
 //            Assert.True(exception.Code == ErrorCodes.InvalidClient);
 //            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.Client.ClientId, ResponseType.token));
@@ -142,8 +134,7 @@
 //        [Fact]
 //        public async Task When_Scope_Is_Not_Valid_Then_Exception_Is_Thrown()
 //        {
-//            // ARRANGE
-//            var messageDescription = "message_description";
+////            var messageDescription = "message_description";
 //            InitializeFakeObjects();
 //            var clientCredentialsGrantTypeParameter = new ClientCredentialsGrantTypeParameter
 //            {
@@ -172,8 +163,7 @@
 //                    ErrorMessage = messageDescription
 //                });
 
-//            // ACT & ASSERT
-//            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
+//            //            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
 //            Assert.True(exception.Code == ErrorCodes.InvalidScope);
 //            Assert.True(exception.Message == messageDescription);
@@ -182,8 +172,7 @@
 //        [Fact]
 //        public async Task When_Access_Is_Granted_Then_Token_Is_Returned()
 //        {
-//            // ARRANGE
-//            const string scope = "valid_scope";
+////            const string scope = "valid_scope";
 //            const string clientId = "client_id";
 //            const string accessToken = "access_token";
 //            var scopes = new List<string> { scope };
@@ -229,11 +218,9 @@
 //                    It.IsAny<JwsPayload>()))
 //                .Returns(Task.FromResult(grantedToken));
 
-//            // ACT
-//            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
+//            //            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
 
-//            // ASSERTS
-//            _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));
+//            //            _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));
 //            Assert.NotNull(result);
 //            Assert.True(result.ClientId == clientId);
 //        }
@@ -241,8 +228,7 @@
 //        [Fact]
 //        public async Task When_Access_Is_Granted_Then_Stateless_Token_Is_Returned()
 //        {
-//            // ARRANGE
-//            const string scope = "valid_scope";
+////            const string scope = "valid_scope";
 //            const string clientId = "client_id";
 //            const string accessToken = "access_token";
 //            var jwsPayload = new JwsPayload();
@@ -295,11 +281,9 @@
 //                It.IsAny<JwsPayload>(),
 //                It.IsAny<JwsPayload>())).Returns(Task.FromResult(grantedToken));
 
-//            // ACT
-//            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
+//            //            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
 
-//            // ASSERTS
-//            _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));
+//            //            _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));
 //            Assert.NotNull(result);
 //            Assert.True(result.ClientId == clientId);
 //        }

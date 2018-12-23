@@ -4,11 +4,11 @@
     using Authenticate.SMS.Common.Requests;
     using Core.Errors;
     using Core.Exceptions;
+    using Core.Jwt;
     using Moq;
     using System;
     using System.Net;
     using System.Threading.Tasks;
-    using Core.Jwt;
     using Twilio.Client;
     using Xunit;
 
@@ -26,7 +26,6 @@
         [Fact]
         public async Task WhenNoPhoneNumberConfiguredThenReturnsError()
         {
-            // ARRANGE
             InitializeFakeObjects();
 
             // ACT : NO PHONE NUMBER
@@ -48,11 +47,10 @@
         [Fact]
         public async Task WhenTwilioNotConfiguredThenReturnsError()
         {
-            // ARRANGE
             InitializeFakeObjects();
 
             // ACT : TWILIO NO CONFIGURED
-            ConfirmationCode confirmationCode = new ConfirmationCode();
+            var confirmationCode = new ConfirmationCode();
             _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((ConfirmationCode)null));
             _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>()))
@@ -70,9 +68,8 @@
                 .ConfigureAwait(false);
 
             // ASSERT : TWILIO NOT CONFIGURED
-            Assert.NotNull(twilioNotConfigured);
             Assert.True(twilioNotConfigured.ContainsError);
-            Assert.Equal("unhandled_exception", twilioNotConfigured.Error.Error);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, twilioNotConfigured.Error.Error);
             Assert.Equal("the twilio account is not properly configured", twilioNotConfigured.Error.ErrorDescription);
             Assert.Equal(HttpStatusCode.InternalServerError, twilioNotConfigured.HttpStatus);
         }
@@ -80,14 +77,13 @@
         [Fact]
         public async Task WhenNoConfirmationCodeThenReturnsError()
         {
-            // ARRANGE
             InitializeFakeObjects();
 
             // ACT : NO CONFIRMATION CODE
             _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((ConfirmationCode)null));
             _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>()))
-               // .Callback<ConfirmationCode>(r => { confirmationCode = r; })
+                // .Callback<ConfirmationCode>(r => { confirmationCode = r; })
                 .Returns(() => Task.FromResult(false));
             _server.SharedCtx.TwilioClient.Setup(h =>
                     h.SendMessage(It.IsAny<TwilioSmsCredentials>(), It.IsAny<string>(), It.IsAny<string>()))
@@ -103,7 +99,7 @@
             // ASSERT : CANNOT INSERT CONFIRMATION CODE
             Assert.NotNull(cannotInsertConfirmationCode);
             Assert.True(cannotInsertConfirmationCode.ContainsError);
-            Assert.Equal("unhandled_exception", cannotInsertConfirmationCode.Error.Error);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, cannotInsertConfirmationCode.Error.Error);
             Assert.Equal("the confirmation code cannot be saved", cannotInsertConfirmationCode.Error.ErrorDescription);
             Assert.Equal(HttpStatusCode.InternalServerError, cannotInsertConfirmationCode.HttpStatus);
         }
@@ -111,7 +107,6 @@
         [Fact]
         public async Task WhenUnhandledExceptionOccursThenReturnsError()
         {
-            // ARRANGE
             InitializeFakeObjects();
 
             // ACT : UNHANDLED EXCEPTION
@@ -128,9 +123,8 @@
                 .ConfigureAwait(false);
 
             // ASSERT : UNHANDLED EXCEPTION
-            Assert.NotNull(unhandledException);
             Assert.True(unhandledException.ContainsError);
-            Assert.Equal("unhandled_exception", unhandledException.Error.Error);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, unhandledException.Error.Error);
             Assert.Equal("unhandled exception occured please contact the administrator",
                 unhandledException.Error.ErrorDescription);
             Assert.Equal(HttpStatusCode.InternalServerError, unhandledException.HttpStatus);
@@ -139,7 +133,6 @@
         [Fact]
         public async Task When_Send_ConfirmationCode_Then_Json_Is_Returned()
         {
-            // ARRANGE
             InitializeFakeObjects();
 
             // ACT : HAPPY PATH

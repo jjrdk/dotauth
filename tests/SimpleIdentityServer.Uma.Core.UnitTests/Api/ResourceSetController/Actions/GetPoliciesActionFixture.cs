@@ -32,9 +32,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
 
         [Fact]
         public async Task When_Passing_NullOrEmpty_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACTS & ASSERTS
             await Assert.ThrowsAsync<ArgumentNullException>(() => _getPoliciesAction.Execute(null)).ConfigureAwait(false);
@@ -43,9 +41,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
 
         [Fact]
         public async Task When_RetrievingPolicies_Then_Ids_Are_Returned()
-        {
-            // ARRANGE
-            const string policyId = "policy_id";
+        {            const string policyId = "policy_id";
             ICollection<Policy> policies = new List<Policy>
             {
                 new Policy
@@ -57,11 +53,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             _policyRepositoryStub.Setup(p => p.SearchByResourceId(It.IsAny<string>()))
                 .Returns(Task.FromResult(policies));
 
-            // ACT
-            var result = await _getPoliciesAction.Execute("resource_id").ConfigureAwait(false);
+                        var result = await _getPoliciesAction.Execute("resource_id").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
             Assert.True(result.Count() == 1);
             Assert.True(result.First() == policyId);
         }

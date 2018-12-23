@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Shared.Responses;
     using Shared.Serializers;
 
-    [Route(Core.Constants.EndPoints.Introspection)]
+    [Route(CoreConstants.EndPoints.Introspection)]
     public class IntrospectionController : Controller
     {
         private readonly IIntrospectionActions _introspectionActions;

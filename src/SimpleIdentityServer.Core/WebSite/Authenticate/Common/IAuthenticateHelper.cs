@@ -8,7 +8,7 @@
 
     public interface IAuthenticateHelper
     {
-        Task<ActionResult> ProcessRedirection(
+        Task<EndpointResult> ProcessRedirection(
             AuthorizationParameter authorizationParameter,
             string code,
             string subject,

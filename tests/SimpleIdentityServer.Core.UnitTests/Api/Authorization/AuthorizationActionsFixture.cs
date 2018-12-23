@@ -51,9 +51,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
         [Fact]
         public async Task When_Client_Require_PKCE_And_NoCodeChallenge_Is_Passed_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            const string clientId = "clientId";
+        {            const string clientId = "clientId";
             const string responseType = "id_token";
             const string scope = "openid";
             InitializeFakeObjects();
@@ -71,18 +69,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 Scope = scope,
             };
 
-            // ACT & ASSERT
-            var result = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationActions.GetAuthorization(authorizationParameter, null, null)).ConfigureAwait(false);
+                        var result = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationActions.GetAuthorization(authorizationParameter, null, null)).ConfigureAwait(false);
             Assert.True(result.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(result.Message == string.Format(ErrorDescriptions.TheClientRequiresPkce, clientId));
         }
 
         [Fact]
         public void When_Starting_Implicit_Authorization_Process_Then_Event_Is_Started_And_Ended()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var actionResult = new ActionResult
+        {            InitializeFakeObjects();
+            var actionResult = new EndpointResult
             {
                 Type = TypeActionResult.RedirectToAction,
                 RedirectInstruction = new RedirectInstruction
@@ -122,20 +117,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
             var serializedParameter = actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
 
-            // ACT
-            _authorizationActions.GetAuthorization(authorizationParameter, null, null);
+                        _authorizationActions.GetAuthorization(authorizationParameter, null, null);
 
-            // ASSERTS
-            _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
+                        _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
             _oauthEventSource.Verify(s => s.EndAuthorization(actionType, controllerAction, serializedParameter));
         }
 
         [Fact]
         public void When_Starting_AuthorizationCode_Authorization_Process_Then_Event_Is_Started_And_Ended()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var actionResult = new ActionResult
+        {            InitializeFakeObjects();
+            var actionResult = new EndpointResult
             {
                 Type = TypeActionResult.RedirectToAction,
                 RedirectInstruction = new RedirectInstruction
@@ -175,20 +166,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
             var serializedParameter = actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
 
-            // ACT
-            _authorizationActions.GetAuthorization(authorizationParameter, null, null);
+                        _authorizationActions.GetAuthorization(authorizationParameter, null, null);
 
-            // ASSERTS
-            _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
+                        _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
             _oauthEventSource.Verify(s => s.EndAuthorization(actionType, controllerAction, serializedParameter));
         }
 
         [Fact]
         public void When_Starting_Hybrid_Authorization_Process_Then_Event_Is_Started_And_Ended()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var actionResult = new ActionResult
+        {            InitializeFakeObjects();
+            var actionResult = new EndpointResult
             {
                 Type = TypeActionResult.RedirectToAction,
                 RedirectInstruction = new RedirectInstruction
@@ -228,11 +215,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
             var serializedParameter = actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
 
-            // ACT
-            _authorizationActions.GetAuthorization(authorizationParameter, null, null);
+                        _authorizationActions.GetAuthorization(authorizationParameter, null, null);
 
-            // ASSERTS
-            _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
+                        _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
             _oauthEventSource.Verify(s => s.EndAuthorization(actionType, controllerAction, serializedParameter));
         }
 

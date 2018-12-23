@@ -19,19 +19,19 @@ namespace SimpleIdentityServer.Host.Tests
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
     using Newtonsoft.Json;
-    using SimpleIdentityServer.Authenticate.SMS;
-    using SimpleIdentityServer.Authenticate.SMS.Actions;
+    using Authenticate.SMS;
+    using Authenticate.SMS.Actions;
     using SimpleIdentityServer.Authenticate.SMS.Controllers;
     using SimpleIdentityServer.Authenticate.SMS.Services;
-    using SimpleIdentityServer.Core;
-    using SimpleIdentityServer.Core.Api.Jwks.Actions;
+    using Core;
+    using Core.Api.Jwks.Actions;
     using SimpleIdentityServer.Core.Extensions;
-    using SimpleIdentityServer.Core.Jwt;
+    using Core.Jwt;
     using SimpleIdentityServer.Core.Services;
-    using SimpleIdentityServer.Host.Tests.MiddleWares;
-    using SimpleIdentityServer.Host.Tests.Services;
-    using SimpleIdentityServer.Host.Tests.Stores;
-    using SimpleIdentityServer.Logging;
+    using MiddleWares;
+    using Services;
+    using Stores;
+    using Logging;
     using SimpleIdentityServer.UserManagement.Controllers;
     using System;
     using System.Collections.Generic;
@@ -124,7 +124,7 @@ namespace SimpleIdentityServer.Host.Tests
                         _context.EncryptionKey,
                         _context.SignatureKey
                     };
-                    var jsonWebKeySet = new JsonWebKeySet();
+                    //var jsonWebKeySet = new JsonWebKeySet();
                     var publicKeysUsedToValidateSignature = ExtractPublicKeysForSignature(jwks);
                     var publicKeysUsedForClientEncryption = ExtractPrivateKeysForSignature(jwks);
                     var result = new JsonWebKeySet
@@ -134,7 +134,7 @@ namespace SimpleIdentityServer.Host.Tests
 
                     result.Keys.AddRange(publicKeysUsedToValidateSignature);
                     result.Keys.AddRange(publicKeysUsedForClientEncryption);
-                    string json = JsonConvert.SerializeObject(result);
+                    var json = JsonConvert.SerializeObject(result);
                     var data = Encoding.UTF8.GetBytes(json);
                     ctx.Response.ContentType = "application/json";
                     await ctx.Response.Body.WriteAsync(data, 0, data.Length).ConfigureAwait(false);

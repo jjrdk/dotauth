@@ -19,12 +19,6 @@ namespace SimpleIdentityServer.Shared.Responses
     using System.Runtime.Serialization;
     using Shared;
 
-    public enum ScopeResponseType
-    {
-        ProtectedApi,
-        ResourceOwner
-    }
-
     [DataContract]
     public class ScopeResponse
     {

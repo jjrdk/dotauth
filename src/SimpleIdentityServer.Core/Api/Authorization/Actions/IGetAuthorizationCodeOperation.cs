@@ -8,6 +8,6 @@
 
     public interface IGetAuthorizationCodeOperation
     {
-        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal claimsPrincipal, Client client, string issuerName);
+        Task<EndpointResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal claimsPrincipal, Client client, string issuerName);
     }
 }

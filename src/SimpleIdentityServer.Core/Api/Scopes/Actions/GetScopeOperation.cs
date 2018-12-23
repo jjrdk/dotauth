@@ -21,11 +21,6 @@ namespace SimpleIdentityServer.Core.Api.Scopes.Actions
     using Shared.Models;
     using Shared.Repositories;
 
-    public interface IGetScopeOperation
-    {
-        Task<Scope> Execute(string scopeName);
-    }
-
     internal class GetScopeOperation : IGetScopeOperation
     {
         private readonly IScopeRepository _scopeRepository;
@@ -42,7 +37,7 @@ namespace SimpleIdentityServer.Core.Api.Scopes.Actions
                 throw new ArgumentNullException(nameof(scopeName));
             }
 
-            var result = await _scopeRepository.GetAsync(scopeName).ConfigureAwait(false);
+            var result = await _scopeRepository.Get(scopeName).ConfigureAwait(false);
             if (result == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,

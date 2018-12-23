@@ -4,9 +4,9 @@
 
     public interface IActionResultFactory
     {
-        ActionResult CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-        ActionResult CreateAnEmptyActionResultWithRedirection();
-        ActionResult CreateAnEmptyActionResultWithOutput();
-        ActionResult CreateAnEmptyActionResultWithNoEffect();
+        EndpointResult CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
+        EndpointResult CreateAnEmptyActionResultWithRedirection();
+        EndpointResult CreateAnEmptyActionResultWithOutput();
+        EndpointResult CreateAnEmptyActionResultWithNoEffect();
     }
 }

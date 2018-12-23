@@ -31,19 +31,14 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 
         [Fact]
         public void When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT
-            Assert.Throws<ArgumentNullException>(() => _jwsGenerator.Generate(null, JwsAlg.none, null));
+                        Assert.Throws<ArgumentNullException>(() => _jwsGenerator.Generate(null, JwsAlg.none, null));
         }
 
         [Fact]
         public void When_Passing_No_JsonWebKey_And_Algorithm_Value_Other_Than_None_Then_Returns_Unsigned_Result()
-        {            
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const JwsAlg jwsAlg = JwsAlg.none;
             const string signature = "signature";
 
@@ -68,19 +63,15 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
                 combined,
                 string.Empty);
 
-            // ACT
-            var result = _jwsGenerator.Generate(jwsPayload, jwsAlg, null);
+                        var result = _jwsGenerator.Generate(jwsPayload, jwsAlg, null);
 
-            // ASSERT
-            _createJwsSignatureFake.Verify(c => c.SignWithRsa(It.IsAny<JwsAlg>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+                        _createJwsSignatureFake.Verify(c => c.SignWithRsa(It.IsAny<JwsAlg>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
             Assert.True(expectedResult == result);
         }
 
         [Fact]
         public void When_Sign_Payload_With_Rsa_Alogirthm_Then_Jws_Token_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const KeyType keyType = KeyType.RSA;
             const string kid = "kid";
             const JwsAlg jwsAlg = JwsAlg.RS384;
@@ -115,19 +106,15 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
                 combined,
                 signature);
 
-            // ACT
-            var result = _jwsGenerator.Generate(jwsPayload, jwsAlg, jsonWebKey);
+                        var result = _jwsGenerator.Generate(jwsPayload, jwsAlg, jsonWebKey);
             
-            // ASSERT
-            _createJwsSignatureFake.Verify(c => c.SignWithRsa(jwsAlg, serializedKey, combined));
+                        _createJwsSignatureFake.Verify(c => c.SignWithRsa(jwsAlg, serializedKey, combined));
             Assert.True(expectedResult == result);
         }
 
         [Fact]
         public void When_Sign_Payload_With_None_Alogithm_Then_Jws_Token_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const JwsAlg jwsAlg = JwsAlg.none;
             const KeyType keyType = KeyType.RSA;
             const string kid = "kid";
@@ -161,11 +148,9 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
                 combined,
                 string.Empty);
 
-            // ACT
-            var result = _jwsGenerator.Generate(jwsPayload, jwsAlg, jsonWebKey);
+                        var result = _jwsGenerator.Generate(jwsPayload, jwsAlg, jsonWebKey);
 
-            // ASSERT
-            _createJwsSignatureFake.Verify(c => c.SignWithRsa(It.IsAny<JwsAlg>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+                        _createJwsSignatureFake.Verify(c => c.SignWithRsa(It.IsAny<JwsAlg>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
             Assert.True(expectedResult == result);
         }
 

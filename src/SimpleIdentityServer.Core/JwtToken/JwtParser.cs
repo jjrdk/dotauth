@@ -22,17 +22,17 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.JwtToken
 {
-    using System.Net.Http;
     using Json;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
     using Shared.Requests;
+    using System.Net.Http;
 
     public class JwtParser : IJwtParser
     {
         private readonly IJweParser _jweParser;
-        private readonly IJwsParser _jwsParser;        
+        private readonly IJwsParser _jwsParser;
         private readonly HttpClient _httpClientFactory;
         private readonly IClientStore _clientRepository;
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             {
                 return string.Empty;
             }
-            
+
             return _jweParser.Parse(jwe, jsonWebKey);
         }
 
@@ -196,23 +196,16 @@ namespace SimpleIdentityServer.Core.JwtToken
             var jsonWebKey = await GetJsonWebKeyFromClient(client, protectedHeader.Kid).ConfigureAwait(false);
             return jsonWebKey;
         }
-        
+
         private async Task<JsonWebKey> GetJsonWebKeyFromClient(Client client, string kid)
         {
             JsonWebKey result = null;
             // Fetch the json web key from the jwks_uri
-            if (!string.IsNullOrWhiteSpace(client.JwksUri))
+            if (client.JwksUri != null)
             {
-                if (!Uri.TryCreate(client.JwksUri, UriKind.Absolute, out var uri))
-                {
-                    return null;
-                }
-
-                //var httpClient = _httpClientFactory.GetHttpClient();
-                //httpClient.BaseAddress = uri;
-                var request = _httpClientFactory.GetAsync(uri.AbsoluteUri).Result;
                 try
                 {
+                    var request = await _httpClientFactory.GetAsync(client.JwksUri).ConfigureAwait(false);
                     request.EnsureSuccessStatusCode();
                     var json = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
                     var jsonWebKeySet = json.DeserializeWithJavascript<JsonWebKeySet>();
@@ -226,7 +219,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             // Fetch the json web key from the jwks
-            if (client.JsonWebKeys != null && 
+            if (client.JsonWebKeys != null &&
                 client.JsonWebKeys.Any())
             {
                 result = client.JsonWebKeys.FirstOrDefault(j => j.Kid == kid);

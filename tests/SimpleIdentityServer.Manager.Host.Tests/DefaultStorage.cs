@@ -1,9 +1,11 @@
-﻿using SimpleIdentityServer.Core.Common.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace SimpleIdentityServer.Manager.Host.Tests
 {
+    using Core.Jwt;
+    using Shared.Models;
+
     public static class DefaultStorage
     {
         public static List<ResourceOwner> GetUsers()
@@ -15,7 +17,7 @@ namespace SimpleIdentityServer.Manager.Host.Tests
                     Id = "administrator",
                     Claims = new List<Claim>
                     {
-                        new Claim(SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "administrator")
+                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "administrator")
                     },
                     Password = "password",
                     IsLocalAccount = true
@@ -26,7 +28,7 @@ namespace SimpleIdentityServer.Manager.Host.Tests
                     Password = "password",
                     Claims = new List<Claim>
                     {
-                        new Claim(SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "user")
+                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "user")
                     },
                     IsLocalAccount = true
                 }

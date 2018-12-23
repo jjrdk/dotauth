@@ -14,6 +14,7 @@
 
 namespace SimpleIdentityServer.Shared.Requests
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.Serialization;
@@ -30,7 +31,7 @@ namespace SimpleIdentityServer.Shared.Requests
 
         public AuthorizationRequest() { }
 
-        public AuthorizationRequest(IEnumerable<string> scopes, IEnumerable<ResponseTypes> responseTypes, string clientId, string redirectUri, string state)
+        public AuthorizationRequest(IEnumerable<string> scopes, IEnumerable<ResponseTypes> responseTypes, string clientId, Uri redirectUri, string state)
         {
             Scope = string.Join(" ", scopes);
             ResponseType = string.Join(" ", responseTypes.Select(s => _mappingResponseTypesToNames[s]));
@@ -44,7 +45,7 @@ namespace SimpleIdentityServer.Shared.Requests
         [DataMember(Name = RequestAuthorizationCodeNames.ResponseType)]
         public string ResponseType { get; set; }
         [DataMember(Name = RequestAuthorizationCodeNames.RedirectUri)]
-        public string RedirectUri { get; set; }
+        public Uri RedirectUri { get; set; }
         [DataMember(Name = RequestAuthorizationCodeNames.State)]
         public string State { get; set; }
         [DataMember(Name = RequestAuthorizationCodeNames.ResponseMode)]

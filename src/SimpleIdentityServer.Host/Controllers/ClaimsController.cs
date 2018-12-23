@@ -10,7 +10,7 @@
     using Shared.Requests;
     using Shared.Responses;
 
-    [Route(Constants.EndPoints.Claims)]
+    [Route(HostEnpoints.Claims)]
     public class ClaimsController : Controller
     {
         //public const string GetClaimsStoreName = "GetClaims";

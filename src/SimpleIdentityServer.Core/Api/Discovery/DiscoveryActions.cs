@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery
             var result = new DiscoveryInformation();
             issuer = issuer.TrimEnd('/');
             // Returns only the exposed scopes
-            var scopes = await _scopeRepository.GetAllAsync().ConfigureAwait(false);
+            var scopes = await _scopeRepository.GetAll().ConfigureAwait(false);
             var scopeSupportedNames = new string[0];
             if (scopes != null ||
                 scopes.Any())
@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery
                 scopeSupportedNames = scopes.Where(s => s.IsExposed).Select(s => s.Name).ToArray();
             }
 
-            var responseTypesSupported = GetSupportedResponseTypes(Constants.Supported.SupportedAuthorizationFlows);
+            var responseTypesSupported = GetSupportedResponseTypes(CoreConstants.Supported.SupportedAuthorizationFlows);
 
             var grantTypesSupported = GetSupportedGrantTypes();
             var tokenAuthMethodSupported = GetSupportedTokenEndPointAuthMethods();
@@ -60,22 +60,22 @@ namespace SimpleIdentityServer.Core.Api.Discovery
             result.ClaimsSupported = (await _claimRepository.GetAllAsync().ConfigureAwait(false)).Select(c => c.Code).ToArray();
             result.ScopesSupported = scopeSupportedNames;
             result.ResponseTypesSupported = responseTypesSupported;
-            result.ResponseModesSupported = Constants.Supported.SupportedResponseModes.ToArray();
+            result.ResponseModesSupported = CoreConstants.Supported.SupportedResponseModes.ToArray();
             result.GrantTypesSupported = grantTypesSupported;
-            result.SubjectTypesSupported = Constants.Supported.SupportedSubjectTypes.ToArray();
+            result.SubjectTypesSupported = CoreConstants.Supported.SupportedSubjectTypes.ToArray();
             result.TokenEndpointAuthMethodSupported = tokenAuthMethodSupported;
-            result.IdTokenSigningAlgValuesSupported = Constants.Supported.SupportedJwsAlgs.ToArray();
+            result.IdTokenSigningAlgValuesSupported = CoreConstants.Supported.SupportedJwsAlgs.ToArray();
             //var issuer = Request.GetAbsoluteUriWithVirtualPath();
-            var authorizationEndPoint = issuer + "/" + Constants.EndPoints.Authorization;
-            var tokenEndPoint = issuer + "/" + Constants.EndPoints.Token;
-            var userInfoEndPoint = issuer + "/" + Constants.EndPoints.UserInfo;
-            var jwksUri = issuer + "/" + Constants.EndPoints.Jwks;
-            var registrationEndPoint = issuer + "/" + Constants.EndPoints.Registration;
-            var revocationEndPoint = issuer + "/" + Constants.EndPoints.Revocation;
+            var authorizationEndPoint = issuer + "/" + CoreConstants.EndPoints.Authorization;
+            var tokenEndPoint = issuer + "/" + CoreConstants.EndPoints.Token;
+            var userInfoEndPoint = issuer + "/" + CoreConstants.EndPoints.UserInfo;
+            var jwksUri = issuer + "/" + CoreConstants.EndPoints.Jwks;
+            var registrationEndPoint = issuer + "/" + CoreConstants.EndPoints.Registration;
+            var revocationEndPoint = issuer + "/" + CoreConstants.EndPoints.Revocation;
             // TODO : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
-            var checkSessionIframe = issuer + "/" + Constants.EndPoints.CheckSession;
-            var endSessionEndPoint = issuer + "/" + Constants.EndPoints.EndSession;
-            var introspectionEndPoint = issuer + "/" + Constants.EndPoints.Introspection;
+            var checkSessionIframe = issuer + "/" + CoreConstants.EndPoints.CheckSession;
+            var endSessionEndPoint = issuer + "/" + CoreConstants.EndPoints.EndSession;
+            var introspectionEndPoint = issuer + "/" + CoreConstants.EndPoints.Introspection;
 
             result.Issuer = issuer;
             result.AuthorizationEndPoint = authorizationEndPoint;
@@ -99,7 +99,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery
         private static string[] GetSupportedResponseTypes(ICollection<AuthorizationFlow> authorizationFlows)
         {
             var result = new List<string>();
-            foreach (var mapping in Constants.MappingResponseTypesToAuthorizationFlows)
+            foreach (var mapping in CoreConstants.MappingResponseTypesToAuthorizationFlows)
             {
                 if (authorizationFlows.Contains(mapping.Value))
                 {
@@ -114,7 +114,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery
         private static string[] GetSupportedGrantTypes()
         {
             var result = new List<string>();
-            foreach (var supportedGrantType in Constants.Supported.SupportedGrantTypes)
+            foreach (var supportedGrantType in CoreConstants.Supported.SupportedGrantTypes)
             {
                 var record = Enum.GetName(typeof(GrantType), supportedGrantType);
                 result.Add(record);
@@ -126,7 +126,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery
         private static string[] GetSupportedTokenEndPointAuthMethods()
         {
             var result = new List<string>();
-            foreach (var supportedAuthMethod in Constants.Supported.SupportedTokenEndPointAuthenticationMethods)
+            foreach (var supportedAuthMethod in CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods)
             {
                 var record = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), supportedAuthMethod);
                 result.Add(record);

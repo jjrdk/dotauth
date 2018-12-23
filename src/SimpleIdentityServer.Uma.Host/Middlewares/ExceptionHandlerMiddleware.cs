@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Http;
-using SimpleIdentityServer.Uma.Core.Exceptions;
-using SimpleIdentityServer.Uma.Host.Extensions;
-using System;
-using System.Net;
-using System.Threading.Tasks;
-
 namespace SimpleIdentityServer.Uma.Host.Middlewares
 {
+    using Microsoft.AspNetCore.Http;
     using Shared.Responses;
+    using SimpleIdentityServer.Uma.Core.Exceptions;
+    using SimpleIdentityServer.Uma.Host.Extensions;
+    using System;
+    using System.Net;
+    using System.Threading.Tasks;
+    using SimpleIdentityServer.Core.Errors;
 
     internal class ExceptionHandlerMiddleware
     {
-        private const string UnhandledExceptionCode = "unhandled_error";
         private readonly RequestDelegate _next;
         private readonly ExceptionHandlerMiddlewareOptions _options;
 
@@ -43,10 +42,9 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
             }
             catch (Exception exception)
             {
-                var identityServerException = exception as BaseUmaException;
-                if (identityServerException == null)
+                if (!(exception is BaseUmaException identityServerException))
                 {
-                    identityServerException = new BaseUmaException(UnhandledExceptionCode, exception.Message);
+                    identityServerException = new BaseUmaException(ErrorCodes.UnhandledExceptionCode, exception.Message);
                 }
 
                 _options.UmaEventSource.Failure(identityServerException);

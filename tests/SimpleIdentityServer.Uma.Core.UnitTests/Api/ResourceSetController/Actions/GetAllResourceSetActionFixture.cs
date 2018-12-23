@@ -33,14 +33,11 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
 
         [Fact]
         public async Task When_Error_Occured_While_Trying_To_Retrieve_ResourceSet_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObject();
+        {            InitializeFakeObject();
             _resourceSetRepositoryStub.Setup(r => r.GetAll())
                 .Returns(() => Task.FromResult((ICollection<ResourceSet>)null));
 
-            // ACT & ASSERTS
-            var exception  = await Assert.ThrowsAsync<BaseUmaException>(() => _getAllResourceSetAction.Execute()).ConfigureAwait(false);
+                        var exception  = await Assert.ThrowsAsync<BaseUmaException>(() => _getAllResourceSetAction.Execute()).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheResourceSetsCannotBeRetrieved);
@@ -48,9 +45,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
 
         [Fact]
         public async Task When_ResourceSets_Are_Retrieved_Then_Ids_Are_Returned()
-        {
-            // ARRANGE
-            const string id = "id";
+        {            const string id = "id";
             ICollection<ResourceSet> resourceSets = new List<ResourceSet>
             {
                 new ResourceSet
@@ -62,11 +57,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             _resourceSetRepositoryStub.Setup(r => r.GetAll())
                 .Returns(Task.FromResult(resourceSets));
 
-            // ACT
-            var result = await _getAllResourceSetAction.Execute().ConfigureAwait(false);
+                        var result = await _getAllResourceSetAction.Execute().ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
             Assert.True(result.Count() == 1);
             Assert.True(result.First() == id);
         }

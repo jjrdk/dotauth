@@ -167,8 +167,7 @@
 //        [Fact]
 //        public void When_Passing_EmptyString_To_The_Method_Sign_With_EC_Then_Exception_Is_Thrown()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
 //            // ACTS & ASSERTS
 //            Assert.Throws<ArgumentNullException>(() => _createJwsSignature.SignWithEllipseCurve(null, null));
@@ -182,8 +181,7 @@
 //        [Fact]
 //        public void When_Passing_Empty_String_To_The_Method_Check_EC_Signature_Then_Exception_Is_Thrown()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
 //            // ACTS & ASSERTS
 //            Assert.Throws<ArgumentNullException>(() => _createJwsSignature.VerifyWithEllipticCurve(null, null, null));

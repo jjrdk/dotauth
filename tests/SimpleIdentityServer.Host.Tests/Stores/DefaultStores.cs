@@ -20,6 +20,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
 {
     using Shared;
     using Shared.Models;
+    using System;
 
     public static class DefaultStores
     {
@@ -195,9 +196,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                    PolicyUri = "http://openid.net",
-                    TosUri = "http://openid.net",
+                    LogoUri = null,
+                    PolicyUri = new Uri("http://openid.net"),
+                    TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -234,9 +235,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<string>
+                    RedirectionUrls = new List<Uri>
                     {
-                        "https://localhost:4200/callback"
+                        new Uri("https://localhost:4200/callback")
                     }
                 },
                 new Client
@@ -252,9 +253,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                    PolicyUri = "http://openid.net",
-                    TosUri = "http://openid.net",
+                    LogoUri = null,
+                    PolicyUri = new Uri("http://openid.net"),
+                    TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -288,7 +289,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     IdTokenSignedResponseAlg = "RS256",
                     UserInfoSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<string> { "https://localhost:4200/callback" }
+                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") }
                 },
                 new Client
                 {
@@ -303,9 +304,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                    PolicyUri = "http://openid.net",
-                    TosUri = "http://openid.net",
+                    LogoUri = null,
+                    PolicyUri = new Uri("http://openid.net"),
+                    TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -341,7 +342,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     UserInfoEncryptedResponseAlg = "RSA1_5",
                     UserInfoEncryptedResponseEnc = "A128CBC-HS256",
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<string> { "https://localhost:4200/callback" }
+                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") }
                 },
                 new Client
                 {
@@ -356,9 +357,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                    PolicyUri = "http://openid.net",
-                    TosUri = "http://openid.net",
+                    LogoUri = null,
+                    PolicyUri = new Uri("http://openid.net"),
+                    TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -389,7 +390,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<string> { "https://localhost:4200/callback" }
+                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") }
                 },
                 new Client
                 {
@@ -404,9 +405,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                    PolicyUri = "http://openid.net",
-                    TosUri = "http://openid.net",
+                    LogoUri = null,
+                    PolicyUri = new Uri("http://openid.net"),
+                    TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -425,7 +426,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<string> { "https://localhost:4200/callback" }
+                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") }
                 },
                 new Client
                 {
@@ -440,9 +441,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                    PolicyUri = "http://openid.net",
-                    TosUri = "http://openid.net",
+                    LogoUri = null,
+                    PolicyUri = new Uri("http://openid.net"),
+                    TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -460,7 +461,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<string> { "https://localhost:4200/callback" }
+                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") }
                 },
                 new Client
                 {
@@ -475,9 +476,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                    PolicyUri = "http://openid.net",
-                    TosUri = "http://openid.net",
+                    LogoUri = null,
+                    PolicyUri = new Uri("http://openid.net"),
+                    TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -495,7 +496,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<string> { "https://localhost:4200/callback" }
+                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") }
                 },
                 new Client
                 {
@@ -510,9 +511,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_jwt,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                    PolicyUri = "http://openid.net",
-                    TosUri = "http://openid.net",
+                    LogoUri = null,
+                    PolicyUri = new Uri("http://openid.net"),
+                    TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -530,7 +531,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<string> { "https://localhost:4200/callback" },
+                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") },
                     JsonWebKeys = new List<JsonWebKey>
                     {
                         sharedCtx.ModelSignatureKey,
@@ -550,9 +551,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.private_key_jwt,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                    PolicyUri = "http://openid.net",
-                    TosUri = "http://openid.net",
+                    LogoUri = null,
+                    PolicyUri = new Uri("http://openid.net"),
+                    TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -570,8 +571,8 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<string> { "https://localhost:4200/callback" },
-                    JwksUri = "http://localhost:5000/jwks_client"
+                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") },
+                    JwksUri = new Uri("http://localhost:5000/jwks_client")
                 },
                 new Client
                 {
@@ -586,9 +587,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                    PolicyUri = "http://openid.net",
-                    TosUri = "http://openid.net",
+                    LogoUri = null,
+                    PolicyUri = new Uri("http://openid.net"),
+                    TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -612,7 +613,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<string> { "http://localhost:5000/callback" }
+                    RedirectionUrls = new List<Uri> { new Uri("http://localhost:5000/callback") }
                 },
                 new Client
                 {
@@ -627,9 +628,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                    PolicyUri = "http://openid.net",
-                    TosUri = "http://openid.net",
+                    LogoUri = null,
+                    PolicyUri = new Uri("http://openid.net"),
+                    TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -651,7 +652,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<string> { "http://localhost:5000/callback" }
+                    RedirectionUrls = new List<Uri> { new Uri("http://localhost:5000/callback") }
                 },
                 new Client
                 {
@@ -666,9 +667,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                    PolicyUri = "http://openid.net",
-                    TosUri = "http://openid.net",
+                    LogoUri = null,
+                    PolicyUri = new Uri("http://openid.net"),
+                    TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -691,7 +692,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<string> { "http://localhost:5000/callback" }
+                    RedirectionUrls = new List<Uri> { new Uri("http://localhost:5000/callback") }
                 },
                 new Client
                 {
@@ -706,9 +707,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                    PolicyUri = "http://openid.net",
-                    TosUri = "http://openid.net",
+                    LogoUri = null,
+                    PolicyUri = new Uri("http://openid.net"),
+                    TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -732,7 +733,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<string> { "http://localhost:5000/callback" },
+                    RedirectionUrls = new List<Uri> { new Uri("http://localhost:5000/callback") },
                     RequirePkce = true
                 },
                 new Client
@@ -748,9 +749,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                    PolicyUri = "http://openid.net",
-                    TosUri = "http://openid.net",
+                    LogoUri = null,
+                    PolicyUri = new Uri("http://openid.net"),
+                    TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -775,7 +776,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<string> { "http://localhost:5000/callback" },
+                    RedirectionUrls = new List<Uri> { new Uri("http://localhost:5000/callback") },
                 },
                 // Certificate test client.
                 new Client
@@ -796,7 +797,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.tls_client_auth,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                    LogoUri = null,
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -830,7 +831,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                    LogoUri = null,
                     AllowedScopes = new List<Scope>
                     {
                         new Scope

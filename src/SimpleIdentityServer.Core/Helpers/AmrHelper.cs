@@ -13,7 +13,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.NoActiveAmr);
             }
 
-            var amr = Constants.DEFAULT_AMR;
+            var amr = CoreConstants.DEFAULT_AMR;
             if (exceptedAmrs != null)
             {
                 foreach(var exceptedAmr in exceptedAmrs)

@@ -89,66 +89,52 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
 
         [Fact]
         public async Task When_Passing_No_Action_Result_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(null, null, null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(null, null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Passing_No_Authorization_Request_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var redirectInstruction = new ActionResult
+        {            InitializeFakeObjects();
+            var redirectInstruction = new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction()
             };
             
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, null, null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_There_Is_No_Logged_User_Then_Exception_Is_Throw()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var redirectInstruction = new ActionResult
+        {            InitializeFakeObjects();
+            var redirectInstruction = new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction()
             };
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_No_Client_Is_Passed_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var redirectInstruction = new ActionResult
+        {            InitializeFakeObjects();
+            var redirectInstruction = new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction()
             };
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), claimsPrincipal, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), claimsPrincipal, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Generating_AuthorizationResponse_With_IdToken_Then_IdToken_Is_Added_To_The_Parameters()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
             const string idToken = "idToken";
             var authorizationParameter = new AuthorizationParameter();
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction()
             };
@@ -170,19 +156,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult(idToken));
 
-            // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
+                        await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == Constants.StandardAuthorizationResponseNames.IdTokenName);
+                        Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == CoreConstants.StandardAuthorizationResponseNames.IdTokenName);
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Value == idToken);
         }
 
         [Fact]
         public async Task When_Generating_AuthorizationResponse_With_AccessToken_And_ThereIs_No_Granted_Token_Then_Token_Is_Generated_And_Added_To_The_Parameters()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string idToken = "idToken";
             const string clientId = "clientId";
             const string scope = "openid";
@@ -196,7 +178,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             {
                 AccessToken = Guid.NewGuid().ToString()
             };
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction()
             };
@@ -229,11 +211,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                     It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult(grantedToken));
 
-            // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
+                        await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == Constants.StandardAuthorizationResponseNames.AccessTokenName);
+                        Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == CoreConstants.StandardAuthorizationResponseNames.AccessTokenName);
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Value == grantedToken.AccessToken);
             _grantedTokenRepositoryFake.Verify(g => g.AddToken(grantedToken));
             _oauthEventSource.Verify(e => e.GrantAccessToClient(clientId, grantedToken.AccessToken, scope));
@@ -241,9 +221,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
 
         [Fact]
         public async Task When_Generating_AuthorizationResponse_With_AccessToken_And_ThereIs_A_GrantedToken_Then_Token_Is_Added_To_The_Parameters()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string idToken = "idToken";
             const string clientId = "clientId";
             const string scope = "openid";
@@ -257,7 +235,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             {
                 AccessToken = Guid.NewGuid().ToString()
             };
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction()
             };
@@ -283,19 +261,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 It.IsAny<JwsPayload>()))
                 .Returns(() => Task.FromResult(grantedToken));
 
-            // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
+                        await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == Constants.StandardAuthorizationResponseNames.AccessTokenName);
+                        Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == CoreConstants.StandardAuthorizationResponseNames.AccessTokenName);
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Value == grantedToken.AccessToken);
         }
 
         [Fact]
         public async Task When_Generating_AuthorizationResponse_With_AuthorizationCode_Then_Code_Is_Added_To_The_Parameters()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string idToken = "idToken";
             const string clientId = "clientId";
             const string scope = "openid";
@@ -306,7 +280,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 Scope = scope
             };
             var consent = new Consent();
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction()
             };
@@ -328,20 +302,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult(consent));
 
-            // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
+                        await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == Constants.StandardAuthorizationResponseNames.AuthorizationCodeName);
+                        Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == CoreConstants.StandardAuthorizationResponseNames.AuthorizationCodeName);
             _authorizationCodeRepositoryFake.Verify(a => a.AddAuthorizationCode(It.IsAny<AuthorizationCode>()));
             _oauthEventSource.Verify(s => s.GrantAuthorizationCodeToClient(clientId, It.IsAny<string>(), scope));
         }
 
         [Fact]
         public async Task When_An_Authorization_Response_Is_Generated_Then_Events_Are_Logged()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string idToken = "idToken";
             const string clientId = "clientId";
             const string scope = "scope";
@@ -355,11 +325,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             };
             var client = new Client
             {
-                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
-                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
-                IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256
+                IdTokenEncryptedResponseAlg = JwtConstants.JweAlgNames.RSA1_5,
+                IdTokenEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256,
+                IdTokenSignedResponseAlg = JwtConstants.JwsAlgNames.RS256
             };
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction()
             };
@@ -378,19 +348,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             _jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
                 .Returns(Task.FromResult(idToken));
 
-            // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
+                        await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
 
-            // ASSERT
-            _oauthEventSource.Verify(s => s.StartGeneratingAuthorizationResponseToClient(clientId, responseType));
+                        _oauthEventSource.Verify(s => s.StartGeneratingAuthorizationResponseToClient(clientId, responseType));
             _oauthEventSource.Verify(s => s.EndGeneratingAuthorizationResponseToClient(clientId, actionResult.RedirectInstruction.Parameters.SerializeWithJavascript()));
         }
 
         [Fact]
         public async Task When_Redirecting_To_Callback_And_There_Is_No_Response_Mode_Specified_Then_The_Response_Mode_Is_Set()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string idToken = "idToken";
             const string clientId = "clientId";
             const string scope = "scope";
@@ -405,11 +371,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             };
             var client = new Client
             {
-                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
-                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
-                IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256
+                IdTokenEncryptedResponseAlg = JwtConstants.JweAlgNames.RSA1_5,
+                IdTokenEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256,
+                IdTokenSignedResponseAlg = JwtConstants.JwsAlgNames.RS256
             };
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction(),
                 Type = TypeActionResult.RedirectToCallBackUrl
@@ -432,11 +398,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(), It.IsAny<string>()))
                 .Returns(AuthorizationFlow.ImplicitFlow);
 
-            // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
+                        await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(actionResult.RedirectInstruction.ResponseMode == ResponseMode.fragment);
+                        Assert.True(actionResult.RedirectInstruction.ResponseMode == ResponseMode.fragment);
         }
 
         private void InitializeFakeObjects()

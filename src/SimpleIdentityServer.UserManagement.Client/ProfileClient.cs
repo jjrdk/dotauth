@@ -1,7 +1,7 @@
 ﻿namespace SimpleIdentityServer.UserManagement.Client
 {
-    using SimpleIdentityServer.UserManagement.Client.Operations;
-    using SimpleIdentityServer.UserManagement.Client.Results;
+    using Operations;
+    using Results;
     using System.Threading.Tasks;
 
     using Common.Requests;

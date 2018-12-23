@@ -19,6 +19,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
 {
     using Shared;
     using Shared.Models;
+    using System;
 
     public static class FakeOpenIdAssets
     {
@@ -144,11 +145,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                     IdTokenSignedResponseAlg = "RS256",
                     // IdTokenEncryptedResponseAlg = "RSA1_5",
                     // IdTokenEncryptedResponseEnc = "A128CBC-HS256",
-                    RedirectionUrls = new List<string>
+                    RedirectionUrls = new List<Uri>
                     {
-                        "https://op.certification.openid.net:60360/authz_cb",
-                        "http://localhost",
-                        "https://op.certification.openid.net:60186/authz_cb"
+                        new Uri("https://op.certification.openid.net:60360/authz_cb"),
+                        new Uri("http://localhost"),
+                        new Uri("https://op.certification.openid.net:60186/authz_cb")
                     }
                 }
             };
@@ -254,7 +255,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                 }
             };
         }
-        
+
         public static List<Consent> GetConsents()
         {
             return new List<Consent>();

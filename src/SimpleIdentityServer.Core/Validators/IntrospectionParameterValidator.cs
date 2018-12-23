@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Core.Validators
             {
                 throw new IdentityServerException(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, Constants.IntrospectionRequestNames.Token));
+                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.IntrospectionRequestNames.Token));
             }
         }
     }

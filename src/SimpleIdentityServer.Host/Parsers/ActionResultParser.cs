@@ -26,27 +26,27 @@ namespace SimpleIdentityServer.Host.Parsers
             _redirectInstructionParser = redirectInstructionParser;
         }
 
-        public ActionInformation GetControllerAndActionFromRedirectionActionResult(ActionResult actionResult)
+        public ActionInformation GetControllerAndActionFromRedirectionActionResult(EndpointResult endpointResult)
         {
-            if (actionResult.Type != TypeActionResult.RedirectToAction 
-                || actionResult.RedirectInstruction == null)
+            if (endpointResult.Type != TypeActionResult.RedirectToAction 
+                || endpointResult.RedirectInstruction == null)
             {
                 return null;
             }
 
-            return _redirectInstructionParser.GetActionInformation(actionResult.RedirectInstruction);
+            return _redirectInstructionParser.GetActionInformation(endpointResult.RedirectInstruction);
         }
 
-        public RouteValueDictionary GetRedirectionParameters(ActionResult actionResult)
+        public RouteValueDictionary GetRedirectionParameters(EndpointResult endpointResult)
         {
-            if (actionResult.Type != TypeActionResult.RedirectToAction &&
-                actionResult.Type != TypeActionResult.RedirectToCallBackUrl ||
-                actionResult.RedirectInstruction == null)
+            if (endpointResult.Type != TypeActionResult.RedirectToAction &&
+                endpointResult.Type != TypeActionResult.RedirectToCallBackUrl ||
+                endpointResult.RedirectInstruction == null)
             {
                 return null;
             }
 
-            return _redirectInstructionParser.GetRouteValueDictionary(actionResult.RedirectInstruction);
+            return _redirectInstructionParser.GetRouteValueDictionary(endpointResult.RedirectInstruction);
         }
     }
 }

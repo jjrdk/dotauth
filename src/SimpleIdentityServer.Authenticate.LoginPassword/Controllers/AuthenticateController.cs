@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
     using Logging;
     using Shared;
     using Shared.Requests;
-    using Constants = LoginPassword.Constants;
+    using Constants = Constants;
 
     [Area(Constants.AMR)]
     public class AuthenticateController : BaseAuthenticateController
@@ -244,11 +244,11 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
                     _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
 
                     // 7. Redirect the user agent
-                    var result = this.CreateRedirectionFromActionResult(actionResult.ActionResult,
+                    var result = this.CreateRedirectionFromActionResult(actionResult.EndpointResult,
                         request);
                     if (result != null)
                     {
-                        LogAuthenticateUser(actionResult.ActionResult, request.ProcessId);
+                        LogAuthenticateUser(actionResult.EndpointResult, request.ProcessId);
                         return result;
                     }
                 }

@@ -24,11 +24,6 @@ namespace SimpleIdentityServer.Core.Api.Jwe.Actions
     using Parameters;
     using Results;
 
-    public interface IGetJweInformationAction
-    {
-        Task<JweInformationResult> ExecuteAsync(GetJweParameter getJweParameter);
-    }
-
     public class GetJweInformationAction : IGetJweInformationAction
     {
         private readonly IJweParser _jweParser;

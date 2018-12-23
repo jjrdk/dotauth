@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>SimpleIdentityServer.Manager.Host.Tests Integration test project</Description>
@@ -12,14 +12,17 @@
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <PackageReference Include="Moq" Version="4.8.2" />
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.1.1" />
   </ItemGroup>
-
+  
   <ItemGroup>
+    <ProjectReference Include="..\..\src\SimpleIdentityServer.Common.Dtos\SimpleIdentityServer.Shared.csproj" />
+    <ProjectReference Include="..\..\src\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj" />
+    <ProjectReference Include="..\..\src\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
+    <ProjectReference Include="..\..\src\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />
     <ProjectReference Include="..\..\src\SimpleIdentityServer.Manager.Client\SimpleIdentityServer.Manager.Client.csproj" />
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Manager.Host\SimpleIdentityServer.Manager.Host.csproj" />
   </ItemGroup>
 
 </Project>

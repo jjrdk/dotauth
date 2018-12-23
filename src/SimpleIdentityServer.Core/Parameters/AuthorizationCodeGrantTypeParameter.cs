@@ -14,6 +14,8 @@
 
 namespace SimpleIdentityServer.Core.Parameters
 {
+    using System;
+
     public class AuthorizationCodeGrantTypeParameter : GrantTypeParameter
     {
         /// <summary>
@@ -23,7 +25,7 @@ namespace SimpleIdentityServer.Core.Parameters
         /// <summary>
         /// Gets or sets the redirection url.
         /// </summary>
-        public string RedirectUri { get; set; }
+        public Uri RedirectUri { get; set; }
         /// <summary>
         /// Gets or sets the code verifier.
         /// </summary>

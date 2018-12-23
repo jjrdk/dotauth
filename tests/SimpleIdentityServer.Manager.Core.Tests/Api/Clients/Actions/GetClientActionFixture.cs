@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,74 +11,65 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
-
-using Moq;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
-using SimpleIdentityServer.Manager.Core.Errors;
-using SimpleIdentityServer.Manager.Core.Exceptions;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
 {
-    public class GetClientActionFixture
-    {
-        private Mock<IClientRepository> _clientRepositoryStub;
-        private IGetClientAction _getClientAction;
+    using Moq;
+    using Shared.Models;
+    using Shared.Repositories;
+    using SimpleIdentityServer.Core.Errors;
+    using SimpleIdentityServer.Core.Exceptions;
+    using System;
+    using System.Threading.Tasks;
+    using Xunit;
 
-        [Fact]
-        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+    //public class GetClientActionFixture
+    //{
+    //    private Mock<IClientStore> _clientRepositoryStub;
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getClientAction.Execute(null));
-        }
+    //    [Fact]
+    //    public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+    //    {
+    //        InitializeFakeObjects();
 
-        [Fact]
-        public async Task When_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            const string clientId = "client_id";
-            InitializeFakeObjects();
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult((SimpleIdentityServer.Core.Common.Models.Client)null));
+    //        await Assert.ThrowsAsync<ArgumentNullException>(() => _clientRepositoryStub.Object.GetById(null)).ConfigureAwait(false);
+    //    }
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _getClientAction.Execute(clientId));
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntExist, clientId));
-        }
+    //    [Fact]
+    //    public async Task When_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
+    //    {
+    //        const string clientId = "client_id";
+    //        InitializeFakeObjects();
+    //        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
+    //            .Returns(Task.FromResult((Client)null));
 
-        [Fact]
-        public async Task When_Getting_Client_Then_Information_Are_Returned()
-        {
-            // ARRANGE
-            const string clientId = "clientId";
-            var client = new SimpleIdentityServer.Core.Common.Models.Client
-            {
-                ClientId = clientId
-            };
-            InitializeFakeObjects();
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(client));
+    //        // ACT & ASSERTS
+    //        var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _clientRepositoryStub.Object.GetById(clientId)).ConfigureAwait(false);
+    //        Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+    //        Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntExist, clientId));
+    //    }
 
-            // ACT
-            var result = await _getClientAction.Execute(clientId);
+    //    [Fact]
+    //    public async Task When_Getting_Client_Then_Information_Are_Returned()
+    //    {
+    //        const string clientId = "clientId";
+    //        var client = new Client
+    //        {
+    //            ClientId = clientId
+    //        };
+    //        InitializeFakeObjects();
+    //        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
+    //            .Returns(Task.FromResult(client));
 
-            // ASSERTS
-            Assert.NotNull(result);
-            Assert.True(result.ClientId == clientId);
-        }
+    //        var result = await _clientRepositoryStub.Object.GetById(clientId).ConfigureAwait(false);
 
-        private void InitializeFakeObjects()
-        {
-            _clientRepositoryStub = new Mock<IClientRepository>();
-            _getClientAction = new GetClientAction(_clientRepositoryStub.Object);
-        }
-    }
+    //        Assert.NotNull(result);
+    //        Assert.True(result.ClientId == clientId);
+    //    }
+
+    //    private void InitializeFakeObjects()
+    //    {
+    //        _clientRepositoryStub = new Mock<IClientStore>();
+    //    }
+    //}
 }
