@@ -5,7 +5,7 @@
 
     public interface IActionResultParser
     {
-        ActionInformation GetControllerAndActionFromRedirectionActionResult(ActionResult actionResult);
-        RouteValueDictionary GetRedirectionParameters(ActionResult actionResult);
+        ActionInformation GetControllerAndActionFromRedirectionActionResult(EndpointResult endpointResult);
+        RouteValueDictionary GetRedirectionParameters(EndpointResult endpointResult);
     }
 }

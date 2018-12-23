@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
     using Shared;
     using Shared.Requests;
     using SimpleIdentityServer.Core;
-    using Constants = Core.Constants;
+    using Constants = Constants;
 
     public class BasicAuthorizationPolicyFixture
     {
@@ -39,9 +39,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACTS & ASSERTS
             await Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(null, null, null))
@@ -53,9 +51,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 
         [Fact]
         public async Task When_Doesnt_have_Permission_To_Access_To_Scope_Then_NotAuthorized_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var ticket = new TicketLineParameter("client_id")
             {
                 Scopes = new List<string>
@@ -80,19 +76,15 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 }
             };
 
-            // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null)
+                        var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null)
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
+                        Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
         }
 
         [Fact]
         public async Task When_Client_Is_Not_Allowed_Then_NotAuthorized_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var ticket = new TicketLineParameter("invalid_client_id")
             {
                 Scopes = new List<string>
@@ -124,19 +116,15 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 
             };
 
-            // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null)
+                        var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null)
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
+                        Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
         }
 
         [Fact]
         public async Task When_There_Is_No_Access_Token_Passed_Then_NeedInfo_Is_Returned()
-        {
-            // ARRANGE
-            const string configurationUrl = "http://localhost/configuration";
+        {            const string configurationUrl = "http://localhost/configuration";
             InitializeFakeObjects();
             var ticket = new TicketLineParameter("client_id")
             {
@@ -185,12 +173,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Token = "token"
             };
 
-            // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter)
+                        var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter)
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
+                        Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
             var errorDetails = result.ErrorDetails as Dictionary<string, object>;
             Assert.NotNull(errorDetails);
             Assert.True(errorDetails.ContainsKey(Constants.ErrorDetailNames.RequestingPartyClaims));
@@ -214,9 +200,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 
         [Fact]
         public async Task When_JwsPayload_Cannot_Be_Extracted_Then_NotAuthorized_Is_Returned()
-        {
-            // ARRANGE
-            const string configurationUrl = "http://localhost/configuration";
+        {            const string configurationUrl = "http://localhost/configuration";
             InitializeFakeObjects();
             var ticket = new TicketLineParameter("client_id")
             {
@@ -267,19 +251,15 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
                 .Returns((JwsPayload)null);
 
-            // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters)
+                        var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters)
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
+                        Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
         }
 
         [Fact]
         public async Task When_Role_Is_Not_Correct_Then_NotAuthorized_Is_Returned()
-        {
-            // ARRANGE
-            const string configurationUrl = "http://localhost/configuration";
+        {            const string configurationUrl = "http://localhost/configuration";
             InitializeFakeObjects();
             var ticket = new TicketLineParameter("client_id")
             {
@@ -337,19 +317,15 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                     }
                 });
 
-            // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter)
+                        var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter)
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
+                        Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
         }
 
         [Fact]
         public async Task When_There_Is_No_Role_Then_NotAuthorized_Is_Returned()
-        {
-            // ARRANGE
-            const string configurationUrl = "http://localhost/configuration";
+        {            const string configurationUrl = "http://localhost/configuration";
             InitializeFakeObjects();
             var ticket = new TicketLineParameter("client_id")
             {
@@ -402,19 +378,15 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
                 .Returns(new JwsPayload());
 
-            // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters)
+                        var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters)
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
+                        Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
         }
 
         [Fact]
         public async Task When_Passing_Not_Valid_Roles_In_JArray_Then_NotAuthorized_Is_Returned()
-        {
-            // ARRANGE
-            const string configurationUrl = "http://localhost/configuration";
+        {            const string configurationUrl = "http://localhost/configuration";
             InitializeFakeObjects();
             var ticket = new TicketLineParameter("client_id")
             {
@@ -468,19 +440,15 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
                 .Returns(payload);
 
-            // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters)
+                        var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters)
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
+                        Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
         }
 
         [Fact]
         public async Task When_Passing_Not_Valid_Roles_InStringArray_Then_NotAuthorized_Is_Returned()
-        {
-            // ARRANGE
-            const string configurationUrl = "http://localhost/configuration";
+        {            const string configurationUrl = "http://localhost/configuration";
             InitializeFakeObjects();
             var ticket = new TicketLineParameter("client_id")
             {
@@ -537,19 +505,15 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
                 .Returns(payload);
 
-            // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter)
+                        var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter)
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
+                        Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
         }
 
         [Fact]
         public async Task When_Claims_Are_Not_Corred_Then_NotAuthorized_Is_Returned()
-        {
-            // ARRANGE
-            const string configurationUrl = "http://localhost/configuration";
+        {            const string configurationUrl = "http://localhost/configuration";
             InitializeFakeObjects();
             var ticket = new TicketLineParameter("client_id")
             {
@@ -607,19 +571,15 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                     }
                 });
 
-            // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter)
+                        var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter)
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
+                        Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
         }
 
         [Fact]
         public async Task When_ResourceOwnerConsent_Is_Required_Then_RequestSubmitted_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var ticket = new TicketLineParameter("client_id")
             {
                 IsAuthorizedByRo = false,
@@ -652,19 +612,15 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 }
             };
 
-            // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null)
+                        var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null)
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.RequestSubmitted);
+                        Assert.True(result.Type == AuthorizationPolicyResultEnum.RequestSubmitted);
         }
 
         [Fact]
         public async Task When_AuthorizationPassed_Then_Authorization_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var ticket = new TicketLineParameter("client_id")
             {
                 IsAuthorizedByRo = true,
@@ -693,12 +649,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 }
             };
 
-            // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null)
+                        var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null)
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.Authorized);
+                        Assert.True(result.Type == AuthorizationPolicyResultEnum.Authorized);
         }
 
         private void InitializeFakeObjects()

@@ -35,9 +35,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
 
         [Fact]
         public async Task When_Getting_Authorization_Policies_Then_A_ListIds_Is_Returned()
-        {
-            // ARRANGE
-            const string policyId = "policy_id";
+        {            const string policyId = "policy_id";
             InitializeFakeObjects();
             ICollection<Policy> policies = new List<Policy>
             {
@@ -50,11 +48,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 It.IsAny<Func<Task<ICollection<Policy>>>>()))
                 .Returns(Task.FromResult(policies));
 
-            // ACT
-            var result = await _getAuthorizationPoliciesAction.Execute().ConfigureAwait(false);
+                        var result = await _getAuthorizationPoliciesAction.Execute().ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
             Assert.True(result.Count() == 1);
             Assert.True(result.First() == policyId);
         }

@@ -157,7 +157,7 @@ namespace SimpleIdentityServer.Core.Repositories
                 : scopes.ToList();
         }
 
-        public Task<bool> DeleteAsync(Scope scope)
+        public Task<bool> Delete(Scope scope)
         {
             if (scope == null)
             {
@@ -174,13 +174,13 @@ namespace SimpleIdentityServer.Core.Repositories
             return Task.FromResult(true);
         }
 
-        public Task<ICollection<Scope>> GetAllAsync()
+        public Task<ICollection<Scope>> GetAll()
         {
             ICollection<Scope> res = _scopes.Select(s => s.Copy()).ToList();
             return Task.FromResult(res);
         }
 
-        public Task<Scope> GetAsync(string name)
+        public Task<Scope> Get(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -196,7 +196,7 @@ namespace SimpleIdentityServer.Core.Repositories
             return Task.FromResult(scope.Copy());
         }
 
-        public Task<bool> InsertAsync(Scope scope)
+        public Task<bool> Insert(Scope scope)
         {
             if (scope == null)
             {
@@ -263,7 +263,7 @@ namespace SimpleIdentityServer.Core.Repositories
             });
         }
 
-        public Task<ICollection<Scope>> SearchByNamesAsync(IEnumerable<string> names)
+        public Task<ICollection<Scope>> SearchByNames(IEnumerable<string> names)
         {
             if (names == null)
             {
@@ -274,7 +274,7 @@ namespace SimpleIdentityServer.Core.Repositories
             return Task.FromResult(result);
         }
 
-        public Task<bool> UpdateAsync(Scope scope)
+        public Task<bool> Update(Scope scope)
         {
             if (scope == null)
             {

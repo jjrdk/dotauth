@@ -20,14 +20,18 @@ namespace SimpleIdentityServer.Shared.Repositories
     using Parameters;
     using Results;
 
-    public interface IScopeRepository
+    public interface IScopeStore
     {
         Task<SearchScopeResult> Search(SearchScopesParameter parameter);
-        Task<Scope> GetAsync(string name);
-        Task<ICollection<Scope>> SearchByNamesAsync(IEnumerable<string> names);
-        Task<ICollection<Scope>> GetAllAsync();
-        Task<bool> InsertAsync(Scope scope);
-        Task<bool> DeleteAsync(Scope scope);
-        Task<bool> UpdateAsync(Scope scope);
+        Task<Scope> Get(string name);
+        Task<ICollection<Scope>> SearchByNames(IEnumerable<string> names);
+        Task<ICollection<Scope>> GetAll();
+    }
+
+    public interface IScopeRepository : IScopeStore
+    {
+        Task<bool> Insert(Scope scope);
+        Task<bool> Delete(Scope scope);
+        Task<bool> Update(Scope scope);
     }
 }

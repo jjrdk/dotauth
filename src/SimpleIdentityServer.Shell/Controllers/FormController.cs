@@ -25,24 +25,24 @@ namespace SimpleIdentityServer.Shell.Controllers
             var queryStringValue = Request.QueryString.Value;
             var queryString = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(queryStringValue);
             var viewModel = new FormViewModel();    
-            if (queryString.ContainsKey(Core.Constants.StandardAuthorizationResponseNames.AccessTokenName))
+            if (queryString.ContainsKey(Core.CoreConstants.StandardAuthorizationResponseNames.AccessTokenName))
             {
-                viewModel.AccessToken = queryString[Core.Constants.StandardAuthorizationResponseNames.AccessTokenName];
+                viewModel.AccessToken = queryString[Core.CoreConstants.StandardAuthorizationResponseNames.AccessTokenName];
             }
 
-            if (queryString.ContainsKey(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName))
+            if (queryString.ContainsKey(Core.CoreConstants.StandardAuthorizationResponseNames.AuthorizationCodeName))
             {
-                viewModel.AuthorizationCode = queryString[Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName];
+                viewModel.AuthorizationCode = queryString[Core.CoreConstants.StandardAuthorizationResponseNames.AuthorizationCodeName];
             }
 
-            if (queryString.ContainsKey(Core.Constants.StandardAuthorizationResponseNames.IdTokenName))
+            if (queryString.ContainsKey(Core.CoreConstants.StandardAuthorizationResponseNames.IdTokenName))
             {
-                viewModel.IdToken = queryString[Core.Constants.StandardAuthorizationResponseNames.IdTokenName];
+                viewModel.IdToken = queryString[Core.CoreConstants.StandardAuthorizationResponseNames.IdTokenName];
             }
 
-            if (queryString.ContainsKey(Core.Constants.StandardAuthorizationResponseNames.StateName))
+            if (queryString.ContainsKey(Core.CoreConstants.StandardAuthorizationResponseNames.StateName))
             {
-                viewModel.State = queryString[Core.Constants.StandardAuthorizationResponseNames.StateName];
+                viewModel.State = queryString[Core.CoreConstants.StandardAuthorizationResponseNames.StateName];
             }
 
             if (queryString.ContainsKey("redirect_uri"))

@@ -30,13 +30,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
         [Fact]
         public async Task When_Parameter_Is_Null_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _displayConsentAction.Execute(
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _displayConsentAction.Execute(
                 null,
                 null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _displayConsentAction.Execute(
@@ -46,12 +43,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
         [Fact]
         public async Task When_A_Consent_Has_Been_Given_Then_Redirect_To_Callback()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction()
             };
@@ -68,19 +63,15 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
 
-            // ACT
-            var result = await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null).ConfigureAwait(false);
+                        var result = await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null).ConfigureAwait(false);
 
-            // ASSERT
-            _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl());
-            Assert.True(result.ActionResult.RedirectInstruction.ResponseMode == ResponseMode.fragment);
+                        _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl());
+            Assert.True(result.EndpointResult.RedirectInstruction.ResponseMode == ResponseMode.fragment);
         }
 
         [Fact]
         public async Task When_A_Consent_Has_Been_Given_And_The_AuthorizationFlow_Is_Not_Supported_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string clientId = "clientId";
             const string state = "state";
             var claimsIdentity = new ClaimsIdentity();
@@ -101,8 +92,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(responseTypes);
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
+                        var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
                 claimsPrincipal, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
@@ -112,9 +102,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
         [Fact]
         public async Task When_No_Consent_Has_Been_Given_And_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string clientId = "clientId";
             const string state = "state";
             var claimsIdentity = new ClaimsIdentity();
@@ -130,8 +118,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>())).
                 Returns(Task.FromResult((Client)null));
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
+                        var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
                 claimsPrincipal, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
@@ -140,9 +127,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
         [Fact]
         public async Task When_No_Consent_Has_Been_Given_Then_Redirect_To_Consent_Screen()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string clientId = "clientId";
             const string state = "state";
             const string scopeName = "profile";
@@ -166,15 +151,13 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(Task.FromResult((Consent)null));
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>())).
                 Returns(Task.FromResult(client));
-            _scopeRepositoryFake.Setup(s => s.SearchByNamesAsync(It.IsAny<IEnumerable<string>>()))
+            _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
 
-            // ACT
-            await _displayConsentAction.Execute(authorizationParameter,
+                        await _displayConsentAction.Execute(authorizationParameter,
                 claimsPrincipal, null).ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.Contains(scopes, s => s.Name == scopeName);
+                        Assert.Contains(scopes, s => s.Name == scopeName);
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithOutput());
         }
 

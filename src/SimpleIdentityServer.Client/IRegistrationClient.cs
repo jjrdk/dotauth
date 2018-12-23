@@ -2,10 +2,10 @@
 {
     using System.Threading.Tasks;
     using Results;
-    using Shared.Requests;
+    using Shared.Models;
 
     public interface IRegistrationClient
     {
-        Task<GetRegisterClientResult> ResolveAsync(ClientRequest client, string configurationUrl, string accessToken);
+        Task<GetRegisterClientResult> ResolveAsync(Client client, string configurationUrl, string accessToken);
     }
 }

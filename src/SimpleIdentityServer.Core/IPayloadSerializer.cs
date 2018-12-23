@@ -12,8 +12,7 @@
         string GetPayload(AuthorizationParameter parameter);
         string GetPayload(IntrospectionParameter parameter, AuthenticationHeaderValue authenticationHeaderValue);
         string GetPayload(IntrospectionResult parameter);
-        string GetPayload(RegistrationParameter parameter);
-        string GetPayload(ClientRegistrationResponse parameter);
+        string GetPayload(Client parameter);
         string GetPayload(string accessToken);
         string GetPayload(IActionResult parameter);
         string GetPayload(AuthorizationCodeGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue);
@@ -22,6 +21,6 @@
         string GetPayload(ResourceOwnerGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue);
         string GetPayload(RevokeTokenParameter parameter, AuthenticationHeaderValue authenticationHeaderValue);
         string GetPayload(GrantedToken parameter);
-        string GetPayload(Results.ActionResult parameter);
+        string GetPayload(Results.EndpointResult parameter);
     }
 }

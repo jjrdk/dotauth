@@ -14,33 +14,36 @@
 
 namespace SimpleIdentityServer.Host.Controllers
 {
-    using System.Net;
-    using System.Threading.Tasks;
-    using Core.Api.Clients;
     using Core.Errors;
+    using Core.Exceptions;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Shared.Models;
+    using Shared.Repositories;
     using Shared.Requests;
     using Shared.Responses;
+    using Shared.Results;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Threading.Tasks;
 
-    [Route(Constants.EndPoints.Clients)]
+    [Route(HostEnpoints.Clients)]
     public class ClientsController : Controller
     {
-        //public const string GetClientsStoreName = "GetClients";
-        //public const string GetClientStoreName = "GetClient_";
-        private readonly IClientActions _clientActions;
-        //private readonly IRepresentationManager _representationManager;
+        private readonly IClientStore _clientStore;
+        private readonly IClientRepository _clientRepository;
 
-        public ClientsController(IClientActions clientActions)
+        public ClientsController(IClientRepository clientRepository, IClientStore clientStore)
         {
-            _clientActions = clientActions;
+            _clientRepository = clientRepository;
+            _clientStore = clientStore;
         }
-        
+
         [HttpGet]
         [Authorize("manager")]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<Client>>> GetAll()
         {
             //if (!await _representationManager.CheckRepresentationExistsAsync(this, GetClientsStoreName))
             //{
@@ -50,7 +53,7 @@ namespace SimpleIdentityServer.Host.Controllers
             //    };
             //}
 
-            var result =  (await _clientActions.GetClients().ConfigureAwait(false)).ToDtos();
+            var result = await _clientStore.GetAllAsync().ConfigureAwait(false);
             //await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName);
             return new OkObjectResult(result);
         }
@@ -65,8 +68,8 @@ namespace SimpleIdentityServer.Host.Controllers
             }
 
             var parameter = request.ToSearchClientParameter();
-            var result = await _clientActions.Search(parameter).ConfigureAwait(false);
-            return new OkObjectResult(result.ToDto());
+            var result = await _clientRepository.Search(parameter).ConfigureAwait(false);
+            return new OkObjectResult(result);
         }
 
         [HttpGet("{id}")]
@@ -78,23 +81,13 @@ namespace SimpleIdentityServer.Host.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "identifier is missing", HttpStatusCode.BadRequest);
             }
 
-            //if (!await _representationManager.CheckRepresentationExistsAsync(this, GetClientStoreName + id))
-            //{
-            //    return new ContentResult
-            //    {
-            //        StatusCode = 412
-            //    };
-            //}
-
-            var result = await _clientActions.GetClient(id).ConfigureAwait(false);
+            var result = await _clientStore.GetById(id).ConfigureAwait(false);
             if (result == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "client doesn't exist", HttpStatusCode.NotFound);
+                return BuildError(ErrorCodes.InvalidRequestCode, ErrorDescriptions.TheClientDoesntExist, HttpStatusCode.NotFound);
             }
 
-            var response = result.ToDto();
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + id);
-            return new OkObjectResult(response);
+            return new OkObjectResult(result);
         }
 
         [HttpDelete("{id}")]
@@ -106,9 +99,9 @@ namespace SimpleIdentityServer.Host.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "identifier is missing", HttpStatusCode.BadRequest);
             }
 
-            if (!await _clientActions.DeleteClient(id).ConfigureAwait(false))
+            if (!await _clientRepository.Delete(id).ConfigureAwait(false))
             {
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                return new BadRequestResult();
             }
 
             //await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + id, false);
@@ -118,48 +111,63 @@ namespace SimpleIdentityServer.Host.Controllers
 
         [HttpPut]
         [Authorize("manager")]
-        public async Task<IActionResult> Put([FromBody] UpdateClientRequest updateClientRequest)
+        public async Task<IActionResult> Put([FromBody] Client updateClientRequest)
         {
             if (updateClientRequest == null)
             {
                 return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
-            if (!await _clientActions.UpdateClient(updateClientRequest.ToParameter()).ConfigureAwait(false))
+            //var client = await _clientStore.GetById(updateClientRequest.ClientId).ConfigureAwait(false);
+            try
+            {
+                var result = await _clientRepository.Update(updateClientRequest).ConfigureAwait(false);
+                return result == null
+                    ? (IActionResult)BadRequest(new ErrorResponse
+                    {
+                        Error = ErrorCodes.UnhandledExceptionCode,
+                        ErrorDescription = ErrorDescriptions.RequestIsNotValid
+                    })
+                    : Ok(result);
+            }
+            catch (IdentityServerException e)
+            {
+                return BuildError(e.Code, e.Message, HttpStatusCode.BadRequest);
+            }
+            catch
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
-
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + updateClientRequest.ClientId, false);
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName, false);
-            return new NoContentResult();
         }
 
         [HttpPost]
         [Authorize("manager")]
-        public async Task<IActionResult> Add([FromBody] AddClientRequest client)
+        public async Task<IActionResult> Add([FromBody] Client client)
         {
             if (client == null)
             {
                 return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
-            var result = await _clientActions.AddClient(client.ToParameter()).ConfigureAwait(false);
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName, false);
+            var existing = await _clientStore.GetById(client.ClientName).ConfigureAwait(false);
+            if (existing != null)
+            {
+                return BadRequest();
+            }
+
+            var result = await _clientRepository.Insert(client).ConfigureAwait(false);
+
             return new OkObjectResult(result);
         }
 
-        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        private IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
             var error = new ErrorResponse
             {
                 Error = code,
                 ErrorDescription = message
             };
-            return new JsonResult(error)
-            {
-                StatusCode = (int)statusCode
-            };
+            return StatusCode((int)statusCode, error);
         }
     }
 }

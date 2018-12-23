@@ -22,9 +22,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 
         [Fact]
         public async Task When_Pass_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACTS & ASSERTS
             await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserClaimsOperation.Execute(null, null)).ConfigureAwait(false);
@@ -33,26 +31,20 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 
         [Fact]
         public async Task When_ResourceOwner_DoesntExist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserClaimsOperation.Execute("subject", new List<ClaimAggregate>())).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserClaimsOperation.Execute("subject", new List<ClaimAggregate>())).ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(exception);
+                        Assert.NotNull(exception);
             Assert.True(exception.Code == Errors.ErrorCodes.InternalError);
             Assert.True(exception.Message == Errors.ErrorDescriptions.TheRoDoesntExist);
         }
 
         [Fact]
         public async Task When_Claims_Are_Updated_Then_Operation_Is_Called()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
@@ -70,14 +62,12 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 }
             }));
 
-            // ACT
-            await _updateUserClaimsOperation.Execute("subjet", new List<ClaimAggregate>
+                        await _updateUserClaimsOperation.Execute("subjet", new List<ClaimAggregate>
             {
                 new ClaimAggregate("type", "value1")
             }).ConfigureAwait(false);
 
-            // ASSERT
-            _resourceOwnerRepositoryStub.Verify(p => p.UpdateAsync(It.Is<ResourceOwner>(r => r.Claims.Any(c => c.Type == "type" && c.Value == "value1"))));
+                        _resourceOwnerRepositoryStub.Verify(p => p.UpdateAsync(It.Is<ResourceOwner>(r => r.Claims.Any(c => c.Type == "type" && c.Value == "value1"))));
         }
 
         private void InitializeFakeObjects()

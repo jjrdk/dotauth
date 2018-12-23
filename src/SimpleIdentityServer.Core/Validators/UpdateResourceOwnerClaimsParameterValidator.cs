@@ -5,11 +5,6 @@
     using Exceptions;
     using Parameters;
 
-    public interface IUpdateResourceOwnerClaimsParameterValidator
-    {
-        void Validate(UpdateResourceOwnerClaimsParameter parameter);
-    }
-
     internal sealed class UpdateResourceOwnerClaimsParameterValidator : IUpdateResourceOwnerClaimsParameterValidator
     {
         public void Validate(UpdateResourceOwnerClaimsParameter parameter)

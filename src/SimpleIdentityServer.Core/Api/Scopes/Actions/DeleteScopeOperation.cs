@@ -21,11 +21,6 @@ namespace SimpleIdentityServer.Core.Api.Scopes.Actions
     using Logging;
     using Shared.Repositories;
 
-    public interface IDeleteScopeOperation
-    {
-        Task<bool> Execute(string scopeName);
-    }
-
     internal class DeleteScopeOperation : IDeleteScopeOperation
     {
         private readonly IScopeRepository _scopeRepository;
@@ -47,14 +42,14 @@ namespace SimpleIdentityServer.Core.Api.Scopes.Actions
                 throw new ArgumentNullException(nameof(scopeName));
             }
 
-            var scope = await _scopeRepository.GetAsync(scopeName).ConfigureAwait(false);
+            var scope = await _scopeRepository.Get(scopeName).ConfigureAwait(false);
             if (scope == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheScopeDoesntExist, scopeName));
             }
 
-            var res = await _scopeRepository.DeleteAsync(scope).ConfigureAwait(false);
+            var res = await _scopeRepository.Delete(scope).ConfigureAwait(false);
             if (res)
             {
                 _managerEventSource.FinishToRemoveScope(scopeName);

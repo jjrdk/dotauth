@@ -32,19 +32,14 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getConsentsOperation.Execute(null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _getConsentsOperation.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Getting_Consents_A_List_Is_Returned()
-        {
-            // ARRANGE
-            const string subject = "subject";
+        {            const string subject = "subject";
             InitializeFakeObjects();
             var claims = new List<Claim>
             {
@@ -62,11 +57,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             _consentRepositoryStub.Setup(c => c.GetConsentsForGivenUserAsync(subject))
                 .Returns(Task.FromResult(consents));
 
-            // ACT
-            var result = await _getConsentsOperation.Execute(claimsPrincipal).ConfigureAwait(false);
+                        var result = await _getConsentsOperation.Execute(claimsPrincipal).ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
             Assert.True(result == consents);
         }
         

@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             _oauthEventSource = oauthEventSource;
         }
 
-        public async Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName)
+        public async Task<EndpointResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -85,7 +85,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
 
             var serializedAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
             _oauthEventSource.StartProcessingAuthorizationRequest(serializedAuthorizationParameter);
-            ActionResult result = null;
+            EndpointResult result = null;
             var prompts = _parameterParserHelper.ParsePrompts(authorizationParameter.Prompt);
             if (prompts == null || !prompts.Any())
             {
@@ -118,11 +118,11 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                     authorizationParameter.State);
             }
 
-            if (!scopeValidationResult.Scopes.Contains(Constants.StandardScopes.OpenId.Name))
+            if (!scopeValidationResult.Scopes.Contains(CoreConstants.StandardScopes.OpenId.Name))
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidScope,
-                    string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, Constants.StandardScopes.OpenId.Name),
+                    string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, CoreConstants.StandardScopes.OpenId.Name),
                     authorizationParameter.State);
             }
 
@@ -131,7 +131,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
+                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
                     authorizationParameter.State);
             }
 
@@ -190,7 +190,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
         }
 
         private async Task ProcessIdTokenHint(
-            ActionResult actionResult,
+            EndpointResult endpointResult,
             AuthorizationParameter authorizationParameter,
             ICollection<PromptParameter> prompts,
             ClaimsPrincipal claimsPrincipal,
@@ -198,7 +198,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
         {
             if (!string.IsNullOrWhiteSpace(authorizationParameter.IdTokenHint) &&
                 prompts.Contains(PromptParameter.none) &&
-                actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
+                endpointResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var token = authorizationParameter.IdTokenHint;
                 if (!_jwtParser.IsJweToken(token) &&
@@ -263,7 +263,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             }
         }
 
-        private ActionResult ProcessPromptParameters(ICollection<PromptParameter> prompts, ClaimsPrincipal principal, AuthorizationParameter authorizationParameter, Consent confirmedConsent)
+        private EndpointResult ProcessPromptParameters(ICollection<PromptParameter> prompts, ClaimsPrincipal principal, AuthorizationParameter authorizationParameter, Consent confirmedConsent)
         {
             if (prompts == null || !prompts.Any())
             {

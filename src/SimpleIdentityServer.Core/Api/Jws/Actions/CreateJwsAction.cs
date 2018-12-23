@@ -24,11 +24,6 @@ namespace SimpleIdentityServer.Core.Api.Jws.Actions
     using Parameters;
     using Shared;
 
-    public interface ICreateJwsAction
-    {
-        Task<string> Execute(CreateJwsParameter createJwsParameter);
-    }
-
     public class CreateJwsAction : ICreateJwsAction
     {
         private readonly IJwsGenerator _jwsGenerator;

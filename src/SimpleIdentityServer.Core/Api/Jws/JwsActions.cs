@@ -20,12 +20,6 @@ namespace SimpleIdentityServer.Core.Api.Jws
     using Parameters;
     using Results;
 
-    public interface IJwsActions
-    {
-        Task<JwsInformationResult> GetJwsInformation(GetJwsParameter getJwsParameter);
-        Task<string> CreateJws(CreateJwsParameter createJwsParameter);
-    }
-
     public class JwsActions : IJwsActions
     {
         private readonly IGetJwsInformationAction _getJwsInformationAction;

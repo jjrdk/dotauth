@@ -38,20 +38,16 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
         [Fact]
         public async Task When_No_Parameters_Is_Passed_To_TokenRevoke_Edp_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            var httpRequest = new HttpRequestMessage
+        {            var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 RequestUri = new Uri($"{baseUrl}/token/revoke")
             };
 
-            // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+                        var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
+                        Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
             Assert.NotNull(error);
             Assert.Equal("invalid_request", error.Error);
@@ -60,9 +56,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
         [Fact]
         public async Task When_No_Valid_Parameters_Is_Passed_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            var request = new List<KeyValuePair<string, string>>
+        {            var request = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("invalid", "invalid")
             };
@@ -74,12 +68,10 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 RequestUri = new Uri($"{baseUrl}/token/revoke")
             };
 
-            // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+                        var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            // ASSERT
-            var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
+                        var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
             Assert.NotNull(error);
             Assert.Equal("invalid_request", error.Error);
             Assert.Equal("the parameter token is missing", error.ErrorDescription);
@@ -88,8 +80,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Revoke_Token_And_Client_Cannot_Be_Authenticated_Then_Error_Is_Returned()
         {
-            // ACT
-            var ex = await new RevokeTokenClient(
+                        var ex = await new RevokeTokenClient(
                     TokenCredentials.FromClientCredentials("invalid_client", "invalid_client"),
                     RevokeTokenRequest.RevokeToken("access_token", TokenTypes.AccessToken),
                     _server.Client,
@@ -97,8 +88,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
                 .ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(ex.ContainsError);
+                        Assert.True(ex.ContainsError);
             Assert.Equal("invalid_client", ex.Error.Error);
             Assert.Equal("the client doesn't exist", ex.Error.ErrorDescription);
         }
@@ -106,16 +96,14 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Token_Doesnt_Exist_Then_Error_Is_Returned()
         {
-            // ACT
-            var ex = await new RevokeTokenClient(
+                        var ex = await new RevokeTokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     RevokeTokenRequest.RevokeToken("access_token", TokenTypes.AccessToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(ex.ContainsError);
+                        Assert.True(ex.ContainsError);
             Assert.Equal("invalid_token", ex.Error.Error);
             Assert.Equal("the token doesn't exist", ex.Error.ErrorDescription);
         }
@@ -123,8 +111,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Revoke_Token_And_Client_Is_Different_Then_Error_Is_Returned()
         {
-            // ACT
-            var result = await new TokenClient(
+                        var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client_userinfo_enc_rsa15", "client_userinfo_enc_rsa15"),
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
@@ -137,8 +124,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(ex.ContainsError);
+                        Assert.True(ex.ContainsError);
             Assert.Equal("invalid_token", ex.Error.Error);
             Assert.Equal("the token has not been issued for the given client id 'client'", ex.Error.ErrorDescription);
         }
@@ -146,8 +132,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Revoking_AccessToken_Then_True_Is_Returned()
         {
-            // ACT
-            var result = await new TokenClient(
+                        var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
@@ -166,16 +151,14 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.False(revoke.ContainsError);
+                        Assert.False(revoke.ContainsError);
             Assert.True(ex.ContainsError);
         }
 
         [Fact]
         public async Task When_Revoking_RefreshToken_Then_True_Is_Returned()
         {
-            // ACT
-            var result = await new TokenClient(
+                        var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     TokenRequest.FromPassword("administrator", "password", new []{"scim"}),
                     _server.Client,
@@ -194,8 +177,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.False(revoke.ContainsError);
+                        Assert.False(revoke.ContainsError);
             Assert.True(ex.ContainsError);
         }
     }

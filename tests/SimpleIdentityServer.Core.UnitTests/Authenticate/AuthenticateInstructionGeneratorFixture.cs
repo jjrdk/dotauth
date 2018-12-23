@@ -25,12 +25,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         [Fact]
         public void When_Passing_No_Parameter_Then_Empty_Result_Is_Returned()
         {
-            // ACT
-            var header = (AuthenticationHeaderValue)null;
+                        var header = (AuthenticationHeaderValue)null;
             var result = header.GetAuthenticateInstruction(null);
 
-            // ASSERT
-            Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
+                        Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
             Assert.True(string.IsNullOrWhiteSpace(result.ClientSecretFromAuthorizationHeader));
         }
 
@@ -39,11 +37,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {
             var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", string.Empty);
 
-            // ACT
-            var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
+                        var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 
-            // ASSERT
-            Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
+                        Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
             Assert.True(string.IsNullOrWhiteSpace(result.ClientSecretFromAuthorizationHeader));
         }
 
@@ -54,11 +50,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             var encodedParameter = parameter.Base64Encode();
             var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", encodedParameter);
 
-            // ACT
-            var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
+                        var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 
-            // ASSERT
-            Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
+                        Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
             Assert.True(string.IsNullOrWhiteSpace(result.ClientSecretFromAuthorizationHeader));
         }
 
@@ -71,11 +65,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             var encodedParameter = parameter.Base64Encode();
             var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", encodedParameter);
 
-            // ACT
-            var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
+                        var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 
-            // ASSERT
-            Assert.True(result.ClientIdFromAuthorizationHeader == clientId);
+                        Assert.True(result.ClientIdFromAuthorizationHeader == clientId);
             Assert.True(result.ClientSecretFromAuthorizationHeader == clientSecret);
         }
     }

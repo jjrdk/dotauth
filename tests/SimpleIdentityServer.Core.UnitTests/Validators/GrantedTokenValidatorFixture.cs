@@ -31,36 +31,27 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
         [Fact]
         public async Task When_Passing_Null_Parameter_To_CheckAccessToken_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenValidator.CheckAccessTokenAsync(null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenValidator.CheckAccessTokenAsync(null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_AccessToken_Doesnt_Exist_Then_False_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
-            // ACT
-            var result = await _grantedTokenValidator.CheckAccessTokenAsync("access_token").ConfigureAwait(false);
+                        var result = await _grantedTokenValidator.CheckAccessTokenAsync("access_token").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.False(result.IsValid);
+                        Assert.False(result.IsValid);
             Assert.True(result.MessageErrorCode == ErrorCodes.InvalidToken);
             Assert.True(result.MessageErrorDescription == ErrorDescriptions.TheTokenIsNotValid);
         }
 
         [Fact]
         public async Task When_AccessToken_Is_Expired_Then_False_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var grantedToken = new GrantedToken
             {
                 CreateDateTime = DateTime.UtcNow.AddDays(-2),
@@ -69,20 +60,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
 
-            // ACT
-            var result = await _grantedTokenValidator.CheckAccessTokenAsync("access_token").ConfigureAwait(false);
+                        var result = await _grantedTokenValidator.CheckAccessTokenAsync("access_token").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.False(result.IsValid);
+                        Assert.False(result.IsValid);
             Assert.True(result.MessageErrorCode == ErrorCodes.InvalidToken);
             Assert.True(result.MessageErrorDescription == ErrorDescriptions.TheTokenIsExpired);
         }
 
         [Fact]
         public async Task When_Checking_Valid_Access_Token_Then_True_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var grantedToken = new GrantedToken
             {
                 CreateDateTime = DateTime.UtcNow,
@@ -91,45 +78,34 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
 
-            // ACT
-            var result = await _grantedTokenValidator.CheckAccessTokenAsync("access_token").ConfigureAwait(false);
+                        var result = await _grantedTokenValidator.CheckAccessTokenAsync("access_token").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.IsValid);
+                        Assert.True(result.IsValid);
         }
 
         [Fact]
         public async Task When_Passing_Null_Parameter_To_CheckRefreshToken_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenValidator.CheckRefreshTokenAsync(null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenValidator.CheckRefreshTokenAsync(null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_RefreshToken_Doesnt_Exist_Then_False_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
-            // ACT
-            var result = await _grantedTokenValidator.CheckRefreshTokenAsync("refresh_token").ConfigureAwait(false);
+                        var result = await _grantedTokenValidator.CheckRefreshTokenAsync("refresh_token").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.False(result.IsValid);
+                        Assert.False(result.IsValid);
             Assert.True(result.MessageErrorCode == ErrorCodes.InvalidToken);
             Assert.True(result.MessageErrorDescription == ErrorDescriptions.TheTokenIsNotValid);
         }
 
         [Fact]
         public async Task When_RefreshToken_Is_Expired_Then_False_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var grantedToken = new GrantedToken
             {
                 CreateDateTime = DateTime.UtcNow.AddDays(-2),
@@ -138,20 +114,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
 
-            // ACT
-            var result = await _grantedTokenValidator.CheckRefreshTokenAsync("refresh_token").ConfigureAwait(false);
+                        var result = await _grantedTokenValidator.CheckRefreshTokenAsync("refresh_token").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.False(result.IsValid);
+                        Assert.False(result.IsValid);
             Assert.True(result.MessageErrorCode == ErrorCodes.InvalidToken);
             Assert.True(result.MessageErrorDescription == ErrorDescriptions.TheTokenIsExpired);
         }
 
         [Fact]
         public async Task When_Checking_Valid_Refresh_Token_Then_True_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var grantedToken = new GrantedToken
             {
                 CreateDateTime = DateTime.UtcNow,
@@ -160,11 +132,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
 
-            // ACT
-            var result = await _grantedTokenValidator.CheckRefreshTokenAsync("refresh_token").ConfigureAwait(false);
+                        var result = await _grantedTokenValidator.CheckRefreshTokenAsync("refresh_token").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result.IsValid);
+                        Assert.True(result.IsValid);
         }
 
         private void InitializeFakeObjects()

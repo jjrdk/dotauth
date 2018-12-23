@@ -22,9 +22,9 @@ namespace SimpleIdentityServer.Core.Factories
         /// Creates an empty action result with redirection
         /// </summary>
         /// <returns>Empty action result with redirection</returns>
-        public ActionResult CreateAnEmptyActionResultWithRedirection()
+        public EndpointResult CreateAnEmptyActionResultWithRedirection()
         {
-            return new ActionResult
+            return new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction(),
                 Type = TypeActionResult.RedirectToAction
@@ -35,9 +35,9 @@ namespace SimpleIdentityServer.Core.Factories
         /// Creates an empty action result with output
         /// </summary>
         /// <returns>Empty action result with output</returns>
-        public ActionResult CreateAnEmptyActionResultWithOutput()
+        public EndpointResult CreateAnEmptyActionResultWithOutput()
         {
-            return new ActionResult
+            return new EndpointResult
             {
                 RedirectInstruction = null,
                 Type = TypeActionResult.Output
@@ -48,9 +48,9 @@ namespace SimpleIdentityServer.Core.Factories
         /// Creates an empty action result with no effect
         /// </summary>
         /// <returns>Empty action result with no effect</returns>
-        public ActionResult CreateAnEmptyActionResultWithNoEffect()
+        public EndpointResult CreateAnEmptyActionResultWithNoEffect()
         {
-            return new ActionResult
+            return new EndpointResult
             {
                 Type = TypeActionResult.None
             };
@@ -60,9 +60,9 @@ namespace SimpleIdentityServer.Core.Factories
         /// Creates an empty action result with redirection to callbackurl.
         /// </summary>
         /// <returns>Empty action with redirection to callbackurl</returns>
-        public ActionResult CreateAnEmptyActionResultWithRedirectionToCallBackUrl()
+        public EndpointResult CreateAnEmptyActionResultWithRedirectionToCallBackUrl()
         {
-            return new ActionResult
+            return new EndpointResult
             {
                 Type = TypeActionResult.RedirectToCallBackUrl,
                 RedirectInstruction = new RedirectInstruction()

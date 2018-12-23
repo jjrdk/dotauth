@@ -39,9 +39,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACTS & ASSERTS
             await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(null)).ConfigureAwait(false);
@@ -51,9 +49,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 
         [Fact]
         public async Task When_ResourceOwner_With_Same_Credentials_Exists_Then_Returns_False()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var parameter = new ResourceOwner { Id = "name", Password = "password" };
 
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -65,9 +61,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 
         [Fact]
         public async Task When_ResourceOwner_Cannot_Be_Added_Then_Returns_False()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.InsertAsync(It.IsAny<ResourceOwner>()))
                 .Returns(Task.FromResult(false));
             var parameter = new ResourceOwner
@@ -82,9 +76,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 
         [Fact]
         public async Task When_Add_ResourceOwner_Then_Operation_Is_Called()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             //var parameter = new AddUserParameter("name", "password", new List<Claim>());
             var parameter = new ResourceOwner
             {
@@ -96,11 +88,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 .Returns(Task.FromResult((ResourceOwner)null));
             _resourceOwnerRepositoryStub.Setup(r => r.InsertAsync(It.IsAny<ResourceOwner>())).Returns(Task.FromResult(true));
 
-            // ACT
-            await _addResourceOwnerAction.Execute(parameter).ConfigureAwait(false);
+                        await _addResourceOwnerAction.Execute(parameter).ConfigureAwait(false);
 
-            // ASSERT
-            _resourceOwnerRepositoryStub.Verify(r => r.InsertAsync(It.IsAny<ResourceOwner>()));
+                        _resourceOwnerRepositoryStub.Verify(r => r.InsertAsync(It.IsAny<ResourceOwner>()));
             _openidEventSourceStub.Verify(o => o.AddResourceOwner("name"));
         }
 

@@ -14,7 +14,6 @@
 
 namespace SimpleIdentityServer.Shared.Repositories
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Models;
     using Parameters;
@@ -23,15 +22,8 @@ namespace SimpleIdentityServer.Shared.Repositories
     public interface IClientRepository
     {
         Task<SearchClientResult> Search(SearchClientParameter parameter);
-        Task<IEnumerable<Client>> GetAllAsync();
-        Task<bool> UpdateAsync(Client client);
-        Task<bool> RemoveAllAsync();
-        Task<bool> InsertAsync(Client client);
-        Task<bool> DeleteAsync(Client client);
-    }
-
-    public interface IClientStore
-    {
-        Task<Client> GetById(string clientId);
+        Task<Client> Update(Client client);
+        Task<Client> Insert(Client client);
+        Task<bool> Delete(string clientId);
     }
 }

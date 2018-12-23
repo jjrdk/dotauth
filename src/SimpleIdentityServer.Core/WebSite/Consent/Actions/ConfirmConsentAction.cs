@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// <param name="authorizationParameter">Authorization code grant-type</param>
         /// <param name="claimsPrincipal">Resource owner's claims</param>
         /// <returns>Redirects the authorization code to the callback.</returns>
-        public async Task<ActionResult> Execute(
+        public async Task<EndpointResult> Execute(
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal, string issuerName)
         {
@@ -99,7 +99,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
 
             var subject = claimsPrincipal.GetSubject();
-            Consent assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
+            var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
             // Insert a new consent.
             if (assignedConsent == null)
             {
@@ -165,7 +165,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         {
             var result = new List<Scope>();
             var scopeNames = _parameterParserHelper.ParseScopes(concatenateListOfScopes);
-            return await _scopeRepository.SearchByNamesAsync(scopeNames).ConfigureAwait(false);
+            return await _scopeRepository.SearchByNames(scopeNames).ConfigureAwait(false);
         }
 
         private static AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state)
@@ -178,7 +178,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     state);
             }
 
-            var record = Constants.MappingResponseTypesToAuthorizationFlows.Keys
+            var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys
                 .SingleOrDefault(k => k.Count == responseTypes.Count && k.All(key => responseTypes.Contains(key)));
             if (record == null)
             {
@@ -188,12 +188,12 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     state);
             }
 
-            return Constants.MappingResponseTypesToAuthorizationFlows[record];
+            return CoreConstants.MappingResponseTypesToAuthorizationFlows[record];
         }
 
         private static ResponseMode GetResponseMode(AuthorizationFlow authorizationFlow)
         {
-            return Constants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
+            return CoreConstants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
         }
     }
 }

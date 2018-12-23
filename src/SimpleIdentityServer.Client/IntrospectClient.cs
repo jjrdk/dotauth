@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
             }
 
-            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out Uri uri))
+            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out var uri))
             {
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }

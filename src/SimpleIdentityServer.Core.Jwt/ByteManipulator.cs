@@ -46,10 +46,10 @@ namespace SimpleIdentityServer.Core.Jwt
 
         public static byte[] Concat(params byte[][] arrays)
         {
-            byte[] result = new byte[arrays.Sum(a => a?.Length ?? 0)];
-            int offset = 0;
+            var result = new byte[arrays.Sum(a => a?.Length ?? 0)];
+            var offset = 0;
 
-            foreach (byte[] array in arrays)
+            foreach (var array in arrays)
             {
                 if (array == null) continue;
 
@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Core.Jwt
 
         public static byte[] LongToBytes(long value)
         {
-            ulong _value = (ulong)value;
+            var _value = (ulong)value;
 
             return BitConverter.IsLittleEndian
                 ? new[] { (byte)((_value >> 56) & 0xFF), (byte)((_value >> 48) & 0xFF), (byte)((_value >> 40) & 0xFF), (byte)((_value >> 32) & 0xFF), (byte)((_value >> 24) & 0xFF), (byte)((_value >> 16) & 0xFF), (byte)((_value >> 8) & 0xFF), (byte)(_value & 0xFF) }
@@ -80,9 +80,9 @@ namespace SimpleIdentityServer.Core.Jwt
             if (expected.Length != actual.Length)
                 return false;
 
-            bool equals = true;
+            var equals = true;
 
-            for (int i = 0; i < expected.Length; i++)
+            for (var i = 0; i < expected.Length; i++)
                 if (expected[i] != actual[i])
                     equals = false;
 

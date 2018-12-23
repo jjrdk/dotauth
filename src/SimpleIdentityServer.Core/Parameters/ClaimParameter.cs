@@ -9,17 +9,17 @@
 
         public Dictionary<string, object> Parameters { get; set; }
 
-        public bool Essential => GetBoolean(Constants.StandardClaimParameterValueNames.EssentialName);
+        public bool Essential => GetBoolean(CoreConstants.StandardClaimParameterValueNames.EssentialName);
 
-        public string Value => GetString(Constants.StandardClaimParameterValueNames.ValueName);
+        public string Value => GetString(CoreConstants.StandardClaimParameterValueNames.ValueName);
 
-        public string[] Values => GetArray(Constants.StandardClaimParameterValueNames.ValuesName);
+        public string[] Values => GetArray(CoreConstants.StandardClaimParameterValueNames.ValuesName);
 
         public bool EssentialParameterExist
         {
             get
             {
-                return Parameters.Any(p => p.Key == Constants.StandardClaimParameterValueNames.EssentialName);
+                return Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.EssentialName);
             }
         }
 
@@ -27,7 +27,7 @@
         {
             get
             {
-                return Parameters.Any(p => p.Key == Constants.StandardClaimParameterValueNames.ValueName);
+                return Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.ValueName);
             }
         }
 
@@ -35,7 +35,7 @@
         {
             get
             {
-                return Parameters.Any(p => p.Key == Constants.StandardClaimParameterValueNames.ValuesName);
+                return Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.ValuesName);
             }
         }
 

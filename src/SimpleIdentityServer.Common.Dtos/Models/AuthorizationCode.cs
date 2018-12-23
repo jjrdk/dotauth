@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Shared.Models
         /// <summary>
         /// Gets or sets the redirection uri.
         /// </summary>
-        public string RedirectUri { get; set; }
+        public Uri RedirectUri { get; set; }
 
         /// <summary>
         /// Gets or sets the creation date time.

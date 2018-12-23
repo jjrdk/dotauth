@@ -7,11 +7,6 @@
     using Shared.Models;
     using Shared.Repositories;
 
-    public interface IGetClaimAction
-    {
-        Task<ClaimAggregate> Execute(string claimCode);
-    }
-
     internal sealed class GetClaimAction : IGetClaimAction
     {
         private readonly IClaimRepository _claimRepository;

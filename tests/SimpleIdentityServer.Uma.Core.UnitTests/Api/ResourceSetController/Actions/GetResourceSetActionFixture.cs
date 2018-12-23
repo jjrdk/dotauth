@@ -30,9 +30,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
 
         [Fact]
         public async Task When_Passing_Null_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACT && ASSERT
             await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceSetAction.Execute(null)).ConfigureAwait(false);
@@ -40,9 +38,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
 
         [Fact]
         public async Task When_Execute_Operation_Then_Resource_Set_Is_Returned()
-        {
-            // ARRANGE
-            var resourceSet = new ResourceSet
+        {            var resourceSet = new ResourceSet
             {
                 Id = "id"
             };
@@ -50,11 +46,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult(resourceSet));
 
-            // ACT
-            var result = await _getResourceSetAction.Execute(resourceSet.Id).ConfigureAwait(false);
+                        var result = await _getResourceSetAction.Execute(resourceSet.Id).ConfigureAwait(false);
         
-            // ASSERTS
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
             Assert.True(result.Id == resourceSet.Id);
         }
 

@@ -25,11 +25,6 @@ namespace SimpleIdentityServer.Core.Helpers
     using Shared;
     using Shared.Requests;
 
-    public interface IJsonWebKeyHelper
-    {
-        Task<JsonWebKey> GetJsonWebKey(string kid, Uri uri);
-    }
-
     public class JsonWebKeyHelper : IJsonWebKeyHelper
     {
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;

@@ -7,15 +7,6 @@
     using Shared.Parameters;
     using Shared.Results;
 
-    public interface IClaimActions
-    {
-        Task<bool> Add(AddClaimParameter request);
-        Task<bool> Delete(string claimCode);
-        Task<ClaimAggregate> Get(string claimCode);
-        Task<SearchClaimsResult> Search(SearchClaimsParameter parameter);
-        Task<IEnumerable<ClaimAggregate>> GetAll();
-    }
-
     internal sealed class ClaimActions : IClaimActions
     {
         private readonly IAddClaimAction _addClaimAction;

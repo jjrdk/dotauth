@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Core.Validators
             {
                 throw new IdentityServerException(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.ScopeName));
+                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardTokenRequestParameterNames.ScopeName));
             }
         }
     }

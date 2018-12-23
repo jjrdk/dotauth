@@ -39,8 +39,7 @@
 //        public async Task WhenSettingImmutablePropertyThenFails()
 //        {
 //            const string baseUrl = "http://localhost:5555";
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
 //            var patchOperation = new PatchOperation
 //            {
@@ -108,8 +107,7 @@
 //            var sevenResult = await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id, null, updateGroupOperation)
 //                .ConfigureAwait(false);
 
-//            // ASSERTS
-//            Assert.NotNull(sevenResult);
+//            //            Assert.NotNull(sevenResult);
 //            Assert.True(sevenResult.StatusCode == HttpStatusCode.BadRequest);
 //        }
 
@@ -117,22 +115,19 @@
 //        public async Task WhenCreatingGroupThenReturnsOk()
 //        {
 //            const string baseUrl = "http://localhost:5555";
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
 //            // ACT : Create group
 //            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
-//            // ASSERTS
-//            Assert.NotNull(firstResult);
+//            //            Assert.NotNull(firstResult);
 //            Assert.True(firstResult.StatusCode == HttpStatusCode.Created);
 //            var id = firstResult.Content["id"].ToString();
 
 //            // ACT : Get group
 //            var secondResult = await _groupsClient.GetGroup(new Uri(baseUrl), id).ConfigureAwait(false);
 
-//            // ASSERTS
-//            Assert.NotNull(secondResult);
+//            //            Assert.NotNull(secondResult);
 //            Assert.True(secondResult.StatusCode == HttpStatusCode.OK);
 //            Assert.True(secondResult.Content["id"].ToString() == id);
 //        }
@@ -141,8 +136,7 @@
 //        public async Task WhenDeletingGroupThenReturnsOk()
 //        {
 //            const string baseUrl = "http://localhost:5555";
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
 //            // ACT : Create group
 //            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
@@ -152,8 +146,7 @@
 //            // ACT : Remove group
 //            var thenResult = await _groupsClient.DeleteGroup(new Uri(baseUrl), id).ConfigureAwait(false);
 
-//            // ASSERTS
-//            Assert.NotNull(thenResult);
+//            //            Assert.NotNull(thenResult);
 //            Assert.Equal(HttpStatusCode.NoContent, thenResult.StatusCode);
 //        }
 
@@ -161,8 +154,7 @@
 //        public async Task WhenSearchingGroupsThenReturnsOnlyMembers()
 //        {
 //            const string baseUrl = "http://localhost:5555";
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
 //            var patchOperation = new PatchOperation
 //            {
@@ -190,16 +182,14 @@
 //                    })
 //                .ConfigureAwait(false);
 
-//            // ASSERTS
-//            Assert.NotNull(nineResult);
+//            //            Assert.NotNull(nineResult);
 //        }
 
 //        [Fact]
 //        public async Task WhenAddingMultipleGroupsThenCanQueryAndReceiveAllGroups()
 //        {
 //            const string baseUrl = "http://localhost:5555";
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
 //            // ACT : Add ten groups
 //            for (var i = 0; i < 10; i++)
@@ -216,8 +206,7 @@
 //                    })
 //                .ConfigureAwait(false);
 
-//            // ASSERTS
-//            Assert.NotNull(eightResult);
+//            //            Assert.NotNull(eightResult);
 //            Assert.True(eightResult.Content["Resources"].Count() == 10);
 //        }
 
@@ -225,8 +214,7 @@
 //        public async Task CanUpdateExistingGroup()
 //        {
 //            const string baseUrl = "http://localhost:5555";
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
 //            // ACT : Create group
 //            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
@@ -239,8 +227,7 @@
 //                    new GroupResource { Id = "other_id" })
 //                .ConfigureAwait(false);
 
-//            // ASSERTS
-//            Assert.NotNull(thirdResult);
+//            //            Assert.NotNull(thirdResult);
 //            Assert.True(thirdResult.StatusCode == HttpStatusCode.OK);
 //            Assert.True(thirdResult.Content["id"].ToString() == id);
 //            Assert.True(thirdResult.Content[ScimConstants.GroupResourceResponseNames.DisplayName].ToString() ==
@@ -253,8 +240,7 @@
 //        public async Task CanPartiallyUpdateExistingGroup()
 //        {
 //            const string baseUrl = "http://localhost:5555";
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
 //            var patchOperation = new PatchOperation
 //            {
@@ -281,8 +267,7 @@
 //            var fourthResult = await _groupsClient.PartialUpdateGroup(new Uri(baseUrl), id, null, patchOperation)
 //                .ConfigureAwait(false);
 
-//            // ASSERTS
-//            Assert.NotNull(fourthResult);
+//            //            Assert.NotNull(fourthResult);
 //            Assert.True(fourthResult.StatusCode == HttpStatusCode.OK);
 //            Assert.True(fourthResult.Content["id"].ToString() == id);
 //            Assert.True(
@@ -301,8 +286,7 @@
 //        public async Task CanRemoveSpecifiedMemberFromGroup()
 //        {
 //            const string baseUrl = "http://localhost:5555";
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
 //            var patchOperation = new PatchOperation
 //            {
@@ -351,8 +335,7 @@
 //        public async Task CanAddSpecifiedMemberFromGroup()
 //        {
 //            const string baseUrl = "http://localhost:5555";
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
 //            var patchOperation = new PatchOperation
 //            {

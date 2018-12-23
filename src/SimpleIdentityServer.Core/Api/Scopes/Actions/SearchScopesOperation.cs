@@ -6,11 +6,6 @@
     using Shared.Repositories;
     using Shared.Results;
 
-    public interface ISearchScopesOperation
-    {
-        Task<SearchScopeResult> Execute(SearchScopesParameter parameter);
-    }
-
     internal sealed class SearchScopesOperation : ISearchScopesOperation
     {
         private readonly IScopeRepository _scopeRepository;

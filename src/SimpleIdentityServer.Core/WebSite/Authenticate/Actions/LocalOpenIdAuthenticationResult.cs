@@ -6,7 +6,7 @@
 
     public class LocalOpenIdAuthenticationResult
     {
-        public ActionResult ActionResult { get; set; }
+        public EndpointResult EndpointResult { get; set; }
         public ICollection<Claim> Claims { get; set; }
         public string TwoFactor { get; set; }
     }

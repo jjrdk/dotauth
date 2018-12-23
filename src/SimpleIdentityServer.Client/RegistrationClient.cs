@@ -23,6 +23,7 @@ namespace SimpleIdentityServer.Client
     using Newtonsoft.Json;
     using System.Net.Http;
     using System.Net.Http.Headers;
+    using Shared.Models;
     using Shared.Requests;
     using Shared.Responses;
 
@@ -37,7 +38,9 @@ namespace SimpleIdentityServer.Client
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
-        public async Task<GetRegisterClientResult> ResolveAsync(ClientRequest client, string configurationUrl, string accessToken)
+        public async Task<GetRegisterClientResult> ResolveAsync(Client client,
+            string configurationUrl,
+            string accessToken)
         {
             if (string.IsNullOrWhiteSpace(configurationUrl))
             {
@@ -51,10 +54,12 @@ namespace SimpleIdentityServer.Client
 
             var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
 
-            var json = JsonConvert.SerializeObject(client, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            });
+            var json = JsonConvert.SerializeObject(
+                client,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -86,9 +91,8 @@ namespace SimpleIdentityServer.Client
             return new GetRegisterClientResult
             {
                 ContainsError = false,
-                Content = JsonConvert.DeserializeObject<ClientRegistrationResponse>(content)
+                Content = JsonConvert.DeserializeObject<Client>(content)
             };
         }
-
     }
 }

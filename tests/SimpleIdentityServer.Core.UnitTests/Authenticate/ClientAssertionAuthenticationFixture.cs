@@ -23,19 +23,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_A_Not_Jws_Token_Is_Passed_To_AuthenticateClientWithPrivateKeyJwt_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "invalid_header.invalid_payload"
@@ -43,19 +38,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _jwtParserFake.Setup(j => j.IsJwsToken(It.IsAny<string>()))
                 .Returns(false);
 
-            // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null).ConfigureAwait(false);
+                        var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Null(result.Client);
+                        Assert.Null(result.Client);
             Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientAssertionIsNotAJwsToken);
         }
 
         [Fact]
         public async Task When_A_Jws_Token_With_Not_Payload_Is_Passed_To_AuthenticateClientWithPrivateKeyJwt_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "invalid_header.invalid_payload"
@@ -65,19 +56,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _jwsParserFake.Setup(j => j.GetPayload(It.IsAny<string>()))
                 .Returns(() => null);
 
-            // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null).ConfigureAwait(false);
+                        var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Null(result.Client);
+                        Assert.Null(result.Client);
             Assert.True(result.ErrorMessage == ErrorDescriptions.TheJwsPayloadCannotBeExtracted);
         }
 
         [Fact]
         public async Task When_A_Jws_Token_With_Invalid_Signature_Is_Passed_To_AuthenticateClientWithPrivateKeyJwt_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "invalid_header.invalid_payload"
@@ -91,19 +78,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 It.IsAny<string>()))
                 .Returns(() => Task.FromResult((JwsPayload)null));
 
-            // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null).ConfigureAwait(false);
+                        var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Null(result.Client);
+                        Assert.Null(result.Client);
             Assert.True(result.ErrorMessage == ErrorDescriptions.TheSignatureIsNotCorrect);
         }
 
         [Fact]
         public async Task When_A_Jws_Token_With_Invalid_Issuer_Is_Passed_To_AuthenticateClientWithPrivateKeyJwt_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "invalid_header.invalid_payload"
@@ -124,19 +107,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Client)null));
 
-            // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null).ConfigureAwait(false);
+                        var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Null(result.Client);
+                        Assert.Null(result.Client);
             Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientIdPassedInJwtIsNotCorrect);
         }
 
         [Fact]
         public async Task When_A_Jws_Token_With_Invalid_Audience_Is_Passed_To_AuthenticateClientWithPrivateKeyJwt_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "invalid_header.invalid_payload"
@@ -167,19 +146,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
-            // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, "invalid_issuer").ConfigureAwait(false);
+                        var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, "invalid_issuer").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Null(result.Client);
+                        Assert.Null(result.Client);
             Assert.True(result.ErrorMessage == ErrorDescriptions.TheAudiencePassedInJwtIsNotCorrect);
         }
 
         [Fact]
         public async Task When_An_Expired_Jws_Token_Is_Passed_To_AuthenticateClientWithPrivateKeyJwt_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "invalid_header.invalid_payload"
@@ -213,19 +188,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
-            // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, "audience").ConfigureAwait(false);
+                        var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, "audience").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Null(result.Client);
+                        Assert.Null(result.Client);
             Assert.True(result.ErrorMessage == ErrorDescriptions.TheReceivedJwtHasExpired);
         }
 
         [Fact]
         public async Task When_A_Valid_Jws_Token_Is_Passed_To_AuthenticateClientWithPrivateKeyJwt_Then_Client_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "invalid_header.invalid_payload"
@@ -259,28 +230,21 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
-            // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, "audience").ConfigureAwait(false);
+                        var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, "audience").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(result.Client);
+                        Assert.NotNull(result.Client);
         }
 
         [Fact]
         public async Task When_Passing_Null_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(null, string.Empty, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(null, string.Empty, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Passing_A_Not_Jwe_Token_To_AuthenticateClientWithClientSecretJwt_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "valid_header.valid.valid.valid.valid"
@@ -288,19 +252,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _jwtParserFake.Setup(j => j.IsJweToken(It.IsAny<string>()))
                 .Returns(false);
 
-            // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null).ConfigureAwait(false);
+                        var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Null(result.Client);
+                        Assert.Null(result.Client);
             Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientAssertionIsNotAJweToken);
         }
 
         [Fact]
         public async Task When_Passing_A_Not_Valid_Jwe_Token_To_AuthenticateClientWithClientSecretJwt_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "valid_header.valid.valid.valid.valid"
@@ -312,19 +272,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 It.IsAny<string>()))
                 .Returns(Task.FromResult(string.Empty));
 
-            // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null).ConfigureAwait(false);
+                        var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Null(result.Client);
+                        Assert.Null(result.Client);
             Assert.True(result.ErrorMessage == ErrorDescriptions.TheJweTokenCannotBeDecrypted);
         }
 
         [Fact]
         public async Task When_Decrypt_Client_Secret_Jwt_And_Its_Not_A_Jws_Token_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "valid_header.valid.valid.valid.valid"
@@ -338,19 +294,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _jwtParserFake.Setup(j => j.IsJwsToken(It.IsAny<string>()))
                 .Returns(false);
 
-            // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null).ConfigureAwait(false);
+                        var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Null(result.Client);
+                        Assert.Null(result.Client);
             Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientAssertionIsNotAJwsToken);
         }
 
         [Fact]
         public async Task When_Decrypt_Client_Secret_Jwt_And_Cannot_Extract_Jws_PayLoad_Then_Null_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "valid_header.valid.valid.valid.valid"
@@ -366,19 +318,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _jwtParserFake.Setup(j => j.UnSignAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(() => Task.FromResult((JwsPayload)null));
 
-            // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null).ConfigureAwait(false);
+                        var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.Null(result.Client);
+                        Assert.Null(result.Client);
             Assert.True(result.ErrorMessage == ErrorDescriptions.TheJwsPayloadCannotBeExtracted);
         }
 
         [Fact]
         public async Task When_Decrypt_Valid_Client_Secret_Jwt_Then_Client_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "valid_header.valid.valid.valid.valid"
@@ -415,11 +363,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
-            // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, "audience").ConfigureAwait(false);
+                        var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, "audience").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
         }
 
         private void InitializeFakeObjects()

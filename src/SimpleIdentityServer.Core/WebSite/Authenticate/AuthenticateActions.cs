@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
                 code, issuerName).ConfigureAwait(false);
         }
 
-        public async Task<ActionResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code, string issuerName)
+        public async Task<EndpointResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code, string issuerName)
         {
             if (parameter == null)
             {

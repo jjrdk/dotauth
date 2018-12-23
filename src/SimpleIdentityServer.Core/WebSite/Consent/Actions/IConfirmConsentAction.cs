@@ -7,6 +7,6 @@
 
     public interface IConfirmConsentAction
     {
-        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName);
+        Task<EndpointResult> Execute(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName);
     }
 }

@@ -22,9 +22,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exceptions_Are_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var localAuthenticationParameter = new LocalAuthenticationParameter();
 
             // ACTS & ASSERTS
@@ -34,22 +32,17 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         [Fact]
         public async Task When_Resource_Owner_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var localAuthenticationParameter = new LocalAuthenticationParameter();
             var authorizationParameter = new AuthorizationParameter();
             _resourceOwnerAuthenticateHelperStub.Setup(r => r.Authenticate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).Returns(Task.FromResult((ResourceOwner)null));
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<IdentityServerAuthenticationException>(() => _localUserAuthenticationAction.Execute(localAuthenticationParameter, authorizationParameter, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<IdentityServerAuthenticationException>(() => _localUserAuthenticationAction.Execute(localAuthenticationParameter, authorizationParameter, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Resource_Owner_Credentials_Are_Correct_Then_Event_Is_Logged_And_Claims_Are_Returned()
-        {
-            // ARRANGE
-            const string subject = "subject";
+        {            const string subject = "subject";
             InitializeFakeObjects();
             var localAuthenticationParameter = new LocalAuthenticationParameter();
             var authorizationParameter = new AuthorizationParameter();
@@ -59,8 +52,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             };
             _resourceOwnerAuthenticateHelperStub.Setup(r => r.Authenticate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).Returns(Task.FromResult(resourceOwner));
 
-            // ACT
-            var result = await _localUserAuthenticationAction.Execute(localAuthenticationParameter,
+                        var result = await _localUserAuthenticationAction.Execute(localAuthenticationParameter,
                 authorizationParameter, 
                 null, null).ConfigureAwait(false);
 

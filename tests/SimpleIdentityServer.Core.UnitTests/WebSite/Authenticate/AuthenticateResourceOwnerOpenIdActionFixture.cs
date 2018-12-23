@@ -36,51 +36,38 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerOpenIdAction.Execute(null, null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerOpenIdAction.Execute(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_No_Resource_Owner_Is_Passed_Then_Redirect_To_Index_Page()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
 
-            // ACT
-            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null, null).ConfigureAwait(false);
+                        await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null, null).ConfigureAwait(false);
 
-            // ASSERT
-            _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
+                        _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
         }
 
         [Fact]
         public async Task When_Resource_Owner_Is_Not_Authenticated_Then_Redirect_To_Index_Page()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-            // ACT
-            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, 
+                        await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, 
                 claimsPrincipal, 
                 null, null).ConfigureAwait(false);
 
-            // ASSERT
-            _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
+                        _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
         }
 
         [Fact]
         public async Task When_Prompt_Parameter_Contains_Login_Value_Then_Redirect_To_Index_Page()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
             var claimsIdentity = new ClaimsIdentity("identityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -91,20 +78,16 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(promptParameters);
 
-            // ACT
-            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
+                        await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
                 claimsPrincipal,
                 null, null).ConfigureAwait(false);
 
-            // ASSERT
-            _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
+                        _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
         }
 
         [Fact]
         public async Task When_Prompt_Parameter_Doesnt_Contain_Login_Value_And_Resource_Owner_Is_Authenticated_Then_Helper_Is_Called()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string code = "code";
             const string subject = "subject";
             var authorizationParameter = new AuthorizationParameter();
@@ -118,7 +101,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 PromptParameter.consent
             };
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction()
             };
@@ -127,13 +110,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirection())
                 .Returns(actionResult);
 
-            // ACT
-            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
+                        await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
                 claimsPrincipal,
                 code, null).ConfigureAwait(false);
 
-            // ASSERT
-            _authenticateHelperFake.Verify(a => a.ProcessRedirection(authorizationParameter, 
+                        _authenticateHelperFake.Verify(a => a.ProcessRedirection(authorizationParameter, 
                 code, 
                 subject,
                 It.IsAny<List<Claim>>(), null));

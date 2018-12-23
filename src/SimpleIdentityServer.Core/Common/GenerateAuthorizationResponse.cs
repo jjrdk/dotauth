@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Api.Authorization;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
 namespace SimpleIdentityServer.Core.Common
 {
+    using SimpleIdentityServer.Core.Api.Authorization;
+    using SimpleIdentityServer.Core.Extensions;
+    using SimpleIdentityServer.Core.Helpers;
+    using SimpleIdentityServer.Core.JwtToken;
+    using SimpleIdentityServer.Core.Parameters;
+    using SimpleIdentityServer.Core.Results;
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+
     using Json;
     using Jwt;
     using Logging;
@@ -68,11 +68,11 @@ namespace SimpleIdentityServer.Core.Common
             _grantedTokenHelper = grantedTokenHelper;
         }
 
-        public async Task ExecuteAsync(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName)
+        public async Task ExecuteAsync(EndpointResult endpointResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName)
         {
-            if (actionResult?.RedirectInstruction == null)
+            if (endpointResult?.RedirectInstruction == null)
             {
-                throw new ArgumentNullException(nameof(actionResult));
+                throw new ArgumentNullException(nameof(endpointResult));
             }
 ;
             if (authorizationParameter == null)
@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Core.Common
                     newAccessTokenGranted = true;
                 }
 
-                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AccessTokenName,
+                endpointResult.RedirectInstruction.AddParameter(CoreConstants.StandardAuthorizationResponseNames.AccessTokenName,
                     grantedToken.AccessToken);
             }
 
@@ -147,7 +147,7 @@ namespace SimpleIdentityServer.Core.Common
                     };
 
                     newAuthorizationCodeGranted = true;
-                    actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AuthorizationCodeName,
+                    endpointResult.RedirectInstruction.AddParameter(CoreConstants.StandardAuthorizationResponseNames.AuthorizationCodeName,
                         authorizationCode.Code);
                 }
             }
@@ -181,29 +181,29 @@ namespace SimpleIdentityServer.Core.Common
             if (responses.Contains(ResponseType.id_token))
             {
                 var idToken = await GenerateIdToken(idTokenPayload, authorizationParameter).ConfigureAwait(false);
-                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.IdTokenName, idToken);
+                endpointResult.RedirectInstruction.AddParameter(CoreConstants.StandardAuthorizationResponseNames.IdTokenName, idToken);
             }
 
             if (!string.IsNullOrWhiteSpace(authorizationParameter.State))
             {
-                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.StateName, authorizationParameter.State);
+                endpointResult.RedirectInstruction.AddParameter(CoreConstants.StandardAuthorizationResponseNames.StateName, authorizationParameter.State);
             }
 
             var sessionState = GetSessionState(authorizationParameter.ClientId, authorizationParameter.OriginUrl, authorizationParameter.SessionId);
             if (sessionState != null)
             {
-                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.SessionState, sessionState);
+                endpointResult.RedirectInstruction.AddParameter(CoreConstants.StandardAuthorizationResponseNames.SessionState, sessionState);
             }
 
             if (authorizationParameter.ResponseMode == ResponseMode.form_post)
             {
-                actionResult.Type = TypeActionResult.RedirectToAction;
-                actionResult.RedirectInstruction.Action = IdentityServerEndPoints.FormIndex;
-                actionResult.RedirectInstruction.AddParameter("redirect_uri", authorizationParameter.RedirectUrl);
+                endpointResult.Type = TypeActionResult.RedirectToAction;
+                endpointResult.RedirectInstruction.Action = IdentityServerEndPoints.FormIndex;
+                endpointResult.RedirectInstruction.AddParameter("redirect_uri", authorizationParameter.RedirectUrl.AbsoluteUri);
             }
 
             // Set the response mode
-            if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
+            if (endpointResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
@@ -214,11 +214,11 @@ namespace SimpleIdentityServer.Core.Common
                     responseMode = GetResponseMode(authorizationFlow);
                 }
 
-                actionResult.RedirectInstruction.ResponseMode = responseMode;
+                endpointResult.RedirectInstruction.ResponseMode = responseMode;
             }
 
             _oauthEventSource.EndGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
-               actionResult.RedirectInstruction.Parameters.SerializeWithJavascript());
+               endpointResult.RedirectInstruction.Parameters.SerializeWithJavascript());
         }
 
         private string GetSessionState(string clientId, string originUrl, string sessionId)
@@ -332,7 +332,7 @@ namespace SimpleIdentityServer.Core.Common
         
         private static ResponseMode GetResponseMode(AuthorizationFlow authorizationFlow)
         {
-            return Constants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
+            return CoreConstants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
         }
 
         private static List<ClaimParameter> Clone(List<ClaimParameter> claims)

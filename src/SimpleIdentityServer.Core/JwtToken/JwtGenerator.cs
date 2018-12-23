@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Core.JwtToken
         private readonly IJweGenerator _jweGenerator;
         private readonly IScopeRepository _scopeRepository;
         private readonly OAuthConfigurationOptions _configurationOptions;
-        private readonly IClientRepository _clientRepository;
+        private readonly IClientStore _clientRepository;
         private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
         private readonly Dictionary<JwsAlg, Func<string, string>> _mappingJwsAlgToHashingFunctions = new Dictionary<JwsAlg, Func<string, string>>
         {
@@ -88,7 +88,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         public JwtGenerator(
             OAuthConfigurationOptions configurationOptions,
-            IClientRepository clientRepository,
+            IClientStore clientRepository,
             IClientValidator clientValidator,
             IJsonWebKeyRepository jsonWebKeyRepository,
             IScopeRepository scopeRepository,
@@ -153,12 +153,12 @@ namespace SimpleIdentityServer.Core.JwtToken
         {
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorizationParameter");
+                throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
             if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
             {
-                throw new ArgumentNullException("claimsPrincipal");
+                throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
             var result = new JwsPayload();
@@ -295,7 +295,7 @@ namespace SimpleIdentityServer.Core.JwtToken
         {
             // 1. Fill-in the subject claim
             var subject = claimsPrincipal.GetSubject();
-            jwsPayload.Add(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject);
+            jwsPayload.Add(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject);
 
             if (authorizationParameter == null ||
                 string.IsNullOrWhiteSpace(authorizationParameter.Scope))
@@ -308,7 +308,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             var claims = await GetClaimsFromRequestedScopes(scopes, claimsPrincipal).ConfigureAwait(false);
             foreach (var claim in claims)
             {
-                if (claim.Type == Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject)
+                if (claim.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject)
                 {
                     continue;
                 }
@@ -326,15 +326,15 @@ namespace SimpleIdentityServer.Core.JwtToken
             var state = authorizationParameter == null ? string.Empty : authorizationParameter.State;
 
             // 1. Fill-In the subject - set the subject as an essential claim
-            if (claimParameters.All(c => c.Name != Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject))
+            if (claimParameters.All(c => c.Name != JwtConstants.StandardResourceOwnerClaimNames.Subject))
             {
                 var essentialSubjectClaimParameter = new ClaimParameter
                 {
-                    Name = Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject,
+                    Name = JwtConstants.StandardResourceOwnerClaimNames.Subject,
                     Parameters = new Dictionary<string, object>
                     {
                         {
-                            Constants.StandardClaimParameterValueNames.EssentialName,
+                            CoreConstants.StandardClaimParameterValueNames.EssentialName,
                             true
                         }
                     }
@@ -351,7 +351,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             var resourceOwnerClaimParameters = claimParameters
-                .Where(c => Jwt.JwtConstants.AllStandardResourceOwnerClaimNames.Contains(c.Name))
+                .Where(c => JwtConstants.AllStandardResourceOwnerClaimNames.Contains(c.Name))
                 .ToList();
             if (resourceOwnerClaimParameters.Any())
             {
@@ -401,7 +401,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             var audiences = new List<string>();
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
-            var acrValues = Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
+            var acrValues = CoreConstants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
             var amr = new[] { "password" };
             if (amrValues != null)
             {
@@ -617,7 +617,7 @@ namespace SimpleIdentityServer.Core.JwtToken
         private async Task<IList<Claim>> GetClaimsFromRequestedScopes(IEnumerable<string> scopes, ClaimsPrincipal claimsPrincipal)
         {
             var result = new List<Claim>();
-            var returnedScopes = await _scopeRepository.SearchByNamesAsync(scopes).ConfigureAwait(false);
+            var returnedScopes = await _scopeRepository.SearchByNames(scopes).ConfigureAwait(false);
             foreach (var returnedScope in returnedScopes)
             {
                 result.AddRange(GetClaims(returnedScope.Claims, claimsPrincipal));

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
-    using Microsoft.AspNetCore.Http;
+    using System;
     using Shared;
     using Shared.Repositories;
     using Shared.Requests;
@@ -30,16 +30,15 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             _jwtParser = jwtParser;
         }
 
-        [HttpGet(Core.Constants.EndPoints.CheckSession)]
+        [HttpGet(Core.CoreConstants.EndPoints.CheckSession)]
         public async Task CheckSession()
         {
-            await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.CheckSession.html", (html) =>
-            {
-                return html.Replace("{cookieName}", Core.Constants.SESSION_ID);
-            }).ConfigureAwait(false);
+            await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.CheckSession.html",
+                    (html) => html.Replace("{cookieName}", Core.CoreConstants.SESSION_ID))
+                .ConfigureAwait(false);
         }
 
-        [HttpGet(Core.Constants.EndPoints.EndSession)]
+        [HttpGet(Core.CoreConstants.EndPoints.EndSession)]
         public async Task RevokeSession()
         {
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName).ConfigureAwait(false);
@@ -49,7 +48,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                 return;
             }
 
-            var url = Core.Constants.EndPoints.EndSessionCallback;
+            var url = Core.CoreConstants.EndPoints.EndSessionCallback;
             if (Request.QueryString.HasValue)
             {
                 url = $"{url}{Request.QueryString.Value}";
@@ -61,7 +60,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             }).ConfigureAwait(false);
         }
 
-        [HttpGet(Core.Constants.EndPoints.EndSessionCallback)]
+        [HttpGet(Core.CoreConstants.EndPoints.EndSessionCallback)]
         public async Task RevokeSessionCallback()
         {
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName).ConfigureAwait(false);
@@ -71,7 +70,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                 return;
             }
 
-            IQueryCollection query = Request.Query;
+            var query = Request.Query;
             var serializer = new ParamSerializer();
             RevokeSessionRequest request = null;
             if (query != null)
@@ -80,28 +79,27 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                     new KeyValuePair<string, string[]>(x.Key, x.Value)));
             }
 
-            Response.Cookies.Delete(Core.Constants.SESSION_ID);
+            Response.Cookies.Delete(Core.CoreConstants.SESSION_ID);
             await _authenticationService.SignOutAsync(HttpContext, HostConstants.CookieNames.CookieName, new AuthenticationProperties()).ConfigureAwait(false);
-            if (request != null && !string.IsNullOrWhiteSpace(request.PostLogoutRedirectUri) && !string.IsNullOrWhiteSpace(request.IdTokenHint))
+            if (request != null
+                && request.PostLogoutRedirectUri != null
+                && !string.IsNullOrWhiteSpace(request.IdTokenHint))
             {
                 var jws = await _jwtParser.UnSignAsync(request.IdTokenHint).ConfigureAwait(false);
-                if (jws != null)
+                var claim = jws?.GetStringClaim(StandardClaimNames.Azp);
+                if (claim != null)
                 {
-                    var claim = jws.GetStringClaim(StandardClaimNames.Azp);
-                    if (claim!= null)
+                    var client = await _clientRepository.GetById(claim).ConfigureAwait(false);
+                    if (client?.PostLogoutRedirectUris != null && client.PostLogoutRedirectUris.Contains(request.PostLogoutRedirectUri))
                     {
-                        var client = await _clientRepository.GetById(claim).ConfigureAwait(false);
-                        if (client?.PostLogoutRedirectUris != null && client.PostLogoutRedirectUris.Contains(request.PostLogoutRedirectUri))
+                        var redirectUrl = request.PostLogoutRedirectUri;
+                        if (!string.IsNullOrWhiteSpace(request.State))
                         {
-                            var redirectUrl = request.PostLogoutRedirectUri;
-                            if (!string.IsNullOrWhiteSpace(request.State))
-                            {
-                                redirectUrl = $"{redirectUrl}?state={request.State}";
-                            }
-
-                            Response.Redirect(redirectUrl);
-                            return;
+                            redirectUrl = new Uri($"{redirectUrl.AbsoluteUri}?state={request.State}");
                         }
+
+                        Response.Redirect(redirectUrl.AbsoluteUri);
+                        return;
                     }
                 }
             }

@@ -18,9 +18,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACTS & ASSERTS
             await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserTwoFactorAuthenticatorOperation.Execute(null, null)).ConfigureAwait(false);
@@ -28,34 +26,26 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 
         [Fact]
         public async Task When_ResourceOwner_DoesntExist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserTwoFactorAuthenticatorOperation.Execute("subject", "two_factor")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserTwoFactorAuthenticatorOperation.Execute("subject", "two_factor")).ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(exception);
+                        Assert.NotNull(exception);
             Assert.True(exception.Code == Errors.ErrorCodes.InternalError);
             Assert.True(exception.Message == Errors.ErrorDescriptions.TheRoDoesntExist);
         }
 
         [Fact]
         public async Task When_Passing_Correct_Parameters_Then_ResourceOwnerIs_Updated()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new ResourceOwner()));
 
-            // ACT
-            await _updateUserTwoFactorAuthenticatorOperation.Execute("subject", "two_factor").ConfigureAwait(false);
+                        await _updateUserTwoFactorAuthenticatorOperation.Execute("subject", "two_factor").ConfigureAwait(false);
 
-            // ASSERTS
-            _resourceOwnerRepositoryStub.Setup(r => r.UpdateAsync(It.IsAny<ResourceOwner>()));
+                        _resourceOwnerRepositoryStub.Setup(r => r.UpdateAsync(It.IsAny<ResourceOwner>()));
         }
 
         private void InitializeFakeObjects()

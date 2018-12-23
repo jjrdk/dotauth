@@ -26,9 +26,7 @@ namespace SimpleIdentityServer.Core.UnitTests.TwoFactors
 
         [Fact]
         public async Task When_Passing_Null_Parameter_To_SendCode_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACTS & ASSERTS
           await  Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(null, null, null)).ConfigureAwait(false);

@@ -11,12 +11,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
         [Fact]
         public void When_No_Amr_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerException>(() => _amrHelper.GetAmr(new List<string>(), new[] { "pwd" }));
+                        var exception = Assert.Throws<IdentityServerException>(() => _amrHelper.GetAmr(new List<string>(), new[] { "pwd" }));
             Assert.NotNull(exception);
             Assert.Equal(Errors.ErrorCodes.InternalError, exception.Code);
             Assert.Equal(Errors.ErrorDescriptions.NoActiveAmr, exception.Message);
@@ -24,12 +21,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
         [Fact]
         public void When_Amr_Doesnt_Exist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerException>(() => _amrHelper.GetAmr(new List<string> { "invalid" }, new[] { "pwd" }));
+                        var exception = Assert.Throws<IdentityServerException>(() => _amrHelper.GetAmr(new List<string> { "invalid" }, new[] { "pwd" }));
             Assert.NotNull(exception);
             Assert.Equal(Errors.ErrorCodes.InternalError, exception.Code);
             Assert.Equal(string.Format(Errors.ErrorDescriptions.TheAmrDoesntExist, "pwd"), exception.Message);
@@ -37,28 +31,20 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
         [Fact]
         public void When_Amr_Doesnt_Exist_Then_Default_One_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT
-            var amr = _amrHelper.GetAmr(new List<string> { "pwd" }, new[] { "invalid" });
+                        var amr = _amrHelper.GetAmr(new List<string> { "pwd" }, new[] { "invalid" });
 
-            // ASSERTS
-            Assert.Equal("pwd", amr);
+                        Assert.Equal("pwd", amr);
         }
 
         [Fact]
         public void When_Amr_Exists_Then_Same_Amr_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT
-            var amr = _amrHelper.GetAmr(new List<string> { "amr" }, new[] { "amr" });
+                        var amr = _amrHelper.GetAmr(new List<string> { "amr" }, new[] { "amr" });
 
-            // ASSERTS
-            Assert.Equal("amr", amr);
+                        Assert.Equal("amr", amr);
         }
 
         private void InitializeFakeObjects()

@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Services
                 return null;
             }
 
-            var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber, login).ConfigureAwait(false);
+            var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber, login).ConfigureAwait(false);
             if (resourceOwner != null)
             {
                 await _confirmationCodeStore.Remove(password).ConfigureAwait(false);

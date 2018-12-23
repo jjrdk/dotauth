@@ -34,19 +34,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         [Fact]
         public async Task When_Passing_No_Request_To_ResourceOwner_Grant_Type_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(null, null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Requesting_Token_Via_Resource_Owner_Credentials_Grant_Type_Then_Events_Are_Logged()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string clientId = "clientId";
             const string userName = "userName";
             const string password = "password";
@@ -68,29 +63,22 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 g => g.Execute(It.IsAny<ResourceOwnerGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>(), It.IsAny<X509Certificate2>(), null))
                 .Returns(Task.FromResult(grantedToken));
 
-            // ACT
-            await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(parameter, null, null, null).ConfigureAwait(false);
+                        await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(parameter, null, null, null).ConfigureAwait(false);
 
-            // ASSERTS
-            _oauthEventSource.Verify(s => s.StartGetTokenByResourceOwnerCredentials(clientId, userName, password));
+                        _oauthEventSource.Verify(s => s.StartGetTokenByResourceOwnerCredentials(clientId, userName, password));
             _oauthEventSource.Verify(s => s.EndGetTokenByResourceOwnerCredentials(accessToken, identityToken));
         }
 
         [Fact]
         public async Task When_Passing_No_Request_To_AuthorizationCode_Grant_Type_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByAuthorizationCodeGrantType(null, null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByAuthorizationCodeGrantType(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Requesting_Token_Via_AuthorizationCode_Grant_Type_Then_Events_Are_Logged()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string clientId = "clientId";
             const string code = "code";
             const string accessToken = "accessToken";
@@ -99,7 +87,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 ClientId = clientId,
                 Code = code,
-                RedirectUri = "https://fake/"
+                RedirectUri = new Uri("https://fake/")
             };
             var grantedToken = new GrantedToken
             {
@@ -110,29 +98,22 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 g => g.Execute(It.IsAny<AuthorizationCodeGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>(), It.IsAny<X509Certificate2>(), null))
                 .Returns(Task.FromResult(grantedToken));
 
-            // ACT
-            await _tokenActions.GetTokenByAuthorizationCodeGrantType(parameter, null, null, null).ConfigureAwait(false);
+                        await _tokenActions.GetTokenByAuthorizationCodeGrantType(parameter, null, null, null).ConfigureAwait(false);
 
-            // ASSERTS
-            _oauthEventSource.Verify(s => s.StartGetTokenByAuthorizationCode(clientId, code));
+                        _oauthEventSource.Verify(s => s.StartGetTokenByAuthorizationCode(clientId, code));
             _oauthEventSource.Verify(s => s.EndGetTokenByAuthorizationCode(accessToken, identityToken));
         }
 
         [Fact]
         public async Task When_Passing_No_Request_To_Refresh_Token_Grant_Type_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByRefreshTokenGrantType(null, null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByRefreshTokenGrantType(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Passing_Request_To_Refresh_Token_Grant_Type_Then_Events_Are_Logged()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string refreshToken = "refresh_token";
             const string accessToken = "accessToken";
             const string identityToken = "identityToken";
@@ -149,29 +130,22 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 g => g.Execute(It.IsAny<RefreshTokenGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>(), It.IsAny<X509Certificate2>(), null))
                 .Returns(Task.FromResult(grantedToken));
 
-            // ACT
-            await _tokenActions.GetTokenByRefreshTokenGrantType(parameter, null, null, null).ConfigureAwait(false);
+                        await _tokenActions.GetTokenByRefreshTokenGrantType(parameter, null, null, null).ConfigureAwait(false);
 
-            // ASSERTS
-            _oauthEventSource.Verify(s => s.StartGetTokenByRefreshToken(refreshToken));
+                        _oauthEventSource.Verify(s => s.StartGetTokenByRefreshToken(refreshToken));
             _oauthEventSource.Verify(s => s.EndGetTokenByRefreshToken(accessToken, identityToken));
         }
 
         [Fact]
         public async Task When_Passing_Null_Parameter_To_ClientCredentials_GrantType_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByClientCredentialsGrantType(null, null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByClientCredentialsGrantType(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Getting_Token_Via_ClientCredentials_GrantType_Then_GrantedToken_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string scope = "valid_scope";
             const string clientId = "valid_client_id";
             var parameter = new ClientCredentialsGrantTypeParameter
@@ -189,11 +163,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             //            null))
             //    .Returns(Task.FromResult(grantedToken));
 
-            // ACT
-            var result = await _tokenActions.GetTokenByClientCredentialsGrantType(parameter, null, null, null).ConfigureAwait(false);
+                        var result = await _tokenActions.GetTokenByClientCredentialsGrantType(parameter, null, null, null).ConfigureAwait(false);
 
-            // ASSERTS
-            _oauthEventSource.Verify(s => s.StartGetTokenByClientCredentials(scope));
+                        _oauthEventSource.Verify(s => s.StartGetTokenByClientCredentials(scope));
             _oauthEventSource.Verify(s => s.EndGetTokenByClientCredentials(clientId, scope));
             Assert.NotNull(result);
             Assert.True(result.ClientId == clientId);
@@ -201,29 +173,22 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.RevokeToken(null, null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.RevokeToken(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public void When_Revoking_Token_Then_Action_Is_Executed()
-        {
-            // ARRANGE
-            const string accessToken = "access_token";
+        {            const string accessToken = "access_token";
             InitializeFakeObjects();
 
-            // ACT
-            _tokenActions.RevokeToken(new RevokeTokenParameter
+                        _tokenActions.RevokeToken(new RevokeTokenParameter
             {
                 Token = accessToken
             }, null, null, null);
 
-            // ASSERTS
-            _oauthEventSource.Verify(s => s.StartRevokeToken(accessToken));
+                        _oauthEventSource.Verify(s => s.StartRevokeToken(accessToken));
             _oauthEventSource.Verify(s => s.EndRevokeToken(accessToken));
         }
 

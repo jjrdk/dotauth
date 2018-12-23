@@ -14,6 +14,8 @@
 
 namespace SimpleIdentityServer.Host.Extensions
 {
+    using Core.Parameters;
+    using Core.Results;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Shared;
@@ -22,8 +24,6 @@ namespace SimpleIdentityServer.Host.Extensions
     using Shared.Requests;
     using Shared.Responses;
     using Shared.Results;
-    using SimpleIdentityServer.Core.Parameters;
-    using SimpleIdentityServer.Core.Results;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -109,34 +109,6 @@ namespace SimpleIdentityServer.Host.Extensions
             };
         }
 
-        public static UpdateResourceOwnerClaimsParameter ToParameter(this UpdateResourceOwnerClaimsRequest request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            return new UpdateResourceOwnerClaimsParameter
-            {
-                Login = request.Login,
-                Claims = request.Claims
-            };
-        }
-
-        public static UpdateResourceOwnerPasswordParameter ToParameter(this UpdateResourceOwnerPasswordRequest request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            return new UpdateResourceOwnerPasswordParameter
-            {
-                Login = request.Login,
-                Password = request.Password
-            };
-        }
-
         public static SearchResourceOwnerParameter ToParameter(this SearchResourceOwnersRequest request)
         {
             return new SearchResourceOwnerParameter
@@ -146,11 +118,6 @@ namespace SimpleIdentityServer.Host.Extensions
                 Subjects = request.Subjects,
                 Order = request.Order?.ToParameter()
             };
-        }
-
-        public static AddUserParameter ToParameter(this AddResourceOwnerRequest request)
-        {
-            return new AddUserParameter(request.Subject, request.Password);
         }
 
         public static GetJwsParameter ToParameter(this GetJwsRequest getJwsRequest)
@@ -215,196 +182,6 @@ namespace SimpleIdentityServer.Host.Extensions
             };
         }
 
-        public static UpdateClientParameter ToParameter(this UpdateClientRequest updateClientRequest)
-        {
-            return new UpdateClientParameter
-            {
-                ApplicationType = updateClientRequest.ApplicationType,
-                ClientId = updateClientRequest.ClientId,
-                ClientName = updateClientRequest.ClientName,
-                ClientUri = updateClientRequest.ClientUri,
-                Contacts = updateClientRequest.Contacts,
-                DefaultAcrValues = updateClientRequest.DefaultAcrValues,
-                DefaultMaxAge = updateClientRequest.DefaultMaxAge,
-                GrantTypes = updateClientRequest.GrantTypes,
-                IdTokenEncryptedResponseAlg = updateClientRequest.IdTokenEncryptedResponseAlg,
-                IdTokenEncryptedResponseEnc = updateClientRequest.IdTokenEncryptedResponseEnc,
-                IdTokenSignedResponseAlg = updateClientRequest.IdTokenSignedResponseAlg,
-                InitiateLoginUri = updateClientRequest.InitiateLoginUri,
-                Jwks = updateClientRequest.Jwks,
-                JwksUri = updateClientRequest.JwksUri,
-                LogoUri = updateClientRequest.LogoUri,
-                PolicyUri = updateClientRequest.PolicyUri,
-                RedirectUris = updateClientRequest.RedirectUris,
-                RequestObjectEncryptionAlg = updateClientRequest.RequestObjectEncryptionAlg,
-                RequestObjectEncryptionEnc = updateClientRequest.RequestObjectEncryptionEnc,
-                RequestObjectSigningAlg = updateClientRequest.RequestObjectSigningAlg,
-                RequestUris = updateClientRequest.RequestUris,
-                RequireAuthTime = updateClientRequest.RequireAuthTime,
-                ResponseTypes = updateClientRequest.ResponseTypes,
-                SectorIdentifierUri = updateClientRequest.SectorIdentifierUri,
-                SubjectType = updateClientRequest.SubjectType,
-                TokenEndPointAuthMethod = updateClientRequest.TokenEndPointAuthMethod,
-                TokenEndPointAuthSigningAlg = updateClientRequest.TokenEndPointAuthSigningAlg,
-                TosUri = updateClientRequest.TosUri,
-                UserInfoEncryptedResponseAlg = updateClientRequest.UserInfoEncryptedResponseAlg,
-                UserInfoEncryptedResponseEnc = updateClientRequest.UserInfoEncryptedResponseEnc,
-                UserInfoSignedResponseAlg = updateClientRequest.UserInfoSignedResponseAlg,
-                PostLogoutRedirectUris = updateClientRequest.PostLogoutRedirectUris,
-                AllowedScopes = updateClientRequest.AllowedScopes ?? new List<string>()
-            };
-        }
-
-        public static RegistrationParameter ToParameter(this AddClientRequest clientResponse)
-        {
-            var redirectUris = clientResponse.RedirectUris == null
-                ? new List<string>()
-                : clientResponse.RedirectUris.ToList();
-            return new RegistrationParameter
-            {
-                ApplicationType = clientResponse.ApplicationType,
-                ClientName = clientResponse.ClientName,
-                ClientUri = clientResponse.ClientUri,
-                Contacts = clientResponse.Contacts == null ? new List<string>() : clientResponse.Contacts.ToList(),
-                DefaultAcrValues = clientResponse.DefaultAcrValues,
-                DefaultMaxAge = clientResponse.DefaultMaxAge,
-                GrantTypes = clientResponse.GrantTypes,
-                IdTokenEncryptedResponseAlg = clientResponse.IdTokenEncryptedResponseAlg,
-                IdTokenEncryptedResponseEnc = clientResponse.IdTokenEncryptedResponseEnc,
-                IdTokenSignedResponseAlg = clientResponse.IdTokenSignedResponseAlg,
-                InitiateLoginUri = clientResponse.InitiateLoginUri,
-                Jwks = clientResponse.Jwks,
-                JwksUri = clientResponse.JwksUri,
-                LogoUri = clientResponse.LogoUri,
-                PolicyUri = clientResponse.PolicyUri,
-                RedirectUris = redirectUris,
-                RequestObjectEncryptionAlg = clientResponse.RequestObjectEncryptionAlg,
-                RequestObjectEncryptionEnc = clientResponse.RequestObjectEncryptionEnc,
-                RequestObjectSigningAlg = clientResponse.RequestObjectSigningAlg,
-                RequestUris = clientResponse.RequestUris,
-                RequireAuthTime = clientResponse.RequireAuthTime,
-                ResponseTypes = clientResponse.ResponseTypes,
-                SectorIdentifierUri = clientResponse.SectorIdentifierUri,
-                SubjectType = clientResponse.SubjectType,
-                TokenEndPointAuthMethod = clientResponse.TokenEndPointAuthMethod,
-                TokenEndPointAuthSigningAlg = clientResponse.TokenEndPointAuthSigningAlg,
-                PostLogoutRedirectUris = clientResponse.PostLogoutRedirectUris,
-                TosUri = clientResponse.TosUri,
-                UserInfoEncryptedResponseAlg = clientResponse.UserInfoEncryptedResponseAlg,
-                UserInfoEncryptedResponseEnc = clientResponse.UserInfoEncryptedResponseEnc,
-                UserInfoSignedResponseAlg = clientResponse.UserInfoSignedResponseAlg
-            };
-        }
-
-        public static Client ToModel(this ClientResponse clientResponse)
-        {
-            var responseTypes = new List<ResponseType>();
-            var grantTypes = new List<GrantType>();
-            var secrets = new List<ClientSecret>();
-            var redirectUris = clientResponse.RedirectUris == null
-                ? new List<string>()
-                : clientResponse.RedirectUris.ToList();
-            var scopes = clientResponse.AllowedScopes == null ? new List<Scope>() : clientResponse.AllowedScopes.Select(s => new Scope
-            {
-                Name = s
-            }).ToList();
-            ApplicationTypes? applicationType = null;
-            if (clientResponse.ResponseTypes != null &&
-                clientResponse.ResponseTypes.Any())
-            {
-                foreach (var responseType in clientResponse.ResponseTypes)
-                {
-                    var responseTypeSplitted = responseType.Split(' ');
-                    foreach (var response in responseTypeSplitted)
-                    {
-                        if (Enum.TryParse(response, out ResponseType responseTypeEnum) &&
-                            !responseTypes.Contains(responseTypeEnum))
-                        {
-                            responseTypes.Add(responseTypeEnum);
-                        }
-                    }
-                }
-            }
-
-            if (clientResponse.GrantTypes != null &&
-                clientResponse.GrantTypes.Any())
-            {
-                foreach (var grantType in clientResponse.GrantTypes)
-                {
-                    if (Enum.TryParse(grantType, out GrantType grantTypeEnum))
-                    {
-                        grantTypes.Add(grantTypeEnum);
-                    }
-                }
-            }
-
-            if (clientResponse.Secrets != null && clientResponse.Secrets.Any())
-            {
-                secrets.AddRange(clientResponse.Secrets.Select(secret => new ClientSecret { Type = secret.Type, Value = secret.Value }));
-            }
-
-            if (Enum.TryParse(clientResponse.ApplicationType, out ApplicationTypes appTypeEnum))
-            {
-                applicationType = appTypeEnum;
-            }
-
-            if (!Enum.TryParse(clientResponse.TokenEndPointAuthMethod, out TokenEndPointAuthenticationMethods tokenEndPointAuthenticationMethod))
-            {
-                tokenEndPointAuthenticationMethod = TokenEndPointAuthenticationMethods.client_secret_basic;
-            }
-
-            return new Client
-            {
-                AllowedScopes = scopes,
-                GrantTypes = grantTypes,
-                TokenEndPointAuthMethod = tokenEndPointAuthenticationMethod,
-                ApplicationType = appTypeEnum,
-                ResponseTypes = responseTypes,
-                ClientId = clientResponse.ClientId,
-                ClientName = clientResponse.ClientName,
-                Secrets = secrets,
-                // ClientSecret = clientResponse.ClientSecret,
-                ClientUri = clientResponse.ClientUri,
-                Contacts = clientResponse.Contacts,
-                DefaultAcrValues = clientResponse.DefaultAcrValues,
-                DefaultMaxAge = clientResponse.DefaultMaxAge,
-                IdTokenEncryptedResponseAlg = clientResponse.IdTokenEncryptedResponseAlg,
-                IdTokenEncryptedResponseEnc = clientResponse.IdTokenEncryptedResponseEnc,
-                IdTokenSignedResponseAlg = clientResponse.IdTokenSignedResponseAlg,
-                InitiateLoginUri = clientResponse.InitiateLoginUri,
-                JwksUri = clientResponse.JwksUri,
-                LogoUri = clientResponse.LogoUri,
-                PolicyUri = clientResponse.PolicyUri,
-                UserInfoSignedResponseAlg = clientResponse.UserInfoSignedResponseAlg,
-                UserInfoEncryptedResponseEnc = clientResponse.UserInfoEncryptedResponseEnc,
-                UserInfoEncryptedResponseAlg = clientResponse.UserInfoEncryptedResponseAlg,
-                TosUri = clientResponse.TosUri,
-                TokenEndPointAuthSigningAlg = clientResponse.TokenEndPointAuthSigningAlg,
-                SubjectType = clientResponse.SubjectType,
-                SectorIdentifierUri = clientResponse.SectorIdentifierUri,
-                RequireAuthTime = clientResponse.RequireAuthTime,
-                RequestObjectSigningAlg = clientResponse.RequestObjectSigningAlg,
-                RequestObjectEncryptionAlg = clientResponse.RequestObjectEncryptionAlg,
-                RequestObjectEncryptionEnc = clientResponse.RequestObjectEncryptionEnc,
-                RedirectionUrls = redirectUris,
-                RequestUris = clientResponse.RequestUris
-            };
-        }
-
-        public static ImportParameter ToParameter(this ExportResponse export)
-        {
-            if (export == null)
-            {
-                throw new ArgumentNullException(nameof(export));
-            }
-
-
-            return new ImportParameter
-            {
-                Clients = export.Clients?.Select(c => c.ToModel())
-            };
-        }
-
         public static ClaimResponse ToDto(this ClaimAggregate claim)
         {
             if (claim == null)
@@ -451,21 +228,6 @@ namespace SimpleIdentityServer.Host.Extensions
             };
         }
 
-        public static PagedResponse<ClientResponse> ToDto(this SearchClientResult parameter)
-        {
-            if (parameter == null)
-            {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-
-            return new PagedResponse<ClientResponse>
-            {
-                StartIndex = parameter.StartIndex,
-                TotalResults = parameter.TotalResults,
-                Content = parameter.Content == null ? new List<ClientResponse>() : parameter.Content.Select(c => ToDto(c))
-            };
-        }
-
         public static SearchClaimsResponse ToDto(this SearchClaimsResult parameter)
         {
             if (parameter == null)
@@ -491,88 +253,12 @@ namespace SimpleIdentityServer.Host.Extensions
             };
         }
 
-        public static ExportResponse ToDto(this ExportResult export)
-        {
-            if (export == null)
-            {
-                throw new ArgumentNullException(nameof(export));
-            }
-
-            return new ExportResponse
-            {
-                Clients = export.Clients?.Select(c => c.ToDto())
-            };
-        }
-
         public static JweInformationResponse ToDto(this JweInformationResult jweInformationResult)
         {
             return new JweInformationResponse
             {
                 IsContentJws = jweInformationResult.IsContentJws,
                 Content = jweInformationResult.Content
-            };
-        }
-
-        public static ResponseClientSecret ToDto(this ClientSecret secret)
-        {
-            if (secret == null)
-            {
-                throw new ArgumentNullException(nameof(secret));
-            }
-
-            return new ResponseClientSecret
-            {
-                Type = secret.Type,
-                Value = secret.Value
-            };
-        }
-
-        public static ClientResponse ToDto(this Client client)
-        {
-            IEnumerable<ResponseClientSecret> secrets = null;
-            if (client.Secrets != null)
-            {
-                secrets = client.Secrets.Select(s => s.ToDto());
-            }
-
-            return new ClientResponse
-            {
-                AllowedScopes = client.AllowedScopes == null ? new List<string>() : client.AllowedScopes.Select(c => c.Name).ToList(),
-                ApplicationType = Enum.GetName(typeof(ApplicationTypes), client.ApplicationType),
-                ClientId = client.ClientId,
-                ClientName = client.ClientName,
-                Secrets = secrets,
-                ClientUri = client.ClientUri,
-                Contacts = client.Contacts,
-                DefaultAcrValues = client.DefaultAcrValues,
-                DefaultMaxAge = client.DefaultMaxAge,
-                GrantTypes = client.GrantTypes == null ? new List<string>() : client.GrantTypes.Select(g => Enum.GetName(typeof(GrantType), g)).ToList(),
-                IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg,
-                IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
-                IdTokenSignedResponseAlg = client.IdTokenSignedResponseAlg,
-                InitiateLoginUri = client.InitiateLoginUri,
-                JsonWebKeys = client.JsonWebKeys,
-                JwksUri = client.JwksUri,
-                LogoUri = client.LogoUri,
-                PolicyUri = client.PolicyUri,
-                RedirectUris = client.RedirectionUrls,
-                RequestObjectEncryptionAlg = client.RequestObjectEncryptionAlg,
-                RequestObjectEncryptionEnc = client.RequestObjectEncryptionEnc,
-                RequestObjectSigningAlg = client.RequestObjectSigningAlg,
-                RequestUris = client.RequestUris,
-                RequireAuthTime = client.RequireAuthTime,
-                ResponseTypes = client.ResponseTypes == null ? new List<string>() : client.ResponseTypes.Select(g => Enum.GetName(typeof(ResponseType), g)).ToList(),
-                SectorIdentifierUri = client.SectorIdentifierUri,
-                SubjectType = client.SubjectType,
-                TokenEndPointAuthMethod = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), client.TokenEndPointAuthMethod),
-                TokenEndPointAuthSigningAlg = client.TokenEndPointAuthSigningAlg,
-                UserInfoEncryptedResponseAlg = client.UserInfoEncryptedResponseAlg,
-                UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc,
-                UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg,
-                TosUri = client.TosUri,
-                PostLogoutRedirectUris = client.PostLogoutRedirectUris,
-                CreateDateTime = client.CreateDateTime,
-                UpdateDateTime = client.UpdateDateTime
             };
         }
 
@@ -610,11 +296,6 @@ namespace SimpleIdentityServer.Host.Extensions
                 CreateDateTime = scope.CreateDateTime,
                 UpdateDateTime = scope.UpdateDateTime
             };
-        }
-
-        public static List<ClientResponse> ToDtos(this IEnumerable<Client> clients)
-        {
-            return clients.Select(c => c.ToDto()).ToList();
         }
 
         public static List<ScopeResponse> ToDtos(this ICollection<Scope> scopes)
@@ -666,8 +347,8 @@ namespace SimpleIdentityServer.Host.Extensions
                 result.Claims = claimsParameter;
 
                 var obj = JObject.Parse(request.Claims);
-                var idToken = obj.GetValue(Core.Constants.StandardClaimParameterNames.IdTokenName);
-                var userInfo = obj.GetValue(Core.Constants.StandardClaimParameterNames.UserInfoName);
+                var idToken = obj.GetValue(Core.CoreConstants.StandardClaimParameterNames.IdTokenName);
+                var userInfo = obj.GetValue(Core.CoreConstants.StandardClaimParameterNames.UserInfoName);
                 if (idToken != null)
                 {
                     claimsParameter.IdToken = new List<ClaimParameter>();
@@ -774,9 +455,9 @@ namespace SimpleIdentityServer.Host.Extensions
         public static AuthorizationRequest ToAuthorizationRequest(this JwsPayload jwsPayload)
         {
             var displayVal =
-                jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.DisplayName);
+                jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.DisplayName);
             var responseMode =
-                jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.ResponseModeName);
+                jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.ResponseModeName);
             if (string.IsNullOrWhiteSpace(displayVal) || !Enum.TryParse(displayVal, out DisplayModes displayEnum))
             {
                 displayEnum = DisplayModes.Page;
@@ -789,158 +470,26 @@ namespace SimpleIdentityServer.Host.Extensions
 
             var result = new AuthorizationRequest
             {
-                AcrValues = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.AcrValuesName),
-                Claims = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.ClaimsName),
-                ClientId = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.ClientIdName),
+                AcrValues = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.AcrValuesName),
+                Claims = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.ClaimsName),
+                ClientId = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName),
                 Display = displayEnum,
-                Prompt = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.PromptName),
-                IdTokenHint = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.IdTokenHintName),
-                MaxAge = jwsPayload.GetDoubleClaim(Core.Constants.StandardAuthorizationRequestParameterNames.MaxAgeName),
-                Nonce = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.NonceName),
-                ResponseType = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
-                State = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.StateName),
-                LoginHint = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.LoginHintName),
-                RedirectUri = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.RedirectUriName),
-                Request = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.RequestName),
-                RequestUri = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.RequestUriName),
-                Scope = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.ScopeName),
+                Prompt = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.PromptName),
+                IdTokenHint = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.IdTokenHintName),
+                MaxAge = jwsPayload.GetDoubleClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.MaxAgeName),
+                Nonce = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
+                ResponseType = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
+                State = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.StateName),
+                LoginHint = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.LoginHintName),
+                RedirectUri = new Uri(jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName)),
+                Request = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.RequestName),
+                RequestUri = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.RequestUriName),
+                Scope = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName),
                 ResponseMode = responseModeEnum,
-                UiLocales = jwsPayload.GetStringClaim(Core.Constants.StandardAuthorizationRequestParameterNames.UiLocalesName),
+                UiLocales = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.UiLocalesName),
             };
 
             return result;
-        }
-
-        public static JwsPayload ToJwsPayload(this AuthorizationRequest request)
-        {
-            return new JwsPayload
-            {
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.AcrValuesName, request.AcrValues
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.ClaimsName, request.Claims
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.ClientIdName, request.ClientId
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.DisplayName, Enum.GetName(typeof(Display), request.Display)
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.PromptName, request.Prompt
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.IdTokenHintName, request.IdTokenHint
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.MaxAgeName, request.MaxAge
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.NonceName, request.Nonce
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName, request.ResponseType
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.StateName, request.State
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.LoginHintName, request.LoginHint
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.RedirectUriName, request.RedirectUri
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.RequestName, request.Request
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.RequestUriName, request.RequestUri
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.ScopeName, request.Scope
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.ResponseModeName, Enum.GetName(typeof(ResponseModes), request.ResponseMode)
-                },
-                {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.UiLocalesName, request.UiLocales
-                }
-            };
-        }
-
-        public static RegistrationParameter ToParameter(this ClientRequest clientRequest)
-        {
-            if (clientRequest == null)
-            {
-                throw new ArgumentNullException(nameof(clientRequest));
-            }
-
-            var responseTypes = new List<ResponseType>();
-            var grantTypes = new List<GrantType>();
-            ApplicationTypes? applicationType = null;
-            if (clientRequest.ResponseTypes != null && clientRequest.ResponseTypes.Any())
-            {
-                foreach (var responseType in clientRequest.ResponseTypes)
-                {
-                    if (Enum.TryParse(responseType, out ResponseType responseTypeEnum) &&
-                        !responseTypes.Contains(responseTypeEnum))
-                    {
-                        responseTypes.Add(responseTypeEnum);
-                    }
-                }
-            }
-
-            if (clientRequest.GrantTypes != null && clientRequest.GrantTypes.Any())
-            {
-                foreach (var grantType in clientRequest.GrantTypes)
-                {
-                    if (Enum.TryParse(grantType, out GrantType grantTypeEnum))
-                    {
-                        grantTypes.Add(grantTypeEnum);
-                    }
-                }
-            }
-
-            if (Enum.TryParse(clientRequest.ApplicationType, out ApplicationTypes appTypeEnum))
-            {
-                applicationType = appTypeEnum;
-            }
-
-            return new RegistrationParameter
-            {
-                ApplicationType = applicationType,
-                ClientName = clientRequest.ClientName,
-                ClientUri = clientRequest.ClientUri,
-                Contacts = clientRequest.Contacts == null ? new List<string>() : clientRequest.Contacts.ToList(),
-                DefaultAcrValues = clientRequest.DefaultAcrValues,
-                DefaultMaxAge = clientRequest.DefaultMaxAge,
-                GrantTypes = grantTypes,
-                IdTokenEncryptedResponseAlg = clientRequest.IdTokenEncryptedResponseAlg,
-                IdTokenEncryptedResponseEnc = clientRequest.IdTokenEncryptedResponseEnc,
-                IdTokenSignedResponseAlg = clientRequest.IdTokenSignedResponseAlg,
-                InitiateLoginUri = clientRequest.InitiateLoginUri,
-                Jwks = clientRequest.Jwks,
-                JwksUri = clientRequest.JwksUri,
-                LogoUri = clientRequest.LogoUri,
-                PolicyUri = clientRequest.PolicyUri,
-                RedirectUris = clientRequest.RedirectUris == null ? new List<string>() : clientRequest.RedirectUris.ToList(),
-                RequestObjectEncryptionAlg = clientRequest.RequestObjectEncryptionAlg,
-                RequestObjectEncryptionEnc = clientRequest.RequestObjectEncryptionEnc,
-                RequestObjectSigningAlg = clientRequest.RequestObjectSigningAlg,
-                RequestUris = clientRequest.RequestUris == null ? new List<string>() : clientRequest.RequestUris.ToList(),
-                RequireAuthTime = clientRequest.RequireAuthTime,
-                ResponseTypes = responseTypes,
-                SectorIdentifierUri = clientRequest.SectorIdentifierUri,
-                SubjectType = clientRequest.SubjectType,
-                TokenEndPointAuthMethod = clientRequest.TokenEndpointAuthMethod,
-                TokenEndPointAuthSigningAlg = clientRequest.TokenEndpointAuthSigningAlg,
-                TosUri = clientRequest.TosUri,
-                UserInfoEncryptedResponseAlg = clientRequest.UserInfoEncryptedResponseAlg,
-                UserInfoEncryptedResponseEnc = clientRequest.UserInfoEncryptedResponseEnc,
-                UserInfoSignedResponseAlg = clientRequest.UserInfoSignedResponseAlg,
-                ScimProfile = clientRequest.ScimProfile
-            };
         }
 
         public static IntrospectionResponse ToDto(this IntrospectionResult introspectionResult)
@@ -982,7 +531,7 @@ namespace SimpleIdentityServer.Host.Extensions
 
         private static void FillInClaimsParameter(
             JToken token,
-            List<ClaimParameter> claimParameters)
+            ICollection<ClaimParameter> claimParameters)
         {
             foreach (var child in token.Children())
             {

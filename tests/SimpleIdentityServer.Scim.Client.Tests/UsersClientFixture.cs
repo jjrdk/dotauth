@@ -39,25 +39,18 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
         [Fact]
         public async Task When_Add_Authenticated_User_Then_ScimIdentifier_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT
-            var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
+                        var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.Equal(HttpStatusCode.Created, scimResponse.StatusCode);
+                        Assert.Equal(HttpStatusCode.Created, scimResponse.StatusCode);
         }
 
         [Fact]
         public async Task WhenUpdatingCurrentUserWithMultipleRolesThenReturnsOk()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT
-            var scimResponse = await _usersClient.AddUser(new ScimUser { UserName = "tester1" }, "token").ConfigureAwait(false);
+                        var scimResponse = await _usersClient.AddUser(new ScimUser { UserName = "tester1" }, "token").ConfigureAwait(false);
             var scimId = scimResponse.Content["id"].ToString();
             UserStore.Instance().ScimId = scimId;
             var thirdResult = await _usersClient.UpdateUser(
@@ -66,18 +59,14 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                 .ConfigureAwait(false);
             UserStore.Instance().ScimId = null;
 
-            // ASSERT
-            Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
+                        Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
         }
 
         [Fact]
         public async Task WhenUpdatingUserWithMultipleRolesThenReturnsOk()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT
-            var scimResponse = await _usersClient.AddUser(new ScimUser { UserName = "tester" }).ConfigureAwait(false);
+                        var scimResponse = await _usersClient.AddUser(new ScimUser { UserName = "tester" }).ConfigureAwait(false);
             //var scimId = scimResponse.Content["id"].ToString();
             //UserStore.Instance().ScimId = scimId;
             var id = scimResponse.Content["id"].ToString();
@@ -86,18 +75,14 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                 .ConfigureAwait(false);
             UserStore.Instance().ScimId = null;
 
-            // ASSERT
-            Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
+                        Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
         }
 
         [Fact]
         public async Task When_Update_Current_User_Then_Ok_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT
-            var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
+                        var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
             var scimId = scimResponse.Content["id"].ToString();
             UserStore.Instance().ScimId = scimId;
             var thirdResult = await _usersClient.UpdateUser(
@@ -107,15 +92,13 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                 .ConfigureAwait(false);
             UserStore.Instance().ScimId = null;
 
-            // ASSERT
-            Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
+                        Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
         }
 
         //[Fact]
         //public async Task When_Partially_Update_Current_User_Then_Ok_Is_Returned()
         //{
-        //    // ARRANGE
-        //    var patchOperation = new PatchOperation
+        //        //    var patchOperation = new PatchOperation
         //    {
         //        Path = ScimConstants.UserResourceResponseNames.UserName,
         //        Type = PatchOperations.replace,
@@ -124,32 +107,26 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
         //    InitializeFakeObjects();
 
-        //    // ACT
-        //    var scimResponse = await _usersClient.AddAuthenticatedUser(baseUrl, "token").ConfigureAwait(false);
+        //            //    var scimResponse = await _usersClient.AddAuthenticatedUser(baseUrl, "token").ConfigureAwait(false);
         //    var scimId = scimResponse.Content["id"].ToString();
         //    UserStore.Instance().ScimId = scimId;
         //    var thirdResult = await _usersClient.PartialUpdateAuthenticatedUser(baseUrl, scimId, patchOperation).ConfigureAwait(false);
         //    UserStore.Instance().ScimId = null;
 
-        //    // ASSERT
-        //    Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
+        //            //    Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
         //}
 
         [Fact]
         public async Task When_Remove_Current_User_Then_NoContent_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT
-            var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
+                        var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
             var scimId = scimResponse.Content["id"].ToString();
             UserStore.Instance().ScimId = scimId;
             var removeResponse = await _usersClient.DeleteAuthenticatedUser(baseUrl, "token").ConfigureAwait(false);
             UserStore.Instance().ScimId = null;
 
-            // ASSERTS
-            Assert.Equal(HttpStatusCode.NoContent, removeResponse.StatusCode);
+                        Assert.Equal(HttpStatusCode.NoContent, removeResponse.StatusCode);
         }
 
         [Fact]
@@ -168,12 +145,9 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
         [Fact]
         public async Task When_Insert_Ten_Users_And_Search_Two_Users_Are_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT
-            for (var i = 0; i < 10; i++)
+                        for (var i = 0; i < 10; i++)
             {
                 await _usersClient.AddUser(new ScimUser()).ConfigureAwait(false);
             }
@@ -186,15 +160,12 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                     Count = 2
                 }).ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.True(searchResult.Content.Length == 2);
+                        Assert.True(searchResult.Content.Length == 2);
         }
 
         [Fact]
         public async Task When_Insert_Complex_Users_Then_Information_Are_Correct()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var complexArr = new JArray();
             var complexObj = new JObject
             {
@@ -250,8 +221,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
         //[Fact]
         //public async Task When_Execute_Operations_On_Users_Then_No_Exceptions_Are_Thrown()
         //{
-        //    // ARRANGE
-        //    InitializeFakeObjects();
+        //        //    InitializeFakeObjects();
         //    var patchOperation = new PatchOperation
         //    {
         //        Path = ScimConstants.UserResourceResponseNames.UserName,
@@ -296,8 +266,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
         //            new JProperty(ScimConstants.UserResourceResponseNames.UserName, "username"))
         //        .ConfigureAwait(false);
 
-        //    // ASSERTS
-        //    Assert.NotNull(firstResult);
+        //            //    Assert.NotNull(firstResult);
         //    Assert.True(firstResult.StatusCode == HttpStatusCode.Created);
         //    var id = firstResult.Content["id"].ToString();
 
@@ -306,8 +275,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
         //    ////.AddOperation(patchOperation)
         //    ////.Execute();
 
-        //    //// ASSERTS
-        //    //Assert.NotNull(secondResult);
+        //    //        //    //Assert.NotNull(secondResult);
         //    //Assert.True(secondResult.Content[ScimConstants.UserResourceResponseNames.UserName].ToString() == "new_username");
 
         //    // ACT : Update user
@@ -321,8 +289,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
         //        })
         //        .ConfigureAwait(false);
 
-        //    // ASSERTS
-        //    Assert.NotNull(thirdResult);
+        //            //    Assert.NotNull(thirdResult);
         //    Assert.True(thirdResult.StatusCode == HttpStatusCode.OK);
         //    Assert.True(thirdResult.Content[ScimConstants.UserResourceResponseNames.UserName].ToString() == "other_username");
         //    var active = thirdResult.Content[ScimConstants.UserResourceResponseNames.Active].ToString();
@@ -334,8 +301,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
         //    //.AddOperation()
         //    //.Execute();
 
-        //    // ASSERTS
-        //    Assert.NotNull(fourthResult);
+        //            //    Assert.NotNull(fourthResult);
         //    Assert.True(fourthResult.StatusCode == HttpStatusCode.OK);
         //    Assert.True(fourthResult.Content[ScimConstants.UserResourceResponseNames.Emails].Count() == 2);
 
@@ -344,8 +310,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
         //    //.AddOperation()
         //    //.Execute();
 
-        //    // ASSERTS
-        //    Assert.NotNull(fifthResult);
+        //            //    Assert.NotNull(fifthResult);
         //    Assert.True(fifthResult.StatusCode == HttpStatusCode.OK);
         //    Assert.True(fifthResult.Content[ScimConstants.UserResourceResponseNames.Emails].Count() == 1);
 
@@ -371,8 +336,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
         //        Count = 10
         //    }).ConfigureAwait(false);
 
-        //    // ASSERTS
-        //    Assert.NotNull(sixResult);
+        //            //    Assert.NotNull(sixResult);
         //    var c = sixResult.Content["Resources"];
         //    Assert.True(sixResult.Content["Resources"].Count() == 10);
 
@@ -383,14 +347,12 @@ namespace SimpleIdentityServer.Scim.Client.Tests
         //        Attributes = new[] { "emails.type", "emails.value", "emails.display", "userName" }
         //    }).ConfigureAwait(false);
 
-        //    // ASSERTS
-        //    Assert.NotNull(sevenResult);
+        //            //    Assert.NotNull(sevenResult);
 
         //    // ACT : Remove the user
         //    var eightResult = await _usersClient.DeleteUser(baseUrl, id).ConfigureAwait(false);
 
-        //    // ASSERTS
-        //    Assert.NotNull(eightResult);
+        //            //    Assert.NotNull(eightResult);
         //    Assert.True(eightResult.StatusCode == HttpStatusCode.NoContent);
         //}
 

@@ -30,12 +30,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() =>
+                        await Assert.ThrowsAsync<ArgumentNullException>(() =>
                     _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(null, null, null, null))
                 .ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() =>
@@ -48,16 +45,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
         [Fact]
         public async Task When_Nonce_Parameter_Is_Not_Set_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter
             {
                 State = "state"
             };
 
-            // ACT & ASSERT
-            var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() =>
+                        var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() =>
                     _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter,
                         null,
                         new Client(),
@@ -66,15 +60,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             Assert.True(ex.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(ex.Message ==
                         string.Format(ErrorDescriptions.MissingParameter,
-                            Constants.StandardAuthorizationRequestParameterNames.NonceName));
+                            CoreConstants.StandardAuthorizationRequestParameterNames.NonceName));
             Assert.True(ex.State == authorizationParameter.State);
         }
 
         [Fact]
         public async Task When_Grant_Type_Is_Not_Supported_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter
             {
                 State = "state",
@@ -85,8 +77,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 .Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(false);
 
-            // ACT & ASSERT
-            var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+                        var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
                     () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter,
                         null,
                         new Client(),
@@ -102,16 +93,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
         [Fact]
         public async Task When_Redirected_To_Callback_And_Resource_Owner_Is_Not_Authenticated_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter
             {
                 State = "state",
                 Nonce = "nonce"
             };
 
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 Type = TypeActionResult.RedirectToCallBackUrl
             };
@@ -125,8 +114,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
-            // ACT & ASSERT
-            var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+                        var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
                     () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter,
                         null,
                         new Client(),
@@ -141,9 +129,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         [Fact]
         public async Task
             When_Resource_Owner_Is_Authenticated_And_Pass_Correct_Authorization_Request_Then_Events_Are_Logged()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter
             {
                 State = "state",
@@ -152,7 +138,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 Nonce = "nonce"
             };
 
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 Type = TypeActionResult.RedirectToCallBackUrl,
                 RedirectInstruction = new RedirectInstruction
@@ -172,8 +158,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
-            // ACT
-            await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation
+                        await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation
                 .Execute(authorizationParameter, claimsPrincipal, new Client(), null)
                 .ConfigureAwait(false);
             _oauthEventSource.Verify(s => s.StartHybridFlow(authorizationParameter.ClientId,

@@ -16,9 +16,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks
 
         [Fact]
         public async Task When_Retrieving_Jwks_Then_Set_Of_Private_And_Public_Keys_Are_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var publicKeys = new List<Dictionary<string, object>>();
             var privateKeys = new List<Dictionary<string, object>>();
 
@@ -27,27 +25,21 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks
             _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenActionStub.Setup(g => g.Execute())
                 .Returns(Task.FromResult(privateKeys));
 
-            // ACT
-            var result = await _jwksActions.GetJwks().ConfigureAwait(false);
+                        var result = await _jwksActions.GetJwks().ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
         }
 
         [Fact]
         public async Task When_JsonWebKeys_Are_Rotated_Then_Operation_Should_Be_Called()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const bool rotateSuccess = true;
             _rotateJsonWebKeysOperationStub.Setup(r => r.Execute())
                 .Returns(Task.FromResult(rotateSuccess));
 
-            // ACT
-            var result = await _jwksActions.RotateJwks().ConfigureAwait(false);
+                        var result = await _jwksActions.RotateJwks().ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result == rotateSuccess);
+                        Assert.True(result == rotateSuccess);
             _rotateJsonWebKeysOperationStub.Verify(r => r.Execute());
         }
 

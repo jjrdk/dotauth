@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
             return await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, issuerName).ConfigureAwait(false);
         }
 
-        public async Task<ActionResult> ConfirmConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName)
+        public async Task<EndpointResult> ConfirmConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName)
         {
             if (authorizationParameter == null)
             {

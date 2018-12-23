@@ -30,9 +30,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACT && ASSERT
             await Assert.ThrowsAsync<ArgumentNullException>(() => _removeConsentOperation.Execute(null)).ConfigureAwait(false);
@@ -40,19 +38,15 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 
         [Fact]
         public async Task When_Deleting_Consent_Then_Boolean_Is_Returned()
-        {
-            // ARRANGE
-            const bool isRemoved = true;
+        {            const bool isRemoved = true;
             const string consentId = "consent_id";
             InitializeFakeObjects();
             _consentRepositoryStub.Setup(c => c.DeleteAsync(It.IsAny<Consent>()))
                 .Returns(Task.FromResult(isRemoved));
 
-            // ACT
-            var result = await _removeConsentOperation.Execute(consentId).ConfigureAwait(false);
+                        var result = await _removeConsentOperation.Execute(consentId).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(result == isRemoved);
+                        Assert.True(result == isRemoved);
         }
 
         private void InitializeFakeObjects()

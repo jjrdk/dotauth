@@ -1,8 +1,8 @@
 ﻿namespace SimpleIdentityServer.Authenticate.SMS.Actions
 {
-    using SimpleIdentityServer.Core.Errors;
-    using SimpleIdentityServer.Core.Exceptions;
-    using SimpleIdentityServer.Twilio.Client;
+    using Core.Errors;
+    using Core.Exceptions;
+    using Twilio.Client;
     using System;
     using System.Threading.Tasks;
     using Core.Jwt;

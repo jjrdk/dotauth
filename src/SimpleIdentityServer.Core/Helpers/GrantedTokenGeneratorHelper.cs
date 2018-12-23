@@ -87,7 +87,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 AccessToken = accessToken,
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
                 ExpiresIn = (int)expiresIn.TotalSeconds,
-                TokenType = Constants.StandardTokenTypes.Bearer,
+                TokenType = CoreConstants.StandardTokenTypes.Bearer,
                 CreateDateTime = DateTime.UtcNow,
                 // IDS
                 Scope = scope,

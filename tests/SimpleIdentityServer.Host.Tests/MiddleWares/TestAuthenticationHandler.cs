@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Host.Tests.MiddleWares
             var claimsIdentity = new ClaimsIdentity(claims, FakeStartup.DefaultSchema);
             var authenticationTicket = new AuthenticationTicket(
                                              new ClaimsPrincipal(claimsIdentity),
-                                             new Microsoft.AspNetCore.Authentication.AuthenticationProperties(),
+                                             new AuthenticationProperties(),
                                              FakeStartup.DefaultSchema);
             return Task.FromResult(AuthenticateResult.Success(authenticationTicket));
         }

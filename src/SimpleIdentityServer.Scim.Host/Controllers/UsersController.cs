@@ -277,7 +277,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
                 return BadRequest();
             }
             user.UserProfile = scimUser;
-            //_userStore.UpdateAsync()
+            //_userStore.Update()
             //_usersAction.UpdateUser(id, scimUser, GetLocationPattern()).ConfigureAwait(false);
 
             return new OkObjectResult(user);

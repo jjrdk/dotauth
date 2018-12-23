@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +11,20 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
-using SimpleIdentityServer.Manager.Core.Errors;
-using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
 {
+    using Shared.Models;
+    using Shared.Repositories;
+    using SimpleIdentityServer.Core.Api.Scopes.Actions;
+    using SimpleIdentityServer.Core.Errors;
+    using SimpleIdentityServer.Core.Exceptions;
+
     public class GetScopeOperationFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
@@ -33,43 +32,34 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getScopeOperation.Execute(null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getScopeOperation.Execute(string.Empty));
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _getScopeOperation.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getScopeOperation.Execute(string.Empty)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Scope_Doesnt_Exist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            const string scopeName = "invalid_scope_name";
+        {            const string scopeName = "invalid_scope_name";
             InitializeFakeObjects();
-            _scopeRepositoryStub.Setup(s => s.GetAsync(It.IsAny<string>()))
+            _scopeRepositoryStub.Setup(s => s.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult((Scope)null));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _getScopeOperation.Execute(scopeName));
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _getScopeOperation.Execute(scopeName)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheScopeDoesntExist, scopeName));
         }
 
         [Fact]
         public async Task When_Scope_Is_Retrieved_Then_Scope_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            _scopeRepositoryStub.Setup(s => s.GetAsync(It.IsAny<string>()))
+        {            InitializeFakeObjects();
+            _scopeRepositoryStub.Setup(s => s.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult(new Scope()));
 
-            // ACT
-            await _getScopeOperation.Execute("scope");
+                        await _getScopeOperation.Execute("scope").ConfigureAwait(false);
 
-            // ASSERT
-            _scopeRepositoryStub.Verify(s => s.GetAsync("scope"));
+                        _scopeRepositoryStub.Verify(s => s.Get("scope"));
         }
 
         private void InitializeFakeObjects()

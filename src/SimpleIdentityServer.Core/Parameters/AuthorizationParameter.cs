@@ -16,6 +16,7 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Parameters
 {
+    using System;
     using Shared.Models;
 
     public sealed class AuthorizationParameter
@@ -24,7 +25,7 @@ namespace SimpleIdentityServer.Core.Parameters
         public string Scope { get; set; }
         public IEnumerable<string> AmrValues { get; set; }
         public string ResponseType { get; set; }
-        public string RedirectUrl { get; set; }
+        public Uri RedirectUrl { get; set; }
         public string State { get; set; }
         public ResponseMode ResponseMode { get; set; }
         public string Nonce { get; set; }

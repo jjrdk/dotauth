@@ -12,106 +12,90 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
-using SimpleIdentityServer.Core.Api.Registration.Actions;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Services;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 {
-    using Logging;
+    using Newtonsoft.Json;
+    using Repositories;
     using Shared;
     using Shared.Models;
+    using Shared.Parameters;
     using Shared.Repositories;
-    using Shared.Requests;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using Xunit;
 
-    public sealed class RegisterClientActionFixture
+    public sealed class DefaultClientRepositoryFixture : IDisposable
     {
-        private Mock<IOAuthEventSource> _oauthEventSource;
-        private Mock<IClientRepository> _clientRepositoryFake;
-        private Mock<IGenerateClientFromRegistrationRequest> _generateClientFromRegistrationRequest;
-        private Mock<IClientPasswordService> _encryptedPasswordFactoryStub;
-        private IRegisterClientAction _registerClientAction;
+        private IClientRepository _clientRepositoryFake;
+        private readonly HttpClient _httpClient;
+
+        public DefaultClientRepositoryFixture()
+        {
+            _httpClient = new HttpClient();
+        }
+
+        [Fact]
+        public async Task When_Client_Doesnt_Exist_Then_ReturnsEmptyResult()
+        {
+            const string clientId = "client_id";
+            InitializeFakeObjects();
+
+            var result = await _clientRepositoryFake.Search(new SearchClientParameter { ClientIds = new[] { clientId } }).ConfigureAwait(false);
+            Assert.Empty(result.Content);
+        }
+
+        [Fact]
+        public async Task When_Getting_Client_Then_Information_Are_Returned()
+        {
+            const string clientId = "clientId";
+            var client = new Client
+            {
+                ClientId = clientId,
+                AllowedScopes = new[] { new Scope { Name = "scope" } },
+                RedirectionUrls = new[] { new Uri("https://localhost"), },
+                RequestUris = new[] { new Uri("https://localhost"), }
+            };
+            InitializeFakeObjects();
+            await _clientRepositoryFake.Insert(client).ConfigureAwait(false);
+
+            var result = await _clientRepositoryFake.Search(
+                new SearchClientParameter { ClientIds = new[] { clientId } })
+                .ConfigureAwait(false);
+
+            Assert.True(result.Content.First().ClientId == clientId);
+        }
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
-            // ARRANGE
             InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _registerClientAction.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientRepositoryFake.Insert(null)).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task When_Passing_Registration_Parameter_With_Specific_Values_Then_Client_Is_Returned()
+        public async Task When_Passing_Registration_Parameter_With_Specific_Values_Then_ReturnsTrue()
         {
-            // ARRANGE
             InitializeFakeObjects();
             const string clientName = "client_name";
-            const string clientUri = "client_uri";
-            const string policyUri = "policy_uri";
-            const string tosUri = "tos_uri";
-            const string jwksUri = "jwks_uri";
+            var clientUri = new Uri("https://client_uri", UriKind.Absolute);
+            var policyUri = new Uri("https://policy_uri", UriKind.Absolute);
+            var tosUri = new Uri("https://tos_uri", UriKind.Absolute);
+            var jwksUri = new Uri("https://jwks_uri", UriKind.Absolute);
             const string kid = "kid";
-            const string sectorIdentifierUri = "sector_identifier_uri";
+            //var sectorIdentifierUri = new Uri("https://sector_identifier_uri", UriKind.Absolute);
             const double defaultMaxAge = 3;
             const string defaultAcrValues = "default_acr_values";
             const bool requireAuthTime = false;
-            const string initiateLoginUri = "initiate_login_uri";
-            const string requestUri = "request_uri";
-            var registrationParameter = new RegistrationParameter
-            {
-                ClientName = clientName,
-                ResponseTypes = new List<ResponseType>
-                {
-                    ResponseType.token
-                },
-                GrantTypes = new List<GrantType>
-                {
-                    GrantType.@implicit
-                },
-                ApplicationType = ApplicationTypes.native,
-                ClientUri = clientUri,
-                PolicyUri = policyUri,
-                TosUri = tosUri,
-                JwksUri = jwksUri,
-                Jwks = new JsonWebKeySet(),
-                SectorIdentifierUri = sectorIdentifierUri,
-                IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
-                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
-                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
-                UserInfoSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
-                UserInfoEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
-                UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
-                RequestObjectSigningAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
-                RequestObjectEncryptionAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
-                RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
-                TokenEndPointAuthMethod = "client_secret_post",
-                TokenEndPointAuthSigningAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
-                DefaultMaxAge = defaultMaxAge,
-                DefaultAcrValues = defaultAcrValues,
-                RequireAuthTime = requireAuthTime,
-                InitiateLoginUri = initiateLoginUri,
-                RequestUris = new List<string>
-                {
-                    requestUri
-                }
-            };
-            var jsonWebKeys = new List<JsonWebKey>
-            {
-                new JsonWebKey
-                {
-                    Kid = kid
-                }
-            };
+            var initiateLoginUri = new Uri("https://initiate_login_uri", UriKind.Absolute);
+            var requestUri = new Uri("https://request_uri", UriKind.Absolute);
+
             var client = new Client
             {
+                ClientId = "testclient",
                 ClientName = clientName,
                 ResponseTypes = new List<ResponseType>
                 {
@@ -121,13 +105,25 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                 {
                     GrantType.@implicit
                 },
+                Secrets = new List<ClientSecret>
+                {
+                    new ClientSecret{ Type = ClientSecretTypes.SharedSecret, Value = "test"}
+                },
+                AllowedScopes = new[] { new Scope { Name = "scope" } },
                 ApplicationType = ApplicationTypes.native,
                 ClientUri = clientUri,
                 PolicyUri = policyUri,
                 TosUri = tosUri,
                 JwksUri = jwksUri,
-                JsonWebKeys = new List<JsonWebKey>(),
-                SectorIdentifierUri = sectorIdentifierUri,
+                JsonWebKeys = new List<JsonWebKey>
+                {
+                    new JsonWebKey
+                    {
+                        Kid = kid
+                    }
+                },
+                RedirectionUrls = new[] { new Uri("https://localhost"), },
+                //SectorIdentifierUri = sectorIdentifierUri,
                 IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
                 IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
                 IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
@@ -143,43 +139,31 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                 DefaultAcrValues = defaultAcrValues,
                 RequireAuthTime = requireAuthTime,
                 InitiateLoginUri = initiateLoginUri,
-                RequestUris = new List<string>
+                RequestUris = new List<Uri>
                 {
                     requestUri
                 }
             };
-            _generateClientFromRegistrationRequest.Setup(g => g.Execute(It.IsAny<RegistrationParameter>()))
-                .Returns(client);                
-            _clientRepositoryFake.Setup(c => c.InsertAsync(It.IsAny<Client>()))
-                .Callback<Client>(c => client = c)
-                .Returns(Task.FromResult(true));
 
-            // ACT
-            var result = await _registerClientAction.Execute(registrationParameter).ConfigureAwait(false);
+            var jsonClient = JsonConvert.SerializeObject(client);
+            var result = await _clientRepositoryFake.Insert(client).ConfigureAwait(false);
+            var jsonResult = JsonConvert.SerializeObject(result);
 
-            // ASSERT
-            _oauthEventSource.Verify(s => s.StartRegistration(clientName));
-            _clientRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Client>()));
-            _oauthEventSource.Verify(s => s.EndRegistration(It.IsAny<string>(), clientName));
-            Assert.NotEmpty(result.ClientSecret);
-            Assert.Contains(Constants.StandardScopes.OpenId, client.AllowedScopes);
-            Assert.Contains(Constants.StandardScopes.Address, client.AllowedScopes);
-            Assert.Contains(Constants.StandardScopes.Email, client.AllowedScopes);
-            Assert.Contains(Constants.StandardScopes.Phone, client.AllowedScopes);
-            Assert.Contains(Constants.StandardScopes.ProfileScope, client.AllowedScopes);
+            Assert.Equal(jsonClient, jsonResult);
         }
 
         private void InitializeFakeObjects()
         {
-            _oauthEventSource = new Mock<IOAuthEventSource>();
-            _clientRepositoryFake = new Mock<IClientRepository>();
-            _generateClientFromRegistrationRequest = new Mock<IGenerateClientFromRegistrationRequest>();
-            _encryptedPasswordFactoryStub = new Mock<IClientPasswordService>();
-            _registerClientAction = new RegisterClientAction(
-                _oauthEventSource.Object,
-                _clientRepositoryFake.Object,
-                _generateClientFromRegistrationRequest.Object,
-                _encryptedPasswordFactoryStub.Object);
+            _clientRepositoryFake =
+                new DefaultClientRepository(
+                    new Client[0],
+                    _httpClient,
+                    new DefaultScopeRepository(new[] { new Scope { Name = "scope" } }));
+        }
+
+        public void Dispose()
+        {
+            _httpClient?.Dispose();
         }
     }
 }

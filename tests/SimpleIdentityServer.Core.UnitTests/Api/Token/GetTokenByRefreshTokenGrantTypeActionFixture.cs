@@ -44,12 +44,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert
+                        await Assert
                 .ThrowsAsync<ArgumentNullException>(() =>
                     _getTokenByRefreshTokenGrantTypeAction.Execute(null, null, null, null))
                 .ConfigureAwait(false);
@@ -57,15 +54,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         [Fact]
         public async Task When_Client_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var parameter = new RefreshTokenGrantTypeParameter();
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(Task.FromResult(new AuthenticationResult(null, "error")));
 
-            // ACT & ASSERT
-            var ex = await Assert
+                        var ex = await Assert
                 .ThrowsAsync<IdentityServerException>(() =>
                     _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
                 .ConfigureAwait(false);
@@ -75,9 +69,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         [Fact]
         public async Task When_Client_Doesnt_Support_GrantType_RefreshToken_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             var parameter = new RefreshTokenGrantTypeParameter();
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
@@ -91,8 +83,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                     },
                     null)));
 
-            // ACT & ASSERT
-            var ex = await Assert
+                        var ex = await Assert
                 .ThrowsAsync<IdentityServerException>(() =>
                     _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
                 .ConfigureAwait(false);
@@ -105,9 +96,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         [Fact]
         public async Task When_Passing_Invalid_Refresh_Token_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             var parameter = new RefreshTokenGrantTypeParameter();
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
@@ -123,8 +112,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _tokenStoreStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken) null));
 
-            // ACT & ASSERT
-            var ex = await Assert
+                        var ex = await Assert
                 .ThrowsAsync<IdentityServerException>(() =>
                     _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
                 .ConfigureAwait(false);
@@ -134,9 +122,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         [Fact]
         public async Task When_RefreshToken_Is_Not_Issued_By_The_Same_Client_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             var parameter = new RefreshTokenGrantTypeParameter();
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
@@ -155,8 +141,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                     ClientId = "differentId"
                 }));
 
-            // ACT & ASSERT
-            var ex = await Assert
+                        var ex = await Assert
                 .ThrowsAsync<IdentityServerException>(() =>
                     _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
                 .ConfigureAwait(false);
@@ -166,9 +151,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         [Fact]
         public async Task When_Requesting_Token_Then_New_One_Is_Generated()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             var parameter = new RefreshTokenGrantTypeParameter();
             var grantedToken = new GrantedToken
@@ -197,11 +180,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                     It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult(grantedToken));
 
-            // ACT
-            await _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null).ConfigureAwait(false);
+                        await _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null).ConfigureAwait(false);
 
-            // ASSERT
-            _tokenStoreStub.Verify(g => g.AddToken(It.IsAny<GrantedToken>()));
+                        _tokenStoreStub.Verify(g => g.AddToken(It.IsAny<GrantedToken>()));
         }
 
         private void InitializeFakeObjects()

@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 using (var rsa = new RSACryptoServiceProvider())
                 {
                     var hashMethod = _mappingWinJwsAlgorithmToRsaHashingAlgorithms[algorithm];
-                    var bytesToBeSigned = ASCIIEncoding.ASCII.GetBytes(combinedJwsNotSigned);
+                    var bytesToBeSigned = Encoding.ASCII.GetBytes(combinedJwsNotSigned);
                     rsa.FromXmlStringNetCore(serializedKeys);
                     var byteToBeConverted = rsa.SignData(bytesToBeSigned, hashMethod);
                     return byteToBeConverted.ToBase64Simplified();
@@ -89,7 +89,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 using (var rsa = new RSAOpenSsl())
                 {
                     var hashMethod = _mappingLinuxJwsAlgorithmToRsaHashingAlgorithms[algorithm];
-                    var bytesToBeSigned = ASCIIEncoding.ASCII.GetBytes(combinedJwsNotSigned);
+                    var bytesToBeSigned = Encoding.ASCII.GetBytes(combinedJwsNotSigned);
                     rsa.FromXmlStringNetCore(serializedKeys);
                     var byteToBeConverted = rsa.SignData(bytesToBeSigned, 0, bytesToBeSigned.Length, hashMethod, RSASignaturePadding.Pkcs1);
                     return byteToBeConverted.ToBase64Simplified();
@@ -113,7 +113,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 throw new ArgumentNullException("serializedKeys");
             }
 
-            var plainBytes = ASCIIEncoding.ASCII.GetBytes(input);
+            var plainBytes = Encoding.ASCII.GetBytes(input);
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 using (var rsa = new RSACryptoServiceProvider())

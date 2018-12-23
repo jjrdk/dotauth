@@ -14,6 +14,7 @@
 
 namespace SimpleIdentityServer.Shared.Requests
 {
+    using System;
     using System.Runtime.Serialization;
 
     [DataContract]
@@ -30,7 +31,7 @@ namespace SimpleIdentityServer.Shared.Requests
         [DataMember(Name = RequestTokenNames.Code)]
         public string Code { get; set; }
         [DataMember(Name = RequestTokenNames.RedirectUri)]
-        public string RedirectUri { get; set; }
+        public Uri RedirectUri { get; set; }
         [DataMember(Name = RequestTokenNames.RefreshToken)]
         public string RefreshToken { get; set; }
         [DataMember(Name = RequestTokenNames.CodeVerifier)]

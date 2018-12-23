@@ -35,47 +35,36 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
         
         [Fact]
         public async Task When_Passing_Empty_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            IntializeFakeObjects();
+        {            IntializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteAuthorizationPolicyAction.Execute(null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteAuthorizationPolicyAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_AuthorizationPolicy_Doesnt_Exist_Then_False_Is_Returned()
-        {
-            // ARRANGE
-            const string policyId = "policy_id";
+        {            const string policyId = "policy_id";
             IntializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId),
                 It.IsAny<Func<Task<Policy>>>()))
                 .Returns(() => Task.FromResult((Policy)null));
 
-            // ACT
-            var isUpdated = await _deleteAuthorizationPolicyAction.Execute(policyId).ConfigureAwait(false);
+                        var isUpdated = await _deleteAuthorizationPolicyAction.Execute(policyId).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.False(isUpdated);
+                        Assert.False(isUpdated);
         }
 
         [Fact]
         public async Task When_AuthorizationPolicy_Exists_Then_True_Is_Returned()
-        {
-            // ARRANGE
-            const string policyId = "policy_id";
+        {            const string policyId = "policy_id";
             var policy = new Policy();
             IntializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId),
                 It.IsAny<Func<Task<Policy>>>()))
                 .Returns(Task.FromResult(policy));
 
-            // ACT
-            var isUpdated = await _deleteAuthorizationPolicyAction.Execute(policyId).ConfigureAwait(false);
+                        var isUpdated = await _deleteAuthorizationPolicyAction.Execute(policyId).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.True(isUpdated);
+                        Assert.True(isUpdated);
         }
 
         private void IntializeFakeObjects()

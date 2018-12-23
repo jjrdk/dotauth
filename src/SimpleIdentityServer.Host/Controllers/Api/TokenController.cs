@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Shared.Serializers;
     using GrantTypes = Shared.Requests.GrantTypes;
 
-    [Route(Core.Constants.EndPoints.Token)]
+    [Route(CoreConstants.EndPoints.Token)]
     public class TokenController : Controller
     {
         private readonly ITokenActions _tokenActions;

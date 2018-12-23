@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.MiddleWares
             var claimsIdentity = new ClaimsIdentity(claims, FakeUmaStartup.DefaultSchema);
             var authenticationTicket = new AuthenticationTicket(
                                              new ClaimsPrincipal(claimsIdentity),
-                                             new Microsoft.AspNetCore.Authentication.AuthenticationProperties(),
+                                             new AuthenticationProperties(),
                                              FakeUmaStartup.DefaultSchema);
             return Task.FromResult(AuthenticateResult.Success(authenticationTicket));
         }

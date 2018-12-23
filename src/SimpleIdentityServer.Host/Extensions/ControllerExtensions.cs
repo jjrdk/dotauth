@@ -72,19 +72,22 @@ namespace SimpleIdentityServer.Host.Extensions
 
         public static ActionResult CreateRedirectionFromActionResult(
             this Controller controller,
-            Core.Results.ActionResult actionResult,
+            Core.Results.EndpointResult endpointResult,
             AuthorizationRequest authorizationRequest)
         {
             var actionResultParser = ActionResultParserFactory.CreateActionResultParser();
-            if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
+            if (endpointResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
-                var parameters = actionResultParser.GetRedirectionParameters(actionResult);
-                var uri = new Uri(authorizationRequest.RedirectUri);
-                var redirectUrl = controller.CreateRedirectHttp(uri, parameters, actionResult.RedirectInstruction.ResponseMode);
+                var parameters = actionResultParser.GetRedirectionParameters(endpointResult);
+                //var uri = new Uri();
+                var redirectUrl = controller.CreateRedirectHttp(
+                    authorizationRequest.RedirectUri,
+                    parameters,
+                    endpointResult.RedirectInstruction.ResponseMode);
                 return new RedirectResult(redirectUrl);
             }
 
-            var actionInformation = actionResultParser.GetControllerAndActionFromRedirectionActionResult(actionResult);
+            var actionInformation = actionResultParser.GetControllerAndActionFromRedirectionActionResult(endpointResult);
             if (actionInformation != null)
             {
                 var routeValueDic = actionInformation.RouteValueDictionary;

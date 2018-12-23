@@ -33,64 +33,49 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getUserOperation.Execute(null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _getUserOperation.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_User_Is_Not_Authenticated_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var emptyClaimsPrincipal = new ClaimsPrincipal();
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getUserOperation.Execute(emptyClaimsPrincipal)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getUserOperation.Execute(emptyClaimsPrincipal)).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(exception);
+                        Assert.NotNull(exception);
             Assert.True(exception.Code == Errors.ErrorCodes.UnhandledExceptionCode);
             Assert.True(exception.Message == Errors.ErrorDescriptions.TheUserNeedsToBeAuthenticated);
         }
 
         [Fact]
         public async Task When_Subject_Is_Not_Passed_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var claimsIdentity = new ClaimsIdentity("test");
             claimsIdentity.AddClaim(new Claim("test", "test"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-            // ACT
-            var exception = await  Assert.ThrowsAsync<IdentityServerException>(() => _getUserOperation.Execute(claimsPrincipal)).ConfigureAwait(false);
+                        var exception = await  Assert.ThrowsAsync<IdentityServerException>(() => _getUserOperation.Execute(claimsPrincipal)).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(exception);
+                        Assert.NotNull(exception);
             Assert.True(exception.Code == Errors.ErrorCodes.UnhandledExceptionCode);
             Assert.True(exception.Message == Errors.ErrorDescriptions.TheSubjectCannotBeRetrieved);
         }
         
         [Fact]
         public void When_Correct_Subject_Is_Passed_Then_ResourceOwner_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var claimsIdentity = new ClaimsIdentity("test");
             claimsIdentity.AddClaim(new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, "subject"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new ResourceOwner()));
 
-            // ACT
-            var result = _getUserOperation.Execute(claimsPrincipal);
+                        var result = _getUserOperation.Execute(claimsPrincipal);
 
-            // ASSERT
-            Assert.NotNull(result);
+                        Assert.NotNull(result);
         }
         
         private void InitializeFakeObjects()

@@ -16,13 +16,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
         [Fact]
         public async Task When_Passing_Null_Parameter_To_DisplayConsent_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(
+                        await Assert.ThrowsAsync<ArgumentNullException>(
                 () => _consentActions.DisplayConsent(null, null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(
                 () => _consentActions.DisplayConsent(authorizationParameter, null, null)).ConfigureAwait(false);
@@ -30,13 +27,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
         [Fact]
         public async Task When_Passing_Null_Parameter_To_ConfirmConsent_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(
+                        await Assert.ThrowsAsync<ArgumentNullException>(
                 () => _consentActions.ConfirmConsent(null, null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(
                 () => _consentActions.ConfirmConsent(authorizationParameter, null, null)).ConfigureAwait(false);

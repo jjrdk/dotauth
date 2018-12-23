@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Host.Controllers
     using Shared.Requests;
     using Shared.Responses;
 
-    [Route(Constants.EndPoints.Scopes)]
+    [Route(HostEnpoints.Scopes)]
     public class ScopesController : Controller
     {
         //private const string ScopesStoreName = "Scopes";

@@ -6,11 +6,6 @@
     using Shared.Repositories;
     using Shared.Results;
 
-    public interface ISearchClaimsAction
-    {
-        Task<SearchClaimsResult> Execute(SearchClaimsParameter parameter);
-    }
-
     internal sealed class SearchClaimsAction : ISearchClaimsAction
     {
         private readonly IClaimRepository _claimRepository;

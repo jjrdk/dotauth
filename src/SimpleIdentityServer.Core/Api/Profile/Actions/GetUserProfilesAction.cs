@@ -14,7 +14,8 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IProfileRepository _profileRepository;
 
-        public GetUserProfilesAction(IProfileRepository profileRepository, IResourceOwnerRepository resourceOwnerRepository)
+        public GetUserProfilesAction(IProfileRepository profileRepository,
+            IResourceOwnerRepository resourceOwnerRepository)
         {
             _profileRepository = profileRepository;
             _resourceOwnerRepository = resourceOwnerRepository;
@@ -32,17 +33,19 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
                 throw new ArgumentNullException(nameof(subject));
             }
 
-
             var resourceOwner = await _resourceOwnerRepository.Get(subject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheResourceOwnerDoesntExist);
+                throw new IdentityServerException(
+                    Errors.ErrorCodes.InternalError,
+                    string.Format(Errors.ErrorDescriptions.TheResourceOwnerDoesntExist, subject));
             }
 
             return await _profileRepository.Search(new SearchProfileParameter
-            {
-                ResourceOwnerIds = new[] { subject }
-            }).ConfigureAwait(false);
+                {
+                    ResourceOwnerIds = new[] {subject}
+                })
+                .ConfigureAwait(false);
         }
     }
 }

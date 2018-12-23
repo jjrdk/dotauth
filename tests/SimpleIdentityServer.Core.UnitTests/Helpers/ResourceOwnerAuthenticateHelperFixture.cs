@@ -13,9 +13,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
         [Fact]
         public async Task When_Pass_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACTS & ASSERTS
             await Assert.ThrowsAsync<ArgumentNullException>(() => _resourceOwnerAuthenticateHelper.Authenticate(null, null, null)).ConfigureAwait(false);

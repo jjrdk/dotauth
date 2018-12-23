@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.Host.Controllers
     using Shared.Requests;
     using Shared.Responses;
 
-    [Route(Constants.EndPoints.Jwe)]
+    [Route(HostEnpoints.Jwe)]
     public class JweController : Controller
     {
         private readonly IJweActions _jweActions;

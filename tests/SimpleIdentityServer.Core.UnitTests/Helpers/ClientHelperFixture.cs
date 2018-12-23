@@ -34,36 +34,27 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientHelper.GenerateIdTokenAsync(string.Empty, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _clientHelper.GenerateIdTokenAsync(string.Empty, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _clientHelper.GenerateIdTokenAsync("client_id", null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Signed_Response_Alg_Is_Not_Passed_Then_RS256_Is_Used()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var client = new Client();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
-            // ACT
-            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload()).ConfigureAwait(false);
+                        await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload()).ConfigureAwait(false);
 
-            // ASSERT
-            _jwtGeneratorStub.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), JwsAlg.RS256));
+                        _jwtGeneratorStub.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), JwsAlg.RS256));
         }
 
         [Fact]
         public async Task When_Signed_Response_And_EncryptResponseAlg_Are_Passed_Then_EncryptResponseEnc_A128CBC_HS256_Is_Used()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var client = new Client
             {
                 IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
@@ -72,19 +63,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
-            // ACT
-            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload()).ConfigureAwait(false);
+                        await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload()).ConfigureAwait(false);
 
-            // ASSERT
-            _jwtGeneratorStub.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), JwsAlg.RS256));
+                        _jwtGeneratorStub.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), JwsAlg.RS256));
             _jwtGeneratorStub.Verify(j => j.EncryptAsync(It.IsAny<string>(), JweAlg.RSA1_5, JweEnc.A128CBC_HS256));
         }
         
         [Fact]
         public async Task When_Sign_And_Encrypt_JwsPayload_Then_Functions_Are_Called()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             var client = new Client
             {
                 IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
@@ -94,11 +81,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
-            // ACT
-            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload()).ConfigureAwait(false);
+                        await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload()).ConfigureAwait(false);
 
-            // ASSERT
-            _jwtGeneratorStub.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), JwsAlg.RS256));
+                        _jwtGeneratorStub.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), JwsAlg.RS256));
             _jwtGeneratorStub.Verify(j => j.EncryptAsync(It.IsAny<string>(), JweAlg.RSA1_5, JweEnc.A128CBC_HS256));
         }
 

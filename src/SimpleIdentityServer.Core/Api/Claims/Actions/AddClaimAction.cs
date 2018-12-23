@@ -7,11 +7,6 @@
     using Shared.Parameters;
     using Shared.Repositories;
 
-    public interface IAddClaimAction
-    {
-        Task<bool> Execute(AddClaimParameter request);
-    }
-
     public class AddClaimAction : IAddClaimAction
     {
         private readonly IClaimRepository _claimRepository;

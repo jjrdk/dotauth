@@ -7,6 +7,6 @@
 
     public interface IAuthorizationActions
     {
-        Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal, string issuerName);
+        Task<EndpointResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal, string issuerName);
     }
 }

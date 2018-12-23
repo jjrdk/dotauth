@@ -1,169 +1,143 @@
-﻿using Moq;
-using SimpleIdentityServer.Common.Client.Factories;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Manager.Client.Clients;
-using SimpleIdentityServer.Manager.Client.Configuration;
-using SimpleIdentityServer.Manager.Common.Requests;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Host.Tests
 {
-    public class ClientFixture : IClassFixture<TestManagerServerFixture>
+    using Client.Clients;
+    using Client.Configuration;
+    using Core.Errors;
+    using Shared.Models;
+    using Shared.Requests;
+    using System.Linq;
+
+    public class ClientFixture //: IClassFixture<TestManagerServerFixture>
     {
-        private TestManagerServerFixture _server;
-        private Mock<IHttpClientFactory> _httpClientFactoryStub;
+        private const string OpenidmanagerConfiguration = "http://localhost:5000/.well-known/openidmanager-configuration";
+        private readonly TestManagerServerFixture _server;
         private IOpenIdClients _openidClients;
 
-        public ClientFixture(TestManagerServerFixture server)
+        public ClientFixture()
         {
-            _server = server;
+            _server = new TestManagerServerFixture();
         }
-
-        #region Errors
-
-        #region Add
 
         [Fact]
         public async Task When_Pass_No_Parameter_Then_Error_Is_Returned()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
-            // ACT
-            var result = await _openidClients.ResolveAdd(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), new AddClientRequest
-            {
+            var result = await _openidClients.ResolveAdd(
+                    new Uri(OpenidmanagerConfiguration),
+                    new Client
+                    {
 
-            }, null);
+                    },
+                    null)
+                .ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal("invalid_redirect_uri", result.Error.Error);
-            Assert.Equal("the parameter request_uris is missing", result.Error.ErrorDescription);
-        }
-
-        [Fact]
-        public async Task When_Add_User_And_Redirect_Uri_Is_Not_Valid_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-
-            // ACT
-            var result = await _openidClients.ResolveAdd(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), new AddClientRequest
-            {
-                RedirectUris = new List<string> { "invalid_uris" }
-            }, null);
-
-            // ASSERTS
-            Assert.NotNull(result);
-            Assert.True(result.ContainsError);
-            Assert.Equal("invalid_redirect_uri", result.Error.Error);
-            Assert.Equal("the redirect_uri invalid_uris is not well formed", result.Error.ErrorDescription);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Error);
         }
 
         [Fact]
         public async Task When_Add_User_And_Redirect_Uri_Contains_Fragment_Then_Error_Is_Returned()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
-            // ACT
-            var result = await _openidClients.ResolveAdd(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), new AddClientRequest
-            {
-                RedirectUris = new List<string> { "http://localhost#fragment" }
-            }, null);
+            var result = await _openidClients.ResolveAdd(
+                    new Uri(OpenidmanagerConfiguration),
+                    new Client
+                    {
+                        AllowedScopes = new[] { new Scope { Name = "openid" } },
+                        ClientId = "test",
+                        ClientName = "name",
+                        RedirectionUrls = new[] { new Uri("http://localhost#fragment") },
+                        RequestUris = new[] { new Uri("https://localhost") }
+                    },
+                    null)
+                .ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(result);
             Assert.True(result.ContainsError);
             Assert.Equal("invalid_redirect_uri", result.Error.Error);
-            Assert.Equal("the redirect_uri http://localhost#fragment cannot contains fragment", result.Error.ErrorDescription);
+            Assert.Equal("The redirect_uri http://localhost/#fragment cannot contain fragment",
+                result.Error.ErrorDescription);
         }
 
-        [Fact]
-        public async Task When_Add_User_And_Redirect_Uri_Is_Not_Valid_And_Client_Is_Native_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+        //[Fact]
+        //public async Task When_Add_User_And_Redirect_Uri_Is_Not_Valid_And_Client_Is_Native_Then_Error_Is_Returned()
+        //{
+        //    InitializeFakeObjects();
 
-            // ACT
-            var result = await _openidClients.ResolveAdd(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), new AddClientRequest
-            {
-                RedirectUris = new List<string> { "invalid_redirect_uri" },
-                ApplicationType = ApplicationTypes.native
-            }, null);
+        //    var result = await _openidClients.ResolveAdd(
+        //            new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+        //            new Client
+        //            {
+        //                RedirectionUrls = new List<string> { "invalid_redirect_uri" },
+        //                ApplicationType = ApplicationTypes.native
+        //            },
+        //            null)
+        //        .ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(result);
-            Assert.True(result.ContainsError);
-            Assert.Equal("invalid_redirect_uri", result.Error.Error);
-            Assert.Equal("the redirect_uri invalid_redirect_uri is not well formed", result.Error.ErrorDescription);
-        }
+        //    Assert.NotNull(result);
+        //    Assert.True(result.ContainsError);
+        //    Assert.Equal("invalid_redirect_uri", result.Error.Error);
+        //    Assert.Equal("the redirect_uri invalid_redirect_uri is not well formed", result.Error.ErrorDescription);
+        //}
 
-        [Fact]
-        public async Task When_Add_User_And_And_Logo_Uri_Is_Not_Valid_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+        //[Fact]
+        //public async Task When_Add_User_And_And_Logo_Uri_Is_Not_Valid_Then_Error_Is_Returned()
+        //{
+        //    InitializeFakeObjects();
 
-            // ACT
-            var result = await _openidClients.ResolveAdd(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), new AddClientRequest
-            {
-                RedirectUris = new List<string> { "http://localhost" },
-                LogoUri = "logo_uri"
-            }, null);
+        //    var result = await _openidClients.ResolveAdd(
+        //            new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+        //            new Client
+        //            {
+        //                RedirectUris = new List<string> { "http://localhost" },
+        //                LogoUri = "logo_uri"
+        //            },
+        //            null)
+        //        .ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(result);
-            Assert.True(result.ContainsError);
-            Assert.Equal("invalid_client_metadata", result.Error.Error);
-            Assert.Equal("the parameter logo_uri is not correct", result.Error.ErrorDescription);
-        }
-
-        #endregion
-
-        #region Update
+        //    Assert.NotNull(result);
+        //    Assert.True(result.ContainsError);
+        //    Assert.Equal("invalid_client_metadata", result.Error.Error);
+        //    Assert.Equal("the parameter logo_uri is not correct", result.Error.ErrorDescription);
+        //}
 
         [Fact]
         public async Task When_Update_And_Pass_No_Parameter_Then_Error_Is_Returned()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
-            // ACT
-            var result = await _openidClients.ResolveUpdate(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), new UpdateClientRequest
-            {
+            var result = await _openidClients.ResolveUpdate(
+                    new Uri(OpenidmanagerConfiguration),
+                    new Client
+                    {
 
-            }, null);
+                    },
+                    null)
+                .ConfigureAwait(false);
 
-            // ASSERTS
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal("invalid_parameter", result.Error.Error);
-            Assert.Equal("the parameter client_id is missing", result.Error.ErrorDescription);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Error);
+            Assert.Equal(ErrorDescriptions.RequestIsNotValid, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task When_Update_Add_Pass_Invalid_Scopes_Then_Error_Is_Returned()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var addClientResult = await _openidClients.ResolveAdd(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), new AddClientRequest
+            var client = new Client
             {
+                AllowedScopes = new[] { new Scope { Name = "openid" } },
+                RequestUris = new[] { new Uri("https://localhost"), },
                 ApplicationType = ApplicationTypes.web,
                 ClientName = "client_name",
-                ClientUri = "http://clienturi.com",
+                ClientUri = new Uri("http://clienturi.com"),
                 Contacts = new List<string>
                 {
                     "contact"
@@ -176,322 +150,311 @@ namespace SimpleIdentityServer.Manager.Host.Tests
                     GrantType.@implicit,
                     GrantType.refresh_token
                 },
-                RedirectUris = new List<string> { "http://localhost" },
-                PostLogoutRedirectUris = new List<string> { "http://localhost/callback" },
-                LogoUri = "http://logouri.com"
-            }, null);
+                RedirectionUrls = new[] { new Uri("http://localhost") },
+                PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+                LogoUri = new Uri("http://logouri.com")
+            };
+            var addClientResult = await _openidClients.ResolveAdd(
+                    new Uri(OpenidmanagerConfiguration),
+                    client,
+                    null)
+                .ConfigureAwait(false);
+            client = addClientResult.Content;
+            client.AllowedScopes = new[] { new Scope { Name = "not_valid" } };
+            var result = await _openidClients.ResolveUpdate(
+                    new Uri(OpenidmanagerConfiguration),
+                    client,
+                    null)
+                .ConfigureAwait(false);
 
-            // ACT
-            var result = await _openidClients.ResolveUpdate(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), new UpdateClientRequest
-            {
-                ClientId = addClientResult.Content.ClientId,
-                PostLogoutRedirectUris = new List<string> { "http://localhost/callback" },
-                RedirectUris = new List<string> { "http://localhost" },
-                GrantTypes = new List<GrantType>
-                {
-                    GrantType.authorization_code,
-                    GrantType.@implicit,
-                    GrantType.refresh_token
-                },
-                AllowedScopes = new List<string>
-                {
-                    "not_valid"
-                }
-            }, null);
-
-            // ASSERTS
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal("invalid_parameter", result.Error.Error);
-            Assert.Equal("the scopes 'not_valid' don't exist", result.Error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidScope, result.Error.Error);
+            Assert.Equal("Unknown scopes: not_valid", result.Error.ErrorDescription);
         }
-
-        #endregion
-
-        #region Get
 
         [Fact]
         public async Task When_Get_Unknown_Client_Then_Error_Is_Returned()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
-            // ACT
-            var newClient = await _openidClients.ResolveGet(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), "unknown_client");
+            var newClient = await _openidClients
+                .ResolveGet(new Uri(OpenidmanagerConfiguration), "unknown_client")
+                .ConfigureAwait(false);
 
-            // ASSERTS
             Assert.NotNull(newClient);
             Assert.True(newClient.ContainsError);
             Assert.Equal("invalid_request", newClient.Error.Error);
-            Assert.Equal("the client 'unknown_client' doesn't exist", newClient.Error.ErrorDescription);
+            Assert.Equal(ErrorDescriptions.TheClientDoesntExist, newClient.Error.ErrorDescription);
         }
-
-        #endregion
-
-        #region Delete
 
         [Fact]
         public async Task When_Delete_An_Unknown_Client_Then_Error_Is_Returned()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
-            // ACT
-            var newClient = await _openidClients.ResolveDelete(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), "unknown_client");
+            var newClient = await _openidClients
+                .ResolveDelete(new Uri(OpenidmanagerConfiguration),
+                    "unknown_client")
+                .ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(newClient);
             Assert.True(newClient.ContainsError);
-            Assert.Equal("invalid_request", newClient.Error.Error);
-            Assert.Equal("the client 'unknown_client' doesn't exist", newClient.Error.ErrorDescription);
+            //Assert.Equal("invalid_request", newClient.Error.Error);
+            //Assert.Equal("the client 'unknown_client' doesn't exist", newClient.Error.ErrorDescription);
         }
-
-        #endregion
-
-        #endregion
-
-        #region Happy path
-
-        #region Add
 
         [Fact]
         public async Task When_Add_Client_Then_Informations_Are_Correct()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var result = await _openidClients.ResolveAdd(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), new AddClientRequest
-            {
-                ApplicationType = ApplicationTypes.web,
-                ClientName = "client_name",
-                IdTokenSignedResponseAlg = "RS256",
-                IdTokenEncryptedResponseAlg = "RSA1_5",
-                IdTokenEncryptedResponseEnc = "A128CBC-HS256",
-                UserInfoSignedResponseAlg = "RS256",
-                UserInfoEncryptedResponseAlg = "RSA1_5",
-                UserInfoEncryptedResponseEnc = "A128CBC-HS256",
-                RequestObjectSigningAlg = "RS256",
-                RequestObjectEncryptionAlg = "RSA1_5",
-                RequestObjectEncryptionEnc = "A128CBC-HS256",
-                TokenEndPointAuthMethod = "client_secret_post",
-                InitiateLoginUri = "https://initloginuri",
-                ClientUri = "http://clienturi.com",
-                Contacts = new List<string>
-                {
-                    "contact"
-                },
-                DefaultAcrValues = "sms",
-                DefaultMaxAge = 10,
-                GrantTypes = new List<GrantType>
-                {
-                    GrantType.authorization_code,
-                    GrantType.@implicit,
-                    GrantType.refresh_token
-                },
-                ResponseTypes = new List<ResponseType>
-                {
-                    ResponseType.code,
-                    ResponseType.id_token,
-                    ResponseType.token
-                },
-                RedirectUris = new List<string> { "http://localhost" },
-                PostLogoutRedirectUris = new List<string> { "http://localhost/callback" },
-                LogoUri = "http://logouri.com"
-            }, null);
-            var newClient = await _openidClients.ResolveGet(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), result.Content.ClientId);
+            var result = await _openidClients.ResolveAdd(
+                    new Uri(OpenidmanagerConfiguration),
+                    new Client
+                    {
+                        AllowedScopes = new[] { new Scope { Name = "openid" } },
+                        ApplicationType = ApplicationTypes.web,
+                        ClientName = "client_name",
+                        IdTokenSignedResponseAlg = "RS256",
+                        IdTokenEncryptedResponseAlg = "RSA1_5",
+                        IdTokenEncryptedResponseEnc = "A128CBC-HS256",
+                        UserInfoSignedResponseAlg = "RS256",
+                        UserInfoEncryptedResponseAlg = "RSA1_5",
+                        UserInfoEncryptedResponseEnc = "A128CBC-HS256",
+                        RequestObjectSigningAlg = "RS256",
+                        RequestObjectEncryptionAlg = "RSA1_5",
+                        RequestObjectEncryptionEnc = "A128CBC-HS256",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        InitiateLoginUri = new Uri("https://initloginuri"),
+                        ClientUri = new Uri("http://clienturi.com"),
+                        Contacts = new List<string>
+                        {
+                            "contact"
+                        },
+                        DefaultAcrValues = "sms",
+                        DefaultMaxAge = 10,
+                        GrantTypes = new List<GrantType>
+                        {
+                            GrantType.authorization_code,
+                            GrantType.@implicit,
+                            GrantType.refresh_token
+                        },
+                        ResponseTypes = new List<ResponseType>
+                        {
+                            ResponseType.code,
+                            ResponseType.id_token,
+                            ResponseType.token
+                        },
+                        RequestUris = new[] { new Uri("https://localhost"), },
+                        RedirectionUrls = new[] { new Uri("http://localhost"), },
+                        PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback"), },
+                        LogoUri = new Uri("http://logouri.com")
+                    },
+                    null)
+                .ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(result);
+            Assert.False(result.ContainsError, result.Error?.ErrorDescription);
+
+            var newClient = await _openidClients
+                .ResolveGet(new Uri(OpenidmanagerConfiguration),
+                    result.Content.ClientId)
+                .ConfigureAwait(false);
+
             Assert.False(newClient.ContainsError);
-            Assert.Equal("web", newClient.Content.ApplicationType);
+            Assert.Equal(ApplicationTypes.web, newClient.Content.ApplicationType);
             Assert.Equal("client_name", newClient.Content.ClientName);
-            Assert.Equal("http://clienturi.com", newClient.Content.ClientUri);
-            Assert.Equal("http://logouri.com", newClient.Content.LogoUri);
+            Assert.Equal(new Uri("http://clienturi.com"), newClient.Content.ClientUri);
+            Assert.Equal(new Uri("http://logouri.com"), newClient.Content.LogoUri);
             Assert.Equal(10, newClient.Content.DefaultMaxAge);
             Assert.Equal("sms", newClient.Content.DefaultAcrValues);
-            Assert.Equal(1, newClient.Content.Contacts.Count());
-            Assert.Equal(1, newClient.Content.RedirectUris.Count());
-            Assert.Equal(1, newClient.Content.PostLogoutRedirectUris.Count());
+            Assert.Single(newClient.Content.Contacts);
+            Assert.Single(newClient.Content.RedirectionUrls);
+            Assert.Single(newClient.Content.PostLogoutRedirectUris);
             Assert.Equal(3, newClient.Content.GrantTypes.Count());
             Assert.Equal(3, newClient.Content.ResponseTypes.Count());
         }
 
-        #endregion
-
-        #region Update
-
         [Fact]
         public async Task When_Update_Client_Then_Information_Are_Correct()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var addClientResult = await _openidClients.ResolveAdd(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), new AddClientRequest
+            var client = new Client
             {
+                AllowedScopes = new[] { new Scope { Name = "openid" } },
                 ApplicationType = ApplicationTypes.web,
                 ClientName = "client_name",
-                ClientUri = "http://clienturi.com",
+                ClientUri = new Uri("http://clienturi.com"),
                 Contacts = new List<string>
                 {
                     "contact"
                 },
                 DefaultAcrValues = "sms",
                 DefaultMaxAge = 10,
-                GrantTypes = new List<GrantType>
+                GrantTypes = new[]
                 {
                     GrantType.authorization_code,
                     GrantType.@implicit,
                     GrantType.refresh_token
                 },
-                RedirectUris = new List<string> { "http://localhost" },
-                PostLogoutRedirectUris = new List<string> { "http://localhost/callback" },
-                LogoUri = "http://logouri.com"
-            }, null);
+                RequestUris = new[] { new Uri("https://localhost") },
+                RedirectionUrls = new[] { new Uri("http://localhost") },
+                PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+                LogoUri = new Uri("http://logouri.com")
+            };
 
-            // ACT
-            var result = await _openidClients.ResolveUpdate(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), new UpdateClientRequest
+            var addClientResult = await _openidClients.ResolveAdd(
+                    new Uri(OpenidmanagerConfiguration),
+                    client,
+                    null)
+                .ConfigureAwait(false);
+            client = addClientResult.Content;
+            client.PostLogoutRedirectUris = new[]
             {
-                ClientId = addClientResult.Content.ClientId,
-                PostLogoutRedirectUris = new List<string> { "http://localhost/callback" },
-                RedirectUris = new List<string> { "http://localhost" },
-                GrantTypes = new List<GrantType>
-                {
-                    GrantType.authorization_code,
-                    GrantType.@implicit,
-                    GrantType.refresh_token
-                },
-                AllowedScopes = new List<string>
-                {
-                    "openid"
-                }
-            }, null);
-            var newClient = await _openidClients.ResolveGet(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), addClientResult.Content.ClientId);
+                new Uri("http://localhost/callback"),
+                new Uri("http://localhost/callback2"),
+            };
+            client.GrantTypes = new[]
+            {
+                GrantType.authorization_code,
+                GrantType.@implicit,
+            };
+            var result = await _openidClients.ResolveUpdate(
+                    new Uri(OpenidmanagerConfiguration),
+                    client,
+                    null)
+                .ConfigureAwait(false);
+            var newClient = await _openidClients
+                .ResolveGet(new Uri(OpenidmanagerConfiguration),
+                    addClientResult.Content.ClientId)
+                .ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(result);
             Assert.False(result.ContainsError);
-            Assert.Equal(1, newClient.Content.PostLogoutRedirectUris.Count());
-            Assert.Equal(1, newClient.Content.RedirectUris.Count());
-            Assert.Equal(3, newClient.Content.GrantTypes.Count());
+            Assert.Equal(2, newClient.Content.PostLogoutRedirectUris.Count);
+            Assert.Single(newClient.Content.RedirectionUrls);
+            Assert.Equal(2, newClient.Content.GrantTypes.Count);
         }
-
-        #endregion
-
-        #region Delete
 
         [Fact]
         public async Task When_Delete_Client_Then_Ok_Is_Returned()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var addClientResult = await _openidClients.ResolveAdd(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), new AddClientRequest
-            {
-                ApplicationType = ApplicationTypes.web,
-                ClientName = "client_name",
-                ClientUri = "http://clienturi.com",
-                Contacts = new List<string>
-                {
-                    "contact"
-                },
-                DefaultAcrValues = "sms",
-                DefaultMaxAge = 10,
-                GrantTypes = new List<GrantType>
-                {
-                    GrantType.authorization_code,
-                    GrantType.@implicit,
-                    GrantType.refresh_token
-                },
-                RedirectUris = new List<string> { "http://localhost" },
-                PostLogoutRedirectUris = new List<string> { "http://localhost/callback" },
-                LogoUri = "http://logouri.com"
-            }, null);
+            var addClientResult = await _openidClients.ResolveAdd(
+                    new Uri(OpenidmanagerConfiguration),
+                    new Client
+                    {
+                        AllowedScopes = new[] { new Scope { Name = "openid" } },
+                        ApplicationType = ApplicationTypes.web,
+                        ClientName = "client_name",
+                        ClientUri = new Uri("http://clienturi.com"),
+                        Contacts = new[]
+                        {
+                            "contact"
+                        },
+                        DefaultAcrValues = "sms",
+                        DefaultMaxAge = 10,
+                        GrantTypes = new List<GrantType>
+                        {
+                            GrantType.authorization_code,
+                            GrantType.@implicit,
+                            GrantType.refresh_token
+                        },
+                        RequestUris = new[] { new Uri("https://localhost"), },
+                        RedirectionUrls = new[] { new Uri("http://localhost") },
+                        PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+                        LogoUri = new Uri("http://logouri.com")
+                    },
+                    null)
+                .ConfigureAwait(false);
 
-            // ACT
-            var deleteResult = await _openidClients.ResolveDelete(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), addClientResult.Content.ClientId);
+            var deleteResult = await _openidClients
+                .ResolveDelete(new Uri(OpenidmanagerConfiguration),
+                    addClientResult.Content.ClientId)
+                .ConfigureAwait(false);
 
-            // ASSERTS
             Assert.NotNull(deleteResult);
             Assert.False(deleteResult.ContainsError);
         }
 
-        #endregion
-
-        #endregion
-
         [Fact]
         public async Task When_Search_One_Client_Then_One_Client_Is_Returned()
         {
-            // ARRANGE
             InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var result = await _openidClients.ResolveAdd(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), new AddClientRequest
-            {
-                ApplicationType = ApplicationTypes.web,
-                ClientName = "client_name",
-                IdTokenSignedResponseAlg = "RS256",
-                IdTokenEncryptedResponseAlg = "RSA1_5",
-                IdTokenEncryptedResponseEnc = "A128CBC-HS256",
-                UserInfoSignedResponseAlg = "RS256",
-                UserInfoEncryptedResponseAlg = "RSA1_5",
-                UserInfoEncryptedResponseEnc = "A128CBC-HS256",
-                RequestObjectSigningAlg = "RS256",
-                RequestObjectEncryptionAlg = "RSA1_5",
-                RequestObjectEncryptionEnc = "A128CBC-HS256",
-                TokenEndPointAuthMethod = "client_secret_post",
-                InitiateLoginUri = "https://initloginuri",
-                ClientUri = "http://clienturi.com",
-                Contacts = new List<string>
-                {
-                    "contact"
-                },
-                DefaultAcrValues = "sms",
-                DefaultMaxAge = 10,
-                GrantTypes = new List<GrantType>
-                {
-                    GrantType.authorization_code,
-                    GrantType.@implicit,
-                    GrantType.refresh_token
-                },
-                ResponseTypes = new List<ResponseType>
-                {
-                    ResponseType.code,
-                    ResponseType.id_token,
-                    ResponseType.token
-                },
-                RedirectUris = new List<string> { "http://localhost" },
-                PostLogoutRedirectUris = new List<string> { "http://localhost/callback" },
-                LogoUri = "http://logouri.com"
-            }, null);
+            var result = await _openidClients.ResolveAdd(
+                    new Uri(OpenidmanagerConfiguration),
+                    new Client
+                    {
+                        AllowedScopes = new[] { new Scope { Name = "openid" } },
+                        RequestUris = new[] { new Uri("https://localhost"), },
+                        ApplicationType = ApplicationTypes.web,
+                        ClientName = "client_name",
+                        IdTokenSignedResponseAlg = "RS256",
+                        IdTokenEncryptedResponseAlg = "RSA1_5",
+                        IdTokenEncryptedResponseEnc = "A128CBC-HS256",
+                        UserInfoSignedResponseAlg = "RS256",
+                        UserInfoEncryptedResponseAlg = "RSA1_5",
+                        UserInfoEncryptedResponseEnc = "A128CBC-HS256",
+                        RequestObjectSigningAlg = "RS256",
+                        RequestObjectEncryptionAlg = "RSA1_5",
+                        RequestObjectEncryptionEnc = "A128CBC-HS256",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        InitiateLoginUri = new Uri("https://initloginuri"),
+                        ClientUri = new Uri("http://clienturi.com"),
+                        Contacts = new List<string>
+                        {
+                            "contact"
+                        },
+                        DefaultAcrValues = "sms",
+                        DefaultMaxAge = 10,
+                        GrantTypes = new List<GrantType>
+                        {
+                            GrantType.authorization_code,
+                            GrantType.@implicit,
+                            GrantType.refresh_token
+                        },
+                        ResponseTypes = new List<ResponseType>
+                        {
+                            ResponseType.code,
+                            ResponseType.id_token,
+                            ResponseType.token
+                        },
+                        RedirectionUrls = new[] { new Uri("http://localhost") },
+                        PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+                        LogoUri = new Uri("http://logouri.com")
+                    },
+                    null)
+                .ConfigureAwait(false);
 
-            // ACT
-            var searchResult = await _openidClients.ResolveSearch(new Uri("http://localhost:5000/.well-known/openidmanager-configuration"), new SearchClientsRequest
-            {
-                StartIndex = 0,
-                NbResults = 1
-            }, null);
+            var searchResult = await _openidClients.ResolveSearch(
+                    new Uri(OpenidmanagerConfiguration),
+                    new SearchClientsRequest
+                    {
+                        StartIndex = 0,
+                        NbResults = 1
+                    },
+                    null)
+                .ConfigureAwait(false);
 
-            // ASSERTS
             Assert.NotNull(searchResult);
             Assert.False(searchResult.ContainsError);
-            Assert.Equal(1, searchResult.Content.Content.Count());
+            Assert.Single(searchResult.Content.Content);
         }
 
         private void InitializeFakeObjects()
         {
-            _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            var addClientOperation = new AddClientOperation(_httpClientFactoryStub.Object);
-            var deleteClientOperation = new DeleteClientOperation(_httpClientFactoryStub.Object);
-            var getAllClientsOperation = new GetAllClientsOperation(_httpClientFactoryStub.Object);
-            var getClientOperation = new GetClientOperation(_httpClientFactoryStub.Object);
-            var searchClientOperation = new SearchClientOperation(_httpClientFactoryStub.Object);
-            var updateClientOperation = new UpdateClientOperation(_httpClientFactoryStub.Object);
-            var configurationClient = new ConfigurationClient(new GetConfigurationOperation(_httpClientFactoryStub.Object));
+            var addClientOperation = new AddClientOperation(_server.Client);
+            var deleteClientOperation = new DeleteClientOperation(_server.Client);
+            var getAllClientsOperation = new GetAllClientsOperation(_server.Client);
+            var getClientOperation = new GetClientOperation(_server.Client);
+            var searchClientOperation = new SearchClientOperation(_server.Client);
+            var updateClientOperation = new UpdateClientOperation(_server.Client);
+            var configurationClient = new GetConfigurationOperation(_server.Client);
             _openidClients = new OpenIdClients(
-                addClientOperation, updateClientOperation, getAllClientsOperation, deleteClientOperation, getClientOperation,
-                searchClientOperation, configurationClient);
+                addClientOperation,
+                updateClientOperation,
+                getAllClientsOperation,
+                deleteClientOperation,
+                getClientOperation,
+                searchClientOperation,
+                configurationClient);
         }
     }
 }

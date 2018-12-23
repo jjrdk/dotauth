@@ -16,34 +16,33 @@ namespace SimpleIdentityServer.Host.Controllers.Api
 {
     using System.Net;
     using System.Threading.Tasks;
-    using Core.Api.Registration;
     using Core.Errors;
-    using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Shared.Requests;
+    using Shared.Models;
+    using Shared.Repositories;
     using Shared.Responses;
 
-    [Route(Core.Constants.EndPoints.Registration)]
+    [Route(Core.CoreConstants.EndPoints.Registration)]
     [Authorize("registration")]
     public class RegistrationController : Controller
     {
-        private readonly IRegistrationActions _registerActions;
+        private readonly IClientRepository _registerActions;
 
-        public RegistrationController(IRegistrationActions registerActions)
+        public RegistrationController(IClientRepository registerActions)
         {
             _registerActions = registerActions;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] ClientRequest client)
+        public async Task<IActionResult> Post([FromBody] Client client)
         {
             if (client == null)
             {
                 return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
             
-            var result = await _registerActions.PostRegistration(client.ToParameter()).ConfigureAwait(false);
+            var result = await _registerActions.Insert(client).ConfigureAwait(false);
             return new OkObjectResult(result);
         }
 

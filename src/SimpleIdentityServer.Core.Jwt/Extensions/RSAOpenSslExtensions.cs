@@ -8,7 +8,7 @@
     {
         public static void FromXmlStringNetCore(this RSAOpenSsl rsa, string xmlString)
         {
-            RSAParameters parameters = new RSAParameters();
+            var parameters = new RSAParameters();
             var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(xmlString);
             if (xmlDoc.DocumentElement.Name.Equals("RSAKeyValue"))
@@ -38,7 +38,7 @@
 
         public static string ToXmlStringNetCore(this RSAOpenSsl rsa, bool includePrivateParameters = false)
         {
-            RSAParameters parameters = rsa.ExportParameters(includePrivateParameters);
+            var parameters = rsa.ExportParameters(includePrivateParameters);
             if (includePrivateParameters)
             {
                 return string.Format("<RSAKeyValue><Modulus>{0}</Modulus><Exponent>{1}</Exponent><P>{2}</P><Q>{3}</Q><DP>{4}</DP><DQ>{5}</DQ><InverseQ>{6}</InverseQ><D>{7}</D></RSAKeyValue>",
@@ -59,7 +59,7 @@
 
         public static void FromXmlStringNetCore(this RSA rsa, string xmlString)
         {
-            RSAParameters parameters = new RSAParameters();
+            var parameters = new RSAParameters();
             var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(xmlString);
             if (xmlDoc.DocumentElement.Name.Equals("RSAKeyValue"))
@@ -89,7 +89,7 @@
 
         public static string ToXmlStringNetCore(this RSA rsa, bool includePrivateParameters = false)
         {
-            RSAParameters parameters = rsa.ExportParameters(includePrivateParameters);
+            var parameters = rsa.ExportParameters(includePrivateParameters);
             if (includePrivateParameters)
             {
                 return string.Format("<RSAKeyValue><Modulus>{0}</Modulus><Exponent>{1}</Exponent><P>{2}</P><Q>{3}</Q><DP>{4}</DP><DQ>{5}</DQ><InverseQ>{6}</InverseQ><D>{7}</D></RSAKeyValue>",

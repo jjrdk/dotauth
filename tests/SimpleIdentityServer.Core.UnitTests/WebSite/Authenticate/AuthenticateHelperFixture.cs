@@ -28,19 +28,14 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateHelper.ProcessRedirection(null, null, null, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateHelper.ProcessRedirection(null, null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult((Client)null));
             var authorizationParameter = new AuthorizationParameter
@@ -48,23 +43,20 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 ClientId = "client_id"
             };
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _authenticateHelper.ProcessRedirection(authorizationParameter, null, null, null, null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _authenticateHelper.ProcessRedirection(authorizationParameter, null, null, null, null)).ConfigureAwait(false);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientIdDoesntExist, authorizationParameter.ClientId));
         }
 
         [Fact]
         public async Task When_PromptConsent_Parameter_Is_Passed_Then_Redirect_To_ConsentScreen()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string subject = "subject";
             const string code = "code";
             var prompts = new List<PromptParameter>
             {
                 PromptParameter.consent
             };
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction()
             };
@@ -77,29 +69,25 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(prompts);
 
-            // ACT
-            actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
+                        actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,
                 subject,
                 claims, null).ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.True(actionResult.RedirectInstruction.Action == IdentityServerEndPoints.ConsentIndex);
+                        Assert.True(actionResult.RedirectInstruction.Action == IdentityServerEndPoints.ConsentIndex);
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == code && p.Value == code);
         }
 
         [Fact]
         public async Task When_Consent_Has_Already_Been_Given_Then_Redirect_To_Callback()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string subject = "subject";
             const string code = "code";
             var prompts = new List<PromptParameter>
             {
                 PromptParameter.none
             };
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction()
             };
@@ -119,28 +107,24 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
 
-            // ACT
-            actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
+                        actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,
                 subject,
                 claims, null).ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.True(actionResult.RedirectInstruction.ResponseMode == ResponseMode.form_post);
+                        Assert.True(actionResult.RedirectInstruction.ResponseMode == ResponseMode.form_post);
         }
 
         [Fact]
         public async Task When_There_Is_No_Consent_Then_Redirect_To_Consent_Screen()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string subject = "subject";
             const string code = "code";
             var prompts = new List<PromptParameter>
             {
                 PromptParameter.none
             };
-            var actionResult = new ActionResult
+            var actionResult = new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction()
             };
@@ -155,14 +139,12 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>())).Returns(() => Task.FromResult((Consent)null));
 
-            // ACT
-            actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
+                        actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,
                 subject,
                 claims, null).ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.True(actionResult.RedirectInstruction.Action == IdentityServerEndPoints.ConsentIndex);
+                        Assert.True(actionResult.RedirectInstruction.Action == IdentityServerEndPoints.ConsentIndex);
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == code && p.Value == code);
         }
 

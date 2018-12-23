@@ -15,108 +15,88 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
 
     public class LinkProfileActionFixture
     {
+        private const string LocalSubject = "localSubject";
+        private const string ExternalSubject = "externalSubject";
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
         private Mock<IProfileRepository> _profileRepositoryStub;
         private ILinkProfileAction _linkProfileAction;
 
         [Fact]
         public async Task WhenPassingNullParametersThenExceptionAreThrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
             // ACTS & ASSERTS
             await Assert.ThrowsAsync<ArgumentNullException>(() => _linkProfileAction.Execute(null, null, null, false)).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _linkProfileAction.Execute("localSubject", null, null, false)).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _linkProfileAction.Execute("localSubject", "externalSubject", null, false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _linkProfileAction.Execute(LocalSubject, null, null, false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _linkProfileAction.Execute(LocalSubject, ExternalSubject, null, false)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task WhenResourceOwnerDoesntExistThenExceptionIsThrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult((ResourceOwner)null));
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", false)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer", false)).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(exception);
+                        Assert.NotNull(exception);
             Assert.Equal(Errors.ErrorCodes.InternalError, exception.Code);
-            Assert.Equal(Errors.ErrorDescriptions.TheResourceOwnerDoesntExist, exception.Message);
+            Assert.Equal(string.Format(Errors.ErrorDescriptions.TheResourceOwnerDoesntExist, LocalSubject), exception.Message);
         }
 
         [Fact]
         public async Task WhenLinkingExistingProfileThenExceptionIsThrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new ResourceOwner()));
             _profileRepositoryStub.Setup(p => p.Get(It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwnerProfile
             {
                 ResourceOwnerId = "otherSubject"
             }));
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<ProfileAssignedAnotherAccountException>(() => _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", false)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<ProfileAssignedAnotherAccountException>(() => _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer", false)).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(exception);
+                        Assert.NotNull(exception);
         }
 
         [Fact]
         public async Task WhenProfileHasAlreadyBeenLinkedThenExceptionIsThrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new ResourceOwner()));
             _profileRepositoryStub.Setup(p => p.Get(It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwnerProfile
             {
-                ResourceOwnerId = "localSubject"
+                ResourceOwnerId = LocalSubject
             }));
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", false)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer", false)).ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(exception);
+                        Assert.NotNull(exception);
             Assert.Equal(Errors.ErrorCodes.InternalError, exception.Code);
             Assert.Equal(Errors.ErrorDescriptions.TheProfileAlreadyLinked, exception.Message);
         }
 
         [Fact]
         public async Task WhenLinkProfileThenOperationIsCalled()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new ResourceOwner()));
             _profileRepositoryStub.Setup(p => p.Get(It.IsAny<string>())).Returns(Task.FromResult((ResourceOwnerProfile)null));
 
-            // ACT
-            await _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", false).ConfigureAwait(false);
+                        await _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer", false).ConfigureAwait(false);
 
-            // ASSERT
-            _profileRepositoryStub.Verify(p => p.Add(It.Is<IEnumerable<ResourceOwnerProfile>>(r => r.First().ResourceOwnerId == "localSubject" && r.First().Subject == "externalSubject" && r.First().Issuer == "issuer")));
+                        _profileRepositoryStub.Verify(p => p.Add(It.Is<IEnumerable<ResourceOwnerProfile>>(r => r.First().ResourceOwnerId == LocalSubject && r.First().Subject == ExternalSubject && r.First().Issuer == "issuer")));
         }
 
         [Fact]
         public async Task WhenForceLinkProfileThenOperationIsCalled()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new ResourceOwner()));
             _profileRepositoryStub.Setup(p => p.Get(It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwnerProfile
             {
                 ResourceOwnerId = "otherSubject"
             }));
 
-            // ACT
-            await _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", true).ConfigureAwait(false);
+                        await _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer", true).ConfigureAwait(false);
 
-            // ASSERT
-            _profileRepositoryStub.Verify(p => p.Remove(It.Is<IEnumerable<string>>(r => r.Contains("externalSubject"))));
-            _profileRepositoryStub.Verify(p => p.Add(It.Is<IEnumerable<ResourceOwnerProfile>>(r => r.First().ResourceOwnerId == "localSubject" && r.First().Subject == "externalSubject" && r.First().Issuer == "issuer")));
+                        _profileRepositoryStub.Verify(p => p.Remove(It.Is<IEnumerable<string>>(r => r.Contains(ExternalSubject))));
+            _profileRepositoryStub.Verify(p => p.Add(It.Is<IEnumerable<ResourceOwnerProfile>>(r => r.First().ResourceOwnerId == LocalSubject && r.First().Subject == ExternalSubject && r.First().Issuer == "issuer")));
 
         }
 

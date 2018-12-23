@@ -2,6 +2,7 @@ namespace SimpleIdentityServer.Shared
 {
     public static class ClientNames
     {
+        public const string AllowedScopes = "scope";
         public const string RedirectUris = "redirect_uris";
         public const string ResponseTypes = "response_types";
         public const string GrantTypes = "grant_types";

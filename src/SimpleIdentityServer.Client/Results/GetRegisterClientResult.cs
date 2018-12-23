@@ -1,9 +1,9 @@
 ﻿namespace SimpleIdentityServer.Client.Results
 {
-    using Shared.Responses;
+    using Shared.Models;
 
     public class GetRegisterClientResult : BaseSidResult
     {
-        public ClientRegistrationResponse Content { get; set; }
+        public Client Content { get; set; }
     }
 }

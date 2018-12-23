@@ -14,19 +14,13 @@
 
 namespace SimpleIdentityServer.Core.Api.Jws.Actions
 {
+    using Errors;
+    using Exceptions;
+    using Shared;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Cryptography;
-    using Errors;
-    using Exceptions;
-    using Shared;
-
-    public interface IJsonWebKeyEnricher
-    {
-        Dictionary<string, object> GetPublicKeyInformation(JsonWebKey jsonWebKey);
-        Dictionary<string, object> GetJsonWebKeyInformation(JsonWebKey jsonWebKey);
-    }
 
     public class JsonWebKeyEnricher : IJsonWebKeyEnricher
     {
@@ -68,12 +62,12 @@ namespace SimpleIdentityServer.Core.Api.Jws.Actions
                 throw new ArgumentNullException(nameof(jsonWebKey));
             }
 
-            if (!SimpleIdentityServer.Core.Jwt.JwtConstants.MappingKeyTypeEnumToName.ContainsKey(jsonWebKey.Kty))
+            if (!Jwt.JwtConstants.MappingKeyTypeEnumToName.ContainsKey(jsonWebKey.Kty))
             {
                 throw new ArgumentException(nameof(jsonWebKey.Kty));
             }
 
-            if (!SimpleIdentityServer.Core.Jwt.JwtConstants.MappingUseEnumerationToName.ContainsKey(jsonWebKey.Use))
+            if (!Jwt.JwtConstants.MappingUseEnumerationToName.ContainsKey(jsonWebKey.Use))
             {
                 throw new ArgumentException(nameof(jsonWebKey.Use));
             }
@@ -81,16 +75,16 @@ namespace SimpleIdentityServer.Core.Api.Jws.Actions
             return new Dictionary<string, object>
             {
                 {
-                    SimpleIdentityServer.Core.Jwt.JwtConstants.JsonWebKeyParameterNames.KeyTypeName, SimpleIdentityServer.Core.Jwt.JwtConstants.MappingKeyTypeEnumToName[jsonWebKey.Kty]
+                    Jwt.JwtConstants.JsonWebKeyParameterNames.KeyTypeName, Jwt.JwtConstants.MappingKeyTypeEnumToName[jsonWebKey.Kty]
                 },
                 {
-                    SimpleIdentityServer.Core.Jwt.JwtConstants.JsonWebKeyParameterNames.UseName, SimpleIdentityServer.Core.Jwt.JwtConstants.MappingUseEnumerationToName[jsonWebKey.Use]
+                    Jwt.JwtConstants.JsonWebKeyParameterNames.UseName, Jwt.JwtConstants.MappingUseEnumerationToName[jsonWebKey.Use]
                 },
                 {
-                    SimpleIdentityServer.Core.Jwt.JwtConstants.JsonWebKeyParameterNames.AlgorithmName, SimpleIdentityServer.Core.Jwt.JwtConstants.MappingNameToAllAlgEnum.SingleOrDefault(kp => kp.Value == jsonWebKey.Alg).Key
+                    Jwt.JwtConstants.JsonWebKeyParameterNames.AlgorithmName, Jwt.JwtConstants.MappingNameToAllAlgEnum.SingleOrDefault(kp => kp.Value == jsonWebKey.Alg).Key
                 },
                 {
-                    SimpleIdentityServer.Core.Jwt.JwtConstants.JsonWebKeyParameterNames.KeyIdentifierName, jsonWebKey.Kid
+                    Jwt.JwtConstants.JsonWebKeyParameterNames.KeyIdentifierName, jsonWebKey.Kid
                 }
                 // TODO : we still need to support the other parameters x5u & x5c & x5t & x5t#S256
             };
@@ -99,9 +93,11 @@ namespace SimpleIdentityServer.Core.Api.Jws.Actions
         private void SetRsaPublicKeyInformation(Dictionary<string, object> result, JsonWebKey jsonWebKey)
         {
             RSAParameters rsaParameters;
-            using (var provider = new RSAOpenSsl())
+            using (var provider = new RSACryptoServiceProvider())
             {
-                provider.FromXmlString(jsonWebKey.SerializedKey);
+                RsaExtensions.FromXmlString(provider, jsonWebKey.SerializedKey);
+                //provider.FromXmlString(jsonWebKey.SerializedKey);
+                //RsaExtensions.FromXmlString(provider, jsonWebKey.SerializedKey);
                 rsaParameters = provider.ExportParameters(false);
             }
 
@@ -110,8 +106,8 @@ namespace SimpleIdentityServer.Core.Api.Jws.Actions
             // Export the exponent
             var exponent = rsaParameters.Exponent.ToBase64Simplified();
 
-            result.Add(SimpleIdentityServer.Core.Jwt.JwtConstants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
-            result.Add(SimpleIdentityServer.Core.Jwt.JwtConstants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
+            result.Add(Jwt.JwtConstants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
+            result.Add(Jwt.JwtConstants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
         }
     }
 }

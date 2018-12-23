@@ -21,7 +21,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Core;
     using Shared.Responses;
 
-    [Route(Core.Constants.EndPoints.DiscoveryAction)]
+    [Route(CoreConstants.EndPoints.DiscoveryAction)]
     public class DiscoveryController : Controller
     {
         private readonly IDiscoveryActions _discoveryActions;

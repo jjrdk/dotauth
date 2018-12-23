@@ -32,24 +32,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks.Operations
 
         [Fact]
         public async Task When_There_Is_No_JsonWebKeys_To_Rotate_Then_False_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             _jsonWebKeyRepositoryStub.Setup(j => j.GetAllAsync())
                 .Returns(() => Task.FromResult((ICollection<JsonWebKey>)null));
 
-            // ACT
-            var result = await _rotateJsonWebKeysOperation.Execute().ConfigureAwait(false);
+                        var result = await _rotateJsonWebKeysOperation.Execute().ConfigureAwait(false);
 
-            // ASSERT
-            Assert.False(result);
+                        Assert.False(result);
         }
 
         [Fact]
         public async Task When_Rotating_Two_JsonWebKeys_Then_SerializedKeyProperty_Has_Changed()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             const string firstJsonWebKeySerializedKey = "firstJsonWebKeySerializedKey";
             const string secondJsonWebKeySerializedKey = "secondJsonWebKeySerializedKey";
             ICollection<JsonWebKey> jsonWebKeys = new List<JsonWebKey>
@@ -68,11 +62,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks.Operations
             _jsonWebKeyRepositoryStub.Setup(j => j.GetAllAsync())
                 .Returns(() => Task.FromResult(jsonWebKeys));
 
-            // ACT
-            var result = await _rotateJsonWebKeysOperation.Execute().ConfigureAwait(false);
+                        var result = await _rotateJsonWebKeysOperation.Execute().ConfigureAwait(false);
 
-            // ASSERT
-            _jsonWebKeyRepositoryStub.Verify(j => j.UpdateAsync(It.IsAny<JsonWebKey>()));
+                        _jsonWebKeyRepositoryStub.Verify(j => j.UpdateAsync(It.IsAny<JsonWebKey>()));
             Assert.True(result);
         }
 

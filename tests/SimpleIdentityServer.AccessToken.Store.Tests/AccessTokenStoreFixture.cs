@@ -18,11 +18,9 @@
 //        [Fact]
 //        public async Task When_Pass_Null_Parameters_Then_Exceptions_Are_Thrown()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 
-//            // ACT & ASSERT
-//            await Assert.ThrowsAsync<ArgumentNullException>(() => _accessTokenStore.GetToken(null, null, null, null));
+//            //            await Assert.ThrowsAsync<ArgumentNullException>(() => _accessTokenStore.GetToken(null, null, null, null));
 //            await Assert.ThrowsAsync<ArgumentNullException>(() => _accessTokenStore.GetToken("url", null, null, null));
 //            await Assert.ThrowsAsync<ArgumentNullException>(() => _accessTokenStore.GetToken("url", "clientid", null, null));
 //            await Assert.ThrowsAsync<ArgumentNullException>(() => _accessTokenStore.GetToken("url", "clientid", "clientsecret", null));
@@ -31,8 +29,7 @@
 //        [Fact]
 //        public async Task When_Get_AccessToken_Then_NewOne_Is_Inserted_In_The_Cache()
 //        {
-//            // ARRANGE
-//            InitializeFakeObjects();
+////            InitializeFakeObjects();
 //            var tokenClient = new Mock<ITokenClient>();
 //            tokenClient.Setup(t => t.ResolveAsync(It.IsAny<string>()))
 //                .Returns(Task.FromResult(new GetTokenResult
@@ -50,16 +47,14 @@
 //                .Returns(tokenGrantTypeSelector.Object);
 //            _identityServerClientFactoryStub.Setup(i => i.CreateAuthSelector()).Returns(clientAuthSelector.Object);
 
-//            // ACT
-//            var result = await _accessTokenStore.GetToken("url", "clientid", "clientsecret", new[] { "scope" }).ConfigureAwait(false);
+//            //            var result = await _accessTokenStore.GetToken("url", "clientid", "clientsecret", new[] { "scope" }).ConfigureAwait(false);
 //            var cachedTokens = _accessTokenStore.Tokens.Count();
 //            var secondResult = await _accessTokenStore.GetToken("url", "clientid", "clientsecret", new[] { "scope" }).ConfigureAwait(false);
 //            var secondCachedTokens = _accessTokenStore.Tokens.Count();
 //            var thirdResult = await _accessTokenStore.GetToken("url", "clientid", "clientsecret", new[] { "scope", "scope2" }).ConfigureAwait(false);
 //            var thirdCachedToken = _accessTokenStore.Tokens.Count();
 
-//            // ASSERT
-//            Assert.Equal(cachedTokens, 1);
+//            //            Assert.Equal(cachedTokens, 1);
 //            Assert.Equal(secondCachedTokens, 1);
 //            Assert.Equal(thirdCachedToken, 2);
 //        }

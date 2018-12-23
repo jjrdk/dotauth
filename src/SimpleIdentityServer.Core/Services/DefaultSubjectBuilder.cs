@@ -6,11 +6,6 @@
     using System.Security.Claims;
     using Shared.DTOs;
 
-    public interface ISubjectBuilder
-    {
-        Task<string> BuildSubject(IList<Claim> claims, ScimUser scimUser = null);
-    }
-
     public class DefaultSubjectBuilder : ISubjectBuilder
     {
         public Task<string> BuildSubject(IList<Claim> claims, ScimUser scimUser = null)

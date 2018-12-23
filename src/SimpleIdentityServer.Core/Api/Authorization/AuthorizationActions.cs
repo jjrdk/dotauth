@@ -12,24 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Api.Authorization.Actions;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.Validators;
-using System;
-using System.Security.Principal;
-using System.Threading.Tasks;
-
 namespace SimpleIdentityServer.Core.Api.Authorization
 {
+    using SimpleIdentityServer.Core.Api.Authorization.Actions;
+    using SimpleIdentityServer.Core.Errors;
+    using SimpleIdentityServer.Core.Exceptions;
+    using SimpleIdentityServer.Core.Helpers;
+    using SimpleIdentityServer.Core.Parameters;
+    using SimpleIdentityServer.Core.Results;
+    using SimpleIdentityServer.Core.Validators;
+    using System;
+    using System.Security.Principal;
+    using System.Threading.Tasks;
+
     using Json;
     using Logging;
     using Shared;
     using Shared.Events.OAuth;
-    using ActionResult = Results.ActionResult;
 
     public class AuthorizationActions : IAuthorizationActions
     {
@@ -73,14 +72,14 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
         }
 
-        public async Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal, string issuerName)
+        public async Task<EndpointResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal, string issuerName)
         {
             var processId = Guid.NewGuid().ToString();
             _eventPublisher.Publish(new AuthorizationRequestReceived(Guid.NewGuid().ToString(), processId,  _payloadSerializer.GetPayload(parameter), 0));
             try
             {
                 var client = await _authorizationCodeGrantTypeParameterValidator.ValidateAsync(parameter).ConfigureAwait(false);
-                ActionResult actionResult = null;
+                EndpointResult endpointResult = null;
                 _oauthEventSource.StartAuthorization(parameter.ClientId,
                     parameter.ResponseType,
                     parameter.Scope,
@@ -95,37 +94,37 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                 switch (authorizationFlow)
                 {
                     case AuthorizationFlow.AuthorizationCodeFlow:
-                        actionResult = await _getAuthorizationCodeOperation.Execute(parameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
+                        endpointResult = await _getAuthorizationCodeOperation.Execute(parameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
                         break;
                     case AuthorizationFlow.ImplicitFlow:
-                        actionResult = await _getTokenViaImplicitWorkflowOperation.Execute(parameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
+                        endpointResult = await _getTokenViaImplicitWorkflowOperation.Execute(parameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
                         break;
                     case AuthorizationFlow.HybridFlow:
-                        actionResult = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(parameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
+                        endpointResult = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(parameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
                         break;
                 }
                 
-                if (actionResult != null)
+                if (endpointResult != null)
                 {
-                    var actionTypeName = Enum.GetName(typeof(TypeActionResult), actionResult.Type);
+                    var actionTypeName = Enum.GetName(typeof(TypeActionResult), endpointResult.Type);
                     var actionName = string.Empty;
-                    if (actionResult.Type == TypeActionResult.RedirectToAction)
+                    if (endpointResult.Type == TypeActionResult.RedirectToAction)
                     {
-                        var actionEnum = actionResult.RedirectInstruction.Action;
+                        var actionEnum = endpointResult.RedirectInstruction.Action;
                         actionName = Enum.GetName(typeof(IdentityServerEndPoints), actionEnum);
                     }
 
-                    var serializedParameters = actionResult.RedirectInstruction?.Parameters == null ? string.Empty :
-                        actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
+                    var serializedParameters = endpointResult.RedirectInstruction?.Parameters == null ? string.Empty :
+                        endpointResult.RedirectInstruction.Parameters.SerializeWithJavascript();
                     _oauthEventSource.EndAuthorization(actionTypeName,
                         actionName,
                         serializedParameters);
                 }
 
-                _eventPublisher.Publish(new AuthorizationGranted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(actionResult), 1));
-                actionResult.ProcessId = processId;
-                actionResult.Amr = _amrHelper.GetAmr(_resourceOwnerAuthenticateHelper.GetAmrs(), parameter.AmrValues);
-                return actionResult;
+                _eventPublisher.Publish(new AuthorizationGranted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(endpointResult), 1));
+                endpointResult.ProcessId = processId;
+                endpointResult.Amr = _amrHelper.GetAmr(_resourceOwnerAuthenticateHelper.GetAmrs(), parameter.AmrValues);
+                return endpointResult;
             }
             catch(IdentityServerException ex)
             {

@@ -21,11 +21,6 @@ namespace SimpleIdentityServer.Core.Api.Scopes.Actions
     using Shared.Models;
     using Shared.Repositories;
 
-    public interface IAddScopeOperation
-    {
-        Task<bool> Execute(Scope scope);
-    }
-
     internal class AddScopeOperation : IAddScopeOperation
     {
         private readonly IScopeRepository _scopeRepository;
@@ -42,14 +37,14 @@ namespace SimpleIdentityServer.Core.Api.Scopes.Actions
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            if (await _scopeRepository.GetAsync(scope.Name).ConfigureAwait(false) != null)
+            if (await _scopeRepository.Get(scope.Name).ConfigureAwait(false) != null)
             {
                 throw new IdentityServerManagerException(
                     ErrorCodes.InvalidParameterCode,
                     string.Format(ErrorDescriptions.TheScopeAlreadyExists, scope.Name));
             }
 
-            return await _scopeRepository.InsertAsync(scope).ConfigureAwait(false);
+            return await _scopeRepository.Insert(scope).ConfigureAwait(false);
         }
     }
 }

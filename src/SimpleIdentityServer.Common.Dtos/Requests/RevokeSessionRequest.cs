@@ -1,5 +1,6 @@
 ﻿namespace SimpleIdentityServer.Shared.Requests
 {
+    using System;
     using System.Runtime.Serialization;
 
     [DataContract]
@@ -8,7 +9,7 @@
         [DataMember(Name = RevokeSessionRequestNames.IdTokenHint)]
         public string IdTokenHint { get; set; }
         [DataMember(Name = RevokeSessionRequestNames.PostLogoutRedirectUri)]
-        public string PostLogoutRedirectUri { get; set; }
+        public Uri PostLogoutRedirectUri { get; set; }
         [DataMember(Name = RevokeSessionRequestNames.State)]
         public string State { get; set; }
     }

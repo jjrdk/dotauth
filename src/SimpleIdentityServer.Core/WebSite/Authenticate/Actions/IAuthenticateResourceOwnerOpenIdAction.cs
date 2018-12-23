@@ -16,7 +16,7 @@
         /// <param name="resourceOwnerPrincipal">Resource owner principal</param>
         /// <param name="code">Encrypted parameter</param>
         /// <returns>Action result to the controller's action</returns>
-        Task<ActionResult> Execute(
+        Task<EndpointResult> Execute(
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal resourceOwnerPrincipal,
             string code, string issuerName);

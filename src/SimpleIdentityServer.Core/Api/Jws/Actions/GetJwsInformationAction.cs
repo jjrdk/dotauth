@@ -26,11 +26,6 @@ namespace SimpleIdentityServer.Core.Api.Jws.Actions
     using Results;
     using Shared;
 
-    public interface IGetJwsInformationAction
-    {
-        Task<JwsInformationResult> Execute(GetJwsParameter getJwsParameter);
-    }
-
     public class GetJwsInformationAction : IGetJwsInformationAction
     {
         private readonly IJwsParser _jwsParser;
@@ -74,7 +69,7 @@ namespace SimpleIdentityServer.Core.Api.Jws.Actions
                     ErrorDescriptions.TheTokenIsNotAValidJws);
             }
 
-            if (!string.Equals(jwsHeader.Alg, SimpleIdentityServer.Core.Jwt.JwtConstants.JwsAlgNames.NONE, StringComparison.CurrentCultureIgnoreCase)
+            if (!string.Equals(jwsHeader.Alg, JwtConstants.JwsAlgNames.NONE, StringComparison.CurrentCultureIgnoreCase)
                 && uri == null)
             {
                 throw new IdentityServerManagerException(

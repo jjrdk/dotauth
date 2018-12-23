@@ -46,9 +46,8 @@ namespace SimpleIdentityServer.Host.MiddleWare
             catch (Exception exception)
             {
                 var simpleIdentityServerEventSource = _options.SimpleIdentityServerEventSource;
-                var identityServerException = exception as IdentityServerException;
                 var identityServerExceptionWithState = exception as IdentityServerExceptionWithState;
-                if (identityServerException == null)
+                if (!(exception is IdentityServerException identityServerException))
                 {
                     identityServerException = new IdentityServerException(ErrorCodes.UnhandledExceptionCode, exception.Message);
                     simpleIdentityServerEventSource.Failure(exception);

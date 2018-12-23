@@ -38,19 +38,15 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Add_Resource_And_No_Name_Is_Specified_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT
-            var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
+                        var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
                 {
                     Name = string.Empty
                 },
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(resource);
+                        Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
             Assert.Equal("invalid_request", resource.Error.Error);
             Assert.Equal("the parameter name needs to be specified", resource.Error.ErrorDescription);
@@ -58,19 +54,15 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Add_Resource_And_No_Scopes_Is_Specified_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
 
-            // ACT
-            var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
+                        var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
                 {
                     Name = "name"
                 },
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(resource);
+                        Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
             Assert.Equal("invalid_request", resource.Error.Error);
             Assert.Equal("the parameter scopes needs to be specified", resource.Error.ErrorDescription);
@@ -78,13 +70,10 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Add_Resource_And_No_Invalid_IconUri_Is_Specified_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             
 
-            // ACT
-            var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
+                        var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
                 {
                     Name = "name",
                     Scopes = new List<string>
@@ -95,8 +84,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 },
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(resource);
+                        Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
             Assert.Equal("invalid_request", resource.Error.Error);
             Assert.Equal("the url invalid is not well formed", resource.Error.ErrorDescription);
@@ -104,17 +92,13 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Get_Unknown_Resource_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             
 
-            // ACT
-            var resource = await _resourceSetClient.GetByResolution("unknown",
+                        var resource = await _resourceSetClient.GetByResolution("unknown",
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(resource);
+                        Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
             Assert.Equal("not_found", resource.Error.Error);
             Assert.Equal("resource cannot be found", resource.Error.ErrorDescription);
@@ -122,17 +106,13 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Delete_Unknown_Resource_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             
 
-            // ACT
-            var resource = await _resourceSetClient.DeleteByResolution("unknown",
+                        var resource = await _resourceSetClient.DeleteByResolution("unknown",
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(resource);
+                        Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
             Assert.Equal("not_found", resource.Error.Error);
             Assert.Equal("resource cannot be found", resource.Error.ErrorDescription);
@@ -140,16 +120,12 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Update_Resource_And_No_Id_Is_Specified_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             
 
-            // ACT
-            var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet(), baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet(), baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(resource);
+                        Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
             Assert.Equal("invalid_request", resource.Error.Error);
             Assert.Equal("the parameter id needs to be specified", resource.Error.ErrorDescription);
@@ -157,21 +133,17 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Update_Resource_And_No_Name_Is_Specified_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             
 
-            // ACT
-            var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
+                        var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
                 {
                     Id = "invalid",
                     Name = string.Empty
                 },
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(resource);
+                        Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
             Assert.Equal("invalid_request", resource.Error.Error);
             Assert.Equal("the parameter name needs to be specified", resource.Error.ErrorDescription);
@@ -179,21 +151,17 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Update_Resource_And_No_Scopes_Is_Specified_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             
 
-            // ACT
-            var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
+                        var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
                 {
                     Id = "invalid",
                     Name = "name"
                 },
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(resource);
+                        Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
             Assert.Equal("invalid_request", resource.Error.Error);
             Assert.Equal("the parameter scopes needs to be specified", resource.Error.ErrorDescription);
@@ -201,13 +169,10 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Update_Resource_And_No_Invalid_IconUri_Is_Specified_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             
 
-            // ACT
-            var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
+                        var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
                 {
                     Id = "invalid",
                     Name = "name",
@@ -219,8 +184,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 },
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(resource);
+                        Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
             Assert.Equal("invalid_request", resource.Error.Error);
             Assert.Equal("the url invalid is not well formed", resource.Error.ErrorDescription);
@@ -228,13 +192,10 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Update_Unknown_Resource_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             
 
-            // ACT
-            var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
+                        var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
                 {
                     Id = "invalid",
                     Name = "name",
@@ -245,8 +206,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 },
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(resource);
+                        Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
             Assert.Equal("not_found", resource.Error.Error);
             Assert.Equal("resource cannot be found", resource.Error.ErrorDescription);
@@ -254,67 +214,52 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Getting_Resources_Then_Identifiers_Are_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             
 
-            // ACT
-            var resources = await _resourceSetClient.GetAllByResolution(
+                        var resources = await _resourceSetClient.GetAllByResolution(
                 baseUrl + "/.well-known/uma2-configuration", "token").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(resources.Content);
+                        Assert.NotNull(resources.Content);
             Assert.True(resources.Content.Any());
         }
 
         [Fact]
         public async Task When_Getting_ResourceInformation_Then_Dto_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             
 
-            // ACT
-            var resources = await _resourceSetClient.GetAllByResolution(
+                        var resources = await _resourceSetClient.GetAllByResolution(
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var resource = await _resourceSetClient.GetByResolution(resources.Content.First(),
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(resource);
+                        Assert.NotNull(resource);
         }
 
         [Fact]
         public async Task When_Deleting_ResourceInformation_Then_It_Doesnt_Exist()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             
 
-            // ACT
-            var resources = await _resourceSetClient.GetAllByResolution(
+                        var resources = await _resourceSetClient.GetAllByResolution(
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var resource = await _resourceSetClient.DeleteByResolution(resources.Content.First(),
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var information = await _resourceSetClient.GetByResolution(resources.Content.First(),
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.False(resource.ContainsError);
+                        Assert.False(resource.ContainsError);
             Assert.True(information.ContainsError);
             Assert.NotNull(information);
         }
 
         [Fact]
         public async Task When_Adding_Resource_Then_Information_Can_Be_Retrieved()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             
 
-            // ACT
-            var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
+                        var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
                 {
                     Name = "name",
                     Scopes = new List<string>
@@ -324,36 +269,29 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 },
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(resource);
+                        Assert.NotNull(resource);
         }
 
         [Fact]
         public async Task When_Search_Resources_Then_List_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             
 
-            // ACT
-            var resource = await _resourceSetClient.ResolveSearch(baseUrl + "/.well-known/uma2-configuration", new SearchResourceSet
+                        var resource = await _resourceSetClient.ResolveSearch(baseUrl + "/.well-known/uma2-configuration", new SearchResourceSet
                 {
                     StartIndex = 0,
                     TotalResults = 100
                 },
                 "header").ConfigureAwait(false);
 
-            // ASSERTS
-            Assert.NotNull(resource);
+                        Assert.NotNull(resource);
             Assert.False(resource.ContainsError);
             Assert.True(resource.Content.Content.Any());
         }
 
         [Fact]
         public async Task When_Updating_Resource_Then_Changes_Are_Persisted()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
+        {            InitializeFakeObjects();
             
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
                 {
@@ -365,8 +303,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 },
                 baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ACT
-            var updateResult = await _resourceSetClient.UpdateByResolution(new PutResourceSet
+                        var updateResult = await _resourceSetClient.UpdateByResolution(new PutResourceSet
                 {
                     Id = resource.Content.Id,
                     Name = "name2",
@@ -378,8 +315,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var information = await _resourceSetClient.GetByResolution(updateResult.Content.Id, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
-            // ASSERT
-            Assert.NotNull(information);
+                        Assert.NotNull(information);
             Assert.True(information.Content.Name == "name2");
             Assert.True(information.Content.Type == "type");
             Assert.True(information.Content.Scopes.Count() == 1 && information.Content.Scopes.First() == "scope2");

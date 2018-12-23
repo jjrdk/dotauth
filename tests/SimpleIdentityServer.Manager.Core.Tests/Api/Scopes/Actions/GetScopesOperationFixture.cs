@@ -1,5 +1,4 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
+﻿// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,18 +11,17 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#endregion
-
-using Moq;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
 {
+    using Moq;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Shared.Models;
+    using Shared.Repositories;
+    using SimpleIdentityServer.Core.Api.Scopes.Actions;
+    using Xunit;
+
     public class GetScopesOperationFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
@@ -31,18 +29,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
         
         [Fact]
         public async Task When_Executing_Operation_Then_Operation_Is_Called()
-        {
-            // ARRANGE
-            ICollection<Scope> scopes = new List<Scope>();
+        {            ICollection<Scope> scopes = new List<Scope>();
             InitializeFakeObjects();
-            _scopeRepositoryStub.Setup(c => c.GetAllAsync())
+            _scopeRepositoryStub.Setup(c => c.GetAll())
                 .Returns(Task.FromResult(scopes));
 
-            // ACT
-            await _getScopesOperation.Execute();
+                        await _getScopesOperation.Execute().ConfigureAwait(false);
 
-            // ASSERT
-            _scopeRepositoryStub.Verify(c => c.GetAllAsync());
+                        _scopeRepositoryStub.Verify(c => c.GetAll());
         }
 
         private void InitializeFakeObjects()
