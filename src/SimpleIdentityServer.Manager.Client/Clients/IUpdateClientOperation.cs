@@ -4,7 +4,6 @@
     using System.Threading.Tasks;
     using Shared;
     using Shared.Models;
-    using Shared.Requests;
 
     public interface IUpdateClientOperation
     {

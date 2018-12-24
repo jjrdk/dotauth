@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Habart Thierry
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Core.Api.Jws.Actions
                 Header = jwsHeader
             };
 
-            JwsPayload payload = null;
+            JwsPayload payload;
             if (!string.Equals(jwsHeader.Alg, JwtConstants.JwsAlgNames.NONE, StringComparison.CurrentCultureIgnoreCase))
             {
                 var jsonWebKey = await _jsonWebKeyHelper.GetJsonWebKey(jwsHeader.Kid, uri).ConfigureAwait(false);

@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Habart Thierry
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.Client
             }
 
             var contentType = serializedContent.Content.Headers.ContentType;
-            if (contentType?.Parameters != null && contentType?.MediaType == "application/jwt")
+            if (contentType?.Parameters != null && contentType.MediaType == "application/jwt")
             {
                 return new GetUserInfoResult
                 {

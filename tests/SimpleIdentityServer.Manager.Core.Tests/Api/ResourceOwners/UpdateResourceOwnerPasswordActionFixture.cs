@@ -1,14 +1,10 @@
 ﻿namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
 {
-    using Moq;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleIdentityServer.Core.Exceptions;
-    using SimpleIdentityServer.Core.Parameters;
     using SimpleIdentityServer.Core.Repositories;
     using System;
     using System.Collections.Generic;
-    using System.Threading;
     using System.Threading.Tasks;
     using Xunit;
 

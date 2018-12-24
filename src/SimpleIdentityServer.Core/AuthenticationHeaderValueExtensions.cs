@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Habart Thierry
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ namespace SimpleIdentityServer.Core
             {
                 return result;
             }
-            if (authenticationHeaderValue != null
-                && !string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter))
+            if (!string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter))
             {
                 var parameters = GetParameters(authenticationHeaderValue.Parameter);
                 if (parameters != null && parameters.Count() == 2)

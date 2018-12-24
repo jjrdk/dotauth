@@ -25,7 +25,7 @@ namespace SimpleIdentityServer.Core.Repositories
                 IsDisplayedInConsent = true,
                 Description = "access to the openid scope",
                 Type = ScopeType.ProtectedApi,
-                Claims = new List<string> { }
+                Claims = new List<string>()
             },
             new Scope
             {

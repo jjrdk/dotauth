@@ -46,8 +46,8 @@ namespace SimpleIdentityServer.Core.Authenticate
             }
 
             var certificate = instruction.Certificate;
-            var isSameThumbPrint = thumbPrint == null || thumbPrint != null && thumbPrint.Value == certificate.Thumbprint;
-            var isSameName = name == null || name != null && name.Value == certificate.SubjectName.Name;
+            var isSameThumbPrint = thumbPrint.Value == certificate.Thumbprint;
+            var isSameName = name.Value == certificate.SubjectName.Name;
             return isSameName && isSameThumbPrint ? client : null;
         }
     }

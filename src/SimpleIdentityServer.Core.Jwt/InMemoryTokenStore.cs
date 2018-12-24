@@ -30,7 +30,7 @@
             var grantedTokens = _tokens.Values
                 .Where(g => g.Scope == scopes && g.ClientId == clientId)
                 .OrderByDescending(g => g.CreateDateTime);
-            if (grantedTokens == null || !_tokens.Any())
+            if (!_tokens.Any())
             {
                 return Task.FromResult((GrantedToken)null);
             }

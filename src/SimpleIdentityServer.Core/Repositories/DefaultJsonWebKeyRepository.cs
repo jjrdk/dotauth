@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Core.Repositories
                 return;
             }
 
-            var serializedRsa = string.Empty;
+            string serializedRsa;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 using (var provider = new RSACryptoServiceProvider())

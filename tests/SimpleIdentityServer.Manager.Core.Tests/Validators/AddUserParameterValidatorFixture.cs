@@ -4,7 +4,6 @@
     using SimpleIdentityServer.Core.Parameters;
     using SimpleIdentityServer.Core.Validators;
     using System;
-    using System.Threading.Tasks;
     using Xunit;
 
     public class AddUserParameterValidatorFixture

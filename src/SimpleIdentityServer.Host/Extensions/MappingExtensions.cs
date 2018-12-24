@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Habart Thierry
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -209,7 +209,7 @@ namespace SimpleIdentityServer.Host.Extensions
             {
                 StartIndex = parameter.StartIndex,
                 TotalResults = parameter.TotalResults,
-                Content = parameter.Content == null ? new List<ScopeResponse>() : parameter.Content.Select(c => ToDto(c))
+                Content = parameter.Content == null ? new List<ScopeResponse>() : parameter.Content.Select(ToDto)
             };
         }
 
@@ -224,7 +224,7 @@ namespace SimpleIdentityServer.Host.Extensions
             {
                 StartIndex = parameter.StartIndex,
                 TotalResults = parameter.TotalResults,
-                Content = parameter.Content == null ? new List<ResourceOwnerResponse>() : parameter.Content.Select(c => ToDto(c))
+                Content = parameter.Content == null ? new List<ResourceOwnerResponse>() : parameter.Content.Select(ToDto)
             };
         }
 
@@ -239,7 +239,7 @@ namespace SimpleIdentityServer.Host.Extensions
             {
                 StartIndex = parameter.StartIndex,
                 TotalResults = parameter.TotalResults,
-                Content = parameter.Content == null ? new List<ClaimResponse>() : parameter.Content.Select(c => ToDto(c))
+                Content = parameter.Content == null ? new List<ClaimResponse>() : parameter.Content.Select(ToDto)
             };
         }
 

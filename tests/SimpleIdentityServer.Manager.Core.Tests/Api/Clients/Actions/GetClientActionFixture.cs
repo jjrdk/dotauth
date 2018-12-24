@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Habart Thierry
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,6 @@
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
 {
-    using Moq;
-    using Shared.Models;
-    using Shared.Repositories;
-    using SimpleIdentityServer.Core.Errors;
-    using SimpleIdentityServer.Core.Exceptions;
-    using System;
-    using System.Threading.Tasks;
-    using Xunit;
-
     //public class GetClientActionFixture
     //{
     //    private Mock<IClientStore> _clientRepositoryStub;

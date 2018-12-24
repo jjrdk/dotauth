@@ -8,7 +8,6 @@
 
     using Shared;
     using Shared.Models;
-    using Shared.Requests;
     using Shared.Responses;
 
     internal sealed class UpdateClientOperation : IUpdateClientOperation

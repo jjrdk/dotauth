@@ -10,7 +10,6 @@
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Shared.Requests;
 
     internal sealed class DefaultClientRepository : IClientRepository, IClientStore
     {

@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Habart Thierry
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,13 +49,14 @@ namespace SimpleIdentityServer.Core.Translation
 
             var preferredLanguage = await GetPreferredLanguage(concatenateListOfCodeLanguages).ConfigureAwait(false);
             var result = new Dictionary<string, string>();
-            foreach(var translationCode in translationCodes)
+            foreach (var translationCode in translationCodes)
             {
                 var record = await _translationRepository.GetAsync(preferredLanguage, translationCode).ConfigureAwait(false);
                 if (record != null)
                 {
                     result.Add(record.Code, record.Value);
-                } else
+                }
+                else
                 {
                     result.Add(translationCode, string.Format("[{0}]", translationCode));
                 }
@@ -73,8 +74,9 @@ namespace SimpleIdentityServer.Core.Translation
 
             var listOfCodeLanguages = concatenateListOfCodeLanguages.Split(' ');
             var supportedCodeLanguages = await _translationRepository.GetLanguageTagsAsync().ConfigureAwait(false);
-            if (listOfCodeLanguages == null || !listOfCodeLanguages.Any() ||
-                supportedCodeLanguages == null || !supportedCodeLanguages.Any())
+            if (!listOfCodeLanguages.Any()
+                || supportedCodeLanguages == null
+                || !supportedCodeLanguages.Any())
             {
                 return _configurationService.DefaultLanguage.TwoLetterISOLanguageName;
             }

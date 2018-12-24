@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Habart Thierry
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,11 @@
 
 namespace SimpleIdentityServer.Core.Common
 {
+    using Json;
+    using Jwt;
+    using Logging;
+    using Shared;
+    using Shared.Models;
     using SimpleIdentityServer.Core.Api.Authorization;
     using SimpleIdentityServer.Core.Extensions;
     using SimpleIdentityServer.Core.Helpers;
@@ -24,12 +29,6 @@ namespace SimpleIdentityServer.Core.Common
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
-
-    using Json;
-    using Jwt;
-    using Logging;
-    using Shared;
-    using Shared.Models;
 
     public class GenerateAuthorizationResponse : IGenerateAuthorizationResponse
     {
@@ -107,7 +106,7 @@ namespace SimpleIdentityServer.Core.Common
                     allowedTokenScopes = string.Join(" ", _parameterParserHelper.ParseScopes(authorizationParameter.Scope));
                 }
 
-                
+
                 grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId,
                     userInformationPayload, idTokenPayload).ConfigureAwait(false);
                 if (grantedToken == null)
@@ -129,7 +128,7 @@ namespace SimpleIdentityServer.Core.Common
 
             if (responses.Contains(ResponseType.code)) // 2. Generate an authorization code.
             {
-                var subject = claimsPrincipal == null ? string.Empty : claimsPrincipal.GetSubject();
+                var subject = claimsPrincipal.GetSubject();
                 var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
                 if (assignedConsent != null)
                 {
@@ -155,7 +154,7 @@ namespace SimpleIdentityServer.Core.Common
             _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(idTokenPayload,
                 authorizationCode == null ? string.Empty : authorizationCode.Code,
                 grantedToken == null ? string.Empty : grantedToken.AccessToken, client);
-            
+
             if (newAccessTokenGranted) // 3. Insert the stateful access token into the DB OR insert the access token into the caching.
             {
                 await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);
@@ -290,7 +289,7 @@ namespace SimpleIdentityServer.Core.Common
             string issuerName)
         {
             JwsPayload jwsPayload;
-            if (authorizationParameter.Claims != null && 
+            if (authorizationParameter.Claims != null &&
                 authorizationParameter.Claims.IsAnyIdentityTokenClaimParameter())
             {
                 jwsPayload = await _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(claimsPrincipal, authorizationParameter, Clone(authorizationParameter.Claims.IdToken), issuerName).ConfigureAwait(false);
@@ -329,7 +328,7 @@ namespace SimpleIdentityServer.Core.Common
 
             return jwsPayload;
         }
-        
+
         private static ResponseMode GetResponseMode(AuthorizationFlow authorizationFlow)
         {
             return CoreConstants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
@@ -338,7 +337,7 @@ namespace SimpleIdentityServer.Core.Common
         private static List<ClaimParameter> Clone(List<ClaimParameter> claims)
         {
             var result = new List<ClaimParameter>();
-            claims.ForEach(c => result.Add(c));
+            claims.ForEach(result.Add);
             return result;
         }
     }

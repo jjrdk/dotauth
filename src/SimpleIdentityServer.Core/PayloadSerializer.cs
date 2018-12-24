@@ -331,12 +331,7 @@ namespace SimpleIdentityServer.Core
             {
                 var decodedParameter = auth.Parameter.Base64Decode();
                 var splitted = decodedParameter.Split(':');
-                if (splitted == null || splitted.Count() != 2)
-                {
-                    return null;
-                }
-
-                return splitted.First();
+                return splitted.Length != 2 ? null : splitted.First();
             }
             catch
             {
