@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Api.UserInfo.Actions;
-using SimpleIdentityServer.Core.Exceptions;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Api.UserInfo
+namespace SimpleIdentityServer.Host.UserInfo
 {
+    using System;
+    using System.Threading.Tasks;
+    using Actions;
+    using Core;
+    using Core.Exceptions;
     using Microsoft.AspNetCore.Mvc;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Events.Openid;
@@ -27,14 +27,11 @@ namespace SimpleIdentityServer.Core.Api.UserInfo
     {
         private readonly IGetJwsPayload _getJwsPayload;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IPayloadSerializer _payloadSerializer;
 
-        public UserInfoActions(IGetJwsPayload getJwsPayload, IEventPublisher eventPublisher,
-            IPayloadSerializer payloadSerializer)
+        public UserInfoActions(IGetJwsPayload getJwsPayload, IEventPublisher eventPublisher)
         {
             _getJwsPayload = getJwsPayload;
             _eventPublisher = eventPublisher;
-            _payloadSerializer = payloadSerializer;
         }
 
         public async Task<IActionResult> GetUserInformation(string accessToken)
@@ -42,9 +39,9 @@ namespace SimpleIdentityServer.Core.Api.UserInfo
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new GetUserInformationReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(accessToken), 0));
+                _eventPublisher.Publish(new GetUserInformationReceived(Guid.NewGuid().ToString(), processId, accessToken, 0));
                 var result = await _getJwsPayload.Execute(accessToken).ConfigureAwait(false);
-                _eventPublisher.Publish(new UserInformationReturned(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
+                _eventPublisher.Publish(new UserInformationReturned(Guid.NewGuid().ToString(), processId, result, 1));
                 return result;
             }
             catch(IdentityServerException ex)

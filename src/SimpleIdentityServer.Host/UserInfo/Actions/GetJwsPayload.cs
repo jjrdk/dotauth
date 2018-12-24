@@ -12,22 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Net.Http.Headers;
-using Newtonsoft.Json;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Validators;
-using System;
-using System.Buffers;
-using System.Net;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
+namespace SimpleIdentityServer.Host.UserInfo.Actions
 {
+    using System;
+    using System.Buffers;
+    using System.Net;
+    using System.Threading.Tasks;
+    using Core.Errors;
+    using Core.Exceptions;
+    using Core.Extensions;
+    using Core.JwtToken;
+    using Core.Validators;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Formatters;
+    using Microsoft.Net.Http.Headers;
+    using Newtonsoft.Json;
     using SimpleAuth.Json;
     using SimpleAuth.Jwt;
     using SimpleAuth.Shared;

@@ -29,36 +29,41 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
     public class IntrospectionActionsFixture
     {
         private Mock<IPostIntrospectionAction> _postIntrospectionActionStub;
-        private Mock<IPayloadSerializer> _payloadSerializerStub;
         private Mock<IIntrospectionParameterValidator> _validatorStub;
         private IIntrospectionActions _introspectionActions;
 
         [Fact]
         public async Task When_Passing_Null_Parameter_To_PostIntrospection_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        await Assert.ThrowsAsync<ArgumentNullException>(() => _introspectionActions.PostIntrospection(null, null, null)).ConfigureAwait(false);
+            await Assert
+                .ThrowsAsync<ArgumentNullException>(() => _introspectionActions.PostIntrospection(null, null, null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
         public void When_Passing_Valid_Parameter_To_PostIntrospection_Then_Operation_Is_Called()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var parameter = new IntrospectionParameter();
 
-                        _introspectionActions.PostIntrospection(parameter, null, null);
+            _introspectionActions.PostIntrospection(parameter, null, null);
 
-                        _postIntrospectionActionStub.Verify(p => p.Execute(It.IsAny<IntrospectionParameter>(),
-                It.IsAny<AuthenticationHeaderValue>(), null));
+            _postIntrospectionActionStub.Verify(p => p.Execute(It.IsAny<IntrospectionParameter>(),
+                It.IsAny<AuthenticationHeaderValue>(),
+                null));
         }
 
         private void InitializeFakeObjects()
         {
             _postIntrospectionActionStub = new Mock<IPostIntrospectionAction>();
             var eventPublisherStub = new Mock<IEventPublisher>();
-            _payloadSerializerStub = new Mock<IPayloadSerializer>();
             _validatorStub = new Mock<IIntrospectionParameterValidator>();
-            _introspectionActions = new IntrospectionActions(_postIntrospectionActionStub.Object, eventPublisherStub.Object,
-                _payloadSerializerStub.Object, _validatorStub.Object);
+            _introspectionActions = new IntrospectionActions(
+                _postIntrospectionActionStub.Object,
+                eventPublisherStub.Object,
+                _validatorStub.Object);
         }
     }
 }

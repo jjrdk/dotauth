@@ -14,7 +14,6 @@
 
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
-    using Core.Api.UserInfo;
     using Core.Errors;
     using Core.Exceptions;
     using Microsoft.AspNetCore.Mvc;
@@ -25,6 +24,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
     using Core;
+    using UserInfo;
 
     [Route(CoreConstants.EndPoints.UserInfo)]
     public class UserInfoController : Controller

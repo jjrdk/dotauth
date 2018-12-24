@@ -16,7 +16,7 @@ namespace SimpleAuth.Shared.Events.Openid
 {
     public class ResourceOwnerAuthenticated : Event
     {
-        public ResourceOwnerAuthenticated(string id, string aggregateId, string payload, int order)
+        public ResourceOwnerAuthenticated(string id, string aggregateId, object payload, int order)
         {
             Id = id;
             AggregateId = aggregateId;
@@ -24,9 +24,9 @@ namespace SimpleAuth.Shared.Events.Openid
             Order = order;
         }
 
-        public string Id { get; private set; }
-        public string AggregateId { get; private set; }
-        public string Payload { get; private set; }
+        public string Id { get; }
+        public string AggregateId { get; }
+        public object Payload { get; }
         public int Order { get; set; }
     }
 }
