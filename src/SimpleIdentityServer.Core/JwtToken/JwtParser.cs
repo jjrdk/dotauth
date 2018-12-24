@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Core.JwtToken
         {
             if (string.IsNullOrWhiteSpace(jwe))
             {
-                throw new ArgumentNullException("jwe");
+                throw new ArgumentNullException(nameof(jwe));
             }
 
             var protectedHeader = _jweParser.GetHeader(jwe);

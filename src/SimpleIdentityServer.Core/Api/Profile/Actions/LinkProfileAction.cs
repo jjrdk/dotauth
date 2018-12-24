@@ -50,16 +50,14 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
                 {
                     throw new ProfileAssignedAnotherAccountException();
                 }
-                else
-                {
-                    await _profileRepository.Remove(new[] { externalSubject }).ConfigureAwait(false);
-                    if (profile.ResourceOwnerId == profile.Subject)
-                    {
-                        await _resourceOwnerRepository.Delete(profile.ResourceOwnerId).ConfigureAwait(false);
-                    }
 
-                    profile = null;
+                await _profileRepository.Remove(new[] { externalSubject }).ConfigureAwait(false);
+                if (profile.ResourceOwnerId == profile.Subject)
+                {
+                    await _resourceOwnerRepository.Delete(profile.ResourceOwnerId).ConfigureAwait(false);
                 }
+
+                profile = null;
             }
 
             if (profile != null)

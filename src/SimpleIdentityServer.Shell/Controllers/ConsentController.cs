@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Shell.Controllers
             _eventPublisher = eventPublisher;
             _payloadSerializer = payloadSerializer;
         }
-        
+
         public async Task<IActionResult> Index(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
@@ -67,7 +67,9 @@ namespace SimpleIdentityServer.Shell.Controllers
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _consentActions.DisplayConsent(request.ToParameter(),
-                authenticatedUser, issuerName).ConfigureAwait(false);
+                    authenticatedUser,
+                    issuerName)
+                .ConfigureAwait(false);
 
             var result = this.CreateRedirectionFromActionResult(actionResult.EndpointResult, request);
             if (result != null)
@@ -90,15 +92,19 @@ namespace SimpleIdentityServer.Shell.Controllers
             };
             return View(viewModel);
         }
-        
+
         public async Task<IActionResult> Confirm(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName).ConfigureAwait(false);
+            var authenticatedUser = await _authenticationService
+                .GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName)
+                .ConfigureAwait(false);
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _consentActions.ConfirmConsent(parameter,
-                authenticatedUser, issuerName).ConfigureAwait(false);
+                    authenticatedUser,
+                    issuerName)
+                .ConfigureAwait(false);
             LogConsentAccepted(actionResult, parameter.ProcessId);
             return this.CreateRedirectionFromActionResult(actionResult,
                 request);
@@ -122,16 +128,18 @@ namespace SimpleIdentityServer.Shell.Controllers
         private async Task TranslateConsentScreen(string uiLocales)
         {
             // Retrieve the translation and store them in a ViewBag
-            var translations = await _translationManager.GetTranslationsAsync(uiLocales, new List<string>
-            {
-                Core.CoreConstants.StandardTranslationCodes.ApplicationWouldLikeToCode,
-                Core.CoreConstants.StandardTranslationCodes.IndividualClaimsCode,
-                Core.CoreConstants.StandardTranslationCodes.ScopesCode,
-                Core.CoreConstants.StandardTranslationCodes.CancelCode,
-                Core.CoreConstants.StandardTranslationCodes.ConfirmCode,
-                Core.CoreConstants.StandardTranslationCodes.LinkToThePolicy,
-                Core.CoreConstants.StandardTranslationCodes.Tos
-            }).ConfigureAwait(false);
+            var translations = await _translationManager.GetTranslationsAsync(uiLocales,
+                    new List<string>
+                    {
+                        Core.CoreConstants.StandardTranslationCodes.ApplicationWouldLikeToCode,
+                        Core.CoreConstants.StandardTranslationCodes.IndividualClaimsCode,
+                        Core.CoreConstants.StandardTranslationCodes.ScopesCode,
+                        Core.CoreConstants.StandardTranslationCodes.CancelCode,
+                        Core.CoreConstants.StandardTranslationCodes.ConfirmCode,
+                        Core.CoreConstants.StandardTranslationCodes.LinkToThePolicy,
+                        Core.CoreConstants.StandardTranslationCodes.Tos
+                    })
+                .ConfigureAwait(false);
             ViewBag.Translations = translations;
         }
 
@@ -142,7 +150,10 @@ namespace SimpleIdentityServer.Shell.Controllers
                 return;
             }
 
-            _eventPublisher.Publish(new ConsentAccepted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(act), 10));
+            _eventPublisher.Publish(new ConsentAccepted(Guid.NewGuid().ToString(),
+                processId,
+                _payloadSerializer.GetPayload(act),
+                10));
         }
 
         private void LogConsentRejected(string processId)

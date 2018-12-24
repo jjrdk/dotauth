@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         {
             if (jwsPayload == null)
             {
-                throw new ArgumentNullException("jwsPayload");
+                throw new ArgumentNullException(nameof(jwsPayload));
             }
 
             if (jsonWebKey == null && 

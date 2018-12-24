@@ -266,7 +266,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
                 // ACT & ASSERTS
                 var result = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
                 Assert.Single(result);
-                Assert.Equal(expectedXml.Replace("\r\n", "").Replace(" ", ""), result.First().SerializedKey);
+                Assert.Equal(expectedXml, result.First().SerializedKey);
             }
         }
 

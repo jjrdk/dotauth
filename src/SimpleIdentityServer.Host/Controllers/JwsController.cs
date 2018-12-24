@@ -16,13 +16,14 @@ namespace SimpleIdentityServer.Host.Controllers
 {
     using System;
     using System.Threading.Tasks;
+    using Core;
     using Core.Api.Jws;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Shared.Requests;
     using Shared.Responses;
 
-    [Route(HostEnpoints.Jws)]
+    [Route(CoreConstants.EndPoints.Jws)]
     public class JwsController : Controller
     {
         private readonly IJwsActions _jwsActions;

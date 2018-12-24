@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
             {
                 throw new ArgumentNullException(nameof(jsonWebKeySet));
             }
-            
+
             if (jsonWebKeySet.Keys == null ||
                     !jsonWebKeySet.Keys.Any())
             {
@@ -100,7 +100,7 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
             {
                 throw new InvalidOperationException(ErrorDescriptions.CannotExtractParametersFromJsonWebKey);
             }
-            
+
             var rsaParameters = new RSAParameters
             {
                 Modulus = modulusKeyPair.Value.ToString().Base64DecodeBytes(),
@@ -111,16 +111,14 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
                 using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
                 {
                     rsaCryptoServiceProvider.ImportParameters(rsaParameters);
-                    return rsaCryptoServiceProvider.ToXmlStringNetCore();
+                    return RsaExtensions.ToXmlString(rsaCryptoServiceProvider);
                 }
             }
-            else
+
+            using (var rsaCryptoServiceProvider = new RSAOpenSsl())
             {
-                using (var rsaCryptoServiceProvider = new RSAOpenSsl())
-                {
-                    rsaCryptoServiceProvider.ImportParameters(rsaParameters);
-                    return rsaCryptoServiceProvider.ToXmlStringNetCore();
-                }
+                rsaCryptoServiceProvider.ImportParameters(rsaParameters);
+                return RsaExtensions.ToXmlString(rsaCryptoServiceProvider);
             }
         }
 
@@ -128,14 +126,12 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
         {
             var xCoordinate = information.FirstOrDefault(i => i.Key == JwtConstants.JsonWebKeyParameterNames.EcKey.XCoordinateName);
             var yCoordinate = information.FirstOrDefault(i => i.Key == JwtConstants.JsonWebKeyParameterNames.EcKey.YCoordinateName);
-            if (xCoordinate.Equals(default(KeyValuePair<string, object>)) ||
-                yCoordinate.Equals(default(KeyValuePair<string, object>)))
+            if (xCoordinate.IsDefault() || yCoordinate.IsDefault())
             {
                 throw new InvalidOperationException(ErrorDescriptions.CannotExtractParametersFromJsonWebKey);
             }
-            
-            byte[] xCoordinateBytes,
-                yCoordinateBytes;
+
+            byte[] xCoordinateBytes, yCoordinateBytes;
             try
             {
                 xCoordinateBytes = xCoordinate.Value.ToString().Base64DecodeBytes();
@@ -145,13 +141,13 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
             {
                 throw new InvalidOperationException(ErrorDescriptions.OneOfTheParameterIsNotBase64Encoded);
             }
-            
+
             var cngKeySerialized = new CngKeySerialized
             {
                 X = xCoordinateBytes,
                 Y = yCoordinateBytes
             };
-            
+
             var serializer = new XmlSerializer(typeof(CngKeySerialized));
             using (var writer = new StringWriter())
             {

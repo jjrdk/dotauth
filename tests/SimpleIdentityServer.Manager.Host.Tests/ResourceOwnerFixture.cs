@@ -28,7 +28,7 @@
 
             var resourceOwnerId = "invalid_login";
             var result = await _resourceOwnerClient.ResolveGet(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     resourceOwnerId,
                     null)
                 .ConfigureAwait(false);
@@ -45,7 +45,7 @@
             InitializeFakeObjects();
 
             var result = await _resourceOwnerClient.ResolveAdd(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     new AddResourceOwnerRequest(),
                     null)
                 .ConfigureAwait(false);
@@ -62,7 +62,7 @@
             InitializeFakeObjects();
 
             var result = await _resourceOwnerClient.ResolveAdd(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     new AddResourceOwnerRequest
                     {
                         Subject = "subject"
@@ -82,7 +82,7 @@
             InitializeFakeObjects();
 
             var result = await _resourceOwnerClient.ResolveAdd(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     new AddResourceOwnerRequest
                     {
                         Subject = "administrator",
@@ -103,7 +103,7 @@
             InitializeFakeObjects();
 
             var result = await _resourceOwnerClient.ResolveUpdateClaims(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     new UpdateResourceOwnerClaimsRequest(),
                     null)
                 .ConfigureAwait(false);
@@ -120,7 +120,7 @@
             InitializeFakeObjects();
 
             var result = await _resourceOwnerClient.ResolveUpdateClaims(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     new UpdateResourceOwnerClaimsRequest
                     {
                         Login = "invalid_login"
@@ -140,7 +140,7 @@
             InitializeFakeObjects();
 
             var result = await _resourceOwnerClient.ResolveUpdatePassword(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     new UpdateResourceOwnerPasswordRequest(),
                     null)
                 .ConfigureAwait(false);
@@ -155,7 +155,7 @@
             InitializeFakeObjects();
 
             var result = await _resourceOwnerClient.ResolveUpdatePassword(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     new UpdateResourceOwnerPasswordRequest
                     {
                         Login = "login"
@@ -173,7 +173,7 @@
             InitializeFakeObjects();
 
             var result = await _resourceOwnerClient.ResolveUpdatePassword(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     new UpdateResourceOwnerPasswordRequest
                     {
                         Login = "invalid_login",
@@ -192,7 +192,7 @@
             InitializeFakeObjects();
 
             var result = await _resourceOwnerClient.ResolveDelete(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     "invalid_login",
                     null)
                 .ConfigureAwait(false);
@@ -208,7 +208,7 @@
 
 
             var result = await _resourceOwnerClient.ResolveUpdateClaims(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     new UpdateResourceOwnerClaimsRequest
                     {
                         Login = "administrator",
@@ -222,7 +222,7 @@
                     null)
                 .ConfigureAwait(false);
             var resourceOwner = await _resourceOwnerClient.ResolveGet(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     "administrator",
                     null)
                 .ConfigureAwait(false);
@@ -238,7 +238,7 @@
             InitializeFakeObjects();
             
             var result = await _resourceOwnerClient.ResolveUpdatePassword(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     new UpdateResourceOwnerPasswordRequest
                     {
                         Login = "administrator",
@@ -247,7 +247,7 @@
                     null)
                 .ConfigureAwait(false);
             var resourceOwner = await _resourceOwnerClient.ResolveGet(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     "administrator",
                     null)
                 .ConfigureAwait(false);
@@ -262,7 +262,7 @@
             InitializeFakeObjects();
 
             var result = await _resourceOwnerClient.ResolveSearch(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     new SearchResourceOwnersRequest
                     {
                         StartIndex = 0,
@@ -283,7 +283,7 @@
             
             var resourceOwners =
                 await _resourceOwnerClient.ResolveGetAll(
-                        new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                        new Uri("http://localhost:5000/.well-known/openid-configuration"),
                         null)
                     .ConfigureAwait(false);
 
@@ -298,7 +298,7 @@
             InitializeFakeObjects();
 
             var result = await _resourceOwnerClient.ResolveAdd(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     new AddResourceOwnerRequest
                     {
                         Subject = "login",
@@ -317,7 +317,7 @@
 
 
             var result = await _resourceOwnerClient.ResolveAdd(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     new AddResourceOwnerRequest
                     {
                         Subject = "login1",
@@ -326,7 +326,7 @@
                     null)
                 .ConfigureAwait(false);
             var remove = await _resourceOwnerClient.ResolveDelete(
-                    new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                    new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     "login1",
                     null)
                 .ConfigureAwait(false);

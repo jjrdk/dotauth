@@ -7,17 +7,17 @@
     [DataContract]
     public class SearchClientsRequest
     {
-        [DataMember(Name = Constants.SearchClientNames.ClientNames)]
+        [DataMember(Name = SharedConstants.SearchClientNames.ClientNames)]
         public IEnumerable<string> ClientNames { get; set; }
-        [DataMember(Name = Constants.SearchClientNames.ClientIds)]
+        [DataMember(Name = SharedConstants.SearchClientNames.ClientIds)]
         public IEnumerable<string> ClientIds { get; set; }
-        [DataMember(Name = Constants.SearchClientNames.ClientTypes)]
+        [DataMember(Name = SharedConstants.SearchClientNames.ClientTypes)]
         public IEnumerable<int> ClientTypes { get; set; }
-        [DataMember(Name = Constants.SearchResponseNames.StartIndex)]
+        [DataMember(Name = SharedConstants.SearchResponseNames.StartIndex)]
         public int StartIndex { get; set; }
-        [DataMember(Name = Constants.SearchResponseNames.TotalResults)]
+        [DataMember(Name = SharedConstants.SearchResponseNames.TotalResults)]
         public int NbResults { get; set; }
-        [DataMember(Name = Constants.SearchClientNames.Order)]
+        [DataMember(Name = SharedConstants.SearchClientNames.Order)]
         public OrderRequest Order { get; set; }
     }
 }

@@ -14,7 +14,7 @@ namespace SimpleIdentityServer.Manager.Host.Tests
 
     public class ClientFixture //: IClassFixture<TestManagerServerFixture>
     {
-        private const string OpenidmanagerConfiguration = "http://localhost:5000/.well-known/openidmanager-configuration";
+        private const string OpenidmanagerConfiguration = "http://localhost:5000/.well-known/openid-configuration";
         private readonly TestManagerServerFixture _server;
         private IOpenIdClients _openidClients;
 
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Manager.Host.Tests
         //    InitializeFakeObjects();
 
         //    var result = await _openidClients.ResolveAdd(
-        //            new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+        //            new Uri("http://localhost:5000/.well-known/openid-configuration"),
         //            new Client
         //            {
         //                RedirectionUrls = new List<string> { "invalid_redirect_uri" },
@@ -92,7 +92,7 @@ namespace SimpleIdentityServer.Manager.Host.Tests
         //    InitializeFakeObjects();
 
         //    var result = await _openidClients.ResolveAdd(
-        //            new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+        //            new Uri("http://localhost:5000/.well-known/openid-configuration"),
         //            new Client
         //            {
         //                RedirectUris = new List<string> { "http://localhost" },

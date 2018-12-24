@@ -25,7 +25,7 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
         {
             if (options == null)
             {
-                throw new ArgumentNullException("options");
+                throw new ArgumentNullException(nameof(options));
             }
 
             return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>(options);

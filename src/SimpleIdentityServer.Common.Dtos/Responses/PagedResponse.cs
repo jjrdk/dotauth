@@ -7,11 +7,11 @@
     [DataContract]
     public class PagedResponse<T>
     {
-        [DataMember(Name = Constants.SearchResponseNames.TotalResults)]
+        [DataMember(Name = SharedConstants.SearchResponseNames.TotalResults)]
         public int TotalResults { get; set; }
-        [DataMember(Name = Constants.SearchResponseNames.StartIndex)]
+        [DataMember(Name = SharedConstants.SearchResponseNames.StartIndex)]
         public int StartIndex { get; set; }
-        [DataMember(Name = Constants.SearchResponseNames.Content)]
+        [DataMember(Name = SharedConstants.SearchResponseNames.Content)]
         public IEnumerable<T> Content { get; set; }
     }
 }

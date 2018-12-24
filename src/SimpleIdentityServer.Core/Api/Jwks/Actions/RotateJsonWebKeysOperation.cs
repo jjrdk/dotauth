@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
     using Jwt;
-    using Jwt.Extensions;
+    using Shared;
     using Shared.Repositories;
 
     public class RotateJsonWebKeysOperation : IRotateJsonWebKeysOperation
@@ -29,21 +29,21 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
                 return false;
             }
 
-            foreach(var jsonWebKey in jsonWebKeys)
+            foreach (var jsonWebKey in jsonWebKeys)
             {
                 string serializedRsa;
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     using (var provider = new RSACryptoServiceProvider())
                     {
-                        serializedRsa = provider.ToXmlStringNetCore(true);
+                        serializedRsa = RsaExtensions.ToXmlString(provider, true);
                     }
                 }
                 else
                 {
                     using (var rsa = new RSAOpenSsl())
                     {
-                        serializedRsa = rsa.ToXmlStringNetCore(true);
+                        serializedRsa = RsaExtensions.ToXmlString(rsa, true);
                     }
                 }
 

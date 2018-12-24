@@ -6,9 +6,9 @@
     [DataContract]
     public class ResponseClientSecret
     {
-        [DataMember(Name = Constants.ClientSecretNames.Type)]
+        [DataMember(Name = SharedConstants.ClientSecretNames.Type)]
         public ClientSecretTypes Type { get; set; }
-        [DataMember(Name = Constants.ClientSecretNames.Value)]
+        [DataMember(Name = SharedConstants.ClientSecretNames.Value)]
         public string Value { get; set; }
     }
 }

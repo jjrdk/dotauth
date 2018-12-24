@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Core.Translation
         {
             if (translationCodes == null)
             {
-                throw new ArgumentNullException("translationCodes");
+                throw new ArgumentNullException(nameof(translationCodes));
             }
 
             var preferredLanguage = await GetPreferredLanguage(concatenateListOfCodeLanguages).ConfigureAwait(false);

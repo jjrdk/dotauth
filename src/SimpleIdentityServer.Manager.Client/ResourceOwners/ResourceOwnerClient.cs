@@ -45,7 +45,7 @@
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
             return await _addResourceOwnerOperation
-                .ExecuteAsync(new Uri(configuration.Content.ResourceOwnersEndpoint), request, authorizationHeaderValue)
+                .ExecuteAsync(new Uri(configuration.Content.ResourceOwners), request, authorizationHeaderValue)
                 .ConfigureAwait(false);
         }
 
@@ -56,7 +56,7 @@
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
             return await _updateResourceOwnerClaimsOperation
-                .ExecuteAsync(new Uri(configuration.Content.ResourceOwnersEndpoint + "/claims"),
+                .ExecuteAsync(new Uri(configuration.Content.ResourceOwners + "/claims"),
                     request,
                     authorizationHeaderValue)
                 .ConfigureAwait(false);
@@ -69,7 +69,7 @@
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
             return await _updateResourceOwnerPasswordOperation
-                .ExecuteAsync(new Uri(configuration.Content.ResourceOwnersEndpoint + "/password"),
+                .ExecuteAsync(new Uri(configuration.Content.ResourceOwners + "/password"),
                     request,
                     authorizationHeaderValue)
                 .ConfigureAwait(false);
@@ -82,7 +82,7 @@
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
             return await _getResourceOwnerOperation
-                .ExecuteAsync(new Uri(configuration.Content.ResourceOwnersEndpoint + "/" + resourceOwnerId),
+                .ExecuteAsync(new Uri(configuration.Content.ResourceOwners + "/" + resourceOwnerId),
                     authorizationHeaderValue)
                 .ConfigureAwait(false);
         }
@@ -94,7 +94,7 @@
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
             return await _deleteResourceOwnerOperation
-                .ExecuteAsync(new Uri(configuration.Content.ResourceOwnersEndpoint + "/" + resourceOwnerId),
+                .ExecuteAsync(new Uri(configuration.Content.ResourceOwners + "/" + resourceOwnerId),
                     authorizationHeaderValue)
                 .ConfigureAwait(false);
         }
@@ -104,7 +104,7 @@
         {
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
-            return await GetAll(new Uri(configuration.Content.ResourceOwnersEndpoint), authorizationHeaderValue)
+            return await GetAll(new Uri(configuration.Content.ResourceOwners), authorizationHeaderValue)
                 .ConfigureAwait(false);
         }
 
@@ -120,7 +120,7 @@
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
             return await _searchResourceOwnersOperation
-                .ExecuteAsync(new Uri(configuration.Content.ResourceOwnersEndpoint + "/.search"),
+                .ExecuteAsync(new Uri(configuration.Content.ResourceOwners + "/.search"),
                     searchResourceOwnersRequest,
                     authorizationHeaderValue)
                 .ConfigureAwait(false);

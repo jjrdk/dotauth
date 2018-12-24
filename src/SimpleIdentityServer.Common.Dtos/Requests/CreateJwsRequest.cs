@@ -23,25 +23,25 @@ namespace SimpleIdentityServer.Shared.Requests
         /// <summary>
         /// Gets or sets the JSON WEB KEY KID
         /// </summary>
-        [DataMember(Name = Constants.CreateJwsRequestNames.Kid)]
+        [DataMember(Name = SharedConstants.CreateJwsRequestNames.Kid)]
         public string Kid { get; set; }
 
         /// <summary>
         /// Gets or sets the sign alg
         /// </summary>
-        [DataMember(Name = Constants.CreateJwsRequestNames.Alg)]
+        [DataMember(Name = SharedConstants.CreateJwsRequestNames.Alg)]
         public JwsAlg Alg { get; set; }
 
         /// <summary>
         /// Gets or sets the JWKS URL
         /// </summary>
-        [DataMember(Name = Constants.CreateJwsRequestNames.Url)]
+        [DataMember(Name = SharedConstants.CreateJwsRequestNames.Url)]
         public string Url { get; set; }
 
         /// <summary>
         /// Gets or sets the Payload
         /// </summary>
-        [DataMember(Name = Constants.CreateJwsRequestNames.Payload)]
+        [DataMember(Name = SharedConstants.CreateJwsRequestNames.Payload)]
         public JwsPayload Payload { get; set; }
     }
 }

@@ -20,13 +20,13 @@ namespace SimpleIdentityServer.Shared.Requests
     [DataContract]
     public class GetJweRequest
     {
-        [DataMember(Name = Constants.GetJweRequestNames.Jwe)]
+        [DataMember(Name = SharedConstants.GetJweRequestNames.Jwe)]
         public string Jwe { get; set; }
 
-        [DataMember(Name = Constants.GetJweRequestNames.Url)]
+        [DataMember(Name = SharedConstants.GetJweRequestNames.Url)]
         public string Url { get; set; }
 
-        [DataMember(Name = Constants.GetJweRequestNames.Password)]
+        [DataMember(Name = SharedConstants.GetJweRequestNames.Password)]
         public string Password { get; set; }
     }
 }

@@ -33,14 +33,15 @@
             _getAllClaimsOperation = getAllClaimsOperation;
         }
 
-        public async Task<BaseResponse> Add(Uri wellKnownConfigurationUri,
+        public async Task<BaseResponse> Add(
+            Uri wellKnownConfigurationUri,
             ClaimResponse claim,
             string authorizationHeaderValue = null)
         {
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
             return await _addClaimOperation
-                .ExecuteAsync(new Uri(configuration.Content.ClaimsEndpoint), claim, authorizationHeaderValue)
+                .ExecuteAsync(new Uri(configuration.Content.Claims), claim, authorizationHeaderValue)
                 .ConfigureAwait(false);
         }
 
@@ -51,7 +52,7 @@
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
             return await _getClaimOperation
-                .ExecuteAsync(new Uri(configuration.Content.ClaimsEndpoint + "/" + claimId), authorizationHeaderValue)
+                .ExecuteAsync(new Uri(configuration.Content.Claims + "/" + claimId), authorizationHeaderValue)
                 .ConfigureAwait(false);
         }
 
@@ -62,7 +63,7 @@
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
             return await _deleteClaimOperation
-                .ExecuteAsync(new Uri(configuration.Content.ClaimsEndpoint + "/" + claimId), authorizationHeaderValue)
+                .ExecuteAsync(new Uri(configuration.Content.Claims + "/" + claimId), authorizationHeaderValue)
                 .ConfigureAwait(false);
         }
 
@@ -72,7 +73,7 @@
         {
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
-            return await _searchClaimsOperation.ExecuteAsync(new Uri(configuration.Content.ClaimsEndpoint + "/.search"),
+            return await _searchClaimsOperation.ExecuteAsync(new Uri(configuration.Content.Claims + "/.search"),
                     searchClaimsRequest,
                     authorizationHeaderValue)
                 .ConfigureAwait(false);
@@ -84,7 +85,7 @@
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
             return await _getAllClaimsOperation
-                .ExecuteAsync(new Uri(configuration.Content.ClaimsEndpoint), authorizationHeaderValue)
+                .ExecuteAsync(new Uri(configuration.Content.Claims), authorizationHeaderValue)
                 .ConfigureAwait(false);
         }
     }

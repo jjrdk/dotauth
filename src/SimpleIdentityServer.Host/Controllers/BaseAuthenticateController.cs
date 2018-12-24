@@ -334,10 +334,8 @@ namespace SimpleIdentityServer.Host.Controllers
                 var result = this.CreateRedirectionFromActionResult(actionResult, request);
                 return result;
             }
-            else
-            {
-                await SetLocalCookie(authenticatedUser.Claims, Guid.NewGuid().ToString()).ConfigureAwait(false);
-            }
+
+            await SetLocalCookie(authenticatedUser.Claims, Guid.NewGuid().ToString()).ConfigureAwait(false);
 
             // 7. Redirect the user agent to the User view.
             return RedirectToAction("Index", "User", new { area = "UserManagement" });
@@ -383,7 +381,7 @@ namespace SimpleIdentityServer.Host.Controllers
         {
             if (string.IsNullOrWhiteSpace(code))
             {
-                throw new ArgumentNullException("code");
+                throw new ArgumentNullException(nameof(code));
             }
 
             // 1. Persist the request code into a cookie & fix the space problems

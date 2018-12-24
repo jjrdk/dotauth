@@ -22,25 +22,25 @@ namespace SimpleIdentityServer.Shared.Responses
     [DataContract]
     public class ResourceOwnerResponse
     {
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.Login)]
+        [DataMember(Name = SharedConstants.ResourceOwnerResponseNames.Login)]
         public string Login { get; set; }
 
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.Password)]
+        [DataMember(Name = SharedConstants.ResourceOwnerResponseNames.Password)]
         public string Password { get; set; }
 
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.IsLocalAccount)]
+        [DataMember(Name = SharedConstants.ResourceOwnerResponseNames.IsLocalAccount)]
         public bool IsLocalAccount { get; set; }
 
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.TwoFactorAuthentication)]
+        [DataMember(Name = SharedConstants.ResourceOwnerResponseNames.TwoFactorAuthentication)]
         public string TwoFactorAuthentication { get; set; }
 
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.Claims)]
+        [DataMember(Name = SharedConstants.ResourceOwnerResponseNames.Claims)]
         public List<KeyValuePair<string, string>> Claims { get; set; }
 
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.CreateDateTime)]
+        [DataMember(Name = SharedConstants.ResourceOwnerResponseNames.CreateDateTime)]
         public DateTime CreateDateTime { get; set; }
 
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.UpdateDateTime)]
+        [DataMember(Name = SharedConstants.ResourceOwnerResponseNames.UpdateDateTime)]
         public DateTime UpdateDateTime { get; set; }
     }
 }

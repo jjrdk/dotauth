@@ -6,10 +6,10 @@
     [DataContract]
     public class OrderRequest
     {
-        [DataMember(Name = Constants.OrderRequestNames.Target)]
+        [DataMember(Name = SharedConstants.OrderRequestNames.Target)]
         public string Target { get; set; }
 
-        [DataMember(Name = Constants.OrderRequestNames.Type)]
+        [DataMember(Name = SharedConstants.OrderRequestNames.Type)]
         public int Type { get; set; }
     }
 }

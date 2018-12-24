@@ -1,16 +1,16 @@
 ﻿namespace SimpleIdentityServer.Shared
 {
-    internal static class Constants
+    internal static class SharedConstants
     {
         public static class ConfigurationResponseNames
         {
-            public const string JwsEndpoint = "jws_endpoint";
-            public const string JweEndpoint = "jwe_endpoint";
-            public const string ClientsEndpoint = "clients_endpoint";
-            public const string ScopesEndpoint = "scopes_endpoint";
-            public const string ResourceOwnersEndpoint = "resourceowners_endpoint";
-            public const string ManageEndpoint = "manage_endpoint";
-            public const string ClaimsEndpoint = "claims_endpoint";
+            public const string JwsEndpoint = "/jws";
+            public const string JweEndpoint = "/jwe";
+            public const string ClientsEndpoint = "/clients";
+            public const string ScopesEndpoint = "/scopes";
+            public const string ResourceOwnersEndpoint = "/resource_owners";
+            public const string ManageEndpoint = "/manage";
+            public const string ClaimsEndpoint = "/claims";
         }
 
         public static class ClaimResponseNames

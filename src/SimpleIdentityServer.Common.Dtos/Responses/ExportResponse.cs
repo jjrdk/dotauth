@@ -21,7 +21,7 @@ namespace SimpleIdentityServer.Shared.Responses
     [DataContract]
     public class ExportResponse
     {
-        [DataMember(Name = Constants.ExportResponseNames.Clients)]
+        [DataMember(Name = SharedConstants.ExportResponseNames.Clients)]
         public IEnumerable<ClientResponse> Clients { get; set; }
     }
 }

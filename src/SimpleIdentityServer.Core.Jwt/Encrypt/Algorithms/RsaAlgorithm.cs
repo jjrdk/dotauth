@@ -17,7 +17,6 @@ using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
 {
-    using Extensions;
     using Shared;
 
     public class RsaAlgorithm : IAlgorithm
@@ -37,38 +36,34 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
             {
                 using (var rsa = new RSACryptoServiceProvider())
                 {
-                    rsa.FromXmlStringNetCore(jsonWebKey.SerializedKey);
+                    RsaExtensions.FromXmlString(rsa, jsonWebKey.SerializedKey);
                     return rsa.Encrypt(toBeEncrypted, _oaep);
                 }
             }
-            else
+
+            using (var rsa = new RSAOpenSsl())
             {
-                using (var rsa = new RSAOpenSsl())
-                {
-                    rsa.FromXmlStringNetCore(jsonWebKey.SerializedKey);
-                    return rsa.Encrypt(toBeEncrypted, RSAEncryptionPadding.Pkcs1);
-                }
+                RsaExtensions.FromXmlString(rsa, jsonWebKey.SerializedKey);
+                return rsa.Encrypt(toBeEncrypted, RSAEncryptionPadding.Pkcs1);
             }
         }
         public byte[] Decrypt(
-            byte[] toBeDecrypted, 
+            byte[] toBeDecrypted,
             JsonWebKey jsonWebKey)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 using (var rsa = new RSACryptoServiceProvider())
                 {
-                    rsa.FromXmlStringNetCore(jsonWebKey.SerializedKey);
+                    RsaExtensions.FromXmlString(rsa, jsonWebKey.SerializedKey);
                     return rsa.Decrypt(toBeDecrypted, _oaep);
                 }
             }
-            else
+
+            using (var rsa = new RSAOpenSsl())
             {
-                using (var rsa = new RSAOpenSsl())
-                {
-                    rsa.FromXmlStringNetCore(jsonWebKey.SerializedKey);
-                    return rsa.Decrypt(toBeDecrypted, RSAEncryptionPadding.Pkcs1);
-                }
+                RsaExtensions.FromXmlString(rsa, jsonWebKey.SerializedKey);
+                return rsa.Decrypt(toBeDecrypted, RSAEncryptionPadding.Pkcs1);
             }
         }
     }

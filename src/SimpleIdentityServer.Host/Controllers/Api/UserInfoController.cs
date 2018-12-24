@@ -146,10 +146,8 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             {
                 return string.Empty;
             }
-            else
-            {
-                return record.Value.First();
-            }
+
+            return record.Value.First();
         }
     }
 }

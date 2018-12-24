@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
-    using Jwt.Extensions;
     using Shared;
     using Shared.Repositories;
 
@@ -29,14 +28,14 @@ namespace SimpleIdentityServer.Core.Repositories
             {
                 using (var provider = new RSACryptoServiceProvider())
                 {
-                    serializedRsa = provider.ToXmlStringNetCore(true);
+                    serializedRsa = RsaExtensions.ToXmlString(provider, true);
                 }
             }
             else
             {
                 using (var rsa = new RSAOpenSsl())
                 {
-                    serializedRsa = rsa.ToXmlStringNetCore(true);
+                    serializedRsa = RsaExtensions.ToXmlString(rsa, true);
                 }
             }
 
@@ -124,7 +123,7 @@ namespace SimpleIdentityServer.Core.Repositories
             {
                 throw new ArgumentNullException(nameof(jsonWebKey));
             }
-            
+
             _jsonWebKeys.Add(jsonWebKey.Copy());
             return Task.FromResult(true);
         }

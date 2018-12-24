@@ -31,8 +31,9 @@ namespace SimpleIdentityServer.Host.Controllers
     using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Core;
 
-    [Route(HostEnpoints.ResourceOwners)]
+    [Route(CoreConstants.EndPoints.ResourceOwners)]
     public class ResourceOwnersController : Controller
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

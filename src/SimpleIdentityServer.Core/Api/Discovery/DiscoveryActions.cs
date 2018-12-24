@@ -16,13 +16,13 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Discovery
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using Authorization;
     using Shared.Models;
     using Shared.Repositories;
     using Shared.Responses;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public class DiscoveryActions : IDiscoveryActions
     {
@@ -85,6 +85,13 @@ namespace SimpleIdentityServer.Core.Api.Discovery
             result.RegistrationEndPoint = registrationEndPoint;
             result.RevocationEndPoint = revocationEndPoint;
             result.IntrospectionEndPoint = introspectionEndPoint;
+            result.Jws = issuer + "/" + CoreConstants.EndPoints.Jws;
+            result.Jwe = issuer + "/" + CoreConstants.EndPoints.Jwe;
+            result.Clients = issuer + "/" + CoreConstants.EndPoints.Clients;
+            result.Scopes = issuer + "/" + CoreConstants.EndPoints.Scopes;
+            result.ResourceOwners = issuer + "/" + CoreConstants.EndPoints.ResourceOwners;
+            result.Manage = issuer + "/" + CoreConstants.EndPoints.Manage;
+            result.Claims = issuer + "/" + CoreConstants.EndPoints.Claims;
             result.Version = "1.0";
             result.CheckSessionEndPoint = checkSessionIframe;
             result.EndSessionEndPoint = endSessionEndPoint;

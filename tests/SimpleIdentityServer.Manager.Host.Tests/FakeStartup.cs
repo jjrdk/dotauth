@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Manager.Host.Tests
             var mvc = services.AddMvcCore(o => { }).AddJsonFormatters();
             var parts = mvc.PartManager.ApplicationParts;
             parts.Clear();
-            parts.Add(new AssemblyPart(typeof(ConfigurationController).GetTypeInfo().Assembly));
+            parts.Add(new AssemblyPart(typeof(JweController).GetTypeInfo().Assembly));
             return services.BuildServiceProvider();
         }
 
@@ -54,6 +54,11 @@ namespace SimpleIdentityServer.Manager.Host.Tests
 
         private void RegisterServices(IServiceCollection serviceCollection)
         {
+            serviceCollection.AddSingleton(new ScimOptions
+            {
+                IsEnabled = true,
+                EndPoint = "http://localhost:5555/"
+            });
             serviceCollection.AddSingleton<IOpenIdEventSource, OpenIdEventSource>();
             serviceCollection.AddSimpleIdentityServerCore(resourceOwners: DefaultStorage.GetUsers());
             serviceCollection.AddSimpleIdentityServerManagerCore();

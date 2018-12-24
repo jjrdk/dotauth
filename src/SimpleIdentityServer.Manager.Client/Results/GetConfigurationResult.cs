@@ -5,6 +5,6 @@
 
     public class GetConfigurationResult : BaseResponse
     {
-	    public ConfigurationResponse Content { get; set; }
+	    public DiscoveryInformation Content { get; set; }
     }
 }

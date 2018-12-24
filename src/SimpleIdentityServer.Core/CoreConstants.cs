@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Core
 
             // Namespace for the custom Assurance Level
             public static string OpenIdCustomAuthLevel = "openid.pape.auth_level.ns";
-            
+
             public static string OpenIdPreferredCustomAuthLevel = "openid.pape.preferred_auth_levels";
         }
 
@@ -318,7 +318,7 @@ namespace SimpleIdentityServer.Core
                 new List<ResponseType>
                 {
                     ResponseType.id_token
-                }, 
+                },
                 AuthorizationFlow.ImplicitFlow
             },
             {
@@ -326,7 +326,7 @@ namespace SimpleIdentityServer.Core
                 {
                     ResponseType.id_token,
                     ResponseType.token
-                }, 
+                },
                 AuthorizationFlow.ImplicitFlow
             },
             {
@@ -334,7 +334,7 @@ namespace SimpleIdentityServer.Core
                 {
                     ResponseType.code,
                     ResponseType.id_token
-                }, 
+                },
                 AuthorizationFlow.HybridFlow
             },
             {
@@ -351,7 +351,7 @@ namespace SimpleIdentityServer.Core
                     ResponseType.code,
                     ResponseType.id_token,
                     ResponseType.token
-                }, 
+                },
                 AuthorizationFlow.HybridFlow
             }
         };
@@ -391,12 +391,12 @@ namespace SimpleIdentityServer.Core
                 GrantType.password,
                 GrantType.refresh_token,
                 GrantType.@implicit
-            }; 
+            };
 
             public static List<string> SupportedResponseModes = new List<string>
             {
                 "query"
-            }; 
+            };
 
             public static List<string> SupportedSubjectTypes = new List<string>
             {
@@ -408,12 +408,12 @@ namespace SimpleIdentityServer.Core
             public static List<string> SupportedJwsAlgs = new List<string>
             {
                 Jwt.JwtConstants.JwsAlgNames.RS256
-            }; 
+            };
 
             public static List<string> SupportedJweAlgs = new List<string>
             {
                 Jwt.JwtConstants.JweAlgNames.RSA1_5
-            }; 
+            };
 
             public static List<string> SupportedJweEncs = new List<string>
             {
@@ -458,6 +458,13 @@ namespace SimpleIdentityServer.Core
 
         public static class EndPoints
         {
+            public const string Jws = "jws";
+            public const string Jwe = "jwe";
+            public const string Clients = "clients";
+            public const string Scopes = "scopes";
+            public const string ResourceOwners = "resource_owners";
+            public const string Manage = "manage";
+            public const string Claims = "claims";
             public const string DiscoveryAction = ".well-known/openid-configuration";
             public const string Authorization = "authorization";
             public const string Token = "token";
@@ -470,9 +477,9 @@ namespace SimpleIdentityServer.Core
             public const string CheckSession = "check_session";
             public const string EndSession = "end_session";
             public const string EndSessionCallback = "end_session_callback";
-            public const string Get401 = "Error/401";
-            public const string Get404 = "Error/404";
-            public const string Get500 = "Error/500";
+            public const string Get401 = "error/401";
+            public const string Get404 = "error/404";
+            public const string Get500 = "error/500";
         }
     }
 }

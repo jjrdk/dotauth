@@ -37,7 +37,7 @@
 
                 return new GetConfigurationResult
                 {
-                    Content = JsonConvert.DeserializeObject<ConfigurationResponse>(content)
+                    Content = JsonConvert.DeserializeObject<DiscoveryInformation>(content)
                 };
             }
             catch (Exception)

@@ -45,7 +45,7 @@
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
             return await _addClientOperation
-                .ExecuteAsync(new Uri(configuration.Content.ClientsEndpoint), client, authorizationHeaderValue)
+                .ExecuteAsync(new Uri(configuration.Content.Clients), client, authorizationHeaderValue)
                 .ConfigureAwait(false);
         }
 
@@ -56,7 +56,7 @@
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
             return await _updateClientOperation
-                .ExecuteAsync(new Uri(configuration.Content.ClientsEndpoint), client, authorizationHeaderValue)
+                .ExecuteAsync(new Uri(configuration.Content.Clients), client, authorizationHeaderValue)
                 .ConfigureAwait(false);
         }
 
@@ -67,7 +67,7 @@
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
             return await _getClientOperation
-                .ExecuteAsync(new Uri(configuration.Content.ClientsEndpoint + "/" + clientId), authorizationHeaderValue)
+                .ExecuteAsync(new Uri(configuration.Content.Clients + "/" + clientId), authorizationHeaderValue)
                 .ConfigureAwait(false);
         }
 
@@ -78,7 +78,7 @@
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
             return await _deleteClientOperation
-                .ExecuteAsync(new Uri(configuration.Content.ClientsEndpoint + "/" + clientId), authorizationHeaderValue)
+                .ExecuteAsync(new Uri(configuration.Content.Clients + "/" + clientId), authorizationHeaderValue)
                 .ConfigureAwait(false);
         }
 
@@ -92,7 +92,7 @@
         {
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
-            return await GetAll(new Uri(configuration.Content.ClientsEndpoint), authorizationHeaderValue)
+            return await GetAll(new Uri(configuration.Content.Clients), authorizationHeaderValue)
                 .ConfigureAwait(false);
         }
 
@@ -103,7 +103,7 @@
             var configuration =
                 await _configurationClient.ExecuteAsync(wellKnownConfigurationUri).ConfigureAwait(false);
             return await _searchClientOperation
-                .ExecuteAsync(new Uri(configuration.Content.ClientsEndpoint + "/.search"),
+                .ExecuteAsync(new Uri(configuration.Content.Clients + "/.search"),
                     searchClientParameter,
                     authorizationHeaderValue)
                 .ConfigureAwait(false);

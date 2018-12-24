@@ -7,13 +7,13 @@
     [DataContract]
     public class SearchScopesResponse
     {
-        [DataMember(Name = Constants.SearchResponseNames.Content)]
+        [DataMember(Name = SharedConstants.SearchResponseNames.Content)]
         public IEnumerable<ScopeResponse> Content { get; set; }
 
-        [DataMember(Name = Constants.SearchResponseNames.TotalResults)]
+        [DataMember(Name = SharedConstants.SearchResponseNames.TotalResults)]
         public int TotalResults { get; set; }
 
-        [DataMember(Name = Constants.SearchResponseNames.StartIndex)]
+        [DataMember(Name = SharedConstants.SearchResponseNames.StartIndex)]
         public int StartIndex { get; set; }
     }
 }

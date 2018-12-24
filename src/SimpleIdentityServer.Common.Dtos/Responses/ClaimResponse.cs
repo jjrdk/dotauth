@@ -7,16 +7,16 @@
     [DataContract]
     public class ClaimResponse
     {
-        [DataMember(Name = Constants.ClaimResponseNames.Code)]
+        [DataMember(Name = SharedConstants.ClaimResponseNames.Code)]
         public string Code { get; set; }
 
-        [DataMember(Name = Constants.ClaimResponseNames.IsIdentifier)]
+        [DataMember(Name = SharedConstants.ClaimResponseNames.IsIdentifier)]
         public bool IsIdentifier  { get; set; }
 
-        [DataMember(Name = Constants.ClaimResponseNames.CreateDateTime)]
+        [DataMember(Name = SharedConstants.ClaimResponseNames.CreateDateTime)]
         public DateTime CreateDateTime { get; set; }
 
-        [DataMember(Name = Constants.ClaimResponseNames.UpdateDateTime)]
+        [DataMember(Name = SharedConstants.ClaimResponseNames.UpdateDateTime)]
         public DateTime UpdateDateTime { get; set; }
     }
 }

@@ -27,8 +27,9 @@ namespace SimpleIdentityServer.Host.Controllers
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
+    using Core;
 
-    [Route(HostEnpoints.Clients)]
+    [Route(CoreConstants.EndPoints.Clients)]
     public class ClientsController : Controller
     {
         private readonly IClientStore _clientStore;

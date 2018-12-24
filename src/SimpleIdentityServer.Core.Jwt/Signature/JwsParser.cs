@@ -148,7 +148,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         {
             if (string.IsNullOrWhiteSpace(jws))
             {
-                throw new ArgumentNullException("jws");
+                throw new ArgumentNullException(nameof(jws));
             }
 
             var parts = GetParts(jws);

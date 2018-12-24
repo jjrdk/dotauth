@@ -10,6 +10,7 @@
 
     public class ClaimsFixture : IClassFixture<TestManagerServerFixture>
     {
+        private const string WellKnownOpenidConfiguration = "http://localhost:5000/.well-known/openid-configuration";
         private readonly TestManagerServerFixture _server;
         private IClaimsClient _claimsClient;
 
@@ -23,15 +24,15 @@
         {
             InitializeFakeObjects();
             var result = await _claimsClient.Add(
-                new Uri("http://localhost:5000/.well-known/openidmanager-configuration"),
+                new Uri(WellKnownOpenidConfiguration),
                 new ClaimResponse
                 {
                     Code = "code"
                 }).ConfigureAwait(false);
 
-            var getAllResult = await _claimsClient.GetAll(new Uri("http://localhost:5000/.well-known/openidmanager-configuration")).ConfigureAwait(false);
+            var getAllResult = await _claimsClient.GetAll(new Uri(WellKnownOpenidConfiguration)).ConfigureAwait(false);
 
-                        Assert.False(getAllResult.ContainsError);
+            Assert.False(getAllResult.ContainsError);
             Assert.True(getAllResult.Content.Any());
         }
 
