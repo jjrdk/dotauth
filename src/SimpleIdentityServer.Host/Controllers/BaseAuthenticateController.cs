@@ -25,7 +25,6 @@ namespace SimpleIdentityServer.Host.Controllers
     using Core.WebSite.Authenticate.Common;
     using Core.WebSite.User.Actions;
     using Extensions;
-    using Logging;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Http;
@@ -43,6 +42,7 @@ namespace SimpleIdentityServer.Host.Controllers
     using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Core.Logging;
     using ViewModels;
     using Website;
 

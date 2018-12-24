@@ -26,8 +26,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
 {
-    using Logging;
     using Moq;
+    using SimpleIdentityServer.Core.Logging;
 
     public class AddResourceSetActionFixture
     {

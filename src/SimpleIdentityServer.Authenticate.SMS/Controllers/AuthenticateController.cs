@@ -3,7 +3,6 @@
     using Core.WebSite.User.Actions;
     using Host.Controllers;
     using Host.ViewModels;
-    using Logging;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Mvc;
@@ -26,6 +25,7 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Core.Logging;
     using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;

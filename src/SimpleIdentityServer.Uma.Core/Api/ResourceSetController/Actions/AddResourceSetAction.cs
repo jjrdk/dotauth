@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
-    using Logging;
+    using SimpleIdentityServer.Core.Logging;
 
     internal class AddResourceSetAction : IAddResourceSetAction
     {

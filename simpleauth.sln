@@ -85,8 +85,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Manage
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Manager.Client", "src\SimpleIdentityServer.Manager.Client\SimpleIdentityServer.Manager.Client.csproj", "{C77BE523-DC6C-4BC8-BCE6-63B3F8D11D65}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Logging", "src\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj", "{AFC46E4C-E3D3-45DD-AD72-FD11F506C250}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -322,12 +320,6 @@ Global
 		{C77BE523-DC6C-4BC8-BCE6-63B3F8D11D65}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{C77BE523-DC6C-4BC8-BCE6-63B3F8D11D65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C77BE523-DC6C-4BC8-BCE6-63B3F8D11D65}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AFC46E4C-E3D3-45DD-AD72-FD11F506C250}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AFC46E4C-E3D3-45DD-AD72-FD11F506C250}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AFC46E4C-E3D3-45DD-AD72-FD11F506C250}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
-		{AFC46E4C-E3D3-45DD-AD72-FD11F506C250}.Fake|Any CPU.Build.0 = Debug|Any CPU
-		{AFC46E4C-E3D3-45DD-AD72-FD11F506C250}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AFC46E4C-E3D3-45DD-AD72-FD11F506C250}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -371,7 +363,6 @@ Global
 		{6362CEB3-1482-444B-A46D-9DC033EBA41D} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{3169E9F3-56CA-46EE-A674-DA84E0FAA6EC} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{C77BE523-DC6C-4BC8-BCE6-63B3F8D11D65} = {BFFECB1F-3326-4B55-9180-58674B3FF5D0}
-		{AFC46E4C-E3D3-45DD-AD72-FD11F506C250} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}

@@ -14,7 +14,7 @@
 
 namespace SimpleIdentityServer.Uma.Host.Middlewares
 {
-    using Logging;
+    using SimpleIdentityServer.Core.Logging;
 
     public class ExceptionHandlerMiddlewareOptions
     {

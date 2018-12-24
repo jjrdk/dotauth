@@ -30,7 +30,6 @@ namespace SimpleIdentityServer.Host.Tests
     using MiddleWares;
     using Services;
     using Stores;
-    using Logging;
     using SimpleIdentityServer.UserManagement.Controllers;
     using System;
     using System.Collections.Generic;
@@ -42,6 +41,7 @@ namespace SimpleIdentityServer.Host.Tests
     using Extensions;
     using System.Net.Http;
     using Client;
+    using Core.Logging;
     using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
