@@ -22,9 +22,9 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
     using Logging;
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public class AddUserOperation : IAddUserOperation
     {

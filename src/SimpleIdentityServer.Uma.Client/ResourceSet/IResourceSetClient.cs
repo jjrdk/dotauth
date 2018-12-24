@@ -3,7 +3,7 @@
     using System.Threading.Tasks;
     using Common.DTOs;
     using Results;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public interface IResourceSetClient
     {

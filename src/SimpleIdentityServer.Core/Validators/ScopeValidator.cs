@@ -19,7 +19,7 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Validators
 {
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     internal class ScopeValidator : IScopeValidator
     {

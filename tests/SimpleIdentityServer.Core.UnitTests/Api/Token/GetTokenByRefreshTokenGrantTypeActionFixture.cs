@@ -29,8 +29,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
     using System.Collections.Generic;
     using Jwt;
     using Logging;
-    using Shared;
-    using Shared.Models;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
     {

@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     [Route(Constants.RouteValues.Policies)]
     public class PoliciesController : Controller

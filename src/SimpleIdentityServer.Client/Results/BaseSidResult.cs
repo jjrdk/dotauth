@@ -2,7 +2,7 @@
 
 namespace SimpleIdentityServer.Client.Results
 {
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     public class BaseSidResult
     {

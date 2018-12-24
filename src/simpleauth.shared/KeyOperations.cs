@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Shared
+﻿namespace SimpleAuth.Shared
 {
     /// <summary>
     /// Identifies the operation(s) that the key is itended to be user for

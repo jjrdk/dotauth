@@ -16,11 +16,11 @@ namespace SimpleIdentityServer.Core.Api.Jws.Actions
 {
     using Errors;
     using Exceptions;
-    using Shared;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Cryptography;
+    using SimpleAuth.Shared;
 
     public class JsonWebKeyEnricher : IJsonWebKeyEnricher
     {

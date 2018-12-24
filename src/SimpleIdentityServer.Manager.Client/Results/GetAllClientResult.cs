@@ -2,8 +2,8 @@
 
 namespace SimpleIdentityServer.Manager.Client.Results
 {
-    using Shared;
-    using Shared.Responses;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
 
     public class GetAllClientResult : BaseResponse
     {

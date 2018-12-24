@@ -32,10 +32,10 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Mvc;
     using Parsers;
-    using Shared.Requests;
-    using Shared.Responses;
-    using Shared.Serializers;
     using Core;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
+    using SimpleAuth.Shared.Serializers;
 
     [Route(Core.CoreConstants.EndPoints.Authorization)]
     public class AuthorizationController : Controller

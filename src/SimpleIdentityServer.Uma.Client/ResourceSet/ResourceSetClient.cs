@@ -19,7 +19,7 @@ namespace SimpleIdentityServer.Uma.Client.ResourceSet
     using Configuration;
     using Helpers;
     using Results;
-    using Shared;
+    using SimpleAuth.Shared;
 
     internal class ResourceSetClient : IResourceSetClient
     {

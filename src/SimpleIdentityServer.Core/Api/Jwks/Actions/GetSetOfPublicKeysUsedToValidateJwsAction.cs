@@ -19,8 +19,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
-    using Shared;
-    using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Repositories;
 
     public class GetSetOfPublicKeysUsedToValidateJwsAction : IGetSetOfPublicKeysUsedToValidateJwsAction
     {

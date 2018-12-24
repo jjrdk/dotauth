@@ -20,8 +20,8 @@ using Xunit;
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 {
     using Json;
-    using Shared;
-    using Shared.Requests;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
 
     public sealed class JwsGeneratorFixture
     {

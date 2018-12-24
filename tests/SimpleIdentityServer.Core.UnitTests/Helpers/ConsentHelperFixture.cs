@@ -9,8 +9,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public sealed class ConsentHelperFixture
     {

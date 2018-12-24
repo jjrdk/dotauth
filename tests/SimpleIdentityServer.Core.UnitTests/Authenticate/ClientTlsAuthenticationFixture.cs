@@ -20,7 +20,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 {
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public class ClientTlsAuthenticationFixture
     {

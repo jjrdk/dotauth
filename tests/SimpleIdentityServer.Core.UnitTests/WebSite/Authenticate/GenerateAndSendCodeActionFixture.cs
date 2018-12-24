@@ -28,9 +28,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
     using System.Threading;
     using Jwt;
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public class GenerateAndSendCodeActionFixture
     {

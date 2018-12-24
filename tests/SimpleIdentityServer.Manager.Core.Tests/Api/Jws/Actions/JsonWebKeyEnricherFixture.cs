@@ -14,13 +14,13 @@
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
 {
-    using Shared;
     using SimpleIdentityServer.Core.Api.Jws.Actions;
     using SimpleIdentityServer.Core.Errors;
     using SimpleIdentityServer.Core.Exceptions;
     using SimpleIdentityServer.Core.Jwt;
     using System;
     using System.Security.Cryptography;
+    using SimpleAuth.Shared;
     using Xunit;
 
     public class JsonWebKeyEnricherFixture

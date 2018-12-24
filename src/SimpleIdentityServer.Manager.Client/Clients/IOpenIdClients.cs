@@ -3,10 +3,10 @@
     using System;
     using System.Threading.Tasks;
     using Results;
-    using Shared;
-    using Shared.Models;
-    using Shared.Requests;
-    using Shared.Responses;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
 
     public interface IOpenIdClients
     {

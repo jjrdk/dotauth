@@ -23,9 +23,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
     using System.Threading;
     using Logging;
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public class AddUserOperationFixture
     {

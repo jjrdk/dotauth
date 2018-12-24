@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
-    using Shared;
-    using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Repositories;
 
     internal sealed class DefaultJsonWebKeyRepository : IJsonWebKeyRepository
     {

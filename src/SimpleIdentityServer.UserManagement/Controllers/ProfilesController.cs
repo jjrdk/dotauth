@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.UserManagement.Controllers
 {
     using Common.Requests;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     [Route("profiles")]
     public class ProfilesController : Controller

@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
     using System;
-    using Shared;
-    using Shared.Repositories;
-    using Shared.Requests;
-    using Shared.Serializers;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Serializers;
 
     public class SessionController : Controller
     {

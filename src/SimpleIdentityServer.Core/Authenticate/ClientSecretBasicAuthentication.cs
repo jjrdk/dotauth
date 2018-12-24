@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public class ClientSecretBasicAuthentication : IClientSecretBasicAuthentication
     {

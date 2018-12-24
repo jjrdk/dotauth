@@ -4,14 +4,14 @@
     using Exceptions;
     using Json;
     using Jwt;
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public class ClientFactory
     {

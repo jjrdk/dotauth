@@ -1,15 +1,15 @@
 ﻿namespace SimpleIdentityServer.Core.Repositories
 {
-    using Shared.Models;
-    using Shared.Parameters;
-    using Shared.Repositories;
-    using Shared.Results;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Parameters;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Results;
 
     internal sealed class DefaultClientRepository : IClientRepository, IClientStore
     {

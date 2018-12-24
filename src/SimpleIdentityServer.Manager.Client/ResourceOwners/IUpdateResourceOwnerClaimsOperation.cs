@@ -2,8 +2,8 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Shared;
-    using Shared.Requests;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
 
     public interface IUpdateResourceOwnerClaimsOperation
     {

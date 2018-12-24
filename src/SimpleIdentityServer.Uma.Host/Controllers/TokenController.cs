@@ -14,10 +14,10 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
-    using Shared.Models;
-    using Shared.Requests;
-    using Shared.Responses;
-    using Shared.Serializers;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
+    using SimpleAuth.Shared.Serializers;
 
     [Route(Constants.RouteValues.Token)]
     public class TokenController : Controller

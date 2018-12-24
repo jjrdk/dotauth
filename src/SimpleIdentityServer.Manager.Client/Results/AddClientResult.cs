@@ -1,7 +1,7 @@
 ﻿namespace SimpleIdentityServer.Manager.Client.Results
 {
-    using Shared;
-    using Shared.Models;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public class AddClientResult : BaseResponse
     {

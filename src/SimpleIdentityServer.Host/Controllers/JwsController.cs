@@ -20,8 +20,8 @@ namespace SimpleIdentityServer.Host.Controllers
     using Core.Api.Jws;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
-    using Shared.Requests;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
 
     [Route(CoreConstants.EndPoints.Jws)]
     public class JwsController : Controller

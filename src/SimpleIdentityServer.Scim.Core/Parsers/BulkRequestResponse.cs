@@ -1,7 +1,7 @@
 ﻿namespace SimpleIdentityServer.Scim.Core.Parsers
 {
-    using Shared.DTOs;
-    using Shared.Models;
+    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Models;
 
     public class BulkRequestResponse
     {

@@ -1,8 +1,8 @@
 ﻿namespace SimpleIdentityServer.Core.Api.Scopes.Actions
 {
     using System.Threading.Tasks;
-    using Shared.Parameters;
-    using Shared.Results;
+    using SimpleAuth.Shared.Parameters;
+    using SimpleAuth.Shared.Results;
 
     public interface ISearchScopesOperation
     {

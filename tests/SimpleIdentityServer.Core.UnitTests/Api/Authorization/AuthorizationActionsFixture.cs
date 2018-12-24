@@ -30,8 +30,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
     using Json;
     using Logging;
-    using Shared;
-    using Shared.Models;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public sealed class AuthorizationActionsFixture
     {

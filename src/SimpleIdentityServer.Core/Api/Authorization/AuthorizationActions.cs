@@ -27,8 +27,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization
 
     using Json;
     using Logging;
-    using Shared;
-    using Shared.Events.OAuth;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Events.OAuth;
 
     public class AuthorizationActions : IAuthorizationActions
     {

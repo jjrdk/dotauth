@@ -14,7 +14,7 @@
 
 namespace SimpleIdentityServer.Core.Parameters
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class CreateJwsParameter
     {

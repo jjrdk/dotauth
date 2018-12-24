@@ -9,9 +9,6 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.AspNetCore.Mvc.Routing;
-    using Shared;
-    using Shared.Models;
-    using Shared.Requests;
     using Actions;
     using ViewModels;
     using Core;
@@ -29,6 +26,9 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
 
     [Area(SmsConstants.AMR)]
     public class AuthenticateController : BaseAuthenticateController

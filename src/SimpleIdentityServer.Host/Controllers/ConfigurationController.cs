@@ -2,7 +2,6 @@
 {
     using Core;
     using Microsoft.AspNetCore.Mvc;
-    using Shared.Responses;
 
     //[Route(HostEnpoints.Configuration)]
     //public class ConfigurationController : Controller

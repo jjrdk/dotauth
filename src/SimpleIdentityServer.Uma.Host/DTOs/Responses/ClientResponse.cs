@@ -2,7 +2,7 @@
 
 namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
 {
-    using Shared.Requests;
+    using SimpleAuth.Shared.Requests;
 
     public class ClientResponse
     {

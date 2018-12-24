@@ -4,9 +4,8 @@
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-
-    using Shared;
-    using Shared.Responses;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
 
     internal sealed class DeleteClientOperation : IDeleteClientOperation
     {

@@ -19,8 +19,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Services
 {
-    using Shared;
-    using Shared.Models;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     internal class TwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandler
     {

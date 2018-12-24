@@ -31,9 +31,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
     using Jwt;
     using Logging;
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
     {

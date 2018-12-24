@@ -16,12 +16,12 @@ namespace SimpleIdentityServer.Host.Extensions
 {
     using Core;
     using Microsoft.Extensions.DependencyInjection;
-    using Shared;
-    using Shared.AccountFiltering;
-    using Shared.Repositories;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.AccountFiltering;
+    using SimpleAuth.Shared.Repositories;
 
     public static class ServiceCollectionExtension
     {

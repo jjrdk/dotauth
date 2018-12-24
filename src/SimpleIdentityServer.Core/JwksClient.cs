@@ -19,7 +19,7 @@ namespace SimpleIdentityServer.Core
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Shared.Requests;
+    using SimpleAuth.Shared.Requests;
 
     public class JwksClient : IJwksClient
     {

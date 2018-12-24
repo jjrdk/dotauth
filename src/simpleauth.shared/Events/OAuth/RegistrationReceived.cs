@@ -13,7 +13,7 @@
 // limitations under the License.
 
 
-namespace SimpleIdentityServer.Shared.Events.OAuth
+namespace SimpleAuth.Shared.Events.OAuth
 {
     public class RegistrationReceived : Event
     {

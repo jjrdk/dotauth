@@ -21,7 +21,7 @@ namespace SimpleIdentityServer.Client.Operations
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     internal class GetDiscoveryOperation : IGetDiscoveryOperation
     {

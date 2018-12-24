@@ -24,7 +24,7 @@ using static SimpleIdentityServer.Uma.Host.Constants;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     [Route(RouteValues.ResourceSet)]
     public class ResourceSetController : Controller

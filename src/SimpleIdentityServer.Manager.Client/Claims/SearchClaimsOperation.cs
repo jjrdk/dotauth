@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Client.Claims
 {
-    using Shared.Requests;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
 
     internal sealed class SearchClaimsOperation : ISearchClaimsOperation
     {

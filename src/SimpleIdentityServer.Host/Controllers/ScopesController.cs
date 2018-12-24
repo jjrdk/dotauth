@@ -22,8 +22,8 @@ namespace SimpleIdentityServer.Host.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Shared.Requests;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
 
     [Route(CoreConstants.EndPoints.Scopes)]
     public class ScopesController : Controller

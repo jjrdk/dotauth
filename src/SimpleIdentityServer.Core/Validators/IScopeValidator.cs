@@ -1,6 +1,6 @@
 ﻿namespace SimpleIdentityServer.Core.Validators
 {
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public interface IScopeValidator
     {

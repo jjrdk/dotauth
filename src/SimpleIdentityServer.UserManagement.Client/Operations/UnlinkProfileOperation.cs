@@ -1,11 +1,11 @@
 ﻿namespace SimpleIdentityServer.UserManagement.Client.Operations
 {
     using Newtonsoft.Json;
-    using Shared;
-    using Shared.Responses;
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
 
     internal sealed class UnlinkProfileOperation : IUnlinkProfileOperation
     {

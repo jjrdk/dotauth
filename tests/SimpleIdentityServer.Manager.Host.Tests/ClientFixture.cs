@@ -8,9 +8,9 @@ namespace SimpleIdentityServer.Manager.Host.Tests
     using Client.Clients;
     using Client.Configuration;
     using Core.Errors;
-    using Shared.Models;
-    using Shared.Requests;
     using System.Linq;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
 
     public class ClientFixture //: IClassFixture<TestManagerServerFixture>
     {

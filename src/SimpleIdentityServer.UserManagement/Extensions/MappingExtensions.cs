@@ -8,7 +8,7 @@ using System.Linq;
 namespace SimpleIdentityServer.UserManagement.Extensions
 {
     using Common.Responses;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     internal static class MappingExtensions
     {

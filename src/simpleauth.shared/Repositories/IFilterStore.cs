@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Shared.Repositories
+﻿namespace SimpleAuth.Shared.Repositories
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;

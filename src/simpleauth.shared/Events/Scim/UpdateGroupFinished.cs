@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Shared.Events.Scim
+﻿namespace SimpleAuth.Shared.Events.Scim
 {
     public class UpdateGroupFinished : Event
     {

@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Jwt.Extensions
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public static class StringExtensions
     {

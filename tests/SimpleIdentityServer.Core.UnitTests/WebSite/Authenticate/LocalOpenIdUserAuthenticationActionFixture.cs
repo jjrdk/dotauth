@@ -12,7 +12,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public sealed class LocalOpenIdUserAuthenticationActionFixture
     {

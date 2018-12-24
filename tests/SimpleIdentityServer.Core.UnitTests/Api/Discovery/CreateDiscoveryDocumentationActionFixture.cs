@@ -6,8 +6,8 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
 {
     using Core.Api.Discovery;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public class CreateDiscoveryDocumentationActionFixture
     {

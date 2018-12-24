@@ -3,9 +3,9 @@
     using System;
     using System.Threading.Tasks;
     using Results;
-    using Shared;
-    using Shared.Requests;
-    using Shared.Responses;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
 
     public interface IResourceOwnerClient
     {

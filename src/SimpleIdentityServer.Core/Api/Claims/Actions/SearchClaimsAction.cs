@@ -2,9 +2,9 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Shared.Parameters;
-    using Shared.Repositories;
-    using Shared.Results;
+    using SimpleAuth.Shared.Parameters;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Results;
 
     internal sealed class SearchClaimsAction : ISearchClaimsAction
     {

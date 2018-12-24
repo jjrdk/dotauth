@@ -22,8 +22,8 @@ namespace SimpleIdentityServer.Core.Helpers
     using Exceptions;
     using Json;
     using Jwt.Converter;
-    using Shared;
-    using Shared.Requests;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
 
     public class JsonWebKeyHelper : IJsonWebKeyHelper
     {

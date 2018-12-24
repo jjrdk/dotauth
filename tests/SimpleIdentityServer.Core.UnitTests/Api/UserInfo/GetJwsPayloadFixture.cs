@@ -26,9 +26,9 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
 {
     using Jwt;
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public sealed class GetJwsPayloadFixture
     {

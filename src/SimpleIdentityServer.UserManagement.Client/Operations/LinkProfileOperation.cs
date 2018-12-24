@@ -7,8 +7,8 @@
     using System.Threading.Tasks;
 
     using Common.Requests;
-    using Shared;
-    using Shared.Responses;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
 
     internal sealed class LinkProfileOperation : ILinkProfileOperation
     {

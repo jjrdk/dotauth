@@ -1,8 +1,8 @@
 ﻿namespace SimpleIdentityServer.Core.Jwt
 {
     using System.Threading.Tasks;
-    using Shared;
-    using Shared.Models;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public interface ITokenStore
     {

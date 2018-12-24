@@ -22,8 +22,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Shared;
-    using Shared.Responses;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
     using Xunit;
 
     public class RevokeTokenClientFixture : IClassFixture<TestOauthServerFixture>

@@ -21,7 +21,7 @@ using System.Text;
 
 namespace SimpleIdentityServer.Core.Jwt.Signature
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class CreateJwsSignature : ICreateJwsSignature
     {

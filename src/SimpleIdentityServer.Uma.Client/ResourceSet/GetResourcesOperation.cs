@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Uma.Client.ResourceSet
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using Results;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     internal class GetResourcesOperation : IGetResourcesOperation
     {

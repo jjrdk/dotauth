@@ -2,7 +2,7 @@
 {
     using System.Threading.Tasks;
     using Common.DTOs;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public interface IAddResourceToPolicyOperation
     {

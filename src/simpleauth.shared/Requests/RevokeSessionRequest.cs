@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Shared.Requests
+﻿namespace SimpleAuth.Shared.Requests
 {
     using System;
     using System.Runtime.Serialization;

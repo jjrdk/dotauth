@@ -1,12 +1,12 @@
 ﻿namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws
 {
     using Moq;
-    using Shared;
     using SimpleIdentityServer.Core.Api.Jws;
     using SimpleIdentityServer.Core.Api.Jws.Actions;
     using SimpleIdentityServer.Core.Parameters;
     using System;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
     using Xunit;
 
     public class JwsActionsFixture

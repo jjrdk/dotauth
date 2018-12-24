@@ -14,7 +14,7 @@
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class AesEncryption : IEncryption
     {

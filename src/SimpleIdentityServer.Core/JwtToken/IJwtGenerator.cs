@@ -4,8 +4,8 @@
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Parameters;
-    using Shared;
-    using Shared.Models;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public interface IJwtGenerator
     {

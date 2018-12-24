@@ -20,8 +20,8 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Api.UserInfo
 {
     using Microsoft.AspNetCore.Mvc;
-    using Shared;
-    using Shared.Events.Openid;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Events.Openid;
 
     public class UserInfoActions : IUserInfoActions
     {

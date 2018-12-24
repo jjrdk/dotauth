@@ -16,15 +16,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 {
     using Newtonsoft.Json;
     using Repositories;
-    using Shared;
-    using Shared.Models;
-    using Shared.Parameters;
-    using Shared.Repositories;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Parameters;
+    using SimpleAuth.Shared.Repositories;
     using Xunit;
 
     public sealed class DefaultClientRepositoryFixture : IDisposable

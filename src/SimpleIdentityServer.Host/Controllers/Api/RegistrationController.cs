@@ -19,9 +19,9 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Core.Errors;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Shared.Models;
-    using Shared.Repositories;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Responses;
 
     [Route(Core.CoreConstants.EndPoints.Registration)]
     [Authorize("registration")]

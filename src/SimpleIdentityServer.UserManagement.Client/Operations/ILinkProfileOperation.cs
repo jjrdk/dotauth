@@ -2,7 +2,7 @@
 {
     using System.Threading.Tasks;
     using Common.Requests;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public interface ILinkProfileOperation
     {

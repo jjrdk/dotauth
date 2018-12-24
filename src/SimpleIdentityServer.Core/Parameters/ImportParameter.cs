@@ -15,7 +15,7 @@
 namespace SimpleIdentityServer.Core.Parameters
 {
     using System.Collections.Generic;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public class ImportParameter
     {

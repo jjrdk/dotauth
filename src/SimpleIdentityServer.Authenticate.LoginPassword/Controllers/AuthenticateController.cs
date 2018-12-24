@@ -28,8 +28,8 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
     using Host.Controllers;
     using Host.ViewModels;
     using Logging;
-    using Shared;
-    using Shared.Requests;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
     using Constants = Constants;
 
     [Area(Constants.AMR)]

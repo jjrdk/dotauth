@@ -5,8 +5,8 @@
     using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
-    using Shared;
-    using Shared.DTOs;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.DTOs;
 
     internal class InMemoryGroupsRepository : IStore<GroupResource>
     {

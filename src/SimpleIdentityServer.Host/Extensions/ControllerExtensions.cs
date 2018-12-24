@@ -26,7 +26,7 @@ using ResponseMode = SimpleIdentityServer.Core.Parameters.ResponseMode;
 
 namespace SimpleIdentityServer.Host.Extensions
 {
-    using Shared.Requests;
+    using SimpleAuth.Shared.Requests;
 
     public static class ControllerExtensions
     {

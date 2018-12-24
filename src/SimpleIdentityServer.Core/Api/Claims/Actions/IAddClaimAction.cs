@@ -1,7 +1,7 @@
 ﻿namespace SimpleIdentityServer.Core.Api.Claims.Actions
 {
     using System.Threading.Tasks;
-    using Shared.Parameters;
+    using SimpleAuth.Shared.Parameters;
 
     public interface IAddClaimAction
     {

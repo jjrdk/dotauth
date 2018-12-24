@@ -21,10 +21,6 @@ namespace SimpleIdentityServer.Host.Controllers
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Shared.Models;
-    using Shared.Repositories;
-    using Shared.Requests;
-    using Shared.Responses;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -32,6 +28,10 @@ namespace SimpleIdentityServer.Host.Controllers
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Core;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
 
     [Route(CoreConstants.EndPoints.ResourceOwners)]
     public class ResourceOwnersController : Controller

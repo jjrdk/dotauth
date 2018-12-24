@@ -27,8 +27,8 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 {
     using Jwt;
     using Logging;
-    using Shared;
-    using Shared.Models;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public class PostIntrospectionAction : IPostIntrospectionAction
     {

@@ -18,7 +18,7 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core
 {
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public static class CoreConstants
     {

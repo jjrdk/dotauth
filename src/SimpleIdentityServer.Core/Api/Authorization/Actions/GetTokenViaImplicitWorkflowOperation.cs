@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
     using Logging;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public class GetTokenViaImplicitWorkflowOperation : IGetTokenViaImplicitWorkflowOperation
     {

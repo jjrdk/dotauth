@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
     using Jwt;
-    using Shared;
-    using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Repositories;
 
     public class RotateJsonWebKeysOperation : IRotateJsonWebKeysOperation
     {

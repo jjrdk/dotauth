@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Client
     using System.Linq;
     using System.Net.Http;
     using Errors;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     internal class IntrospectClient : IIntrospectClient
     {

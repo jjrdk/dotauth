@@ -26,8 +26,8 @@ using Xunit;
 namespace SimpleIdentityServer.Manager.Core.Tests.Helpers
 {
     using Json;
-    using Shared;
-    using Shared.Requests;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
     using SimpleIdentityServer.Core.Errors;
     using SimpleIdentityServer.Core.Exceptions;
     using SimpleIdentityServer.Core.Helpers;

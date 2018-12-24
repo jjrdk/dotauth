@@ -30,8 +30,8 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
     using Logging;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public class ConfirmConsentAction : IConfirmConsentAction
     {

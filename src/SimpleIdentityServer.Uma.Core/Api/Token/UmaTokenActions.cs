@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
     using System.Collections.Generic;
     using System.Text;
     using Logging;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
     using SimpleIdentityServer.Core.Jwt;
     using AuthenticationHeaderValueExtensions = SimpleIdentityServer.Core.AuthenticationHeaderValueExtensions;
 

@@ -2,7 +2,7 @@
 {
     using System.Threading.Tasks;
     using Results;
-    using Shared.Requests;
+    using SimpleAuth.Shared.Requests;
 
     public interface IAuthorizationClient
     {

@@ -20,14 +20,14 @@ namespace SimpleIdentityServer.Host.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Shared.Models;
-    using Shared.Repositories;
-    using Shared.Requests;
-    using Shared.Responses;
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
     using Core;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
 
     [Route(CoreConstants.EndPoints.Clients)]
     public class ClientsController : Controller

@@ -8,8 +8,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
 {
     using Core.Services;
     using Core.WebSite.User.Actions;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public class SmsAuthenticationOperationFixture
     {

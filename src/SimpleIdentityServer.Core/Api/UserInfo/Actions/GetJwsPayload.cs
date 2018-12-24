@@ -30,8 +30,8 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
     using Json;
     using Jwt;
     using Microsoft.AspNetCore.Mvc;
-    using Shared;
-    using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Repositories;
 
     public class GetJwsPayload : IGetJwsPayload
     {

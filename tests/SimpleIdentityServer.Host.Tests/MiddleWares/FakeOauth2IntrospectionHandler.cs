@@ -11,7 +11,7 @@ namespace SimpleIdentityServer.Host.Tests.MiddleWares
 {
     using Client;
     using Client.Operations;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class FakeOauth2IntrospectionHandler : AuthenticationHandler<FakeOAuth2IntrospectionOptions>
     {

@@ -34,10 +34,10 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
-    using Client = Shared.Models.Client;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
+    using Client = SimpleAuth.Shared.Models.Client;
 
     public class JwtGeneratorFixture
     {

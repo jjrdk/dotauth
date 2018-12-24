@@ -6,9 +6,9 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Shared;
-    using Shared.AccountFiltering;
-    using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.AccountFiltering;
+    using SimpleAuth.Shared.Repositories;
     using Xunit;
 
     public class AccountFilterFixture

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Shared.Parameters
+namespace SimpleAuth.Shared.Parameters
 {
     using System.Collections.Generic;
 

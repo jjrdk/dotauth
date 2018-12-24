@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     using Jwt;
     using Logging;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public class GetTokenByResourceOwnerCredentialsGrantTypeAction : IGetTokenByResourceOwnerCredentialsGrantTypeAction
     {

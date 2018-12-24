@@ -18,8 +18,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Tests.Services
 {
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public class CustomAuthenticateResourceOwnerService : IAuthenticateResourceOwnerService
     {

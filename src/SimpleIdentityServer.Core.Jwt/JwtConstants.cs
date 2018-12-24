@@ -17,7 +17,7 @@ using System.Security.Claims;
 
 namespace SimpleIdentityServer.Core.Jwt
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class JwtConstants
     {

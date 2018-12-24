@@ -2,8 +2,9 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>simpleauth.shared</AssemblyName>
+    <RootNamespace>SimpleAuth.Shared</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="system.security.permissions" Version="4.5.0"/>
+    <PackageReference Include="system.security.permissions" Version="4.5.0" />
   </ItemGroup>
 </Project>

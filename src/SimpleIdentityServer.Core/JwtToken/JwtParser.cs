@@ -23,11 +23,11 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.JwtToken
 {
     using Json;
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
-    using Shared.Requests;
     using System.Net.Http;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Requests;
 
     public class JwtParser : IJwtParser
     {

@@ -4,7 +4,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Parameters;
     using Results;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public interface IPayloadSerializer
     {

@@ -19,7 +19,7 @@ using System.Text;
 
 namespace SimpleIdentityServer.Core.Protector
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class Compressor : ICompressor
     {

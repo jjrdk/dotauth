@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Shared.AccountFiltering
+﻿namespace SimpleAuth.Shared.AccountFiltering
 {
     public enum ComparisonOperations
     {

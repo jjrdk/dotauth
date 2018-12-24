@@ -24,11 +24,11 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Microsoft.Extensions.DependencyInjection;
     using MiddleWares;
     using Newtonsoft.Json;
-    using Shared;
-    using Shared.Requests;
-    using Shared.Responses;
     using System;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
     using Xunit;
     using TokenRequest = Client.TokenRequest;
 

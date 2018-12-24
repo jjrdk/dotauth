@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Profile.Actions
 {
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Repositories;
 
     internal sealed class UnlinkProfileAction : IUnlinkProfileAction
     {

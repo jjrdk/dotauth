@@ -6,10 +6,9 @@
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
-
-    using Shared;
-    using Shared.Requests;
-    using Shared.Responses;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
 
     internal sealed class AddResourceOwnerOperation : IAddResourceOwnerOperation
     {

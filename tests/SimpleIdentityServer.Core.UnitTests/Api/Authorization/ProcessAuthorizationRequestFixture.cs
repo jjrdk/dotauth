@@ -16,9 +16,9 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
     using Logging;
-    using Shared.Repositories;
     using System.Net.Http;
-    using IClientStore = Shared.Repositories.IClientStore;
+    using SimpleAuth.Shared.Repositories;
+    using IClientStore = SimpleAuth.Shared.Repositories.IClientStore;
 
     public sealed class ProcessAuthorizationRequestFixture
     {

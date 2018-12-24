@@ -2,7 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     public interface IGetDiscoveryOperation
     {

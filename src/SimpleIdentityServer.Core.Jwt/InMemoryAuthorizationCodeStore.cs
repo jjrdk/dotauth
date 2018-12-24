@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     internal sealed class InMemoryAuthorizationCodeStore : IAuthorizationCodeStore
     {

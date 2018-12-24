@@ -10,9 +10,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
-    using Shared.Models;
-    using Shared.Repositories;
     using System;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
     {

@@ -17,7 +17,7 @@ using System.Linq;
 namespace SimpleIdentityServer.Core.Jwt.Encrypt
 {
     using Json;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class JweParser : IJweParser
     {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Shared.Events.Openid
+namespace SimpleAuth.Shared.Events.Openid
 {
     public class OpenIdErrorReceived : Event
     {

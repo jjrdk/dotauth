@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Client.Claims
 {
-    using Shared;
-    using Shared.Responses;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
 
     internal sealed class AddClaimOperation : IAddClaimOperation
     {

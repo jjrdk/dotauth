@@ -18,9 +18,9 @@ using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Host.Tests.Stores
 {
-    using Shared;
-    using Shared.Models;
     using System;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public static class DefaultStores
     {

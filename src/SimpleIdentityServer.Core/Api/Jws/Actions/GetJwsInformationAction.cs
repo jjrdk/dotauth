@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Core.Api.Jws.Actions
     using Jwt.Signature;
     using Parameters;
     using Results;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class GetJwsInformationAction : IGetJwsInformationAction
     {

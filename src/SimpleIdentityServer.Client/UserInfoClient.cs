@@ -16,8 +16,6 @@ namespace SimpleIdentityServer.Client
 {
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-    using Shared;
-    using Shared.Responses;
     using Errors;
     using Operations;
     using Results;
@@ -25,6 +23,8 @@ namespace SimpleIdentityServer.Client
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
 
     internal class UserInfoClient : IUserInfoClient
     {

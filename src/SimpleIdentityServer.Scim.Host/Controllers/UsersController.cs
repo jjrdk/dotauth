@@ -26,10 +26,10 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using Shared;
-    using Shared.DTOs;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     [Route(Core.Constants.RoutePaths.UsersController)]
     public class UsersController : Controller

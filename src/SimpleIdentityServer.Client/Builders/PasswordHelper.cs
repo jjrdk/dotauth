@@ -2,7 +2,7 @@
 {
     using System.Security.Cryptography;
     using System.Text;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public static class PasswordHelper
     {

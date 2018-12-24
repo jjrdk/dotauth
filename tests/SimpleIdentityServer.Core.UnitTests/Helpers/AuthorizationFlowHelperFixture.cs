@@ -7,7 +7,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public sealed class AuthorizationFlowHelperFixture
     {

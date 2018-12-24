@@ -23,8 +23,8 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Scim.Host.Controllers
 {
     using Core.Results;
-    using Shared;
-    using Shared.DTOs;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.DTOs;
 
     [Route(Constants.RoutePaths.BulkController)]
     public class BulkController : Controller

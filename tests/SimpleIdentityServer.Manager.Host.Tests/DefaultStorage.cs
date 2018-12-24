@@ -4,7 +4,7 @@ using System.Security.Claims;
 namespace SimpleIdentityServer.Manager.Host.Tests
 {
     using Core.Jwt;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public static class DefaultStorage
     {

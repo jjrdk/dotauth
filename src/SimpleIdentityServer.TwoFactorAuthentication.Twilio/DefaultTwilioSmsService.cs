@@ -19,8 +19,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
 {
-    using Shared;
-    using Shared.Models;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public class DefaultTwilioSmsService : ITwoFactorAuthenticationService
     {

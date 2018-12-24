@@ -24,9 +24,9 @@ using DomainResponse = SimpleIdentityServer.Uma.Core.Responses;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
-    using Shared.Models;
-    using Shared.Requests;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
     using ConfigurationResponse = ConfigurationResponse;
 
     internal static class MappingExtensions

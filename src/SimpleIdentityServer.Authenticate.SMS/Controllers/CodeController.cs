@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 {
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     [Route(SmsConstants.CodeController)]
     public class CodeController : Controller

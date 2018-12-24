@@ -26,7 +26,7 @@ using System.Security.Claims;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public static class ServiceCollectionExtensions
     {

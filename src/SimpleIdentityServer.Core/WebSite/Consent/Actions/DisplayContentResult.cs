@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using Results;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public class DisplayContentResult
     {

@@ -4,11 +4,10 @@
     using Results;
     using System;
     using System.Threading.Tasks;
-
-    using Shared;
-    using Shared.Models;
-    using Shared.Requests;
-    using Shared.Responses;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
 
     internal sealed class OpenIdClients : IOpenIdClients
     {

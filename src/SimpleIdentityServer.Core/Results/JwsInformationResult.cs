@@ -15,8 +15,8 @@
 namespace SimpleIdentityServer.Core.Results
 {
     using System.Collections.Generic;
-    using Shared;
-    using Shared.Requests;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
 
     public class JwsInformationResult
     {

@@ -18,8 +18,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 {
     using System.Threading;
     using Logging;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public sealed class ConfirmConsentFixture
     {

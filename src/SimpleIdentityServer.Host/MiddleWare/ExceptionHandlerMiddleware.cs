@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Host.MiddleWare
 {
     using Json;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     public class ExceptionHandlerMiddleware
     {

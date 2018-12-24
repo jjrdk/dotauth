@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Repositories;
 
     internal sealed class UpdateUserCredentialsOperation : IUpdateUserCredentialsOperation
     {

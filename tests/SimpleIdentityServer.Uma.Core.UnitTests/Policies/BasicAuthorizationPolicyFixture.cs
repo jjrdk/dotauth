@@ -26,8 +26,8 @@ using Xunit;
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 {
     using Moq;
-    using Shared;
-    using Shared.Requests;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
     using SimpleIdentityServer.Core;
     using Constants = Constants;
 

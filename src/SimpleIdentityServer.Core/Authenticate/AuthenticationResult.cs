@@ -14,7 +14,7 @@
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public class AuthenticationResult
     {

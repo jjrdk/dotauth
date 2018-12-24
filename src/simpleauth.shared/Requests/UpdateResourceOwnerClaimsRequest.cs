@@ -1,8 +1,7 @@
-﻿namespace SimpleIdentityServer.Shared.Requests
+﻿namespace SimpleAuth.Shared.Requests
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;
-    using Shared;
 
     [DataContract]
     public class UpdateResourceOwnerClaimsRequest

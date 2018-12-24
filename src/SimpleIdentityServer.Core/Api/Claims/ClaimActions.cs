@@ -3,9 +3,9 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Actions;
-    using Shared.Models;
-    using Shared.Parameters;
-    using Shared.Results;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Parameters;
+    using SimpleAuth.Shared.Results;
 
     internal sealed class ClaimActions : IClaimActions
     {

@@ -22,9 +22,9 @@ namespace SimpleIdentityServer.Client
 {
     using Newtonsoft.Json;
     using System.Net.Http;
-    using Shared.Requests;
-    using Shared.Responses;
-    using Shared.Serializers;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
+    using SimpleAuth.Shared.Serializers;
 
     internal class AuthorizationClient : IAuthorizationClient
     {

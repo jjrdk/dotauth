@@ -9,10 +9,10 @@
 
     using System.Linq.Expressions;
     using System.Threading;
-    using Shared.Models;
-    using Shared.Parameters;
-    using Shared.Repositories;
-    using Shared.Results;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Parameters;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Results;
 
     internal sealed class DefaultResourceOwnerRepository : IResourceOwnerRepository
     {

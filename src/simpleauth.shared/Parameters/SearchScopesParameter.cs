@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Shared.Parameters
+﻿namespace SimpleAuth.Shared.Parameters
 {
     using System.Collections.Generic;
 

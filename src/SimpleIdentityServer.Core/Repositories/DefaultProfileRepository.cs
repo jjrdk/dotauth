@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
-    using Shared.Models;
-    using Shared.Parameters;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Parameters;
+    using SimpleAuth.Shared.Repositories;
 
     internal sealed class DefaultProfileRepository : IProfileRepository
     {

@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Shared.Models
+﻿namespace SimpleAuth.Shared.Models
 {
     public enum ClientSecretTypes
     {

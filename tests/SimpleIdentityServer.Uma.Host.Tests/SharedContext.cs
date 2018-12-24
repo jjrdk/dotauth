@@ -2,7 +2,7 @@
 
 namespace SimpleIdentityServer.Uma.Host.Tests
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class SharedContext
     {

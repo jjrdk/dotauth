@@ -5,7 +5,7 @@
     using System.Threading.Tasks;
 
     using Common.Requests;
-    using Shared;
+    using SimpleAuth.Shared;
 
     internal sealed class ProfileClient : IProfileClient
     {

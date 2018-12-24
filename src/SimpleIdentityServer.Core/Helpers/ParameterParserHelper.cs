@@ -19,7 +19,7 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public class ParameterParserHelper : IParameterParserHelper
     {

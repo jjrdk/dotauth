@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Translation
 {
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Repositories;
 
     public class TranslationManager : ITranslationManager
     {

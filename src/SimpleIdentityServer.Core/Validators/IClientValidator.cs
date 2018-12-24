@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public interface IClientValidator
     {
