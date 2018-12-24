@@ -59,7 +59,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{BFFE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Client.Tests", "tests\SimpleIdentityServer.Scim.Client.Tests\SimpleIdentityServer.Scim.Client.Tests.csproj", "{733145CA-22FA-4971-8107-F0AFF459AEAB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleAuth.Shared", "src\simpleauth.shared\simpleauth.shared.csproj", "{4B6809E0-D49A-492A-8B2D-260D46791926}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.shared", "src\simpleauth.shared\simpleauth.shared.csproj", "{4B6809E0-D49A-492A-8B2D-260D46791926}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Logging", "src\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj", "{A823EB7C-C0A2-453B-BD2D-62B412A21DD7}"
 EndProject
@@ -79,7 +79,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "reimers.scim.query", "src\r
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "reimers.scim.query.tests", "reimers.scim.query.tests\reimers.scim.query.tests.csproj", "{C759A4A0-9E20-49B9-B12E-7C8F5584C1C0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Json", "src\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Json.csproj", "{ADFBF7A5-F2D5-40FB-9BF0-7E5DE0BDB188}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleAuth.Json", "src\simpleauth.json\simpleauth.json.csproj", "{ADFBF7A5-F2D5-40FB-9BF0-7E5DE0BDB188}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Manager.Core.Tests", "tests\SimpleIdentityServer.Manager.Core.Tests\SimpleIdentityServer.Manager.Core.Tests.csproj", "{6362CEB3-1482-444B-A46D-9DC033EBA41D}"
 EndProject
