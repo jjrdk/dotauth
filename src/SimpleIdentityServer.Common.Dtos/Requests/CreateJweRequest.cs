@@ -20,22 +20,22 @@ namespace SimpleIdentityServer.Shared.Requests
     [DataContract]
     public class CreateJweRequest
     {
-        [DataMember(Name = Constants.CreateJweRequestNames.Jws)]
+        [DataMember(Name = SharedConstants.CreateJweRequestNames.Jws)]
         public string Jws { get; set; }
 
-        [DataMember(Name = Constants.CreateJweRequestNames.Url)]
+        [DataMember(Name = SharedConstants.CreateJweRequestNames.Url)]
         public string Url { get; set; }
 
-        [DataMember(Name = Constants.CreateJweRequestNames.Kid)]
+        [DataMember(Name = SharedConstants.CreateJweRequestNames.Kid)]
         public string Kid { get; set; }
 
-        [DataMember(Name = Constants.CreateJweRequestNames.Alg)]
+        [DataMember(Name = SharedConstants.CreateJweRequestNames.Alg)]
         public JweAlg Alg { get; set; }
 
-        [DataMember(Name = Constants.CreateJweRequestNames.Enc)]
+        [DataMember(Name = SharedConstants.CreateJweRequestNames.Enc)]
         public JweEnc Enc { get; set; }
 
-        [DataMember(Name = Constants.CreateJweRequestNames.Password)]
+        [DataMember(Name = SharedConstants.CreateJweRequestNames.Password)]
         public string Password { get; set; }
     }
 }

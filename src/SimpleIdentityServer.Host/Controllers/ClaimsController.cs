@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Core;
     using Core.Api.Claims;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
@@ -10,7 +11,7 @@
     using Shared.Requests;
     using Shared.Responses;
 
-    [Route(HostEnpoints.Claims)]
+    [Route(CoreConstants.EndPoints.Claims)]
     public class ClaimsController : Controller
     {
         //public const string GetClaimsStoreName = "GetClaims";

@@ -152,8 +152,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         public async Task When_Not_Correct_ClientId_Is_Passed_To_Authorization_Then_Json_Is_Returned()
         {
             InitializeFakeObjects();
-
-
             var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&state=state&client_id=bad_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none")).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
@@ -168,7 +166,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         public async Task When_Not_Support_Redirect_Uri_Is_Passed_To_Authorization_Then_Json_Is_Returned()
         {
             InitializeFakeObjects();
-
 
             var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none")).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -288,7 +285,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             InitializeFakeObjects();
 
 
-
             UserStore.Instance().Subject = "user";
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
@@ -312,7 +308,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         public async Task When_Pass_Invalid_IdTokenHint_To_Authorization_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
-
 
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
@@ -499,9 +494,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             InitializeFakeObjects();
 
-
-
-            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
+            var result = await _authorizationClient.ResolveAsync(
+                    baseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
                         new[] { ResponseTypes.Code },
                         "authcode_client",
@@ -585,10 +579,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Requesting_IdTokenAndAccessToken_Then_Tokens_Are_Returned()
         {
-            const string baseUrl = "http://localhost:5000"; InitializeFakeObjects();
-
-
-            // NOTE : The consent has already been given in the database.
+            const string baseUrl = "http://localhost:5000"; InitializeFakeObjects();            // NOTE : The consent has already been given in the database.
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
                         new[] { ResponseTypes.IdToken, ResponseTypes.Token },
@@ -613,10 +604,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_RequestingIdTokenAndAuthorizationCodeAndAccessToken_Then_Tokens_Are_Returned()
         {
-            const string baseUrl = "http://localhost:5000"; InitializeFakeObjects();
-
-
-            // NOTE : The consent has already been given in the database.
+            const string baseUrl = "http://localhost:5000"; InitializeFakeObjects();            // NOTE : The consent has already been given in the database.
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
                         new[] { ResponseTypes.IdToken, ResponseTypes.Token, ResponseTypes.Code },

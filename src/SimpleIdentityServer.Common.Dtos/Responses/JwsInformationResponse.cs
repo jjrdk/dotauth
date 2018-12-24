@@ -22,13 +22,13 @@ namespace SimpleIdentityServer.Shared.Responses
     [DataContract]
     public class JwsInformationResponse
     {
-        [DataMember(Name = Constants.JwsInformationResponseNames.Header)]
+        [DataMember(Name = SharedConstants.JwsInformationResponseNames.Header)]
         public JwsProtectedHeader Header { get; set; }
 
-        [DataMember(Name = Constants.JwsInformationResponseNames.Payload)]
+        [DataMember(Name = SharedConstants.JwsInformationResponseNames.Payload)]
         public JwsPayload Payload { get; set; }
 
-        [DataMember(Name = Constants.JwsInformationResponseNames.JsonWebKey)]
+        [DataMember(Name = SharedConstants.JwsInformationResponseNames.JsonWebKey)]
         public Dictionary<string, object> JsonWebKey { get; set; }
     }
 }

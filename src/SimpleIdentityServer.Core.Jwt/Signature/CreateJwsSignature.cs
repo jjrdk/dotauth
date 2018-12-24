@@ -21,7 +21,6 @@ using System.Text;
 
 namespace SimpleIdentityServer.Core.Jwt.Signature
 {
-    using Extensions;
     using Shared;
 
     public class CreateJwsSignature : ICreateJwsSignature
@@ -59,7 +58,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         };
 
         public string SignWithRsa(
-            JwsAlg algorithm, 
+            JwsAlg algorithm,
             string serializedKeys,
             string combinedJwsNotSigned)
         {
@@ -70,7 +69,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
             if (string.IsNullOrWhiteSpace(serializedKeys))
             {
-                throw new ArgumentNullException("serializedKeys");
+                throw new ArgumentNullException(nameof(serializedKeys));
             }
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -79,21 +78,19 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 {
                     var hashMethod = _mappingWinJwsAlgorithmToRsaHashingAlgorithms[algorithm];
                     var bytesToBeSigned = Encoding.ASCII.GetBytes(combinedJwsNotSigned);
-                    rsa.FromXmlStringNetCore(serializedKeys);
+                    RsaExtensions.FromXmlString(rsa, serializedKeys);
                     var byteToBeConverted = rsa.SignData(bytesToBeSigned, hashMethod);
                     return byteToBeConverted.ToBase64Simplified();
                 }
             }
-            else
+
+            using (var rsa = new RSAOpenSsl())
             {
-                using (var rsa = new RSAOpenSsl())
-                {
-                    var hashMethod = _mappingLinuxJwsAlgorithmToRsaHashingAlgorithms[algorithm];
-                    var bytesToBeSigned = Encoding.ASCII.GetBytes(combinedJwsNotSigned);
-                    rsa.FromXmlStringNetCore(serializedKeys);
-                    var byteToBeConverted = rsa.SignData(bytesToBeSigned, 0, bytesToBeSigned.Length, hashMethod, RSASignaturePadding.Pkcs1);
-                    return byteToBeConverted.ToBase64Simplified();
-                }
+                var hashMethod = _mappingLinuxJwsAlgorithmToRsaHashingAlgorithms[algorithm];
+                var bytesToBeSigned = Encoding.ASCII.GetBytes(combinedJwsNotSigned);
+                RsaExtensions.FromXmlString(rsa, serializedKeys);
+                var byteToBeConverted = rsa.SignData(bytesToBeSigned, 0, bytesToBeSigned.Length, hashMethod, RSASignaturePadding.Pkcs1);
+                return byteToBeConverted.ToBase64Simplified();
             }
         }
 
@@ -110,7 +107,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
             if (string.IsNullOrWhiteSpace(serializedKeys))
             {
-                throw new ArgumentNullException("serializedKeys");
+                throw new ArgumentNullException(nameof(serializedKeys));
             }
 
             var plainBytes = Encoding.ASCII.GetBytes(input);
@@ -119,19 +116,16 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 using (var rsa = new RSACryptoServiceProvider())
                 {
                     var hashMethod = _mappingWinJwsAlgorithmToRsaHashingAlgorithms[algorithm];
-                    rsa.FromXmlStringNetCore(serializedKeys);
+                    RsaExtensions.FromXmlString(rsa, serializedKeys);
                     return rsa.VerifyData(plainBytes, hashMethod, signature);
                 }
             }
-            else
-            {
-                using (var rsa = new RSAOpenSsl())
-                {
-                    var hashMethod = _mappingLinuxJwsAlgorithmToRsaHashingAlgorithms[algorithm];
-                    rsa.FromXmlStringNetCore(serializedKeys);
-                    return rsa.VerifyData(plainBytes, signature, hashMethod, RSASignaturePadding.Pkcs1);
-                }
 
+            using (var rsa = new RSAOpenSsl())
+            {
+                var hashMethod = _mappingLinuxJwsAlgorithmToRsaHashingAlgorithms[algorithm];
+                RsaExtensions.FromXmlString(rsa, serializedKeys);
+                return rsa.VerifyData(plainBytes, signature, hashMethod, RSASignaturePadding.Pkcs1);
             }
         }
     }

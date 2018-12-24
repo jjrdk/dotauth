@@ -7,19 +7,19 @@
     [DataContract]
     public class SearchScopesRequest
     {
-        [DataMember(Name = Constants.SearchScopeNames.ScopeTypes)]
+        [DataMember(Name = SharedConstants.SearchScopeNames.ScopeTypes)]
         public IList<int> ScopeTypes { get; set; }
 
-        [DataMember(Name = Constants.SearchScopeNames.ScopeNames)]
+        [DataMember(Name = SharedConstants.SearchScopeNames.ScopeNames)]
         public IEnumerable<string> ScopeNames { get; set; }
 
-        [DataMember(Name = Constants.SearchResponseNames.StartIndex)]
+        [DataMember(Name = SharedConstants.SearchResponseNames.StartIndex)]
         public int StartIndex { get; set; }
 
-        [DataMember(Name = Constants.SearchResponseNames.TotalResults)]
+        [DataMember(Name = SharedConstants.SearchResponseNames.TotalResults)]
         public int NbResults { get; set; }
 
-        [DataMember(Name = Constants.SearchScopeNames.Order)]
+        [DataMember(Name = SharedConstants.SearchScopeNames.Order)]
         public OrderRequest Order { get; set; }
     }
 }

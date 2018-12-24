@@ -48,12 +48,12 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
         {
             if (localAuthenticationParameter == null)
             {
-                throw new ArgumentNullException("localAuthenticationParameter");
+                throw new ArgumentNullException(nameof(localAuthenticationParameter));
             }
 
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorizationParameter");
+                throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
             return await _localOpenIdUserAuthenticationAction.Execute(

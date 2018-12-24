@@ -7,16 +7,16 @@
     [DataContract]
     public class SearchResourceOwnersRequest
     {
-        [DataMember(Name = Constants.SearchResourceOwnerNames.Subjects)]
+        [DataMember(Name = SharedConstants.SearchResourceOwnerNames.Subjects)]
         public IEnumerable<string> Subjects { get; set; }
 
-        [DataMember(Name = Constants.SearchResponseNames.StartIndex)]
+        [DataMember(Name = SharedConstants.SearchResponseNames.StartIndex)]
         public int StartIndex { get; set; }
 
-        [DataMember(Name = Constants.SearchResponseNames.TotalResults)]
+        [DataMember(Name = SharedConstants.SearchResponseNames.TotalResults)]
         public int NbResults { get; set; }
 
-        [DataMember(Name = Constants.SearchResourceOwnerNames.Order)]
+        [DataMember(Name = SharedConstants.SearchResourceOwnerNames.Order)]
         public OrderRequest Order { get; set; }
     }
 }

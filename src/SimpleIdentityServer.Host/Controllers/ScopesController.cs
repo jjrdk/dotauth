@@ -16,6 +16,7 @@ namespace SimpleIdentityServer.Host.Controllers
 {
     using System;
     using System.Threading.Tasks;
+    using Core;
     using Core.Api.Scopes;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
@@ -24,11 +25,9 @@ namespace SimpleIdentityServer.Host.Controllers
     using Shared.Requests;
     using Shared.Responses;
 
-    [Route(HostEnpoints.Scopes)]
+    [Route(CoreConstants.EndPoints.Scopes)]
     public class ScopesController : Controller
     {
-        //private const string ScopesStoreName = "Scopes";
-        //private const string ScopeStoreName = "Scope_";
         private readonly IScopeActions _scopeActions;
 
         public ScopesController(IScopeActions scopeActions)

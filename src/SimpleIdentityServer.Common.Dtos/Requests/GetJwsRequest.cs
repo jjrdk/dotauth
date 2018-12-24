@@ -20,10 +20,10 @@ namespace SimpleIdentityServer.Shared.Requests
     [DataContract]
     public sealed class GetJwsRequest
     {
-        [DataMember(Name = Constants.GetJwsRequestNames.Jws)]
+        [DataMember(Name = SharedConstants.GetJwsRequestNames.Jws)]
         public string Jws { get; set; }
 
-        [DataMember(Name = Constants.GetJwsRequestNames.Url)]
+        [DataMember(Name = SharedConstants.GetJwsRequestNames.Url)]
         public string Url { get; set; }
     }
 }

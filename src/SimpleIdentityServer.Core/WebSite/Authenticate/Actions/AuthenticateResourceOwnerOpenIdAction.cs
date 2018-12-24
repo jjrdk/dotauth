@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         {
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorizationParameter");    
+                throw new ArgumentNullException(nameof(authorizationParameter));    
             }
 
             var resourceOwnerIsAuthenticated = resourceOwnerPrincipal.IsAuthenticated();

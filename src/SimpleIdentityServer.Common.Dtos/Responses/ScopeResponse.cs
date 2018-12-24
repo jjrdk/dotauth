@@ -22,37 +22,37 @@ namespace SimpleIdentityServer.Shared.Responses
     [DataContract]
     public class ScopeResponse
     {
-        [DataMember(Name = Constants.ScopeResponseNames.Name)]
+        [DataMember(Name = SharedConstants.ScopeResponseNames.Name)]
         public string Name { get; set; }
 
-        [DataMember(Name = Constants.ScopeResponseNames.Description)]
+        [DataMember(Name = SharedConstants.ScopeResponseNames.Description)]
         public string Description { get; set; }
 
-        [DataMember(Name = Constants.ScopeResponseNames.IsDisplayedInConsent)]
+        [DataMember(Name = SharedConstants.ScopeResponseNames.IsDisplayedInConsent)]
         public bool IsDisplayedInConsent { get; set; }
 
-        [DataMember(Name = Constants.ScopeResponseNames.IsOpenIdScope)]
+        [DataMember(Name = SharedConstants.ScopeResponseNames.IsOpenIdScope)]
         public bool IsOpenIdScope { get; set; }
 
-        [DataMember(Name = Constants.ScopeResponseNames.IsExposed)]
+        [DataMember(Name = SharedConstants.ScopeResponseNames.IsExposed)]
         public bool IsExposed { get; set; }
 
-        [DataMember(Name = Constants.ScopeResponseNames.Type)]
+        [DataMember(Name = SharedConstants.ScopeResponseNames.Type)]
         public ScopeResponseType Type { get; set; }
 
-        [DataMember(Name = Constants.ScopeResponseNames.Claims)]
+        [DataMember(Name = SharedConstants.ScopeResponseNames.Claims)]
         public List<string> Claims { get; set; }
 
         /// <summary>
         /// Gets or sets the create datetime.
         /// </summary>
-        [DataMember(Name = Constants.ScopeResponseNames.CreateDateTime)]
+        [DataMember(Name = SharedConstants.ScopeResponseNames.CreateDateTime)]
         public DateTime CreateDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the update datetime.
         /// </summary>
-        [DataMember(Name = Constants.ScopeResponseNames.UpdateDateTime)]
+        [DataMember(Name = SharedConstants.ScopeResponseNames.UpdateDateTime)]
         public DateTime UpdateDateTime { get; set; }
     }
 }

@@ -212,5 +212,20 @@ namespace SimpleIdentityServer.Shared.Responses
         /// Gets or sets the TOS uri.
         /// </summary>
         public string OpTosUri { get; set; }
+
+        [DataMember(Name = "jws")]
+        public string Jws { get; set; }
+        [DataMember(Name = "jwe")]
+        public string Jwe { get; set; }
+        [DataMember(Name = "clients")]
+        public string Clients { get; set; }
+        [DataMember(Name = "scopes")]
+        public string Scopes { get; set; }
+        [DataMember(Name = "resource_owners")]
+        public string ResourceOwners { get; set; }
+        [DataMember(Name = "manage")]
+        public string Manage { get; set; }
+        [DataMember(Name = "claims")]
+        public string Claims { get; set; }
     }
 }

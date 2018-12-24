@@ -20,10 +20,10 @@ namespace SimpleIdentityServer.Shared.Responses
     [DataContract]
     public class JweInformationResponse
     {
-        [DataMember(Name = Constants.JweInformationResponseNames.Content)]
+        [DataMember(Name = SharedConstants.JweInformationResponseNames.Content)]
         public string Content { get; set; }
 
-        [DataMember(Name = Constants.JweInformationResponseNames.IsContentJws)]
+        [DataMember(Name = SharedConstants.JweInformationResponseNames.IsContentJws)]
         public bool IsContentJws { get; set; }
     }
 }

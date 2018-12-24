@@ -6,9 +6,9 @@
     [DataContract]
     public class AddClaimRequest
     {
-        [DataMember(Name = Constants.ClaimResponseNames.Code)]
+        [DataMember(Name = SharedConstants.ClaimResponseNames.Code)]
         public string Code { get; set; }
-        [DataMember(Name = Constants.ClaimResponseNames.IsIdentifier)]
+        [DataMember(Name = SharedConstants.ClaimResponseNames.IsIdentifier)]
         public bool IsIdentifier { get; set; }
     }
 }

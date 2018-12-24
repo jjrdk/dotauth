@@ -1,6 +1,6 @@
 namespace SimpleIdentityServer.Shared
 {
-    public static class DiscoveryInformationNames
+    internal static class DiscoveryInformationNames
     {
         public const string AuthorizationEndPoint = "authorization_endpoint";
         public const string CheckSessionEndPoint = "check_session_iframe";

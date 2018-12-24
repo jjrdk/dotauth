@@ -109,7 +109,6 @@ namespace SimpleIdentityServer.Host.Tests
 
         public void Configure(IApplicationBuilder app)
         {
-
             //1 . Enable CORS.
             app.UseCors("AllowAll");
             // 4. Use simple identity server.

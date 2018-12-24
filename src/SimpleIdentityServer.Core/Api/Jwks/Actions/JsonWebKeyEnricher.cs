@@ -20,7 +20,6 @@ using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
-    using Jwt.Extensions;
     using Shared;
 
     public class JsonWebKeyEnricher : IJsonWebKeyEnricher
@@ -36,7 +35,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
                 }
             };
         }
-        
+
         public Dictionary<string, object> GetPublicKeyInformation(JsonWebKey jsonWebKey)
         {
             var result = new Dictionary<string, object>();
@@ -71,7 +70,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
             {
                 using (var provider = new RSACryptoServiceProvider())
                 {
-                    provider.FromXmlStringNetCore(jsonWebKey.SerializedKey);
+                    RsaExtensions.FromXmlString(provider, jsonWebKey.SerializedKey);
                     var rsaParameters = provider.ExportParameters(false);
                     // Export the modulus
                     var modulus = rsaParameters.Modulus.ToBase64Simplified();
@@ -86,7 +85,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
             {
                 using (var provider = new RSAOpenSsl())
                 {
-                    provider.FromXmlStringNetCore(jsonWebKey.SerializedKey);
+                    RsaExtensions.FromXmlString(provider, jsonWebKey.SerializedKey);
                     var rsaParameters = provider.ExportParameters(false);
                     // Export the modulus
                     var modulus = rsaParameters.Modulus.ToBase64Simplified();

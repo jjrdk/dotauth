@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Shared
 
     public static class RsaExtensions
     {
-        public static string ToXmlString(this RSA rsa, bool includePrivateParameters)
+        public static string ToXmlString(this RSA rsa, bool includePrivateParameters = false)
         {
             // From the XMLDSIG spec, RFC 3075, Section 6.4.2,
             var rsaParams = rsa.ExportParameters(includePrivateParameters);

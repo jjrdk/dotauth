@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Core.Protector
         {
             if (string.IsNullOrWhiteSpace(compressedText))
             {
-                throw new ArgumentNullException("compressedText");
+                throw new ArgumentNullException(nameof(compressedText));
             }
 
             var compressedBytes = compressedText.Base64DecodeBytes();

@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Core
         {
             if (serviceCollection == null)
             {
-                throw new ArgumentNullException("serviceCollection");
+                throw new ArgumentNullException(nameof(serviceCollection));
             }
 
             serviceCollection.AddTransient<IGrantedTokenGeneratorHelper, GrantedTokenGeneratorHelper>();

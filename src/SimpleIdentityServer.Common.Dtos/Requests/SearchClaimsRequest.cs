@@ -7,13 +7,13 @@
     [DataContract]
     public class SearchClaimsRequest
     {
-        [DataMember(Name = Constants.SearchClaimNames.Codes)]
+        [DataMember(Name = SharedConstants.SearchClaimNames.Codes)]
         public IEnumerable<string> Codes { get; set; }
-        [DataMember(Name = Constants.SearchResponseNames.StartIndex)]
+        [DataMember(Name = SharedConstants.SearchResponseNames.StartIndex)]
         public int StartIndex { get; set; }
-        [DataMember(Name = Constants.SearchResponseNames.TotalResults)]
+        [DataMember(Name = SharedConstants.SearchResponseNames.TotalResults)]
         public int NbResults { get; set; }
-        [DataMember(Name = Constants.SearchScopeNames.Order)]
+        [DataMember(Name = SharedConstants.SearchScopeNames.Order)]
         public OrderRequest Order { get; set; }
     }
 }

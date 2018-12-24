@@ -6,9 +6,9 @@
     [DataContract]
     public class AddResourceOwnerRequest
     {
-        [DataMember(Name = Constants.AddResourceOwnerRequestNames.Subject)]
+        [DataMember(Name = SharedConstants.AddResourceOwnerRequestNames.Subject)]
         public string Subject { get; set; }
-        [DataMember(Name = Constants.AddResourceOwnerRequestNames.Password)]
+        [DataMember(Name = SharedConstants.AddResourceOwnerRequestNames.Password)]
         public string Password { get; set; }
     }
 }

@@ -6,9 +6,9 @@
     [DataContract]
     public class UpdateResourceOwnerPasswordRequest
     {
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.Login)]
+        [DataMember(Name = SharedConstants.ResourceOwnerResponseNames.Login)]
         public string Login { get; set; }
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.Password)]
+        [DataMember(Name = SharedConstants.ResourceOwnerResponseNames.Password)]
         public string Password { get; set; }
     }
 }
