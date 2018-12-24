@@ -13,9 +13,6 @@
 // limitations under the License.
 
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Jwt.Converter;
-using SimpleIdentityServer.Core.Jwt.Encrypt;
-using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,6 +21,10 @@ namespace SimpleIdentityServer.Core.JwtToken
 {
     using System.Net.Http;
     using SimpleAuth.Json;
+    using SimpleAuth.Jwt;
+    using SimpleAuth.Jwt.Converter;
+    using SimpleAuth.Jwt.Encrypt;
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -156,12 +157,12 @@ namespace SimpleIdentityServer.Core.JwtToken
         private JwsPayload UnSignWithJsonWebKey(JsonWebKey jsonWebKey, JwsProtectedHeader jwsProtectedHeader, string jws)
         {
             if (jsonWebKey == null
-                && jwsProtectedHeader.Alg != Jwt.JwtConstants.JwsAlgNames.NONE)
+                && jwsProtectedHeader.Alg != JwtConstants.JwsAlgNames.NONE)
             {
                 return null;
             }
 
-            if (jwsProtectedHeader.Alg == Jwt.JwtConstants.JwsAlgNames.NONE)
+            if (jwsProtectedHeader.Alg == JwtConstants.JwsAlgNames.NONE)
             {
                 return _jwsParser.GetPayload(jws);
             }

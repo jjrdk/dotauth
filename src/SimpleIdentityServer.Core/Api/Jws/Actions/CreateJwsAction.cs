@@ -20,8 +20,8 @@ namespace SimpleIdentityServer.Core.Api.Jws.Actions
     using Errors;
     using Exceptions;
     using Helpers;
-    using Jwt.Signature;
     using Parameters;
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
 
     public class CreateJwsAction : ICreateJwsAction

@@ -20,8 +20,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
     using System.Collections.Generic;
     using System.Text;
     using Logging;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared.Models;
-    using SimpleIdentityServer.Core.Jwt;
     using AuthenticationHeaderValueExtensions = SimpleIdentityServer.Core.AuthenticationHeaderValueExtensions;
 
     internal sealed class UmaTokenActions : IUmaTokenActions

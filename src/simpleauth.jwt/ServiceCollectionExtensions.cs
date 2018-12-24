@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core.Jwt
+namespace SimpleAuth.Jwt
 {
     using System;
     using Microsoft.Extensions.DependencyInjection;

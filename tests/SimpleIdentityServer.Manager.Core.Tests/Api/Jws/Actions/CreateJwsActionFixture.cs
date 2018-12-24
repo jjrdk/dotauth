@@ -15,9 +15,9 @@
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
 {
     using Moq;
-    using SimpleIdentityServer.Core.Jwt.Signature;
     using System;
     using System.Threading.Tasks;
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using Xunit;
     using SimpleIdentityServer.Core.Api.Jws.Actions;

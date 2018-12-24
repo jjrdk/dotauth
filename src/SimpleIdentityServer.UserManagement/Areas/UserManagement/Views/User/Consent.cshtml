@@ -37,17 +37,17 @@
                     <div>
                         @if (string.IsNullOrWhiteSpace(client.First().LogoUri))
                         {
-                            <img src="@Url.Content("~/img/OAuth2.png")" width="150" height="150" />
+                            <img src="@System.Security.Policy.Url.Content("~/img/OAuth2.png")" width="150" height="150" />
                         }
                         else
                         {
-                            <img src="@Url.Content(client.First().LogoUri)" width="150" height="150" />
+                            <img src="@System.Security.Policy.Url.Content(client.First().LogoUri)" width="150" height="150" />
                         }
                     </div>
                     <ul class="list-group">
                         @foreach (var consent in client)
                         {
-                            <form method="post" action="@Url.Action("Consent", new { id = consent.Id })">
+                            <form method="post" action="@System.Security.Policy.Url.Action("Consent", new { id = consent.Id })">
                                 <li class="list-group-item" style="margin-top: 10px;">
                                     <!-- Display scopes -->
                                     <h4>Scopes</h4>

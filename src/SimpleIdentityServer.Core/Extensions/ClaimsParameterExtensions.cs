@@ -19,6 +19,8 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Extensions
 {
+    using SimpleAuth.Jwt;
+
     public static class ClaimsParameterExtensions
     {
         /// <summary>
@@ -90,8 +92,8 @@ namespace SimpleIdentityServer.Core.Extensions
 
         private static bool IsStandardClaim(string claimName)
         {
-            return Jwt.JwtConstants.AllStandardResourceOwnerClaimNames.Contains(claimName) ||
-                Jwt.JwtConstants.AllStandardClaimNames.Contains(claimName);
+            return JwtConstants.AllStandardResourceOwnerClaimNames.Contains(claimName) ||
+                JwtConstants.AllStandardClaimNames.Contains(claimName);
         }
     }
 }

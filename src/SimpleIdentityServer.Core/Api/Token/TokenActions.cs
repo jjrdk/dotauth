@@ -26,8 +26,8 @@ namespace SimpleIdentityServer.Core.Api.Token
     using Authenticate;
     using Errors;
     using Helpers;
-    using Jwt;
     using Logging;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Events.OAuth;
     using SimpleAuth.Shared.Models;

@@ -19,6 +19,7 @@ using System.Security.Cryptography;
 namespace SimpleIdentityServer.Host.Tests.Stores
 {
     using System;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 
@@ -147,9 +148,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         Id = "administrator",
                         Claims = new List<Claim>
                         {
-                            new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, "administrator"),
-                            new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Role, "administrator"),
-                            new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Address, "{ country : 'france' }")
+                            new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "administrator"),
+                            new Claim(JwtConstants.StandardResourceOwnerClaimNames.Role, "administrator"),
+                            new Claim(JwtConstants.StandardResourceOwnerClaimNames.Address, "{ country : 'france' }")
                         },
                         Password = "password",
                         IsLocalAccount = true
@@ -160,7 +161,7 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         Password = "password",
                         Claims = new List<Claim>
                         {
-                            new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, "user")
+                            new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "user")
                         },
                         IsLocalAccount = true
                     },
@@ -170,9 +171,9 @@ namespace SimpleIdentityServer.Host.Tests.Stores
                         Password = "password",
                         Claims = new List<Claim>
                         {
-                            new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, "superuser"),
-                            new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Role, "administrator"),
-                            new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Role, "role")
+                            new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "superuser"),
+                            new Claim(JwtConstants.StandardResourceOwnerClaimNames.Role, "administrator"),
+                            new Claim(JwtConstants.StandardResourceOwnerClaimNames.Role, "role")
                         },
                         IsLocalAccount = true
                     }

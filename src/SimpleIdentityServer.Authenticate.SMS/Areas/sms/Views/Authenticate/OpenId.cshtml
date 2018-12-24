@@ -41,7 +41,7 @@
         </div>
         <div>
             @Html.ValidationMessage("message_error")
-            <form name="form" method="POST" action="@Url.Action("LocalLoginOpenId")">
+            <form name="form" method="POST" action="@System.Security.Policy.Url.Action("LocalLoginOpenId")">
                 <fieldset>
                     <input type="hidden" value="@Model.Code" name="Code" />
                     @if (phoneNumberState != null && phoneNumberState.Errors.Any())

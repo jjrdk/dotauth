@@ -3,6 +3,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Extensions
 {
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 
@@ -24,7 +25,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetIdTokenSignedResponseAlg_Then_RS256_Is_Returned()
         {            var client = new Client
             {
-                IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256
+                IdTokenSignedResponseAlg = JwtConstants.JwsAlgNames.RS256
             };
 
                         var result = client.GetIdTokenSignedResponseAlg();
@@ -48,7 +49,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetIdTokenEncryptedResponseAlg_Then_RSA1_5_Is_Returned()
         {            var client = new Client
             {
-                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
+                IdTokenEncryptedResponseAlg = JwtConstants.JweAlgNames.RSA1_5
             };
 
                         var result = client.GetIdTokenEncryptedResponseAlg();
@@ -72,7 +73,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetIdTokenEncryptedResponseEnc_Then_A128CBC_HS256_Is_Returned()
         {            var client = new Client
             {
-                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
+                IdTokenEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256
             };
 
                         var result = client.GetIdTokenEncryptedResponseEnc();
@@ -96,7 +97,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetUserInfoSignedResponseAlg_Then_RS256_Is_Returned()
         {            var client = new Client
             {
-                UserInfoSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256
+                UserInfoSignedResponseAlg = JwtConstants.JwsAlgNames.RS256
             };
 
                         var result = client.GetUserInfoSignedResponseAlg();
@@ -120,7 +121,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetUserInfoEncryptedResponseAlg_Then_RSA1_5_Is_Returned()
         {            var client = new Client
             {
-                UserInfoEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
+                UserInfoEncryptedResponseAlg = JwtConstants.JweAlgNames.RSA1_5
             };
 
                         var result = client.GetUserInfoEncryptedResponseAlg();
@@ -144,7 +145,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetUserInfoEncryptedResponseEnc_Then_A128CBC_HS256_Is_Returned()
         {            var client = new Client
             {
-                UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
+                UserInfoEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256
             };
 
                         var result = client.GetUserInfoEncryptedResponseEnc();
@@ -168,7 +169,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetRequestObjectSigningAlg_Then_RS256_Is_Returned()
         {            var client = new Client
             {
-                RequestObjectSigningAlg = Jwt.JwtConstants.JwsAlgNames.RS256
+                RequestObjectSigningAlg = JwtConstants.JwsAlgNames.RS256
             };
 
                         var result = client.GetRequestObjectSigningAlg();
@@ -192,7 +193,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetRequestObjectEncryptionAlg_Then_RSA1_5_Is_Returned()
         {            var client = new Client
             {
-                RequestObjectEncryptionAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
+                RequestObjectEncryptionAlg = JwtConstants.JweAlgNames.RSA1_5
             };
 
                         var result = client.GetRequestObjectEncryptionAlg();
@@ -216,7 +217,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         public void When_Passing_Alg_To_GetRequestObjectEncryptionEnc_Then_A128CBC_HS256_Is_Returned()
         {            var client = new Client
             {
-                RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
+                RequestObjectEncryptionEnc = JwtConstants.JweEncNames.A128CBC_HS256
             };
 
                         var result = client.GetRequestObjectEncryptionEnc();

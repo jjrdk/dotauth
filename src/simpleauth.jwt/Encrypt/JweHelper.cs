@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Core.Jwt.Encrypt
+namespace SimpleAuth.Jwt.Encrypt
 {
-    using SimpleAuth.Shared;
+    using System.Collections.Generic;
+    using Encryption;
+    using Shared;
 
     public class JweHelper : IJweHelper
     {

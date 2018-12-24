@@ -5,8 +5,8 @@
     using Twilio.Client;
     using System;
     using System.Threading.Tasks;
-    using Core.Jwt;
     using Logging;
+    using SimpleAuth.Jwt;
 
     internal sealed class GenerateAndSendSmsCodeOperation : IGenerateAndSendSmsCodeOperation
     {

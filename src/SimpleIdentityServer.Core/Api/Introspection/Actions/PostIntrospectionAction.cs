@@ -25,8 +25,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 {
-    using Jwt;
     using Logging;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 

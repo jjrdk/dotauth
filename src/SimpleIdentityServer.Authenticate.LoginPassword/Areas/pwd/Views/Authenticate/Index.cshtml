@@ -45,7 +45,7 @@
         </div>
         <div>
             @Html.ValidationMessage("invalid_credentials")
-            <form name="form" method="POST" action="@Url.Action("LocalLogin")">
+            <form name="form" method="POST" action="@System.Security.Policy.Url.Action("LocalLogin")">
                 <fieldset>
                     @if (loginState != null && loginState.Errors.Any())
                     {

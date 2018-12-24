@@ -19,14 +19,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
     using SimpleIdentityServer.Core.Errors;
     using SimpleIdentityServer.Core.Exceptions;
     using SimpleIdentityServer.Core.Helpers;
-    using SimpleIdentityServer.Core.Jwt;
-    using SimpleIdentityServer.Core.Jwt.Signature;
     using SimpleIdentityServer.Core.Parameters;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using SimpleAuth.Json;
+    using SimpleAuth.Jwt;
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
     using Xunit;

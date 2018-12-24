@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Uma.Client.Policy;
 using SimpleIdentityServer.Uma.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Common.DTOs;
@@ -13,6 +11,8 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 {
     using Client.Configuration;
     using Client.Permission;
+    using SimpleAuth.Jwt;
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using SimpleIdentityServer.Client;
 

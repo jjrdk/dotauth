@@ -5,12 +5,12 @@
 
 <div class="row">
     <h1>Dashboard</h1>
-    <a href="@Url.Content("~/.well-known/openid-configuration")">
+    <a href="@System.Security.Policy.Url.Content("~/.well-known/openid-configuration")">
         <section class="col-md-3 tile">
             <div class="header"></div>
             <div class="row clicked">
                 <div class="col-md-4 picture">
-                    <img src="@Url.Content("~/img/openid.png")" />
+                    <img src="@System.Security.Policy.Url.Content("~/img/openid.png")" />
                 </div>
                 <div class="col-md-8 title">
                     <h4>OpenId contract</h4>
@@ -20,12 +20,12 @@
     </a>
     @if (!ViewBag.IsAuthenticated)
     {
-        <a href="@Url.Content("~/Authenticate")">
+        <a href="@System.Security.Policy.Url.Content("~/Authenticate")">
             <section class="col-md-3 tile">
                 <div class="header"></div>
                 <div class="row clicked">
                     <div class="col-md-4 picture">
-                        <img src="@Url.Content("~/img/Unknown.png")" />
+                        <img src="@System.Security.Policy.Url.Content("~/img/Unknown.png")" />
                     </div>
                     <div class="col-md-8 title">
                         <h4>Authenticate</h4>
@@ -36,12 +36,12 @@
     }
     else
     {
-        <a href="@Url.Content("~/User")">
+        <a href="@System.Security.Policy.Url.Content("~/User")">
             <section class="col-md-3 tile">
                 <div class="header"></div>
                 <div class="row clicked">
                     <div class="col-md-4 picture">
-                        <img src="@Url.Content("~/img/Unknown.png")" />
+                        <img src="@System.Security.Policy.Url.Content("~/img/Unknown.png")" />
                     </div>
                     <div class="col-md-8 title">
                         <h4>Profile</h4>

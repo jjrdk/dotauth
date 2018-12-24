@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.IO;
-using System.Security.Cryptography;
-using SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms;
-
-namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
+namespace SimpleAuth.Jwt.Encrypt.Encryption
 {
-    using SimpleAuth.Shared;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Security.Cryptography;
+    using Algorithms;
+    using Shared;
 
     public class AesEncryptionHelper : IAesEncryptionHelper
     {

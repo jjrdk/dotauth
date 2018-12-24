@@ -1,6 +1,6 @@
-﻿namespace SimpleIdentityServer.Core.Jwt.Encrypt
+﻿namespace SimpleAuth.Jwt.Encrypt
 {
-    using SimpleAuth.Shared;
+    using Shared;
 
     public interface IJweGenerator
     {

@@ -26,6 +26,7 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
@@ -202,10 +203,10 @@
             }
 
             var subject = authenticatedUser.Claims
-                .First(c => c.Type == Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject)
+                .First(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject)
                 .Value;
             var phoneNumber = authenticatedUser.Claims.First(c =>
-                c.Type == Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber);
+                c.Type == JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber);
             if (confirmCodeViewModel.Action == "resend") // Resend the confirmation code.
             {
                 var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value).ConfigureAwait(false);

@@ -22,6 +22,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 
@@ -43,7 +44,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
             var claims = new List<Claim>
             {
-                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             IEnumerable<Consent> consents = new List<Consent>
             {

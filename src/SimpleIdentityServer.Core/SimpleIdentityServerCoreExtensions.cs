@@ -33,7 +33,6 @@ namespace SimpleIdentityServer.Core
     using SimpleIdentityServer.Core.Common;
     using SimpleIdentityServer.Core.Factories;
     using SimpleIdentityServer.Core.Helpers;
-    using SimpleIdentityServer.Core.Jwt.Converter;
     using SimpleIdentityServer.Core.JwtToken;
     using SimpleIdentityServer.Core.Protector;
     using SimpleIdentityServer.Core.Repositories;
@@ -49,6 +48,7 @@ namespace SimpleIdentityServer.Core
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using SimpleAuth.Jwt.Converter;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;

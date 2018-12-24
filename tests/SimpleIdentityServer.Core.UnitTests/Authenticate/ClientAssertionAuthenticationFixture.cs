@@ -2,7 +2,6 @@
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
 using System;
 using System.Threading.Tasks;
@@ -10,6 +9,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 {
+    using SimpleAuth.Jwt;
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -126,7 +127,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     StandardClaimNames.Issuer, "issuer"
                 },
                 {
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, "issuer"
+                    JwtConstants.StandardResourceOwnerClaimNames.Subject, "issuer"
                 },
                 {
                     StandardClaimNames.Audiences, new []
@@ -165,7 +166,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     StandardClaimNames.Issuer, "issuer"
                 },
                 {
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, "issuer"
+                    JwtConstants.StandardResourceOwnerClaimNames.Subject, "issuer"
                 },
                 {
                     StandardClaimNames.Audiences, new []
@@ -207,7 +208,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     StandardClaimNames.Issuer, "issuer"
                 },
                 {
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, "issuer"
+                    JwtConstants.StandardResourceOwnerClaimNames.Subject, "issuer"
                 },
                 {
                     StandardClaimNames.Audiences, new []
@@ -337,7 +338,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     StandardClaimNames.Issuer, "issuer"
                 },
                 {
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, "issuer"
+                    JwtConstants.StandardResourceOwnerClaimNames.Subject, "issuer"
                 },
                 {
                     StandardClaimNames.Audiences, new []

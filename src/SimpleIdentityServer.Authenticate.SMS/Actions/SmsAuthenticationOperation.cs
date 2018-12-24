@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Authenticate.SMS.Actions
 {
     using Core.Helpers;
-    using Core.Jwt;
     using Core.Services;
     using Core.WebSite.User.Actions;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 

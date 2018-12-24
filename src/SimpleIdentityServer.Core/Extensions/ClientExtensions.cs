@@ -17,6 +17,7 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Extensions
 {
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 
@@ -80,9 +81,9 @@ namespace SimpleIdentityServer.Core.Extensions
         {
             JweAlg? algEnum = null;
             if (!string.IsNullOrWhiteSpace(algName) &&
-                Jwt.JwtConstants.MappingNameToJweAlgEnum.Keys.Contains(algName))
+                JwtConstants.MappingNameToJweAlgEnum.Keys.Contains(algName))
             {
-                algEnum = Jwt.JwtConstants.MappingNameToJweAlgEnum[algName];
+                algEnum = JwtConstants.MappingNameToJweAlgEnum[algName];
             }
 
             return algEnum;
@@ -92,9 +93,9 @@ namespace SimpleIdentityServer.Core.Extensions
         {
             JweEnc? encEnum = null;
             if (!string.IsNullOrWhiteSpace(encName) &&
-                Jwt.JwtConstants.MappingNameToJweEncEnum.Keys.Contains(encName))
+                JwtConstants.MappingNameToJweEncEnum.Keys.Contains(encName))
             {
-                encEnum = Jwt.JwtConstants.MappingNameToJweEncEnum[encName];
+                encEnum = JwtConstants.MappingNameToJweEncEnum[encName];
             }
 
             return encEnum;

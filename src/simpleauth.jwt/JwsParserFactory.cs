@@ -1,7 +1,7 @@
-﻿using SimpleIdentityServer.Core.Jwt.Signature;
-
-namespace SimpleIdentityServer.Core.Jwt
+﻿namespace SimpleAuth.Jwt
 {
+    using Signature;
+
     public class JwsParserFactory
     {
         public IJwsParser BuildJwsParser()

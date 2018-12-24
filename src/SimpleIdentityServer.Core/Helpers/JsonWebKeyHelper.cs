@@ -20,8 +20,8 @@ namespace SimpleIdentityServer.Core.Helpers
     using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Jwt.Converter;
     using SimpleAuth.Json;
+    using SimpleAuth.Jwt.Converter;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
 

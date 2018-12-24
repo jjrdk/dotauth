@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Core.Jwt.Encrypt
+namespace SimpleAuth.Jwt.Encrypt
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class JweProtectedHeader
     {

@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
     using Logging;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -73,8 +74,8 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
 
             var newClaims = new List<Claim>
             {
-                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()),
-                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, resourceOwner.Id)
+                new Claim(JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()),
+                new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, resourceOwner.Id)
             };
 
             // 2. Populate the claims.
@@ -134,8 +135,8 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 //    newClaims.Remove(scimLocation);
                 //}
 
-                newClaims.Add(new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.ScimId, resourceOwner.Id));
-                newClaims.Add(new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.ScimLocation,
+                newClaims.Add(new Claim(JwtConstants.StandardResourceOwnerClaimNames.ScimId, resourceOwner.Id));
+                newClaims.Add(new Claim(JwtConstants.StandardResourceOwnerClaimNames.ScimLocation,
                     $"{scimBaseUrl}/Users/{resourceOwner.Id}"));
             }
 

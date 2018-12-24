@@ -14,7 +14,6 @@
 
 
 using Moq;
-using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Manager.Core.Tests.Fake;
 using System;
 using System.Collections.Generic;
@@ -26,6 +25,7 @@ using Xunit;
 namespace SimpleIdentityServer.Manager.Core.Tests.Helpers
 {
     using SimpleAuth.Json;
+    using SimpleAuth.Jwt.Converter;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
     using SimpleIdentityServer.Core.Errors;

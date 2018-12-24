@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Jwt.Converter;
-using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
 using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Core.JwtToken
 {
+    using SimpleAuth.Jwt;
+    using SimpleAuth.Jwt.Converter;
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
 
@@ -64,7 +65,7 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
             }
 
             var jsonWebKey = jsonWebKeys.First(j => j.Kid == protectedHeader.Kid);
-            if (protectedHeader.Alg == SimpleIdentityServer.Core.Jwt.JwtConstants.JwsAlgNames.NONE)
+            if (protectedHeader.Alg == JwtConstants.JwsAlgNames.NONE)
             {
                 return _jwsParser.GetPayload(jws);
             }

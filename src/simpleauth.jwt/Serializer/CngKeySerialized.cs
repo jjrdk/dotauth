@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Xml.Serialization;
-
-namespace SimpleIdentityServer.Core.Jwt.Serializer
+namespace SimpleAuth.Jwt.Serializer
 {
+    using System.Xml.Serialization;
+
     [XmlRoot]
     public class CngKeySerialized
     {

@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
-    using Jwt;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared.Repositories;
 
     internal class GenerateAndSendCodeAction : IGenerateAndSendCodeAction

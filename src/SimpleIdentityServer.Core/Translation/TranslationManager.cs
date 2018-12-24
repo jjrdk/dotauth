@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Core.Translation
                 }
                 else
                 {
-                    result.Add(translationCode, string.Format("[{0}]", translationCode));
+                    result.Add(translationCode, $"[{translationCode}]");
                 }
             }
 

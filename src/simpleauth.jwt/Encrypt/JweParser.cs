@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
-
-namespace SimpleIdentityServer.Core.Jwt.Encrypt
+namespace SimpleAuth.Jwt.Encrypt
 {
-    using SimpleAuth.Json;
-    using SimpleAuth.Shared;
+    using System.Linq;
+    using Json;
+    using Shared;
 
     public class JweParser : IJweParser
     {

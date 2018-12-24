@@ -7,7 +7,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Tests.Services
 {
-    using Core.Jwt;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 

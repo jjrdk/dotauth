@@ -4,7 +4,7 @@
     <Description>SimpleIdentityServer.Core.Jwt Class Library</Description>
     <Authors>thabart</Authors>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>SimpleIdentityServer.Core.Jwt</AssemblyName>
+    <AssemblyName>simpleauth.jwt</AssemblyName>
     <PackageId>SimpleIdentityServer.Core.Jwt</PackageId>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
@@ -14,6 +14,7 @@
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <RootNamespace>SimpleAuth.Jwt</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

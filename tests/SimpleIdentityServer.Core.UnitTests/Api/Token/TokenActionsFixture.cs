@@ -14,8 +14,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
     using Core.Authenticate;
     using Core.Helpers;
     using System.Collections.Generic;
-    using Jwt;
     using Logging;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 

@@ -12,6 +12,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared.Models;
 
     public sealed class LocalOpenIdUserAuthenticationActionFixture
@@ -60,7 +61,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             Assert.NotNull(result);
             Assert.NotNull(result.Claims);
             Assert.Contains(result.Claims, r => r.Type == ClaimTypes.AuthenticationInstant ||
-                r.Type == Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject);
+                r.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject);
         }
 
         private void InitializeFakeObjects()

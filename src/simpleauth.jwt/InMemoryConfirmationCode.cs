@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Jwt
+﻿namespace SimpleAuth.Jwt
 {
     using System;
     using System.Collections.Generic;

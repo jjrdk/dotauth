@@ -19,9 +19,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Client;
     using Client.Operations;
     using Core.Extensions;
-    using Core.Jwt;
-    using Core.Jwt.Encrypt;
-    using Core.Jwt.Signature;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using Newtonsoft.Json;
@@ -31,6 +28,9 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using SimpleAuth.Jwt;
+    using SimpleAuth.Jwt.Encrypt;
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
     using Xunit;
@@ -39,7 +39,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     {
         private const string baseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
-        //private IJwksClient _jwksClient;
         private ISidSmsAuthenticateClient _sidSmsAuthenticateClient;
         private IJwsGenerator _jwsGenerator;
         private IJweGenerator _jweGenerator;

@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\simpleauth.jwt\simpleauth.jwt.csproj" />
+    <ProjectReference Include="..\..\src\simpleauth.shared\simpleauth.shared.csproj" />
   </ItemGroup>
 
 </Project>

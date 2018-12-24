@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
-namespace SimpleIdentityServer.Core.Jwt.Signature
+namespace SimpleAuth.Jwt.Signature
 {
-    using SimpleAuth.Json;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
+    using System;
+    using Json;
+    using Shared;
+    using Shared.Requests;
 
     public class JwsGenerator : IJwsGenerator
     {

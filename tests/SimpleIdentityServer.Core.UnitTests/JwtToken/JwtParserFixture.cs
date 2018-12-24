@@ -1,8 +1,5 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Jwt.Converter;
-using SimpleIdentityServer.Core.Jwt.Encrypt;
-using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.UnitTests.Fake;
 using System;
@@ -15,6 +12,10 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
     using SimpleAuth.Json;
+    using SimpleAuth.Jwt;
+    using SimpleAuth.Jwt.Converter;
+    using SimpleAuth.Jwt.Encrypt;
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -56,7 +57,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             InitializeFakeObjects();
             var jwsProtectedHeader = new JweProtectedHeader
             {
-                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
+                Alg = JwtConstants.JwsAlgNames.PS256
             };
             _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
@@ -74,7 +75,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             InitializeFakeObjects();
             var jwsProtectedHeader = new JweProtectedHeader
             {
-                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
+                Alg = JwtConstants.JwsAlgNames.PS256
             };
             var jsonWebKey = new JsonWebKey();
             _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
@@ -132,7 +133,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string clientId = "client_id";
             var jwsProtectedHeader = new JweProtectedHeader
             {
-                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
+                Alg = JwtConstants.JwsAlgNames.PS256
             };
             var client = new Client
             {
@@ -164,7 +165,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var payLoad = new JwsPayload();
             var jwsProtectedHeader = new JweProtectedHeader
             {
-                Alg = Jwt.JwtConstants.JweAlgNames.A128KW,
+                Alg = JwtConstants.JweAlgNames.A128KW,
                 Kid = kid
             };
             var client = new Client
@@ -196,7 +197,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string password = "password";
             var jwsProtectedHeader = new JweProtectedHeader
             {
-                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
+                Alg = JwtConstants.JwsAlgNames.PS256
             };
             var client = new Client
             {
@@ -230,7 +231,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var payLoad = new JwsPayload();
             var jwsProtectedHeader = new JweProtectedHeader
             {
-                Alg = Jwt.JwtConstants.JweAlgNames.A128KW,
+                Alg = JwtConstants.JweAlgNames.A128KW,
                 Kid = kid
             };
             var client = new Client
@@ -288,7 +289,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var payLoad = new JwsPayload();
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.JwtConstants.JwsAlgNames.PS256,
+                Alg = JwtConstants.JwsAlgNames.PS256,
                 Kid = kid
             };
 
@@ -349,7 +350,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string clientId = "client_id";
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
+                Alg = JwtConstants.JwsAlgNames.PS256
             };
             var client = new Client
             {
@@ -377,7 +378,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string json = "json";
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
+                Alg = JwtConstants.JwsAlgNames.PS256
             };
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest)
             {
@@ -412,7 +413,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var json = jsonWebKeySet.SerializeWithDataContract();
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
+                Alg = JwtConstants.JwsAlgNames.PS256
             };
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.Accepted)
             {
@@ -449,7 +450,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string clientId = "client_id";
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
+                Alg = JwtConstants.JwsAlgNames.PS256
             };
             var client = new Client
             {
@@ -473,7 +474,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string clientId = "client_id";
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.JwtConstants.JwsAlgNames.PS256
+                Alg = JwtConstants.JwsAlgNames.PS256
             };
             var client = new Client
             {
@@ -498,7 +499,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var payLoad = new JwsPayload();
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.JwtConstants.JwsAlgNames.NONE
+                Alg = JwtConstants.JwsAlgNames.NONE
             };
             var client = new Client
             {
@@ -535,7 +536,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var payLoad = new JwsPayload();
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.JwtConstants.JwsAlgNames.PS256,
+                Alg = JwtConstants.JwsAlgNames.PS256,
                 Kid = kid
             };
             var client = new Client
@@ -588,7 +589,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var payLoad = new JwsPayload();
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Alg = Jwt.JwtConstants.JwsAlgNames.PS256,
+                Alg = JwtConstants.JwsAlgNames.PS256,
                 Kid = kid
             };
             var client = new Client

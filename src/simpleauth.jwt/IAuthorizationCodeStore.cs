@@ -1,7 +1,7 @@
-﻿namespace SimpleIdentityServer.Core.Jwt
+﻿namespace SimpleAuth.Jwt
 {
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public interface IAuthorizationCodeStore
     {

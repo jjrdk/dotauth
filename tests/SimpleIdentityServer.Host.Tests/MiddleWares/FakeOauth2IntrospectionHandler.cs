@@ -11,6 +11,7 @@ namespace SimpleIdentityServer.Host.Tests.MiddleWares
 {
     using Client;
     using Client.Operations;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
 
     public class FakeOauth2IntrospectionHandler : AuthenticationHandler<FakeOAuth2IntrospectionOptions>
@@ -59,7 +60,7 @@ namespace SimpleIdentityServer.Host.Tests.MiddleWares
 
                 if (!string.IsNullOrWhiteSpace(introspectionResult.Content.Subject))
                 {
-                    claims.Add(new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, introspectionResult.Content.Subject));
+                    claims.Add(new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, introspectionResult.Content.Subject));
                 }
 
                 if (!string.IsNullOrWhiteSpace(introspectionResult.Content.ClientId))

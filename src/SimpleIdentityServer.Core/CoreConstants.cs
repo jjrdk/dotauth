@@ -18,6 +18,7 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core
 {
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared.Models;
 
     public static class CoreConstants
@@ -79,20 +80,20 @@ namespace SimpleIdentityServer.Core
                 Description = "Access to the profile",
                 Claims = new List<string>
                 {
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.Name,
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.FamilyName,
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.GivenName,
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.MiddleName,
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.NickName,
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.PreferredUserName,
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.Profile,
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.Picture,
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.WebSite,
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.Gender,
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.BirthDate,
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.ZoneInfo,
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.Locale,
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt
+                    JwtConstants.StandardResourceOwnerClaimNames.Name,
+                    JwtConstants.StandardResourceOwnerClaimNames.FamilyName,
+                    JwtConstants.StandardResourceOwnerClaimNames.GivenName,
+                    JwtConstants.StandardResourceOwnerClaimNames.MiddleName,
+                    JwtConstants.StandardResourceOwnerClaimNames.NickName,
+                    JwtConstants.StandardResourceOwnerClaimNames.PreferredUserName,
+                    JwtConstants.StandardResourceOwnerClaimNames.Profile,
+                    JwtConstants.StandardResourceOwnerClaimNames.Picture,
+                    JwtConstants.StandardResourceOwnerClaimNames.WebSite,
+                    JwtConstants.StandardResourceOwnerClaimNames.Gender,
+                    JwtConstants.StandardResourceOwnerClaimNames.BirthDate,
+                    JwtConstants.StandardResourceOwnerClaimNames.ZoneInfo,
+                    JwtConstants.StandardResourceOwnerClaimNames.Locale,
+                    JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt
                 },
                 Type = ScopeType.ResourceOwner
             };
@@ -106,8 +107,8 @@ namespace SimpleIdentityServer.Core
                 Description = "Access to the email",
                 Claims = new List<string>
                 {
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.Email,
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.EmailVerified
+                    JwtConstants.StandardResourceOwnerClaimNames.Email,
+                    JwtConstants.StandardResourceOwnerClaimNames.EmailVerified
                 },
                 Type = ScopeType.ResourceOwner
             };
@@ -121,7 +122,7 @@ namespace SimpleIdentityServer.Core
                 Description = "Access to the address",
                 Claims = new List<string>
                 {
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.Address
+                    JwtConstants.StandardResourceOwnerClaimNames.Address
                 },
                 Type = ScopeType.ResourceOwner
             };
@@ -135,8 +136,8 @@ namespace SimpleIdentityServer.Core
                 Description = "Access to the phone",
                 Claims = new List<string>
                 {
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber,
-                    Jwt.JwtConstants.StandardResourceOwnerClaimNames.PhoneNumberVerified
+                    JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber,
+                    JwtConstants.StandardResourceOwnerClaimNames.PhoneNumberVerified
                 },
                 Type = ScopeType.ResourceOwner
             };
@@ -407,17 +408,17 @@ namespace SimpleIdentityServer.Core
 
             public static List<string> SupportedJwsAlgs = new List<string>
             {
-                Jwt.JwtConstants.JwsAlgNames.RS256
+                JwtConstants.JwsAlgNames.RS256
             };
 
             public static List<string> SupportedJweAlgs = new List<string>
             {
-                Jwt.JwtConstants.JweAlgNames.RSA1_5
+                JwtConstants.JweAlgNames.RSA1_5
             };
 
             public static List<string> SupportedJweEncs = new List<string>
             {
-                Jwt.JwtConstants.JweEncNames.A128CBC_HS256
+                JwtConstants.JweEncNames.A128CBC_HS256
             };
 
             public static List<TokenEndPointAuthenticationMethods> SupportedTokenEndPointAuthenticationMethods = new List
@@ -432,27 +433,27 @@ namespace SimpleIdentityServer.Core
 
             public static List<string> SupportedClaims = new List<string>
             {
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.Name,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.FamilyName,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.GivenName,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.MiddleName,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.NickName,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.PreferredUserName,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.Profile,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.Picture,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.WebSite,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.Gender,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.BirthDate,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.ZoneInfo,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.Locale,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.Email,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.EmailVerified,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.Address,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.PhoneNumberVerified,
-                Jwt.JwtConstants.StandardResourceOwnerClaimNames.Role
+                JwtConstants.StandardResourceOwnerClaimNames.Subject,
+                JwtConstants.StandardResourceOwnerClaimNames.Name,
+                JwtConstants.StandardResourceOwnerClaimNames.FamilyName,
+                JwtConstants.StandardResourceOwnerClaimNames.GivenName,
+                JwtConstants.StandardResourceOwnerClaimNames.MiddleName,
+                JwtConstants.StandardResourceOwnerClaimNames.NickName,
+                JwtConstants.StandardResourceOwnerClaimNames.PreferredUserName,
+                JwtConstants.StandardResourceOwnerClaimNames.Profile,
+                JwtConstants.StandardResourceOwnerClaimNames.Picture,
+                JwtConstants.StandardResourceOwnerClaimNames.WebSite,
+                JwtConstants.StandardResourceOwnerClaimNames.Gender,
+                JwtConstants.StandardResourceOwnerClaimNames.BirthDate,
+                JwtConstants.StandardResourceOwnerClaimNames.ZoneInfo,
+                JwtConstants.StandardResourceOwnerClaimNames.Locale,
+                JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt,
+                JwtConstants.StandardResourceOwnerClaimNames.Email,
+                JwtConstants.StandardResourceOwnerClaimNames.EmailVerified,
+                JwtConstants.StandardResourceOwnerClaimNames.Address,
+                JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber,
+                JwtConstants.StandardResourceOwnerClaimNames.PhoneNumberVerified,
+                JwtConstants.StandardResourceOwnerClaimNames.Role
             };
         }
 

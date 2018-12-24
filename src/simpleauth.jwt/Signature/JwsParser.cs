@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Jwt.Converter;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace SimpleIdentityServer.Core.Jwt.Signature
+namespace SimpleAuth.Jwt.Signature
 {
-    using SimpleAuth.Json;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Converter;
+    using Json;
+    using Shared;
+    using Shared.Requests;
 
     public class JwsParser : IJwsParser
     {
@@ -60,8 +59,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
             var base64EncodedProtectedHeader = parts[0];
             var base64EncodedSerialized = parts[1];
-            var combinedProtectedHeaderAndPayLoad = string.Format("{0}.{1}", base64EncodedProtectedHeader,
-                base64EncodedSerialized);
+            var combinedProtectedHeaderAndPayLoad = $"{base64EncodedProtectedHeader}.{base64EncodedSerialized}";
             var serializedProtectedHeader = base64EncodedProtectedHeader.Base64Decode();
             var serializedPayload = base64EncodedSerialized.Base64Decode();
             var signature = parts[2].Base64DecodeBytes();

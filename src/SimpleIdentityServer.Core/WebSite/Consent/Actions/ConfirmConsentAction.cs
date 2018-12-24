@@ -94,8 +94,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             var client = await _clientRepository.GetById(authorizationParameter.ClientId).ConfigureAwait(false);
             if (client == null)
             {
-                throw new InvalidOperationException(string.Format("the client id {0} doesn't exist",
-                    authorizationParameter.ClientId));
+                throw new InvalidOperationException($"the client id {authorizationParameter.ClientId} doesn't exist");
             }
 
             var subject = claimsPrincipal.GetSubject();

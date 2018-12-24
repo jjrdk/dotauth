@@ -1,11 +1,11 @@
-﻿namespace SimpleIdentityServer.Core.Jwt
+﻿namespace SimpleAuth.Jwt
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
+    using Shared;
+    using Shared.Models;
 
     internal sealed class InMemoryTokenStore : ITokenStore
     {

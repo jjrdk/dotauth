@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.OAuth2Introspection
 {
     using System.Globalization;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
 
     public class OAuth2IntrospectionHandler : AuthenticationHandler<OAuth2IntrospectionOptions>
@@ -67,7 +68,7 @@ namespace SimpleIdentityServer.OAuth2Introspection
 
                 if (!string.IsNullOrWhiteSpace(introspectionResult.Content.Subject))
                 {
-                    claims.Add(new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject,
+                    claims.Add(new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject,
                         introspectionResult.Content.Subject));
                 }
 

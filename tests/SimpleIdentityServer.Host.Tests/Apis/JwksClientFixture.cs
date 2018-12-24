@@ -18,12 +18,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Client.Operations;
     using Core;
     using Core.Api.Discovery;
-    using Core.Jwt;
     using Core.Repositories;
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared.Models;
     using Xunit;
 

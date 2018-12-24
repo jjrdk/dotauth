@@ -27,6 +27,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
+    using SimpleAuth.Jwt;
+
     public sealed class AuthenticateResourceOwnerOpenIdActionFixture
     {
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
@@ -93,7 +95,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
             var claims = new List<Claim>
             {
-                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimsIdentity = new ClaimsIdentity(claims, "identityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);

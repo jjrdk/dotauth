@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {
             const string clientId = "clientId";
             const string clientSecret = "clientSecret";
-            var parameter = string.Format("{0}:{1}", clientId, clientSecret);
+            var parameter = $"{clientId}:{clientSecret}";
             var encodedParameter = parameter.Base64Encode();
             var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", encodedParameter);
 

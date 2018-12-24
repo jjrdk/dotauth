@@ -6,16 +6,16 @@
 <div class="row">
     <ul class="nav nav-tabs">
         <li class="@(ViewBag.IsIndexDisplayed ? "active": string.Empty)">
-            <a href="@Url.Action("Index")">Information</a>
+            <a href="@System.Security.Policy.Url.Action("Index")">Information</a>
         </li>
         <li class="@(ViewBag.IsConsentDisplayed ? "active": string.Empty)">
-            <a href="@Url.Action("Consent")">Consents</a>
+            <a href="@System.Security.Policy.Url.Action("Consent")">Consents</a>
         </li>
         <li class="@(ViewBag.IsEditDisplayed ? "active": string.Empty)">
-            <a href="@Url.Action("Edit")">Edit</a>
+            <a href="@System.Security.Policy.Url.Action("Edit")">Edit</a>
         </li>
         <li class="@(ViewBag.IsProfileDisplayed ? "active": string.Empty)">
-            <a href="@Url.Action("Profile")">Profile</a>
+            <a href="@System.Security.Policy.Url.Action("Profile")">Profile</a>
         </li>
     </ul>
 

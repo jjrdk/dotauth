@@ -15,11 +15,11 @@
         <div class="col-center">
             @if (string.IsNullOrWhiteSpace(Model.LogoUri))
             {
-                <img src="@Url.Content("~/img/OAuth2.png")" width="150" height="150" />
+                <img src="@System.Security.Policy.Url.Content("~/img/OAuth2.png")" width="150" height="150" />
             }
             else
             {
-                <img src="@Url.Content(Model.LogoUri)" width="150" height="150" />
+                <img src="@System.Security.Policy.Url.Content(Model.LogoUri)" width="150" height="150" />
             }
         </div>
         <div>
@@ -77,8 +77,8 @@
         }
         
         <div>
-            <a href="@Url.Action("Cancel", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations["cancel"]</a>
-            <a href="@Url.Action("Confirm", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations["confirm"]</a>
+            <a href="@System.Security.Policy.Url.Action("Cancel", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations["cancel"]</a>
+            <a href="@System.Security.Policy.Url.Action("Confirm", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations["confirm"]</a>
         </div>
     </div>
 </div>
