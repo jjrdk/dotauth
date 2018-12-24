@@ -3,7 +3,7 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class TokenRequest : IEnumerable<KeyValuePair<string, string>>
     {

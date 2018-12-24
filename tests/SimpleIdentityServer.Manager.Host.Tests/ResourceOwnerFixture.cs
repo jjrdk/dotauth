@@ -4,11 +4,11 @@
     using Client.ResourceOwners;
     using Core.Errors;
     using Core.Helpers;
-    using Shared.Requests;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Requests;
     using Xunit;
 
     public class ResourceOwnerFixture : IClassFixture<TestManagerServerFixture>

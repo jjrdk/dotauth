@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client
 {
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     internal class DiscoveryClient : IDiscoveryClient
     {

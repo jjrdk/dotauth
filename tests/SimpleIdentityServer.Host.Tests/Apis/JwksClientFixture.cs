@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
     using Xunit;
 
     public class JwksClientFixture : IClassFixture<TestOauthServerFixture>

@@ -15,10 +15,10 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
     using Json;
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
-    using Shared.Requests;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Requests;
 
     public sealed class JwtParserFixture
     {

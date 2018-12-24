@@ -2,7 +2,7 @@
 
 namespace SimpleIdentityServer.Uma.Client.Results
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class GetPoliciesResult : BaseResponse
     {

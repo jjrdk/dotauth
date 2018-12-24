@@ -30,10 +30,10 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Shell.Controllers
 {
     using Host;
-    using Shared;
-    using Shared.Events.Openid;
-    using Shared.Models;
-    using Shared.Requests;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Events.Openid;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
 
     [Area("Shell")]
     [Authorize("Connected")]

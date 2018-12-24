@@ -21,8 +21,8 @@ namespace SimpleIdentityServer.Client
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-    using Shared;
-    using Shared.DTOs;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.DTOs;
 
     internal class UsersClient : IUsersClient
     {

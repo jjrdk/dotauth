@@ -6,7 +6,7 @@
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     internal sealed class GetAllScopesOperation : IGetAllScopesOperation
     {

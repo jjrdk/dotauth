@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using Parameters;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public interface IParameterParserHelper
     {

@@ -16,8 +16,8 @@ namespace SimpleIdentityServer.Core.Api.Scopes.Actions
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     internal class GetScopesOperation : IGetScopesOperation
     {

@@ -2,10 +2,10 @@
 {
     using Newtonsoft.Json;
     using Results;
-    using Shared.Responses;
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Responses;
 
     internal sealed class GetConfigurationOperation : IGetConfigurationOperation
     {

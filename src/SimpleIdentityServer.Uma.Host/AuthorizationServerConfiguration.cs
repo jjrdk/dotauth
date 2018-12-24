@@ -3,7 +3,7 @@
     using System;
     using Core.Models;
     using System.Collections.Generic;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public class AuthorizationServerConfiguration
     {

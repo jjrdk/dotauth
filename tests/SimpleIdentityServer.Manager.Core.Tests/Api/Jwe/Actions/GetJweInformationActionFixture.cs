@@ -19,10 +19,9 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
     using SimpleIdentityServer.Core.Jwt.Signature;
     using System;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
     using Xunit;
-
-    using Shared;
-    using Shared.Requests;
     using SimpleIdentityServer.Core.Api.Jwe.Actions;
     using SimpleIdentityServer.Core.Errors;
     using SimpleIdentityServer.Core.Exceptions;

@@ -4,8 +4,8 @@
     using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     internal sealed class GetClaimAction : IGetClaimAction
     {

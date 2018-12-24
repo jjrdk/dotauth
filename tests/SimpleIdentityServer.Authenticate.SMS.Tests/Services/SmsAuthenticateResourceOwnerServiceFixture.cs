@@ -8,8 +8,8 @@ using Xunit;
 namespace SimpleIdentityServer.Authenticate.SMS.Tests.Services
 {
     using Core.Jwt;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public class SmsAuthenticateResourceOwnerServiceFixture
     {

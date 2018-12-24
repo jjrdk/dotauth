@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Shared.Results
+namespace SimpleAuth.Shared.Results
 {
     using System.Collections.Generic;
     using Models;

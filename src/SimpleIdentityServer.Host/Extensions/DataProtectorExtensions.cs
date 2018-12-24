@@ -18,7 +18,7 @@ using System.Text;
 
 namespace SimpleIdentityServer.Host.Extensions
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public static class DataProtectorExtensions
     {

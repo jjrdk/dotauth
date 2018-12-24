@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.LoginPassword.Services
 {
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     internal sealed class PasswordAuthenticateResourceOwnerService : IAuthenticateResourceOwnerService
     {

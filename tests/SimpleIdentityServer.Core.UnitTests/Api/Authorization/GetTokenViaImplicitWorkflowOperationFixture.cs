@@ -15,8 +15,8 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
     using Logging;
-    using Shared.Models;
-    using Client = Shared.Models.Client;
+    using SimpleAuth.Shared.Models;
+    using Client = SimpleAuth.Shared.Models.Client;
 
     public class GetTokenViaImplicitWorkflowOperationFixture
     {

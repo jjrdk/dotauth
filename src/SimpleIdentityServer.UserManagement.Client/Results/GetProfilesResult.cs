@@ -3,7 +3,7 @@
 namespace SimpleIdentityServer.UserManagement.Client.Results
 {
     using Common.Responses;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class GetProfilesResult : BaseResponse
     {

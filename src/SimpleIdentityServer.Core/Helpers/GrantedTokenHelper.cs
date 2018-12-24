@@ -19,8 +19,8 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Helpers
 {
     using Jwt;
-    using Shared;
-    using Shared.Models;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     internal class GrantedTokenHelper : IGrantedTokenHelper
     {

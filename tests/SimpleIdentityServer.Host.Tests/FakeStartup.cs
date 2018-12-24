@@ -43,9 +43,9 @@ namespace SimpleIdentityServer.Host.Tests
     using Extensions;
     using System.Net.Http;
     using Client;
-    using Shared;
-    using Shared.Repositories;
-    using Shared.Requests;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Requests;
 
     public class FakeStartup : IStartup
     {

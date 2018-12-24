@@ -2,7 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public interface IDeleteClientOperation
     {

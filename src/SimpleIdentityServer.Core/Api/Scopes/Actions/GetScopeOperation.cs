@@ -18,8 +18,8 @@ namespace SimpleIdentityServer.Core.Api.Scopes.Actions
     using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     internal class GetScopeOperation : IGetScopeOperation
     {

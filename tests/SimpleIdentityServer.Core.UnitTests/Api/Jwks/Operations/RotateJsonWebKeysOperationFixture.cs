@@ -21,8 +21,8 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks.Operations
 {
     using Jwt;
-    using Shared;
-    using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Repositories;
 
     public sealed class RotateJsonWebKeysOperationFixture
     {

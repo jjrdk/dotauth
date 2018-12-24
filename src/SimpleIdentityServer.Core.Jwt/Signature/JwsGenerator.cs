@@ -17,8 +17,8 @@ using System;
 namespace SimpleIdentityServer.Core.Jwt.Signature
 {
     using Json;
-    using Shared;
-    using Shared.Requests;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
 
     public class JwsGenerator : IJwsGenerator
     {

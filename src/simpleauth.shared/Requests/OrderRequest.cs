@@ -1,7 +1,6 @@
-﻿namespace SimpleIdentityServer.Shared.Requests
+﻿namespace SimpleAuth.Shared.Requests
 {
     using System.Runtime.Serialization;
-    using Shared;
 
     [DataContract]
     public class OrderRequest

@@ -3,7 +3,7 @@
     using System.Threading.Tasks;
     using Common.Requests;
     using Results;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public interface IProfileClient
     {

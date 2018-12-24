@@ -19,7 +19,7 @@ namespace SimpleIdentityServer.Core
     using System.Security.Cryptography.X509Certificates;
     using Authenticate;
     using Parameters;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public static class AuthenticationHeaderValueExtensions
     {

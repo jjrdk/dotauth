@@ -22,8 +22,8 @@ namespace SimpleIdentityServer.Client
     using Newtonsoft.Json;
     using System.Net.Http;
     using System.Net.Http.Headers;
-    using Shared.Models;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Responses;
 
     internal class RegistrationClient : IRegistrationClient
     {

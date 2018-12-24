@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Repositories;
 
     internal sealed class DeleteClaimAction : IDeleteClaimAction
     {

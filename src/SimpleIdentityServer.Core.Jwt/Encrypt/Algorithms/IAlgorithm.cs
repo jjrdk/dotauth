@@ -14,7 +14,7 @@
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public interface IAlgorithm
     {

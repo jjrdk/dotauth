@@ -22,8 +22,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Validators
 {
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator : IAuthorizationCodeGrantTypeParameterAuthEdpValidator
     {

@@ -20,7 +20,7 @@ using System.Text;
 namespace SimpleIdentityServer.Core.Validators
 {
     using Helpers;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public class ClientValidator : IClientValidator
     {        

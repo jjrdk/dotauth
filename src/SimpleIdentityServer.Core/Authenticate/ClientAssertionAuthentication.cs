@@ -22,9 +22,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public class ClientAssertionAuthentication : IClientAssertionAuthentication
     {

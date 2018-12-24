@@ -16,8 +16,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
     using Json;
     using Logging;
-    using Shared.Models;
-    using Client = Shared.Models.Client;
+    using SimpleAuth.Shared.Models;
+    using Client = SimpleAuth.Shared.Models.Client;
 
     public sealed class GetAuthorizationCodeOperationFixture
     {

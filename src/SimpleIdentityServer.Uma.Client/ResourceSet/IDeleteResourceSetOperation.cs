@@ -1,7 +1,7 @@
 ﻿namespace SimpleIdentityServer.Uma.Client.ResourceSet
 {
     using System.Threading.Tasks;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public interface IDeleteResourceSetOperation
     {

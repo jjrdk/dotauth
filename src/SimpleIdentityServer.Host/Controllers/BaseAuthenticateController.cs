@@ -33,16 +33,16 @@ namespace SimpleIdentityServer.Host.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.AspNetCore.Mvc.Routing;
-    using Shared;
-    using Shared.Events.Openid;
-    using Shared.Models;
-    using Shared.Requests;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Events.Openid;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
     using ViewModels;
     using Website;
 

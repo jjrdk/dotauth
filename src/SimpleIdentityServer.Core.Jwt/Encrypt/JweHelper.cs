@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class JweHelper : IJweHelper
     {

@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Newtonsoft.Json;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class JwsPayloadConverter : JsonConverter<JwsPayload>
     {

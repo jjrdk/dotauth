@@ -3,8 +3,8 @@
     using System;
     using System.Threading.Tasks;
     using Newtonsoft.Json.Linq;
-    using Shared;
-    using Shared.DTOs;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.DTOs;
 
     public interface IUsersClient
     {

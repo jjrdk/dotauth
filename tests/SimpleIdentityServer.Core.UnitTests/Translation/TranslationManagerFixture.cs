@@ -8,8 +8,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Translation
 {
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public sealed class TranslationManagerFixture
     {

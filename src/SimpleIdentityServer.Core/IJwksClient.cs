@@ -2,7 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Shared.Requests;
+    using SimpleAuth.Shared.Requests;
 
     public interface IJwksClient
     {

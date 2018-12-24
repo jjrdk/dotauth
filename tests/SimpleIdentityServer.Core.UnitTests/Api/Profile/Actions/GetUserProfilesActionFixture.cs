@@ -8,10 +8,10 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
 {
-    using Shared.Models;
-    using Shared.Parameters;
-    using Shared.Repositories;
     using System.Threading;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Parameters;
+    using SimpleAuth.Shared.Repositories;
 
     public class GetUserProfilesActionFixture
     {

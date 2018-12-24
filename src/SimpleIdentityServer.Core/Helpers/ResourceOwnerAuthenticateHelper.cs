@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     internal class ResourceOwnerAuthenticateHelper : IResourceOwnerAuthenticateHelper
     {

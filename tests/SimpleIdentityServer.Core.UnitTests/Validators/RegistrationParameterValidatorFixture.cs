@@ -2,8 +2,6 @@
 {
     using Json;
     using Repositories;
-    using Shared;
-    using Shared.Models;
     using SimpleIdentityServer.Core.Errors;
     using SimpleIdentityServer.Core.Exceptions;
     using SimpleIdentityServer.Core.UnitTests.Fake;
@@ -12,6 +10,8 @@
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
     using Xunit;
 
     public sealed class ClientFactoryFixture

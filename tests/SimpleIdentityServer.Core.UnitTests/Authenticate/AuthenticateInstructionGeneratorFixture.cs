@@ -17,7 +17,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class AuthenticateInstructionGeneratorFixture
     {

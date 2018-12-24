@@ -25,8 +25,8 @@ using System.Xml.Serialization;
 namespace SimpleIdentityServer.Core.Jwt.Converter
 {
     using Extensions;
-    using Shared;
-    using Shared.Requests;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
 
     public class JsonWebKeyConverter : IJsonWebKeyConverter
     {

@@ -17,8 +17,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
     using Moq;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
     using SimpleIdentityServer.Core.Api.Scopes.Actions;
     using Xunit;
 

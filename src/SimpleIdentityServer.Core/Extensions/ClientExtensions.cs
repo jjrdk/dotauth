@@ -17,8 +17,8 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Extensions
 {
-    using Shared;
-    using Shared.Models;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public static class ClientExtensions
     {

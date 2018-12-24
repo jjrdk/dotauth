@@ -2,10 +2,10 @@
 {
     using Client.Claims;
     using Client.Configuration;
-    using Shared.Responses;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Responses;
     using Xunit;
 
     public class ClaimsFixture : IClassFixture<TestManagerServerFixture>

@@ -16,7 +16,7 @@ using System;
 
 namespace SimpleIdentityServer.Core.Extensions
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public static class AlgorithmExtensions
     {

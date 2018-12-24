@@ -18,16 +18,16 @@ namespace SimpleIdentityServer.Host.Extensions
     using Core.Results;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-    using Shared;
-    using Shared.Models;
-    using Shared.Parameters;
-    using Shared.Requests;
-    using Shared.Responses;
-    using Shared.Results;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using CodeChallengeMethods = Shared.Models.CodeChallengeMethods;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Parameters;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
+    using SimpleAuth.Shared.Results;
+    using CodeChallengeMethods = SimpleAuth.Shared.Models.CodeChallengeMethods;
 
     public static class MappingExtensions
     {

@@ -20,7 +20,7 @@ using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class JsonWebKeyEnricher : IJsonWebKeyEnricher
     {

@@ -1,6 +1,6 @@
 ﻿namespace SimpleIdentityServer.Scim.Client.Tests
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class DefaultEventPublisher : IEventPublisher
     {

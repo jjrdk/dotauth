@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Shared.Requests
+﻿namespace SimpleAuth.Shared.Requests
 {
     public enum GrantTypes
     {

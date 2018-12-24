@@ -1,7 +1,7 @@
 ﻿namespace SimpleIdentityServer.UserManagement.Client.Operations
 {
     using System.Threading.Tasks;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public interface IUnlinkProfileOperation
     {

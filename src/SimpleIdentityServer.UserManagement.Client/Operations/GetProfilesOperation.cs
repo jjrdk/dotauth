@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.UserManagement.Client.Operations
 {
     using Common.Responses;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     internal sealed class GetProfilesOperation : IGetProfilesOperation
     {

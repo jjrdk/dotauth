@@ -19,8 +19,8 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Core.JwtToken
 {
-    using Shared;
-    using Shared.Requests;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
 
     internal class JwtTokenParser : IJwtTokenParser
     {

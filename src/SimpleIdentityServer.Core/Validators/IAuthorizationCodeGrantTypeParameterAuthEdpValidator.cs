@@ -2,7 +2,7 @@
 {
     using System.Threading.Tasks;
     using Parameters;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public interface IAuthorizationCodeGrantTypeParameterAuthEdpValidator
     {

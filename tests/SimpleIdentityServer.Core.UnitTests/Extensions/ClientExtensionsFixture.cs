@@ -3,8 +3,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Extensions
 {
-    using Shared;
-    using Shared.Models;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public sealed class ClientExtensionsFixture
     {

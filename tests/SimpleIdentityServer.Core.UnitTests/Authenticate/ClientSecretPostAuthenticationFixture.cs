@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 {
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public sealed class ClientSecretPostAuthenticationFixture
     {

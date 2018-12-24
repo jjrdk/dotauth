@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Client.Policy
 {
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     internal sealed class SearchPoliciesOperation : ISearchPoliciesOperation
     {

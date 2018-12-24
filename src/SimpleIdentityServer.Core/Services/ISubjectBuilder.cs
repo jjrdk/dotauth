@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Shared.DTOs;
+    using SimpleAuth.Shared.DTOs;
 
     public interface ISubjectBuilder
     {

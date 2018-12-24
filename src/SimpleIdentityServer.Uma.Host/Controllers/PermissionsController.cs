@@ -25,7 +25,7 @@ using SimpleIdentityServer.Core.Errors;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     [Route(Constants.RouteValues.Permission)]
     public class PermissionsController : Controller

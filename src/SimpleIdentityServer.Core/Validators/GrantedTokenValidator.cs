@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Validators
 {
     using Jwt;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public class GrantedTokenValidator : IGrantedTokenValidator
     {

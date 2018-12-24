@@ -9,8 +9,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
     using Core.Jwt;
     using Core.Services;
     using Core.WebSite.User.Actions;
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     internal sealed class SmsAuthenticationOperation : ISmsAuthenticationOperation
     {

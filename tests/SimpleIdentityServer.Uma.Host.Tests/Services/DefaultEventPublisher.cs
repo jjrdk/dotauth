@@ -1,6 +1,6 @@
 ﻿namespace SimpleIdentityServer.Uma.Host.Tests.Services
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     internal sealed class DefaultEventPublisher : IEventPublisher
     {

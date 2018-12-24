@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public interface IGetClaimsAction
     {

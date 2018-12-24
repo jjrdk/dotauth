@@ -32,9 +32,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
     using Json;
     using Jwt;
     using Logging;
-    using Shared;
-    using Shared.Models;
-    using Client = Shared.Models.Client;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using Client = SimpleAuth.Shared.Models.Client;
 
     public sealed  class GenerateAuthorizationResponseFixture
     {

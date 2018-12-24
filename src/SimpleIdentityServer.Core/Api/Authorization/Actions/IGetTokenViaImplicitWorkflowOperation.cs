@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using Parameters;
     using Results;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public interface IGetTokenViaImplicitWorkflowOperation
     {

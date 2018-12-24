@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Shared.DTOs
+﻿namespace SimpleAuth.Shared.DTOs
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;

@@ -18,8 +18,8 @@ namespace SimpleIdentityServer.Uma.Client.Policy
     using System.Net.Http;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
-    using Shared;
-    using Shared.Responses;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
 
     internal class DeleteResourceFromPolicyOperation : IDeleteResourceFromPolicyOperation
     {

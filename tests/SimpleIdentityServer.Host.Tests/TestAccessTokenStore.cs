@@ -2,8 +2,8 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Shared;
-    using Shared.Responses;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
 
     internal class TestAccessTokenStore : IAccessTokenStore
     {

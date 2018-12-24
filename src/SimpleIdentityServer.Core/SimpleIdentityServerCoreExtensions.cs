@@ -48,10 +48,10 @@ namespace SimpleIdentityServer.Core
     using SimpleIdentityServer.Core.WebSite.User.Actions;
     using System;
     using System.Collections.Generic;
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
     using System.Net.Http;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     public static class SimpleIdentityServerCoreExtensions
     {
@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Core
             IReadOnlyCollection<ResourceOwnerProfile> profiles = null,
             IReadOnlyCollection<ResourceOwner> resourceOwners = null,
             IReadOnlyCollection<Scope> scopes = null,
-            IReadOnlyCollection<Shared.Models.Translation> translations = null)
+            IReadOnlyCollection<SimpleAuth.Shared.Models.Translation> translations = null)
         {
             if (serviceCollection == null)
             {

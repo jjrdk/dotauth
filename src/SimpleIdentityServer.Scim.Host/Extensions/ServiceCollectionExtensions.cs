@@ -6,8 +6,8 @@ using System.Linq;
 namespace SimpleIdentityServer.Scim.Host.Extensions
 {
     using Core.Validators;
-    using Shared;
-    using Shared.DTOs;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.DTOs;
 
     public static class ServiceCollectionExtensions
     {

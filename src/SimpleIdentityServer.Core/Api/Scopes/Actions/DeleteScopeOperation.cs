@@ -19,7 +19,7 @@ namespace SimpleIdentityServer.Core.Api.Scopes.Actions
     using Errors;
     using Exceptions;
     using Logging;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Repositories;
 
     internal class DeleteScopeOperation : IDeleteScopeOperation
     {

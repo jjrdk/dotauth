@@ -22,8 +22,8 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
     using Jwt;
-    using Shared;
-    using Shared.Models;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public class GrantedTokenHelperFixture
     {

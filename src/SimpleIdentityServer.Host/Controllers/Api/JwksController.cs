@@ -17,7 +17,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using System.Threading.Tasks;
     using Core.Api.Jwks;
     using Microsoft.AspNetCore.Mvc;
-    using Shared.Requests;
+    using SimpleAuth.Shared.Requests;
 
     [Route(Core.CoreConstants.EndPoints.Jwks)]
     public class JwksController : Controller

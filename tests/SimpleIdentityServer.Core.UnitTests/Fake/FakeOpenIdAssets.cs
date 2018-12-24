@@ -17,9 +17,9 @@ using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Core.UnitTests.Fake
 {
-    using Shared;
-    using Shared.Models;
     using System;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public static class FakeOpenIdAssets
     {

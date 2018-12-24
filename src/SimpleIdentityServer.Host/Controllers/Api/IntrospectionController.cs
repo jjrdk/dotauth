@@ -27,9 +27,9 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
     using Core;
-    using Shared.Requests;
-    using Shared.Responses;
-    using Shared.Serializers;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
+    using SimpleAuth.Shared.Serializers;
 
     [Route(CoreConstants.EndPoints.Introspection)]
     public class IntrospectionController : Controller

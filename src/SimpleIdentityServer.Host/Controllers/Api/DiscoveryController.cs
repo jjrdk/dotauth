@@ -19,7 +19,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
     using Core;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     [Route(CoreConstants.EndPoints.DiscoveryAction)]
     public class DiscoveryController : Controller

@@ -22,10 +22,9 @@ namespace SimpleIdentityServer.Core
     using System;
     using System.Linq;
     using System.Net.Http.Headers;
-
-    using Shared;
-    using Shared.Models;
     using System.Collections.Generic;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public class PayloadSerializer : IPayloadSerializer
     {

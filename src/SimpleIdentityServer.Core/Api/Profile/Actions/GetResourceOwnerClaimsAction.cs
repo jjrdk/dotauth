@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Profile.Actions
 {
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     internal sealed class GetResourceOwnerClaimsAction : IGetResourceOwnerClaimsAction
     {

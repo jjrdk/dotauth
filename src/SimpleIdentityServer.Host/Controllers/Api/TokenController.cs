@@ -28,12 +28,12 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Primitives;
-    using Shared;
-    using Shared.Models;
-    using Shared.Requests;
-    using Shared.Responses;
-    using Shared.Serializers;
-    using GrantTypes = Shared.Requests.GrantTypes;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
+    using SimpleAuth.Shared.Serializers;
+    using GrantTypes = SimpleAuth.Shared.Requests.GrantTypes;
 
     [Route(CoreConstants.EndPoints.Token)]
     public class TokenController : Controller

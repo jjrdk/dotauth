@@ -25,14 +25,14 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using Newtonsoft.Json;
-    using Shared;
-    using Shared.Responses;
     using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
     using Xunit;
 
     public class TokenClientFixture : IClassFixture<TestOauthServerFixture>

@@ -22,7 +22,7 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
     using Jwt;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public class GrantedTokenValidatorFixture
     {

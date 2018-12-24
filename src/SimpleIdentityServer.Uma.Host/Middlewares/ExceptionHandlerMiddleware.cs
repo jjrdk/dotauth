@@ -15,12 +15,12 @@
 namespace SimpleIdentityServer.Uma.Host.Middlewares
 {
     using Microsoft.AspNetCore.Http;
-    using Shared.Responses;
     using SimpleIdentityServer.Uma.Core.Exceptions;
     using SimpleIdentityServer.Uma.Host.Extensions;
     using System;
     using System.Net;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Responses;
     using SimpleIdentityServer.Core.Errors;
 
     internal class ExceptionHandlerMiddleware

@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.Core.Api.Jws.Actions
     using Helpers;
     using Jwt.Signature;
     using Parameters;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class CreateJwsAction : ICreateJwsAction
     {

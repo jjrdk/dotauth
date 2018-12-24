@@ -3,8 +3,8 @@
     using System;
     using System.Threading.Tasks;
     using Results;
-    using Shared.Requests;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
 
     public interface ISearchClientOperation
     {

@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Shared
+﻿namespace SimpleAuth.Shared
 {
     /// <summary>
     /// Encryptions algorithms for JWE : https://tools.ietf.org/html/rfc7518#page-22

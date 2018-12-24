@@ -14,11 +14,11 @@
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
 {
-    using Shared;
     using System;
     using System.Security.Cryptography;
     using System.Text;
     using Json;
+    using SimpleAuth.Shared;
 
     public class AesEncryptionWithHmac : IEncryption
     {

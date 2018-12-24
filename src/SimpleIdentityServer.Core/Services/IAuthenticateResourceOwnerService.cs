@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Services
 {
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public interface IAuthenticateResourceOwnerService
     {

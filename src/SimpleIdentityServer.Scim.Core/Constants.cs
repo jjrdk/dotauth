@@ -14,8 +14,8 @@
 
 namespace SimpleIdentityServer.Scim.Core
 {
-    using Shared;
     using System.Collections.Generic;
+    using SimpleAuth.Shared;
 
     public static class Constants
     {

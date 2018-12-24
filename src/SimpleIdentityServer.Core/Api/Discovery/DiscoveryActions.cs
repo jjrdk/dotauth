@@ -17,12 +17,12 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Core.Api.Discovery
 {
     using Authorization;
-    using Shared.Models;
-    using Shared.Repositories;
-    using Shared.Responses;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Responses;
 
     public class DiscoveryActions : IDiscoveryActions
     {

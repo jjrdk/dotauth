@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
-    using Shared.Requests;
+    using SimpleAuth.Shared.Requests;
 
     [Route(Constants.RouteValues.Jwks)]
     public class JwksController : Controller

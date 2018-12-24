@@ -20,8 +20,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
-    using Shared.Models;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     internal class GetUserOperation : IGetUserOperation
     {

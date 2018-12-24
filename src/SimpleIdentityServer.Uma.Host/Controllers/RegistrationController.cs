@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
-    using Shared.Models;
-    using Shared.Repositories;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Responses;
 
     [Route(Constants.RouteValues.Registration)]
     public class RegistrationController : Controller

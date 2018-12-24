@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Shared
+﻿namespace SimpleAuth.Shared
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;

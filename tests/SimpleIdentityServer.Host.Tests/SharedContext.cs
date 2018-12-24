@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Host.Tests
 {
     using System.Net.Http;
     using Core.Jwt;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class SharedContext
     {

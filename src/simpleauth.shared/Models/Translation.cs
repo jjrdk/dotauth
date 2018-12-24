@@ -15,7 +15,7 @@
 /// <summary>
 /// RFC :  http://tools.ietf.org/html/rfc5646
 /// </summary>
-namespace SimpleIdentityServer.Shared.Models
+namespace SimpleAuth.Shared.Models
 {
     public class Translation
     {

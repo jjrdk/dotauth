@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Shared
+﻿namespace SimpleAuth.Shared
 {
     /// <summary>
     /// Key types

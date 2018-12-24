@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Shared.Responses
+﻿namespace SimpleAuth.Shared.Responses
 {
     public enum ScopeResponseType
     {

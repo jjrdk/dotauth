@@ -13,7 +13,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 {
     using Client.Configuration;
     using Client.Permission;
-    using Shared;
+    using SimpleAuth.Shared;
     using SimpleIdentityServer.Client;
 
     public class TokenFixture : IClassFixture<TestUmaServerFixture>

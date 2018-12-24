@@ -19,7 +19,7 @@ using SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class AesEncryptionHelper : IAesEncryptionHelper
     {

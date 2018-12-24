@@ -2,8 +2,8 @@
 
 namespace SimpleIdentityServer.Uma.Host.Tests.Stores
 {
-    using Shared;
-    using Shared.Models;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public static class OAuthStores
     {

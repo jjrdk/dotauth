@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Shared.Results
+﻿namespace SimpleAuth.Shared.Results
 {
     using System.Collections.Generic;
     using Models;

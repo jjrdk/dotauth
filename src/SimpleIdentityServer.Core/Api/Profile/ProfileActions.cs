@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Profile
 {
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     internal sealed class ProfileActions : IProfileActions
     {

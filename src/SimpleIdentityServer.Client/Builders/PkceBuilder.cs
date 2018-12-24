@@ -17,7 +17,7 @@ using System.Text;
 
 namespace SimpleIdentityServer.Client.Builders
 {
-    using Shared.Requests;
+    using SimpleAuth.Shared.Requests;
 
     public class PkceBuilder
     {

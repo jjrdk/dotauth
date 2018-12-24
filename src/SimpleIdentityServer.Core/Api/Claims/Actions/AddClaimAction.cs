@@ -4,8 +4,8 @@
     using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Shared.Parameters;
-    using Shared.Repositories;
+    using SimpleAuth.Shared.Parameters;
+    using SimpleAuth.Shared.Repositories;
 
     public class AddClaimAction : IAddClaimAction
     {

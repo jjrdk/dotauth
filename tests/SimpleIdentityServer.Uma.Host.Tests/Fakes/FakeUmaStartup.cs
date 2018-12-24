@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
 {
     using SimpleIdentityServer.Client.Operations;
     using System.Net.Http;
-    using Shared;
+    using SimpleAuth.Shared;
 
     public class FakeUmaStartup : IStartup
     {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Client.ResourceSet
 {
-    using Shared.Responses;
+    using SimpleAuth.Shared.Responses;
 
     internal sealed class SearchResourcesOperation : ISearchResourcesOperation
     {

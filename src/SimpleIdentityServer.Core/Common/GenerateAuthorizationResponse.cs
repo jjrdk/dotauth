@@ -17,8 +17,6 @@ namespace SimpleIdentityServer.Core.Common
     using Json;
     using Jwt;
     using Logging;
-    using Shared;
-    using Shared.Models;
     using SimpleIdentityServer.Core.Api.Authorization;
     using SimpleIdentityServer.Core.Extensions;
     using SimpleIdentityServer.Core.Helpers;
@@ -29,6 +27,8 @@ namespace SimpleIdentityServer.Core.Common
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public class GenerateAuthorizationResponse : IGenerateAuthorizationResponse
     {

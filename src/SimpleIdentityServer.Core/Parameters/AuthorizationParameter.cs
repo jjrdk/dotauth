@@ -17,7 +17,7 @@ using System.Collections.Generic;
 namespace SimpleIdentityServer.Core.Parameters
 {
     using System;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public sealed class AuthorizationParameter
     {

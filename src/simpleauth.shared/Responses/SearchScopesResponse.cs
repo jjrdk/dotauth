@@ -1,8 +1,7 @@
-﻿namespace SimpleIdentityServer.Shared.Responses
+﻿namespace SimpleAuth.Shared.Responses
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;
-    using Shared;
 
     [DataContract]
     public class SearchScopesResponse

@@ -25,7 +25,7 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
     using Jwt;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public class RevokeTokenActionFixture
     {

@@ -22,7 +22,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 {
-    using Shared;
+    using SimpleAuth.Shared;
 
     public sealed class CreateJwsSignatureFixture
     {

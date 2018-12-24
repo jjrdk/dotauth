@@ -16,14 +16,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
 {
     using Moq;
     using Newtonsoft.Json;
-    using Shared.Models;
-    using Shared.Repositories;
     using SimpleIdentityServer.Core.Exceptions;
     using SimpleIdentityServer.Core.Repositories;
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
     using Xunit;
 
     public class UpdateClientActionFixture

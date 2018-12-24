@@ -6,8 +6,8 @@
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
-    using Shared.Models;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Responses;
 
     internal sealed class AddClientOperation : IAddClientOperation
     {
