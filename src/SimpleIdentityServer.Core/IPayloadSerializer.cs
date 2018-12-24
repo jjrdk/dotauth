@@ -5,7 +5,6 @@
     using Parameters;
     using Results;
     using Shared.Models;
-    using Shared.Responses;
 
     public interface IPayloadSerializer
     {
@@ -21,6 +20,6 @@
         string GetPayload(ResourceOwnerGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue);
         string GetPayload(RevokeTokenParameter parameter, AuthenticationHeaderValue authenticationHeaderValue);
         string GetPayload(GrantedToken parameter);
-        string GetPayload(Results.EndpointResult parameter);
+        string GetPayload(EndpointResult parameter);
     }
 }

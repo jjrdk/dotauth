@@ -31,7 +31,7 @@
                 throw new ArgumentNullException(nameof(updateResourceOwnerClaimsRequest));
             }
 
-            var serializedJson = JsonConvert.SerializeObject(updateResourceOwnerClaimsRequest).ToString();
+            var serializedJson = JsonConvert.SerializeObject(updateResourceOwnerClaimsRequest);
             var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
             var request = new HttpRequestMessage
             {

@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 
             foreach(var jsonWebKey in jsonWebKeys)
             {
-                var serializedRsa = string.Empty;
+                string serializedRsa;
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     using (var provider = new RSACryptoServiceProvider())

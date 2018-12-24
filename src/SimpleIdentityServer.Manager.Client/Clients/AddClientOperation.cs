@@ -1,14 +1,12 @@
 ﻿namespace SimpleIdentityServer.Manager.Client.Clients
 {
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using Results;
     using System;
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
     using Shared.Models;
-    using Shared.Requests;
     using Shared.Responses;
 
     internal sealed class AddClientOperation : IAddClientOperation

@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Habart Thierry
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,19 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Parameters;
-using System;
-using System.Net.Http.Headers;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
+    using SimpleIdentityServer.Core.Authenticate;
+    using SimpleIdentityServer.Core.Errors;
+    using SimpleIdentityServer.Core.Exceptions;
+    using SimpleIdentityServer.Core.Parameters;
+    using System;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
     using Jwt;
-    using Shared.Models;
 
     internal class RevokeTokenAction : IRevokeTokenAction
     {

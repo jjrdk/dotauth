@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Uma.Host.Extensions;
 using System.Net;
 using System.Threading.Tasks;
 

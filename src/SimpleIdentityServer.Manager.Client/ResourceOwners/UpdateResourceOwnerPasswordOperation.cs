@@ -30,7 +30,7 @@
                 throw new ArgumentNullException(nameof(updateResourceOwnerPasswordRequest));
             }
 
-            var serializedJson = JsonConvert.SerializeObject(updateResourceOwnerPasswordRequest).ToString();
+            var serializedJson = JsonConvert.SerializeObject(updateResourceOwnerPasswordRequest);
             var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
             var request = new HttpRequestMessage
             {

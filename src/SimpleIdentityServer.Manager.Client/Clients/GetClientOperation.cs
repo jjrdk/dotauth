@@ -1,7 +1,6 @@
 ﻿namespace SimpleIdentityServer.Manager.Client.Clients
 {
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using Results;
     using System;
     using System.Net.Http;

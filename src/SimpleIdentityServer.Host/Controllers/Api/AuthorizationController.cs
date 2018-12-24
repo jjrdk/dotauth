@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Habart Thierry
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -142,7 +142,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                 return Guid.NewGuid().ToString();
             }
 
-            return Request.Cookies[Core.CoreConstants.SESSION_ID].ToString();
+            return Request.Cookies[CoreConstants.SESSION_ID];
         }
 
         private async Task<AuthorizationRequest> GetAuthorizationRequestFromJwt(string token, string clientId)

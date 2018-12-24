@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Habart Thierry
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -81,15 +81,9 @@ namespace SimpleIdentityServer.Core.Api.Jwe.Actions
                     string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, jweHeader.Kid, uri.AbsoluteUri));
             }
 
-            var content = string.Empty;
-            if (!string.IsNullOrWhiteSpace(getJweParameter.Password))
-            {
-                content = _jweParser.ParseByUsingSymmetricPassword(jwe, jsonWebKey, getJweParameter.Password);
-            }
-            else
-            {
-                content = _jweParser.Parse(jwe, jsonWebKey);                
-            }
+            var content = !string.IsNullOrWhiteSpace(getJweParameter.Password)
+                ? _jweParser.ParseByUsingSymmetricPassword(jwe, jsonWebKey, getJweParameter.Password)
+                : _jweParser.Parse(jwe, jsonWebKey);
 
             if (string.IsNullOrWhiteSpace(content))
             {

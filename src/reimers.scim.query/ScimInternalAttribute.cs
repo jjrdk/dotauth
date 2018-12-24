@@ -7,7 +7,7 @@
     /// not a defined SCIM attribute, but is internal for development usage.
     /// </summary>
     /// <seealso cref="System.Attribute" />
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class ScimInternalAttribute : Attribute
     {
     }

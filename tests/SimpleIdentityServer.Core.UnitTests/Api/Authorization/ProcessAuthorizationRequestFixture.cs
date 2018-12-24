@@ -1,7 +1,5 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt.Converter;
@@ -18,7 +16,6 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
     using Logging;
-    using Shared.Models;
     using Shared.Repositories;
     using System.Net.Http;
     using IClientStore = Shared.Repositories.IClientStore;

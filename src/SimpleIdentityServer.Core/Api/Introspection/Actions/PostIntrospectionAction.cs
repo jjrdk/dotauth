@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Habart Thierry
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -82,22 +82,16 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
             }
 
             // 4. Trying to fetch the information about the access_token  || refresh_token
-            GrantedToken grantedToken = null;
+            GrantedToken grantedToken;
             if (tokenTypeHint == CoreConstants.StandardTokenTypeHintNames.AccessToken)
             {
-                grantedToken = await _tokenStore.GetAccessToken(introspectionParameter.Token).ConfigureAwait(false);
-                if (grantedToken == null)
-                {
-                    grantedToken = await _tokenStore.GetRefreshToken(introspectionParameter.Token).ConfigureAwait(false);
-                }
+                grantedToken = await _tokenStore.GetAccessToken(introspectionParameter.Token).ConfigureAwait(false) ??
+                               await _tokenStore.GetRefreshToken(introspectionParameter.Token).ConfigureAwait(false);
             }
             else
             {
-                grantedToken = await _tokenStore.GetRefreshToken(introspectionParameter.Token).ConfigureAwait(false);
-                if (grantedToken == null)
-                {
-                    grantedToken = await _tokenStore.GetAccessToken(introspectionParameter.Token).ConfigureAwait(false);
-                }
+                grantedToken = await _tokenStore.GetRefreshToken(introspectionParameter.Token).ConfigureAwait(false) ??
+                               await _tokenStore.GetAccessToken(introspectionParameter.Token).ConfigureAwait(false);
             }
 
             // 5. Throw an exception if there's no granted token

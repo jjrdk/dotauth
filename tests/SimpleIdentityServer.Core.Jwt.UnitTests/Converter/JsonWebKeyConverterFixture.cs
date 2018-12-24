@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Habart Thierry
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -265,9 +265,8 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 
                 // ACT & ASSERTS
                 var result = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
-                Assert.NotNull(result);
-                Assert.True(result.Count() == 1);
-                Assert.True(result.First().SerializedKey == expectedXml);
+                Assert.Single(result);
+                Assert.Equal(expectedXml.Replace("\r\n", "").Replace(" ", ""), result.First().SerializedKey);
             }
         }
 

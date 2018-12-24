@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Habart Thierry
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -344,8 +344,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             // 2. Fill-In all the other resource owner claims
-            if (claimParameters == null ||
-                !claimParameters.Any())
+            if (!claimParameters.Any())
             {
                 return;
             }
@@ -606,7 +605,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
             if (claimParameter.ValuesParameterExist &&
                 claimParameter.Values != null &&
-                (claimValues == null || !claimParameter.Values.All(c => claimValues.Contains(c))))
+                (claimValues == null || !claimParameter.Values.All(claimValues.Contains)))
             {
                 return false;
             }

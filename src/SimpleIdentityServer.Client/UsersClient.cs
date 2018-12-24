@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Client
                 : $"{FormatUrl(_baseUri.AbsoluteUri)}/Me";
             if (url == null)
             {
-                throw new ArgumentException($"{url} is not a valid uri");
+                throw new ArgumentException("null is not a valid uri");
             }
 
             return ExecuteRequest<JObject>(scimUser, new Uri(url), HttpMethod.Post, accessToken);
