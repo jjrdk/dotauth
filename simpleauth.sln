@@ -59,7 +59,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{BFFE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Client.Tests", "tests\SimpleIdentityServer.Scim.Client.Tests\SimpleIdentityServer.Scim.Client.Tests.csproj", "{733145CA-22FA-4971-8107-F0AFF459AEAB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Shared", "src\SimpleIdentityServer.Common.Dtos\SimpleIdentityServer.Shared.csproj", "{4B6809E0-D49A-492A-8B2D-260D46791926}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleAuth.Shared", "src\simpleauth.shared\simpleauth.shared.csproj", "{4B6809E0-D49A-492A-8B2D-260D46791926}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Logging", "src\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj", "{A823EB7C-C0A2-453B-BD2D-62B412A21DD7}"
 EndProject

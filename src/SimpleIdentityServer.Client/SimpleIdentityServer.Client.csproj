@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SimpleIdentityServer.Common.Dtos\SimpleIdentityServer.Shared.csproj" />
+    <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />
   </ItemGroup>
 
 </Project>

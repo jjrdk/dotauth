@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\src\reimers.scim.query\reimers.scim.query.csproj" />
-    <ProjectReference Include="..\src\SimpleIdentityServer.Common.Dtos\SimpleIdentityServer.Shared.csproj" />
+    <ProjectReference Include="..\src\simpleauth.shared\simpleauth.shared.csproj" />
   </ItemGroup>
 
 </Project>
