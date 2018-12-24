@@ -27,8 +27,6 @@ namespace SimpleIdentityServer.Core
     using SimpleIdentityServer.Core.Api.Profile.Actions;
     using SimpleIdentityServer.Core.Api.Token;
     using SimpleIdentityServer.Core.Api.Token.Actions;
-    using SimpleIdentityServer.Core.Api.UserInfo;
-    using SimpleIdentityServer.Core.Api.UserInfo.Actions;
     using SimpleIdentityServer.Core.Authenticate;
     using SimpleIdentityServer.Core.Common;
     using SimpleIdentityServer.Core.Factories;
@@ -87,8 +85,6 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IAuthorizationActions, AuthorizationActions>();
             serviceCollection.AddTransient<IGetAuthorizationCodeOperation, GetAuthorizationCodeOperation>();
             serviceCollection.AddTransient<IGetTokenViaImplicitWorkflowOperation, GetTokenViaImplicitWorkflowOperation>();
-            serviceCollection.AddTransient<IUserInfoActions, UserInfoActions>();
-            serviceCollection.AddTransient<IGetJwsPayload, GetJwsPayload>();
             serviceCollection.AddTransient<ITokenActions, TokenActions>();
             serviceCollection.AddTransient<IGetTokenByResourceOwnerCredentialsGrantTypeAction, GetTokenByResourceOwnerCredentialsGrantTypeAction>();
             serviceCollection.AddTransient<IGetTokenByAuthorizationCodeGrantTypeAction, GetTokenByAuthorizationCodeGrantTypeAction>();
@@ -136,7 +132,6 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IValidateConfirmationCodeAction, ValidateConfirmationCodeAction>();
             serviceCollection.AddTransient<IRemoveConfirmationCodeAction, RemoveConfirmationCodeAction>();
             serviceCollection.AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>();
-            serviceCollection.AddTransient<IPayloadSerializer, PayloadSerializer>();
             serviceCollection.AddTransient<IProfileActions, ProfileActions>();
             serviceCollection.AddTransient<ILinkProfileAction, LinkProfileAction>();
             serviceCollection.AddTransient<IUnlinkProfileAction, UnlinkProfileAction>();

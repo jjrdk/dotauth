@@ -32,17 +32,17 @@ namespace SimpleIdentityServer.Host.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.AspNetCore.Mvc.Routing;
+    using SimpleAuth.Jwt.Extensions;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Events.Openid;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using SimpleAuth.Jwt.Extensions;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Events.Openid;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Requests;
     using ViewModels;
     using Website;
 
@@ -61,7 +61,6 @@ namespace SimpleIdentityServer.Host.Controllers
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
 
         //protected readonly IUserActions _userActions;
-        private readonly IPayloadSerializer _payloadSerializer;
         private readonly OAuthConfigurationOptions _configurationService;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
         private readonly BasicAuthenticateOptions _basicAuthenticateOptions;
@@ -84,7 +83,6 @@ namespace SimpleIdentityServer.Host.Controllers
             IAddUserOperation userActions,
             IGetUserOperation getUserOperation,
             IUpdateUserClaimsOperation updateUserClaimsOperation,
-            IPayloadSerializer payloadSerializer,
             OAuthConfigurationOptions configurationService,
             IAuthenticateHelper authenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
@@ -98,7 +96,6 @@ namespace SimpleIdentityServer.Host.Controllers
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _eventPublisher = eventPublisher;
-            _payloadSerializer = payloadSerializer;
             _authenticationSchemeProvider = authenticationSchemeProvider;
             _userActions = userActions;
             _getUserOperation = getUserOperation;
@@ -637,7 +634,7 @@ namespace SimpleIdentityServer.Host.Controllers
                 new ResourceOwnerAuthenticated(
                 Guid.NewGuid().ToString(),
                 processId,
-                _payloadSerializer.GetPayload(act),
+                act,
                 2));
         }
 

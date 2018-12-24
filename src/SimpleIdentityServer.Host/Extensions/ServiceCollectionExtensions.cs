@@ -24,6 +24,8 @@ namespace SimpleIdentityServer.Host.Extensions
     using System;
     using System.Linq;
     using SimpleAuth.Jwt;
+    using UserInfo;
+    using UserInfo.Actions;
 
     public static class ServiceCollectionExtensions
     {
@@ -167,6 +169,8 @@ namespace SimpleIdentityServer.Host.Extensions
             {
                 throw new ArgumentNullException(nameof(options));
             }
+            serviceCollection.AddTransient<IUserInfoActions, UserInfoActions>();
+            serviceCollection.AddTransient<IGetJwsPayload, GetJwsPayload>();
 
             serviceCollection
                 .AddSingleton(options.Scim)

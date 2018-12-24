@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-
-namespace SimpleIdentityServer.Logging
+﻿namespace SimpleIdentityServer.Logging
 {
+    using Microsoft.Extensions.Logging;
+    using System;
+
     public class BaseEventSource : IEventSource
     {
         protected readonly ILogger _logger;

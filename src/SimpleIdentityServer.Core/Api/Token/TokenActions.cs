@@ -34,7 +34,9 @@ namespace SimpleIdentityServer.Core.Api.Token
 
     public class TokenActions : ITokenActions
     {
-        private readonly IGetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantType;
+        private readonly IGetTokenByResourceOwnerCredentialsGrantTypeAction
+            _getTokenByResourceOwnerCredentialsGrantType;
+
         private readonly IGetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
         private readonly IGetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
         private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
@@ -46,7 +48,6 @@ namespace SimpleIdentityServer.Core.Api.Token
         private readonly IOAuthEventSource _oauthEventSource;
         private readonly IGrantedTokenHelper _grantedTokenHelper;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IPayloadSerializer _payloadSerializer;
         private readonly ITokenStore _tokenStore;
 
         public TokenActions(
@@ -61,7 +62,6 @@ namespace SimpleIdentityServer.Core.Api.Token
             IOAuthEventSource oauthEventSource,
             IRevokeTokenAction revokeTokenAction,
             IEventPublisher eventPublisher,
-            IPayloadSerializer payloadSerializer,
             ITokenStore tokenStore,
             IGrantedTokenHelper grantedTokenHelper)
         {
@@ -76,12 +76,15 @@ namespace SimpleIdentityServer.Core.Api.Token
             _revokeTokenParameterValidator = revokeTokenParameterValidator;
             _revokeTokenAction = revokeTokenAction;
             _eventPublisher = eventPublisher;
-            _payloadSerializer = payloadSerializer;
             _tokenStore = tokenStore;
             _grantedTokenHelper = grantedTokenHelper;
         }
 
-        public async Task<GrantedToken> GetTokenByResourceOwnerCredentialsGrantType(ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
+        public async Task<GrantedToken> GetTokenByResourceOwnerCredentialsGrantType(
+            ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
+            AuthenticationHeaderValue authenticationHeaderValue,
+            X509Certificate2 certificate,
+            string issuerName)
         {
             if (resourceOwnerGrantTypeParameter == null)
             {
@@ -91,7 +94,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new GrantTokenViaResourceOwnerCredentialsReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(resourceOwnerGrantTypeParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
+                //_eventPublisher.Publish(new GrantTokenViaResourceOwnerCredentialsReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(resourceOwnerGrantTypeParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
                 _oauthEventSource.StartGetTokenByResourceOwnerCredentials(resourceOwnerGrantTypeParameter.ClientId,
                     resourceOwnerGrantTypeParameter.UserName,
                     resourceOwnerGrantTypeParameter.Password);
@@ -99,40 +102,53 @@ namespace SimpleIdentityServer.Core.Api.Token
                 {
                     throw new IdentityServerException(
                         ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardTokenRequestParameterNames.UserName));
+                        string.Format(ErrorDescriptions.MissingParameter,
+                            CoreConstants.StandardTokenRequestParameterNames.UserName));
                 }
 
                 if (string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Password))
                 {
                     throw new IdentityServerException(
                         ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardTokenRequestParameterNames.PasswordName));
+                        string.Format(ErrorDescriptions.MissingParameter,
+                            CoreConstants.StandardTokenRequestParameterNames.PasswordName));
                 }
 
                 if (string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Scope))
                 {
                     throw new IdentityServerException(
                         ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardTokenRequestParameterNames.ScopeName));
+                        string.Format(ErrorDescriptions.MissingParameter,
+                            CoreConstants.StandardTokenRequestParameterNames.ScopeName));
                 }
+
                 var result = await _getTokenByResourceOwnerCredentialsGrantType.Execute(resourceOwnerGrantTypeParameter,
-                    authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
+                        authenticationHeaderValue,
+                        certificate,
+                        issuerName)
+                    .ConfigureAwait(false);
                 var accessToken = result != null ? result.AccessToken : string.Empty;
                 var identityToken = result != null ? result.IdToken : string.Empty;
                 _oauthEventSource.EndGetTokenByResourceOwnerCredentials(accessToken, identityToken);
-                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
+                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result.AccessToken, 1));
                 return result;
             }
             catch (IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(),
+                    processId,
+                    ex.Code,
+                    ex.Message,
+                    1));
                 throw;
             }
         }
 
-        public async Task<GrantedToken> GetTokenByAuthorizationCodeGrantType(AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
+        public async Task<GrantedToken> GetTokenByAuthorizationCodeGrantType(
+            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate, string issuerName)
+            X509Certificate2 certificate,
+            string issuerName)
         {
             if (authorizationCodeGrantTypeParameter == null)
             {
@@ -142,26 +158,36 @@ namespace SimpleIdentityServer.Core.Api.Token
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new GrantTokenViaAuthorizationCodeReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(authorizationCodeGrantTypeParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
+                //_eventPublisher.Publish(new GrantTokenViaAuthorizationCodeReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(authorizationCodeGrantTypeParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
                 _oauthEventSource.StartGetTokenByAuthorizationCode(
                     authorizationCodeGrantTypeParameter.ClientId,
                     authorizationCodeGrantTypeParameter.Code);
                 Validate(authorizationCodeGrantTypeParameter);
-                var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
+                var result = await _getTokenByAuthorizationCodeGrantTypeAction
+                    .Execute(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate, issuerName)
+                    .ConfigureAwait(false);
                 _oauthEventSource.EndGetTokenByAuthorizationCode(
                     result.AccessToken,
                     result.IdToken);
-                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
+                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result.AccessToken, 1));
                 return result;
             }
             catch (IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(),
+                    processId,
+                    ex.Code,
+                    ex.Message,
+                    1));
                 throw;
             }
         }
 
-        public async Task<GrantedToken> GetTokenByRefreshTokenGrantType(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
+        public async Task<GrantedToken> GetTokenByRefreshTokenGrantType(
+            RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
+            AuthenticationHeaderValue authenticationHeaderValue,
+            X509Certificate2 certificate,
+            string issuerName)
         {
             if (refreshTokenGrantTypeParameter == null)
             {
@@ -171,23 +197,33 @@ namespace SimpleIdentityServer.Core.Api.Token
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new GrantTokenViaRefreshTokenReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(refreshTokenGrantTypeParameter), 0));
+                //_eventPublisher.Publish(new GrantTokenViaRefreshTokenReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(refreshTokenGrantTypeParameter), 0));
                 _oauthEventSource.StartGetTokenByRefreshToken(refreshTokenGrantTypeParameter.RefreshToken);
                 // Read this RFC for more information
                 if (string.IsNullOrWhiteSpace(refreshTokenGrantTypeParameter.RefreshToken))
                 {
                     throw new IdentityServerException(
                         ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardTokenRequestParameterNames.RefreshToken));
+                        string.Format(ErrorDescriptions.MissingParameter,
+                            CoreConstants.StandardTokenRequestParameterNames.RefreshToken));
                 }
-                var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(refreshTokenGrantTypeParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
+
+                var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(refreshTokenGrantTypeParameter,
+                        authenticationHeaderValue,
+                        certificate,
+                        issuerName)
+                    .ConfigureAwait(false);
                 _oauthEventSource.EndGetTokenByRefreshToken(result.AccessToken, result.IdToken);
-                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
+                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result.AccessToken, 1));
                 return result;
             }
             catch (IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(),
+                    processId,
+                    ex.Code,
+                    ex.Message,
+                    1));
                 throw;
             }
         }
@@ -206,19 +242,27 @@ namespace SimpleIdentityServer.Core.Api.Token
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new GrantTokenViaClientCredentialsReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(clientCredentialsGrantTypeParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
+                //_eventPublisher.Publish(new GrantTokenViaClientCredentialsReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(clientCredentialsGrantTypeParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
                 _oauthEventSource.StartGetTokenByClientCredentials(clientCredentialsGrantTypeParameter.Scope);
                 // _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
-                var result = await GetTokenByClientCredentials(clientCredentialsGrantTypeParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
+                var result = await GetTokenByClientCredentials(clientCredentialsGrantTypeParameter,
+                        authenticationHeaderValue,
+                        certificate,
+                        issuerName)
+                    .ConfigureAwait(false);
                 _oauthEventSource.EndGetTokenByClientCredentials(
                     result.ClientId,
                     clientCredentialsGrantTypeParameter.Scope);
-                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
+                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result.AccessToken, 1));
                 return result;
             }
             catch (IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(),
+                    processId,
+                    ex.Code,
+                    ex.Message,
+                    1));
                 throw;
             }
         }
@@ -226,7 +270,8 @@ namespace SimpleIdentityServer.Core.Api.Token
         public Task<bool> RevokeToken(
             RevokeTokenParameter revokeTokenParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate, string issuerName)
+            X509Certificate2 certificate,
+            string issuerName)
         {
             if (revokeTokenParameter == null)
             {
@@ -236,22 +281,33 @@ namespace SimpleIdentityServer.Core.Api.Token
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new RevokeTokenReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(revokeTokenParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
+                //_eventPublisher.Publish(new RevokeTokenReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(revokeTokenParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
                 _oauthEventSource.StartRevokeToken(revokeTokenParameter.Token);
                 _revokeTokenParameterValidator.Validate(revokeTokenParameter);
-                var result = _revokeTokenAction.Execute(revokeTokenParameter, authenticationHeaderValue, certificate, issuerName);
+                var result = _revokeTokenAction.Execute(revokeTokenParameter,
+                    authenticationHeaderValue,
+                    certificate,
+                    issuerName);
                 _oauthEventSource.EndRevokeToken(revokeTokenParameter.Token);
                 _eventPublisher.Publish(new TokenRevoked(Guid.NewGuid().ToString(), processId, 1));
                 return result;
             }
             catch (IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(),
+                    processId,
+                    ex.Code,
+                    ex.Message,
+                    1));
                 throw;
             }
         }
 
-        public async Task<GrantedToken> GetTokenByClientCredentials(ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
+        public async Task<GrantedToken> GetTokenByClientCredentials(
+            ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
+            AuthenticationHeaderValue authenticationHeaderValue,
+            X509Certificate2 certificate,
+            string issuerName)
         {
             if (clientCredentialsGrantTypeParameter == null)
             {
@@ -261,7 +317,8 @@ namespace SimpleIdentityServer.Core.Api.Token
             _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
 
             // 1. Authenticate the client
-            var instruction = authenticationHeaderValue.GetAuthenticateInstruction(clientCredentialsGrantTypeParameter, certificate);
+            var instruction =
+                authenticationHeaderValue.GetAuthenticateInstruction(clientCredentialsGrantTypeParameter, certificate);
             var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
@@ -273,13 +330,17 @@ namespace SimpleIdentityServer.Core.Api.Token
             if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.client_credentials))
             {
                 throw new IdentityServerException(ErrorCodes.InvalidClient,
-                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.client_credentials));
+                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                        client.ClientId,
+                        GrantType.client_credentials));
             }
 
             if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseType.token))
             {
                 throw new IdentityServerException(ErrorCodes.InvalidClient,
-                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, ResponseType.token));
+                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType,
+                        client.ClientId,
+                        ResponseType.token));
             }
 
             // 3. Check scopes
@@ -298,10 +359,13 @@ namespace SimpleIdentityServer.Core.Api.Token
             }
 
             // 4. Generate the JWT access token on the fly.
-            var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId).ConfigureAwait(false);
+            var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId)
+                .ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes, issuerName, null).ConfigureAwait(false);
+                grantedToken = await _grantedTokenGeneratorHelper
+                    .GenerateTokenAsync(client, allowedTokenScopes, issuerName, null)
+                    .ConfigureAwait(false);
                 await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);
                 _oauthEventSource.GrantAccessToClient(client.ClientId, grantedToken.AccessToken, allowedTokenScopes);
             }
@@ -309,13 +373,14 @@ namespace SimpleIdentityServer.Core.Api.Token
             return grantedToken;
         }
 
-        public void Validate(AuthorizationCodeGrantTypeParameter parameter)
+        private static void Validate(AuthorizationCodeGrantTypeParameter parameter)
         {
             if (string.IsNullOrWhiteSpace(parameter.Code))
             {
                 throw new IdentityServerException(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardTokenRequestParameterNames.AuthorizationCodeName));
+                    string.Format(ErrorDescriptions.MissingParameter,
+                        CoreConstants.StandardTokenRequestParameterNames.AuthorizationCodeName));
             }
 
             // With this instruction

@@ -43,21 +43,18 @@ namespace SimpleIdentityServer.Shell.Controllers
         private readonly IDataProtector _dataProtector;
         private readonly ITranslationManager _translationManager;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IPayloadSerializer _payloadSerializer;
 
         public ConsentController(
             IConsentActions consentActions,
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
             IEventPublisher eventPublisher,
-            IAuthenticationService authenticationService,
-            IPayloadSerializer payloadSerializer) : base(authenticationService)
+            IAuthenticationService authenticationService) : base(authenticationService)
         {
             _consentActions = consentActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _translationManager = translationManager;
             _eventPublisher = eventPublisher;
-            _payloadSerializer = payloadSerializer;
         }
 
         public async Task<IActionResult> Index(string code)
@@ -152,7 +149,7 @@ namespace SimpleIdentityServer.Shell.Controllers
 
             _eventPublisher.Publish(new ConsentAccepted(Guid.NewGuid().ToString(),
                 processId,
-                _payloadSerializer.GetPayload(act),
+                act,
                 10));
         }
 

@@ -29,7 +29,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<IClientCredentialsGrantTypeParameterValidator> _clientCredentialsGrantTypeParameterValidatorStub;
         private Mock<IRevokeTokenParameterValidator> _revokeTokenParameterValidator;
         private Mock<IRevokeTokenAction> _revokeTokenActionStub;
-        private Mock<IPayloadSerializer> _payloadSerializerStub;
         private ITokenActions _tokenActions;
 
         [Fact]
@@ -201,7 +200,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _clientCredentialsGrantTypeParameterValidatorStub = new Mock<IClientCredentialsGrantTypeParameterValidator>();
             _revokeTokenParameterValidator = new Mock<IRevokeTokenParameterValidator>();
             var eventPublisher = new Mock<IEventPublisher>();
-            _payloadSerializerStub = new Mock<IPayloadSerializer>();
             _revokeTokenActionStub = new Mock<IRevokeTokenAction>();
             const string scope = "valid_scope";
             const string clientId = "valid_client_id";
@@ -242,7 +240,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _oauthEventSource.Object,
                 _revokeTokenActionStub.Object,
                 eventPublisher.Object,
-                _payloadSerializerStub.Object,
                 new Mock<ITokenStore>().Object,
                 grantedTokenHelperMock.Object);
         }

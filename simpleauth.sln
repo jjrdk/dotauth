@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Client
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Core", "src\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj", "{C23BD3A1-78CE-4531-9649-19BB87C93F53}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleAuth.Jwt", "src\simpleauth.jwt\simpleauth.jwt.csproj", "{19960628-A045-486E-8EF4-6FDC4E176026}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.jwt", "src\simpleauth.jwt\simpleauth.jwt.csproj", "{19960628-A045-486E-8EF4-6FDC4E176026}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Host", "src\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj", "{F3EE8444-7F92-458D-8DB4-FAA7607629CB}"
 EndProject
@@ -61,8 +61,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.shared", "src\simpleauth.shared\simpleauth.shared.csproj", "{4B6809E0-D49A-492A-8B2D-260D46791926}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Logging", "src\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj", "{A823EB7C-C0A2-453B-BD2D-62B412A21DD7}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Core", "src\SimpleIdentityServer.Scim.Core\SimpleIdentityServer.Scim.Core.csproj", "{BAFF380E-E8C5-4EF8-B9A2-28263155FA8C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Host", "src\SimpleIdentityServer.Scim.Host\SimpleIdentityServer.Scim.Host.csproj", "{C26FF26D-C2DC-42EC-9C29-1C26048AFA27}"
@@ -86,6 +84,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Manager.Host.Tests", "tests\SimpleIdentityServer.Manager.Host.Tests\SimpleIdentityServer.Manager.Host.Tests.csproj", "{3169E9F3-56CA-46EE-A674-DA84E0FAA6EC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Manager.Client", "src\SimpleIdentityServer.Manager.Client\SimpleIdentityServer.Manager.Client.csproj", "{C77BE523-DC6C-4BC8-BCE6-63B3F8D11D65}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Logging", "src\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj", "{AFC46E4C-E3D3-45DD-AD72-FD11F506C250}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -250,12 +250,6 @@ Global
 		{4B6809E0-D49A-492A-8B2D-260D46791926}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{4B6809E0-D49A-492A-8B2D-260D46791926}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B6809E0-D49A-492A-8B2D-260D46791926}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A823EB7C-C0A2-453B-BD2D-62B412A21DD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A823EB7C-C0A2-453B-BD2D-62B412A21DD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A823EB7C-C0A2-453B-BD2D-62B412A21DD7}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
-		{A823EB7C-C0A2-453B-BD2D-62B412A21DD7}.Fake|Any CPU.Build.0 = Debug|Any CPU
-		{A823EB7C-C0A2-453B-BD2D-62B412A21DD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A823EB7C-C0A2-453B-BD2D-62B412A21DD7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BAFF380E-E8C5-4EF8-B9A2-28263155FA8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BAFF380E-E8C5-4EF8-B9A2-28263155FA8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAFF380E-E8C5-4EF8-B9A2-28263155FA8C}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
@@ -328,6 +322,12 @@ Global
 		{C77BE523-DC6C-4BC8-BCE6-63B3F8D11D65}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{C77BE523-DC6C-4BC8-BCE6-63B3F8D11D65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C77BE523-DC6C-4BC8-BCE6-63B3F8D11D65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFC46E4C-E3D3-45DD-AD72-FD11F506C250}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFC46E4C-E3D3-45DD-AD72-FD11F506C250}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFC46E4C-E3D3-45DD-AD72-FD11F506C250}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFC46E4C-E3D3-45DD-AD72-FD11F506C250}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{AFC46E4C-E3D3-45DD-AD72-FD11F506C250}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFC46E4C-E3D3-45DD-AD72-FD11F506C250}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -359,7 +359,6 @@ Global
 		{657BBBAE-E85B-494F-B591-FF0D8844DEE7} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{733145CA-22FA-4971-8107-F0AFF459AEAB} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{4B6809E0-D49A-492A-8B2D-260D46791926} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
-		{A823EB7C-C0A2-453B-BD2D-62B412A21DD7} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{BAFF380E-E8C5-4EF8-B9A2-28263155FA8C} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{C26FF26D-C2DC-42EC-9C29-1C26048AFA27} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{2E2182BF-61A6-4987-9500-68BBA4B9D270} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
@@ -372,6 +371,7 @@ Global
 		{6362CEB3-1482-444B-A46D-9DC033EBA41D} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{3169E9F3-56CA-46EE-A674-DA84E0FAA6EC} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{C77BE523-DC6C-4BC8-BCE6-63B3F8D11D65} = {BFFECB1F-3326-4B55-9180-58674B3FF5D0}
+		{AFC46E4C-E3D3-45DD-AD72-FD11F506C250} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}

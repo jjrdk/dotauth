@@ -16,24 +16,20 @@ namespace SimpleAuth.Shared.Events.OAuth
 {
     public class AuthorizationRequestReceived : Event
     {
-        private readonly string _id;
-        private readonly string _processId;
-        private readonly string _payload;
-
-        public AuthorizationRequestReceived(string id, string processId, string payload, int order)
+        public AuthorizationRequestReceived(string id, string processId, object payload, int order)
         {
-            _id = id;
-            _processId = processId;
-            _payload = payload;
+            Id = id;
+            ProcessId = processId;
+            Payload = payload;
             Order = order;
         }
 
-        public string Id => _id;
+        public string Id { get; }
 
-        public string ProcessId => _processId;
+        public string ProcessId { get; }
 
-        public  string Payload => _payload;
+        public object Payload { get; }
 
-        public int Order { get; private set; }
+        public int Order { get; }
     }
 }

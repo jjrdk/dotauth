@@ -16,7 +16,7 @@ namespace SimpleAuth.Shared.Events.OAuth
 {
     public class AuthorizationGranted : Event
     {
-        public AuthorizationGranted(string id, string processId, string payload, int order)
+        public AuthorizationGranted(string id, string processId, object payload, int order)
         {
             Id = id;
             ProcessId = processId;
@@ -24,9 +24,9 @@ namespace SimpleAuth.Shared.Events.OAuth
             Order = order;
         }
 
-        public string Id { get; private set; }
-        public string ProcessId { get; private set; }
-        public string Payload { get; private set; }
-        public int Order { get; private set; }
+        public string Id { get; }
+        public string ProcessId { get; }
+        public object Payload { get; }
+        public int Order { get; }
     }
 }

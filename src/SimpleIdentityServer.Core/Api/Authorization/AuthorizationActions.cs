@@ -40,7 +40,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization
         private readonly IOAuthEventSource _oauthEventSource;
         private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IPayloadSerializer _payloadSerializer;
         private readonly IAmrHelper _amrHelper;
         private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
 
@@ -53,7 +52,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             IOAuthEventSource oauthEventSource,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IEventPublisher eventPublisher,
-            IPayloadSerializer payloadSerializer, 
             IAmrHelper amrHelper,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper)
         {
@@ -66,7 +64,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             _oauthEventSource = oauthEventSource;
             _authorizationFlowHelper = authorizationFlowHelper;
             _eventPublisher = eventPublisher;
-            _payloadSerializer = payloadSerializer;
             _amrHelper = amrHelper;
             _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
         }
@@ -74,7 +71,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
         public async Task<EndpointResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal, string issuerName)
         {
             var processId = Guid.NewGuid().ToString();
-            _eventPublisher.Publish(new AuthorizationRequestReceived(Guid.NewGuid().ToString(), processId,  _payloadSerializer.GetPayload(parameter), 0));
+            _eventPublisher.Publish(new AuthorizationRequestReceived(Guid.NewGuid().ToString(), processId, parameter, 0));
             try
             {
                 var client = await _authorizationCodeGrantTypeParameterValidator.ValidateAsync(parameter).ConfigureAwait(false);
@@ -120,7 +117,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                         serializedParameters);
                 }
 
-                _eventPublisher.Publish(new AuthorizationGranted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(endpointResult), 1));
+                _eventPublisher.Publish(new AuthorizationGranted(Guid.NewGuid().ToString(), processId,endpointResult, 1));
                 endpointResult.ProcessId = processId;
                 endpointResult.Amr = _amrHelper.GetAmr(_resourceOwnerAuthenticateHelper.GetAmrs(), parameter.AmrValues);
                 return endpointResult;

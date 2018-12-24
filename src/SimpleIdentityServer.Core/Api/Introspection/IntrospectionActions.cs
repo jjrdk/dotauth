@@ -30,19 +30,20 @@ namespace SimpleIdentityServer.Core.Api.Introspection
     {
         private readonly IPostIntrospectionAction _postIntrospectionAction;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IPayloadSerializer _payloadSerializer;
         private readonly IIntrospectionParameterValidator _introspectionParameterValidator;
 
-        public IntrospectionActions(IPostIntrospectionAction postIntrospectionAction, IEventPublisher eventPublisher, 
-            IPayloadSerializer payloadSerializer, IIntrospectionParameterValidator introspectionParameterValidator)
+        public IntrospectionActions(IPostIntrospectionAction postIntrospectionAction,
+            IEventPublisher eventPublisher,
+            IIntrospectionParameterValidator introspectionParameterValidator)
         {
             _postIntrospectionAction = postIntrospectionAction;
             _eventPublisher = eventPublisher;
-            _payloadSerializer = payloadSerializer;
             _introspectionParameterValidator = introspectionParameterValidator;
         }
 
-        public async Task<IntrospectionResult> PostIntrospection(IntrospectionParameter introspectionParameter, AuthenticationHeaderValue authenticationHeaderValue, string issuerName)
+        public async Task<IntrospectionResult> PostIntrospection(IntrospectionParameter introspectionParameter,
+            AuthenticationHeaderValue authenticationHeaderValue,
+            string issuerName)
         {
             if (introspectionParameter == null)
             {
@@ -52,15 +53,21 @@ namespace SimpleIdentityServer.Core.Api.Introspection
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new IntrospectionRequestReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(introspectionParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
+                //_eventPublisher.Publish(new IntrospectionRequestReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(introspectionParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
                 _introspectionParameterValidator.Validate(introspectionParameter);
-                var result = await _postIntrospectionAction.Execute(introspectionParameter, authenticationHeaderValue, issuerName).ConfigureAwait(false);
-                _eventPublisher.Publish(new IntrospectionResultReturned(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
+                var result = await _postIntrospectionAction
+                    .Execute(introspectionParameter, authenticationHeaderValue, issuerName)
+                    .ConfigureAwait(false);
+                //_eventPublisher.Publish(new IntrospectionResultReturned(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
                 return result;
             }
             catch (IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(),
+                    processId,
+                    ex.Code,
+                    ex.Message,
+                    1));
                 throw;
             }
         }
