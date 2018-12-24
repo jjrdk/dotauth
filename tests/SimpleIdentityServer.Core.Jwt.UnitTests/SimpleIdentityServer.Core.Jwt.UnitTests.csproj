@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj" />
+    <ProjectReference Include="..\..\src\SimpleIdentityServer.Core.Jwt\simpleauth.jwt.csproj" />
   </ItemGroup>
 
 </Project>
