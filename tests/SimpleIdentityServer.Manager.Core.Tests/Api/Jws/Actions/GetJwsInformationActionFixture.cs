@@ -14,7 +14,6 @@
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
 {
-    using Json;
     using Moq;
     using SimpleIdentityServer.Core.Api.Jws.Actions;
     using SimpleIdentityServer.Core.Errors;
@@ -27,6 +26,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using SimpleAuth.Json;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
     using Xunit;

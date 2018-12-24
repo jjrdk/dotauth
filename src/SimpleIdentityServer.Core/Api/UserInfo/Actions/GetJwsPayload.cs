@@ -27,9 +27,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 {
-    using Json;
     using Jwt;
     using Microsoft.AspNetCore.Mvc;
+    using SimpleAuth.Json;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
 

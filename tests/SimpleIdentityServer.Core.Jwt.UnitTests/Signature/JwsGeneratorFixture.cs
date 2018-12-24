@@ -19,7 +19,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 {
-    using Json;
+    using SimpleAuth.Json;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
 

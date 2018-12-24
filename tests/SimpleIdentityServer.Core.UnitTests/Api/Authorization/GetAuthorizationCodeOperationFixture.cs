@@ -14,8 +14,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
-    using Json;
     using Logging;
+    using SimpleAuth.Json;
     using SimpleAuth.Shared.Models;
     using Client = SimpleAuth.Shared.Models.Client;
 

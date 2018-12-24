@@ -19,7 +19,7 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Jwt.Signature
 {
-    using Json;
+    using SimpleAuth.Json;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
 

@@ -29,8 +29,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Common
 {
-    using Json;
     using Logging;
+    using SimpleAuth.Json;
     using SimpleAuth.Shared.Models;
 
     public class ProcessAuthorizationRequest : IProcessAuthorizationRequest

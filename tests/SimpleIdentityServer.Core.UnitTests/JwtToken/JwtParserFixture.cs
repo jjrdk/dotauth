@@ -14,7 +14,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
-    using Json;
+    using SimpleAuth.Json;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;

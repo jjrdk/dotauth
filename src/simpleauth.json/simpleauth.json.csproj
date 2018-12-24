@@ -6,6 +6,7 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>SimpleIdentityServer.Core.Common</AssemblyName>
     <PackageId>SimpleIdentityServer.Core.Common</PackageId>
+    <RootNamespace>SimpleAuth.Json</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">

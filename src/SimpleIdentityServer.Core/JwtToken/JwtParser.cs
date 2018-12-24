@@ -22,8 +22,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.JwtToken
 {
-    using Json;
     using System.Net.Http;
+    using SimpleAuth.Json;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
