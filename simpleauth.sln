@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Client
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Core", "src\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj", "{C23BD3A1-78CE-4531-9649-19BB87C93F53}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.jwt", "src\SimpleIdentityServer.Core.Jwt\simpleauth.jwt.csproj", "{19960628-A045-486E-8EF4-6FDC4E176026}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleAuth.Jwt", "src\simpleauth.jwt\simpleauth.jwt.csproj", "{19960628-A045-486E-8EF4-6FDC4E176026}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Host", "src\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj", "{F3EE8444-7F92-458D-8DB4-FAA7607629CB}"
 EndProject
