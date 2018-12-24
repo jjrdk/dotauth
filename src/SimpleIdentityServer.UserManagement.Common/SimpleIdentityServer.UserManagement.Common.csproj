@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>SimpleIdentityServer.UserManagement.Common Class Library</Description>
@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SimpleIdentityServer.Common.Dtos\SimpleIdentityServer.Shared.csproj" />
+    <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">

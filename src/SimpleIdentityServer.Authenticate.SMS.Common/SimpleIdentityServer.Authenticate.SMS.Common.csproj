@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SimpleIdentityServer.Common.Dtos\SimpleIdentityServer.Shared.csproj" />
+    <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />
   </ItemGroup>
 </Project>

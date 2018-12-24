@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>simpleIdentityserver.shared</AssemblyName>
+    <AssemblyName>simpleauth.shared</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="system.security.permissions" Version="4.5.0"/>

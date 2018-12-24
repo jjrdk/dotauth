@@ -11,8 +11,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
-  
-  <ItemGroup>  
-    <ProjectReference Include="..\SimpleIdentityServer.Common.Dtos\SimpleIdentityServer.Shared.csproj" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />
   </ItemGroup>
 </Project>
