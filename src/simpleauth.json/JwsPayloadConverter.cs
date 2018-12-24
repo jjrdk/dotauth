@@ -1,9 +1,9 @@
-﻿namespace SimpleIdentityServer.Json
+﻿namespace SimpleAuth.Json
 {
     using System;
     using System.Collections.Generic;
     using Newtonsoft.Json;
-    using SimpleAuth.Shared;
+    using Shared;
 
     public class JwsPayloadConverter : JsonConverter<JwsPayload>
     {

@@ -25,7 +25,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 {
-    using Json;
+    using SimpleAuth.Json;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
 

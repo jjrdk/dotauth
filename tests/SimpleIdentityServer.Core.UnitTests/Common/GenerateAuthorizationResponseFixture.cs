@@ -29,9 +29,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Common
 {
-    using Json;
     using Jwt;
     using Logging;
+    using SimpleAuth.Json;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using Client = SimpleAuth.Shared.Models.Client;

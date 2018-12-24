@@ -17,7 +17,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
     using System;
     using System.Security.Cryptography;
     using System.Text;
-    using Json;
+    using SimpleAuth.Json;
     using SimpleAuth.Shared;
 
     public class AesEncryptionWithHmac : IEncryption
