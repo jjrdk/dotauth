@@ -1,9 +1,9 @@
-﻿namespace SimpleIdentityServer.Core.Jwt
+﻿namespace SimpleAuth.Jwt
 {
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     internal sealed class InMemoryAuthorizationCodeStore : IAuthorizationCodeStore
     {

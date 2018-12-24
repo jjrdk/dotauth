@@ -10,6 +10,7 @@
     using System.Net.Http;
     using System.Threading.Tasks;
     using SimpleAuth.Json;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using Xunit;
@@ -335,7 +336,7 @@
                 {
                     new Uri("https://google.fr")
                 },
-                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
+                IdTokenEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256
             };
 
             var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
@@ -353,7 +354,7 @@
                 {
                     new Uri("https://google.fr")
                 },
-                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
+                IdTokenEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256,
                 IdTokenEncryptedResponseAlg = "not_correct"
             };
 
@@ -372,7 +373,7 @@
                 {
                     new Uri("https://google.fr")
                 },
-                UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
+                UserInfoEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256
             };
 
             var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
@@ -390,7 +391,7 @@
                 {
                     new Uri("https://google.fr")
                 },
-                UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
+                UserInfoEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256,
                 UserInfoEncryptedResponseAlg = "user_info_encrypted_response_alg_not_correct"
             };
 
@@ -409,7 +410,7 @@
                 {
                     new Uri("https://google.fr")
                 },
-                RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
+                RequestObjectEncryptionEnc = JwtConstants.JweEncNames.A128CBC_HS256
             };
 
             var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
@@ -427,7 +428,7 @@
                 {
                     new Uri("https://google.fr")
                 },
-                RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
+                RequestObjectEncryptionEnc = JwtConstants.JweEncNames.A128CBC_HS256,
                 RequestObjectEncryptionAlg = "request_object_encryption_alg_not_valid"
             };
 
@@ -506,12 +507,12 @@
                 AllowedScopes = new[] { new Scope { Name = "openid" } },
                 ApplicationType = ApplicationTypes.native,
                 JsonWebKeys = new List<JsonWebKey>(), //new JsonWebKeySet(),
-                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.A128KW,
-                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
-                UserInfoEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.A128KW,
-                UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
-                RequestObjectEncryptionAlg = Jwt.JwtConstants.JweAlgNames.A128KW,
-                RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
+                IdTokenEncryptedResponseAlg = JwtConstants.JweAlgNames.A128KW,
+                IdTokenEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256,
+                UserInfoEncryptedResponseAlg = JwtConstants.JweAlgNames.A128KW,
+                UserInfoEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256,
+                RequestObjectEncryptionAlg = JwtConstants.JweAlgNames.A128KW,
+                RequestObjectEncryptionEnc = JwtConstants.JweEncNames.A128CBC_HS256,
                 RequestUris = new List<Uri>
                 {
                     new Uri("http://localhost")

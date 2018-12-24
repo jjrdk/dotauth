@@ -19,8 +19,8 @@ namespace SimpleIdentityServer.Core.Api.Jwe.Actions
     using Errors;
     using Exceptions;
     using Helpers;
-    using Jwt.Encrypt;
     using Parameters;
+    using SimpleAuth.Jwt.Encrypt;
 
     public class CreateJweAction : ICreateJweAction
     {

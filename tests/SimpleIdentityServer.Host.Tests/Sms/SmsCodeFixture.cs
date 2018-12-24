@@ -4,11 +4,11 @@
     using Authenticate.SMS.Common.Requests;
     using Core.Errors;
     using Core.Exceptions;
-    using Core.Jwt;
     using Moq;
     using System;
     using System.Net;
     using System.Threading.Tasks;
+    using SimpleAuth.Jwt;
     using Twilio.Client;
     using Xunit;
 

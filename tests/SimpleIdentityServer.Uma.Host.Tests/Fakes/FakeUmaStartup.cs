@@ -18,7 +18,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Host.Controllers;
@@ -35,6 +34,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
 {
     using SimpleIdentityServer.Client.Operations;
     using System.Net.Http;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
 
     public class FakeUmaStartup : IStartup

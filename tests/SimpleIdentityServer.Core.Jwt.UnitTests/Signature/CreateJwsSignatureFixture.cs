@@ -1,5 +1,4 @@
-﻿//#region copyright
-// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +11,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//#endregion
-
-using SimpleIdentityServer.Core.Jwt.Signature;
-using System;
-using System.Security.Cryptography;
-using System.Xml;
-using Xunit;
 
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 {
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
+    using System;
+    using System.Security.Cryptography;
+    using System.Xml;
+    using Xunit;
 
     public sealed class CreateJwsSignatureFixture
     {

@@ -28,6 +28,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
     using Host.Controllers;
     using Host.ViewModels;
     using Logging;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
     using Constants = Constants;
@@ -132,7 +133,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
                 claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
                     DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                     ClaimValueTypes.Integer));
-                var subject = claims.First(c => c.Type == Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject)
+                var subject = claims.First(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject)
                     .Value;
                 if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
                 {
@@ -214,7 +215,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
                         issuerName)
                     .ConfigureAwait(false);
                 var subject = actionResult.Claims
-                    .First(c => c.Type == Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject)
+                    .First(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject)
                     .Value;
 
                 // 5. Two factor authentication.

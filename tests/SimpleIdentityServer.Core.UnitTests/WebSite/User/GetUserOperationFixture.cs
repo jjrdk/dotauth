@@ -23,6 +23,7 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
     using System.Threading;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 
@@ -68,7 +69,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         public void When_Correct_Subject_Is_Passed_Then_ResourceOwner_Is_Returned()
         {            InitializeFakeObjects();
             var claimsIdentity = new ClaimsIdentity("test");
-            claimsIdentity.AddClaim(new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, "subject"));
+            claimsIdentity.AddClaim(new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "subject"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new ResourceOwner()));

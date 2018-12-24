@@ -19,10 +19,10 @@ namespace SimpleIdentityServer.Core.Api.Jwe.Actions
     using Errors;
     using Exceptions;
     using Helpers;
-    using Jwt.Encrypt;
-    using Jwt.Signature;
     using Parameters;
     using Results;
+    using SimpleAuth.Jwt.Encrypt;
+    using SimpleAuth.Jwt.Signature;
 
     public class GetJweInformationAction : IGetJweInformationAction
     {

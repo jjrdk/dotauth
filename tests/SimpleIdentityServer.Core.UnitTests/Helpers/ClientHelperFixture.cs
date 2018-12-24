@@ -21,6 +21,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -57,8 +58,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {            InitializeFakeObjects();
             var client = new Client
             {
-                IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
-                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5
+                IdTokenSignedResponseAlg = JwtConstants.JwsAlgNames.RS256,
+                IdTokenEncryptedResponseAlg = JwtConstants.JweAlgNames.RSA1_5
             };
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
@@ -74,9 +75,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {            InitializeFakeObjects();
             var client = new Client
             {
-                IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
-                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
-                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256
+                IdTokenSignedResponseAlg = JwtConstants.JwsAlgNames.RS256,
+                IdTokenEncryptedResponseAlg = JwtConstants.JweAlgNames.RSA1_5,
+                IdTokenEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256
             };
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));

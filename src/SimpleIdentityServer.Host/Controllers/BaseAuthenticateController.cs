@@ -19,7 +19,6 @@ namespace SimpleIdentityServer.Host.Controllers
     using Core.Errors;
     using Core.Exceptions;
     using Core.Extensions;
-    using Core.Jwt.Extensions;
     using Core.Services;
     using Core.Translation;
     using Core.WebSite.Authenticate;
@@ -39,6 +38,7 @@ namespace SimpleIdentityServer.Host.Controllers
     using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using SimpleAuth.Jwt.Extensions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Events.Openid;
     using SimpleAuth.Shared.Models;

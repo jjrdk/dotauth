@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
-using SimpleIdentityServer.Core.Jwt.Signature;
-using System;
-using Xunit;
-
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 {
+    using Moq;
+    using System;
     using SimpleAuth.Json;
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
+    using Xunit;
 
     public sealed class JwsGeneratorFixture
     {
@@ -31,14 +30,16 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 
         [Fact]
         public void When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        Assert.Throws<ArgumentNullException>(() => _jwsGenerator.Generate(null, JwsAlg.none, null));
+            Assert.Throws<ArgumentNullException>(() => _jwsGenerator.Generate(null, JwsAlg.none, null));
         }
 
         [Fact]
         public void When_Passing_No_JsonWebKey_And_Algorithm_Value_Other_Than_None_Then_Returns_Unsigned_Result()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             const JwsAlg jwsAlg = JwsAlg.none;
             const string signature = "signature";
 
@@ -56,28 +57,25 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             var base64SerializedJwsProtectedHeader = serializedJwsProtectedHeader.Base64Encode();
             var serializedJwsPayload = jwsPayload.SerializeWithJavascript();
             var base64SerializedJwsPayload = serializedJwsPayload.Base64Encode();
-            var combined = string.Format("{0}.{1}",
-                base64SerializedJwsProtectedHeader,
-                base64SerializedJwsPayload);
-            var expectedResult = string.Format("{0}.{1}",
-                combined,
-                string.Empty);
+            var combined = $"{base64SerializedJwsProtectedHeader}.{base64SerializedJwsPayload}";
+            var expectedResult = $"{combined}.{string.Empty}";
 
-                        var result = _jwsGenerator.Generate(jwsPayload, jwsAlg, null);
+            var result = _jwsGenerator.Generate(jwsPayload, jwsAlg, null);
 
-                        _createJwsSignatureFake.Verify(c => c.SignWithRsa(It.IsAny<JwsAlg>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+            _createJwsSignatureFake.Verify(c => c.SignWithRsa(It.IsAny<JwsAlg>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
             Assert.True(expectedResult == result);
         }
 
         [Fact]
         public void When_Sign_Payload_With_Rsa_Alogirthm_Then_Jws_Token_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             const KeyType keyType = KeyType.RSA;
             const string kid = "kid";
             const JwsAlg jwsAlg = JwsAlg.RS384;
             const string serializedKey = "serializedKey";
             const string signature = "signature";
-            
+
             var jsonWebKey = new JsonWebKey
             {
                 Kty = keyType,
@@ -99,22 +97,19 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             var base64SerializedJwsProtectedHeader = serializedJwsProtectedHeader.Base64Encode();
             var serializedJwsPayload = jwsPayload.SerializeWithJavascript();
             var base64SerializedJwsPayload = serializedJwsPayload.Base64Encode();
-            var combined = string.Format("{0}.{1}",
-                base64SerializedJwsProtectedHeader,
-                base64SerializedJwsPayload);
-            var expectedResult = string.Format("{0}.{1}",
-                combined,
-                signature);
+            var combined = $"{base64SerializedJwsProtectedHeader}.{base64SerializedJwsPayload}";
+            var expectedResult = $"{combined}.{signature}";
 
-                        var result = _jwsGenerator.Generate(jwsPayload, jwsAlg, jsonWebKey);
-            
-                        _createJwsSignatureFake.Verify(c => c.SignWithRsa(jwsAlg, serializedKey, combined));
+            var result = _jwsGenerator.Generate(jwsPayload, jwsAlg, jsonWebKey);
+
+            _createJwsSignatureFake.Verify(c => c.SignWithRsa(jwsAlg, serializedKey, combined));
             Assert.True(expectedResult == result);
         }
 
         [Fact]
         public void When_Sign_Payload_With_None_Alogithm_Then_Jws_Token_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             const JwsAlg jwsAlg = JwsAlg.none;
             const KeyType keyType = KeyType.RSA;
             const string kid = "kid";
@@ -141,16 +136,12 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             var base64SerializedJwsProtectedHeader = serializedJwsProtectedHeader.Base64Encode();
             var serializedJwsPayload = jwsPayload.SerializeWithJavascript();
             var base64SerializedJwsPayload = serializedJwsPayload.Base64Encode();
-            var combined = string.Format("{0}.{1}",
-                base64SerializedJwsProtectedHeader,
-                base64SerializedJwsPayload);
-            var expectedResult = string.Format("{0}.{1}",
-                combined,
-                string.Empty);
+            var combined = $"{base64SerializedJwsProtectedHeader}.{base64SerializedJwsPayload}";
+            var expectedResult = $"{combined}.{string.Empty}";
 
-                        var result = _jwsGenerator.Generate(jwsPayload, jwsAlg, jsonWebKey);
+            var result = _jwsGenerator.Generate(jwsPayload, jwsAlg, jsonWebKey);
 
-                        _createJwsSignatureFake.Verify(c => c.SignWithRsa(It.IsAny<JwsAlg>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+            _createJwsSignatureFake.Verify(c => c.SignWithRsa(It.IsAny<JwsAlg>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
             Assert.True(expectedResult == result);
         }
 

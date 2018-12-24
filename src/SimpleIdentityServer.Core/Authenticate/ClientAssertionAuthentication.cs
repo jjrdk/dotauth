@@ -14,7 +14,6 @@
 
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
 using System;
 using System.Linq;
@@ -22,6 +21,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
+    using SimpleAuth.Jwt;
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -150,7 +151,7 @@ namespace SimpleIdentityServer.Core.Authenticate
         {
             // The checks are coming from this url : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
             var jwsIssuer = jwsPayload.Issuer;
-            var jwsSubject = jwsPayload.GetStringClaim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject);
+            var jwsSubject = jwsPayload.GetStringClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject);
             var jwsAudiences = jwsPayload.Audiences;
             var expirationDateTime = jwsPayload.ExpirationTime.ConvertFromUnixTimestamp();
             Client client = null;

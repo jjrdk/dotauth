@@ -6,6 +6,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Extensions
 {
+    using SimpleAuth.Jwt;
+
     public sealed class ClaimPrincipalExtensionsFixture
     {
         [Fact]
@@ -48,7 +50,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
         {
             const string subject = "subject";            var claims = new List<Claim>
             {
-                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimsIdentity = new ClaimsIdentity(claims);
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);

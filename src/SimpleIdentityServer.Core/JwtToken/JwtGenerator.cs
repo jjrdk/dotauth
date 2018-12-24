@@ -16,9 +16,6 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Jwt.Encrypt;
-using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
 using System;
@@ -32,6 +29,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.JwtToken
 {
+    using SimpleAuth.Jwt;
+    using SimpleAuth.Jwt.Encrypt;
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -243,8 +243,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
             if (!_mappingJwsAlgToHashingFunctions.ContainsKey(signedAlg.Value))
             {
-                throw new InvalidOperationException(string.Format("the alg {0} is not supported",
-                    signedAlg.Value));
+                throw new InvalidOperationException($"the alg {signedAlg.Value} is not supported");
             }
 
             var callback = _mappingJwsAlgToHashingFunctions[signedAlg.Value];

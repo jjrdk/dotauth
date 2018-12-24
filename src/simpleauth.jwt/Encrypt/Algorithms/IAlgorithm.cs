@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
+namespace SimpleAuth.Jwt.Encrypt.Algorithms
 {
-    using SimpleAuth.Shared;
+    using Shared;
 
     public interface IAlgorithm
     {

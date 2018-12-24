@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-
-namespace SimpleIdentityServer.Core.Jwt.Extensions
+﻿namespace SimpleAuth.Jwt.Extensions
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
 
     public static class ClaimsExtensions
     {

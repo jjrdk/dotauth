@@ -27,7 +27,7 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
     using System.Threading;
-    using Jwt;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;

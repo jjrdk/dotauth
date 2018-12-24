@@ -15,9 +15,9 @@
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
 {
     using Moq;
-    using SimpleIdentityServer.Core.Jwt.Encrypt;
     using System;
     using System.Threading.Tasks;
+    using SimpleAuth.Jwt.Encrypt;
     using SimpleAuth.Shared;
     using Xunit;
     using SimpleIdentityServer.Core.Api.Jwe.Actions;

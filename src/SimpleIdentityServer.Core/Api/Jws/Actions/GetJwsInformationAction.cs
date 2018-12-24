@@ -20,10 +20,10 @@ namespace SimpleIdentityServer.Core.Api.Jws.Actions
     using Exceptions;
     using Extensions;
     using Helpers;
-    using Jwt;
-    using Jwt.Signature;
     using Parameters;
     using Results;
+    using SimpleAuth.Jwt;
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
 
     public class GetJwsInformationAction : IGetJwsInformationAction

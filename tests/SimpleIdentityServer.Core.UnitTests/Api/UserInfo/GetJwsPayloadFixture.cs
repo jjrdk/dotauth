@@ -25,7 +25,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
 {
-    using Jwt;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;

@@ -21,6 +21,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Parameters;
@@ -124,17 +125,17 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                 },
                 RedirectionUrls = new[] { new Uri("https://localhost"), },
                 //SectorIdentifierUri = sectorIdentifierUri,
-                IdTokenSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
-                IdTokenEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
-                IdTokenEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
-                UserInfoSignedResponseAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
-                UserInfoEncryptedResponseAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
-                UserInfoEncryptedResponseEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
-                RequestObjectSigningAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
-                RequestObjectEncryptionAlg = Jwt.JwtConstants.JweAlgNames.RSA1_5,
-                RequestObjectEncryptionEnc = Jwt.JwtConstants.JweEncNames.A128CBC_HS256,
+                IdTokenSignedResponseAlg = JwtConstants.JwsAlgNames.RS256,
+                IdTokenEncryptedResponseAlg = JwtConstants.JweAlgNames.RSA1_5,
+                IdTokenEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256,
+                UserInfoSignedResponseAlg = JwtConstants.JwsAlgNames.RS256,
+                UserInfoEncryptedResponseAlg = JwtConstants.JweAlgNames.RSA1_5,
+                UserInfoEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256,
+                RequestObjectSigningAlg = JwtConstants.JwsAlgNames.RS256,
+                RequestObjectEncryptionAlg = JwtConstants.JweAlgNames.RSA1_5,
+                RequestObjectEncryptionEnc = JwtConstants.JweEncNames.A128CBC_HS256,
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
-                TokenEndPointAuthSigningAlg = Jwt.JwtConstants.JwsAlgNames.RS256,
+                TokenEndPointAuthSigningAlg = JwtConstants.JwsAlgNames.RS256,
                 DefaultMaxAge = defaultMaxAge,
                 DefaultAcrValues = defaultAcrValues,
                 RequireAuthTime = requireAuthTime,

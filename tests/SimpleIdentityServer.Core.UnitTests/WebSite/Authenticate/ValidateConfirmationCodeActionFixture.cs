@@ -20,7 +20,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
-    using Jwt;
+    using SimpleAuth.Jwt;
 
     public class ValidateConfirmationCodeActionFixture
     {

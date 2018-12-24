@@ -14,7 +14,6 @@
 
 namespace SimpleIdentityServer.Core.Common
 {
-    using Jwt;
     using Logging;
     using SimpleIdentityServer.Core.Api.Authorization;
     using SimpleIdentityServer.Core.Extensions;
@@ -27,6 +26,7 @@ namespace SimpleIdentityServer.Core.Common
     using System.Security.Claims;
     using System.Threading.Tasks;
     using SimpleAuth.Json;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 

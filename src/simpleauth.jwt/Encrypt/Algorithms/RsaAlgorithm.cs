@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-
-namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
+namespace SimpleAuth.Jwt.Encrypt.Algorithms
 {
-    using SimpleAuth.Shared;
+    using System.Runtime.InteropServices;
+    using System.Security.Cryptography;
+    using Shared;
 
     public class RsaAlgorithm : IAlgorithm
     {

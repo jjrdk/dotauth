@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core.Jwt.Extensions
+namespace SimpleAuth.Jwt.Extensions
 {
     public static class StructExtensions
     {

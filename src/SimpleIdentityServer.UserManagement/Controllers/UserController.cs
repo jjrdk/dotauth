@@ -22,6 +22,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
 {
     using Core.WebSite.User.Actions;
     using Host;
+    using SimpleAuth.Jwt;
 
     [Area("UserManagement")]
     [Authorize("Connected")]
@@ -421,7 +422,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             var notEditableClaims = new Dictionary<string, string>();
             foreach (var claim in claims)
             {
-                if (Core.Jwt.JwtConstants.NotEditableResourceOwnerClaimNames.Contains(claim.Type))
+                if (JwtConstants.NotEditableResourceOwnerClaimNames.Contains(claim.Type))
                 {
                     notEditableClaims.Add(claim.Type, claim.Value);
                 }

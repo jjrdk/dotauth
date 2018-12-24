@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
-using SimpleIdentityServer.Core.Jwt.Extensions;
-using System;
-using System.Linq;
-
-namespace SimpleIdentityServer.Core.Jwt.Encrypt
+namespace SimpleAuth.Jwt.Encrypt
 {
-    using SimpleAuth.Json;
-    using SimpleAuth.Shared;
+    using System;
+    using System.Linq;
+    using Encryption;
+    using Extensions;
+    using Json;
+    using Shared;
 
     public class JweGenerator : IJweGenerator
     {

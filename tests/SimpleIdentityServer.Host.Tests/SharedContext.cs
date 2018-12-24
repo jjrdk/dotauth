@@ -19,7 +19,7 @@ using System.Security.Cryptography;
 namespace SimpleIdentityServer.Host.Tests
 {
     using System.Net.Http;
-    using Core.Jwt;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
 
     public class SharedContext

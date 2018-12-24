@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
 {
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 
@@ -38,7 +39,7 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
             _twilioClient = new TwilioClient();
         }
 
-        public string RequiredClaim => Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber;
+        public string RequiredClaim => JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber;
         public string Name => "SMS";
 
         public async Task SendAsync(string code, ResourceOwner user)

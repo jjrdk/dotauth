@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.DependencyInjection;
-
-using SimpleIdentityServer.Core.Jwt.Converter;
-using SimpleIdentityServer.Core.Jwt.Encrypt;
-using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
-using SimpleIdentityServer.Core.Jwt.Signature;
-
-namespace SimpleIdentityServer.Core.Jwt
+namespace SimpleAuth.Jwt
 {
+    using Converter;
+    using Encrypt;
+    using Encrypt.Encryption;
+    using Microsoft.Extensions.DependencyInjection;
+    using Signature;
+
     public static class SimpleIdentityServerJwtExtensions
     {
         public static IServiceCollection AddSimpleIdentityServerJwt(this IServiceCollection serviceCollection)

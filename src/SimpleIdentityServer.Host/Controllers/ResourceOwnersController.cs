@@ -28,6 +28,7 @@ namespace SimpleIdentityServer.Host.Controllers
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Core;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
@@ -135,18 +136,18 @@ namespace SimpleIdentityServer.Host.Controllers
 
             resourceOwner.Claims = claims;
             Claim updatedClaim, subjectClaim;
-            if (((updatedClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt)) != null))
+            if (((updatedClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt)) != null))
             {
                 resourceOwner.Claims.Remove(updatedClaim);
             }
 
-            if (((subjectClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject)) != null))
+            if (((subjectClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject)) != null))
             {
                 resourceOwner.Claims.Remove(subjectClaim);
             }
 
-            resourceOwner.Claims.Add(new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, request.Login));
-            resourceOwner.Claims.Add(new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
+            resourceOwner.Claims.Add(new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, request.Login));
+            resourceOwner.Claims.Add(new Claim(JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
             var result = await _resourceOwnerRepository.UpdateAsync(resourceOwner).ConfigureAwait(false);
             if (!result)
             {

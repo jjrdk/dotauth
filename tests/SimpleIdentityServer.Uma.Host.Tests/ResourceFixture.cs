@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Uma.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
@@ -24,6 +23,7 @@ using Xunit;
 namespace SimpleIdentityServer.Uma.Host.Tests
 {
     using Client.Configuration;
+    using SimpleAuth.Jwt;
 
     public class ResourceFixture : IClassFixture<TestUmaServerFixture>
     {

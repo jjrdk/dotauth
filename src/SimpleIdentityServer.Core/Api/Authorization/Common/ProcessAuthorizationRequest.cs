@@ -31,6 +31,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
 {
     using Logging;
     using SimpleAuth.Json;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared.Models;
 
     public class ProcessAuthorizationRequest : IProcessAuthorizationRequest
@@ -247,7 +248,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 }
 
                 var currentSubject = string.Empty;
-                var expectedSubject = jwsPayload.GetStringClaim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject);
+                var expectedSubject = jwsPayload.GetStringClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject);
                 if (claimsPrincipal != null && claimsPrincipal.IsAuthenticated())
                 {
                     currentSubject = claimsPrincipal.GetSubject();

@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Linq;
-using System.Security.Cryptography;
-
-namespace SimpleIdentityServer.Core.Jwt
+namespace SimpleAuth.Jwt
 {
+    using System;
+    using System.Linq;
+    using System.Security.Cryptography;
+
     public static class ByteManipulator
     {
         public static byte[] GenerateRandomBytes(int size)

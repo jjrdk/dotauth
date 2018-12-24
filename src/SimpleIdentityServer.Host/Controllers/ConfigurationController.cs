@@ -1,8 +1,5 @@
 ﻿namespace SimpleIdentityServer.Host.Controllers
 {
-    using Core;
-    using Microsoft.AspNetCore.Mvc;
-
     //[Route(HostEnpoints.Configuration)]
     //public class ConfigurationController : Controller
     //{

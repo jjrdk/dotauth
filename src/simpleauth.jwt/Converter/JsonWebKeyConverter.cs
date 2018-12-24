@@ -12,21 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Jwt.Exceptions;
-using SimpleIdentityServer.Core.Jwt.Serializer;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Xml.Serialization;
-
-namespace SimpleIdentityServer.Core.Jwt.Converter
+namespace SimpleAuth.Jwt.Converter
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Runtime.InteropServices;
+    using System.Security.Cryptography;
+    using System.Xml.Serialization;
+    using Exceptions;
     using Extensions;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
+    using Serializer;
+    using Shared;
+    using Shared.Requests;
 
     public class JsonWebKeyConverter : IJsonWebKeyConverter
     {

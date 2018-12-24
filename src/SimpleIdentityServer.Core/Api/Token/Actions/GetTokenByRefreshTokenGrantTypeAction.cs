@@ -25,8 +25,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
-    using Jwt;
     using Logging;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared.Models;
 
     public sealed class GetTokenByRefreshTokenGrantTypeAction : IGetTokenByRefreshTokenGrantTypeAction

@@ -26,7 +26,6 @@ namespace SimpleIdentityServer.Host.Tests
     using Core;
     using Core.Api.Jwks.Actions;
     using SimpleIdentityServer.Core.Extensions;
-    using Core.Jwt;
     using SimpleIdentityServer.Core.Services;
     using MiddleWares;
     using Services;
@@ -43,6 +42,7 @@ namespace SimpleIdentityServer.Host.Tests
     using Extensions;
     using System.Net.Http;
     using Client;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;

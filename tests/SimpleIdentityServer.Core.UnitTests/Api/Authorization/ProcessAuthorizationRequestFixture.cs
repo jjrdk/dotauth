@@ -2,10 +2,6 @@
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Jwt.Converter;
-using SimpleIdentityServer.Core.Jwt.Encrypt;
-using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
-using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
@@ -17,6 +13,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
     using Logging;
     using System.Net.Http;
+    using SimpleAuth.Jwt.Converter;
+    using SimpleAuth.Jwt.Encrypt;
+    using SimpleAuth.Jwt.Encrypt.Encryption;
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared.Repositories;
     using IClientStore = SimpleAuth.Shared.Repositories.IClientStore;
 

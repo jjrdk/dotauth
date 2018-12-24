@@ -15,10 +15,10 @@
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
 {
     using Moq;
-    using SimpleIdentityServer.Core.Jwt.Encrypt;
-    using SimpleIdentityServer.Core.Jwt.Signature;
     using System;
     using System.Threading.Tasks;
+    using SimpleAuth.Jwt.Encrypt;
+    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
     using Xunit;

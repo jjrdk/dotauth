@@ -18,6 +18,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 {
     using System.Threading;
     using Logging;
+    using SimpleAuth.Jwt;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 
@@ -59,7 +60,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             };
             var claims = new List<Claim>
             {
-                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -114,7 +115,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                     {
                         new ClaimParameter
                         {
-                            Name = Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject
+                            Name = JwtConstants.StandardResourceOwnerClaimNames.Subject
                         }
                     }
                 },
@@ -122,7 +123,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             };
             var claims = new List<Claim>
             {
-                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -160,7 +161,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                         await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null).ConfigureAwait(false);
 
                         Assert.NotNull(insertedConsent);
-            Assert.Contains(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, insertedConsent.Claims);
+            Assert.Contains(JwtConstants.StandardResourceOwnerClaimNames.Subject, insertedConsent.Claims);
             Assert.True(insertedConsent.ResourceOwner.Id == subject);
             Assert.True(insertedConsent.Client.ClientId == clientId);
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl());
@@ -178,7 +179,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             };
             var claims = new List<Claim>
             {
-                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);

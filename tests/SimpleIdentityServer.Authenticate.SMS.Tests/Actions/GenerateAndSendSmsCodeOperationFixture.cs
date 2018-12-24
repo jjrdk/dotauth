@@ -9,8 +9,8 @@ using Xunit;
 namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
 {
     using Core.Errors;
-    using Core.Jwt;
     using Logging;
+    using SimpleAuth.Jwt;
 
     public class GenerateAndSendSmsCodeOperationFixture
     {

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 
-namespace SimpleIdentityServer.Core.Jwt.Exceptions
+namespace SimpleAuth.Jwt.Exceptions
 {
     public static class ErrorDescriptions
     {

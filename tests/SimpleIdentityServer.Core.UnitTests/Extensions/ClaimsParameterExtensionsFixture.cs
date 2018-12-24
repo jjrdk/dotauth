@@ -6,6 +6,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Extensions
 {
+    using SimpleAuth.Jwt;
+
     public sealed class ClaimsParameterExtensionsFixture
     {
         [Fact]
@@ -25,7 +27,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             {
                 UserInfo = new List<ClaimParameter>
                 {
-                    new ClaimParameter { Name = Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject },
+                    new ClaimParameter { Name = JwtConstants.StandardResourceOwnerClaimNames.Subject },
                     new ClaimParameter { Name = notStandardClaimName }
                 }
             };
@@ -33,7 +35,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
                         var claimNames = claimsParameter.GetClaimNames();
 
                         Assert.NotNull(claimNames);
-            Assert.Contains(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, claimNames);
+            Assert.Contains(JwtConstants.StandardResourceOwnerClaimNames.Subject, claimNames);
             Assert.DoesNotContain(notStandardClaimName, claimNames);
         }
     }
