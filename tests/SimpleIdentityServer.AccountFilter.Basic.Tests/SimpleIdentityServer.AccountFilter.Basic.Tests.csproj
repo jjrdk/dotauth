@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>SimpleIdentityServer.AccountFilter.Basic.Tests Unit test project</Description>
     <Authors>thierry habart</Authors>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <AssemblyName>SimpleIdentityServer.AccountFilter.Basic.Tests</AssemblyName>
     <PackageId>SimpleIdentityServer.AccountFilter.Basic.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
@@ -19,14 +19,14 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-    <PackageReference Include="Moq" Version="4.10.0" />
-    <PackageReference Include="xunit" Version="2.4.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0">
+    <PackageReference Include="Moq" Version="4.10.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="OpenCover" Version="4.6.519" />
-    <PackageReference Include="ReportGenerator" Version="3.1.2" />
+    <PackageReference Include="ReportGenerator" Version="4.0.4" />
     <PackageReference Include="coveralls.io" Version="1.4.2" />
   </ItemGroup>
 

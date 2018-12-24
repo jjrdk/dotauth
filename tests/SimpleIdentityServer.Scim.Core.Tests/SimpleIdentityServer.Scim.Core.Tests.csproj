@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>SimpleIdentityServer.Scim.Core.Tests test project</Description>
     <Authors>thierry habart</Authors>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <AssemblyName>SimpleIdentityServer.Scim.Core.Tests</AssemblyName>
     <PackageId>SimpleIdentityServer.Scim.Core.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>

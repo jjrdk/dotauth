@@ -8,8 +8,8 @@
     <ProjectReference Include="..\SimpleIdentityServer.UserManagement.Common\SimpleIdentityServer.UserManagement.Common.csproj" />  
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="microsoft.extensions.fileproviders.embedded" Version="2.1.1"/>
-    <PackageReference Include="microsoft.aspnetcore.mvc.razor" Version="2.1.1"/>
+    <PackageReference Include="microsoft.extensions.fileproviders.embedded" Version="2.2.0" />
+    <PackageReference Include="microsoft.aspnetcore.mvc.razor" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>  
     <EmbeddedResource Include="Areas\**\*.cshtml" />
