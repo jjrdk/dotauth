@@ -23,9 +23,9 @@ using System.Reflection;
 
 namespace SimpleIdentityServer.Scim.Client.Tests
 {
-    using Logging;
     using SimpleAuth.Shared;
     using SimpleIdentityServer.Core;
+    using SimpleIdentityServer.Core.Logging;
     using SimpleIdentityServer.Core.Services;
     using SimpleIdentityServer.Core.WebSite.User.Actions;
 

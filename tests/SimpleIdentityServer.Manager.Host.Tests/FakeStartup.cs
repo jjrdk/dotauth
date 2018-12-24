@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.Manager.Host.Tests
     using SimpleIdentityServer.Host.Extensions;
     using System;
     using System.Reflection;
-    using Logging;
+    using Core.Logging;
     using SimpleAuth.Jwt;
 
     public class FakeStartup : IStartup

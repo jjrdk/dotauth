@@ -18,11 +18,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\simpleauth.jwt\simpleauth.jwt.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0"/>
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">

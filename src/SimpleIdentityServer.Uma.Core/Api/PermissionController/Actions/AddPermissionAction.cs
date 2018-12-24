@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
 {
-    using Logging;
+    using SimpleIdentityServer.Core.Logging;
 
     internal class AddPermissionAction : IAddPermissionAction
     {

@@ -27,8 +27,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actions
 {
-    using Logging;
     using Moq;
+    using SimpleIdentityServer.Core.Logging;
 
     public class AddPermissionActionFixture
     {

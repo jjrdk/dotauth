@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
-    using Logging;
+    using SimpleIdentityServer.Core.Logging;
 
     internal class AddAuthorizationPolicyAction : IAddAuthorizationPolicyAction
     {

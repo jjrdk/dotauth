@@ -15,7 +15,6 @@
 namespace SimpleIdentityServer.Host.Extensions
 {
     using Core;
-    using Logging;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -23,6 +22,7 @@ namespace SimpleIdentityServer.Host.Extensions
     using Parsers;
     using System;
     using System.Linq;
+    using Core.Logging;
     using SimpleAuth.Jwt;
     using UserInfo;
     using UserInfo.Actions;

@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Logging
+﻿namespace SimpleIdentityServer.Core.Logging
 {
     public interface IUmaServerEventSource : IEventSource
     {

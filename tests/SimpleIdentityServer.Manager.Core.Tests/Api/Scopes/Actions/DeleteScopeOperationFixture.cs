@@ -20,12 +20,12 @@ using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
 {
-    using Logging;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleIdentityServer.Core.Api.Scopes.Actions;
     using SimpleIdentityServer.Core.Errors;
     using SimpleIdentityServer.Core.Exceptions;
+    using SimpleIdentityServer.Core.Logging;
 
     public class DeleteScopeOperationFixture
     {

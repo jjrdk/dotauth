@@ -11,8 +11,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
-    using Logging;
     using System.Net.Http;
+    using Logging;
     using SimpleAuth.Jwt.Converter;
     using SimpleAuth.Jwt.Encrypt;
     using SimpleAuth.Jwt.Encrypt.Encryption;

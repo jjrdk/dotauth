@@ -25,8 +25,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 {
-    using Logging;
     using Moq;
+    using SimpleIdentityServer.Core.Logging;
 
     public class AuthorizationPolicyValidatorFixture
     {

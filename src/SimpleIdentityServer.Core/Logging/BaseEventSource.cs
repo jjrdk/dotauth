@@ -1,7 +1,7 @@
-﻿namespace SimpleIdentityServer.Logging
+﻿namespace SimpleIdentityServer.Core.Logging
 {
-    using Microsoft.Extensions.Logging;
     using System;
+    using Microsoft.Extensions.Logging;
 
     public class BaseEventSource : IEventSource
     {

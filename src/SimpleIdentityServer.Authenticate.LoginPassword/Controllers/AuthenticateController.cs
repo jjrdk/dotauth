@@ -23,11 +23,11 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
 {
+    using Core.Logging;
     using Core.WebSite.User.Actions;
     using Host;
     using Host.Controllers;
     using Host.ViewModels;
-    using Logging;
     using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
