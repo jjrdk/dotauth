@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>SimpleIdentityServer.UserInfoIntrospection Class Library</Description>
@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Core.Jwt\simpleauth.jwt.csproj" />
+    <ProjectReference Include="..\simpleauth.jwt\simpleauth.jwt.csproj" />
   </ItemGroup>
 
   <ItemGroup>
