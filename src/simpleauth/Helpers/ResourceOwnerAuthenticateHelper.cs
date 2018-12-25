@@ -18,7 +18,7 @@
             _amrHelper = amrHelper;
         }
 
-        public Task<ResourceOwner> Authenticate(string login, string password, IEnumerable<string> exceptedAmrValues)
+        public Task<ResourceOwner> Authenticate(string login, string password, IEnumerable<string> exceptedAmrValues = null)
         {
             if (string.IsNullOrWhiteSpace(login))
             {

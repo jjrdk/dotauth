@@ -1,12 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Authenticate.LoginPassword.Services
+﻿namespace SimpleAuth.Server.Services
 {
-    using SimpleAuth.Helpers;
+    using System;
+    using System.Threading.Tasks;
+    using Helpers;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth.Services;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
 
     internal sealed class PasswordAuthenticateResourceOwnerService : IAuthenticateResourceOwnerService
     {
@@ -17,7 +16,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Services
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
-        public string Amr => Constants.AMR;
+        public string Amr => "pwd";
 
         public Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password)
         {

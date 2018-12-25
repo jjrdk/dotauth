@@ -6,7 +6,7 @@
 
     internal sealed class AmrHelper : IAmrHelper
     {
-        public string GetAmr(IEnumerable<string> currentAmrs, IEnumerable<string> exceptedAmrs)
+        public string GetAmr(IEnumerable<string> currentAmrs, IEnumerable<string> exceptedAmrs = null)
         {
             if (currentAmrs == null || !currentAmrs.Any())
             {

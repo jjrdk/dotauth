@@ -100,7 +100,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> LocalLogin(LocalAuthenticationViewModel localAuthenticationViewModel)
+        public async Task<IActionResult> LocalLogin(SmsAuthenticationViewModel localAuthenticationViewModel)
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated)
@@ -272,7 +272,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> LocalLoginOpenId(OpenidLocalAuthenticationViewModel viewModel)
+        public async Task<IActionResult> LocalLoginOpenId(SmsOpenIdLocalAuthenticationViewModel viewModel)
         {
             if (viewModel == null)
             {

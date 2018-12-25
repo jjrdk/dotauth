@@ -6,7 +6,7 @@
 
     public interface IResourceOwnerAuthenticateHelper
     {
-        Task<ResourceOwner> Authenticate(string login, string password, IEnumerable<string> exceptedAmrValues);
+        Task<ResourceOwner> Authenticate(string login, string password, IEnumerable<string> exceptedAmrValues = null);
         IEnumerable<string> GetAmrs();
     }
 }
