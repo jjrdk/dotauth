@@ -17,6 +17,7 @@ namespace SimpleAuth.Server.Extensions
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.AspNetCore.Authentication;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Parameters;
@@ -28,10 +29,52 @@ namespace SimpleAuth.Server.Extensions
     using Shared.Responses;
     using Shared.Results;
     using SimpleAuth;
+    using SimpleIdentityServer.UserManagement.Common.Responses;
+    using ViewModels;
     using CodeChallengeMethods = Shared.Models.CodeChallengeMethods;
 
     public static class MappingExtensions
     {
+        public static AuthproviderResponse ToDto(this AuthenticationScheme authenticationScheme)
+        {
+            if(authenticationScheme == null)
+            {
+                throw new ArgumentNullException(nameof(authenticationScheme));
+            }
+
+            return new AuthproviderResponse
+            {
+                AuthenticationScheme = authenticationScheme.Name,
+                DisplayName = authenticationScheme.DisplayName
+            };
+        }
+
+        public static IEnumerable<AuthproviderResponse> ToDtos(this IEnumerable<AuthenticationScheme> authenticationSchemes)
+        {
+            if (authenticationSchemes == null)
+            {
+                throw new ArgumentNullException(nameof(authenticationSchemes));
+            }
+
+            return authenticationSchemes.Select(a => a.ToDto());
+        }
+
+        public static ProfileResponse ToDto(this ResourceOwnerProfile profile)
+        {
+            if(profile == null)
+            {
+                throw new ArgumentNullException(nameof(profile));
+            }
+
+            return new ProfileResponse
+            {
+                Issuer = profile.Issuer,
+                UserId = profile.Subject,
+                CreateDateTime = profile.CreateDateTime,
+                UpdateTime = profile.UpdateTime                
+            };
+        }
+    
         public static AddClaimParameter ToParameter(this ClaimResponse request)
         {
             if (request == null)

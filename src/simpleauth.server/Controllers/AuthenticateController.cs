@@ -86,7 +86,7 @@
                 return View(viewModel);
             }
 
-            return RedirectToAction("Index", "User", new {area = "UserManagement"});
+            return RedirectToAction("Index", "User");
         }
 
         [HttpPost]
@@ -95,7 +95,7 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "User", new {area = "UserManagement"});
+                return RedirectToAction("Index", "User");
             }
 
             if (authorizeViewModel == null)
@@ -131,7 +131,7 @@
                 {
                     await SetLocalCookie(claims, Guid.NewGuid().ToString()).ConfigureAwait(false);
                     _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
-                    return RedirectToAction("Index", "User", new {area = "UserManagement"});
+                    return RedirectToAction("Index", "User");
                 }
 
                 // 2.1 Store temporary information in cookie

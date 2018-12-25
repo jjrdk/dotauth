@@ -42,7 +42,6 @@ namespace SimpleAuth.Server.Controllers
     using SimpleAuth.Services;
     using Translation;
     using ViewModels;
-    using Website;
     using WebSite.Authenticate;
     using WebSite.Authenticate.Common;
     using WebSite.User.Actions;

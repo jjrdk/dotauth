@@ -32,7 +32,6 @@
     <ProjectReference Include="..\..\src\SimpleIdentityServer.Uma.Core\SimpleIdentityServer.Uma.Core.csproj" />
     <ProjectReference Include="..\..\src\SimpleIdentityServer.UserInfoIntrospection\SimpleIdentityServer.UserInfoIntrospection.csproj" />
     <ProjectReference Include="..\..\src\SimpleIdentityServer.UserManagement.Client\SimpleIdentityServer.UserManagement.Client.csproj" />
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.UserManagement\SimpleIdentityServer.UserManagement.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.UserManagement.Common\SimpleIdentityServer.UserManagement.Common.csproj" />
   </ItemGroup>
 
 </Project>
