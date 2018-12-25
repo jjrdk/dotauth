@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SimpleIdentityServer.Authenticate.SMS\SimpleIdentityServer.Authenticate.SMS.csproj" />
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Core\simpleauth.csproj" />
   </ItemGroup>
 
 </Project>

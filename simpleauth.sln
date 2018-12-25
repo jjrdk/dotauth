@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Core.U
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Client", "src\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj", "{0F285AB3-E812-4AE0-9CEC-D118D10C3557}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth", "src\SimpleIdentityServer.Core\simpleauth.csproj", "{C23BD3A1-78CE-4531-9649-19BB87C93F53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleAuth", "src\simpleauth\simpleauth.csproj", "{C23BD3A1-78CE-4531-9649-19BB87C93F53}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Host", "src\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj", "{F3EE8444-7F92-458D-8DB4-FAA7607629CB}"
 EndProject

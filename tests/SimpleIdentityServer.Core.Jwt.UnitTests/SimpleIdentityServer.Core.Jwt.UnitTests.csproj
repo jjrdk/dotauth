@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\simpleauth.shared\simpleauth.shared.csproj" />
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Core\simpleauth.csproj" />
+    <ProjectReference Include="..\..\src\simpleauth\simpleauth.csproj" />
   </ItemGroup>
 
 </Project>

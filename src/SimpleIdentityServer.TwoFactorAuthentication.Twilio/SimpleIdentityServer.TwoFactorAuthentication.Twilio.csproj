@@ -14,7 +14,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\SimpleIdentityServer.Core\simpleauth.csproj" />
+    <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Twilio.Client\SimpleIdentityServer.Twilio.Client.csproj" />
   </ItemGroup>
 </Project>

@@ -17,7 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SimpleIdentityServer.Core\simpleauth.csproj" />
+    <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Core\SimpleIdentityServer.Scim.Core.csproj" />
   </ItemGroup>
   
