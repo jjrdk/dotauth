@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Client
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth", "src\simpleauth\simpleauth.csproj", "{C23BD3A1-78CE-4531-9649-19BB87C93F53}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.server", "src\SimpleIdentityServer.Host\simpleauth.server.csproj", "{F3EE8444-7F92-458D-8DB4-FAA7607629CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.server", "src\simpleauth.server\simpleauth.server.csproj", "{F3EE8444-7F92-458D-8DB4-FAA7607629CB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.TwoFactorAuthentication.Twilio", "src\SimpleIdentityServer.TwoFactorAuthentication.Twilio\SimpleIdentityServer.TwoFactorAuthentication.Twilio.csproj", "{7F360C48-3D1D-4C64-88D4-322B1A12B1BF}"
 EndProject

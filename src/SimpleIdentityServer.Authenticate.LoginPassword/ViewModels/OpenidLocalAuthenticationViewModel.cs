@@ -1,6 +1,6 @@
 ﻿namespace SimpleIdentityServer.Authenticate.LoginPassword.ViewModels
 {
-    using Host.ViewModels;
+    using SimpleAuth.Server.ViewModels;
 
     public class OpenidLocalAuthenticationViewModel : AuthorizeOpenIdViewModel
     {

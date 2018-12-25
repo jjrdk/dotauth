@@ -19,6 +19,9 @@
     using SimpleAuth.Helpers;
     using SimpleAuth.Logging;
     using SimpleAuth.Parameters;
+    using SimpleAuth.Server;
+    using SimpleAuth.Server.Extensions;
+    using SimpleAuth.Server.ViewModels;
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;

@@ -12,23 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Host.Controllers.Website;
-using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Shell.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace SimpleIdentityServer.Shell.Controllers
 {
-    using Host;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.DataProtection;
+    using Microsoft.AspNetCore.Mvc;
+    using SimpleIdentityServer.Shell.ViewModels;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using SimpleAuth;
     using SimpleAuth.Results;
+    using SimpleAuth.Server;
+    using SimpleAuth.Server.Controllers.Website;
+    using SimpleAuth.Server.Extensions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Events.Openid;
     using SimpleAuth.Shared.Models;

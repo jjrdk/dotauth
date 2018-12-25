@@ -6,10 +6,10 @@ using System.Reflection;
 
 namespace SimpleIdentityServer.Authenticate.LoginPassword
 {
-    using Host;
     using Microsoft.AspNetCore.Mvc.Razor;
     using Microsoft.CodeAnalysis;
     using Microsoft.Extensions.FileProviders;
+    using SimpleAuth.Server;
     using SimpleAuth.Services;
 
     public static class ServiceCollectionExtensions

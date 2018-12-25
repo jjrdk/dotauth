@@ -32,15 +32,14 @@ namespace SimpleIdentityServer.Host.Tests
     using System.Linq;
     using System.Reflection;
     using System.Text;
-
-    using Controllers.Api;
-    using Extensions;
     using System.Net.Http;
     using Client;
     using SimpleAuth;
     using SimpleAuth.Api.Jwks.Actions;
     using SimpleAuth.Extensions;
     using SimpleAuth.Logging;
+    using SimpleAuth.Server.Controllers.Api;
+    using SimpleAuth.Server.Extensions;
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;

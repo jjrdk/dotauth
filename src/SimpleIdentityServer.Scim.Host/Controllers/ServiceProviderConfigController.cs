@@ -15,10 +15,8 @@
 namespace SimpleIdentityServer.Scim.Host.Controllers
 {
     using System;
-    using Core;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
-    using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using ScimConstants = Core.ScimConstants;
 

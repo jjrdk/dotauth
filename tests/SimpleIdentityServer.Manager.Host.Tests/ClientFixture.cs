@@ -6,7 +6,6 @@ using Xunit;
 namespace SimpleIdentityServer.Manager.Host.Tests
 {
     using Client.Clients;
-    using Client.Configuration;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using System.Linq;
