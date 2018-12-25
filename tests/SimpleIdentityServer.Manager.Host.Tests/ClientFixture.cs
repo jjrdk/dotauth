@@ -8,9 +8,9 @@ namespace SimpleIdentityServer.Manager.Host.Tests
     using Client.Clients;
     using Client.Configuration;
     using Core.Errors;
-    using System.Linq;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
+    using System.Linq;
 
     public class ClientFixture //: IClassFixture<TestManagerServerFixture>
     {
@@ -440,21 +440,16 @@ namespace SimpleIdentityServer.Manager.Host.Tests
 
         private void InitializeFakeObjects()
         {
-            var addClientOperation = new AddClientOperation(_server.Client);
             var deleteClientOperation = new DeleteClientOperation(_server.Client);
             var getAllClientsOperation = new GetAllClientsOperation(_server.Client);
             var getClientOperation = new GetClientOperation(_server.Client);
             var searchClientOperation = new SearchClientOperation(_server.Client);
-            var updateClientOperation = new UpdateClientOperation(_server.Client);
-            var configurationClient = new GetConfigurationOperation(_server.Client);
             _openidClients = new OpenIdClients(
-                addClientOperation,
-                updateClientOperation,
+                _server.Client,
                 getAllClientsOperation,
                 deleteClientOperation,
                 getClientOperation,
-                searchClientOperation,
-                configurationClient);
+                searchClientOperation);
         }
     }
 }

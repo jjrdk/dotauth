@@ -21,7 +21,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
+    <ProjectReference Include="..\..\src\SimpleIdentityServer.Core\simpleauth.csproj" />
     <ProjectReference Include="..\..\src\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />
     <ProjectReference Include="..\..\src\SimpleIdentityServer.Manager.Client\SimpleIdentityServer.Manager.Client.csproj" />
   </ItemGroup>

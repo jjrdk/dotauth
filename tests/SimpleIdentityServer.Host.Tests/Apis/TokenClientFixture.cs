@@ -22,18 +22,19 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using Newtonsoft.Json;
+    using SimpleAuth.Jwt;
+    using SimpleAuth.Jwt.Encrypt;
+    using SimpleAuth.Jwt.Signature;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
     using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Jwt.Encrypt;
-    using SimpleAuth.Jwt.Signature;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Responses;
     using Xunit;
+    using JwtConstants = SimpleAuth.Jwt.JwtConstants;
 
     public class TokenClientFixture : IClassFixture<TestOauthServerFixture>
     {
@@ -181,7 +182,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         }
 
         [Fact]
-        public async Task When_Use_Password_GrantType_And_Authenticate_Client_With_Not_Accepted_Auth_Method_Then_Json_Is_Returned()
+        public async Task
+            When_Use_Password_GrantType_And_Authenticate_Client_With_Not_Accepted_Auth_Method_Then_Json_Is_Returned()
         {
             InitializeFakeObjects();
             var request = new List<KeyValuePair<string, string>>
@@ -210,7 +212,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         }
 
         [Fact]
-        public async Task When_Use_Password_GrantType_And_ResourceOwner_Credentials_Are_Not_Valid_Then_Json_Is_Returned()
+        public async Task
+            When_Use_Password_GrantType_And_ResourceOwner_Credentials_Are_Not_Valid_Then_Json_Is_Returned()
         {
             InitializeFakeObjects();
             var request = new List<KeyValuePair<string, string>>
@@ -323,7 +326,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         }
 
         [Fact]
-        public async Task When_Use_ClientCredentials_And_Client_Doesnt_Have_Token_ResponseType_It_Then_Json_Is_Returned()
+        public async Task
+            When_Use_ClientCredentials_And_Client_Doesnt_Have_Token_ResponseType_It_Then_Json_Is_Returned()
         {
             InitializeFakeObjects();
             var request = new List<KeyValuePair<string, string>>
@@ -347,7 +351,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal("invalid_client", error.Error);
-            Assert.Equal("the client 'clientWithWrongResponseType' doesn't support the response type: 'token'", error.ErrorDescription);
+            Assert.Equal("the client 'clientWithWrongResponseType' doesn't support the response type: 'token'",
+                error.ErrorDescription);
         }
 
         [Fact]
@@ -465,17 +470,19 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
 
             var result = await new TokenClient(
-        TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
-        TokenRequest.FromScopes("openid"),
-        _server.Client,
-        new GetDiscoveryOperation(_server.Client))
-    .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("openid"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
             var refreshToken = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     TokenRequest.FromRefreshToken(result.Content.RefreshToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.BadRequest, refreshToken.Status);
             Assert.Equal("invalid_grant", refreshToken.Error.Error);
@@ -562,7 +569,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         }
 
         [Fact]
-        public async Task When_Use_AuthCode_GrantType_And_Client_DoesntSupport_AuthCode_GrantType_Then_Json_Is_Returned()
+        public async Task
+            When_Use_AuthCode_GrantType_And_Client_DoesntSupport_AuthCode_GrantType_Then_Json_Is_Returned()
         {
             InitializeFakeObjects();
             var request = new List<KeyValuePair<string, string>>
@@ -616,7 +624,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal("invalid_client", error.Error);
-            Assert.Equal("the client 'incomplete_authcode_client' doesn't support the response type: 'code'", error.ErrorDescription);
+            Assert.Equal("the client 'incomplete_authcode_client' doesn't support the response type: 'code'",
+                error.ErrorDescription);
         }
 
         [Fact]
@@ -655,13 +664,13 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         {
             InitializeFakeObjects();
 
-
             var result = await new TokenClient(
-        TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
-        TokenRequest.FromScopes("openid"),
-        _server.Client,
-        new GetDiscoveryOperation(_server.Client))
-    .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+                    TokenRequest.FromScopes("openid"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
             // var claims = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.AccessToken);
 
             Assert.NotNull(result);
@@ -675,11 +684,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             InitializeFakeObjects();
 
             var result = await new TokenClient(
-        TokenCredentials.FromClientCredentials("client", "client"),
-        TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
-        _server.Client,
-        new GetDiscoveryOperation(_server.Client))
-    .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
             // var claims = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.AccessToken);
 
             Assert.NotNull(result);
@@ -693,11 +703,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             InitializeFakeObjects();
 
             var result = await new TokenClient(
-        TokenCredentials.FromClientCredentials("client", "client"),
-        TokenRequest.FromPassword("superuser", "password", new[] { "role" }),
-        _server.Client,
-        new GetDiscoveryOperation(_server.Client))
-    .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    TokenRequest.FromPassword("superuser", "password", new[] {"role"}),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
             // var claims = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.AccessToken);
 
             var jwsParserFactory = new JwsParserFactory();
@@ -716,22 +727,26 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             InitializeFakeObjects();
 
             var confirmationCode = new ConfirmationCode();
-            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>())).Returns(() => Task.FromResult((ConfirmationCode)null));
-            _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>())).Callback<ConfirmationCode>(r =>
-            {
-                confirmationCode = r;
-            }).Returns(() => Task.FromResult(true));
-            await _sidSmsAuthenticateClient.Send(baseUrl, new ConfirmationCodeRequest
-            {
-                PhoneNumber = "phone"
-            }).ConfigureAwait(false);
-            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>())).Returns(Task.FromResult(confirmationCode));
+            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((ConfirmationCode) null));
+            _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>()))
+                .Callback<ConfirmationCode>(r => { confirmationCode = r; })
+                .Returns(() => Task.FromResult(true));
+            await _sidSmsAuthenticateClient.Send(baseUrl,
+                    new ConfirmationCodeRequest
+                    {
+                        PhoneNumber = "phone"
+                    })
+                .ConfigureAwait(false);
+            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(confirmationCode));
             var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    TokenRequest.FromPassword("phone", confirmationCode.Value, new[] { "scim" }, "sms"),
+                    TokenRequest.FromPassword("phone", confirmationCode.Value, new[] {"scim"}, "sms"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
             Assert.NotNull(result);
             Assert.False(result.ContainsError);
@@ -746,13 +761,13 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var certificate = new X509Certificate2("testCert.pfx");
 
             var result = await new TokenClient(
-        TokenCredentials.FromCertificate("certificate_client", certificate),
-        TokenRequest.FromPassword("administrator", "password", new[] { "openid" }),
-        _server.Client,
-        new GetDiscoveryOperation(_server.Client))
-    .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                    TokenCredentials.FromCertificate("certificate_client", certificate),
+                    TokenRequest.FromPassword("administrator", "password", new[] {"openid"}),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
-            Assert.NotNull(result);
             Assert.False(result.ContainsError);
             Assert.NotEmpty(result.Content.AccessToken);
         }
@@ -763,11 +778,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             InitializeFakeObjects();
 
             var result = await new TokenClient(
-        TokenCredentials.FromClientCredentials("client", "client"),
-        TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
-        _server.Client,
-        new GetDiscoveryOperation(_server.Client))
-    .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
             //var refreshToken = await new TokenClient(
             //        TokenCredentials.FromClientCredentials("client", "client"),
             //        TokenRequest.FromRefreshToken(result.Content.RefreshToken),
@@ -781,16 +797,18 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         }
 
         [Fact]
-        public async Task When_Get_Access_Token_With_Password_Grant_Type_Then_Access_Token_With_Valid_Signature_Is_Returned()
+        public async Task
+            When_Get_Access_Token_With_Password_Grant_Type_Then_Access_Token_With_Valid_Signature_Is_Returned()
         {
             InitializeFakeObjects();
 
             var result = await new TokenClient(
-        TokenCredentials.FromClientCredentials("client", "client"),
-        TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
-        _server.Client,
-        new GetDiscoveryOperation(_server.Client))
-    .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                    TokenCredentials.FromClientCredentials("client", "client"),
+                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
             // TODO: Look into this
             //var jwks = await _jwksClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
@@ -805,11 +823,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             InitializeFakeObjects();
 
             var token = await new TokenClient(
-        TokenCredentials.FromBasicAuthentication("basic_client", "basic_client"),
-        TokenRequest.FromScopes("api1"),
-        _server.Client,
-        new GetDiscoveryOperation(_server.Client))
-    .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                    TokenCredentials.FromBasicAuthentication("basic_client", "basic_client"),
+                    TokenRequest.FromScopes("api1"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
             Assert.NotNull(token);
             Assert.False(token.ContainsError);
@@ -822,11 +841,11 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             InitializeFakeObjects();
 
             var firstToken = await new TokenClient(
-        TokenCredentials.FromBasicAuthentication("basic_client", "basic_client"),
-        TokenRequest.FromScopes("api1"),
-        _server.Client,
-        new GetDiscoveryOperation(_server.Client))
-    .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                    TokenCredentials.FromBasicAuthentication("basic_client", "basic_client"),
+                    TokenRequest.FromScopes("api1"),
+                    _server.Client)
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
             //Assert.NotNull(firstToken);
             Assert.False(firstToken.ContainsError);
@@ -846,14 +865,19 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 {StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddHours(1).ConvertToUnixTimestamp()}
             };
             var jws = _jwsGenerator.Generate(payload, JwsAlg.RS256, _server.SharedCtx.ModelSignatureKey);
-            var jwe = _jweGenerator.GenerateJweByUsingSymmetricPassword(jws, JweAlg.RSA1_5, JweEnc.A128CBC_HS256, _server.SharedCtx.ModelEncryptionKey, "jwt_client");
+            var jwe = _jweGenerator.GenerateJweByUsingSymmetricPassword(jws,
+                JweAlg.RSA1_5,
+                JweEnc.A128CBC_HS256,
+                _server.SharedCtx.ModelEncryptionKey,
+                "jwt_client");
 
             var token = await new TokenClient(
-        TokenCredentials.FromClientSecret(jwe, "jwt_client"),
-        TokenRequest.FromScopes("api1"),
-        _server.Client,
-        new GetDiscoveryOperation(_server.Client))
-    .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                    TokenCredentials.FromClientSecret(jwe, "jwt_client"),
+                    TokenRequest.FromScopes("api1"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
             Assert.NotNull(token);
             Assert.False(token.ContainsError);
@@ -873,7 +897,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                     JwtConstants.StandardResourceOwnerClaimNames.Subject, "private_key_client"
                 },
                 {
-                    StandardClaimNames.Audiences, new []
+                    StandardClaimNames.Audiences, new[]
                     {
                         "http://localhost:5000"
                     }
@@ -885,11 +909,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var jws = _jwsGenerator.Generate(payload, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
 
             var token = await new TokenClient(
-        TokenCredentials.FromClientSecret(jws, "private_key_client"),
-        TokenRequest.FromScopes("api1"),
-        _server.Client,
-        new GetDiscoveryOperation(_server.Client))
-    .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                    TokenCredentials.FromClientSecret(jws, "private_key_client"),
+                    TokenRequest.FromScopes("api1"),
+                    _server.Client,
+                    new GetDiscoveryOperation(_server.Client))
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
             Assert.NotNull(token);
             Assert.False(token.ContainsError);
@@ -901,8 +926,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var services = new ServiceCollection();
             services.AddSimpleIdentityServerJwt();
             var provider = services.BuildServiceProvider();
-            _jwsGenerator = (IJwsGenerator)provider.GetService(typeof(IJwsGenerator));
-            _jweGenerator = (IJweGenerator)provider.GetService(typeof(IJweGenerator));
+            _jwsGenerator = (IJwsGenerator) provider.GetService(typeof(IJwsGenerator));
+            _jweGenerator = (IJweGenerator) provider.GetService(typeof(IJweGenerator));
             _sidSmsAuthenticateClient = new SidSmsAuthenticateClient(_server.Client);
         }
     }

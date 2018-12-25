@@ -21,11 +21,11 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Client
 {
     using Newtonsoft.Json;
+    using SimpleAuth.Shared.Responses;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
-    using SimpleAuth.Shared.Responses;
 
     public class TokenClient : ITokenClient
     {
@@ -39,11 +39,11 @@ namespace SimpleIdentityServer.Client
             TokenCredentials credentials,
             TokenRequest form,
             HttpClient client,
-            IGetDiscoveryOperation getDiscoveryOperation)
+            IGetDiscoveryOperation getDiscoveryOperation = null)
         {
             _form = credentials.Concat(form).ToDictionary(x => x.Key, x => x.Value);
             _client = client;
-            _getDiscoveryOperation = getDiscoveryOperation;
+            _getDiscoveryOperation = getDiscoveryOperation ?? new GetDiscoveryOperation(_client);
             _authorizationValue = credentials.AuthorizationValue;
             _certificate = credentials.Certificate;
         }

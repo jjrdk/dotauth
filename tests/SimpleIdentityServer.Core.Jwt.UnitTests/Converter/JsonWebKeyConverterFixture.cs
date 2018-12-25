@@ -17,7 +17,6 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
     using SimpleAuth.Json;
     using SimpleAuth.Jwt;
     using SimpleAuth.Jwt.Converter;
-    using SimpleAuth.Jwt.Exceptions;
     using SimpleAuth.Jwt.Serializer;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
@@ -27,6 +26,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
     using System.Linq;
     using System.Security.Cryptography;
     using System.Xml.Serialization;
+    using Errors;
     using Xunit;
 
     public sealed class JsonWebKeyConverterFixture

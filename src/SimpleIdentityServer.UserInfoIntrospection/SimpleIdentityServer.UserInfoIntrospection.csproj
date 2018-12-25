@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
-    <ProjectReference Include="..\simpleauth.jwt\simpleauth.jwt.csproj" />
   </ItemGroup>
 
   <ItemGroup>

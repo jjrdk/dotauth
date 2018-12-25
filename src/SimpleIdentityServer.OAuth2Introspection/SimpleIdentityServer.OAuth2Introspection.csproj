@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Core\simpleauth.csproj" />
   </ItemGroup>
   
   <ItemGroup>

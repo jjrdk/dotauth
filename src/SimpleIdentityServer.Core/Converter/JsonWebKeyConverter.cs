@@ -21,11 +21,11 @@ namespace SimpleAuth.Jwt.Converter
     using System.Runtime.InteropServices;
     using System.Security.Cryptography;
     using System.Xml.Serialization;
-    using Exceptions;
-    using Extensions;
     using Serializer;
     using Shared;
     using Shared.Requests;
+    using SimpleIdentityServer.Core.Errors;
+    using SimpleIdentityServer.Core.Extensions;
 
     public class JsonWebKeyConverter : IJsonWebKeyConverter
     {

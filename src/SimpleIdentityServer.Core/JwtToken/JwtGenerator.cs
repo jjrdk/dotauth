@@ -396,7 +396,6 @@ namespace SimpleIdentityServer.Core.JwtToken
             var azpParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Azp);
 
             var timeKeyValuePair = await GetExpirationAndIssuedTime().ConfigureAwait(false);
-            var audiences = new List<string>();
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
             var acrValues = CoreConstants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
@@ -409,18 +408,13 @@ namespace SimpleIdentityServer.Core.JwtToken
             var azp = string.Empty;
 
             var clients = await _clientRepository.GetAllAsync().ConfigureAwait(false);
-            foreach (var client in clients)
-            {
-                var isClientSupportIdTokenResponseType =
-                    _clientValidator.CheckResponseTypes(client, ResponseType.id_token);
-                if (isClientSupportIdTokenResponseType ||
-                    client.ClientId == authorizationParameter.ClientId)
-                {
-                    audiences.Add(client.ClientId);
-                }
-            }
+            var audiences = (from client in clients
+                let isClientSupportIdTokenResponseType =
+                    _clientValidator.CheckResponseTypes(client, ResponseType.id_token)
+                where isClientSupportIdTokenResponseType || client.ClientId == authorizationParameter.ClientId
+                select client.ClientId).ToList();
 
-            // The identity token can be reused by the simple identity server.
+            // The identity token can be reused by the identity server.
             if (!string.IsNullOrWhiteSpace(issuerName))
             {
                 audiences.Add(issuerName);
@@ -442,9 +436,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 }
             }
 
-            if (audiences.Count() > 1 ||
-                audiences.Count() == 1 &&
-                audiences.First() != clientId)
+            if (audiences.Count > 1 || (audiences.Count == 1 && audiences.First() != clientId))
             {
                 azp = clientId;
             }
@@ -647,9 +639,10 @@ namespace SimpleIdentityServer.Core.JwtToken
         {
             JsonWebKey result = null;
             var jsonWebKeys = await _jsonWebKeyRepository.GetByAlgorithmAsync(
-                use,
-                alg,
-                new[] { operation }).ConfigureAwait(false);
+                    use,
+                    alg,
+                    new[] {operation})
+                .ConfigureAwait(false);
             if (jsonWebKeys != null && jsonWebKeys.Any())
             {
                 result = jsonWebKeys.First();
@@ -670,26 +663,22 @@ namespace SimpleIdentityServer.Core.JwtToken
         private static string HashWithSha256(string parameter)
         {
             var sha256 = SHA256.Create();
-            return GetFirstPart(parameter,
-                sha256);
+            return GetFirstPart(parameter, sha256);
         }
 
         private static string HashWithSha384(string parameter)
         {
             var sha384 = SHA384.Create();
-            return GetFirstPart(parameter,
-                sha384);
+            return GetFirstPart(parameter, sha384);
         }
 
         private static string HashWithSha512(string parameter)
         {
             var sha512 = SHA512.Create();
-            return GetFirstPart(parameter,
-                sha512);
+            return GetFirstPart(parameter, sha512);
         }
 
-        private static string GetFirstPart(string parameter,
-            HashAlgorithm alg)
+        private static string GetFirstPart(string parameter, HashAlgorithm alg)
         {
             var hashingResultBytes = alg.ComputeHash(Encoding.UTF8.GetBytes(parameter));
             var split = ByteManipulator.SplitByteArrayInHalf(hashingResultBytes);

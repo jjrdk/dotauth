@@ -37,11 +37,11 @@ namespace SimpleIdentityServer.Authenticate.SMS
             services.Configure<RazorViewEngineOptions>(opts =>
             {
                 opts.FileProviders.Add(embeddedFileProvider);
-                opts.CompilationCallback = (context) =>
-                {
-                    var assm = MetadataReference.CreateFromFile(Assembly.Load("SimpleIdentityServer.Authenticate.Basic").Location);
-                    context.Compilation = context.Compilation.AddReferences(assm);
-                };
+                //opts.CompilationCallback = (context) =>
+                //{
+                //    var assm = MetadataReference.CreateFromFile(Assembly.Load("SimpleIdentityServer.Authenticate.Basic").Location);
+                //    context.Compilation = context.Compilation.AddReferences(assm);
+                //};
             });
             services.AddSingleton(smsAuthenticationOptions);
             services.AddSingleton<ISubjectBuilder, DefaultSubjectBuilder>();

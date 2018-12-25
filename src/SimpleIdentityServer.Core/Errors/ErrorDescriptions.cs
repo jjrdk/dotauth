@@ -16,6 +16,10 @@ namespace SimpleIdentityServer.Core.Errors
 {
     public static class ErrorDescriptions
     {
+        public const string JwksCannotBeDeserialied = "the json web key set cannot be deserialized";
+        public const string JwkIsInvalid = "the json web key set is invalid";
+        public const string CannotExtractParametersFromJsonWebKey = "cannot extract the parameters from the json web key";
+        public const string OneOfTheParameterIsNotBase64Encoded = "one of the parameter is not base64";
         public const string TheParameterIsMissing = "the parameter {0} is missing";
         public const string TheUrlIsNotWellFormed = "the url {0} is not well formed";
         public const string TheTokenIsNotAValidJws = "the token is not a valid JWS";

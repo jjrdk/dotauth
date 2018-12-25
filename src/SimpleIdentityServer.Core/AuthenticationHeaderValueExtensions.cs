@@ -23,7 +23,10 @@ namespace SimpleIdentityServer.Core
 
     public static class AuthenticationHeaderValueExtensions
     {
-        public static AuthenticateInstruction GetAuthenticateInstruction(this AuthenticationHeaderValue authenticationHeaderValue, GrantTypeParameter grantTypeParameter, X509Certificate2 certificate = null)
+        public static AuthenticateInstruction GetAuthenticateInstruction(
+            this AuthenticationHeaderValue authenticationHeaderValue,
+            GrantTypeParameter grantTypeParameter,
+            X509Certificate2 certificate = null)
         {
             var result = grantTypeParameter == null
                 ? new AuthenticateInstruction {Certificate = certificate}

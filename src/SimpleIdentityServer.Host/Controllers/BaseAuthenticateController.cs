@@ -31,7 +31,6 @@ namespace SimpleIdentityServer.Host.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.AspNetCore.Mvc.Routing;
-    using SimpleAuth.Jwt.Extensions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Events.Openid;
     using SimpleAuth.Shared.Models;

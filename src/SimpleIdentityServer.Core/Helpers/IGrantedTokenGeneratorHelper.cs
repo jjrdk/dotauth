@@ -7,7 +7,7 @@
 
     public interface IGrantedTokenGeneratorHelper
     {
-        Task<GrantedToken> GenerateTokenAsync(string clientId, string scope, string issuerName, IDictionary<string, object> additionalClaims, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null);
-        Task<GrantedToken> GenerateTokenAsync(Client clientId, string scope, string issuerName, IDictionary<string, object> additionalClaims, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null);
+        Task<GrantedToken> GenerateTokenAsync(string clientId, string scope, string issuerName, IDictionary<string, object> additionalClaims = null, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null);
+        Task<GrantedToken> GenerateTokenAsync(Client clientId, string scope, string issuerName, IDictionary<string, object> additionalClaims = null, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null);
     }
 }

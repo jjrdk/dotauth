@@ -22,6 +22,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
+    using System.Linq;
+    using System.Security.Claims;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -35,7 +37,9 @@ namespace SimpleIdentityServer.Core.Helpers
 
         public GrantedTokenGeneratorHelper(
             OAuthConfigurationOptions configurationService,
-            IJwtGenerator jwtGenerator, IClientHelper clientHelper, IClientStore clientRepository)
+            IJwtGenerator jwtGenerator,
+            IClientHelper clientHelper,
+            IClientStore clientRepository)
         {
             _configurationService = configurationService;
             _jwtGenerator = jwtGenerator;
@@ -81,6 +85,7 @@ namespace SimpleIdentityServer.Core.Helpers
             var expiresIn = _configurationService.TokenValidityPeriod; // 1. Retrieve the expiration time of the granted token.
             var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName, additionalClaims).ConfigureAwait(false); // 2. Construct the JWT token (client).
             var accessToken = await _clientHelper.GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
+            
             var refreshTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()); // 3. Construct the refresh token.
             return new GrantedToken
             {
