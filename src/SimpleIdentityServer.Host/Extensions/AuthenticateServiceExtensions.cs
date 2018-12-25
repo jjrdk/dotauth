@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Host.Extensions
+﻿namespace SimpleAuth.Server.Extensions
 {
+    using System;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Mvc;
+
     public static class AuthenticateServiceExtensions
     {
         public static async Task<ClaimsPrincipal> GetAuthenticatedUser(this IAuthenticationService authenticateService, Controller controller, string scheme)

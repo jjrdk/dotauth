@@ -1,21 +1,17 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-using SimpleIdentityServer.Authenticate.LoginPassword.ViewModels;
-using SimpleIdentityServer.Host.Extensions;
-using System;
-using System.Globalization;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
+﻿namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
 {
-    using Host;
-    using Host.Controllers;
-    using Host.ViewModels;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.DataProtection;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.AspNetCore.Mvc.Routing;
+    using SimpleIdentityServer.Authenticate.LoginPassword.ViewModels;
+    using SimpleAuth.Server.Controllers;
+    using System;
+    using System.Globalization;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using SimpleAuth;
     using SimpleAuth.Api.Profile;
     using SimpleAuth.Exceptions;

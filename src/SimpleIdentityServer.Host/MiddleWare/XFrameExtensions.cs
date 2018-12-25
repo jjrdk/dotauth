@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using System;
-
-namespace SimpleIdentityServer.Host.MiddleWare
+namespace SimpleAuth.Server.MiddleWare
 {
+    using System;
+    using Microsoft.AspNetCore.Builder;
+
     internal static class XFrameExtensions
     {
         public static IApplicationBuilder UseXFrame(

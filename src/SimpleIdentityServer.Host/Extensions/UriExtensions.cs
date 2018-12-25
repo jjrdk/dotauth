@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Primitives;
-using System;
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Host.Extensions
+namespace SimpleAuth.Server.Extensions
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.AspNetCore.Routing;
+    using Microsoft.Extensions.Primitives;
 
     public static class UriExtensions
     {

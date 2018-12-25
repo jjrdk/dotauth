@@ -2,9 +2,6 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
-  <ItemGroup>  
-    <ProjectReference Include="..\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />  
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     <PackageReference Include="microsoft.extensions.fileproviders.embedded" Version="2.2.0" />
@@ -24,5 +21,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Areas\Shell\Views\Error\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleIdentityServer.Host\simpleauth.server.csproj" />
   </ItemGroup>
 </Project>

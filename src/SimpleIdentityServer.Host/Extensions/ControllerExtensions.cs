@@ -12,21 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-using SimpleIdentityServer.Host.Parsers;
-using System;
-using System.IO;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using ActionResult = Microsoft.AspNetCore.Mvc.ActionResult;
 using ResponseMode = SimpleAuth.Parameters.ResponseMode;
 
-namespace SimpleIdentityServer.Host.Extensions
+namespace SimpleAuth.Server.Extensions
 {
-    using SimpleAuth.Results;
-    using SimpleAuth.Shared.Requests;
+    using System;
+    using System.IO;
+    using System.Reflection;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Routing;
+    using Parsers;
+    using Results;
+    using Shared.Requests;
 
     public static class ControllerExtensions
     {

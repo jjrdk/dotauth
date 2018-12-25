@@ -7,7 +7,7 @@
     <Authors>Thierry Habart</Authors>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AssemblyName>SimpleIdentityServer.Host</AssemblyName>
+    <AssemblyName>simpleauth.server</AssemblyName>
     <PackageId>SimpleIdentityServer.Host</PackageId>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
@@ -17,6 +17,7 @@
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <RootNamespace>SimpleAuth.Server</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

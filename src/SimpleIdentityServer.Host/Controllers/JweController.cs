@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Controllers
+namespace SimpleAuth.Server.Controllers
 {
     using System;
     using System.Threading.Tasks;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
+    using Shared.Requests;
+    using Shared.Responses;
     using SimpleAuth;
     using SimpleAuth.Api.Jwe;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
 
     [Route(CoreConstants.EndPoints.Jwe)]
     public class JweController : Controller

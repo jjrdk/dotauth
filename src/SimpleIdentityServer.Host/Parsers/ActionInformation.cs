@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Routing;
-
-namespace SimpleIdentityServer.Host.Parsers
+namespace SimpleAuth.Server.Parsers
 {
+    using Microsoft.AspNetCore.Routing;
+
     public class ActionInformation
     {
         public ActionInformation()

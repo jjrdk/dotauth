@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Host.Extensions;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Host.Controllers.Website
+﻿namespace SimpleAuth.Server.Controllers.Website
 {
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Extensions;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Mvc;
     using SimpleAuth.Extensions;
 
     public class BaseController : Controller

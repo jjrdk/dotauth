@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Host.ViewModels
+﻿namespace SimpleAuth.Server.ViewModels
 {
     public class IdProviderViewModel
     {

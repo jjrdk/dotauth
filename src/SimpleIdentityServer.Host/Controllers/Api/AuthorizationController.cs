@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Controllers.Api
+namespace SimpleAuth.Server.Controllers.Api
 {
     using System;
     using System.Collections.Generic;
@@ -20,22 +20,21 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
     using Extensions;
-    using Host;
+    using JwtToken;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Mvc;
+    using Parameters;
     using Parsers;
+    using Results;
+    using Shared.Requests;
+    using Shared.Responses;
+    using Shared.Serializers;
     using SimpleAuth;
     using SimpleAuth.Api.Authorization;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
-    using SimpleAuth.JwtToken;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Results;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
-    using SimpleAuth.Shared.Serializers;
 
     [Route(CoreConstants.EndPoints.Authorization)]
     public class AuthorizationController : Controller

@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Host.Extensions
+﻿namespace SimpleAuth.Server.Extensions
 {
     public class ScimOptions
     {

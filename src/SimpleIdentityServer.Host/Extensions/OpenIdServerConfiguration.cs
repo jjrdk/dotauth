@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Host.Extensions
+﻿namespace SimpleAuth.Server.Extensions
 {
     using System.Collections.Generic;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
+    using Shared;
+    using Shared.Models;
 
     public class OpenIdServerConfiguration
     {

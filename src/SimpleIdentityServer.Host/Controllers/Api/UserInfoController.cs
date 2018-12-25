@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Controllers.Api
+namespace SimpleAuth.Server.Controllers.Api
 {
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Primitives;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Primitives;
     using SimpleAuth;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
     using UserInfo;
 
     [Route(CoreConstants.EndPoints.UserInfo)]

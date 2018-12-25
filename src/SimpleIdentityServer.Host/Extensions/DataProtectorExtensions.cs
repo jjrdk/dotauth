@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.DataProtection;
-using System;
-using System.Text;
-
-namespace SimpleIdentityServer.Host.Extensions
+namespace SimpleAuth.Server.Extensions
 {
-    using SimpleAuth.Shared;
+    using System;
+    using System.Text;
+    using Microsoft.AspNetCore.DataProtection;
+    using Shared;
 
     public static class DataProtectorExtensions
     {
         public static T Unprotect<T>(this IDataProtector dataProtector, string encoded)
         {
-            var unprotected = dataProtector.Unprotect(encoded);
+            var unprotected = Unprotect(dataProtector, encoded);
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(unprotected);
         }
 
@@ -39,7 +38,7 @@ namespace SimpleIdentityServer.Host.Extensions
         public static string Protect<T>(this IDataProtector dataProtector, T toEncode)
         {
             var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(toEncode);
-            return dataProtector.Protect(serialized);
+            return Protect(dataProtector, serialized);
         }
 
         public static string Protect(this IDataProtector dataProtector, string toEncode)

@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Host.Controllers
+﻿namespace SimpleAuth.Server.Controllers
 {
     using System;
     using System.Threading.Tasks;
@@ -6,10 +6,10 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Shared.Requests;
+    using Shared.Responses;
     using SimpleAuth;
     using SimpleAuth.Api.Claims;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
 
     [Route(CoreConstants.EndPoints.Claims)]
     public class ClaimsController : Controller

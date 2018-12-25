@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Host
+﻿namespace SimpleAuth.Server
 {
     using System;
     using System.Collections.Generic;

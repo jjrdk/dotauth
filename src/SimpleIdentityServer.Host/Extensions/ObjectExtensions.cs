@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
-using System.Net;
-
-namespace SimpleIdentityServer.Host.Extensions
+namespace SimpleAuth.Server.Extensions
 {
+    using System.Linq;
+    using System.Net;
+
     public static class ObjectExtensions
     {
         public static string GetQueryString(this object obj)
