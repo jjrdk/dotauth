@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\simpleauth.jwt\simpleauth.jwt.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.shared\simpleauth.shared.csproj" />
+    <ProjectReference Include="..\..\src\SimpleIdentityServer.Core\simpleauth.csproj" />
   </ItemGroup>
 
 </Project>

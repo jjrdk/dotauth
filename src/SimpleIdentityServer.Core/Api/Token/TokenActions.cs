@@ -34,9 +34,7 @@ namespace SimpleIdentityServer.Core.Api.Token
 
     public class TokenActions : ITokenActions
     {
-        private readonly IGetTokenByResourceOwnerCredentialsGrantTypeAction
-            _getTokenByResourceOwnerCredentialsGrantType;
-
+        private readonly IGetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantType;
         private readonly IGetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
         private readonly IGetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
         private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
@@ -245,7 +243,8 @@ namespace SimpleIdentityServer.Core.Api.Token
                 //_eventPublisher.Publish(new GrantTokenViaClientCredentialsReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(clientCredentialsGrantTypeParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
                 _oauthEventSource.StartGetTokenByClientCredentials(clientCredentialsGrantTypeParameter.Scope);
                 // _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
-                var result = await GetTokenByClientCredentials(clientCredentialsGrantTypeParameter,
+                var result = await GetTokenByClientCredentials(
+                        clientCredentialsGrantTypeParameter,
                         authenticationHeaderValue,
                         certificate,
                         issuerName)

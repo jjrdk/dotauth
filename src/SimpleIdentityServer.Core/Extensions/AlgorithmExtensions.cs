@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 namespace SimpleIdentityServer.Core.Extensions
 {
+    using System;
     using SimpleAuth.Shared;
 
     public static class AlgorithmExtensions

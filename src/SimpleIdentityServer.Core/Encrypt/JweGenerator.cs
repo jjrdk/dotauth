@@ -17,9 +17,9 @@ namespace SimpleAuth.Jwt.Encrypt
     using System;
     using System.Linq;
     using Encryption;
-    using Extensions;
     using Json;
     using Shared;
+    using SimpleIdentityServer.Core.Extensions;
 
     public class JweGenerator : IJweGenerator
     {

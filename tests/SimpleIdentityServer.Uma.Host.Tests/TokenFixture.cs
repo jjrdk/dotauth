@@ -1,20 +1,19 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Uma.Client.Policy;
-using SimpleIdentityServer.Uma.Client.ResourceSet;
-using SimpleIdentityServer.Uma.Common.DTOs;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Uma.Host.Tests
+﻿namespace SimpleIdentityServer.Uma.Host.Tests
 {
     using Client.Configuration;
     using Client.Permission;
+    using Microsoft.Extensions.DependencyInjection;
     using SimpleAuth.Jwt;
     using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using SimpleIdentityServer.Client;
+    using SimpleIdentityServer.Client.Operations;
+    using SimpleIdentityServer.Uma.Client.Policy;
+    using SimpleIdentityServer.Uma.Client.ResourceSet;
+    using SimpleIdentityServer.Uma.Common.DTOs;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Xunit;
 
     public class TokenFixture : IClassFixture<TestUmaServerFixture>
     {
@@ -32,9 +31,10 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Ticket_Id_Doesnt_Exist_Then_Error_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        var token = await new TokenClient(
+            var token = await new TokenClient(
                     TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
                     TokenRequest.FromTicketId("ticket_id", ""),
                     _server.Client,
@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
                 .ConfigureAwait(false);
 
-                        Assert.NotNull(token);
+            Assert.NotNull(token);
             Assert.True(token.ContainsError);
             Assert.Equal("invalid_ticket", token.Error.Error);
             Assert.Equal("the ticket ticket_id doesn't exist", token.Error.ErrorDescription);
@@ -51,9 +51,10 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         [Fact]
         public async Task When_Using_ClientCredentials_Grant_Type_Then_AccessToken_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        var result = await new TokenClient(
+            var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
                     TokenRequest.FromScopes("uma_protection", "uma_authorization"),
                     _server.Client,
@@ -61,13 +62,14 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
                 .ConfigureAwait(false);
 
-                        Assert.NotNull(result);
+            Assert.NotNull(result);
             Assert.NotEmpty(result.Content.AccessToken);
         }
 
         [Fact]
         public async Task When_Using_TicketId_Grant_Type_Then_AccessToken_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
             var jwsPayload = new JwsPayload
             {
@@ -80,7 +82,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             };
             var jwt = _jwsGenerator.Generate(jwsPayload, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
 
-                        var result = await new TokenClient(
+            var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("resource_server", "resource_server"), // Get PAT.
                     TokenRequest.FromScopes("uma_protection", "uma_authorization"),
                     _server.Client,
@@ -88,21 +90,21 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
                 .ConfigureAwait(false);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet // Add ressource.
-                    {
-                        Name = "name",
-                        Scopes = new List<string>
+            {
+                Name = "name",
+                Scopes = new List<string>
                         {
                             "read",
                             "write",
                             "execute"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     result.Content.AccessToken)
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy // Add an authorization policy.
-                    {
-                        Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                         {
                             new PostPolicyRule
                             {
@@ -121,11 +123,11 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                                 }
                             }
                         },
-                        ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                         {
                             resource.Content.Id
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     result.Content.AccessToken)
                 .ConfigureAwait(false);
@@ -147,7 +149,8 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     TokenRequest.FromTicketId(ticket.Content.TicketId, jwt),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration").ConfigureAwait(false);
+                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
+                .ConfigureAwait(false);
 
             // ASSERTS.
             Assert.NotNull(token);

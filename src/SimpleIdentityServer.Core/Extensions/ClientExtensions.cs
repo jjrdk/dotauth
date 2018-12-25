@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Linq;
-
 namespace SimpleIdentityServer.Core.Extensions
 {
+    using System;
+    using System.Linq;
     using SimpleAuth.Jwt;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
@@ -104,9 +103,8 @@ namespace SimpleIdentityServer.Core.Extensions
         private static JwsAlg? GetDefaultJwsAlg(string algName)
         {
             JwsAlg? signedAlgorithm = null;
-            JwsAlg result;
             if (!string.IsNullOrWhiteSpace(algName)
-                && Enum.TryParse(algName, true, out result))
+                && Enum.TryParse(algName, true, out JwsAlg result))
             {
                 signedAlgorithm = result;
             }

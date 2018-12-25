@@ -11,13 +11,15 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
-    using System.Net.Http;
+    using Errors;
+    using Exceptions;
     using Logging;
     using SimpleAuth.Jwt.Converter;
     using SimpleAuth.Jwt.Encrypt;
     using SimpleAuth.Jwt.Encrypt.Encryption;
     using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared.Repositories;
+    using System.Net.Http;
     using IClientStore = SimpleAuth.Shared.Repositories.IClientStore;
 
     public sealed class ProcessAuthorizationRequestFixture
@@ -62,8 +64,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
         /*
         [Fact]
-        public void When_Passing_AuthorizationParameterWithoutOpenIdScope_Then_Exception_Is_Thrown()
-        {            InitializeMockingObjects();
+        public async Task When_Passing_AuthorizationParameterWithoutOpenIdScope_Then_Exception_Is_Thrown()
+        {
+            InitializeMockingObjects();
             const string state = "state";
             const string clientId = "MyBlog";
             const string redirectUrl = "http://localhost";
@@ -76,11 +79,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 Scope = "email"
             };
 
-                        var exception =
-                Assert.Throws<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, null));
+            var exception =await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+        () => _processAuthorizationRequest.ProcessAsync(authorizationParameter, null));
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidScope));
-            Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, Core.JwtConstants.StandardScopes.OpenId.Name)));
+            Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, CoreConstants.StandardScopes.OpenId.Name)));
             Assert.True(exception.State.Equals(state));
         }
 

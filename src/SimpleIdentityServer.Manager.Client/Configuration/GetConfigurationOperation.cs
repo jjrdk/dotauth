@@ -2,13 +2,15 @@
 {
     using Newtonsoft.Json;
     using Results;
+    using SimpleAuth.Shared.Responses;
     using System;
+    using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Responses;
 
     internal sealed class GetConfigurationOperation : IGetConfigurationOperation
     {
+        private readonly Dictionary<string, DiscoveryInformation> _cache = new Dictionary<string, DiscoveryInformation>();
         private readonly HttpClient _httpClientFactory;
 
         public GetConfigurationOperation(HttpClient httpClientFactory)
@@ -21,6 +23,14 @@
             if (wellKnownConfigurationUri == null)
             {
                 throw new ArgumentNullException(nameof(wellKnownConfigurationUri));
+            }
+
+            if (_cache.TryGetValue(wellKnownConfigurationUri.ToString(), out var doc))
+            {
+                return new GetConfigurationResult
+                {
+                    Content = doc
+                };
             }
 
             var request = new HttpRequestMessage

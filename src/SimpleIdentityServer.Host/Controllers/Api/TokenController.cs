@@ -67,7 +67,9 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             }
 
             var serializer = new ParamSerializer();
-            var tokenRequest = serializer.Deserialize<TokenRequest>(Request.Form.Select(x => new KeyValuePair<string, string[]>(x.Key, x.Value)));
+            var tokenRequest =
+                serializer.Deserialize<TokenRequest>(Request.Form.Select(x =>
+                    new KeyValuePair<string, string[]>(x.Key, x.Value)));
             if (tokenRequest.GrantType == null)
             {
                 return BuildError(ErrorCodes.InvalidRequestCode,
