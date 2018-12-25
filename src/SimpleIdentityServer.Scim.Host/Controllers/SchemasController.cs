@@ -13,11 +13,12 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Scim.Core;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Host.Controllers
 {
+    using SimpleAuth.Scim;
+
     [Route(ScimConstants.RoutePaths.SchemasController)]
     public class SchemasController : Controller
     {

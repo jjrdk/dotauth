@@ -21,9 +21,9 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Host.Controllers
 {
-    using Core.Results;
+    using SimpleAuth.Results;
     using SimpleAuth.Shared.DTOs;
-    using ScimConstants = Core.ScimConstants;
+    using ScimConstants = SimpleAuth.Scim.ScimConstants;
 
     [Route(ScimConstants.RoutePaths.BulkController)]
     public class BulkController : Controller

@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Scim.Core.Apis
+﻿namespace SimpleAuth.Api.Scim
 {
     //public interface IUsersAction
     //{

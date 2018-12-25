@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Scim.Core.Parsers
+﻿namespace SimpleAuth.Parsers
 {
     public enum SortOrders
     {
