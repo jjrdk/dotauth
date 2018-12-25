@@ -1,9 +1,9 @@
-﻿namespace SimpleIdentityServer.Shell.Controllers
+﻿namespace SimpleAuth.Server.Controllers
 {
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Mvc;
-    using SimpleAuth.Server.Controllers.Website;
-    using System.Threading.Tasks;
+    using Website;
 
     [Area("Shell")]
     public class HomeController : BaseController

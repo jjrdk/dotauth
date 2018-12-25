@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Shell.ViewModels;
-
-namespace SimpleIdentityServer.Shell.Controllers
+namespace SimpleAuth.Server.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+    using ViewModels;
+
     [Area("Shell")]
     public class ErrorController : Controller
     {

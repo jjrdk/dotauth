@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Shell.Controllers
+namespace SimpleAuth.Server.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
     using SimpleAuth;

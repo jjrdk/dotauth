@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Shell.ViewModels
+﻿namespace SimpleAuth.Server.ViewModels
 {
     public class ErrorViewModel
     {
