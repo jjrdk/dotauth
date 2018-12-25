@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Routing;
-
-namespace SimpleIdentityServer.Host.Parsers
+namespace SimpleAuth.Server.Parsers
 {
-    using SimpleAuth.Results;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.AspNetCore.Routing;
+    using Results;
 
     public class RedirectInstructionParser : IRedirectInstructionParser
     {

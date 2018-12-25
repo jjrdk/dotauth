@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Authentication.Cookies;
-
-namespace SimpleIdentityServer.Host
+namespace SimpleAuth.Server
 {
-    using SimpleAuth.Results;
+    using System.Collections.Generic;
+    using Microsoft.AspNetCore.Authentication.Cookies;
+    using Results;
 
     public static class HostConstants
     {

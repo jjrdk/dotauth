@@ -1,7 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SimpleIdentityServer.Authenticate.SMS.ViewModels
+﻿namespace SimpleIdentityServer.Authenticate.SMS.ViewModels
 {
+    using System.ComponentModel.DataAnnotations;
     using Host.ViewModels;
 
     public class OpenidLocalAuthenticationViewModel : AuthorizeOpenIdViewModel

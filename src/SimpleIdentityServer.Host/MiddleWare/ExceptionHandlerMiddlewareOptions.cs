@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.MiddleWare
+namespace SimpleAuth.Server.MiddleWare
 {
-    using SimpleAuth.Logging;
+    using Logging;
 
     public class ExceptionHandlerMiddlewareOptions
     {

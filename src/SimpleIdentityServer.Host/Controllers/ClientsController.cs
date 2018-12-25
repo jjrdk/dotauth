@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Controllers
+namespace SimpleAuth.Server.Controllers
 {
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using System.Collections.Generic;
-    using System.Net;
-    using System.Threading.Tasks;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Shared.Requests;
+    using Shared.Responses;
     using SimpleAuth;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
 
     [Route(CoreConstants.EndPoints.Clients)]
     public class ClientsController : Controller

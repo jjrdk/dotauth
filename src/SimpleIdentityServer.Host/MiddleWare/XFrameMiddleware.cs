@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Host.MiddleWare
+namespace SimpleAuth.Server.MiddleWare
 {
+    using System;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Primitives;
+
     internal class XFrameMiddleware
     {
         private readonly RequestDelegate _next;

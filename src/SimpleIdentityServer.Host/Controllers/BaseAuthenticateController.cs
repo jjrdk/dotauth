@@ -12,39 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Controllers
+namespace SimpleAuth.Server.Controllers
 {
-    using Extensions;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.DataProtection;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Infrastructure;
-    using Microsoft.AspNetCore.Mvc.Routing;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Events.Openid;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Requests;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Extensions;
+    using Logging;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.DataProtection;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.AspNetCore.Mvc.Routing;
+    using Results;
+    using Services;
+    using Shared;
+    using Shared.Events.Openid;
+    using Shared.Models;
+    using Shared.Requests;
     using SimpleAuth;
     using SimpleAuth.Api.Profile;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
     using SimpleAuth.Extensions;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Results;
-    using SimpleAuth.Services;
-    using SimpleAuth.Translation;
-    using SimpleAuth.WebSite.Authenticate;
-    using SimpleAuth.WebSite.Authenticate.Common;
-    using SimpleAuth.WebSite.User.Actions;
+    using Translation;
     using ViewModels;
     using Website;
+    using WebSite.Authenticate;
+    using WebSite.Authenticate.Common;
+    using WebSite.User.Actions;
 
     public abstract class BaseAuthenticateController : BaseController
     {

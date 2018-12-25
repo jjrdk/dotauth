@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Controllers.Api
+namespace SimpleAuth.Server.Controllers.Api
 {
     using System;
     using System.Collections.Generic;
@@ -22,18 +22,18 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Primitives;
+    using Shared;
+    using Shared.Models;
+    using Shared.Requests;
+    using Shared.Responses;
+    using Shared.Serializers;
     using SimpleAuth;
     using SimpleAuth.Api.Token;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
-    using SimpleAuth.Shared.Serializers;
-    using GrantTypes = SimpleAuth.Shared.Requests.GrantTypes;
+    using GrantTypes = Shared.Requests.GrantTypes;
 
     [Route(CoreConstants.EndPoints.Token)]
     public class TokenController : Controller

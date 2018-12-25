@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Controllers.Api
+namespace SimpleAuth.Server.Controllers.Api
 {
     using System.Net;
     using System.Threading.Tasks;
+    using Errors;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Shared.Responses;
     using SimpleAuth;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Responses;
 
     [Route(CoreConstants.EndPoints.Registration)]
     [Authorize("registration")]

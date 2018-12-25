@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Extensions
+namespace SimpleAuth.Server.Extensions
 {
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using Parameters;
+    using Results;
+    using Shared;
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Requests;
+    using Shared.Responses;
+    using Shared.Results;
     using SimpleAuth;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Results;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Parameters;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
-    using SimpleAuth.Shared.Results;
-    using CodeChallengeMethods = SimpleAuth.Shared.Models.CodeChallengeMethods;
+    using CodeChallengeMethods = Shared.Models.CodeChallengeMethods;
 
     public static class MappingExtensions
     {

@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.UserInfo
+namespace SimpleAuth.Server.UserInfo
 {
     using System;
     using System.Threading.Tasks;
     using Actions;
+    using Exceptions;
     using Microsoft.AspNetCore.Mvc;
-    using SimpleAuth.Exceptions;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Events.Openid;
+    using Shared;
+    using Shared.Events.Openid;
 
     public class UserInfoActions : IUserInfoActions
     {

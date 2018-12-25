@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Extensions
+namespace SimpleAuth.Server.Extensions
 {
+    using System;
+    using Logging;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using MiddleWare;
-    using System;
-    using SimpleAuth.Logging;
 
     public static class ApplicationBuilderExtensions
     {

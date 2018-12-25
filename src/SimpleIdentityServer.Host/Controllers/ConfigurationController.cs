@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Host.Controllers
+﻿namespace SimpleAuth.Server.Controllers
 {
     //[Route(HostEnpoints.Configuration)]
     //public class ConfigurationController : Controller

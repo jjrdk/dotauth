@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.ViewModels
+namespace SimpleAuth.Server.ViewModels
 {
     using System;
     using Microsoft.AspNetCore.Mvc.ModelBinding;

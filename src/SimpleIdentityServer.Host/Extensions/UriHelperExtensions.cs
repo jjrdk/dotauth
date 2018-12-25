@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
-namespace SimpleIdentityServer.Host.Extensions
+namespace SimpleAuth.Server.Extensions
 {
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+
     public static class UriHelperExtensions 
     {
         private static IHttpContextAccessor HttpContextAccessor;

@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Controllers.Api
+namespace SimpleAuth.Server.Controllers.Api
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
+    using Shared.Requests;
     using SimpleAuth;
     using SimpleAuth.Api.Jwks;
-    using SimpleAuth.Shared.Requests;
 
     [Route(CoreConstants.EndPoints.Jwks)]
     public class JwksController : Controller

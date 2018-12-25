@@ -1,7 +1,7 @@
-﻿namespace SimpleIdentityServer.Host.Parsers
+﻿namespace SimpleAuth.Server.Parsers
 {
     using Microsoft.AspNetCore.Routing;
-    using SimpleAuth.Results;
+    using Results;
 
     public interface IActionResultParser
     {

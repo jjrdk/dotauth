@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Extensions
+namespace SimpleAuth.Server.Extensions
 {
-    using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Extensions.DependencyInjection;
+    using Shared;
+    using Shared.AccountFiltering;
+    using Shared.Repositories;
     using SimpleAuth;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.AccountFiltering;
-    using SimpleAuth.Shared.Repositories;
 
     public static class ServiceCollectionExtension
     {

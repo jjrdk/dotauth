@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Host.UserInfo
+﻿namespace SimpleAuth.Server.UserInfo
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;

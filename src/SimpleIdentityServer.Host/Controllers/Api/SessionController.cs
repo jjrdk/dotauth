@@ -1,19 +1,18 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Host.Extensions;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Host.Controllers.Api
+﻿namespace SimpleAuth.Server.Controllers.Api
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Extensions;
+    using JwtToken;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Mvc;
+    using Shared;
+    using Shared.Repositories;
+    using Shared.Requests;
+    using Shared.Serializers;
     using SimpleAuth;
-    using SimpleAuth.JwtToken;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Serializers;
 
     public class SessionController : Controller
     {

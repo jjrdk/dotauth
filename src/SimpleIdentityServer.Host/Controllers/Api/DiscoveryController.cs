@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Controllers.Api
+namespace SimpleAuth.Server.Controllers.Api
 {
+    using System.Threading.Tasks;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
-    using System.Threading.Tasks;
+    using Shared.Responses;
     using SimpleAuth;
     using SimpleAuth.Api.Discovery;
-    using SimpleAuth.Shared.Responses;
 
     [Route(CoreConstants.EndPoints.DiscoveryAction)]
     public class DiscoveryController : Controller

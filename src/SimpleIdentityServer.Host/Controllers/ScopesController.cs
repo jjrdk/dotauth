@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Controllers
+namespace SimpleAuth.Server.Controllers
 {
     using System;
     using System.Threading.Tasks;
@@ -20,10 +20,10 @@ namespace SimpleIdentityServer.Host.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Shared.Requests;
+    using Shared.Responses;
     using SimpleAuth;
     using SimpleAuth.Api.Scopes;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
 
     [Route(CoreConstants.EndPoints.Scopes)]
     public class ScopesController : Controller

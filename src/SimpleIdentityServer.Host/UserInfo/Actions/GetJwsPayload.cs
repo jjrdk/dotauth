@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.UserInfo.Actions
+namespace SimpleAuth.Server.UserInfo.Actions
 {
     using System;
     using System.Buffers;
     using System.Net;
     using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using JwtToken;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Formatters;
     using Microsoft.Net.Http.Headers;
     using Newtonsoft.Json;
+    using Shared;
+    using Shared.Repositories;
     using SimpleAuth;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
     using SimpleAuth.Extensions;
-    using SimpleAuth.JwtToken;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Validators;
+    using Validators;
 
     public class GetJwsPayload : IGetJwsPayload
     {
