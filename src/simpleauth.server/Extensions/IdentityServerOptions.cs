@@ -35,5 +35,7 @@ namespace SimpleAuth.Server.Extensions
         /// Gets or sets the OAUTH configuration options.
         /// </summary>
         public OAuthConfigurationOptions OAuthConfigurationOptions { get; set; }
+
+        public BasicAuthenticateOptions BasicAuthenticationOptions { get; set; }
     }
 }

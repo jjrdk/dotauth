@@ -3,7 +3,7 @@
     using System.ComponentModel.DataAnnotations;
     using SimpleAuth.Server.ViewModels;
 
-    public class OpenidLocalAuthenticationViewModel : AuthorizeOpenIdViewModel
+    public class SmsOpenIdLocalAuthenticationViewModel : AuthorizeOpenIdViewModel
     {
         [Required]
         public string PhoneNumber { get; set; }

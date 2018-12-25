@@ -39,6 +39,7 @@ namespace SimpleAuth.Server.Controllers
     using SimpleAuth;
     using SimpleAuth.Api.Profile;
     using SimpleAuth.Extensions;
+    using SimpleAuth.Services;
     using Translation;
     using ViewModels;
     using Website;
@@ -589,10 +590,8 @@ namespace SimpleAuth.Server.Controllers
                 Password = Guid.NewGuid().ToString("N"),
                 IsLocalAccount = false,
                 Claims = openidClaims.ToArray()
-                //ExternalLogin = authenticatedUser.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value
             };
-            //if (_basicAuthenticateOptions.ScimBaseUrl != null)
-            //{
+
             if (!await _userActions.Execute(
                     record,
                     _basicAuthenticateOptions.ScimBaseUrl)
@@ -600,12 +599,6 @@ namespace SimpleAuth.Server.Controllers
             {
                 return (null, (int)HttpStatusCode.Conflict, "Failed to add user");
             }
-            //}
-            //else
-            //{
-            //    await _userActions.Execute(record, null)
-            //        .ConfigureAwait(false);
-            //}
 
             return (subject, null, null);
         }

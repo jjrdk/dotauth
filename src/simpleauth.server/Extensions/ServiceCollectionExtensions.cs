@@ -14,20 +14,71 @@
 
 namespace SimpleAuth.Server.Extensions
 {
-    using System;
-    using System.Linq;
     using Logging;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
     using Parsers;
+    using Shared;
+    using Shared.AccountFiltering;
+    using Shared.Repositories;
     using SimpleAuth;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using UserInfo;
     using UserInfo.Actions;
 
     public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection AddSimpleIdentityServerManager(this IServiceCollection serviceCollection)
+        {
+            // 2. Register all the dependencies.
+            serviceCollection.AddSimpleIdentityServerManagerCore();
+            //serviceCollection.AddDefaultSimpleBus();
+            //serviceCollection.AddConcurrency(opt => opt.UseInMemory());
+            //serviceCollection.AddDefaultAccessTokenStore();
+            // 3. Add authorization policies
+            serviceCollection.AddAuthorization(options =>
+            {
+                options.AddPolicy("manager", policy =>
+                {
+                    policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                    policy.RequireAssertion(p =>
+                    {
+                        if (p.User?.Identity?.IsAuthenticated != true)
+                        {
+                            return false;
+                        }
+
+                        var claimsRole = p.User.Claims.Where(c => c.Type == "role");
+                        var claimsScope = p.User.Claims.Where(c => c.Type == "scope");
+                        if (!claimsRole.Any() && !claimsScope.Any())
+                        {
+                            return false;
+                        }
+
+                        return claimsRole.Any(c => c.Value == "administrator") || claimsScope.Any(c => c.Value == "manager");
+                    });
+                });
+            });
+
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddAccountFilter(this IServiceCollection services, List<Filter> filters = null)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddTransient<IAccountFilter, AccountFilter>();
+            services.AddSingleton<IFilterStore>(new DefaultFilterStore(filters));
+            return services;
+        }
+
         public static IServiceCollection AddOpenIdApi(this IServiceCollection serviceCollection, Action<IdentityServerOptions> optionsCallback)
         {
             if (serviceCollection == null)
@@ -123,13 +174,14 @@ namespace SimpleAuth.Server.Extensions
                     }
 
                     var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
+                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope").ToArray();
                     if (claimRole == null && !claimScopes.Any())
                     {
                         return false;
                     }
 
-                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(s => s.Value == "manage_account_filtering");
+                    return claimRole != null && claimRole.Value == "administrator" ||
+                           claimScopes.SelectMany(s => s.Value.Split(' ')).Any(s => s == "manage_account_filtering");
                 });
             });
             return authenticateOptions;

@@ -1,37 +1,33 @@
-﻿namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
+﻿namespace SimpleAuth.Server.Controllers
 {
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.DataProtection;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Infrastructure;
-    using Microsoft.AspNetCore.Mvc.Routing;
-    using SimpleIdentityServer.Authenticate.LoginPassword.ViewModels;
-    using SimpleAuth.Server.Controllers;
     using System;
     using System.Globalization;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Exceptions;
+    using Extensions;
+    using Helpers;
+    using Logging;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.DataProtection;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.AspNetCore.Mvc.Routing;
+    using Parameters;
+    using Server;
+    using Shared;
+    using Shared.Requests;
     using SimpleAuth;
     using SimpleAuth.Api.Profile;
-    using SimpleAuth.Exceptions;
     using SimpleAuth.Extensions;
-    using SimpleAuth.Helpers;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Server;
-    using SimpleAuth.Server.Extensions;
-    using SimpleAuth.Server.ViewModels;
     using SimpleAuth.Services;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Translation;
-    using SimpleAuth.WebSite.Authenticate;
-    using SimpleAuth.WebSite.Authenticate.Common;
-    using SimpleAuth.WebSite.User.Actions;
-    using Constants = Constants;
+    using Translation;
+    using ViewModels;
+    using WebSite.Authenticate;
+    using WebSite.Authenticate.Common;
+    using WebSite.User.Actions;
 
-    [Area(Constants.AMR)]
     public class AuthenticateController : BaseAuthenticateController
     {
         private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
@@ -118,7 +114,7 @@
             try
             {
                 var resourceOwner = await _resourceOwnerAuthenticateHelper
-                    .Authenticate(authorizeViewModel.Login, authorizeViewModel.Password, new[] {Constants.AMR})
+                    .Authenticate(authorizeViewModel.Login, authorizeViewModel.Password)
                     .ConfigureAwait(false);
                 if (resourceOwner == null)
                 {

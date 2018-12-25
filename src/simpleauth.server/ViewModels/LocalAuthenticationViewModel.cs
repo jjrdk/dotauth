@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Authenticate.LoginPassword.ViewModels
+﻿namespace SimpleAuth.Server.ViewModels
 {
     public class LocalAuthenticationViewModel
     {
