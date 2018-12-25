@@ -17,7 +17,7 @@ namespace SimpleIdentityServer.Scim.Core
     using System.Collections.Generic;
     using SimpleAuth.Shared;
 
-    public static class Constants
+    public static class ScimConstants
     {
         public static class RoutePaths
         {
@@ -32,11 +32,11 @@ namespace SimpleIdentityServer.Scim.Core
         {
             {
                 RoutePaths.UsersController,
-                ScimConstants.ResourceTypes.User
+                SimpleAuth.Shared.ScimConstants.ResourceTypes.User
             },
             {
                 RoutePaths.GroupsController,
-                ScimConstants.ResourceTypes.Group
+                SimpleAuth.Shared.ScimConstants.ResourceTypes.Group
             }
         };
     }

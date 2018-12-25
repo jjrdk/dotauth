@@ -25,13 +25,14 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
     using Core.Results;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
+    using ScimConstants = Core.ScimConstants;
 
-    [Route(Constants.RoutePaths.BulkController)]
+    [Route(ScimConstants.RoutePaths.BulkController)]
     public class BulkController : Controller
     {
         private readonly BulkAction _bulkAction = new BulkAction();
 
-        [Authorize(ScimConstants.ScimPolicies.ScimManage)]
+        [Authorize(SimpleAuth.Shared.ScimConstants.ScimPolicies.ScimManage)]
         [HttpPost]
         public Task<IActionResult> Post([FromBody] BulkRequest bulk)
         {
@@ -106,11 +107,11 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
             private JObject CreateResponse(JArray operationsResult)
             {
-                var schemas = new JArray { ScimConstants.Messages.BulkResponse };
+                var schemas = new JArray { SimpleAuth.Shared.ScimConstants.Messages.BulkResponse };
                 var result = new JObject
                 {
-                    {ScimConstants.ScimResourceNames.Schemas, schemas},
-                    {ScimConstants.PatchOperationsRequestNames.Operations, operationsResult}
+                    {SimpleAuth.Shared.ScimConstants.ScimResourceNames.Schemas, schemas},
+                    {SimpleAuth.Shared.ScimConstants.PatchOperationsRequestNames.Operations, operationsResult}
                 };
                 return result;
             }

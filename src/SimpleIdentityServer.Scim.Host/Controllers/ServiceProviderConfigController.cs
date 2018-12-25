@@ -20,8 +20,9 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
     using Microsoft.AspNetCore.Mvc;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
+    using ScimConstants = Core.ScimConstants;
 
-    [Route(Constants.RoutePaths.ServiceProviderConfigController)]
+    [Route(ScimConstants.RoutePaths.ServiceProviderConfigController)]
     public class ServiceProviderConfigController : Controller
     {
         [HttpGet]
@@ -29,7 +30,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
         {
             var result = new ServiceProviderConfigResponse
             {
-                Schemas = new[] { ScimConstants.SchemaUrns.ServiceProvider },
+                Schemas = new[] { SimpleAuth.Shared.ScimConstants.SchemaUrns.ServiceProvider },
                 DocumentationUri = "http://www.simplecloud.info/",
                 Patch = new PatchResponse
                 {
@@ -93,7 +94,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
         private string GetLocationPattern()
         {
-            return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Constants.RoutePaths.ServiceProviderConfigController).AbsoluteUri;
+            return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), ScimConstants.RoutePaths.ServiceProviderConfigController).AbsoluteUri;
         }
     }
 }

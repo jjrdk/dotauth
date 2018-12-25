@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Host.Controllers
 {
-    [Route(Constants.RoutePaths.SchemasController)]
+    [Route(ScimConstants.RoutePaths.SchemasController)]
     public class SchemasController : Controller
     {
         [HttpGet("{id}")]
