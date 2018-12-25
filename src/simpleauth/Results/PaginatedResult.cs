@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Scim.Core.Results
+﻿namespace SimpleAuth.Results
 {
+    using System.Collections.Generic;
+
     public class PaginatedResult<T>
     {
         public int StartIndex { get; set; }

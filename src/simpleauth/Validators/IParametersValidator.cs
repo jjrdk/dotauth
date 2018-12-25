@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Scim.Core.Validators
+﻿namespace SimpleAuth.Validators
 {
     public interface IParametersValidator
     {

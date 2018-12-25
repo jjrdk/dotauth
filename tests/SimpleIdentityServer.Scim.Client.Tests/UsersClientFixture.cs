@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Client.Tests.MiddleWares;
-using System;
-using System.Net;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace SimpleIdentityServer.Scim.Client.Tests
 {
-    using Core.Extensions;
+    using Newtonsoft.Json.Linq;
+    using SimpleIdentityServer.Scim.Client.Tests.MiddleWares;
+    using System;
+    using System.Net;
+    using System.Threading.Tasks;
+    using SimpleAuth.Extensions;
+    using Xunit;
+
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleIdentityServer.Client;
@@ -39,60 +39,65 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
         [Fact]
         public async Task When_Add_Authenticated_User_Then_ScimIdentifier_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
+            var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
 
-                        Assert.Equal(HttpStatusCode.Created, scimResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.Created, scimResponse.StatusCode);
         }
 
         [Fact]
         public async Task WhenUpdatingCurrentUserWithMultipleRolesThenReturnsOk()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        var scimResponse = await _usersClient.AddUser(new ScimUser { UserName = "tester1" }, "token").ConfigureAwait(false);
+            var scimResponse = await _usersClient.AddUser(new ScimUser {UserName = "tester1"}, "token")
+                .ConfigureAwait(false);
             var scimId = scimResponse.Content["id"].ToString();
             UserStore.Instance().ScimId = scimId;
             var thirdResult = await _usersClient.UpdateUser(
                     baseUrl,
-                    new ScimUser { Id = scimId, Roles = "onerole, secondrole, thirdrole" })
+                    new ScimUser {Id = scimId, Roles = "onerole, secondrole, thirdrole"})
                 .ConfigureAwait(false);
             UserStore.Instance().ScimId = null;
 
-                        Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
         }
 
         [Fact]
         public async Task WhenUpdatingUserWithMultipleRolesThenReturnsOk()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        var scimResponse = await _usersClient.AddUser(new ScimUser { UserName = "tester" }).ConfigureAwait(false);
+            var scimResponse = await _usersClient.AddUser(new ScimUser {UserName = "tester"}).ConfigureAwait(false);
             //var scimId = scimResponse.Content["id"].ToString();
             //UserStore.Instance().ScimId = scimId;
             var id = scimResponse.Content["id"].ToString();
             var thirdResult = await _usersClient.UpdateUser(baseUrl,
-                    new ScimUser { Id = id, Roles = "onerole, secondrole, thirdrole" })
+                    new ScimUser {Id = id, Roles = "onerole, secondrole, thirdrole"})
                 .ConfigureAwait(false);
             UserStore.Instance().ScimId = null;
 
-                        Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
         }
 
         [Fact]
         public async Task When_Update_Current_User_Then_Ok_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
+            var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
             var scimId = scimResponse.Content["id"].ToString();
             UserStore.Instance().ScimId = scimId;
             var thirdResult = await _usersClient.UpdateUser(
                     baseUrl,
-                    new ScimUser { Id = scimId, UserName = "other_username" },
+                    new ScimUser {Id = scimId, UserName = "other_username"},
                     "token")
                 .ConfigureAwait(false);
             UserStore.Instance().ScimId = null;
 
-                        Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
         }
 
         //[Fact]
@@ -118,15 +123,16 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
         [Fact]
         public async Task When_Remove_Current_User_Then_NoContent_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
+            var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
             var scimId = scimResponse.Content["id"].ToString();
             UserStore.Instance().ScimId = scimId;
             var removeResponse = await _usersClient.DeleteAuthenticatedUser(baseUrl, "token").ConfigureAwait(false);
             UserStore.Instance().ScimId = null;
 
-                        Assert.Equal(HttpStatusCode.NoContent, removeResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, removeResponse.StatusCode);
         }
 
         [Fact]
@@ -145,70 +151,82 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
         [Fact]
         public async Task When_Insert_Ten_Users_And_Search_Two_Users_Are_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 await _usersClient.AddUser(new ScimUser()).ConfigureAwait(false);
             }
 
             var searchResult = await _usersClient.SearchUsers(
-                baseUrl,
-                new SearchParameter
-                {
-                    StartIndex = 0,
-                    Count = 2
-                }).ConfigureAwait(false);
+                    baseUrl,
+                    new SearchParameter
+                    {
+                        StartIndex = 0,
+                        Count = 2
+                    })
+                .ConfigureAwait(false);
 
-                        Assert.True(searchResult.Content.Length == 2);
+            Assert.True(searchResult.Content.Length == 2);
         }
 
         [Fact]
         public async Task When_Insert_Complex_Users_Then_Information_Are_Correct()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var complexArr = new JArray();
             var complexObj = new JObject
             {
-                { "test", "test2" }
+                {"test", "test2"}
             };
             complexArr.Add(complexObj);
             var firstResult = await _usersClient.AddUser(new ScimUser
-            {
-                UserName = "username",
-                Name = new Name
                 {
-                    MiddleName = "middlename",
-                    GivenName = "givenname"
-                }
-            }).ConfigureAwait(false);
+                    UserName = "username",
+                    Name = new Name
+                    {
+                        MiddleName = "middlename",
+                        GivenName = "givenname"
+                    }
+                })
+                .ConfigureAwait(false);
             var id = firstResult.Content["id"].ToString();
             Assert.NotNull(id);
 
-            var firstSearch = await _usersClient.SearchUsers(baseUrl, new SearchParameter
-            {
-                StartIndex = 0,
-                Count = 10,
-                Filter = $"arr co a1"
-            }).ConfigureAwait(false);
-            var secondSearch = await _usersClient.SearchUsers(baseUrl, new SearchParameter
-            {
-                StartIndex = 0,
-                Count = 10,
-                Filter = $"complexarr[test eq test2]"
-            }).ConfigureAwait(false);
-            var thirdSearch = await _usersClient.SearchUsers(baseUrl, new SearchParameter
-            {
-                StartIndex = 0,
-                Count = 10,
-                Filter = $"age le 23"
-            }).ConfigureAwait(false);
+            var firstSearch = await _usersClient.SearchUsers(baseUrl,
+                    new SearchParameter
+                    {
+                        StartIndex = 0,
+                        Count = 10,
+                        Filter = $"arr co a1"
+                    })
+                .ConfigureAwait(false);
+            var secondSearch = await _usersClient.SearchUsers(baseUrl,
+                    new SearchParameter
+                    {
+                        StartIndex = 0,
+                        Count = 10,
+                        Filter = $"complexarr[test eq test2]"
+                    })
+                .ConfigureAwait(false);
+            var thirdSearch = await _usersClient.SearchUsers(baseUrl,
+                    new SearchParameter
+                    {
+                        StartIndex = 0,
+                        Count = 10,
+                        Filter = $"age le 23"
+                    })
+                .ConfigureAwait(false);
             var newDate = DateTime.UtcNow.AddDays(2).ToUnix().ToString();
-            var fourthSearch = await _usersClient.SearchUsers(baseUrl, new SearchParameter
-            {
-                StartIndex = 0,
-                Count = 10,
-                Filter = $"date lt {newDate}"
-            }).ConfigureAwait(false);
+            var fourthSearch = await _usersClient.SearchUsers(baseUrl,
+                    new SearchParameter
+                    {
+                        StartIndex = 0,
+                        Count = 10,
+                        Filter = $"date lt {newDate}"
+                    })
+                .ConfigureAwait(false);
 
             Assert.NotNull(firstSearch);
             Assert.NotNull(secondSearch);

@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.C:\Projects\SimpleIdentityServer\SimpleIdentityServer\src\SimpleIdentityServer.Scim.Core\DTOs\
 
-using SimpleIdentityServer.Scim.Core.Errors;
-using System;
-
-namespace SimpleIdentityServer.Scim.Core.Validators
+namespace SimpleAuth.Validators
 {
+    using System;
+    using Errors;
+
     public class ParametersValidator : IParametersValidator
     {
         public void ValidateLocationPattern(string locationPattern)

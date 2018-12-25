@@ -14,11 +14,12 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
-using SimpleIdentityServer.Scim.Core.Results;
 using System;
 
 namespace SimpleIdentityServer.Scim.Host.Extensions
 {
+    using SimpleAuth.Results;
+
     public static class ControllerExtensions
     {
         public static ActionResult GetActionResult(this Controller controller, ApiActionResult result)
