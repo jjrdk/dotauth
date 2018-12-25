@@ -96,7 +96,7 @@
                 return View(viewModel);
             }
 
-            return RedirectToAction("Index", "User", new { area = "UserManagement" });
+            return RedirectToAction("Index", "User");
         }
 
         [HttpPost]
@@ -105,7 +105,7 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "User", new { area = "UserManagement" });
+                return RedirectToAction("Index", "User");
             }
 
             if (localAuthenticationViewModel == null)
@@ -158,7 +158,7 @@
             var user = await SetUser().ConfigureAwait(false);
             if (user?.Identity != null && user.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "User", new { area = "UserManagement" });
+                return RedirectToAction("Index", "User");
             }
 
             var authenticatedUser = await _authenticationService
@@ -189,7 +189,7 @@
             var user = await SetUser().ConfigureAwait(false);
             if (user?.Identity != null && user.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "User", new { area = "UserManagement" });
+                return RedirectToAction("Index", "User");
             }
 
             var authenticatedUser = await _authenticationService
@@ -268,7 +268,7 @@
 
             await SetLocalCookie(authenticatedUser.Claims, Guid.NewGuid().ToString())
                 .ConfigureAwait(false); // Authenticate the resource owner
-            return RedirectToAction("Index", "User", new { area = "UserManagement" });
+            return RedirectToAction("Index", "User");
         }
 
         [HttpPost]

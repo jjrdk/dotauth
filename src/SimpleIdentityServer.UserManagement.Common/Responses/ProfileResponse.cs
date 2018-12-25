@@ -7,13 +7,13 @@
     [DataContract]
     public class ProfileResponse
     {
-        [DataMember(Name = Constants.LinkProfileRequestNames.UserId)]
+        [DataMember(Name = UserManagementConstants.LinkProfileRequestNames.UserId)]
         public string UserId { get; set; }
-        [DataMember(Name = Constants.LinkProfileRequestNames.Issuer)]
+        [DataMember(Name = UserManagementConstants.LinkProfileRequestNames.Issuer)]
         public string Issuer { get; set; }
-        [DataMember(Name = Constants.LinkProfileResponseNames.CreateDatetime)]
+        [DataMember(Name = UserManagementConstants.LinkProfileResponseNames.CreateDatetime)]
         public DateTime CreateDateTime { get; set; }
-        [DataMember(Name = Constants.LinkProfileResponseNames.UpdateDatetime)]
+        [DataMember(Name = UserManagementConstants.LinkProfileResponseNames.UpdateDatetime)]
         public DateTime UpdateTime { get; set; }
     }
 }

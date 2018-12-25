@@ -26,7 +26,6 @@ namespace SimpleIdentityServer.Host.Tests
     using MiddleWares;
     using Services;
     using Stores;
-    using SimpleIdentityServer.UserManagement.Controllers;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -38,7 +37,7 @@ namespace SimpleIdentityServer.Host.Tests
     using SimpleAuth.Api.Jwks.Actions;
     using SimpleAuth.Extensions;
     using SimpleAuth.Logging;
-    using SimpleAuth.Server.Controllers.Api;
+    using SimpleAuth.Server.Controllers;
     using SimpleAuth.Server.Extensions;
     using SimpleAuth.Services;
     using SimpleAuth.Shared;

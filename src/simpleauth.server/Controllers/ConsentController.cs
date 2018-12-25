@@ -32,7 +32,6 @@ namespace SimpleAuth.Server.Controllers
     using SimpleAuth;
     using Translation;
     using ViewModels;
-    using Website;
     using WebSite.Consent;
 
     [Area("Shell")]
