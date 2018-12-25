@@ -14,11 +14,11 @@
 
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 {
-    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using System;
     using System.Security.Cryptography;
     using System.Xml;
+    using SimpleAuth.Signature;
     using Xunit;
 
     public sealed class CreateJwsSignatureFixture

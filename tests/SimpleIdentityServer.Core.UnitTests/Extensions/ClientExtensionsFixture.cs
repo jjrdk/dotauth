@@ -1,9 +1,9 @@
-﻿using SimpleIdentityServer.Core.Extensions;
-using Xunit;
+﻿using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Extensions
 {
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 

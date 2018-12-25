@@ -1,10 +1,9 @@
-﻿using SimpleIdentityServer.Core.Exceptions;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.WebSite.User.Actions
+﻿namespace SimpleAuth.WebSite.User.Actions
 {
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Threading.Tasks;
+    using Exceptions;
+    using Shared.Repositories;
 
     internal sealed class UpdateUserTwoFactorAuthenticatorOperation : IUpdateUserTwoFactorAuthenticatorOperation
     {

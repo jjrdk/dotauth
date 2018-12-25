@@ -13,17 +13,17 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Helpers;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Validators;
 
     public class GrantedTokenHelperFixture
     {

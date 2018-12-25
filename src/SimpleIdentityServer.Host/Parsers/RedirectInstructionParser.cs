@@ -14,11 +14,12 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using SimpleIdentityServer.Core.Results;
 using Microsoft.AspNetCore.Routing;
 
 namespace SimpleIdentityServer.Host.Parsers
 {
+    using SimpleAuth.Results;
+
     public class RedirectInstructionParser : IRedirectInstructionParser
     {
         private readonly Dictionary<IdentityServerEndPoints, ActionInformation> _mappingEnumToActionInformations = new Dictionary<IdentityServerEndPoints, ActionInformation>

@@ -1,18 +1,17 @@
-﻿namespace SimpleIdentityServer.Core.Repositories
+﻿namespace SimpleAuth.Repositories
 {
-    using Extensions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
-
     using System.Linq.Expressions;
+    using System.Security.Claims;
     using System.Threading;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Parameters;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Results;
+    using System.Threading.Tasks;
+    using Extensions;
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Repositories;
+    using Shared.Results;
 
     internal sealed class DefaultResourceOwnerRepository : IResourceOwnerRepository
     {

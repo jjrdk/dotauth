@@ -1,11 +1,11 @@
 ﻿namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws
 {
     using Moq;
-    using SimpleIdentityServer.Core.Api.Jws;
-    using SimpleIdentityServer.Core.Api.Jws.Actions;
-    using SimpleIdentityServer.Core.Parameters;
     using System;
     using System.Threading.Tasks;
+    using SimpleAuth.Api.Jws;
+    using SimpleAuth.Api.Jws.Actions;
+    using SimpleAuth.Parameters;
     using SimpleAuth.Shared;
     using Xunit;
 

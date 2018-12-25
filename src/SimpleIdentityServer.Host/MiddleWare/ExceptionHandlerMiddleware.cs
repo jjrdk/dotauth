@@ -13,15 +13,15 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Http;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
 using System;
 using System.Net;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.MiddleWare
 {
-    using SimpleAuth.Json;
+    using SimpleAuth;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
     using SimpleAuth.Shared.Responses;
 
     public class ExceptionHandlerMiddleware

@@ -12,44 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core
+namespace SimpleAuth
 {
-    using Microsoft.Extensions.DependencyInjection;
-    using SimpleIdentityServer.Core.Api.Authorization;
-    using SimpleIdentityServer.Core.Api.Authorization.Actions;
-    using SimpleIdentityServer.Core.Api.Authorization.Common;
-    using SimpleIdentityServer.Core.Api.Discovery;
-    using SimpleIdentityServer.Core.Api.Introspection;
-    using SimpleIdentityServer.Core.Api.Introspection.Actions;
-    using SimpleIdentityServer.Core.Api.Jwks;
-    using SimpleIdentityServer.Core.Api.Jwks.Actions;
-    using SimpleIdentityServer.Core.Api.Profile;
-    using SimpleIdentityServer.Core.Api.Profile.Actions;
-    using SimpleIdentityServer.Core.Api.Token;
-    using SimpleIdentityServer.Core.Api.Token.Actions;
-    using SimpleIdentityServer.Core.Authenticate;
-    using SimpleIdentityServer.Core.Common;
-    using SimpleIdentityServer.Core.Factories;
-    using SimpleIdentityServer.Core.Helpers;
-    using SimpleIdentityServer.Core.JwtToken;
-    using SimpleIdentityServer.Core.Protector;
-    using SimpleIdentityServer.Core.Repositories;
-    using SimpleIdentityServer.Core.Services;
-    using SimpleIdentityServer.Core.Translation;
-    using SimpleIdentityServer.Core.Validators;
-    using SimpleIdentityServer.Core.WebSite.Authenticate;
-    using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
-    using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
-    using SimpleIdentityServer.Core.WebSite.Consent;
-    using SimpleIdentityServer.Core.WebSite.Consent.Actions;
-    using SimpleIdentityServer.Core.WebSite.User.Actions;
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
-    using SimpleAuth.Jwt.Converter;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using Api.Authorization;
+    using Api.Authorization.Actions;
+    using Api.Authorization.Common;
+    using Api.Discovery;
+    using Api.Introspection;
+    using Api.Introspection.Actions;
+    using Api.Jwks;
+    using Api.Jwks.Actions;
+    using Api.Profile;
+    using Api.Profile.Actions;
+    using Api.Token;
+    using Api.Token.Actions;
+    using Authenticate;
+    using Common;
+    using Converter;
+    using Factories;
+    using Helpers;
+    using JwtToken;
+    using Microsoft.Extensions.DependencyInjection;
+    using Protector;
+    using Repositories;
+    using Services;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Translation;
+    using Validators;
+    using WebSite.Authenticate;
+    using WebSite.Authenticate.Actions;
+    using WebSite.Authenticate.Common;
+    using WebSite.Consent;
+    using WebSite.Consent.Actions;
+    using WebSite.User.Actions;
 
     public static class SimpleIdentityServerCoreExtensions
     {

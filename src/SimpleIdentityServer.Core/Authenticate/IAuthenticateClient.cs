@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Authenticate
+﻿namespace SimpleAuth.Authenticate
 {
     using System.Threading.Tasks;
 

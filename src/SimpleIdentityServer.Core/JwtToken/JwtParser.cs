@@ -12,23 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Errors;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.JwtToken
+namespace SimpleAuth.JwtToken
 {
+    using System;
+    using System.Linq;
     using System.Net.Http;
-    using SimpleAuth.Json;
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Jwt.Converter;
-    using SimpleAuth.Jwt.Encrypt;
-    using SimpleAuth.Jwt.Signature;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Requests;
+    using System.Threading.Tasks;
+    using Converter;
+    using Encrypt;
+    using Errors;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Shared.Requests;
+    using Signature;
 
     public class JwtParser : IJwtParser
     {

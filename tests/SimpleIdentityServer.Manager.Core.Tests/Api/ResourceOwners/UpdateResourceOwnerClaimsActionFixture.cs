@@ -15,10 +15,10 @@
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
 {
     using Moq;
-    using SimpleIdentityServer.Core.Repositories;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using Xunit;

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SimpleIdentityServer.Core.Extensions;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Claims;
@@ -10,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Tests.MiddleWares
 {
+    using SimpleAuth.Extensions;
+
     public class TestAuthenticationHandler : AuthenticationHandler<TestAuthenticationOptions>
     {
         public TestAuthenticationHandler(IOptionsMonitor<TestAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)

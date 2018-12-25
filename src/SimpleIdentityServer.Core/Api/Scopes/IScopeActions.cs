@@ -1,10 +1,10 @@
-﻿namespace SimpleIdentityServer.Core.Api.Scopes
+﻿namespace SimpleAuth.Api.Scopes
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Parameters;
-    using SimpleAuth.Shared.Results;
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Results;
 
     public interface IScopeActions
     {

@@ -17,18 +17,18 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Client;
     using Client.Builders;
     using Client.Operations;
-    using Core.Errors;
     using Microsoft.Extensions.DependencyInjection;
     using MiddleWares;
     using Newtonsoft.Json;
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Jwt.Encrypt;
-    using SimpleAuth.Jwt.Signature;
+    using SimpleAuth;
+    using SimpleAuth.Encrypt;
+    using SimpleAuth.Errors;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
+    using SimpleAuth.Signature;
     using Xunit;
     using TokenRequest = Client.TokenRequest;
 

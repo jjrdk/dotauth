@@ -13,9 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.WebSite.Authenticate;
-using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -23,6 +20,10 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
+    using SimpleAuth.Parameters;
+    using SimpleAuth.WebSite.Authenticate;
+    using SimpleAuth.WebSite.Authenticate.Actions;
+
     public sealed class AuthenticateActionsFixture
     {
         private Mock<IAuthenticateResourceOwnerOpenIdAction> _authenticateResourceOwnerActionFake;

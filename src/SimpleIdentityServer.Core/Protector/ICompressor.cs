@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Protector
+﻿namespace SimpleAuth.Protector
 {
     public interface ICompressor
     {

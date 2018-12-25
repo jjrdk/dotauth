@@ -1,10 +1,10 @@
-﻿namespace SimpleIdentityServer.Core.Api.Token
+﻿namespace SimpleAuth.Api.Token
 {
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using Parameters;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public interface ITokenActions
     {

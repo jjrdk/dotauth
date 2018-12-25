@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core.Api.Token.Actions
+namespace SimpleAuth.Api.Token.Actions
 {
-    using SimpleIdentityServer.Core.Authenticate;
-    using SimpleIdentityServer.Core.Errors;
-    using SimpleIdentityServer.Core.Exceptions;
-    using SimpleIdentityServer.Core.Parameters;
     using System;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
-    using SimpleAuth.Jwt;
+    using Authenticate;
+    using Errors;
+    using Exceptions;
+    using Parameters;
 
     internal class RevokeTokenAction : IRevokeTokenAction
     {

@@ -22,12 +22,12 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
-    using Core;
-    using Core.Api.Token;
-    using Core.Errors;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Primitives;
+    using SimpleAuth;
+    using SimpleAuth.Api.Token;
+    using SimpleAuth.Errors;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;

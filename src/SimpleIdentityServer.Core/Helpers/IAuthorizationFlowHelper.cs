@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Core.Helpers
+﻿namespace SimpleAuth.Helpers
 {
     using System.Collections.Generic;
     using Api.Authorization;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public interface IAuthorizationFlowHelper
     {

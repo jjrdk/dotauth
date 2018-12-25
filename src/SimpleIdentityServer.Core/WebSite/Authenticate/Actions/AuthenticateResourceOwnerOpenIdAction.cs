@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Linq;
-using System.Security.Claims;
-
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Factories;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
+namespace SimpleAuth.WebSite.Authenticate.Actions
 {
+    using System;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Common;
+    using Extensions;
+    using Factories;
+    using Helpers;
+    using Parameters;
+    using Results;
+
     public class AuthenticateResourceOwnerOpenIdAction : IAuthenticateResourceOwnerOpenIdAction
     {
         private readonly IParameterParserHelper _parameterParserHelper;

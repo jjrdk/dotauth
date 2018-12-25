@@ -1,10 +1,10 @@
-﻿namespace SimpleIdentityServer.Core.Api.Authorization.Actions
+﻿namespace SimpleAuth.Api.Authorization.Actions
 {
     using System.Security.Principal;
     using System.Threading.Tasks;
     using Parameters;
     using Results;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public interface IGetAuthorizationCodeOperation
     {

@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
+namespace SimpleAuth.WebSite.Authenticate.Actions
 {
-    using SimpleAuth.Jwt;
+    using System;
+    using System.Threading.Tasks;
 
     internal class ValidateConfirmationCodeAction : IValidateConfirmationCodeAction
     {

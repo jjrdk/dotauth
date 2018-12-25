@@ -1,12 +1,11 @@
-﻿using SimpleIdentityServer.Core.Api.Profile.Actions;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Api.Profile
+﻿namespace SimpleAuth.Api.Profile
 {
-    using SimpleAuth.Shared.Models;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Actions;
+    using Errors;
+    using Exceptions;
+    using Shared.Models;
 
     internal sealed class ProfileActions : IProfileActions
     {

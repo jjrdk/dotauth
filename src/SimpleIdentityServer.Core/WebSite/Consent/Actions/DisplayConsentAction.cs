@@ -12,25 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Api.Authorization;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Factories;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
+namespace SimpleAuth.WebSite.Consent.Actions
 {
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Api.Authorization;
+    using Common;
+    using Errors;
+    using Exceptions;
+    using Extensions;
+    using Factories;
+    using Helpers;
+    using Parameters;
+    using Results;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public class DisplayConsentAction : IDisplayConsentAction
     {

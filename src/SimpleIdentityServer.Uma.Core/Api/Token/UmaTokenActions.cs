@@ -12,17 +12,17 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Policies;
-    using SimpleIdentityServer.Core.Authenticate;
-    using SimpleIdentityServer.Core.Helpers;
-    using SimpleIdentityServer.Core.JwtToken;
     using Stores;
     using System;
     using System.Collections.Generic;
     using System.Text;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Authenticate;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.JwtToken;
+    using SimpleAuth.Logging;
     using SimpleAuth.Shared.Models;
-    using SimpleIdentityServer.Core.Logging;
-    using AuthenticationHeaderValueExtensions = SimpleIdentityServer.Core.AuthenticationHeaderValueExtensions;
+    using AuthenticationHeaderValueExtensions = SimpleAuth.AuthenticationHeaderValueExtensions;
 
     internal sealed class UmaTokenActions : IUmaTokenActions
     {
@@ -177,7 +177,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
                 AccessToken = accessToken,
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
                 ExpiresIn = (int)expiresIn.TotalSeconds,
-                TokenType = SimpleIdentityServer.Core.CoreConstants.StandardTokenTypes.Bearer,
+                TokenType = CoreConstants.StandardTokenTypes.Bearer,
                 CreateDateTime = DateTime.UtcNow,
                 Scope = scope,
                 ClientId = client.ClientId

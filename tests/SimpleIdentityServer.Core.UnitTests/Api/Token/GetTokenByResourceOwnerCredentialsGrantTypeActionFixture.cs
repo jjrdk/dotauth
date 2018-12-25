@@ -13,14 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Api.Token.Actions;
-using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -29,11 +21,19 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
-    using Logging;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Api.Token.Actions;
+    using SimpleAuth.Authenticate;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.JwtToken;
+    using SimpleAuth.Logging;
+    using SimpleAuth.Parameters;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Validators;
 
     public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
     {

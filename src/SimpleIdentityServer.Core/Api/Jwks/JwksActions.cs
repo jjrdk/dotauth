@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using SimpleIdentityServer.Core.Api.Jwks.Actions;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Api.Jwks
+namespace SimpleAuth.Api.Jwks
 {
-    using SimpleAuth.Shared.Requests;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Actions;
+    using Shared.Requests;
 
     public class JwksActions : IJwksActions
     {

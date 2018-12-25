@@ -1,13 +1,13 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Errors;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 {
-    using Logging;
+    using SimpleAuth.Authenticate;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Logging;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 

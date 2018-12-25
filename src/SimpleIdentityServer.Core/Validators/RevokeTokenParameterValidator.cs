@@ -1,10 +1,10 @@
-﻿using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Parameters;
-using System;
-
-namespace SimpleIdentityServer.Core.Validators
+﻿namespace SimpleAuth.Validators
 {
+    using System;
+    using Errors;
+    using Exceptions;
+    using Parameters;
+
     internal sealed class RevokeTokenParameterValidator : IRevokeTokenParameterValidator
     {
         public void Validate(RevokeTokenParameter parameter)

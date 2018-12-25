@@ -17,9 +17,9 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
     using Moq;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using SimpleAuth.Api.Scopes.Actions;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using SimpleIdentityServer.Core.Api.Scopes.Actions;
     using Xunit;
 
     public class GetScopesOperationFixture

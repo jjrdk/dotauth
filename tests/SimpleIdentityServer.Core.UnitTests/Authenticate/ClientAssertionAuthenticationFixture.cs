@@ -1,19 +1,19 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.JwtToken;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 {
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Jwt.Signature;
+    using SimpleAuth;
+    using SimpleAuth.Authenticate;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.JwtToken;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Signature;
 
     public sealed class ClientAssertionAuthenticationFixture
     {

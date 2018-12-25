@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
-using SimpleIdentityServer.Core.Api.Token;
-using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Api.Token;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
@@ -14,6 +12,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
+    using SimpleAuth.Api.Token;
+    using SimpleAuth.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;

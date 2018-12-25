@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
+﻿namespace SimpleAuth.WebSite.Authenticate.Actions
 {
     using System.Security.Claims;
     using System.Threading.Tasks;

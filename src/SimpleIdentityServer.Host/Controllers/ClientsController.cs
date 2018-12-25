@@ -14,8 +14,6 @@
 
 namespace SimpleIdentityServer.Host.Controllers
 {
-    using Core.Errors;
-    using Core.Exceptions;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -23,7 +21,9 @@ namespace SimpleIdentityServer.Host.Controllers
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
-    using Core;
+    using SimpleAuth;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;

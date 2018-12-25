@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Policies
 {
-    using SimpleIdentityServer.Core.Logging;
+    using SimpleAuth.Logging;
 
     internal class AuthorizationPolicyValidator : IAuthorizationPolicyValidator
     {

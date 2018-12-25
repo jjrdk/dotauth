@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Core.Api.Profile.Actions
+﻿namespace SimpleAuth.Api.Profile.Actions
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public interface IGetUserProfilesAction
     {

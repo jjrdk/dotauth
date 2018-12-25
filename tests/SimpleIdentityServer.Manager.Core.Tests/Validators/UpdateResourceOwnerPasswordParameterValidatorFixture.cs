@@ -3,9 +3,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Validators
 {
-    using SimpleIdentityServer.Core.Exceptions;
-    using SimpleIdentityServer.Core.Parameters;
-    using SimpleIdentityServer.Core.Validators;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Parameters;
+    using SimpleAuth.Validators;
 
     public class UpdateResourceOwnerPasswordParameterValidatorFixture
     {

@@ -1,7 +1,6 @@
-﻿namespace SimpleIdentityServer.Core.Parameters
+﻿namespace SimpleAuth.Parameters
 {
     using System.Collections.Generic;
-    using SimpleAuth.Json;
 
     public class ClaimsParameter
     {

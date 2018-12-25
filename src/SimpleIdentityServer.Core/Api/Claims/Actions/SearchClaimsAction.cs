@@ -1,10 +1,10 @@
-﻿namespace SimpleIdentityServer.Core.Api.Claims.Actions
+﻿namespace SimpleAuth.Api.Claims.Actions
 {
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Parameters;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Results;
+    using Shared.Parameters;
+    using Shared.Repositories;
+    using Shared.Results;
 
     internal sealed class SearchClaimsAction : ISearchClaimsAction
     {

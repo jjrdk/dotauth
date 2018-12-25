@@ -15,20 +15,19 @@
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
 {
     using Moq;
-    using SimpleIdentityServer.Core.Api.Jws.Actions;
-    using SimpleIdentityServer.Core.Errors;
-    using SimpleIdentityServer.Core.Exceptions;
-    using SimpleIdentityServer.Core.Helpers;
-    using SimpleIdentityServer.Core.Parameters;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using SimpleAuth.Json;
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Jwt.Signature;
+    using SimpleAuth;
+    using SimpleAuth.Api.Jws.Actions;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.Parameters;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Signature;
     using Xunit;
 
     public class GetJwsInformationActionFixture

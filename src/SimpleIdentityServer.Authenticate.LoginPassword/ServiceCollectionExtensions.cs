@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Authenticate.LoginPassword.Controllers;
 using SimpleIdentityServer.Authenticate.LoginPassword.Services;
-using SimpleIdentityServer.Core.Services;
 using System;
 using System.Reflection;
 
@@ -11,6 +10,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword
     using Microsoft.AspNetCore.Mvc.Razor;
     using Microsoft.CodeAnalysis;
     using Microsoft.Extensions.FileProviders;
+    using SimpleAuth.Services;
 
     public static class ServiceCollectionExtensions
     {

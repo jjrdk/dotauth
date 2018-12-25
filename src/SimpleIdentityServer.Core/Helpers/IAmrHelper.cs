@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Helpers
+﻿namespace SimpleAuth.Helpers
 {
     using System.Collections.Generic;
 

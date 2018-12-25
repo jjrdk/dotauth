@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
@@ -24,6 +22,8 @@ using DomainResponse = SimpleIdentityServer.Uma.Core.Responses;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
+    using SimpleAuth.Parameters;
+    using SimpleAuth.Results;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;

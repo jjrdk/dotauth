@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Core.Api.Claims.Actions
+﻿namespace SimpleAuth.Api.Claims.Actions
 {
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Parameters;
-    using SimpleAuth.Shared.Results;
+    using Shared.Parameters;
+    using Shared.Results;
 
     public interface ISearchClaimsAction
     {

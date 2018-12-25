@@ -1,13 +1,12 @@
-﻿using SimpleIdentityServer.Core.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Repositories
+﻿namespace SimpleAuth.Repositories
 {
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Extensions;
+    using Shared.Models;
+    using Shared.Repositories;
 
     internal sealed class DefaultConsentRepository : IConsentRepository
     {

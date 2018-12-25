@@ -1,25 +1,24 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Api.Authorization.Common;
-using SimpleIdentityServer.Core.Factories;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
-    using Errors;
-    using Exceptions;
-    using Logging;
-    using SimpleAuth.Jwt.Converter;
-    using SimpleAuth.Jwt.Encrypt;
-    using SimpleAuth.Jwt.Encrypt.Encryption;
-    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared.Repositories;
     using System.Net.Http;
+    using SimpleAuth;
+    using SimpleAuth.Api.Authorization.Common;
+    using SimpleAuth.Converter;
+    using SimpleAuth.Encrypt;
+    using SimpleAuth.Encrypt.Encryption;
+    using SimpleAuth.Factories;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.JwtToken;
+    using SimpleAuth.Logging;
+    using SimpleAuth.Parameters;
+    using SimpleAuth.Signature;
+    using SimpleAuth.Validators;
     using IClientStore = SimpleAuth.Shared.Repositories.IClientStore;
 
     public sealed class ProcessAuthorizationRequestFixture

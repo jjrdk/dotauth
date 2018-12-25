@@ -1,9 +1,9 @@
-﻿namespace SimpleIdentityServer.Core.Api.Claims.Actions
+﻿namespace SimpleAuth.Api.Claims.Actions
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using Shared.Models;
+    using Shared.Repositories;
 
     internal sealed class GetClaimsAction : IGetClaimsAction
     {

@@ -13,10 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Api.Introspection;
-using SimpleIdentityServer.Core.Api.Introspection.Actions;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -24,7 +20,11 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
 {
+    using SimpleAuth.Api.Introspection;
+    using SimpleAuth.Api.Introspection.Actions;
+    using SimpleAuth.Parameters;
     using SimpleAuth.Shared;
+    using SimpleAuth.Validators;
 
     public class IntrospectionActionsFixture
     {

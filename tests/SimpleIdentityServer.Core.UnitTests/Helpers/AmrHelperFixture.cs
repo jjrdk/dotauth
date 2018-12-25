@@ -1,10 +1,12 @@
-﻿using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Helpers;
+
     public class AmrHelperFixture
     {
         private IAmrHelper _amrHelper;
@@ -15,8 +17,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
                         var exception = Assert.Throws<IdentityServerException>(() => _amrHelper.GetAmr(new List<string>(), new[] { "pwd" }));
             Assert.NotNull(exception);
-            Assert.Equal(Errors.ErrorCodes.InternalError, exception.Code);
-            Assert.Equal(Errors.ErrorDescriptions.NoActiveAmr, exception.Message);
+            Assert.Equal(ErrorCodes.InternalError, exception.Code);
+            Assert.Equal(ErrorDescriptions.NoActiveAmr, exception.Message);
         }
 
         [Fact]
@@ -25,8 +27,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
                         var exception = Assert.Throws<IdentityServerException>(() => _amrHelper.GetAmr(new List<string> { "invalid" }, new[] { "pwd" }));
             Assert.NotNull(exception);
-            Assert.Equal(Errors.ErrorCodes.InternalError, exception.Code);
-            Assert.Equal(string.Format(Errors.ErrorDescriptions.TheAmrDoesntExist, "pwd"), exception.Message);
+            Assert.Equal(ErrorCodes.InternalError, exception.Code);
+            Assert.Equal(string.Format(ErrorDescriptions.TheAmrDoesntExist, "pwd"), exception.Message);
         }
 
         [Fact]

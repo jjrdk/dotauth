@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Api.Authorization;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace SimpleIdentityServer.Core.Helpers
+namespace SimpleAuth.Helpers
 {
-    using SimpleAuth.Shared.Models;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Api.Authorization;
+    using Errors;
+    using Exceptions;
+    using Shared.Models;
 
     public class AuthorizationFlowHelper : IAuthorizationFlowHelper
     {

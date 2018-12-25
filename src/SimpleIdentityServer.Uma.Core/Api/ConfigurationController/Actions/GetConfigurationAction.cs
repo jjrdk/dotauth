@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
 {
     using Microsoft.AspNetCore.Http;
-    using SimpleIdentityServer.Core;
+    using SimpleAuth;
 
     public class GetConfigurationAction : IGetConfigurationAction
     {

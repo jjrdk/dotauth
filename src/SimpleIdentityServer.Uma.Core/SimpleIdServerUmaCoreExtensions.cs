@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Core
 {
-    using SimpleIdentityServer.Core;
+    using SimpleAuth;
 
     public static class SimpleIdServerUmaCoreExtensions
     {

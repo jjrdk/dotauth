@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.WebSite.Consent
+﻿namespace SimpleAuth.WebSite.Consent
 {
     using System.Security.Claims;
     using System.Threading.Tasks;

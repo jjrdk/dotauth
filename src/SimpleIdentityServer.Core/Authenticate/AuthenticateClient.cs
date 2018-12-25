@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Errors;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Authenticate
+namespace SimpleAuth.Authenticate
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Errors;
     using Logging;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public class AuthenticateClient : IAuthenticateClient
     {

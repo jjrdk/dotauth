@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Host.Extensions
     using Microsoft.Extensions.Logging;
     using MiddleWare;
     using System;
-    using Core.Logging;
+    using SimpleAuth.Logging;
 
     public static class ApplicationBuilderExtensions
     {

@@ -20,8 +20,8 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
     using System;
     using System.Net;
     using System.Threading.Tasks;
+    using SimpleAuth.Errors;
     using SimpleAuth.Shared.Responses;
-    using SimpleIdentityServer.Core.Errors;
 
     internal class ExceptionHandlerMiddleware
     {

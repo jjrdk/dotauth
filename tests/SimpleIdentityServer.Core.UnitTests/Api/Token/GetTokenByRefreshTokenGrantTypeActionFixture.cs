@@ -13,13 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Api.Token.Actions;
-using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Parameters;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -27,8 +20,15 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
     using System.Collections.Generic;
-    using Logging;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Api.Token.Actions;
+    using SimpleAuth.Authenticate;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.JwtToken;
+    using SimpleAuth.Logging;
+    using SimpleAuth.Parameters;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 

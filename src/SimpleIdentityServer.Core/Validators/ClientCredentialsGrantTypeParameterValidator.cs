@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Parameters;
-using System;
-
-namespace SimpleIdentityServer.Core.Validators
+namespace SimpleAuth.Validators
 {
+    using System;
+    using Errors;
+    using Exceptions;
+    using Parameters;
+
     internal class ClientCredentialsGrantTypeParameterValidator : IClientCredentialsGrantTypeParameterValidator
     {
         public void Validate(ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter)

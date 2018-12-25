@@ -23,10 +23,6 @@ namespace SimpleIdentityServer.Host.Tests
     using Authenticate.SMS.Actions;
     using SimpleIdentityServer.Authenticate.SMS.Controllers;
     using SimpleIdentityServer.Authenticate.SMS.Services;
-    using Core;
-    using Core.Api.Jwks.Actions;
-    using SimpleIdentityServer.Core.Extensions;
-    using SimpleIdentityServer.Core.Services;
     using MiddleWares;
     using Services;
     using Stores;
@@ -41,8 +37,11 @@ namespace SimpleIdentityServer.Host.Tests
     using Extensions;
     using System.Net.Http;
     using Client;
-    using Core.Logging;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Api.Jwks.Actions;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Logging;
+    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;

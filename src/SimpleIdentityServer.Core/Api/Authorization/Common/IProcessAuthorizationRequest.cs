@@ -1,10 +1,10 @@
-﻿namespace SimpleIdentityServer.Core.Api.Authorization.Common
+﻿namespace SimpleAuth.Api.Authorization.Common
 {
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Parameters;
     using Results;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public interface IProcessAuthorizationRequest
     {

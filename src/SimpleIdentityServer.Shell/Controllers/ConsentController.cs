@@ -16,9 +16,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Translation;
-using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Shell.ViewModels;
@@ -30,10 +27,14 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Shell.Controllers
 {
     using Host;
+    using SimpleAuth;
+    using SimpleAuth.Results;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Events.Openid;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Translation;
+    using SimpleAuth.WebSite.Consent;
 
     [Area("Shell")]
     [Authorize("Connected")]
@@ -128,19 +129,19 @@ namespace SimpleIdentityServer.Shell.Controllers
             var translations = await _translationManager.GetTranslationsAsync(uiLocales,
                     new List<string>
                     {
-                        Core.CoreConstants.StandardTranslationCodes.ApplicationWouldLikeToCode,
-                        Core.CoreConstants.StandardTranslationCodes.IndividualClaimsCode,
-                        Core.CoreConstants.StandardTranslationCodes.ScopesCode,
-                        Core.CoreConstants.StandardTranslationCodes.CancelCode,
-                        Core.CoreConstants.StandardTranslationCodes.ConfirmCode,
-                        Core.CoreConstants.StandardTranslationCodes.LinkToThePolicy,
-                        Core.CoreConstants.StandardTranslationCodes.Tos
+                        CoreConstants.StandardTranslationCodes.ApplicationWouldLikeToCode,
+                        CoreConstants.StandardTranslationCodes.IndividualClaimsCode,
+                        CoreConstants.StandardTranslationCodes.ScopesCode,
+                        CoreConstants.StandardTranslationCodes.CancelCode,
+                        CoreConstants.StandardTranslationCodes.ConfirmCode,
+                        CoreConstants.StandardTranslationCodes.LinkToThePolicy,
+                        CoreConstants.StandardTranslationCodes.Tos
                     })
                 .ConfigureAwait(false);
             ViewBag.Translations = translations;
         }
 
-        private void LogConsentAccepted(Core.Results.EndpointResult act, string processId)
+        private void LogConsentAccepted(EndpointResult act, string processId)
         {
             if (string.IsNullOrWhiteSpace(processId))
             {

@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Results;
-
-namespace SimpleIdentityServer.Core.Factories
+namespace SimpleAuth.Factories
 {
+    using Results;
+
     public class ActionResultFactory : IActionResultFactory
     {
         /// <summary>

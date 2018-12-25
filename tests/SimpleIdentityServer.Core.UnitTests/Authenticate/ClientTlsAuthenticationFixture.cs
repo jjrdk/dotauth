@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Authenticate;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
@@ -20,6 +19,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 {
+    using SimpleAuth.Authenticate;
     using SimpleAuth.Shared.Models;
 
     public class ClientTlsAuthenticationFixture

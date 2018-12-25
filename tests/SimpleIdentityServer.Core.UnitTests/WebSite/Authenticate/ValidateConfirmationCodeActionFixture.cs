@@ -13,14 +13,14 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.WebSite.Authenticate.Actions;
 
     public class ValidateConfirmationCodeActionFixture
     {

@@ -1,15 +1,14 @@
-﻿using SimpleIdentityServer.Core.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Repositories
+﻿namespace SimpleAuth.Repositories
 {
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Runtime.InteropServices;
+    using System.Security.Cryptography;
+    using System.Threading.Tasks;
+    using Extensions;
+    using Shared;
+    using Shared.Repositories;
 
     internal sealed class DefaultJsonWebKeyRepository : IJsonWebKeyRepository
     {

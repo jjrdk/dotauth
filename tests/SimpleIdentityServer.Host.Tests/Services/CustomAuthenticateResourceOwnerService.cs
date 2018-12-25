@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Services;
 using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Tests.Services
 {
+    using SimpleAuth.Services;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 

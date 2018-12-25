@@ -1,7 +1,7 @@
-﻿namespace SimpleIdentityServer.Core.Api.Scopes.Actions
+﻿namespace SimpleAuth.Api.Scopes.Actions
 {
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public interface IGetScopeOperation
     {

@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Core.Extensions
+namespace SimpleAuth.Extensions
 {
+    using System.Collections.Generic;
+
     public static class CollectionExtensions
     {
         public static void AddRange<T, TZ>(this Dictionary<T, TZ> firstDictionary,

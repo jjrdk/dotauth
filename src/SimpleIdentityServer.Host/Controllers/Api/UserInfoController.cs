@@ -14,8 +14,6 @@
 
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
-    using Core.Errors;
-    using Core.Exceptions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Primitives;
     using System;
@@ -23,7 +21,9 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using System.Linq;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
-    using Core;
+    using SimpleAuth;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
     using UserInfo;
 
     [Route(CoreConstants.EndPoints.UserInfo)]

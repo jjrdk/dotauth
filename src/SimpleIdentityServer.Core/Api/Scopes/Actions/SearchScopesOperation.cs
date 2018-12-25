@@ -1,10 +1,10 @@
-﻿namespace SimpleIdentityServer.Core.Api.Scopes.Actions
+﻿namespace SimpleAuth.Api.Scopes.Actions
 {
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Parameters;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Results;
+    using Shared.Parameters;
+    using Shared.Repositories;
+    using Shared.Results;
 
     internal sealed class SearchScopesOperation : ISearchScopesOperation
     {

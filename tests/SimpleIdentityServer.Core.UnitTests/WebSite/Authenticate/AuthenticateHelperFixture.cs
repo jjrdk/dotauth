@@ -1,11 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Factories;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -14,8 +7,15 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
+    using SimpleAuth.Common;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Factories;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.Parameters;
+    using SimpleAuth.Results;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.WebSite.Authenticate.Common;
 
     public sealed class AuthenticateHelperFixture
     {

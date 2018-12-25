@@ -14,7 +14,7 @@
 
 namespace SimpleIdentityServer.Host.MiddleWare
 {
-    using Core.Logging;
+    using SimpleAuth.Logging;
 
     public class ExceptionHandlerMiddlewareOptions
     {

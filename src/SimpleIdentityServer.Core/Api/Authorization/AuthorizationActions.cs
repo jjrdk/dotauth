@@ -12,22 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core.Api.Authorization
+namespace SimpleAuth.Api.Authorization
 {
-    using SimpleIdentityServer.Core.Api.Authorization.Actions;
-    using SimpleIdentityServer.Core.Errors;
-    using SimpleIdentityServer.Core.Exceptions;
-    using SimpleIdentityServer.Core.Helpers;
-    using SimpleIdentityServer.Core.Parameters;
-    using SimpleIdentityServer.Core.Results;
-    using SimpleIdentityServer.Core.Validators;
     using System;
     using System.Security.Principal;
     using System.Threading.Tasks;
+    using Actions;
+    using Errors;
+    using Exceptions;
+    using Helpers;
     using Logging;
-    using SimpleAuth.Json;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Events.OAuth;
+    using Parameters;
+    using Results;
+    using Shared;
+    using Shared.Events.OAuth;
+    using Validators;
 
     public class AuthorizationActions : IAuthorizationActions
     {

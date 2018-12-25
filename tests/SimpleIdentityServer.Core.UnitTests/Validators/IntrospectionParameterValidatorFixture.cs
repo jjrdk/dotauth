@@ -12,15 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Validators;
 using System;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
+    using SimpleAuth;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Parameters;
+    using SimpleAuth.Validators;
+
     public class IntrospectionParameterValidatorFixture
     {
         private IntrospectionParameterValidator _introspectionParameterValidator;

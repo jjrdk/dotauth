@@ -1,12 +1,12 @@
 ﻿namespace SimpleIdentityServer.Authenticate.SMS.Actions
 {
-    using Core.Errors;
-    using Core.Exceptions;
     using Twilio.Client;
     using System;
     using System.Threading.Tasks;
-    using Core.Logging;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Logging;
 
     internal sealed class GenerateAndSendSmsCodeOperation : IGenerateAndSendSmsCodeOperation
     {

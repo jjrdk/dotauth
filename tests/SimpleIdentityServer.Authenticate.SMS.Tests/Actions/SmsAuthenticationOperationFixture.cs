@@ -6,10 +6,10 @@ using Xunit;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
 {
-    using Core.Services;
-    using Core.WebSite.User.Actions;
+    using SimpleAuth.Services;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.WebSite.User.Actions;
 
     public class SmsAuthenticationOperationFixture
     {

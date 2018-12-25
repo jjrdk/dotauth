@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Jwt.Signature
+namespace SimpleAuth.Signature
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using Converter;
-    using Json;
     using Shared;
     using Shared.Requests;
 

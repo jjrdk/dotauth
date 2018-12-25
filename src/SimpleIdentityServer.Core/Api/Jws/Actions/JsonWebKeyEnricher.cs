@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core.Api.Jws.Actions
+namespace SimpleAuth.Api.Jws.Actions
 {
-    using Errors;
-    using Exceptions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Cryptography;
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Shared;
+    using Errors;
+    using Exceptions;
+    using Shared;
 
     public class JsonWebKeyEnricher : IJsonWebKeyEnricher
     {

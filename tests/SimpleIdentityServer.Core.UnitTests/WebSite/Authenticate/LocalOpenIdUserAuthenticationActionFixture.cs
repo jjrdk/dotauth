@@ -1,9 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
-using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -12,8 +7,13 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.Parameters;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.WebSite.Authenticate.Actions;
+    using SimpleAuth.WebSite.Authenticate.Common;
 
     public sealed class LocalOpenIdUserAuthenticationActionFixture
     {

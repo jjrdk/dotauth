@@ -1,9 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Validators;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -11,8 +6,14 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
     using System;
+    using SimpleAuth;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.Parameters;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Validators;
 
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
     {

@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Api.Authorization
+﻿namespace SimpleAuth.Api.Authorization
 {
     using System.Security.Principal;
     using System.Threading.Tasks;

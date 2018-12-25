@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.UserManagement.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.Linq;
 namespace SimpleIdentityServer.UserManagement.Extensions
 {
     using Common.Responses;
+    using SimpleAuth.Parameters;
     using SimpleAuth.Shared.Models;
 
     internal static class MappingExtensions

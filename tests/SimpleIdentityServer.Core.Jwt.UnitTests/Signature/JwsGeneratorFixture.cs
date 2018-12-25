@@ -16,10 +16,10 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 {
     using Moq;
     using System;
-    using SimpleAuth.Json;
-    using SimpleAuth.Jwt.Signature;
+    using SimpleAuth;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Signature;
     using Xunit;
 
     public sealed class JwsGeneratorFixture

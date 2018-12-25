@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Services
+namespace SimpleAuth.Services
 {
-    using SimpleAuth.Shared.Models;
+    using System.Threading.Tasks;
+    using Shared.Models;
 
     public interface IAuthenticateResourceOwnerService
     {

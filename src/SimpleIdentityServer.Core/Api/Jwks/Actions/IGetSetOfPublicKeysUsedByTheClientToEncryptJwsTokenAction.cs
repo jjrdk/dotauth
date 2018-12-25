@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Api.Jwks.Actions
+﻿namespace SimpleAuth.Api.Jwks.Actions
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;

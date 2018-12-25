@@ -1,5 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Translation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +7,10 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Translation
 {
+    using SimpleAuth;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Translation;
 
     public sealed class TranslationManagerFixture
     {

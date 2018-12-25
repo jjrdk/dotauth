@@ -14,12 +14,12 @@
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
 {
-    using SimpleIdentityServer.Core.Api.Jws.Actions;
-    using SimpleIdentityServer.Core.Errors;
-    using SimpleIdentityServer.Core.Exceptions;
     using System;
     using System.Security.Cryptography;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Api.Jws.Actions;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
     using SimpleAuth.Shared;
     using Xunit;
 

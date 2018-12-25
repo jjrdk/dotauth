@@ -2,13 +2,13 @@
 {
     using Authenticate.SMS.Client;
     using Authenticate.SMS.Common.Requests;
-    using Core.Errors;
-    using Core.Exceptions;
     using Moq;
     using System;
     using System.Net;
     using System.Threading.Tasks;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
     using Twilio.Client;
     using Xunit;
 

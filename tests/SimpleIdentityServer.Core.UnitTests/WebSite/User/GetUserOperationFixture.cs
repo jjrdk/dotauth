@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -23,9 +21,12 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
     using System.Threading;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.WebSite.User.Actions;
 
     public class GetUserOperationFixture
     {
@@ -47,8 +48,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                         var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getUserOperation.Execute(emptyClaimsPrincipal)).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
-            Assert.True(exception.Code == Errors.ErrorCodes.UnhandledExceptionCode);
-            Assert.True(exception.Message == Errors.ErrorDescriptions.TheUserNeedsToBeAuthenticated);
+            Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
+            Assert.True(exception.Message == ErrorDescriptions.TheUserNeedsToBeAuthenticated);
         }
 
         [Fact]
@@ -61,8 +62,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                         var exception = await  Assert.ThrowsAsync<IdentityServerException>(() => _getUserOperation.Execute(claimsPrincipal)).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
-            Assert.True(exception.Code == Errors.ErrorCodes.UnhandledExceptionCode);
-            Assert.True(exception.Message == Errors.ErrorDescriptions.TheSubjectCannotBeRetrieved);
+            Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
+            Assert.True(exception.Message == ErrorDescriptions.TheSubjectCannotBeRetrieved);
         }
         
         [Fact]

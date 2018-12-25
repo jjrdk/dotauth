@@ -14,10 +14,10 @@
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
 {
-    using SimpleIdentityServer.Core.Repositories;
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using Xunit;

@@ -18,13 +18,9 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using Authenticate.SMS.Common.Requests;
     using Client;
     using Client.Operations;
-    using Core.Extensions;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using Newtonsoft.Json;
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Jwt.Encrypt;
-    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
     using System;
@@ -33,8 +29,12 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using SimpleAuth;
+    using SimpleAuth.Encrypt;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Signature;
     using Xunit;
-    using JwtConstants = SimpleAuth.Jwt.JwtConstants;
+    using JwtConstants = SimpleAuth.JwtConstants;
 
     public class TokenClientFixture : IClassFixture<TestOauthServerFixture>
     {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core
+namespace SimpleAuth
 {
     using Api.Claims;
     using Api.Claims.Actions;

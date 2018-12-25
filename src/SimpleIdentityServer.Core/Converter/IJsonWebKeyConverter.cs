@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Jwt.Converter
+﻿namespace SimpleAuth.Converter
 {
     using System.Collections.Generic;
     using Shared;

@@ -12,29 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Validators;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.JwtToken
+namespace SimpleAuth.JwtToken
 {
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Jwt.Encrypt;
-    using SimpleAuth.Jwt.Signature;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Security.Cryptography;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Encrypt;
+    using Errors;
+    using Exceptions;
+    using Extensions;
+    using Helpers;
+    using Parameters;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Signature;
+    using Validators;
 
     public class JwtGenerator : IJwtGenerator
     {

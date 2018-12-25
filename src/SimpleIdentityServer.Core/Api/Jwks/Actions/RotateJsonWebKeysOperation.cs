@@ -1,13 +1,11 @@
-﻿using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Api.Jwks.Actions
+﻿namespace SimpleAuth.Api.Jwks.Actions
 {
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Repositories;
+    using System.Linq;
+    using System.Runtime.InteropServices;
+    using System.Security.Cryptography;
+    using System.Threading.Tasks;
+    using Shared;
+    using Shared.Repositories;
 
     public class RotateJsonWebKeysOperation : IRotateJsonWebKeysOperation
     {

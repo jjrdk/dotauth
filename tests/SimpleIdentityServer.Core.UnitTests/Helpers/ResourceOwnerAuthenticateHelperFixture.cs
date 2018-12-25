@@ -1,11 +1,12 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Helpers;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
+    using SimpleAuth.Helpers;
+
     public class ResourceOwnerAuthenticateHelperFixture
     {
         private Mock<IAmrHelper> _amrHelperStub;

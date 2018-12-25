@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Core.Validators
+﻿namespace SimpleAuth.Validators
 {
     using System;
     using System.Collections.Generic;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public interface IClientValidator
     {

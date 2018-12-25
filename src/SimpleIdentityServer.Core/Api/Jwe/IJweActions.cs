@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Api.Jwe
+﻿namespace SimpleAuth.Api.Jwe
 {
     using System.Threading.Tasks;
     using Parameters;

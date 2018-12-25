@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core
+﻿namespace SimpleAuth
 {
     public class Payload
     {

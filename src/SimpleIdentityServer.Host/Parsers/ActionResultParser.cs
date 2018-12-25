@@ -13,10 +13,11 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Routing;
-using SimpleIdentityServer.Core.Results;
 
 namespace SimpleIdentityServer.Host.Parsers
 {
+    using SimpleAuth.Results;
+
     public class ActionResultParser : IActionResultParser
     {
         private readonly IRedirectInstructionParser _redirectInstructionParser;

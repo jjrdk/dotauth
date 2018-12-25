@@ -17,9 +17,9 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe
     using System;
     using System.Threading.Tasks;
     using Moq;
-    using SimpleIdentityServer.Core.Api.Jwe;
-    using SimpleIdentityServer.Core.Api.Jwe.Actions;
-    using SimpleIdentityServer.Core.Parameters;
+    using SimpleAuth.Api.Jwe;
+    using SimpleAuth.Api.Jwe.Actions;
+    using SimpleAuth.Parameters;
     using Xunit;
 
     public class JweActionsFixture

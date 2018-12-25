@@ -2,12 +2,12 @@
 {
     using Client.Configuration;
     using Client.ResourceOwners;
-    using Core.Errors;
-    using Core.Helpers;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Helpers;
     using SimpleAuth.Shared.Requests;
     using Xunit;
 

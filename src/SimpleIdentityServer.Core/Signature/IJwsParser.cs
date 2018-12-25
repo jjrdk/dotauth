@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Jwt.Signature
+﻿namespace SimpleAuth.Signature
 {
     using Shared;
     using Shared.Requests;

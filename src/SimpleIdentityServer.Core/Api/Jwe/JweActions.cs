@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core.Api.Jwe
+namespace SimpleAuth.Api.Jwe
 {
     using System;
     using System.Threading.Tasks;

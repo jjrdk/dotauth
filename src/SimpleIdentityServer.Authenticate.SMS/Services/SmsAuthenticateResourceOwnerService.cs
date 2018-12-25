@@ -1,10 +1,10 @@
-﻿using SimpleIdentityServer.Core.Services;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Services
 {
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Services;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 

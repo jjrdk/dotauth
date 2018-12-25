@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core
+namespace SimpleAuth
 {
     using System.Linq;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using Authenticate;
     using Parameters;
-    using SimpleAuth.Shared;
+    using Shared;
 
     public static class AuthenticationHeaderValueExtensions
     {

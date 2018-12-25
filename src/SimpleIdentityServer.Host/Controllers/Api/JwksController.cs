@@ -15,11 +15,12 @@
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
     using System.Threading.Tasks;
-    using Core.Api.Jwks;
     using Microsoft.AspNetCore.Mvc;
+    using SimpleAuth;
+    using SimpleAuth.Api.Jwks;
     using SimpleAuth.Shared.Requests;
 
-    [Route(Core.CoreConstants.EndPoints.Jwks)]
+    [Route(CoreConstants.EndPoints.Jwks)]
     public class JwksController : Controller
     {
         private readonly IJwksActions _jwksActions;

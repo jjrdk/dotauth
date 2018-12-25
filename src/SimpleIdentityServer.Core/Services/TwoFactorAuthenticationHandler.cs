@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Services
+namespace SimpleAuth.Services
 {
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Shared;
+    using Shared.Models;
 
     internal class TwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandler
     {

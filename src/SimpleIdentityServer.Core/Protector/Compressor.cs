@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
-
-namespace SimpleIdentityServer.Core.Protector
+namespace SimpleAuth.Protector
 {
-    using SimpleAuth.Shared;
+    using System;
+    using System.IO;
+    using System.IO.Compression;
+    using System.Text;
+    using Shared;
 
     public class Compressor : ICompressor
     {

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Core.Api.Jwks;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
+    using SimpleAuth.Api.Jwks;
     using SimpleAuth.Shared.Requests;
 
     [Route(Constants.RouteValues.Jwks)]

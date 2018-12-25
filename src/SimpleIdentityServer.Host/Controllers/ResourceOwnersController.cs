@@ -14,10 +14,6 @@
 
 namespace SimpleIdentityServer.Host.Controllers
 {
-    using Core.Errors;
-    using Core.Exceptions;
-    using Core.Helpers;
-    using Core.WebSite.User.Actions;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -27,12 +23,15 @@ namespace SimpleIdentityServer.Host.Controllers
     using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Core;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Helpers;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
+    using SimpleAuth.WebSite.User.Actions;
 
     [Route(CoreConstants.EndPoints.ResourceOwners)]
     public class ResourceOwnersController : Controller

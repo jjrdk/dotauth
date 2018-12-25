@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Core.Helpers
+﻿namespace SimpleAuth.Helpers
 {
     using System.Threading.Tasks;
     using Parameters;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public interface IConsentHelper
     {

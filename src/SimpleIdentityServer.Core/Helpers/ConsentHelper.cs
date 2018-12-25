@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Parameters;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Helpers
+namespace SimpleAuth.Helpers
 {
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Extensions;
+    using Parameters;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public class ConsentHelper : IConsentHelper
     {

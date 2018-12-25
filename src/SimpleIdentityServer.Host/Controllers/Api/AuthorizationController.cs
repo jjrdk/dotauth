@@ -20,24 +20,24 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Core.Api.Authorization;
-    using Core.Errors;
-    using Core.Exceptions;
-    using Core.JwtToken;
-    using Core.Parameters;
-    using Core.Results;
     using Extensions;
     using Host;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Mvc;
     using Parsers;
-    using Core;
+    using SimpleAuth;
+    using SimpleAuth.Api.Authorization;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.JwtToken;
+    using SimpleAuth.Parameters;
+    using SimpleAuth.Results;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
     using SimpleAuth.Shared.Serializers;
 
-    [Route(Core.CoreConstants.EndPoints.Authorization)]
+    [Route(CoreConstants.EndPoints.Authorization)]
     public class AuthorizationController : Controller
     {
         private readonly IAuthorizationActions _authorizationActions;
@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                         // Add the encoded request into the query string
                         var encryptedRequest = _dataProtector.Protect(authorizationRequest);
                         actionResult.RedirectInstruction.AddParameter(
-                            Core.CoreConstants.StandardAuthorizationResponseNames.AuthorizationCodeName,
+                            CoreConstants.StandardAuthorizationResponseNames.AuthorizationCodeName,
                             encryptedRequest);
                     }
 
@@ -137,7 +137,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
 
         private string GetSessionId()
         {
-            if (!Request.Cookies.ContainsKey(Core.CoreConstants.SESSION_ID))
+            if (!Request.Cookies.ContainsKey(CoreConstants.SESSION_ID))
             {
                 return Guid.NewGuid().ToString();
             }

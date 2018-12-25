@@ -17,9 +17,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
 {
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using SimpleIdentityServer.Core.Repositories;
 
     public class DeleteResourceOwnerActionFixture
     {

@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Security.Claims;
 using Moq;
-using SimpleIdentityServer.Core.Api.Authorization.Actions;
-using SimpleIdentityServer.Core.Api.Authorization.Common;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.Validators;
 using Xunit;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
-    using Logging;
+    using SimpleAuth;
+    using SimpleAuth.Api.Authorization.Actions;
+    using SimpleAuth.Api.Authorization.Common;
+    using SimpleAuth.Common;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Logging;
+    using SimpleAuth.Parameters;
+    using SimpleAuth.Results;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Validators;
     using Client = SimpleAuth.Shared.Models.Client;
 
     public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperationFixture

@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Services;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
+namespace SimpleAuth.WebSite.Authenticate.Actions
 {
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Services;
+    using Shared.Repositories;
 
     internal class GenerateAndSendCodeAction : IGenerateAndSendCodeAction
     {

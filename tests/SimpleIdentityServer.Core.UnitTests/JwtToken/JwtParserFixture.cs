@@ -1,6 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.UnitTests.Fake;
 using System;
 using System.Collections.Generic;
@@ -11,15 +9,16 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
-    using SimpleAuth.Json;
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Jwt.Converter;
-    using SimpleAuth.Jwt.Encrypt;
-    using SimpleAuth.Jwt.Signature;
+    using SimpleAuth;
+    using SimpleAuth.Converter;
+    using SimpleAuth.Encrypt;
+    using SimpleAuth.Errors;
+    using SimpleAuth.JwtToken;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Signature;
 
     public sealed class JwtParserFixture
     {

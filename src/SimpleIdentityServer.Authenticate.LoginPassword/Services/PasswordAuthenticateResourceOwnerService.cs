@@ -1,10 +1,10 @@
-﻿using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Services;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.LoginPassword.Services
 {
+    using SimpleAuth.Helpers;
+    using SimpleAuth.Services;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 
