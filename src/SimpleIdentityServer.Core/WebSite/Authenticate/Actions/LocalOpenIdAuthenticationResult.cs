@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
+﻿namespace SimpleAuth.WebSite.Authenticate.Actions
 {
     using System.Collections.Generic;
     using System.Security.Claims;

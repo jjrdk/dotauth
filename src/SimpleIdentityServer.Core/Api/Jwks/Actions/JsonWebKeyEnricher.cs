@@ -12,16 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-
-namespace SimpleIdentityServer.Core.Api.Jwks.Actions
+namespace SimpleAuth.Api.Jwks.Actions
 {
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Shared;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Runtime.InteropServices;
+    using System.Security.Cryptography;
+    using Shared;
 
     public class JsonWebKeyEnricher : IJsonWebKeyEnricher
     {

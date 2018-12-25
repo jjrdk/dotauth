@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Parameters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace SimpleIdentityServer.Core.Helpers
+namespace SimpleAuth.Helpers
 {
-    using SimpleAuth.Shared.Models;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Parameters;
+    using Shared.Models;
 
     public class ParameterParserHelper : IParameterParserHelper
     {

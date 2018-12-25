@@ -1,12 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Factories;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.WebSite.Consent.Actions;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -15,8 +7,16 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 {
+    using SimpleAuth.Common;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Factories;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.Parameters;
+    using SimpleAuth.Results;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.WebSite.Consent.Actions;
 
     public sealed class DisplayConsentActionFixture
     {

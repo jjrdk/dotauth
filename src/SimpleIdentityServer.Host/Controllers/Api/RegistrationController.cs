@@ -16,14 +16,15 @@ namespace SimpleIdentityServer.Host.Controllers.Api
 {
     using System.Net;
     using System.Threading.Tasks;
-    using Core.Errors;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using SimpleAuth;
+    using SimpleAuth.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Responses;
 
-    [Route(Core.CoreConstants.EndPoints.Registration)]
+    [Route(CoreConstants.EndPoints.Registration)]
     [Authorize("registration")]
     public class RegistrationController : Controller
     {

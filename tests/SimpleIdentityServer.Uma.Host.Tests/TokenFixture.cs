@@ -3,8 +3,6 @@
     using Client.Configuration;
     using Client.Permission;
     using Microsoft.Extensions.DependencyInjection;
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Jwt.Signature;
     using SimpleAuth.Shared;
     using SimpleIdentityServer.Client;
     using SimpleIdentityServer.Client.Operations;
@@ -13,6 +11,8 @@
     using SimpleIdentityServer.Uma.Common.DTOs;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using SimpleAuth;
+    using SimpleAuth.Signature;
     using Xunit;
 
     public class TokenFixture : IClassFixture<TestUmaServerFixture>

@@ -1,7 +1,7 @@
-﻿namespace SimpleIdentityServer.Core.Validators
+﻿namespace SimpleAuth.Validators
 {
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public interface IGrantedTokenValidator
     {

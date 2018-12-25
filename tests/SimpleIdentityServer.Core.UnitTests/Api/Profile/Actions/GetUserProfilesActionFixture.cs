@@ -1,6 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Api.Profile.Actions;
-using SimpleIdentityServer.Core.Exceptions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +7,8 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
 {
     using System.Threading;
+    using SimpleAuth.Api.Profile.Actions;
+    using SimpleAuth.Exceptions;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Parameters;
     using SimpleAuth.Shared.Repositories;

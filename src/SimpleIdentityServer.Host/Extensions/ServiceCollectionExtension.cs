@@ -14,11 +14,11 @@
 
 namespace SimpleIdentityServer.Host.Extensions
 {
-    using Core;
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using SimpleAuth;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.AccountFiltering;
     using SimpleAuth.Shared.Repositories;

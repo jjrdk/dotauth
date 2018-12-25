@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Core.Api.Introspection;
-using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
 using System.Linq;
@@ -25,6 +23,8 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
     using System.Collections.Generic;
+    using SimpleAuth.Api.Introspection;
+    using SimpleAuth.Errors;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
     using SimpleAuth.Shared.Serializers;

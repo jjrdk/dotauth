@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.JwtToken;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Helpers
+namespace SimpleAuth.Helpers
 {
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Threading.Tasks;
+    using Extensions;
+    using JwtToken;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public sealed class ClientHelper : IClientHelper
     {

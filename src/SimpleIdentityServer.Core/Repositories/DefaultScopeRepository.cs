@@ -1,16 +1,14 @@
-﻿using SimpleIdentityServer.Core.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Repositories
+﻿namespace SimpleAuth.Repositories
 {
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Parameters;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Results;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Extensions;
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Repositories;
+    using Shared.Results;
 
     internal sealed class DefaultScopeRepository : IScopeRepository
     {

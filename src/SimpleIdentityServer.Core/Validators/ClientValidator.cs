@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace SimpleIdentityServer.Core.Validators
+namespace SimpleAuth.Validators
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
     using Helpers;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public class ClientValidator : IClientValidator
     {        

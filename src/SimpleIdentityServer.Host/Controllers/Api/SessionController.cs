@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Host.Extensions;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +8,8 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
     using System;
+    using SimpleAuth;
+    using SimpleAuth.JwtToken;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
@@ -30,15 +31,15 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             _jwtParser = jwtParser;
         }
 
-        [HttpGet(Core.CoreConstants.EndPoints.CheckSession)]
+        [HttpGet(CoreConstants.EndPoints.CheckSession)]
         public async Task CheckSession()
         {
             await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.CheckSession.html",
-                    (html) => html.Replace("{cookieName}", Core.CoreConstants.SESSION_ID))
+                    (html) => html.Replace("{cookieName}", CoreConstants.SESSION_ID))
                 .ConfigureAwait(false);
         }
 
-        [HttpGet(Core.CoreConstants.EndPoints.EndSession)]
+        [HttpGet(CoreConstants.EndPoints.EndSession)]
         public async Task RevokeSession()
         {
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName).ConfigureAwait(false);
@@ -48,7 +49,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                 return;
             }
 
-            var url = Core.CoreConstants.EndPoints.EndSessionCallback;
+            var url = CoreConstants.EndPoints.EndSessionCallback;
             if (Request.QueryString.HasValue)
             {
                 url = $"{url}{Request.QueryString.Value}";
@@ -60,7 +61,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             }).ConfigureAwait(false);
         }
 
-        [HttpGet(Core.CoreConstants.EndPoints.EndSessionCallback)]
+        [HttpGet(CoreConstants.EndPoints.EndSessionCallback)]
         public async Task RevokeSessionCallback()
         {
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName).ConfigureAwait(false);
@@ -79,7 +80,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                     new KeyValuePair<string, string[]>(x.Key, x.Value)));
             }
 
-            Response.Cookies.Delete(Core.CoreConstants.SESSION_ID);
+            Response.Cookies.Delete(CoreConstants.SESSION_ID);
             await _authenticationService.SignOutAsync(HttpContext, HostConstants.CookieNames.CookieName, new AuthenticationProperties()).ConfigureAwait(false);
             if (request != null
                 && request.PostLogoutRedirectUri != null

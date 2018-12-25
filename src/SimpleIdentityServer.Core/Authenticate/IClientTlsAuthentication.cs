@@ -1,6 +1,6 @@
-﻿namespace SimpleIdentityServer.Core.Authenticate
+﻿namespace SimpleAuth.Authenticate
 {
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public interface IClientTlsAuthentication
     {

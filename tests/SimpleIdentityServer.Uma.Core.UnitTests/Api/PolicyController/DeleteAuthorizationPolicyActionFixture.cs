@@ -24,7 +24,7 @@ using Xunit;
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
 {
     using Moq;
-    using SimpleIdentityServer.Core.Logging;
+    using SimpleAuth.Logging;
 
     public class DeleteAuthorizationPolicyActionFixture
     {

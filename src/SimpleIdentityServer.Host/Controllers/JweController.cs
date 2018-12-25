@@ -16,10 +16,10 @@ namespace SimpleIdentityServer.Host.Controllers
 {
     using System;
     using System.Threading.Tasks;
-    using Core;
-    using Core.Api.Jwe;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
+    using SimpleAuth;
+    using SimpleAuth.Api.Jwe;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
 

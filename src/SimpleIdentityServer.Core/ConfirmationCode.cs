@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Jwt
+﻿namespace SimpleAuth
 {
     using System;
 

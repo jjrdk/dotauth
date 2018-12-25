@@ -13,18 +13,18 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Api.Token.Actions;
-using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Parameters;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Api.Token.Actions;
+    using SimpleAuth.Authenticate;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Parameters;
     using SimpleAuth.Shared.Models;
 
     public class RevokeTokenActionFixture

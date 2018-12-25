@@ -1,12 +1,13 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Api.Jwks;
-using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks
 {
+    using SimpleAuth.Api.Jwks;
+    using SimpleAuth.Api.Jwks.Actions;
+
     public sealed class JwksActionsFixture
     {
         private Mock<IGetSetOfPublicKeysUsedToValidateJwsAction> _getSetOfPublicKeysUsedToValidateJwsActionStub;

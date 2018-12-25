@@ -12,23 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core.Api.Token.Actions
+namespace SimpleAuth.Api.Token.Actions
 {
-    using SimpleIdentityServer.Core.Authenticate;
-    using SimpleIdentityServer.Core.Errors;
-    using SimpleIdentityServer.Core.Exceptions;
-    using SimpleIdentityServer.Core.Helpers;
-    using SimpleIdentityServer.Core.JwtToken;
-    using SimpleIdentityServer.Core.Parameters;
-    using SimpleIdentityServer.Core.Validators;
     using System;
     using System.Net.Http.Headers;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using Authenticate;
+    using Errors;
+    using Exceptions;
+    using Helpers;
+    using JwtToken;
     using Logging;
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Shared.Models;
+    using Parameters;
+    using Shared.Models;
+    using Validators;
 
     public class GetTokenByResourceOwnerCredentialsGrantTypeAction : IGetTokenByResourceOwnerCredentialsGrantTypeAction
     {

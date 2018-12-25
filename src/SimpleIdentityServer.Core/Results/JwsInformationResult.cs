@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core.Results
+namespace SimpleAuth.Results
 {
     using System.Collections.Generic;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
+    using Shared;
+    using Shared.Requests;
 
     public class JwsInformationResult
     {

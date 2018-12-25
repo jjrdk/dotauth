@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core.Api.Scopes.Actions
+namespace SimpleAuth.Api.Scopes.Actions
 {
     using System;
     using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Logging;
-    using SimpleAuth.Shared.Repositories;
+    using Shared.Repositories;
 
     internal class DeleteScopeOperation : IDeleteScopeOperation
     {

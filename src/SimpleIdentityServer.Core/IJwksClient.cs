@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Core
+﻿namespace SimpleAuth
 {
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Requests;
+    using Shared.Requests;
 
     public interface IJwksClient
     {

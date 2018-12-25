@@ -14,16 +14,6 @@
 
 namespace SimpleIdentityServer.Host.Controllers
 {
-    using Core;
-    using Core.Api.Profile;
-    using Core.Errors;
-    using Core.Exceptions;
-    using Core.Extensions;
-    using Core.Services;
-    using Core.Translation;
-    using Core.WebSite.Authenticate;
-    using Core.WebSite.Authenticate.Common;
-    using Core.WebSite.User.Actions;
     using Extensions;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
@@ -41,7 +31,18 @@ namespace SimpleIdentityServer.Host.Controllers
     using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Core.Logging;
+    using SimpleAuth;
+    using SimpleAuth.Api.Profile;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Logging;
+    using SimpleAuth.Results;
+    using SimpleAuth.Services;
+    using SimpleAuth.Translation;
+    using SimpleAuth.WebSite.Authenticate;
+    using SimpleAuth.WebSite.Authenticate.Common;
+    using SimpleAuth.WebSite.User.Actions;
     using ViewModels;
     using Website;
 
@@ -622,7 +623,7 @@ namespace SimpleIdentityServer.Host.Controllers
             }
         }
 
-        protected void LogAuthenticateUser(Core.Results.EndpointResult act, string processId)
+        protected void LogAuthenticateUser(EndpointResult act, string processId)
         {
             if (string.IsNullOrWhiteSpace(processId))
             {

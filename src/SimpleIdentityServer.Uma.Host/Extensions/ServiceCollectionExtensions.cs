@@ -15,7 +15,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Uma.Core;
 using System;
 using System.Collections.Generic;
@@ -24,9 +23,9 @@ using System.Security.Claims;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Logging;
     using SimpleAuth.Shared.Models;
-    using SimpleIdentityServer.Core.Logging;
 
     public static class ServiceCollectionExtensions
     {

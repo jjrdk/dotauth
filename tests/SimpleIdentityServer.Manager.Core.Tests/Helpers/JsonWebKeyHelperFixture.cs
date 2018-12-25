@@ -24,13 +24,13 @@ using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Helpers
 {
-    using SimpleAuth.Json;
-    using SimpleAuth.Jwt.Converter;
+    using SimpleAuth;
+    using SimpleAuth.Converter;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Helpers;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
-    using SimpleIdentityServer.Core.Errors;
-    using SimpleIdentityServer.Core.Exceptions;
-    using SimpleIdentityServer.Core.Helpers;
 
     public class JsonWebKeyHelperFixture
     {

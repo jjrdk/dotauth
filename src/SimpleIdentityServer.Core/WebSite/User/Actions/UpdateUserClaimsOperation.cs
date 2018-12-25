@@ -12,18 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.WebSite.User.Actions
+namespace SimpleAuth.WebSite.User.Actions
 {
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Exceptions;
+    using Shared.Models;
+    using Shared.Repositories;
 
     internal class UpdateUserClaimsOperation : IUpdateUserClaimsOperation
     {

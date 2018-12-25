@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Jwt.Encrypt.Encryption
+namespace SimpleAuth.Encrypt.Encryption
 {
     using System;
     using System.Security.Cryptography;
     using System.Text;
-    using Json;
     using Shared;
 
     public class AesEncryptionWithHmac : IEncryption

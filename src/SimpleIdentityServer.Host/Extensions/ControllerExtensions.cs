@@ -14,7 +14,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Host.Parsers;
 using System;
 using System.IO;
@@ -22,10 +21,11 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ActionResult = Microsoft.AspNetCore.Mvc.ActionResult;
-using ResponseMode = SimpleIdentityServer.Core.Parameters.ResponseMode;
+using ResponseMode = SimpleAuth.Parameters.ResponseMode;
 
 namespace SimpleIdentityServer.Host.Extensions
 {
+    using SimpleAuth.Results;
     using SimpleAuth.Shared.Requests;
 
     public static class ControllerExtensions
@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Host.Extensions
 
         public static ActionResult CreateRedirectionFromActionResult(
             this Controller controller,
-            Core.Results.EndpointResult endpointResult,
+            EndpointResult endpointResult,
             AuthorizationRequest authorizationRequest)
         {
             var actionResultParser = ActionResultParserFactory.CreateActionResultParser();

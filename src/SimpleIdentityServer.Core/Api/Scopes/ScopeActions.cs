@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core.Api.Scopes
+namespace SimpleAuth.Api.Scopes
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Actions;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Parameters;
-    using SimpleAuth.Shared.Results;
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Results;
 
     internal class ScopeActions : IScopeActions
     {

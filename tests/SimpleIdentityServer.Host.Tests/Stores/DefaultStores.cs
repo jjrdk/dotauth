@@ -19,7 +19,7 @@ using System.Security.Cryptography;
 namespace SimpleIdentityServer.Host.Tests.Stores
 {
     using System;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 

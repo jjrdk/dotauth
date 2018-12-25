@@ -1,7 +1,7 @@
-﻿namespace SimpleIdentityServer.Core.Api.Jws.Actions
+﻿namespace SimpleAuth.Api.Jws.Actions
 {
     using System.Collections.Generic;
-    using SimpleAuth.Shared;
+    using Shared;
 
     public interface IJsonWebKeyEnricher
     {

@@ -13,14 +13,7 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.UnitTests.Fake;
-using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,13 +24,20 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Jwt.Encrypt;
-    using SimpleAuth.Jwt.Encrypt.Encryption;
-    using SimpleAuth.Jwt.Signature;
+    using SimpleAuth;
+    using SimpleAuth.Encrypt;
+    using SimpleAuth.Encrypt.Encryption;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.JwtToken;
+    using SimpleAuth.Parameters;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Signature;
+    using SimpleAuth.Validators;
     using Client = SimpleAuth.Shared.Models.Client;
 
     public class JwtGeneratorFixture

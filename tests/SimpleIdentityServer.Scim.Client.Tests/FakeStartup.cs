@@ -23,11 +23,11 @@ using System.Reflection;
 
 namespace SimpleIdentityServer.Scim.Client.Tests
 {
+    using SimpleAuth;
+    using SimpleAuth.Logging;
+    using SimpleAuth.Services;
     using SimpleAuth.Shared;
-    using SimpleIdentityServer.Core;
-    using SimpleIdentityServer.Core.Logging;
-    using SimpleIdentityServer.Core.Services;
-    using SimpleIdentityServer.Core.WebSite.User.Actions;
+    using SimpleAuth.WebSite.User.Actions;
 
     public class FakeStartup
     {

@@ -1,11 +1,10 @@
-﻿using SimpleIdentityServer.Core.Exceptions;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Api.Profile.Actions
+﻿namespace SimpleAuth.Api.Profile.Actions
 {
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Threading.Tasks;
+    using Exceptions;
+    using Shared.Models;
+    using Shared.Repositories;
 
     internal sealed class LinkProfileAction : ILinkProfileAction
     {

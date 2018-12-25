@@ -17,8 +17,6 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using SimpleIdentityServer.Core.Services;
-    using SimpleIdentityServer.Core.WebSite.User.Actions;
     using System;
     using System.Linq;
     using System.Linq.Expressions;
@@ -26,10 +24,12 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.WebSite.User.Actions;
 
     [Route(Core.Constants.RoutePaths.UsersController)]
     public class UsersController : Controller

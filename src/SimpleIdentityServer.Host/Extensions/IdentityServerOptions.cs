@@ -14,7 +14,7 @@
 
 namespace SimpleIdentityServer.Host.Extensions
 {
-    using Core;
+    using SimpleAuth;
 
     public class IdentityServerOptions
     {

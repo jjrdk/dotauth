@@ -12,25 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Api.Token.Actions;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Validators;
-using System;
-using System.Net.Http.Headers;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Api.Token
+namespace SimpleAuth.Api.Token
 {
+    using System;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
+    using Actions;
     using Authenticate;
     using Errors;
+    using Exceptions;
     using Helpers;
     using Logging;
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Events.OAuth;
-    using SimpleAuth.Shared.Models;
+    using Parameters;
+    using Shared;
+    using Shared.Events.OAuth;
+    using Shared.Models;
+    using Validators;
 
     public class TokenActions : ITokenActions
     {

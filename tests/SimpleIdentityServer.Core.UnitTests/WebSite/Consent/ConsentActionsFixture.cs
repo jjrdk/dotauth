@@ -1,13 +1,14 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.WebSite.Consent;
-using SimpleIdentityServer.Core.WebSite.Consent.Actions;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 {
+    using SimpleAuth.Parameters;
+    using SimpleAuth.WebSite.Consent;
+    using SimpleAuth.WebSite.Consent.Actions;
+
     public sealed class ConsentActionsFixture
     {
         private Mock<IDisplayConsentAction> _displayConsentActionFake;

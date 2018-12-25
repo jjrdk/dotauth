@@ -15,13 +15,13 @@
 namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 {
     using Newtonsoft.Json;
-    using Repositories;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Parameters;

@@ -1,6 +1,5 @@
 ﻿namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 {
-    using Core.WebSite.User.Actions;
     using Host.Controllers;
     using Host.ViewModels;
     using Microsoft.AspNetCore.Authentication;
@@ -10,14 +9,6 @@
     using Microsoft.AspNetCore.Mvc.Routing;
     using Actions;
     using ViewModels;
-    using Core;
-    using Core.Api.Profile;
-    using Core.Exceptions;
-    using Core.Extensions;
-    using SimpleIdentityServer.Core.Services;
-    using Core.Translation;
-    using SimpleIdentityServer.Core.WebSite.Authenticate;
-    using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
     using Host.Extensions;
     using System;
     using System.Collections.Generic;
@@ -25,11 +16,20 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Core.Logging;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Api.Profile;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Logging;
+    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Translation;
+    using SimpleAuth.WebSite.Authenticate;
+    using SimpleAuth.WebSite.Authenticate.Common;
+    using SimpleAuth.WebSite.User.Actions;
 
     [Area(SmsConstants.AMR)]
     public class AuthenticateController : BaseAuthenticateController
@@ -165,7 +165,7 @@
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
                     "SMS authentication cannot be performed");
             }
 
@@ -196,7 +196,7 @@
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
                     "SMS authentication cannot be performed");
             }
 

@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Core.Parameters
+namespace SimpleAuth.Parameters
 {
+    using System.Collections.Generic;
+
     public sealed class ResourceOwnerGrantTypeParameter : GrantTypeParameter
     {
         public string Scope { get; set; }

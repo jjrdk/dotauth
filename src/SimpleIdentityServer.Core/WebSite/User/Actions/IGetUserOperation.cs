@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Core.WebSite.User.Actions
+﻿namespace SimpleAuth.WebSite.User.Actions
 {
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public interface IGetUserOperation
     {

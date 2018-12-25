@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Api.Token.Actions
+﻿namespace SimpleAuth.Api.Token.Actions
 {
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;

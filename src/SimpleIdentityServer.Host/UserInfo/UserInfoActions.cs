@@ -17,9 +17,8 @@ namespace SimpleIdentityServer.Host.UserInfo
     using System;
     using System.Threading.Tasks;
     using Actions;
-    using Core;
-    using Core.Exceptions;
     using Microsoft.AspNetCore.Mvc;
+    using SimpleAuth.Exceptions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Events.Openid;
 

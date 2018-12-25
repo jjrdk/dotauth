@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
 {
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 

@@ -1,11 +1,11 @@
-﻿namespace SimpleIdentityServer.Core.Api.Claims.Actions
+﻿namespace SimpleAuth.Api.Claims.Actions
 {
     using System;
     using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using SimpleAuth.Shared.Parameters;
-    using SimpleAuth.Shared.Repositories;
+    using Shared.Parameters;
+    using Shared.Repositories;
 
     public class AddClaimAction : IAddClaimAction
     {

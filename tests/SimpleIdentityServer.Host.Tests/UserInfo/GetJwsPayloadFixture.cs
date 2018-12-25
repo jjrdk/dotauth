@@ -16,17 +16,17 @@ namespace SimpleIdentityServer.Host.Tests.UserInfo
 {
     using System;
     using System.Threading.Tasks;
-    using Core.Errors;
-    using Core.Exceptions;
-    using Core.JwtToken;
-    using Core.Validators;
     using Host.UserInfo.Actions;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.JwtToken;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Validators;
     using Xunit;
 
     public sealed class GetJwsPayloadFixture

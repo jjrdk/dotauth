@@ -13,16 +13,17 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.JwtToken;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
+    using SimpleAuth;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.JwtToken;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 

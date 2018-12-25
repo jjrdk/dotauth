@@ -1,10 +1,10 @@
-﻿namespace SimpleIdentityServer.Core.Services
+﻿namespace SimpleAuth.Services
 {
     using System;
-    using System.Threading.Tasks;
     using System.Collections.Generic;
     using System.Security.Claims;
-    using SimpleAuth.Shared.DTOs;
+    using System.Threading.Tasks;
+    using Shared.DTOs;
 
     public class DefaultSubjectBuilder : ISubjectBuilder
     {

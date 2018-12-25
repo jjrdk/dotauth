@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Api.Authorization;
-using SimpleIdentityServer.Core.Parameters;
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Core
+namespace SimpleAuth
 {
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Shared.Models;
+    using System.Collections.Generic;
+    using Api.Authorization;
+    using Parameters;
+    using Shared.Models;
 
     public static class CoreConstants
     {

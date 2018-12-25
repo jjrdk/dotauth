@@ -18,7 +18,7 @@ using System.Security.Cryptography;
 namespace SimpleIdentityServer.Core.UnitTests.Fake
 {
     using System;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 

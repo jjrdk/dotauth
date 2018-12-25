@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Helpers;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace SimpleIdentityServer.Core.Validators
+namespace SimpleAuth.Validators
 {
-    using SimpleAuth.Shared.Models;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Errors;
+    using Helpers;
+    using Shared.Models;
 
     internal class ScopeValidator : IScopeValidator
     {

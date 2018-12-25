@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Core.Api.Profile
+﻿namespace SimpleAuth.Api.Profile
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public interface IProfileActions
     {

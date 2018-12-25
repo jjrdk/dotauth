@@ -14,7 +14,6 @@
 
 namespace SimpleIdentityServer.Manager.Host.Tests
 {
-    using Core;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -23,8 +22,8 @@ namespace SimpleIdentityServer.Manager.Host.Tests
     using SimpleIdentityServer.Host.Extensions;
     using System;
     using System.Reflection;
-    using Core.Logging;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Logging;
 
     public class FakeStartup : IStartup
     {

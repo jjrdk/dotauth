@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Factories
+﻿namespace SimpleAuth.Factories
 {
     using Results;
 

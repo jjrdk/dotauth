@@ -3,12 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using SimpleIdentityServer.Core.Api.Profile;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.UserManagement.ViewModels;
@@ -20,9 +14,15 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.UserManagement.Controllers
 {
-    using Core.WebSite.User.Actions;
     using Host;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Api.Profile;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Services;
+    using SimpleAuth.Translation;
+    using SimpleAuth.WebSite.User.Actions;
 
     [Area("UserManagement")]
     [Authorize("Connected")]
@@ -386,27 +386,27 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             var translations = await _translationManager.GetTranslationsAsync(uiLocales,
                     new List<string>
                     {
-                        Core.CoreConstants.StandardTranslationCodes.LoginCode,
-                        Core.CoreConstants.StandardTranslationCodes.EditResourceOwner,
-                        Core.CoreConstants.StandardTranslationCodes.NameCode,
-                        Core.CoreConstants.StandardTranslationCodes.YourName,
-                        Core.CoreConstants.StandardTranslationCodes.PasswordCode,
-                        Core.CoreConstants.StandardTranslationCodes.YourPassword,
-                        Core.CoreConstants.StandardTranslationCodes.Email,
-                        Core.CoreConstants.StandardTranslationCodes.YourEmail,
-                        Core.CoreConstants.StandardTranslationCodes.ConfirmCode,
-                        Core.CoreConstants.StandardTranslationCodes.TwoAuthenticationFactor,
-                        Core.CoreConstants.StandardTranslationCodes.UserIsUpdated,
-                        Core.CoreConstants.StandardTranslationCodes.Phone,
-                        Core.CoreConstants.StandardTranslationCodes.HashedPassword,
-                        Core.CoreConstants.StandardTranslationCodes.CreateResourceOwner,
-                        Core.CoreConstants.StandardTranslationCodes.Credentials,
-                        Core.CoreConstants.StandardTranslationCodes.RepeatPassword,
-                        Core.CoreConstants.StandardTranslationCodes.Claims,
-                        Core.CoreConstants.StandardTranslationCodes.UserIsCreated,
-                        Core.CoreConstants.StandardTranslationCodes.TwoFactor,
-                        Core.CoreConstants.StandardTranslationCodes.NoTwoFactorAuthenticator,
-                        Core.CoreConstants.StandardTranslationCodes.NoTwoFactorAuthenticatorSelected
+                        CoreConstants.StandardTranslationCodes.LoginCode,
+                        CoreConstants.StandardTranslationCodes.EditResourceOwner,
+                        CoreConstants.StandardTranslationCodes.NameCode,
+                        CoreConstants.StandardTranslationCodes.YourName,
+                        CoreConstants.StandardTranslationCodes.PasswordCode,
+                        CoreConstants.StandardTranslationCodes.YourPassword,
+                        CoreConstants.StandardTranslationCodes.Email,
+                        CoreConstants.StandardTranslationCodes.YourEmail,
+                        CoreConstants.StandardTranslationCodes.ConfirmCode,
+                        CoreConstants.StandardTranslationCodes.TwoAuthenticationFactor,
+                        CoreConstants.StandardTranslationCodes.UserIsUpdated,
+                        CoreConstants.StandardTranslationCodes.Phone,
+                        CoreConstants.StandardTranslationCodes.HashedPassword,
+                        CoreConstants.StandardTranslationCodes.CreateResourceOwner,
+                        CoreConstants.StandardTranslationCodes.Credentials,
+                        CoreConstants.StandardTranslationCodes.RepeatPassword,
+                        CoreConstants.StandardTranslationCodes.Claims,
+                        CoreConstants.StandardTranslationCodes.UserIsCreated,
+                        CoreConstants.StandardTranslationCodes.TwoFactor,
+                        CoreConstants.StandardTranslationCodes.NoTwoFactorAuthenticator,
+                        CoreConstants.StandardTranslationCodes.NoTwoFactorAuthenticatorSelected
                     })
                 .ConfigureAwait(false);
 

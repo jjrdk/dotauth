@@ -21,10 +21,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Errors;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
+    using SimpleAuth.Errors;
     using SimpleAuth.Shared.Responses;
 
     [Route(Constants.RouteValues.Permission)]

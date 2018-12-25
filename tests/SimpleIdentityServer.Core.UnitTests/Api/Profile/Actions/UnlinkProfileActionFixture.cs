@@ -1,6 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Api.Profile.Actions;
-using SimpleIdentityServer.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +8,9 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
 {
     using System.Threading;
+    using SimpleAuth.Api.Profile.Actions;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 
@@ -38,8 +39,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
                         var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _unlinkProfileAction.Execute(LocalSubject, ExternalSubject)).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
-            Assert.Equal(Errors.ErrorCodes.InternalError, exception.Code);
-            Assert.Equal(string.Format(Errors.ErrorDescriptions.TheResourceOwnerDoesntExist, LocalSubject), exception.Message);
+            Assert.Equal(ErrorCodes.InternalError, exception.Code);
+            Assert.Equal(string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, LocalSubject), exception.Message);
         }
 
         [Fact]
@@ -54,8 +55,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
                         var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _unlinkProfileAction.Execute(LocalSubject, ExternalSubject)).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
-            Assert.Equal(Errors.ErrorCodes.InternalError, exception.Code);
-            Assert.Equal(Errors.ErrorDescriptions.NotAuthorizedToRemoveTheProfile, exception.Message);
+            Assert.Equal(ErrorCodes.InternalError, exception.Code);
+            Assert.Equal(ErrorDescriptions.NotAuthorizedToRemoveTheProfile, exception.Message);
 
         }
 

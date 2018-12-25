@@ -1,10 +1,9 @@
-﻿using System;
-using System.Security.Cryptography;
-using System.Text;
-
-namespace SimpleIdentityServer.Core.Helpers
+﻿namespace SimpleAuth.Helpers
 {
-    using SimpleAuth.Shared;
+    using System;
+    using System.Security.Cryptography;
+    using System.Text;
+    using Shared;
 
     public static class PasswordHelper
     {

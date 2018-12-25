@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +23,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Validators;
 
     public class ClientValidatorFixture
     {

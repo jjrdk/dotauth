@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.OAuth2Introspection
 {
     using System.Globalization;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
     using SimpleAuth.Shared;
 
     public class OAuth2IntrospectionHandler : AuthenticationHandler<OAuth2IntrospectionOptions>

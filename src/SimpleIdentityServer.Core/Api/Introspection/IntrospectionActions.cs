@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Api.Introspection.Actions;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.Validators;
-using System;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Api.Introspection
+namespace SimpleAuth.Api.Introspection
 {
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Events.OAuth;
+    using System;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
+    using Actions;
+    using Exceptions;
+    using Parameters;
+    using Results;
+    using Shared;
+    using Shared.Events.OAuth;
+    using Validators;
 
     public class IntrospectionActions : IIntrospectionActions
     {

@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core
+namespace SimpleAuth
 {
-    using Api.Discovery;
-    using Newtonsoft.Json;
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Requests;
+    using Api.Discovery;
+    using Newtonsoft.Json;
+    using Shared.Requests;
 
     public class JwksClient : IJwksClient
     {

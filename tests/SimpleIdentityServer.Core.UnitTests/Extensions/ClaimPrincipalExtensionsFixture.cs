@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
-
-using SimpleIdentityServer.Core.Extensions;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Extensions
 {
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Extensions;
 
     public sealed class ClaimPrincipalExtensionsFixture
     {

@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Api.Profile.Actions;
-using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -22,10 +20,12 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
     using System.Threading;
-    using Logging;
+    using SimpleAuth.Api.Profile.Actions;
+    using SimpleAuth.Logging;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.WebSite.User.Actions;
 
     public class AddUserOperationFixture
     {

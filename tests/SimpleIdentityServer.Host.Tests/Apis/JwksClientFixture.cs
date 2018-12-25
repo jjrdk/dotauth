@@ -16,14 +16,13 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 {
     using Client;
     using Client.Operations;
-    using Core;
-    using Core.Api.Discovery;
-    using Core.Repositories;
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Api.Discovery;
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Models;
     using Xunit;
 

@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Core.Api.Profile;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.UserManagement.Extensions;
 using System.Linq;
 using System.Net;
@@ -11,6 +8,9 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.UserManagement.Controllers
 {
     using Common.Requests;
+    using SimpleAuth.Api.Profile;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Responses;
 
     [Route("profiles")]

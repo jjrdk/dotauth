@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Exceptions
+﻿namespace SimpleAuth.Exceptions
 {
     public class ClaimRequiredException : IdentityServerException
     {

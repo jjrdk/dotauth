@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-
-namespace SimpleIdentityServer.Core.Extensions
+﻿namespace SimpleAuth.Extensions
 {
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using Shared;
+    using Shared.Models;
 
     internal static class CloneExtensions
     {

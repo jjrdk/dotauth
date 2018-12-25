@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Core.Validators
+﻿namespace SimpleAuth.Validators
 {
     using System.Threading.Tasks;
     using Parameters;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public interface IAuthorizationCodeGrantTypeParameterAuthEdpValidator
     {

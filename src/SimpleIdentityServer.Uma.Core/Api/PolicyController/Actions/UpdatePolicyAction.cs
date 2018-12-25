@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
-    using SimpleIdentityServer.Core.Logging;
+    using SimpleAuth.Logging;
 
     internal class UpdatePolicyAction : IUpdatePolicyAction
     {

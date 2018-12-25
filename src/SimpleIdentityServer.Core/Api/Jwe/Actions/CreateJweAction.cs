@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core.Api.Jwe.Actions
+namespace SimpleAuth.Api.Jwe.Actions
 {
     using System;
     using System.Threading.Tasks;
+    using Encrypt;
     using Errors;
     using Exceptions;
     using Helpers;
     using Parameters;
-    using SimpleAuth.Jwt.Encrypt;
 
     public class CreateJweAction : ICreateJweAction
     {

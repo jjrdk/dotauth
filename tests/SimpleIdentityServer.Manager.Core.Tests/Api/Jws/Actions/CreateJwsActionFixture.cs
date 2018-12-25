@@ -17,14 +17,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
     using Moq;
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Jwt.Signature;
+    using SimpleAuth.Api.Jws.Actions;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.Parameters;
     using SimpleAuth.Shared;
+    using SimpleAuth.Signature;
     using Xunit;
-    using SimpleIdentityServer.Core.Api.Jws.Actions;
-    using SimpleIdentityServer.Core.Errors;
-    using SimpleIdentityServer.Core.Exceptions;
-    using SimpleIdentityServer.Core.Helpers;
-    using SimpleIdentityServer.Core.Parameters;
 
     public class CreateJwsActionFixture
     {

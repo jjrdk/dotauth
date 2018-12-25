@@ -1,7 +1,7 @@
-﻿using SimpleIdentityServer.Core;
-
-namespace SimpleIdentityServer.Uma.Host
+﻿namespace SimpleIdentityServer.Uma.Host
 {
+    using SimpleAuth;
+
     public class AuthorizationServerOptions
     {
         public Core.UmaConfigurationOptions UmaConfigurationOptions { get; set; }

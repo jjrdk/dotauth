@@ -12,20 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.JwtToken;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Authenticate
+namespace SimpleAuth.Authenticate
 {
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Jwt.Signature;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Errors;
+    using Extensions;
+    using JwtToken;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Signature;
 
     public class ClientAssertionAuthentication : IClientAssertionAuthentication
     {

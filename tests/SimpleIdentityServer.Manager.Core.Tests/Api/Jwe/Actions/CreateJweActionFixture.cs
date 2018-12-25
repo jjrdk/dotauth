@@ -17,14 +17,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
     using Moq;
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Jwt.Encrypt;
+    using SimpleAuth.Api.Jwe.Actions;
+    using SimpleAuth.Encrypt;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.Parameters;
     using SimpleAuth.Shared;
     using Xunit;
-    using SimpleIdentityServer.Core.Api.Jwe.Actions;
-    using SimpleIdentityServer.Core.Errors;
-    using SimpleIdentityServer.Core.Exceptions;
-    using SimpleIdentityServer.Core.Helpers;
-    using SimpleIdentityServer.Core.Parameters;
 
     public class CreateJweActionFixture
     {

@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Logging
+﻿namespace SimpleAuth.Logging
 {
     using Microsoft.Extensions.Logging;
 

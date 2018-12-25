@@ -14,10 +14,6 @@
 
 
 using Moq;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -27,10 +23,14 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
     using System.Threading;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.WebSite.Authenticate.Actions;
 
     public class GenerateAndSendCodeActionFixture
     {

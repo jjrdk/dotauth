@@ -1,12 +1,11 @@
-﻿using SimpleIdentityServer.Core.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Helpers
+﻿namespace SimpleAuth.Helpers
 {
-    using SimpleAuth.Shared.Models;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Services;
+    using Shared.Models;
 
     internal class ResourceOwnerAuthenticateHelper : IResourceOwnerAuthenticateHelper
     {

@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Extensions;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Api.Jwks.Actions
+namespace SimpleAuth.Api.Jwks.Actions
 {
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Repositories;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Extensions;
+    using Shared;
+    using Shared.Repositories;
 
     public class GetSetOfPublicKeysUsedToValidateJwsAction : IGetSetOfPublicKeysUsedToValidateJwsAction
     {

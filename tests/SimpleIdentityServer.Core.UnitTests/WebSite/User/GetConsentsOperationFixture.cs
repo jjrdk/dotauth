@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -22,9 +21,10 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.WebSite.User.Actions;
 
     public class GetConsentsOperationFixture
     {

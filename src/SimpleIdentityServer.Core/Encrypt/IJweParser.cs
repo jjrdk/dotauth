@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Jwt.Encrypt
+﻿namespace SimpleAuth.Encrypt
 {
     using Shared;
 

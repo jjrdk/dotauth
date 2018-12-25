@@ -26,7 +26,7 @@ using Xunit;
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
 {
     using Moq;
-    using SimpleIdentityServer.Core.Logging;
+    using SimpleAuth.Logging;
 
     public class UpdateResourceSetActionFixture
     {

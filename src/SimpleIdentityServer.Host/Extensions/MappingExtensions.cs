@@ -14,13 +14,14 @@
 
 namespace SimpleIdentityServer.Host.Extensions
 {
-    using Core.Parameters;
-    using Core.Results;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using SimpleAuth;
+    using SimpleAuth.Parameters;
+    using SimpleAuth.Results;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Parameters;
@@ -347,8 +348,8 @@ namespace SimpleIdentityServer.Host.Extensions
                 result.Claims = claimsParameter;
 
                 var obj = JObject.Parse(request.Claims);
-                var idToken = obj.GetValue(Core.CoreConstants.StandardClaimParameterNames.IdTokenName);
-                var userInfo = obj.GetValue(Core.CoreConstants.StandardClaimParameterNames.UserInfoName);
+                var idToken = obj.GetValue(CoreConstants.StandardClaimParameterNames.IdTokenName);
+                var userInfo = obj.GetValue(CoreConstants.StandardClaimParameterNames.UserInfoName);
                 if (idToken != null)
                 {
                     claimsParameter.IdToken = new List<ClaimParameter>();
@@ -455,9 +456,9 @@ namespace SimpleIdentityServer.Host.Extensions
         public static AuthorizationRequest ToAuthorizationRequest(this JwsPayload jwsPayload)
         {
             var displayVal =
-                jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.DisplayName);
+                jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.DisplayName);
             var responseMode =
-                jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.ResponseModeName);
+                jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.ResponseModeName);
             if (string.IsNullOrWhiteSpace(displayVal) || !Enum.TryParse(displayVal, out DisplayModes displayEnum))
             {
                 displayEnum = DisplayModes.Page;
@@ -470,23 +471,23 @@ namespace SimpleIdentityServer.Host.Extensions
 
             var result = new AuthorizationRequest
             {
-                AcrValues = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.AcrValuesName),
-                Claims = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.ClaimsName),
-                ClientId = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName),
+                AcrValues = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.AcrValuesName),
+                Claims = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.ClaimsName),
+                ClientId = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName),
                 Display = displayEnum,
-                Prompt = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.PromptName),
-                IdTokenHint = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.IdTokenHintName),
-                MaxAge = jwsPayload.GetDoubleClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.MaxAgeName),
-                Nonce = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
-                ResponseType = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
-                State = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.StateName),
-                LoginHint = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.LoginHintName),
-                RedirectUri = new Uri(jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName)),
-                Request = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.RequestName),
-                RequestUri = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.RequestUriName),
-                Scope = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName),
+                Prompt = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.PromptName),
+                IdTokenHint = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.IdTokenHintName),
+                MaxAge = jwsPayload.GetDoubleClaim(CoreConstants.StandardAuthorizationRequestParameterNames.MaxAgeName),
+                Nonce = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
+                ResponseType = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
+                State = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.StateName),
+                LoginHint = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.LoginHintName),
+                RedirectUri = new Uri(jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName)),
+                Request = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.RequestName),
+                RequestUri = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.RequestUriName),
+                Scope = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName),
                 ResponseMode = responseModeEnum,
-                UiLocales = jwsPayload.GetStringClaim(Core.CoreConstants.StandardAuthorizationRequestParameterNames.UiLocalesName),
+                UiLocales = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.UiLocalesName),
             };
 
             return result;

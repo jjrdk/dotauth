@@ -1,9 +1,9 @@
 ﻿namespace SimpleIdentityServer.Manager.Core.Tests.Validators
 {
-    using SimpleIdentityServer.Core.Exceptions;
-    using SimpleIdentityServer.Core.Parameters;
-    using SimpleIdentityServer.Core.Validators;
     using System;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Parameters;
+    using SimpleAuth.Validators;
     using Xunit;
 
     public class AddUserParameterValidatorFixture

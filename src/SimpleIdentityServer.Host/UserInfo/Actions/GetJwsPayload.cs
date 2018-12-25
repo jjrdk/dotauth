@@ -18,19 +18,18 @@ namespace SimpleIdentityServer.Host.UserInfo.Actions
     using System.Buffers;
     using System.Net;
     using System.Threading.Tasks;
-    using Core.Errors;
-    using Core.Exceptions;
-    using Core.Extensions;
-    using Core.JwtToken;
-    using Core.Validators;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Formatters;
     using Microsoft.Net.Http.Headers;
     using Newtonsoft.Json;
-    using SimpleAuth.Json;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.JwtToken;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Validators;
 
     public class GetJwsPayload : IGetJwsPayload
     {

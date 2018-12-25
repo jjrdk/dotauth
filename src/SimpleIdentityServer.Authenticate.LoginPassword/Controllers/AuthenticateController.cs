@@ -4,16 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using SimpleIdentityServer.Authenticate.LoginPassword.ViewModels;
-using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Api.Profile;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Core.Translation;
-using SimpleIdentityServer.Core.WebSite.Authenticate;
-using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Host.Extensions;
 using System;
 using System.Globalization;
@@ -23,14 +13,23 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
 {
-    using Core.Logging;
-    using Core.WebSite.User.Actions;
     using Host;
     using Host.Controllers;
     using Host.ViewModels;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Api.Profile;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.Logging;
+    using SimpleAuth.Parameters;
+    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Translation;
+    using SimpleAuth.WebSite.Authenticate;
+    using SimpleAuth.WebSite.Authenticate.Common;
+    using SimpleAuth.WebSite.User.Actions;
     using Constants = Constants;
 
     [Area(Constants.AMR)]

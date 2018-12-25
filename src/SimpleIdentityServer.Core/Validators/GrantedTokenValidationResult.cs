@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Validators
+﻿namespace SimpleAuth.Validators
 {
     public class GrantedTokenValidationResult
     {

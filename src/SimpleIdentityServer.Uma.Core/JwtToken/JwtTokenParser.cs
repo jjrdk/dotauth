@@ -17,11 +17,11 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Core.JwtToken
 {
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Jwt.Converter;
-    using SimpleAuth.Jwt.Signature;
+    using SimpleAuth;
+    using SimpleAuth.Converter;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Signature;
 
     internal class JwtTokenParser : IJwtTokenParser
     {

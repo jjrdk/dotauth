@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core.Api.Jws.Actions
+namespace SimpleAuth.Api.Jws.Actions
 {
     using System;
     using System.Linq;
@@ -21,8 +21,8 @@ namespace SimpleIdentityServer.Core.Api.Jws.Actions
     using Exceptions;
     using Helpers;
     using Parameters;
-    using SimpleAuth.Jwt.Signature;
-    using SimpleAuth.Shared;
+    using Shared;
+    using Signature;
 
     public class CreateJwsAction : ICreateJwsAction
     {

@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Json
+﻿namespace SimpleAuth
 {
     using System;
     using System.Collections.Generic;

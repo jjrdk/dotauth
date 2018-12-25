@@ -23,7 +23,7 @@ using Xunit;
 namespace SimpleIdentityServer.Uma.Host.Tests
 {
     using Client.Configuration;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
 
     public class ResourceFixture : IClassFixture<TestUmaServerFixture>
     {

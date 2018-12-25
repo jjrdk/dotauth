@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Api.Introspection
+﻿namespace SimpleAuth.Api.Introspection
 {
     using System.Net.Http.Headers;
     using System.Threading.Tasks;

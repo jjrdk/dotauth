@@ -1,13 +1,12 @@
-﻿using SimpleIdentityServer.Core.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Api.Profile.Actions
+﻿namespace SimpleAuth.Api.Profile.Actions
 {
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Parameters;
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Exceptions;
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Repositories;
 
     internal sealed class GetUserProfilesAction : IGetUserProfilesAction
     {

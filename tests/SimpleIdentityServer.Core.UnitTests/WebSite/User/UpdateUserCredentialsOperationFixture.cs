@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -22,8 +20,11 @@ using Xunit;
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
     using System.Threading;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.WebSite.User.Actions;
 
     public class UpdateUserCredentialsOperationFixture
     {
@@ -48,8 +49,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                         var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserCredentialsOperation.Execute("subject", "password")).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
-            Assert.True(exception.Code == Errors.ErrorCodes.InternalError);
-            Assert.True(exception.Message == Errors.ErrorDescriptions.TheRoDoesntExist);
+            Assert.True(exception.Code == ErrorCodes.InternalError);
+            Assert.True(exception.Message == ErrorDescriptions.TheRoDoesntExist);
         }
 
         [Fact]

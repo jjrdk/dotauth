@@ -12,20 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.WebSite.User.Actions
+namespace SimpleAuth.WebSite.User.Actions
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Helpers;
     using Logging;
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public class AddUserOperation : IAddUserOperation
     {

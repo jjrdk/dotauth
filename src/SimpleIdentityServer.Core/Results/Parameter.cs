@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Results
+﻿namespace SimpleAuth.Results
 {
     public class Parameter
     {

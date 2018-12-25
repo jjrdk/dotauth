@@ -1,17 +1,15 @@
-﻿namespace SimpleIdentityServer.Core.Repositories
+﻿namespace SimpleAuth.Repositories
 {
-    using Errors;
-    using Exceptions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using SimpleAuth.Json;
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using Errors;
+    using Exceptions;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public class ClientFactory
     {

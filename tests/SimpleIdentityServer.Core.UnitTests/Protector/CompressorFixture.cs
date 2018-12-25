@@ -1,10 +1,11 @@
-﻿using SimpleIdentityServer.Core.Protector;
-using System;
+﻿using System;
 using System.Linq;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Protector
 {
+    using SimpleAuth.Protector;
+
     public sealed class CompressorFixture
     {
         private ICompressor _compressor;

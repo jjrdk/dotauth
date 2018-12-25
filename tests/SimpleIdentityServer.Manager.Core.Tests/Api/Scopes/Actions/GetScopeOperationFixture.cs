@@ -19,11 +19,11 @@ using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
 {
+    using SimpleAuth.Api.Scopes.Actions;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using SimpleIdentityServer.Core.Api.Scopes.Actions;
-    using SimpleIdentityServer.Core.Errors;
-    using SimpleIdentityServer.Core.Exceptions;
 
     public class GetScopeOperationFixture
     {

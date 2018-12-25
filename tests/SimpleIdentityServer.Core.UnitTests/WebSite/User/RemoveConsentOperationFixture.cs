@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -22,6 +21,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.WebSite.User.Actions;
 
     public class RemoveConsentOperationFixture
     {

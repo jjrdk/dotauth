@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Actions
 {
-    using Core.Helpers;
-    using Core.Services;
-    using Core.WebSite.User.Actions;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.Services;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.WebSite.User.Actions;
 
     internal sealed class SmsAuthenticationOperation : ISmsAuthenticationOperation
     {

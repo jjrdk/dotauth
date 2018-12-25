@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Core.Parameters
+namespace SimpleAuth.Parameters
 {
     using System;
-    using SimpleAuth.Shared.Models;
+    using System.Collections.Generic;
+    using Shared.Models;
 
     public sealed class AuthorizationParameter
     {

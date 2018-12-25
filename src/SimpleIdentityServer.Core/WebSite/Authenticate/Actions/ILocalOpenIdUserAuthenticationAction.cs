@@ -1,7 +1,6 @@
-﻿namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
+﻿namespace SimpleAuth.WebSite.Authenticate.Actions
 {
     using System.Threading.Tasks;
-    using Exceptions;
     using Parameters;
 
     public interface ILocalOpenIdUserAuthenticationAction

@@ -12,27 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Factories;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.Validators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Api.Authorization.Common
+namespace SimpleAuth.Api.Authorization.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Extensions;
+    using Factories;
+    using Helpers;
+    using JwtToken;
     using Logging;
-    using SimpleAuth.Json;
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Shared.Models;
+    using Parameters;
+    using Results;
+    using Shared.Models;
+    using Validators;
 
     public class ProcessAuthorizationRequest : IProcessAuthorizationRequest
     {

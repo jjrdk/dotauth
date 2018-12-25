@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Extensions
+﻿namespace SimpleAuth.Extensions
 {
     public static class StructExtensions
     {

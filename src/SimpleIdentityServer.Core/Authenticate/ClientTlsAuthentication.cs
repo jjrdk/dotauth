@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Linq;
-
-namespace SimpleIdentityServer.Core.Authenticate
+namespace SimpleAuth.Authenticate
 {
-    using SimpleAuth.Shared.Models;
+    using System;
+    using System.Linq;
+    using Shared.Models;
 
     internal class ClientTlsAuthentication : IClientTlsAuthentication
     {

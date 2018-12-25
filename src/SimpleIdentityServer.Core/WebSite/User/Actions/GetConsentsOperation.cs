@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.WebSite.User.Actions
+namespace SimpleAuth.WebSite.User.Actions
 {
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Extensions;
+    using Shared.Models;
+    using Shared.Repositories;
 
     internal class GetConsentsOperation : IGetConsentsOperation
     {

@@ -1,9 +1,9 @@
-﻿using SimpleIdentityServer.Core.Exceptions;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace SimpleIdentityServer.Core.Helpers
+﻿namespace SimpleAuth.Helpers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Exceptions;
+
     internal sealed class AmrHelper : IAmrHelper
     {
         public string GetAmr(IEnumerable<string> currentAmrs, IEnumerable<string> exceptedAmrs)

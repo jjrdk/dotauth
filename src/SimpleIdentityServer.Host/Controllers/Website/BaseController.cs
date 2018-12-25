@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Host.Extensions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Controllers.Website
 {
+    using SimpleAuth.Extensions;
+
     public class BaseController : Controller
     {
         protected readonly IAuthenticationService _authenticationService;

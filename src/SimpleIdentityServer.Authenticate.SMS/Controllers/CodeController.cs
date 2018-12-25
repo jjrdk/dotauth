@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Authenticate.SMS.Common.Requests;
-using SimpleIdentityServer.Core.Exceptions;
 using System;
 using System.Net;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 {
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
     using SimpleAuth.Shared.Responses;
 
     [Route(SmsConstants.CodeController)]
@@ -46,7 +47,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             }
             catch(Exception)
             {
-                result = BuildError(Core.Errors.ErrorCodes.UnhandledExceptionCode, "unhandled exception occured please contact the administrator", HttpStatusCode.InternalServerError);
+                result = BuildError(ErrorCodes.UnhandledExceptionCode, "unhandled exception occured please contact the administrator", HttpStatusCode.InternalServerError);
             }
 
             return result;
@@ -61,12 +62,12 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
         {
             if (confirmationCodeRequest == null)
             {
-                return BuildError(Core.Errors.ErrorCodes.InvalidRequestCode, "no request", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequestCode, "no request", HttpStatusCode.BadRequest);
             }
 
             if (string.IsNullOrWhiteSpace(confirmationCodeRequest.PhoneNumber))
             {
-                return BuildError(Core.Errors.ErrorCodes.InvalidRequestCode, $"parameter {Common.Constants.ConfirmationCodeRequestNames.PhoneNumber} is missing", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequestCode, $"parameter {Common.Constants.ConfirmationCodeRequestNames.PhoneNumber} is missing", HttpStatusCode.BadRequest);
             }
 
             return null;

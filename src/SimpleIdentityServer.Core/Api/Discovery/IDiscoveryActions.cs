@@ -1,7 +1,7 @@
-﻿namespace SimpleIdentityServer.Core.Api.Discovery
+﻿namespace SimpleAuth.Api.Discovery
 {
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Responses;
+    using Shared.Responses;
 
     public interface IDiscoveryActions
     {

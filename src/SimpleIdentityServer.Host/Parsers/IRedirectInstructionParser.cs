@@ -1,7 +1,7 @@
 ﻿namespace SimpleIdentityServer.Host.Parsers
 {
-    using Core.Results;
     using Microsoft.AspNetCore.Routing;
+    using SimpleAuth.Results;
 
     public interface IRedirectInstructionParser
     {

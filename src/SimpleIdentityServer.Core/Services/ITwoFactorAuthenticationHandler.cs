@@ -1,9 +1,9 @@
-﻿namespace SimpleIdentityServer.Core.Services
+﻿namespace SimpleAuth.Services
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
+    using Shared;
+    using Shared.Models;
 
     public interface ITwoFactorAuthenticationHandler
     {

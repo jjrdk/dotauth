@@ -12,21 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.JwtToken;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Helpers
+namespace SimpleAuth.Helpers
 {
-    using System.Linq;
-    using System.Security.Claims;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using JwtToken;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public class GrantedTokenGeneratorHelper : IGrantedTokenGeneratorHelper
     {

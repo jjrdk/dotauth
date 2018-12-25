@@ -14,10 +14,11 @@
 
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using SimpleIdentityServer.Core.Results;
 
 namespace SimpleIdentityServer.Host
 {
+    using SimpleAuth.Results;
+
     public static class HostConstants
     {
         public static class CookieNames

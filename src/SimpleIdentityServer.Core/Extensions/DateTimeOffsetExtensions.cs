@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-namespace SimpleIdentityServer.Core.Extensions
+namespace SimpleAuth.Extensions
 {
+    using System;
+
     public static class DateTimeOffsetExtensions
     {
         public static long ConvertToUnixTimestamp(this DateTimeOffset dateTime)

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Jwt.Encrypt.Algorithms
+namespace SimpleAuth.Encrypt.Algorithms
 {
     using System.Runtime.InteropServices;
     using System.Security.Cryptography;

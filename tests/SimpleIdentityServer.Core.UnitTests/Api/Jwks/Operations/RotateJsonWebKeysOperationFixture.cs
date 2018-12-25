@@ -13,14 +13,14 @@
 // limitations under the License.
 
 using Moq;
-using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks.Operations
 {
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Api.Jwks.Actions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
 

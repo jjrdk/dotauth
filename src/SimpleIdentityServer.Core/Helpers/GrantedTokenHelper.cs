@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Validators;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Helpers
+namespace SimpleAuth.Helpers
 {
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
+    using System;
+    using System.Threading.Tasks;
+    using Shared;
+    using Shared.Models;
+    using Validators;
 
     internal class GrantedTokenHelper : IGrantedTokenHelper
     {

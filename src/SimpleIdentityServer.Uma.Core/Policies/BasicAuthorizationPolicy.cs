@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Policies
 {
-    using SimpleIdentityServer.Core;
+    using SimpleAuth;
     using Constants = Constants;
 
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy

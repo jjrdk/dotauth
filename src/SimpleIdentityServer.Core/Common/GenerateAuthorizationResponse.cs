@@ -12,23 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core.Common
+namespace SimpleAuth.Common
 {
-    using SimpleIdentityServer.Core.Api.Authorization;
-    using SimpleIdentityServer.Core.Extensions;
-    using SimpleIdentityServer.Core.Helpers;
-    using SimpleIdentityServer.Core.JwtToken;
-    using SimpleIdentityServer.Core.Parameters;
-    using SimpleIdentityServer.Core.Results;
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Api.Authorization;
+    using Extensions;
+    using Helpers;
+    using JwtToken;
     using Logging;
-    using SimpleAuth.Json;
-    using SimpleAuth.Jwt;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
+    using Parameters;
+    using Results;
+    using Shared;
+    using Shared.Models;
 
     public class GenerateAuthorizationResponse : IGenerateAuthorizationResponse
     {

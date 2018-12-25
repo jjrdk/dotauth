@@ -1,11 +1,11 @@
-﻿namespace SimpleIdentityServer.Core.Api.Claims
+﻿namespace SimpleAuth.Api.Claims
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Actions;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Parameters;
-    using SimpleAuth.Shared.Results;
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Results;
 
     internal sealed class ClaimActions : IClaimActions
     {

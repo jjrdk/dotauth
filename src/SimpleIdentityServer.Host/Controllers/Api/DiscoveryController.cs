@@ -14,11 +14,11 @@
 
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
-    using Core.Api.Discovery;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
-    using Core;
+    using SimpleAuth;
+    using SimpleAuth.Api.Discovery;
     using SimpleAuth.Shared.Responses;
 
     [Route(CoreConstants.EndPoints.DiscoveryAction)]

@@ -1,11 +1,10 @@
-﻿using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.WebSite.User.Actions
+﻿namespace SimpleAuth.WebSite.User.Actions
 {
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Threading.Tasks;
+    using Exceptions;
+    using Helpers;
+    using Shared.Repositories;
 
     internal sealed class UpdateUserCredentialsOperation : IUpdateUserCredentialsOperation
     {

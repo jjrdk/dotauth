@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Parameters
+﻿namespace SimpleAuth.Parameters
 {
     using System.Collections.Generic;
     using System.Linq;

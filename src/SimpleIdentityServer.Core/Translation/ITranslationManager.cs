@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Translation
+﻿namespace SimpleAuth.Translation
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;

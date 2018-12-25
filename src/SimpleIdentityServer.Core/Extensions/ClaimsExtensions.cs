@@ -1,10 +1,9 @@
-﻿namespace SimpleIdentityServer.Core.Extensions
+﻿namespace SimpleAuth.Extensions
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
-    using SimpleAuth.Jwt;
 
     public static class ClaimsExtensions
     {

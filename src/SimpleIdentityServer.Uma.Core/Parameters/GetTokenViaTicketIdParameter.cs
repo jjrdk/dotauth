@@ -1,6 +1,6 @@
 ﻿namespace SimpleIdentityServer.Uma.Core.Parameters
 {
-    using SimpleIdentityServer.Core.Parameters;
+    using SimpleAuth.Parameters;
 
     public class GetTokenViaTicketIdParameter : GrantTypeParameter
     {

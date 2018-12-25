@@ -1,8 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Api.Token;
-using SimpleIdentityServer.Core.Api.Token.Actions;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
@@ -11,13 +7,17 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
-    using Core.Authenticate;
-    using Core.Helpers;
     using System.Collections.Generic;
-    using Logging;
-    using SimpleAuth.Jwt;
+    using SimpleAuth;
+    using SimpleAuth.Api.Token;
+    using SimpleAuth.Api.Token.Actions;
+    using SimpleAuth.Authenticate;
+    using SimpleAuth.Helpers;
+    using SimpleAuth.Logging;
+    using SimpleAuth.Parameters;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Validators;
 
     public sealed class TokenActionsFixture
     {

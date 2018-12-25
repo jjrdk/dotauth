@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Api.Profile.Actions
+﻿namespace SimpleAuth.Api.Profile.Actions
 {
     using System.Threading.Tasks;
 

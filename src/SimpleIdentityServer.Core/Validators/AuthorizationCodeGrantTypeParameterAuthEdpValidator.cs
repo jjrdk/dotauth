@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Parameters;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Validators
+namespace SimpleAuth.Validators
 {
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Helpers;
+    using Parameters;
+    using Shared.Models;
+    using Shared.Repositories;
 
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator : IAuthorizationCodeGrantTypeParameterAuthEdpValidator
     {

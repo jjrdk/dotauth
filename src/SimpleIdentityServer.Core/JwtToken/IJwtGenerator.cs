@@ -1,11 +1,11 @@
-﻿namespace SimpleIdentityServer.Core.JwtToken
+﻿namespace SimpleAuth.JwtToken
 {
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Parameters;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
+    using Shared;
+    using Shared.Models;
 
     public interface IJwtGenerator
     {
