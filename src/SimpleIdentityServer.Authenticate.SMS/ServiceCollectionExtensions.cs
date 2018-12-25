@@ -4,12 +4,10 @@ using SimpleIdentityServer.Authenticate.SMS.Controllers;
 using SimpleIdentityServer.Authenticate.SMS.Services;
 using SimpleIdentityServer.Twilio.Client;
 using System;
-using System.Reflection;
 
 namespace SimpleIdentityServer.Authenticate.SMS
 {
     using Microsoft.AspNetCore.Mvc.Razor;
-    using Microsoft.CodeAnalysis;
     using Microsoft.Extensions.FileProviders;
     using SimpleAuth.Services;
 

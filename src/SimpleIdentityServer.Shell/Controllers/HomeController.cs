@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Host.Controllers.Website;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Shell.Controllers
+﻿namespace SimpleIdentityServer.Shell.Controllers
 {
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Mvc;
+    using SimpleAuth.Server.Controllers.Website;
+    using System.Threading.Tasks;
+
     [Area("Shell")]
     public class HomeController : BaseController
     {

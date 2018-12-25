@@ -1,25 +1,25 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-using SimpleIdentityServer.Host.Controllers.Website;
-using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.UserManagement.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.UserManagement.Controllers
+﻿namespace SimpleIdentityServer.UserManagement.Controllers
 {
-    using Host;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.AspNetCore.Mvc.Routing;
+    using SimpleIdentityServer.UserManagement.ViewModels;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+
     using SimpleAuth;
     using SimpleAuth.Api.Profile;
     using SimpleAuth.Errors;
     using SimpleAuth.Exceptions;
     using SimpleAuth.Extensions;
+    using SimpleAuth.Server;
+    using SimpleAuth.Server.Controllers.Website;
+    using SimpleAuth.Server.Extensions;
     using SimpleAuth.Services;
     using SimpleAuth.Translation;
     using SimpleAuth.WebSite.User.Actions;

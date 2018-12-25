@@ -17,30 +17,32 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
         [Fact]
         public async Task When_Check_Session_Then_Ok_Is_Returned()
-        {            var httpRequest = new HttpRequestMessage
+        {
+            var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
                 RequestUri = new System.Uri($"{baseUrl}/check_session")
             };
 
-                        var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var html = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                        Assert.Equal(HttpStatusCode.OK, httpResult.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, httpResult.StatusCode);
         }
 
         [Fact]
         public async Task When_End_Session_Then_Ok_Is_Returned()
-        {            var httpRequest = new HttpRequestMessage
+        {
+            var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
                 RequestUri = new System.Uri($"{baseUrl}/end_session")
             };
 
-                        var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var html = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                        Assert.Equal(HttpStatusCode.OK, httpResult.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, httpResult.StatusCode);
         }
     }
 }

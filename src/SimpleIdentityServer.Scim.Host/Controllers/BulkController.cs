@@ -15,7 +15,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Host.Extensions;
 using System;
 using System.Threading.Tasks;
@@ -23,7 +22,6 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Scim.Host.Controllers
 {
     using Core.Results;
-    using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using ScimConstants = Core.ScimConstants;
 

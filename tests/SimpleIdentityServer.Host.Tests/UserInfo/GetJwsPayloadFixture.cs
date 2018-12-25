@@ -16,13 +16,13 @@ namespace SimpleIdentityServer.Host.Tests.UserInfo
 {
     using System;
     using System.Threading.Tasks;
-    using Host.UserInfo.Actions;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
     using SimpleAuth;
     using SimpleAuth.Errors;
     using SimpleAuth.Exceptions;
     using SimpleAuth.JwtToken;
+    using SimpleAuth.Server.UserInfo.Actions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;

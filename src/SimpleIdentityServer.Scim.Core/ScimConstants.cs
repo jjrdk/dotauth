@@ -15,7 +15,6 @@
 namespace SimpleIdentityServer.Scim.Core
 {
     using System.Collections.Generic;
-    using SimpleAuth.Shared;
 
     public static class ScimConstants
     {

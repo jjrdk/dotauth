@@ -1,7 +1,5 @@
 ﻿namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 {
-    using Host.Controllers;
-    using Host.ViewModels;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Mvc;
@@ -9,7 +7,6 @@
     using Microsoft.AspNetCore.Mvc.Routing;
     using Actions;
     using ViewModels;
-    using Host.Extensions;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -22,6 +19,10 @@
     using SimpleAuth.Exceptions;
     using SimpleAuth.Extensions;
     using SimpleAuth.Logging;
+    using SimpleAuth.Server;
+    using SimpleAuth.Server.Controllers;
+    using SimpleAuth.Server.Extensions;
+    using SimpleAuth.Server.ViewModels;
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
@@ -161,7 +162,7 @@
             }
 
             var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, Host.HostConstants.CookieNames.PasswordLessCookieName)
+                .GetAuthenticatedUser(this, HostConstants.CookieNames.PasswordLessCookieName)
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
@@ -192,7 +193,7 @@
             }
 
             var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, Host.HostConstants.CookieNames.PasswordLessCookieName)
+                .GetAuthenticatedUser(this, HostConstants.CookieNames.PasswordLessCookieName)
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
@@ -221,7 +222,7 @@
             }
 
             await _authenticationService.SignOutAsync(HttpContext,
-                    Host.HostConstants.CookieNames.PasswordLessCookieName,
+                    HostConstants.CookieNames.PasswordLessCookieName,
                     new AuthenticationProperties())
                 .ConfigureAwait(false);
             var resourceOwner = await _getUserOperation.Execute(authenticatedUser).ConfigureAwait(false);
@@ -328,10 +329,10 @@
 
         private async Task SetPasswordLessCookie(IEnumerable<Claim> claims)
         {
-            var identity = new ClaimsIdentity(claims, Host.HostConstants.CookieNames.PasswordLessCookieName);
+            var identity = new ClaimsIdentity(claims, HostConstants.CookieNames.PasswordLessCookieName);
             var principal = new ClaimsPrincipal(identity);
             await _authenticationService.SignInAsync(HttpContext,
-                    Host.HostConstants.CookieNames.PasswordLessCookieName,
+                    HostConstants.CookieNames.PasswordLessCookieName,
                     principal,
                     new AuthenticationProperties
                     {

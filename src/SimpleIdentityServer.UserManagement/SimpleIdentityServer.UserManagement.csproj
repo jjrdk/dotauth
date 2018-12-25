@@ -4,7 +4,7 @@
   </PropertyGroup>
   <ItemGroup>  
     <ProjectReference Include="..\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />  
-    <ProjectReference Include="..\SimpleIdentityServer.Host\simpleauth.server.csproj" />  
+    <ProjectReference Include="..\simpleauth.server\simpleauth.server.csproj" />  
     <ProjectReference Include="..\SimpleIdentityServer.UserManagement.Common\SimpleIdentityServer.UserManagement.Common.csproj" />  
   </ItemGroup>
   <ItemGroup>

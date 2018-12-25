@@ -4,7 +4,7 @@
   </PropertyGroup>
   <ItemGroup>  
     <ProjectReference Include="..\SimpleIdentityServer.Authenticate.SMS.Common\SimpleIdentityServer.Authenticate.SMS.Common.csproj" />  
-    <ProjectReference Include="..\SimpleIdentityServer.Host\simpleauth.server.csproj" />  
+    <ProjectReference Include="..\simpleauth.server\simpleauth.server.csproj" />  
     <ProjectReference Include="..\SimpleIdentityServer.Twilio.Client\SimpleIdentityServer.Twilio.Client.csproj" />  
   </ItemGroup>
   <ItemGroup>
