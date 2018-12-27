@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Scim.Host.Controllers
+namespace SimpleAuth.Server.Controllers
 {
-    using SimpleAuth.Scim;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Scim;
 
     [Route(ScimConstants.RoutePaths.SchemasController)]
     public class SchemasController : Controller

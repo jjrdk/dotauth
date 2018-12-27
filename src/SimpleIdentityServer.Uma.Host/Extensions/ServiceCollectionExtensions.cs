@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 authorizationServerOptions.UmaConfigurationOptions,
                     authorizationServerOptions.Configuration?.Resources,
                     authorizationServerOptions.Configuration?.Policies)
-                .AddSimpleIdentityServerCore(
+                .AddSimpleAuthServer(
                 authorizationServerOptions.OAuthConfigurationOptions,
                     clients: authorizationServerOptions.Configuration?.Clients,
                     scopes: authorizationServerOptions.Configuration == null

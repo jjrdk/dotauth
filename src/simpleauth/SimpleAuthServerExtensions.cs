@@ -14,9 +14,6 @@
 
 namespace SimpleAuth
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Net.Http;
     using Api.Authorization;
     using Api.Authorization.Actions;
     using Api.Authorization.Common;
@@ -24,7 +21,6 @@ namespace SimpleAuth
     using Api.Introspection;
     using Api.Introspection.Actions;
     using Api.Jwks;
-    using Api.Jwks.Actions;
     using Api.Profile;
     using Api.Profile.Actions;
     using Api.Token;
@@ -36,12 +32,20 @@ namespace SimpleAuth
     using Helpers;
     using JwtToken;
     using Microsoft.Extensions.DependencyInjection;
-    using Protector;
     using Repositories;
     using Services;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using Api.Claims;
+    using Api.Claims.Actions;
+    using Api.Jwe;
+    using Api.Jws;
+    using Api.Scopes;
+    using Api.Scopes.Actions;
     using Translation;
     using Validators;
     using WebSite.Authenticate;
@@ -51,9 +55,9 @@ namespace SimpleAuth
     using WebSite.Consent.Actions;
     using WebSite.User.Actions;
 
-    public static class SimpleIdentityServerCoreExtensions
+    public static class SimpleAuthServerExtensions
     {
-        public static IServiceCollection AddSimpleIdentityServerCore(
+        public static IServiceCollection AddSimpleAuthServer(
             this IServiceCollection serviceCollection,
             OAuthConfigurationOptions configurationOptions = null,
             IReadOnlyCollection<ClaimAggregate> claims = null,
@@ -69,7 +73,24 @@ namespace SimpleAuth
             {
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
-
+            serviceCollection.AddTransient<IJweActions, JweActions>();
+            serviceCollection.AddTransient<IJsonWebKeyHelper, JsonWebKeyHelper>();
+            serviceCollection.AddTransient<IScopeActions, ScopeActions>();
+            serviceCollection.AddTransient<IDeleteScopeOperation, DeleteScopeOperation>();
+            serviceCollection.AddTransient<IGetScopeOperation, GetScopeOperation>();
+            serviceCollection.AddTransient<IGetScopesOperation, GetScopesOperation>();
+            serviceCollection.AddTransient<IUpdateResourceOwnerClaimsParameterValidator, UpdateResourceOwnerClaimsParameterValidator>();
+            serviceCollection.AddTransient<IUpdateResourceOwnerPasswordParameterValidator, UpdateResourceOwnerPasswordParameterValidator>();
+            serviceCollection.AddTransient<IAddUserOperation, AddUserOperation>();
+            serviceCollection.AddTransient<IAddScopeOperation, AddScopeOperation>();
+            serviceCollection.AddTransient<IUpdateScopeOperation, UpdateScopeOperation>();
+            serviceCollection.AddTransient<ISearchScopesOperation, SearchScopesOperation>();
+            serviceCollection.AddTransient<IClaimActions, ClaimActions>();
+            serviceCollection.AddTransient<IAddClaimAction, AddClaimAction>();
+            serviceCollection.AddTransient<IDeleteClaimAction, DeleteClaimAction>();
+            serviceCollection.AddTransient<IGetClaimAction, GetClaimAction>();
+            serviceCollection.AddTransient<ISearchClaimsAction, SearchClaimsAction>();
+            serviceCollection.AddTransient<IGetClaimsAction, GetClaimsAction>();
             serviceCollection.AddTransient<IGrantedTokenGeneratorHelper, GrantedTokenGeneratorHelper>();
             serviceCollection.AddTransient<IConsentHelper, ConsentHelper>();
             serviceCollection.AddTransient<IClientHelper, ClientHelper>();
@@ -79,7 +100,7 @@ namespace SimpleAuth
             serviceCollection.AddTransient<IScopeValidator, ScopeValidator>();
             serviceCollection.AddTransient<IGrantedTokenValidator, GrantedTokenValidator>();
             serviceCollection.AddTransient<IAuthorizationCodeGrantTypeParameterAuthEdpValidator, AuthorizationCodeGrantTypeParameterAuthEdpValidator>();
-            serviceCollection.AddTransient<ICompressor, Compressor>();
+            //serviceCollection.AddTransient<ICompressor, Compressor>();
             serviceCollection.AddTransient<IParameterParserHelper, ParameterParserHelper>();
             serviceCollection.AddTransient<IActionResultFactory, ActionResultFactory>();
             serviceCollection.AddTransient<IAuthorizationActions, AuthorizationActions>();
@@ -92,11 +113,7 @@ namespace SimpleAuth
             serviceCollection.AddTransient<IConsentActions, ConsentActions>();
             serviceCollection.AddTransient<IConfirmConsentAction, ConfirmConsentAction>();
             serviceCollection.AddTransient<IDisplayConsentAction, DisplayConsentAction>();
-            serviceCollection.AddTransient<IJwksActions, JwksActions>();
-            serviceCollection.AddTransient<IRotateJsonWebKeysOperation, RotateJsonWebKeysOperation>();
-            serviceCollection.AddTransient<IGetSetOfPublicKeysUsedToValidateJwsAction, GetSetOfPublicKeysUsedToValidateJwsAction>();
-            serviceCollection.AddTransient<IJsonWebKeyEnricher, JsonWebKeyEnricher>();
-            serviceCollection.AddTransient<IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction, GetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction>();
+            serviceCollection.AddSingleton<IJwksActions, JwksActions>();
             serviceCollection.AddTransient<IAuthenticateActions, AuthenticateActions>();
             serviceCollection
                 .AddTransient<IAuthenticateResourceOwnerOpenIdAction, AuthenticateResourceOwnerOpenIdAction>();

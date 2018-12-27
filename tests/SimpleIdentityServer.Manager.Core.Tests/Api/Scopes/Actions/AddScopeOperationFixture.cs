@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
                 .Returns(Task.FromResult(scope));
 
             // ACT & ASSERTS
-            var ex = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _addScopeOperation.Execute(new Scope
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _addScopeOperation.Execute(new Scope
             {
                 Name = name
             })).ConfigureAwait(false);

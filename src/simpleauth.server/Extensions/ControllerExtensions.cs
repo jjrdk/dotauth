@@ -23,12 +23,41 @@ namespace SimpleAuth.Server.Extensions
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
+    using Microsoft.Net.Http.Headers;
     using Parsers;
     using Results;
     using Shared.Requests;
 
     public static class ControllerExtensions
     {
+        public static ActionResult GetActionResult(this Controller controller, ApiActionResult result)
+        {
+            if (controller == null)
+            {
+                throw new ArgumentNullException(nameof(controller));
+            }
+
+            if (result == null)
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
+
+
+            if (!string.IsNullOrWhiteSpace(result.Location))
+            {
+                controller.HttpContext.Response.Headers[HeaderNames.Location] = result.Location;
+            }
+
+            if (result.Content != null)
+            {
+                var res = new ObjectResult(result.Content);
+                res.StatusCode = result.StatusCode;
+                return res;
+            }
+
+            return new StatusCodeResult(result.StatusCode.Value);
+        }
+
         public static string GetOriginUrl(this Controller controller)
         {
             if (controller == null)

@@ -23,9 +23,9 @@ namespace SimpleAuth.Server
         public static class CookieNames
         {
             public const string CookieName = CookieAuthenticationDefaults.AuthenticationScheme;
-            public const string ExternalCookieName = "SimpleIdServer-OpenId-External";
-            public const string PasswordLessCookieName = "SimpleIdServer-PasswordLess";
-            public const string TwoFactorCookieName = "SimpleIdentityServer-TwoFactorAuth";
+            public const string ExternalCookieName = "saoie";
+            public const string PasswordLessCookieName = "sapl";
+            public const string TwoFactorCookieName = "sa2fa";
         }
 
         public static Dictionary<IdentityServerEndPoints, string> MappingIdentityServerEndPointToPartialUrl = new Dictionary<IdentityServerEndPoints, string>

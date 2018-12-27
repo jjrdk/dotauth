@@ -24,7 +24,7 @@
             InitializeFakeObjects();
 
             var exception = Assert
-                .Throws<IdentityServerManagerException>(() =>
+                .Throws<IdentityServerException>(() =>
                     _addUserParameterValidator.Validate(new AddUserParameter(null, null)));
 
                         Assert.NotNull(exception);
@@ -37,7 +37,7 @@
         {
             InitializeFakeObjects();
 
-            var exception = Assert.Throws<IdentityServerManagerException>(() =>
+            var exception = Assert.Throws<IdentityServerException>(() =>
                     _addUserParameterValidator.Validate(new AddUserParameter("login", null)));
 
                         Assert.NotNull(exception);

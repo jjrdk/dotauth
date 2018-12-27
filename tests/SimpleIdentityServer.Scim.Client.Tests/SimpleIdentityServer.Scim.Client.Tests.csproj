@@ -32,8 +32,8 @@
   </ItemGroup>  
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\simpleauth.server\simpleauth.server.csproj" />
     <ProjectReference Include="..\..\src\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Scim.Host\SimpleIdentityServer.Scim.Host.csproj" />
   </ItemGroup>
 
 </Project>

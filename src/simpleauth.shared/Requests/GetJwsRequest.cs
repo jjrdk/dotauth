@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Shared.Requests
 {
+    using System;
     using System.Runtime.Serialization;
 
     [DataContract]
@@ -23,6 +24,6 @@ namespace SimpleAuth.Shared.Requests
         public string Jws { get; set; }
 
         [DataMember(Name = SharedConstants.GetJwsRequestNames.Url)]
-        public string Url { get; set; }
+        public Uri Url { get; set; }
     }
 }

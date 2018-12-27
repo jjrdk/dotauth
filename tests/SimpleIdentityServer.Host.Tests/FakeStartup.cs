@@ -14,42 +14,38 @@
 
 namespace SimpleIdentityServer.Host.Tests
 {
+    using Authenticate.SMS;
+    using Authenticate.SMS.Actions;
+    using Client;
+    using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
-    using Newtonsoft.Json;
-    using Authenticate.SMS;
-    using Authenticate.SMS.Actions;
-    using SimpleIdentityServer.Authenticate.SMS.Controllers;
-    using SimpleIdentityServer.Authenticate.SMS.Services;
     using MiddleWares;
+    using Newtonsoft.Json;
     using Services;
-    using Stores;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using System.Text;
-    using System.Net.Http;
-    using Client;
     using SimpleAuth;
-    using SimpleAuth.Api.Jwks.Actions;
-    using SimpleAuth.Extensions;
+    using SimpleAuth.Api.Jwks;
     using SimpleAuth.Logging;
     using SimpleAuth.Server.Controllers;
     using SimpleAuth.Server.Extensions;
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Requests;
+    using SimpleIdentityServer.Authenticate.SMS.Controllers;
+    using SimpleIdentityServer.Authenticate.SMS.Services;
+    using Stores;
+    using System;
+    using System.Net.Http;
+    using System.Reflection;
+    using System.Text;
 
     public class FakeStartup : IStartup
     {
         public const string ScimEndPoint = "http://localhost:5555/";
-        public const string DefaultSchema = "Cookies";
+        public const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
         private readonly IdentityServerOptions _options;
-        private readonly IJsonWebKeyEnricher _jsonWebKeyEnricher;
         private readonly SharedContext _context;
 
         public FakeStartup(SharedContext context)
@@ -62,7 +58,6 @@ namespace SimpleIdentityServer.Host.Tests
                     EndPoint = ScimEndPoint
                 }
             };
-            _jsonWebKeyEnricher = new JsonWebKeyEnricher();
             _context = context;
         }
 
@@ -91,7 +86,7 @@ namespace SimpleIdentityServer.Host.Tests
             .AddFakeUserInfoIntrospection(o => { });
             services.AddAuthorization(opt =>
             {
-                opt.AddOpenIdSecurityPolicy(DefaultSchema);
+                opt.AddAuthPolicies(DefaultSchema);
             });
             // 3. Configure MVC
             var mvc = services.AddMvc();
@@ -99,7 +94,7 @@ namespace SimpleIdentityServer.Host.Tests
             parts.Clear();
             parts.Add(new AssemblyPart(typeof(DiscoveryController).GetTypeInfo().Assembly));
             parts.Add(new AssemblyPart(typeof(CodeController).GetTypeInfo().Assembly));
-            parts.Add(new AssemblyPart(typeof(ProfilesController).GetTypeInfo().Assembly));
+            //parts.Add(new AssemblyPart(typeof(ProfilesController).GetTypeInfo().Assembly));
             //parts.Add(new AssemblyPart(typeof(FiltersController).GetTypeInfo().Assembly));
             return services.BuildServiceProvider();
         }
@@ -110,7 +105,7 @@ namespace SimpleIdentityServer.Host.Tests
             app.UseCors("AllowAll");
             // 4. Use simple identity server.
             app.UseOpenIdApi(_options);
-            // 5. Client JWKS endpoint
+            //// 5. Client JWKS endpoint
             app.Map("/jwks_client", a =>
             {
                 a.Run(async ctx =>
@@ -120,16 +115,9 @@ namespace SimpleIdentityServer.Host.Tests
                         _context.EncryptionKey,
                         _context.SignatureKey
                     };
-                    //var jsonWebKeySet = new JsonWebKeySet();
-                    var publicKeysUsedToValidateSignature = ExtractPublicKeysForSignature(jwks);
-                    var publicKeysUsedForClientEncryption = ExtractPrivateKeysForSignature(jwks);
-                    var result = new JsonWebKeySet
-                    {
-                        Keys = new List<Dictionary<string, object>>()
-                    };
+                    var repo = app.ApplicationServices.GetService<IJwksActions>();
+                    var result = await repo.GetJwks().ConfigureAwait(false);
 
-                    result.Keys.AddRange(publicKeysUsedToValidateSignature);
-                    result.Keys.AddRange(publicKeysUsedForClientEncryption);
                     var json = JsonConvert.SerializeObject(result);
                     var data = Encoding.UTF8.GetBytes(json);
                     ctx.Response.ContentType = "application/json";
@@ -151,14 +139,13 @@ namespace SimpleIdentityServer.Host.Tests
             services.AddTransient<IAuthenticateResourceOwnerService, CustomAuthenticateResourceOwnerService>();
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
             services.AddHostIdentityServer(_options)
-                .AddSimpleIdentityServerCore(null, null, DefaultStores.Clients(_context), DefaultStores.Consents(), DefaultStores.JsonWebKeys(_context), null, DefaultStores.Users())
+                .AddSimpleAuthServer(null, null, DefaultStores.Clients(_context), DefaultStores.Consents(), DefaultStores.JsonWebKeys(_context), null, DefaultStores.Users())
                 .AddDefaultTokenStore()
                 .AddSimpleIdentityServerJwt()
                 .AddTechnicalLogging()
                 .AddOpenidLogging()
                 .AddOAuthLogging()
                 .AddLogging()
-                .AddSimpleIdentityServerManager()
                 //.AddDefaultAccessTokenStore()
                 .AddTransient<IAccountFilter, AccountFilter>()
                 .AddSingleton<IFilterStore>(new DefaultFilterStore(null));
@@ -170,38 +157,6 @@ namespace SimpleIdentityServer.Host.Tests
                 return new UsersClient(new Uri(baseUrl), sp.GetService<HttpClient>());
             });
             services.AddSingleton<IAccessTokenStore>(new TestAccessTokenStore());
-        }
-
-        private List<Dictionary<string, object>> ExtractPublicKeysForSignature(IEnumerable<JsonWebKey> jsonWebKeys)
-        {
-            var result = new List<Dictionary<string, object>>();
-            var jsonWebKeysUsedForSignature = jsonWebKeys.Where(jwk => jwk.Use == Use.Sig && jwk.KeyOps.Contains(KeyOperations.Verify));
-            foreach (var jsonWebKey in jsonWebKeysUsedForSignature)
-            {
-                var publicKeyInformation = _jsonWebKeyEnricher.GetPublicKeyInformation(jsonWebKey);
-                var jsonWebKeyInformation = _jsonWebKeyEnricher.GetJsonWebKeyInformation(jsonWebKey);
-                publicKeyInformation.AddRange(jsonWebKeyInformation);
-                result.Add(publicKeyInformation);
-            }
-
-            return result;
-        }
-
-        private List<Dictionary<string, object>> ExtractPrivateKeysForSignature(IEnumerable<JsonWebKey> jsonWebKeys)
-        {
-            var result = new List<Dictionary<string, object>>();
-            // Retrieve all the JWK used by the client to encrypt the JWS
-            var jsonWebKeysUsedForEncryption =
-                jsonWebKeys.Where(jwk => jwk.Use == Use.Enc && jwk.KeyOps.Contains(KeyOperations.Encrypt));
-            foreach (var jsonWebKey in jsonWebKeysUsedForEncryption)
-            {
-                var publicKeyInformation = _jsonWebKeyEnricher.GetPublicKeyInformation(jsonWebKey);
-                var jsonWebKeyInformation = _jsonWebKeyEnricher.GetJsonWebKeyInformation(jsonWebKey);
-                publicKeyInformation.AddRange(jsonWebKeyInformation);
-                result.Add(publicKeyInformation);
-            }
-
-            return result;
         }
     }
 }

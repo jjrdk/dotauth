@@ -14,9 +14,11 @@
 
 namespace SimpleAuth.Parameters
 {
+    using System;
+
     public class GetJwsParameter
     {
         public string Jws { get; set; }
-        public string Url { get; set; }
+        public Uri Url { get; set; }
     }
 }

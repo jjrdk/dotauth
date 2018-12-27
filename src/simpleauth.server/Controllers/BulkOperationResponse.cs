@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Scim.Host.Controllers
+﻿namespace SimpleAuth.Server.Controllers
 {
     public class BulkOperationResponse
     {

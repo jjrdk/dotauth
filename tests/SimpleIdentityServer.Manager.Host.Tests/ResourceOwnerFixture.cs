@@ -35,7 +35,7 @@
 
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, result.Error.Error);
             Assert.Equal(string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, resourceOwnerId), result.Error.ErrorDescription);
         }
 
@@ -130,7 +130,7 @@
 
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Error);
             Assert.Equal("The resource owner invalid_login doesn't exist", result.Error.ErrorDescription);
         }
 
@@ -163,7 +163,7 @@
                     null)
                 .ConfigureAwait(false);
 
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Error);
             Assert.Equal(string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, "login"), result.Error.ErrorDescription);
         }
 
@@ -182,7 +182,7 @@
                     null)
                 .ConfigureAwait(false);
 
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Error);
             Assert.Equal(string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, "invalid_login"), result.Error.ErrorDescription);
         }
 

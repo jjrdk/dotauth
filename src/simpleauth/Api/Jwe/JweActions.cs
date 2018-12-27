@@ -16,41 +16,155 @@ namespace SimpleAuth.Api.Jwe
 {
     using System;
     using System.Threading.Tasks;
-    using Actions;
+    using Encrypt;
+    using Errors;
+    using Exceptions;
+    using Helpers;
     using Parameters;
     using Results;
+    using Signature;
 
     public class JweActions : IJweActions
     {
-        private readonly IGetJweInformationAction _getJweInformationAction;
-        private readonly ICreateJweAction _createJweAction;
+        private readonly IJweGenerator _jweGenerator;
+        private readonly IJsonWebKeyHelper _jsonWebKeyHelper;
+        private readonly IJwsParser _jwsParser;
+        private readonly IJweParser _jweParser;
 
         public JweActions(
-            IGetJweInformationAction getJweInformationAction,
-            ICreateJweAction createJweAction)
+            IJweGenerator jweGenerator,
+            IJsonWebKeyHelper jsonWebKeyHelper,
+            IJwsParser jwsParser,
+            IJweParser jweParser)
         {
-            _getJweInformationAction = getJweInformationAction;
-            _createJweAction = createJweAction;
+            _jweGenerator = jweGenerator;
+            _jsonWebKeyHelper = jsonWebKeyHelper;
+            _jwsParser = jwsParser;
+            _jweParser = jweParser;
         }
 
-        public Task<JweInformationResult> GetJweInformation(GetJweParameter getJweParameter)
+        public async Task<JweInformationResult> GetJweInformation(GetJweParameter getJweParameter)
         {
             if (getJweParameter == null)
             {
                 throw new ArgumentNullException(nameof(getJweParameter));
             }
 
-            return _getJweInformationAction.ExecuteAsync(getJweParameter);
+            if (string.IsNullOrWhiteSpace(getJweParameter.Jwe))
+            {
+                throw new ArgumentNullException(nameof(getJweParameter.Jwe));
+            }
+
+            if (string.IsNullOrWhiteSpace(getJweParameter.Url))
+            {
+                throw new ArgumentNullException(nameof(getJweParameter.Url));
+            }
+
+            if (!Uri.TryCreate(getJweParameter.Url, UriKind.Absolute, out var uri))
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, getJweParameter.Url));
+            }
+
+            var jwe = getJweParameter.Jwe;
+            var jweHeader = _jweParser.GetHeader(jwe);
+            if (jweHeader == null)
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    ErrorDescriptions.TheTokenIsNotAValidJwe);
+            }
+
+            var jsonWebKey = await _jsonWebKeyHelper.GetJsonWebKey(jweHeader.Kid, uri).ConfigureAwait(false);
+            if (jsonWebKey == null)
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, jweHeader.Kid, uri.AbsoluteUri));
+            }
+
+            var content = !string.IsNullOrWhiteSpace(getJweParameter.Password)
+                ? _jweParser.ParseByUsingSymmetricPassword(jwe, jsonWebKey, getJweParameter.Password)
+                : _jweParser.Parse(jwe, jsonWebKey);
+
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    ErrorDescriptions.TheContentCannotBeExtractedFromJweToken);
+            }
+
+            var result = new JweInformationResult
+            {
+                Content = content,
+                IsContentJws = false
+            };
+
+            var jwsHeader = _jwsParser.GetHeader(content);
+            if (jwsHeader != null)
+            {
+                result.IsContentJws = true;
+            }
+
+            return result;
         }
 
-        public Task<string> CreateJwe(CreateJweParameter createJweParameter)
+        public async Task<string> CreateJwe(CreateJweParameter createJweParameter)
         {
             if (createJweParameter == null)
             {
                 throw new ArgumentNullException(nameof(createJweParameter));
             }
 
-            return _createJweAction.ExecuteAsync(createJweParameter);
+            if (string.IsNullOrWhiteSpace(createJweParameter.Url))
+            {
+                throw new ArgumentNullException(nameof(createJweParameter.Url));
+            }
+
+            if (string.IsNullOrWhiteSpace(createJweParameter.Jws))
+            {
+                throw new ArgumentNullException(nameof(createJweParameter.Jws));
+            }
+
+            if (string.IsNullOrWhiteSpace(createJweParameter.Kid))
+            {
+                throw new ArgumentNullException(nameof(createJweParameter.Kid));
+            }
+
+            if (!Uri.TryCreate(createJweParameter.Url, UriKind.Absolute, out var uri))
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, createJweParameter.Url));
+            }
+
+            var jsonWebKey = await _jsonWebKeyHelper.GetJsonWebKey(createJweParameter.Kid, uri).ConfigureAwait(false);
+            if (jsonWebKey == null)
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, createJweParameter.Kid, uri.AbsoluteUri));
+            }
+
+            string result;
+            if (!string.IsNullOrWhiteSpace(createJweParameter.Password))
+            {
+                result = _jweGenerator.GenerateJweByUsingSymmetricPassword(createJweParameter.Jws,
+                    createJweParameter.Alg,
+                    createJweParameter.Enc,
+                    jsonWebKey,
+                    createJweParameter.Password);
+            }
+            else
+            {
+                result = _jweGenerator.GenerateJwe(createJweParameter.Jws,
+                    createJweParameter.Alg,
+                    createJweParameter.Enc,
+                    jsonWebKey);
+            }
+
+            return result;
         }
     }
 }
