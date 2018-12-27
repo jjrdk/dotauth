@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
+﻿namespace SimpleAuth.Authenticate.Twilio
 {
     public class TwoFactorTwilioOptions
     {

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Authenticate.SMS.Services
+﻿namespace SimpleAuth.Authenticate.Twilio.Services
 {
+    using System;
+    using System.Threading.Tasks;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth;
     using SimpleAuth.Services;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
 
     internal sealed class SmsAuthenticateResourceOwnerService : IAuthenticateResourceOwnerService
     {

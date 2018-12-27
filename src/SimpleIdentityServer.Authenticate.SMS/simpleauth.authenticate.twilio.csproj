@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <RootNamespace>SimpleAuth.Authenticate.Twilio</RootNamespace>
   </PropertyGroup>
   <ItemGroup>  
     <ProjectReference Include="..\SimpleIdentityServer.Authenticate.SMS.Common\SimpleIdentityServer.Authenticate.SMS.Common.csproj" />  

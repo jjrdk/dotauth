@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Authenticate.SMS.ViewModels
+﻿namespace SimpleAuth.Authenticate.Twilio.ViewModels
 {
     public class ConfirmCodeViewModel
     {

@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Authenticate.SMS.Actions
+﻿namespace SimpleAuth.Authenticate.Twilio.Actions
 {
     using System.Threading.Tasks;
 

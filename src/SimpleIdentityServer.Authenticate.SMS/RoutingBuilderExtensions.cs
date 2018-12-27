@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
-using System;
-
-namespace SimpleIdentityServer.Authenticate.SMS
+﻿namespace SimpleAuth.Authenticate.Twilio
 {
+    using System;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Routing;
+
     public static class RoutingBuilderExtensions
     {
         public static IRouteBuilder UseSmsAuthentication(this IRouteBuilder routeBuilder)
