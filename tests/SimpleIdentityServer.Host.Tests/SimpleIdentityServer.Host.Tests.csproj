@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\simpleauth.twilio\simpleauth.twilio.csproj" />
     <ProjectReference Include="..\..\src\SimpleIdentityServer.Authenticate.SMS.Client\SimpleIdentityServer.Authenticate.SMS.Client.csproj" />
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Authenticate.SMS\SimpleIdentityServer.Authenticate.SMS.csproj" />
     <ProjectReference Include="..\..\src\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.server\simpleauth.server.csproj" />
     <ProjectReference Include="..\..\src\SimpleIdentityServer.Twilio.Client\SimpleIdentityServer.Twilio.Client.csproj" />

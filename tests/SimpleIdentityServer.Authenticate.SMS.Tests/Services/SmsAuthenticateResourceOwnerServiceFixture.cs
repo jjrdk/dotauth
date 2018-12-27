@@ -1,5 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Authenticate.SMS.Services;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -10,6 +9,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Services
     using SimpleAuth.Services;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Twilio.Services;
 
     public class SmsAuthenticateResourceOwnerServiceFixture
     {

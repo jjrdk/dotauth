@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Authenticate.Twilio.Actions
+﻿namespace SimpleAuth.Twilio.Actions
 {
     using System;
     using System.Threading.Tasks;

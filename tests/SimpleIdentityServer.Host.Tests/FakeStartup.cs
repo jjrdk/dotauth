@@ -15,7 +15,6 @@
 namespace SimpleIdentityServer.Host.Tests
 {
     using Authenticate.SMS;
-    using Authenticate.SMS.Actions;
     using Client;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
@@ -33,13 +32,15 @@ namespace SimpleIdentityServer.Host.Tests
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
-    using SimpleIdentityServer.Authenticate.SMS.Controllers;
-    using SimpleIdentityServer.Authenticate.SMS.Services;
     using Stores;
     using System;
     using System.Net.Http;
     using System.Reflection;
     using System.Text;
+    using SimpleAuth.Twilio;
+    using SimpleAuth.Twilio.Actions;
+    using SimpleAuth.Twilio.Controllers;
+    using SimpleAuth.Twilio.Services;
 
     public class FakeStartup : IStartup
     {
@@ -94,8 +95,7 @@ namespace SimpleIdentityServer.Host.Tests
             parts.Clear();
             parts.Add(new AssemblyPart(typeof(DiscoveryController).GetTypeInfo().Assembly));
             parts.Add(new AssemblyPart(typeof(CodeController).GetTypeInfo().Assembly));
-            //parts.Add(new AssemblyPart(typeof(ProfilesController).GetTypeInfo().Assembly));
-            //parts.Add(new AssemblyPart(typeof(FiltersController).GetTypeInfo().Assembly));
+
             return services.BuildServiceProvider();
         }
 
@@ -146,9 +146,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddOpenidLogging()
                 .AddOAuthLogging()
                 .AddLogging()
-                //.AddDefaultAccessTokenStore()
-                .AddTransient<IAccountFilter, AccountFilter>()
-                .AddSingleton<IFilterStore>(new DefaultFilterStore(null));
+                .AddAccountFilter();
             services.AddSingleton(_context.ConfirmationCodeStore.Object);
             services.AddSingleton(sp => _context.Client);
             services.AddSingleton<IUsersClient>(sp =>

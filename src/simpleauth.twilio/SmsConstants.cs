@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Authenticate.Twilio
+﻿namespace SimpleAuth.Twilio
 {
     internal static class SmsConstants
     {

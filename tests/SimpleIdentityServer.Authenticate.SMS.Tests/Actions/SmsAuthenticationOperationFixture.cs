@@ -1,5 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Authenticate.SMS.Actions;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -9,6 +8,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
     using SimpleAuth.Services;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Twilio;
+    using SimpleAuth.Twilio.Actions;
     using SimpleAuth.WebSite.User.Actions;
 
     public class SmsAuthenticationOperationFixture

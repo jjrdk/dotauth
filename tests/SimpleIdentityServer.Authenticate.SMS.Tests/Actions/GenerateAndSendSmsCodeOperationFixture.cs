@@ -1,5 +1,4 @@
 ﻿using Moq;
-using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Twilio.Client;
 using System;
 using System.Threading.Tasks;
@@ -11,6 +10,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
     using SimpleAuth.Errors;
     using SimpleAuth.Exceptions;
     using SimpleAuth.Logging;
+    using SimpleAuth.Twilio;
+    using SimpleAuth.Twilio.Actions;
 
     public class GenerateAndSendSmsCodeOperationFixture
     {
