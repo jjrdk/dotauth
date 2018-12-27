@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.UserManagement.Client
+﻿namespace SimpleIdentityServer.Manager.Client
 {
     using System.Threading.Tasks;
     using Results;
