@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.twilio", "src\si
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Twilio.Client", "src\SimpleIdentityServer.Twilio.Client\SimpleIdentityServer.Twilio.Client.csproj", "{D5A83FD7-EB4B-4085-AAD1-E5CAB7FAFA2C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Authenticate.SMS.Common", "src\SimpleIdentityServer.Authenticate.SMS.Common\SimpleIdentityServer.Authenticate.SMS.Common.csproj", "{5D826B9E-BDC2-4BAE-A7FC-5D1A0BBF08E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.twilio.shared", "src\SimpleIdentityServer.Authenticate.SMS.Common\simpleauth.twilio.shared.csproj", "{5D826B9E-BDC2-4BAE-A7FC-5D1A0BBF08E8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Authenticate.SMS.Client", "src\SimpleIdentityServer.Authenticate.SMS.Client\SimpleIdentityServer.Authenticate.SMS.Client.csproj", "{D6575015-95E4-41F9-9498-79C8F0102E4D}"
 EndProject
