@@ -16,7 +16,7 @@
 
         public Task<IEnumerable<Filter>> GetAll()
         {
-            return Task.FromResult(_filters.Select(f => f));
+            return Task.FromResult(_filters.Select(f => f).ToArray().AsEnumerable());
         }
     }
 }

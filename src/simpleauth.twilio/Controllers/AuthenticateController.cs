@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Authenticate.Twilio.Controllers
+﻿namespace SimpleAuth.Twilio.Controllers
 {
     using System;
     using System.Collections.Generic;
