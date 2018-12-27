@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Common.DTOs;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Parameters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using DomainResponse = SimpleIdentityServer.Uma.Core.Responses;
 
-namespace SimpleIdentityServer.Uma.Host.Extensions
+namespace SimpleIdentityServer.Uma.Core.Extensions
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Common.DTOs;
+    using Models;
+    using Parameters;
     using SimpleAuth.Parameters;
     using SimpleAuth.Results;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
-    using ConfigurationResponse = ConfigurationResponse;
+    using ConfigurationResponse = Common.DTOs.ConfigurationResponse;
 
     internal static class MappingExtensions
     {

@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
             if (updatePolicyParameter.Rules == null || !updatePolicyParameter.Rules.Any())
             {
-                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Rules));
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.Rules));
             }
             
             _umaServerEventSource.StartUpdateAuthorizationPolicy(JsonConvert.SerializeObject(updatePolicyParameter));

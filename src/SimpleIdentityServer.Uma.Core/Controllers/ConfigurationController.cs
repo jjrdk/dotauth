@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Uma.Core.Api.ConfigurationController;
-using SimpleIdentityServer.Uma.Host.Extensions;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Host.Controllers
+namespace SimpleIdentityServer.Uma.Core.Controllers
 {
-    [Route(Constants.RouteValues.Configuration)]
+    using System.Threading.Tasks;
+    using Api.ConfigurationController;
+    using Core;
+    using Extensions;
+    using Microsoft.AspNetCore.Mvc;
+
+    [Route(UmaConstants.RouteValues.Configuration)]
     public class ConfigurationController : Controller
     {
         private readonly IConfigurationActions _configurationActions;

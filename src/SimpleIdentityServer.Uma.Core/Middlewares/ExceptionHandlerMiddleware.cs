@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Host.Middlewares
+namespace SimpleIdentityServer.Uma.Core.Middlewares
 {
-    using Microsoft.AspNetCore.Http;
-    using SimpleIdentityServer.Uma.Core.Exceptions;
-    using SimpleIdentityServer.Uma.Host.Extensions;
     using System;
     using System.Net;
     using System.Threading.Tasks;
+    using Exceptions;
+    using Extensions;
+    using Microsoft.AspNetCore.Http;
     using SimpleAuth.Errors;
     using SimpleAuth.Shared.Responses;
 

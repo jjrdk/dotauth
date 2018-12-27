@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Host.Controllers
+﻿namespace SimpleIdentityServer.Uma.Core.Controllers
 {
+    using System.Net;
+    using System.Threading.Tasks;
+    using Core;
+    using Microsoft.AspNetCore.Mvc;
     using SimpleAuth.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Responses;
 
-    [Route(Constants.RouteValues.Registration)]
+    [Route(UmaConstants.RouteValues.Registration)]
     public class RegistrationController : Controller
     {
         private readonly IClientRepository _repository;

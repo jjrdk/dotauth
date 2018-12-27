@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Uma.Host.Extensions;
-using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Host.Controllers
+namespace SimpleIdentityServer.Uma.Core.Controllers
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
+    using Core;
+    using Extensions;
+    using Microsoft.AspNetCore.Mvc;
     using SimpleAuth.Api.Introspection;
     using SimpleAuth.Errors;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
     using SimpleAuth.Shared.Serializers;
 
-    [Route(Constants.RouteValues.Introspection)]
+    [Route(UmaConstants.RouteValues.Introspection)]
     public class IntrospectionController : Controller
     {
         private readonly IIntrospectionActions _introspectionActions;

@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "SimpleIdentityServer.Uma.Host": {
-      "commandName": "Project",
-      "commandLineArgs": "http://*:5001"
-    }
-  }
-}

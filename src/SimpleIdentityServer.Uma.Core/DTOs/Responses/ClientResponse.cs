@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
+﻿namespace SimpleIdentityServer.Uma.Core.DTOs.Responses
 {
+    using System.Collections.Generic;
     using SimpleAuth.Shared.Requests;
 
     public class ClientResponse

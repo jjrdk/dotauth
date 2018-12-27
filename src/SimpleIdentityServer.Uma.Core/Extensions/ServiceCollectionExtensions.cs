@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Uma.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-
-namespace SimpleIdentityServer.Uma.Host.Extensions
+namespace SimpleIdentityServer.Uma.Core.Extensions
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
     using SimpleAuth;
     using SimpleAuth.Logging;
     using SimpleAuth.Shared.Models;

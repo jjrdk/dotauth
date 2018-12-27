@@ -163,13 +163,13 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token
             {
                 var jObj = new JObject
                 {
-                    {Constants.RptClaims.ResourceSetId, ticketLine.ResourceSetId},
-                    {Constants.RptClaims.Scopes, string.Join(" ", ticketLine.Scopes)}
+                    {UmaConstants.RptClaims.ResourceSetId, ticketLine.ResourceSetId},
+                    {UmaConstants.RptClaims.Scopes, string.Join(" ", ticketLine.Scopes)}
                 };
                 jArr.Add(jObj);
             }
 
-            jwsPayload.Add(Constants.RptClaims.Ticket, jArr);
+            jwsPayload.Add(UmaConstants.RptClaims.Ticket, jArr);
             var accessToken = await _clientHelper.GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
             var refreshTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()); // 3. Construct the refresh token.
             return new GrantedToken

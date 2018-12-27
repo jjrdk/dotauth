@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Models;
-using System.Collections.Generic;
-
 namespace SimpleIdentityServer.Uma.Host.Tests.Stores
 {
+    using SimpleIdentityServer.Uma.Core.Models;
+    using System.Collections.Generic;
+
     public static class UmaStores
     {
         public static List<ResourceSet> GetResources()

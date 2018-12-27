@@ -59,13 +59,13 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             if (addPolicyParameter.ResourceSetIds == null || !addPolicyParameter.ResourceSetIds.Any())
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.ResourceSetIds));
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.ResourceSetIds));
             }
 
             if (addPolicyParameter.Rules == null || !addPolicyParameter.Rules.Any())
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Rules));
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.Rules));
             }
 
             foreach (var resourceSetId in addPolicyParameter.ResourceSetIds)

@@ -29,7 +29,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
     using SimpleAuth;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
-    using Constants = Constants;
 
     public class BasicAuthorizationPolicyFixture
     {
@@ -179,23 +178,23 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                         Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
             var errorDetails = result.ErrorDetails as Dictionary<string, object>;
             Assert.NotNull(errorDetails);
-            Assert.True(errorDetails.ContainsKey(Constants.ErrorDetailNames.RequestingPartyClaims));
+            Assert.True(errorDetails.ContainsKey(UmaConstants.ErrorDetailNames.RequestingPartyClaims));
             var requestingPartyClaims =
-                errorDetails[Constants.ErrorDetailNames.RequestingPartyClaims] as Dictionary<string, object>;
+                errorDetails[UmaConstants.ErrorDetailNames.RequestingPartyClaims] as Dictionary<string, object>;
             Assert.NotNull(requestingPartyClaims);
-            Assert.True(requestingPartyClaims.ContainsKey(Constants.ErrorDetailNames.RequiredClaims));
-            Assert.True(requestingPartyClaims.ContainsKey(Constants.ErrorDetailNames.RedirectUser));
+            Assert.True(requestingPartyClaims.ContainsKey(UmaConstants.ErrorDetailNames.RequiredClaims));
+            Assert.True(requestingPartyClaims.ContainsKey(UmaConstants.ErrorDetailNames.RedirectUser));
             var requiredClaims =
-                requestingPartyClaims[Constants.ErrorDetailNames.RequiredClaims] as List<Dictionary<string, string>>;
+                requestingPartyClaims[UmaConstants.ErrorDetailNames.RequiredClaims] as List<Dictionary<string, string>>;
             Assert.NotNull(requiredClaims);
             Assert.Contains(requiredClaims, r =>
-                r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimName && kv.Value == "name"));
+                r.Any(kv => kv.Key == UmaConstants.ErrorDetailNames.ClaimName && kv.Value == "name"));
             Assert.Contains(requiredClaims, r =>
-                r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimFriendlyName && kv.Value == "name"));
+                r.Any(kv => kv.Key == UmaConstants.ErrorDetailNames.ClaimFriendlyName && kv.Value == "name"));
             Assert.Contains(requiredClaims, r =>
-                r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimName && kv.Value == "email"));
+                r.Any(kv => kv.Key == UmaConstants.ErrorDetailNames.ClaimName && kv.Value == "email"));
             Assert.Contains(requiredClaims, r =>
-                r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimFriendlyName && kv.Value == "email"));
+                r.Any(kv => kv.Key == UmaConstants.ErrorDetailNames.ClaimFriendlyName && kv.Value == "email"));
         }
 
         [Fact]
