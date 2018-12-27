@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authentication;
-using SimpleIdentityServer.Uma.Host.Tests.Fakes;
-using System;
-
 namespace SimpleIdentityServer.Uma.Host.Tests.MiddleWares
 {
+    using Microsoft.AspNetCore.Authentication;
+    using SimpleIdentityServer.Uma.Host.Tests.Fakes;
+    using System;
+
     public static class FakeCustomAuthExtensions
     {
-        public static AuthenticationBuilder AddFakeCustomAuth(this AuthenticationBuilder builder, Action<TestAuthenticationOptions> configureOptions)
+        public static AuthenticationBuilder AddFakeCustomAuth(this AuthenticationBuilder builder, Action<AuthenticationSchemeOptions> configureOptions)
         {
-            return builder.AddScheme<TestAuthenticationOptions, TestAuthenticationHandler>(FakeUmaStartup.DefaultSchema, FakeUmaStartup.DefaultSchema, configureOptions);
+            return builder.AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>(FakeUmaStartup.DefaultSchema, FakeUmaStartup.DefaultSchema, configureOptions);
         }
     }
 }

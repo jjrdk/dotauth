@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Host.Controllers
+﻿namespace SimpleIdentityServer.Uma.Core.Controllers
 {
+    using System.Threading.Tasks;
+    using Core;
+    using Microsoft.AspNetCore.Mvc;
     using SimpleAuth.Api.Jwks;
     using SimpleAuth.Shared.Requests;
 
-    [Route(Constants.RouteValues.Jwks)]
+    [Route(UmaConstants.RouteValues.Jwks)]
     public class JwksController : Controller
     {
         private readonly IJwksActions _jwksActions;

@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using SimpleIdentityServer.Uma.Host.Tests.Fakes;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Host.Tests.MiddleWares
+﻿namespace SimpleIdentityServer.Uma.Host.Tests.MiddleWares
 {
-    public class TestAuthenticationHandler : AuthenticationHandler<TestAuthenticationOptions>
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using SimpleIdentityServer.Uma.Host.Tests.Fakes;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authentication;
+
+    public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        public TestAuthenticationHandler(IOptionsMonitor<TestAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+        public TestAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
         {
         }
 

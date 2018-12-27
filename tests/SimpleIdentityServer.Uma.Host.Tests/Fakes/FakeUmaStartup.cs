@@ -12,26 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Uma.Core;
-using SimpleIdentityServer.Uma.Host.Controllers;
-using SimpleIdentityServer.Uma.Host.Middlewares;
-using SimpleIdentityServer.Uma.Host.Tests.MiddleWares;
-using SimpleIdentityServer.Uma.Host.Tests.Services;
-using SimpleIdentityServer.Uma.Host.Tests.Stores;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Security.Claims;
-
 namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
 {
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
+    using SimpleIdentityServer.Uma.Host.Tests.MiddleWares;
+    using SimpleIdentityServer.Uma.Host.Tests.Services;
+    using SimpleIdentityServer.Uma.Host.Tests.Stores;
+    using System;
+    using System.Collections.Generic;
+    using System.Reflection;
+    using System.Security.Claims;
     using SimpleIdentityServer.Client.Operations;
     using System.Net.Http;
+    using Core;
+    using Core.Controllers;
+    using Core.Middlewares;
+    using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using SimpleAuth;
     using SimpleAuth.Logging;
     using SimpleAuth.Shared;

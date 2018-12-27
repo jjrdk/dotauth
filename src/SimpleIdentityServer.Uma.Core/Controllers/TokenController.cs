@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
-using SimpleIdentityServer.Uma.Core.Api.Token;
-using SimpleIdentityServer.Uma.Host.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Host.Controllers
+﻿namespace SimpleIdentityServer.Uma.Core.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
+    using Api.Token;
+    using Core;
+    using Extensions;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Primitives;
     using SimpleAuth.Api.Token;
     using SimpleAuth.Errors;
     using SimpleAuth.Shared.Models;
@@ -19,7 +19,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
     using SimpleAuth.Shared.Responses;
     using SimpleAuth.Shared.Serializers;
 
-    [Route(Constants.RouteValues.Token)]
+    [Route(UmaConstants.RouteValues.Token)]
     public class TokenController : Controller
     {
         private readonly ITokenActions _tokenActions;

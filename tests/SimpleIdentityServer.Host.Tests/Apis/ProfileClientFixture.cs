@@ -1,13 +1,11 @@
-﻿using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.UserManagement.Client;
-using SimpleIdentityServer.UserManagement.Client.Operations;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Host.Tests.Apis
+﻿namespace SimpleIdentityServer.Host.Tests.Apis
 {
+    using SimpleIdentityServer.Client.Operations;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Xunit;
     using Client;
+    using Manager.Client;
     using SimpleAuth.Errors;
     using SimpleAuth.Shared.Requests;
     using TokenRequest = Client.TokenRequest;
@@ -220,10 +218,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 
         private void InitializeFakeObjects()
         {
-            var linkProfileOperation = new LinkProfileOperation(_server.Client);
-            var unlinkProfileOperation = new UnlinkProfileOperation(_server.Client);
-            var getProfilesOperation = new GetProfilesOperation(_server.Client);
-            _profileClient = new ProfileClient(linkProfileOperation, unlinkProfileOperation, getProfilesOperation);
+            _profileClient = new ProfileClient(_server.Client);
         }
     }
 }

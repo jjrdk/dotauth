@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Uma.Common.DTOs;
-using SimpleIdentityServer.Uma.Core.Api.PermissionController;
-using SimpleIdentityServer.Uma.Host.Extensions;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Host.Controllers
+namespace SimpleIdentityServer.Uma.Core.Controllers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
+    using Api.PermissionController;
+    using Common.DTOs;
+    using Core;
+    using Extensions;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
     using SimpleAuth.Errors;
     using SimpleAuth.Shared.Responses;
 
-    [Route(Constants.RouteValues.Permission)]
+    [Route(UmaConstants.RouteValues.Permission)]
     public class PermissionsController : Controller
     {
         private readonly IPermissionControllerActions _permissionControllerActions;

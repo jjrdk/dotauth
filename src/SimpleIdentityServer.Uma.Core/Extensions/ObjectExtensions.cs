@@ -12,12 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Host.Errors
+namespace SimpleIdentityServer.Uma.Core.Extensions
 {
-    internal static class ErrorDescriptions
+    using System.IO;
+    using System.Runtime.Serialization.Json;
+
+    internal static class ObjectExtensions
     {
-        public const string TheClientIsNotAuthorized = "the client is not authorized";
-        public const string TheAuthorizationProcessNeedsMoreInformation = "the authorization process needs more information";
-        public const string TheResourceOwnerDidntGiveHisConsent = "require intervention of the resource owner";
+        public static string SerializeWithDataContract(this object parameter)
+        {
+            var serializer = new DataContractJsonSerializer(parameter.GetType());
+            using (var ms = new MemoryStream())
+            {
+                serializer.WriteObject(ms, parameter);
+                ms.Position = 0;
+                var reader = new StreamReader(ms);
+                return reader.ReadToEnd();
+            }
+        }
     }
 }

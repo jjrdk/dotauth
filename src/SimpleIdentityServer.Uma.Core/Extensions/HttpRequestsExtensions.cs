@@ -12,12 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Host.Middlewares
+namespace SimpleIdentityServer.Uma.Core.Extensions
 {
-    using SimpleAuth.Logging;
+    using Microsoft.AspNetCore.Http;
 
-    public class ExceptionHandlerMiddlewareOptions
+    internal static class HttpRequestsExtensions
     {
-        public IUmaServerEventSource UmaEventSource { get; set; }
+        public static string GetAbsoluteUriWithVirtualPath(this HttpRequest requestMessage)
+        {
+            var host = requestMessage.Host.Value;
+            var http = "http://";
+            if (requestMessage.IsHttps)
+            {
+                http = "https://";
+            }
+
+            var relativePath = requestMessage.PathBase.Value;
+            return http + host + relativePath;
+        }
     }
 }

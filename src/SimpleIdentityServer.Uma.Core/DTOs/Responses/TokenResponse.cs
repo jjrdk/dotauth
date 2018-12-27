@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
+﻿namespace SimpleIdentityServer.Uma.Core.DTOs.Responses
 {
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class TokenResponse
     {

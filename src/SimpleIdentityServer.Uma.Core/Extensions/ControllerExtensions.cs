@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
-using Microsoft.Extensions.Primitives;
-using System.Net.Http.Headers;
-using System.Collections.Generic;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc;
-
-namespace SimpleIdentityServer.Uma.Host.Extensions
+namespace SimpleIdentityServer.Uma.Core.Extensions
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http.Headers;
+    using System.Security.Claims;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Primitives;
+
     internal static class ControllerExtensions
     {
         public static AuthenticationHeaderValue GetAuthenticationHeader(this Controller controller)

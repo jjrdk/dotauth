@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
                         var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPermissionNames.ResourceSetId));
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.ResourceSetId));
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
                         var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPermissionNames.Scopes));
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.Scopes));
         }
 
         [Fact]

@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Uma.Common.DTOs;
-using SimpleIdentityServer.Uma.Core.Api.PolicyController;
-using SimpleIdentityServer.Uma.Core.Parameters;
-using SimpleIdentityServer.Uma.Host.Extensions;
-using System.Net;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Host.Controllers
+namespace SimpleIdentityServer.Uma.Core.Controllers
 {
+    using System.Net;
+    using System.Threading.Tasks;
+    using Api.PolicyController;
+    using Common.DTOs;
+    using Core;
+    using Extensions;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Parameters;
     using SimpleAuth.Errors;
     using SimpleAuth.Shared.Responses;
 
-    [Route(Constants.RouteValues.Policies)]
+    [Route(UmaConstants.RouteValues.Policies)]
     public class PoliciesController : Controller
     {
         private readonly IPolicyActions _policyActions;

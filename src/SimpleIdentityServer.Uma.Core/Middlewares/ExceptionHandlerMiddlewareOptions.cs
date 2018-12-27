@@ -12,23 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IO;
-using System.Runtime.Serialization.Json;
-
-namespace SimpleIdentityServer.Uma.Host.Extensions
+namespace SimpleIdentityServer.Uma.Core.Middlewares
 {
-    internal static class ObjectExtensions
+    using SimpleAuth.Logging;
+
+    public class ExceptionHandlerMiddlewareOptions
     {
-        public static string SerializeWithDataContract(this object parameter)
-        {
-            var serializer = new DataContractJsonSerializer(parameter.GetType());
-            using (var ms = new MemoryStream())
-            {
-                serializer.WriteObject(ms, parameter);
-                ms.Position = 0;
-                var reader = new StreamReader(ms);
-                return reader.ReadToEnd();
-            }
-        }
+        public IUmaServerEventSource UmaEventSource { get; set; }
     }
 }

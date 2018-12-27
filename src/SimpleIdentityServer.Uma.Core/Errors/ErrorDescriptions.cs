@@ -16,6 +16,9 @@ namespace SimpleIdentityServer.Uma.Core.Errors
 {
     internal static class ErrorDescriptions
     {
+        public const string TheClientIsNotAuthorized = "the client is not authorized";
+        public const string TheAuthorizationProcessNeedsMoreInformation = "the authorization process needs more information";
+        public const string TheResourceOwnerDidntGiveHisConsent = "require intervention of the resource owner";
         public const string TheParameterNeedsToBeSpecified = "the parameter {0} needs to be specified";           
         public const string TheUrlIsNotWellFormed = "the url {0} is not well formed";
         public const string TheResourceSetCannotBeInserted = "an error occured while trying to insert the resource set";

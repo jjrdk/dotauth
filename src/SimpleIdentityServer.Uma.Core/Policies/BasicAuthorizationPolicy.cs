@@ -23,7 +23,6 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Uma.Core.Policies
 {
     using SimpleAuth;
-    using Constants = Constants;
 
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy
     {
@@ -129,26 +128,26 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 requiredClaims.Add(new Dictionary<string, string>
                 {
                     {
-                        Constants.ErrorDetailNames.ClaimName, claim.Type
+                        UmaConstants.ErrorDetailNames.ClaimName, claim.Type
                     },
                     {
-                        Constants.ErrorDetailNames.ClaimFriendlyName, claim.Type
+                        UmaConstants.ErrorDetailNames.ClaimFriendlyName, claim.Type
                     },
                     {
-                        Constants.ErrorDetailNames.ClaimIssuer, openidConfigurationUrl
+                        UmaConstants.ErrorDetailNames.ClaimIssuer, openidConfigurationUrl
                     }
                 });
             }
 
-            requestingPartyClaims.Add(Constants.ErrorDetailNames.RequiredClaims, requiredClaims);
-            requestingPartyClaims.Add(Constants.ErrorDetailNames.RedirectUser, false);
+            requestingPartyClaims.Add(UmaConstants.ErrorDetailNames.RequiredClaims, requiredClaims);
+            requestingPartyClaims.Add(UmaConstants.ErrorDetailNames.RedirectUser, false);
             return new AuthorizationPolicyResult
             {
                 Type = AuthorizationPolicyResultEnum.NeedInfo,
                 ErrorDetails = new Dictionary<string, object>
                 {
                     {
-                        Constants.ErrorDetailNames.RequestingPartyClaims,
+                        UmaConstants.ErrorDetailNames.RequestingPartyClaims,
                         requestingPartyClaims
                     }
                 }
@@ -164,7 +163,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 return null;
             }
 
-            if (claimTokenParameter == null || claimTokenParameter.Format != Constants.IdTokenType)
+            if (claimTokenParameter == null || claimTokenParameter.Format != UmaConstants.IdTokenType)
             {
                 return GetNeedInfoResult(authorizationPolicy.Claims, authorizationPolicy.OpenIdProvider);
             }
