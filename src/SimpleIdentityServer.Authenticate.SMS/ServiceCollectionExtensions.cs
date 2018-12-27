@@ -1,18 +1,35 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Authenticate.SMS.Actions;
-using SimpleIdentityServer.Authenticate.SMS.Controllers;
-using SimpleIdentityServer.Authenticate.SMS.Services;
-using SimpleIdentityServer.Twilio.Client;
-using System;
-
-namespace SimpleIdentityServer.Authenticate.SMS
+﻿namespace SimpleAuth.Authenticate.Twilio
 {
+    using System;
+    using Actions;
+    using Controllers;
     using Microsoft.AspNetCore.Mvc.Razor;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.FileProviders;
+    using Services;
+    using Shared;
     using SimpleAuth.Services;
+    using SimpleIdentityServer.Twilio.Client;
 
     public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection AddTwoFactorSmsAuthentication(this IServiceCollection services, TwoFactorTwilioOptions twilioOptions)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (twilioOptions == null)
+            {
+                throw new ArgumentNullException(nameof(twilioOptions));
+            }
+
+            services.AddSingleton(twilioOptions);
+            services.AddTransient<ITwoFactorAuthenticationService, DefaultTwilioSmsService>();
+            return services;
+        }
+
         public static IServiceCollection AddSmsAuthentication(this IServiceCollection services, IMvcBuilder mvcBuilder, SmsAuthenticationOptions smsAuthenticationOptions)
         {
             if (services == null)

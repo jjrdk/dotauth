@@ -1,15 +1,14 @@
-using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Authenticate.SMS.Actions;
-using SimpleIdentityServer.Authenticate.SMS.Common.Requests;
-using System;
-using System.Net;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Authenticate.SMS.Controllers
+namespace SimpleAuth.Authenticate.Twilio.Controllers
 {
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
-    using SimpleAuth.Shared.Responses;
+    using System;
+    using System.Net;
+    using System.Threading.Tasks;
+    using Actions;
+    using Errors;
+    using Exceptions;
+    using Microsoft.AspNetCore.Mvc;
+    using Shared.Responses;
+    using SimpleIdentityServer.Authenticate.SMS.Common.Requests;
 
     [Route(SmsConstants.CodeController)]
     public class CodeController : Controller
@@ -67,7 +66,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 
             if (string.IsNullOrWhiteSpace(confirmationCodeRequest.PhoneNumber))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, $"parameter {Common.Constants.ConfirmationCodeRequestNames.PhoneNumber} is missing", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequestCode, $"parameter {SimpleIdentityServer.Authenticate.SMS.Common.Constants.ConfirmationCodeRequestNames.PhoneNumber} is missing", HttpStatusCode.BadRequest);
             }
 
             return null;

@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Twilio.Client;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
+namespace SimpleAuth.Authenticate.Twilio
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Shared;
+    using Shared.Models;
     using SimpleAuth;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
+    using SimpleIdentityServer.Twilio.Client;
 
     public class DefaultTwilioSmsService : ITwoFactorAuthenticationService
     {
@@ -30,12 +29,7 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
 
         public DefaultTwilioSmsService(TwoFactorTwilioOptions options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            _options = options;
+            _options = options ?? throw new ArgumentNullException(nameof(options));
             _twilioClient = new TwilioClient();
         }
 
@@ -59,13 +53,16 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
             {
                 throw new ArgumentException("the phone number is missing");
             }
-            
+
             await _twilioClient.SendMessage(new TwilioSmsCredentials
-            {
-                AccountSid = _options.TwilioAccountSid,
-                AuthToken = _options.TwilioAuthToken,
-                FromNumber = _options.TwilioFromNumber,
-            }, phoneNumberClaim.Value, string.Format(_options.TwilioMessage, code)).ConfigureAwait(false);
+                    {
+                        AccountSid = _options.TwilioAccountSid,
+                        AuthToken = _options.TwilioAuthToken,
+                        FromNumber = _options.TwilioFromNumber,
+                    },
+                    phoneNumberClaim.Value,
+                    string.Format(_options.TwilioMessage, code))
+                .ConfigureAwait(false);
         }
     }
 }

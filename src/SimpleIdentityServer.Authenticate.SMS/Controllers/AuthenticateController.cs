@@ -1,36 +1,36 @@
-﻿namespace SimpleIdentityServer.Authenticate.SMS.Controllers
+﻿namespace SimpleAuth.Authenticate.Twilio.Controllers
 {
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.DataProtection;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Infrastructure;
-    using Microsoft.AspNetCore.Mvc.Routing;
-    using Actions;
-    using ViewModels;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Actions;
+    using Api.Profile;
+    using Errors;
+    using Exceptions;
+    using Extensions;
+    using Logging;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.DataProtection;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.AspNetCore.Mvc.Routing;
+    using Server;
+    using Server.Controllers;
+    using Server.Extensions;
+    using Server.ViewModels;
+    using Shared;
+    using Shared.Models;
+    using Shared.Requests;
     using SimpleAuth;
-    using SimpleAuth.Api.Profile;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Server;
-    using SimpleAuth.Server.Controllers;
-    using SimpleAuth.Server.Extensions;
-    using SimpleAuth.Server.ViewModels;
     using SimpleAuth.Services;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Translation;
-    using SimpleAuth.WebSite.Authenticate;
-    using SimpleAuth.WebSite.Authenticate.Common;
-    using SimpleAuth.WebSite.User.Actions;
+    using Translation;
+    using ViewModels;
+    using WebSite.Authenticate;
+    using WebSite.Authenticate.Common;
+    using WebSite.User.Actions;
 
     [Area(SmsConstants.AMR)]
     public class AuthenticateController : BaseAuthenticateController

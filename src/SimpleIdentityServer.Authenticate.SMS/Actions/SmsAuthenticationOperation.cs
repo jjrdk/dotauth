@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Authenticate.SMS.Actions
+﻿namespace SimpleAuth.Authenticate.Twilio.Actions
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Helpers;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth;
-    using SimpleAuth.Helpers;
     using SimpleAuth.Services;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.WebSite.User.Actions;
+    using WebSite.User.Actions;
 
     internal sealed class SmsAuthenticationOperation : ISmsAuthenticationOperation
     {
