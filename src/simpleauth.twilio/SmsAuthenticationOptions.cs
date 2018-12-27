@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Twilio
 {
     using Server;
-    using SimpleIdentityServer.Twilio.Client;
 
     public class SmsAuthenticationOptions : BasicAuthenticateOptions
     {

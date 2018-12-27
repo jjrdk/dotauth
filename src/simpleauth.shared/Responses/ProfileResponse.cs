@@ -1,8 +1,7 @@
-﻿namespace SimpleIdentityServer.UserManagement.Common.Responses
+﻿namespace SimpleAuth.Shared.Responses
 {
     using System;
     using System.Runtime.Serialization;
-    using Common;
 
     [DataContract]
     public class ProfileResponse

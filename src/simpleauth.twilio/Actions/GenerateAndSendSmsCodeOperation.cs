@@ -6,7 +6,6 @@
     using Exceptions;
     using Logging;
     using SimpleAuth;
-    using SimpleIdentityServer.Twilio.Client;
 
     internal sealed class GenerateAndSendSmsCodeOperation : IGenerateAndSendSmsCodeOperation
     {
@@ -15,8 +14,11 @@
         private readonly ITwilioClient _twilioClient;
         private readonly IOpenIdEventSource _eventSource;
 
-        public GenerateAndSendSmsCodeOperation(IConfirmationCodeStore confirmationCodeStore, SmsAuthenticationOptions smsAuthenticationOptions,
-            ITwilioClient twilioClient, IOpenIdEventSource eventSource)
+        public GenerateAndSendSmsCodeOperation(
+            IConfirmationCodeStore confirmationCodeStore,
+            SmsAuthenticationOptions smsAuthenticationOptions,
+            ITwilioClient twilioClient,
+            IOpenIdEventSource eventSource)
         {
             _confirmationCodeStore = confirmationCodeStore;
             _smsAuthenticationOptions = smsAuthenticationOptions;
@@ -42,17 +44,20 @@
             var message = string.Format(_smsAuthenticationOptions.Message, confirmationCode.Value);
             try
             {
-                await _twilioClient.SendMessage(_smsAuthenticationOptions.TwilioSmsCredentials, phoneNumber, message).ConfigureAwait(false);
+                await _twilioClient.SendMessage(_smsAuthenticationOptions.TwilioSmsCredentials, phoneNumber, message)
+                    .ConfigureAwait(false);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _eventSource.Failure(ex);
-                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, "the twilio account is not properly configured");
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                    "the twilio account is not properly configured");
             }
 
             if (!await _confirmationCodeStore.Add(confirmationCode).ConfigureAwait(false))
             {
-                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                    ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
             }
 
             _eventSource.GetConfirmationCode(confirmationCode.Value);

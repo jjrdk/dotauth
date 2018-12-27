@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Twilio.Client
+﻿namespace SimpleAuth.Twilio
 {
     using System.Threading.Tasks;
 

@@ -1,7 +1,7 @@
-﻿using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Authenticate.SMS.Common.Requests
+﻿namespace SimpleAuth.Twilio.Shared.Requests
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class ConfirmationCodeRequest
     {

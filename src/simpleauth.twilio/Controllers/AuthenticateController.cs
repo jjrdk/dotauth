@@ -21,11 +21,11 @@
     using Server.Controllers;
     using Server.Extensions;
     using Server.ViewModels;
-    using Shared;
-    using Shared.Models;
-    using Shared.Requests;
     using SimpleAuth;
     using SimpleAuth.Services;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
     using Translation;
     using ViewModels;
     using WebSite.Authenticate;

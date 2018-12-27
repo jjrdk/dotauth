@@ -9,7 +9,7 @@
     using Services;
     using Shared;
     using SimpleAuth.Services;
-    using SimpleIdentityServer.Twilio.Client;
+    using SimpleAuth.Shared;
 
     public static class ServiceCollectionExtensions
     {
@@ -60,7 +60,7 @@
             });
             services.AddSingleton(smsAuthenticationOptions);
             services.AddSingleton<ISubjectBuilder, DefaultSubjectBuilder>();
-            services.AddTransient<ITwilioClient, TwilioClient>();
+            services.AddSingleton<ITwilioClient, TwilioClient>();
             services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
             services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();

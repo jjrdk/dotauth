@@ -3,9 +3,8 @@
     using Operations;
     using Results;
     using System.Threading.Tasks;
-
-    using Common.Requests;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
 
     internal sealed class ProfileClient : IProfileClient
     {

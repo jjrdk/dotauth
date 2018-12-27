@@ -1,8 +1,8 @@
 ﻿namespace SimpleIdentityServer.UserManagement.Client.Operations
 {
     using System.Threading.Tasks;
-    using Common.Requests;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
 
     public interface ILinkProfileOperation
     {

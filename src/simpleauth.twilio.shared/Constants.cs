@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Authenticate.SMS.Common
+﻿namespace SimpleAuth.Twilio.Shared
 {
     public static class Constants
     {

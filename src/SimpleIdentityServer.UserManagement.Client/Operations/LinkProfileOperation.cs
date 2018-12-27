@@ -5,9 +5,8 @@
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
-
-    using Common.Requests;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
 
     internal sealed class LinkProfileOperation : ILinkProfileOperation

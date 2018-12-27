@@ -1,9 +1,9 @@
 ﻿namespace SimpleIdentityServer.UserManagement.Client
 {
     using System.Threading.Tasks;
-    using Common.Requests;
     using Results;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
 
     public interface IProfileClient
     {

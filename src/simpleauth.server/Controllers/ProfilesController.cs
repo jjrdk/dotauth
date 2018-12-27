@@ -7,10 +7,10 @@
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Shared.Requests;
     using Shared.Responses;
     using SimpleAuth.Api.Profile;
     using SimpleAuth.Extensions;
-    using SimpleIdentityServer.UserManagement.Common.Requests;
 
     [Route("profiles")]
     public class ProfilesController : Controller

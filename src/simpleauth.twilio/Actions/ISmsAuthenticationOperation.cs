@@ -1,7 +1,7 @@
 ﻿namespace SimpleAuth.Twilio.Actions
 {
     using System.Threading.Tasks;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     public interface ISmsAuthenticationOperation
     {
