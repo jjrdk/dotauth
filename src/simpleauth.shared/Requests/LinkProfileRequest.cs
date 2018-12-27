@@ -1,7 +1,6 @@
-﻿namespace SimpleIdentityServer.UserManagement.Common.Requests
+﻿namespace SimpleAuth.Shared.Requests
 {
     using System.Runtime.Serialization;
-    using Common;
 
     [DataContract]
     public sealed class LinkProfileRequest

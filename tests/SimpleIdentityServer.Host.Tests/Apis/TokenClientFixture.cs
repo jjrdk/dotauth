@@ -15,7 +15,6 @@
 namespace SimpleIdentityServer.Host.Tests.Apis
 {
     using Authenticate.SMS.Client;
-    using Authenticate.SMS.Common.Requests;
     using Client;
     using Client.Operations;
     using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +32,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
     using SimpleAuth.Encrypt;
     using SimpleAuth.Extensions;
     using SimpleAuth.Signature;
+    using SimpleAuth.Twilio.Shared.Requests;
     using Xunit;
     using JwtConstants = SimpleAuth.JwtConstants;
 

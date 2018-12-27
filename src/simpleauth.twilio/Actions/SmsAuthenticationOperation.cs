@@ -5,10 +5,10 @@
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Helpers;
-    using Shared.Models;
-    using Shared.Repositories;
     using SimpleAuth;
     using SimpleAuth.Services;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
     using WebSite.User.Actions;
 
     internal sealed class SmsAuthenticationOperation : ISmsAuthenticationOperation

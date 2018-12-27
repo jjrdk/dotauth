@@ -9,7 +9,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
 {
     using Client;
     using SimpleAuth.Errors;
-    using UserManagement.Common.Requests;
+    using SimpleAuth.Shared.Requests;
+    using TokenRequest = Client.TokenRequest;
 
     public class ProfileClientFixture : IClassFixture<TestOauthServerFixture>
     {

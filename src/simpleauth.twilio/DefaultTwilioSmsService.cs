@@ -17,15 +17,14 @@ namespace SimpleAuth.Twilio
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using Shared;
-    using Shared.Models;
     using SimpleAuth;
-    using SimpleIdentityServer.Twilio.Client;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     public class DefaultTwilioSmsService : ITwoFactorAuthenticationService
     {
         private readonly TwoFactorTwilioOptions _options;
-        private readonly ITwilioClient _twilioClient;
+        private readonly TwilioClient _twilioClient;
 
         public DefaultTwilioSmsService(TwoFactorTwilioOptions options)
         {
@@ -54,7 +53,8 @@ namespace SimpleAuth.Twilio
                 throw new ArgumentException("the phone number is missing");
             }
 
-            await _twilioClient.SendMessage(new TwilioSmsCredentials
+            await _twilioClient.SendMessage(
+                    new TwilioSmsCredentials
                     {
                         AccountSid = _options.TwilioAccountSid,
                         AuthToken = _options.TwilioAuthToken,

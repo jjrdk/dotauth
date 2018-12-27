@@ -7,6 +7,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SimpleIdentityServer.Authenticate.SMS.Common\simpleauth.twilio.shared.csproj" />
+    <ProjectReference Include="..\simpleauth.twilio.shared\simpleauth.twilio.shared.csproj" />
   </ItemGroup>
 </Project>

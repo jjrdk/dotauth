@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.UserManagement.Common
+﻿namespace SimpleAuth.Shared
 {
     internal static class UserManagementConstants
     {

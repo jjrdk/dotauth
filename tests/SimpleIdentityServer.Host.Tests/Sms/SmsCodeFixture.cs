@@ -1,7 +1,6 @@
 ﻿namespace SimpleIdentityServer.Host.Tests.Sms
 {
     using Authenticate.SMS.Client;
-    using Authenticate.SMS.Common.Requests;
     using Moq;
     using System;
     using System.Net;
@@ -9,7 +8,8 @@
     using SimpleAuth;
     using SimpleAuth.Errors;
     using SimpleAuth.Exceptions;
-    using Twilio.Client;
+    using SimpleAuth.Twilio;
+    using SimpleAuth.Twilio.Shared.Requests;
     using Xunit;
 
     public class SmsCodeFixture : IClassFixture<TestOauthServerFixture>

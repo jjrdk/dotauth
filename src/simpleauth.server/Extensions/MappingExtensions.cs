@@ -29,7 +29,6 @@ namespace SimpleAuth.Server.Extensions
     using Shared.Responses;
     using Shared.Results;
     using SimpleAuth;
-    using SimpleIdentityServer.UserManagement.Common.Responses;
     using ViewModels;
     using CodeChallengeMethods = Shared.Models.CodeChallengeMethods;
 

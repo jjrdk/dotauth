@@ -7,8 +7,9 @@ namespace SimpleAuth.Twilio.Controllers
     using Errors;
     using Exceptions;
     using Microsoft.AspNetCore.Mvc;
-    using Shared.Responses;
-    using SimpleIdentityServer.Authenticate.SMS.Common.Requests;
+    using Shared;
+    using Shared.Requests;
+    using SimpleAuth.Shared.Responses;
 
     [Route(SmsConstants.CodeController)]
     public class CodeController : Controller
@@ -66,7 +67,7 @@ namespace SimpleAuth.Twilio.Controllers
 
             if (string.IsNullOrWhiteSpace(confirmationCodeRequest.PhoneNumber))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, $"parameter {SimpleIdentityServer.Authenticate.SMS.Common.Constants.ConfirmationCodeRequestNames.PhoneNumber} is missing", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequestCode, $"parameter {Constants.ConfirmationCodeRequestNames.PhoneNumber} is missing", HttpStatusCode.BadRequest);
             }
 
             return null;
