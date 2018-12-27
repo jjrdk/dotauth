@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Scim.Host.Controllers
+namespace SimpleAuth.Server.Controllers
 {
     using System;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
-    using SimpleAuth.Shared.DTOs;
-    using ScimConstants = SimpleAuth.Scim.ScimConstants;
+    using Shared.DTOs;
+    using ScimConstants = Scim.ScimConstants;
 
     [Route(ScimConstants.RoutePaths.ServiceProviderConfigController)]
     public class ServiceProviderConfigController : Controller

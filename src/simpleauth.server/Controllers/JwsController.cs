@@ -14,23 +14,25 @@
 
 namespace SimpleAuth.Server.Controllers
 {
-    using System;
-    using System.Threading.Tasks;
     using Extensions;
+    using Helpers;
     using Microsoft.AspNetCore.Mvc;
     using Shared.Requests;
     using Shared.Responses;
+    using Signature;
     using SimpleAuth;
     using SimpleAuth.Api.Jws;
+    using System;
+    using System.Threading.Tasks;
 
     [Route(CoreConstants.EndPoints.Jws)]
     public class JwsController : Controller
     {
-        private readonly IJwsActions _jwsActions;
+        private readonly JwsActions _jwsActions;
 
-        public JwsController(IJwsActions jwsActions)
+        public JwsController(IJwsParser jwsParser, IJwsGenerator jwsGenerator, IJsonWebKeyHelper jsonWebKeyHelper)
         {
-            _jwsActions = jwsActions;
+            _jwsActions = new JwsActions(jwsParser, jwsGenerator, jsonWebKeyHelper);
         }
 
         [HttpGet]
@@ -44,7 +46,7 @@ namespace SimpleAuth.Server.Controllers
             var result = await _jwsActions.GetJwsInformation(getJwsRequest.ToParameter()).ConfigureAwait(false);
             return result.ToDto();
         }
-        
+
         [HttpPost]
         public async Task<string> PostJws([FromBody] CreateJwsRequest createJwsRequest)
         {

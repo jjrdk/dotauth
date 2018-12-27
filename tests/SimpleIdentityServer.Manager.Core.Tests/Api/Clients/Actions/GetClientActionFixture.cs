@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
     //            .Returns(Task.FromResult((Client)null));
 
     //        // ACT & ASSERTS
-    //        var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _clientRepositoryStub.Object.GetById(clientId)).ConfigureAwait(false);
+    //        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _clientRepositoryStub.Object.GetById(clientId)).ConfigureAwait(false);
     //        Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
     //        Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntExist, clientId));
     //    }

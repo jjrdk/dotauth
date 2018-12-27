@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Scim.Host.Controllers
+namespace SimpleAuth.Server.Controllers
 {
-    using Extensions;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Linq;
     using System.Linq.Expressions;
@@ -24,12 +21,15 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Extensions;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Shared;
+    using Shared.DTOs;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth.Services;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.DTOs;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.WebSite.User.Actions;
+    using WebSite.User.Actions;
 
     [Route(SimpleAuth.Scim.ScimConstants.RoutePaths.UsersController)]
     public class UsersController : Controller

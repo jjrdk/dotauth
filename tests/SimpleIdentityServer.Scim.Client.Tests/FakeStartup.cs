@@ -12,35 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Scim.Client.Tests.MiddleWares;
-using SimpleIdentityServer.Scim.Host.Controllers;
-using SimpleIdentityServer.Scim.Host.Extensions;
-using System.Reflection;
-
 namespace SimpleIdentityServer.Scim.Client.Tests
 {
+    using System.Net;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Mvc.ApplicationParts;
+    using Microsoft.Extensions.DependencyInjection;
+    using SimpleIdentityServer.Scim.Client.Tests.MiddleWares;
+    using System.Reflection;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authentication.Cookies;
     using SimpleAuth;
     using SimpleAuth.Logging;
+    using SimpleAuth.Server.Controllers;
+    using SimpleAuth.Server.Extensions;
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.WebSite.User.Actions;
 
     public class FakeStartup
     {
-        public const string DefaultSchema = "Cookies";
+        public const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSimpleIdentityServerCore()
+            services.AddSimpleAuthServer()
                 .AddOpenidLogging()
-                .AddScimHost(new Host.ScimServerConfiguration
-            {
-
-            });
+                .AddScimHost();
             services.AddAuthentication(opts =>
             {
                 opts.DefaultAuthenticateScheme = DefaultSchema;
@@ -48,6 +47,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             }).AddFakeCustomAuth(o => { });
             services.AddAuthorization(options =>
             {
+                options.AddAuthPolicies(DefaultSchema);
                 options.AddPolicy(ScimConstants.ScimPolicies.ScimManage, policy => policy.RequireAssertion((ctx) => true));
                 options.AddPolicy(ScimConstants.ScimPolicies.ScimRead, policy => policy.RequireAssertion((ctx) => true));
                 options.AddPolicy("authenticated", (policy) =>

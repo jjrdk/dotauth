@@ -21,7 +21,7 @@
         public void When_Login_Is_Null_Then_Exception_Is_Thrown()
         {            InitializeFakeObjects();
 
-                        var ex = Assert.Throws<IdentityServerManagerException>(() => _updateResourceOwnerClaimsParameterValidator.Validate(new UpdateResourceOwnerClaimsParameter()));
+                        var ex = Assert.Throws<IdentityServerException>(() => _updateResourceOwnerClaimsParameterValidator.Validate(new UpdateResourceOwnerClaimsParameter()));
 
                         Assert.NotNull(ex);
             Assert.Equal("invalid_request", ex.Code);

@@ -208,7 +208,7 @@ namespace SimpleAuth.Server.Controllers
                 .ConfigureAwait(false);
 
             // 5. Redirect to the profile
-            return RedirectToAction("Index", "User", new { area = "UserManagement" });
+            return RedirectToAction("Index", "User");
         }
 
         [HttpGet]
@@ -335,7 +335,7 @@ namespace SimpleAuth.Server.Controllers
             await SetLocalCookie(authenticatedUser.Claims, Guid.NewGuid().ToString()).ConfigureAwait(false);
 
             // 7. Redirect the user agent to the User view.
-            return RedirectToAction("Index", "User", new { area = "UserManagement" });
+            return RedirectToAction("Index", "User");
         }
 
         [HttpGet]

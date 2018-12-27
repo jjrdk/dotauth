@@ -18,7 +18,7 @@ namespace SimpleAuth.Server.MiddleWare
 
     public static class UseExceptionHandlerExtensions
     {
-        public static IApplicationBuilder UseSimpleIdentityServerManagerExceptionHandler(this IApplicationBuilder applicationBuilder, ExceptionHandlerMiddlewareOptions options)
+        public static IApplicationBuilder UseSimpleAuthExceptionHandler(this IApplicationBuilder applicationBuilder, ExceptionHandlerMiddlewareOptions options)
         {
             return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>(options);
         }

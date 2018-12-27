@@ -12,23 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.MiddleWare
+namespace SimpleAuth.Server.Controllers
 {
-    using System;
-    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Mvc;
 
-    public static class SimpleIdentityServerExceptionExtensions
+    public class ResourceTypesController : Controller
     {
-        public static IApplicationBuilder UseSimpleIdentityServerExceptionHandler(
-            this IApplicationBuilder applicationBuilder,
-            ExceptionHandlerMiddlewareOptions options)
-        {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>(options);
-        }
     }
 }

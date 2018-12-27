@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Host.Extensions;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Scim.Host.Controllers
+namespace SimpleAuth.Server.Controllers
 {
-    using SimpleAuth.Results;
-    using SimpleAuth.Shared.DTOs;
-    using ScimConstants = SimpleAuth.Scim.ScimConstants;
+    using System;
+    using System.Threading.Tasks;
+    using Extensions;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Newtonsoft.Json.Linq;
+    using Results;
+    using Shared.DTOs;
+    using ScimConstants = Scim.ScimConstants;
 
     [Route(ScimConstants.RoutePaths.BulkController)]
     public class BulkController : Controller

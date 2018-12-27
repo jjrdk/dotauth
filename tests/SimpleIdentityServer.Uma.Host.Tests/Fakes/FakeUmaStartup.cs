@@ -121,7 +121,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
         {
             // 1. Add CORE.
             services.AddSimpleIdServerUmaCore(new UmaConfigurationOptions(), UmaStores.GetResources())
-                .AddSimpleIdentityServerCore(clients: OAuthStores.GetClients(),
+                .AddSimpleAuthServer(clients: OAuthStores.GetClients(),
                     jsonWebKeys: OAuthStores.GetJsonWebKeys(_context),
                     scopes: OAuthStores.GetScopes())
                 .AddSimpleIdentityServerJwt()

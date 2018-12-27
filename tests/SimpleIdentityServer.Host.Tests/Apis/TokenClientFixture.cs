@@ -916,7 +916,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
                 .ConfigureAwait(false);
 
-            Assert.NotNull(token);
             Assert.False(token.ContainsError);
             Assert.NotEmpty(token.Content.AccessToken);
         }

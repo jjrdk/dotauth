@@ -31,7 +31,7 @@ namespace SimpleAuth.Server.Extensions
                 throw new ArgumentNullException(nameof(app));
             }
 
-            app.UseSimpleIdentityServerManagerExceptionHandler(new ExceptionHandlerMiddlewareOptions
+            app.UseSimpleAuthExceptionHandler(new ExceptionHandlerMiddlewareOptions
             {
                 SimpleIdentityServerEventSource = app.ApplicationServices.GetService<IOpenIdEventSource>()
                 // ManagerEventSource = (IManagerEventSource)app.ApplicationServices.GetService(typeof(IManagerEventSource))
@@ -64,7 +64,7 @@ namespace SimpleAuth.Server.Extensions
                 throw new ArgumentNullException(nameof(options));
             }
 
-            app.UseSimpleIdentityServerExceptionHandler(new ExceptionHandlerMiddlewareOptions
+            app.UseSimpleAuthExceptionHandler(new ExceptionHandlerMiddlewareOptions
             {
                 SimpleIdentityServerEventSource = app.ApplicationServices.GetService<IOpenIdEventSource>()
             });

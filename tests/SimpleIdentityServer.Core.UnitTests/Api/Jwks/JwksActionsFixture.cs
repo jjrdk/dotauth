@@ -1,58 +1,74 @@
-﻿using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks
+﻿namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks
 {
+    using Moq;
+    using SimpleAuth;
     using SimpleAuth.Api.Jwks;
-    using SimpleAuth.Api.Jwks.Actions;
+    using SimpleAuth.Repositories;
+    using SimpleAuth.Shared;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Xunit;
 
     public sealed class JwksActionsFixture
     {
-        private Mock<IGetSetOfPublicKeysUsedToValidateJwsAction> _getSetOfPublicKeysUsedToValidateJwsActionStub;
-        private Mock<IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction> _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenActionStub;
-        private Mock<IRotateJsonWebKeysOperation> _rotateJsonWebKeysOperationStub;
         private IJwksActions _jwksActions;
 
         [Fact]
-        public async Task When_Retrieving_Jwks_Then_Set_Of_Private_And_Public_Keys_Are_Returned()
-        {            InitializeFakeObjects();
-            var publicKeys = new List<Dictionary<string, object>>();
-            var privateKeys = new List<Dictionary<string, object>>();
+        public async Task When_There_Is_No_JsonWebKeys_To_Rotate_Then_False_Is_Returned()
+        {
+            InitializeFakeObjects(null);
+            //_jsonWebKeyRepositoryStub.Setup(j => j.GetAllAsync())
+            //    .Returns(() => Task.FromResult((ICollection<JsonWebKey>)null));
 
-            _getSetOfPublicKeysUsedToValidateJwsActionStub.Setup(g => g.Execute())
-                .Returns(Task.FromResult(publicKeys));
-            _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenActionStub.Setup(g => g.Execute())
-                .Returns(Task.FromResult(privateKeys));
+            var result = await _jwksActions.RotateJwks().ConfigureAwait(false);
 
-                        var result = await _jwksActions.GetJwks().ConfigureAwait(false);
-
-                        Assert.NotNull(result);
+            Assert.False(result);
         }
 
         [Fact]
-        public async Task When_JsonWebKeys_Are_Rotated_Then_Operation_Should_Be_Called()
-        {            InitializeFakeObjects();
-            const bool rotateSuccess = true;
-            _rotateJsonWebKeysOperationStub.Setup(r => r.Execute())
-                .Returns(Task.FromResult(rotateSuccess));
+        public async Task When_Rotating_Two_JsonWebKeys_Then_SerializedKeyProperty_Has_Changed()
+        {
+            const string firstJsonWebKeySerializedKey = "firstJsonWebKeySerializedKey";
+            const string secondJsonWebKeySerializedKey = "secondJsonWebKeySerializedKey";
+            var jsonWebKeys = new List<JsonWebKey>
+            {
+                new JsonWebKey
+                {
+                    Kid = "1",
+                    SerializedKey = firstJsonWebKeySerializedKey
+                },
+                new JsonWebKey
+                {
+                    Kid = "2",
+                    SerializedKey = secondJsonWebKeySerializedKey
+                }
+            };
 
-                        var result = await _jwksActions.RotateJwks().ConfigureAwait(false);
+            InitializeFakeObjects(jsonWebKeys);
+            //_jsonWebKeyRepositoryStub.Setup(j => j.GetAllAsync())
+            //    .Returns(() => Task.FromResult(jsonWebKeys));
 
-                        Assert.True(result == rotateSuccess);
-            _rotateJsonWebKeysOperationStub.Verify(r => r.Execute());
+            var result = await _jwksActions.RotateJwks().ConfigureAwait(false);
+
+            //_jsonWebKeyRepositoryStub.Verify(j => j.UpdateAsync(It.IsAny<JsonWebKey>()));
+            Assert.True(result);
         }
 
-        private void InitializeFakeObjects()
+        [Fact]
+        public async Task When_Retrieving_Jwks_Then_Set_Of_Private_And_Public_Keys_Are_Returned()
         {
-            _getSetOfPublicKeysUsedToValidateJwsActionStub = new Mock<IGetSetOfPublicKeysUsedToValidateJwsAction>();
-            _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenActionStub = new Mock<IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction>();
-            _rotateJsonWebKeysOperationStub = new Mock<IRotateJsonWebKeysOperation>();
+            InitializeFakeObjects();
+
+            var result = await _jwksActions.GetJwks().ConfigureAwait(false);
+
+            Assert.NotNull(result);
+        }
+
+        private void InitializeFakeObjects(IReadOnlyCollection<JsonWebKey> jsonWebKeys = null)
+        {
             _jwksActions = new JwksActions(
-                _getSetOfPublicKeysUsedToValidateJwsActionStub.Object,
-                _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenActionStub.Object,
-                _rotateJsonWebKeysOperationStub.Object);
+                new DefaultJsonWebKeyRepository(jsonWebKeys ?? new JsonWebKey[0]),
+                new InMemoryTokenStore());
         }
     }
 }

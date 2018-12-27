@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authentication;
-using System;
-
 namespace SimpleIdentityServer.Scim.Client.Tests.MiddleWares
 {
+    using Microsoft.AspNetCore.Authentication;
+    using System;
+
     public static class FakeCustomAuthExtensions
     {
         public static AuthenticationBuilder AddFakeCustomAuth(this AuthenticationBuilder builder, Action<AuthenticationSchemeOptions> configureOptions)

@@ -14,43 +14,239 @@
 
 namespace SimpleAuth.Api.Jws
 {
-    using System;
-    using System.Threading.Tasks;
-    using Actions;
+    using Errors;
+    using Exceptions;
+    using Extensions;
+    using Helpers;
     using Parameters;
     using Results;
+    using Shared;
+    using Signature;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Cryptography;
+    using System.Threading.Tasks;
 
-    public class JwsActions : IJwsActions
+    public class JwsActions
     {
-        private readonly IGetJwsInformationAction _getJwsInformationAction;
-        private readonly ICreateJwsAction _createJwsAction;
+        private readonly IJwsParser _jwsParser;
+        private readonly IJwsGenerator _jwsGenerator;
+        private readonly IJsonWebKeyHelper _jsonWebKeyHelper;
+        private readonly JsonWebKeyEnricher _jsonWebKeyEnricher = new JsonWebKeyEnricher();
 
         public JwsActions(
-            IGetJwsInformationAction getJwsInformationAction, 
-            ICreateJwsAction createJwsAction)
+            IJwsParser jwsParser,
+            IJwsGenerator jwsGenerator,
+            IJsonWebKeyHelper jsonWebKeyHelper)
         {
-            _getJwsInformationAction = getJwsInformationAction;
-            _createJwsAction = createJwsAction;
+            _jwsParser = jwsParser;
+            _jwsGenerator = jwsGenerator;
+            _jsonWebKeyHelper = jsonWebKeyHelper;
         }
 
-        public Task<JwsInformationResult> GetJwsInformation(GetJwsParameter getJwsParameter)
+        public async Task<JwsInformationResult> GetJwsInformation(GetJwsParameter getJwsParameter)
         {
             if (getJwsParameter == null || string.IsNullOrWhiteSpace(getJwsParameter.Jws))
             {
                 throw new ArgumentNullException(nameof(getJwsParameter));
             }
 
-            return _getJwsInformationAction.Execute(getJwsParameter);
+            if (getJwsParameter.Url != null && !getJwsParameter.Url.IsAbsoluteUri)
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, getJwsParameter.Url));
+            }
+
+            var jws = getJwsParameter.Jws;
+            var jwsHeader = _jwsParser.GetHeader(jws);
+            if (jwsHeader == null)
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    ErrorDescriptions.TheTokenIsNotAValidJws);
+            }
+
+            if (!string.Equals(jwsHeader.Alg, JwtConstants.JwsAlgNames.NONE, StringComparison.CurrentCultureIgnoreCase)
+                && getJwsParameter.Url == null)
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    ErrorDescriptions.TheSignatureCannotBeChecked);
+            }
+
+            var result = new JwsInformationResult
+            {
+                Header = jwsHeader
+            };
+
+            JwsPayload payload;
+            if (!string.Equals(jwsHeader.Alg, JwtConstants.JwsAlgNames.NONE, StringComparison.CurrentCultureIgnoreCase))
+            {
+                var jsonWebKey = await _jsonWebKeyHelper.GetJsonWebKey(jwsHeader.Kid, getJwsParameter.Url)
+                    .ConfigureAwait(false);
+                if (jsonWebKey == null)
+                {
+                    throw new IdentityServerException(
+                        ErrorCodes.InvalidRequestCode,
+                        string.Format(
+                            ErrorDescriptions.TheJsonWebKeyCannotBeFound,
+                            jwsHeader.Kid,
+                            getJwsParameter.Url.AbsoluteUri));
+                }
+
+                payload = _jwsParser.ValidateSignature(jws, jsonWebKey);
+                if (payload == null)
+                {
+                    throw new IdentityServerException(
+                        ErrorCodes.InvalidRequestCode,
+                        ErrorDescriptions.TheSignatureIsNotCorrect);
+                }
+
+                var jsonWebKeyDic = _jsonWebKeyEnricher.GetJsonWebKeyInformation(jsonWebKey);
+                jsonWebKeyDic.AddRange(_jsonWebKeyEnricher.GetPublicKeyInformation(jsonWebKey));
+                result.JsonWebKey = jsonWebKeyDic;
+            }
+            else
+            {
+                payload = _jwsParser.GetPayload(jws);
+            }
+
+            result.Payload = payload;
+            return result;
         }
 
-        public Task<string> CreateJws(CreateJwsParameter createJwsParameter)
+        public async Task<string> CreateJws(CreateJwsParameter createJwsParameter)
         {
             if (createJwsParameter == null)
             {
                 throw new ArgumentNullException(nameof(createJwsParameter));
             }
 
-            return _createJwsAction.Execute(createJwsParameter);
+            if (createJwsParameter.Payload == null
+                || !createJwsParameter.Payload.Any())
+            {
+                throw new ArgumentNullException(nameof(createJwsParameter.Payload));
+            }
+
+            if (createJwsParameter.Alg != JwsAlg.none &&
+                (string.IsNullOrWhiteSpace(createJwsParameter.Kid) || string.IsNullOrWhiteSpace(createJwsParameter.Url)))
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidRequestCode,
+                    ErrorDescriptions.TheJwsCannotBeGeneratedBecauseMissingParameters);
+            }
+
+            Uri uri = null;
+            if (createJwsParameter.Alg != JwsAlg.none && !Uri.TryCreate(createJwsParameter.Url, UriKind.Absolute, out uri))
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidRequestCode,
+                    ErrorDescriptions.TheUrlIsNotWellFormed);
+            }
+
+            JsonWebKey jsonWebKey = null;
+            if (createJwsParameter.Alg != JwsAlg.none)
+            {
+                jsonWebKey = await _jsonWebKeyHelper.GetJsonWebKey(createJwsParameter.Kid, uri).ConfigureAwait(false);
+                if (jsonWebKey == null)
+                {
+                    throw new IdentityServerException(
+                        ErrorCodes.InvalidRequestCode,
+                        string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, createJwsParameter.Kid, uri.AbsoluteUri));
+                }
+            }
+
+            return _jwsGenerator.Generate(createJwsParameter.Payload,
+                createJwsParameter.Alg,
+                jsonWebKey);
+        }
+
+        private class JsonWebKeyEnricher
+        {
+            private readonly Dictionary<KeyType, Action<Dictionary<string, object>, JsonWebKey>> _mappingKeyTypeAndPublicKeyEnricher;
+
+            public JsonWebKeyEnricher()
+            {
+                _mappingKeyTypeAndPublicKeyEnricher =
+                    new Dictionary<KeyType, Action<Dictionary<string, object>, JsonWebKey>>
+                    {
+                        {
+                            KeyType.RSA, SetRsaPublicKeyInformation
+                        }
+                    };
+            }
+
+            public Dictionary<string, object> GetPublicKeyInformation(JsonWebKey jsonWebKey)
+            {
+                if (jsonWebKey == null)
+                {
+                    throw new ArgumentNullException(nameof(jsonWebKey));
+                }
+
+                if (!_mappingKeyTypeAndPublicKeyEnricher.ContainsKey(jsonWebKey.Kty))
+                {
+                    throw new IdentityServerException(ErrorCodes.InvalidParameterCode,
+                        string.Format(ErrorDescriptions.TheKtyIsNotSupported, jsonWebKey.Kty));
+                }
+
+                var result = new Dictionary<string, object>();
+                var enricher = _mappingKeyTypeAndPublicKeyEnricher[jsonWebKey.Kty];
+                enricher(result, jsonWebKey);
+                return result;
+            }
+
+            public Dictionary<string, object> GetJsonWebKeyInformation(JsonWebKey jsonWebKey)
+            {
+                if (!JwtConstants.MappingKeyTypeEnumToName.ContainsKey(jsonWebKey.Kty))
+                {
+                    throw new ArgumentException(nameof(jsonWebKey.Kty));
+                }
+
+                if (!JwtConstants.MappingUseEnumerationToName.ContainsKey(jsonWebKey.Use))
+                {
+                    throw new ArgumentException(nameof(jsonWebKey.Use));
+                }
+
+                return new Dictionary<string, object>
+                {
+                    {
+                        JwtConstants.JsonWebKeyParameterNames.KeyTypeName,
+                        JwtConstants.MappingKeyTypeEnumToName[jsonWebKey.Kty]
+                    },
+                    {
+                        JwtConstants.JsonWebKeyParameterNames.UseName,
+                        JwtConstants.MappingUseEnumerationToName[jsonWebKey.Use]
+                    },
+                    {
+                        JwtConstants.JsonWebKeyParameterNames.AlgorithmName,
+                        JwtConstants.MappingNameToAllAlgEnum.SingleOrDefault(kp => kp.Value == jsonWebKey.Alg).Key
+                    },
+                    {
+                        JwtConstants.JsonWebKeyParameterNames.KeyIdentifierName, jsonWebKey.Kid
+                    }
+                    // TODO : we still need to support the other parameters x5u & x5c & x5t & x5t#S256
+                };
+            }
+
+            private void SetRsaPublicKeyInformation(Dictionary<string, object> result, JsonWebKey jsonWebKey)
+            {
+                RSAParameters rsaParameters;
+                using (var provider = new RSACryptoServiceProvider())
+                {
+                    RsaExtensions.FromXmlString(provider, jsonWebKey.SerializedKey);
+                    //provider.FromXmlString(jsonWebKey.SerializedKey);
+                    //RsaExtensions.FromXmlString(provider, jsonWebKey.SerializedKey);
+                    rsaParameters = provider.ExportParameters(false);
+                }
+
+                // Export the modulus
+                var modulus = rsaParameters.Modulus.ToBase64Simplified();
+                // Export the exponent
+                var exponent = rsaParameters.Exponent.ToBase64Simplified();
+
+                result.Add(JwtConstants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
+                result.Add(JwtConstants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
+            }
         }
     }
 }

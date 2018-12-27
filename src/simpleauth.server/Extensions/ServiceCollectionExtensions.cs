@@ -27,44 +27,158 @@ namespace SimpleAuth.Server.Extensions
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Shared.DTOs;
     using UserInfo;
     using UserInfo.Actions;
+    using Validators;
 
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddSimpleIdentityServerManager(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddScimHost(this IServiceCollection services)
         {
-            // 2. Register all the dependencies.
-            serviceCollection.AddSimpleIdentityServerManagerCore();
-            //serviceCollection.AddDefaultSimpleBus();
-            //serviceCollection.AddConcurrency(opt => opt.UseInMemory());
-            //serviceCollection.AddDefaultAccessTokenStore();
-            // 3. Add authorization policies
-            serviceCollection.AddAuthorization(options =>
+            if (services == null)
             {
-                options.AddPolicy("manager", policy =>
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddTransient<IParametersValidator, ParametersValidator>();
+            services.AddSingleton(new InMemoryGroupsRepository());
+            services.AddSingleton<IProvide<GroupResource>>(sp => sp.GetService<InMemoryGroupsRepository>());
+            services.AddSingleton<IPersist<GroupResource>>(sp => sp.GetService<InMemoryGroupsRepository>());
+            services.AddSingleton<IStore<GroupResource>>(sp => sp.GetService<InMemoryGroupsRepository>());
+            return services;
+        }
+
+        public static AuthorizationOptions AddAuthPolicies(this AuthorizationOptions options, string cookieName)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            options.AddPolicy(ScimConstants.ScimPolicies.ScimManage, policy =>
+            {
+                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                policy.RequireAssertion(p =>
                 {
-                    policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
-                    policy.RequireAssertion(p =>
+                    if (p.User?.Identity?.IsAuthenticated != true)
                     {
-                        if (p.User?.Identity?.IsAuthenticated != true)
-                        {
-                            return false;
-                        }
+                        return false;
+                    }
 
-                        var claimsRole = p.User.Claims.Where(c => c.Type == "role");
-                        var claimsScope = p.User.Claims.Where(c => c.Type == "scope");
-                        if (!claimsRole.Any() && !claimsScope.Any())
-                        {
-                            return false;
-                        }
+                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
+                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
+                    if (claimRole == null && !claimScopes.Any())
+                    {
+                        return false;
+                    }
 
-                        return claimsRole.Any(c => c.Value == "administrator") || claimsScope.Any(c => c.Value == "manager");
-                    });
+                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(c => c.Value == ScimConstants.ScimPolicies.ScimManage);
+                });
+            });
+            options.AddPolicy("scim_read", policy =>
+            {
+                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                policy.RequireAssertion(p =>
+                {
+                    if (p.User?.Identity == null || !p.User.Identity.IsAuthenticated)
+                    {
+                        return false;
+                    }
+
+                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
+                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
+                    if (claimRole == null && !claimScopes.Any())
+                    {
+                        return false;
+                    }
+
+                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(c => c.Value == "scim_read");
+                });
+            });
+            options.AddPolicy("authenticated", policy =>
+            {
+                policy.AddAuthenticationSchemes("UserInfoIntrospection");
+                policy.RequireAuthenticatedUser();
+            });
+            options.AddPolicy("manager", policy =>
+            {
+                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                policy.RequireAssertion(p =>
+                {
+                    if (p.User?.Identity?.IsAuthenticated != true)
+                    {
+                        return false;
+                    }
+
+                    var claimsRole = p.User.Claims.Where(c => c.Type == "role");
+                    var claimsScope = p.User.Claims.Where(c => c.Type == "scope");
+                    if (!claimsRole.Any() && !claimsScope.Any())
+                    {
+                        return false;
+                    }
+
+                    return claimsRole.Any(c => c.Value == "administrator") || claimsScope.Any(c => c.Value == "manager");
                 });
             });
 
-            return serviceCollection;
+            options.AddPolicy("Connected", policy => // User is connected
+            {
+                policy.AddAuthenticationSchemes(cookieName);
+                policy.RequireAuthenticatedUser();
+            });
+            options.AddPolicy("registration", policy => // Access token with scope = register_client
+            {
+                policy.AddAuthenticationSchemes("OAuth2Introspection");
+                policy.RequireClaim("scope", "register_client");
+            });
+            options.AddPolicy("connected_user", policy => // Introspect the identity token.
+            {
+                policy.AddAuthenticationSchemes("UserInfoIntrospection");
+                policy.RequireAuthenticatedUser();
+            });
+            options.AddPolicy("manage_profile", policy => // Access token with scope = manage_profile or with role = administrator
+            {
+                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                policy.RequireAssertion(p =>
+                {
+                    if (p.User?.Identity == null || !p.User.Identity.IsAuthenticated)
+                    {
+                        return false;
+                    }
+
+                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
+                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
+                    if (claimRole == null && !claimScopes.Any())
+                    {
+                        return false;
+                    }
+
+                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(s => s.Value == "manage_profile");
+                });
+            });
+            options.AddPolicy("manage_account_filtering", policy => // Access token with scope = manage_account_filtering or role = administrator
+            {
+                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                policy.RequireAssertion(p =>
+                {
+                    if (p.User?.Identity == null || !p.User.Identity.IsAuthenticated)
+                    {
+                        return false;
+                    }
+
+                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
+                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope").ToArray();
+                    if (claimRole == null && !claimScopes.Any())
+                    {
+                        return false;
+                    }
+
+                    return claimRole != null && claimRole.Value == "administrator" ||
+                           claimScopes.SelectMany(s => s.Value.Split(' ')).Any(s => s == "manage_account_filtering");
+                });
+            });
+            return options;
         }
 
         public static IServiceCollection AddAccountFilter(this IServiceCollection services, List<Filter> filters = null)
@@ -121,77 +235,11 @@ namespace SimpleAuth.Server.Extensions
             return serviceCollection;
         }
 
-        public static AuthorizationOptions AddOpenIdSecurityPolicy(this AuthorizationOptions authenticateOptions, string cookieName)
-        {
-            if (authenticateOptions == null)
-            {
-                throw new ArgumentNullException(nameof(authenticateOptions));
-            }
-
-            authenticateOptions.AddPolicy("Connected", policy => // User is connected
-            {
-                policy.AddAuthenticationSchemes(cookieName);
-                policy.RequireAuthenticatedUser();
-            });
-            authenticateOptions.AddPolicy("registration", policy => // Access token with scope = register_client
-            {
-                policy.AddAuthenticationSchemes("OAuth2Introspection");
-                policy.RequireClaim("scope", "register_client");
-            });
-            authenticateOptions.AddPolicy("connected_user", policy => // Introspect the identity token.
-            {
-                policy.AddAuthenticationSchemes("UserInfoIntrospection");
-                policy.RequireAuthenticatedUser();
-            });
-            authenticateOptions.AddPolicy("manage_profile", policy => // Access token with scope = manage_profile or with role = administrator
-            {
-                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
-                policy.RequireAssertion(p =>
-                {
-                    if (p.User?.Identity == null || !p.User.Identity.IsAuthenticated)
-                    {
-                        return false;
-                    }
-
-                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
-                    if (claimRole == null && !claimScopes.Any())
-                    {
-                        return false;
-                    }
-
-                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(s => s.Value == "manage_profile");
-                });
-            });
-            authenticateOptions.AddPolicy("manage_account_filtering", policy => // Access token with scope = manage_account_filtering or role = administrator
-            {
-                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
-                policy.RequireAssertion(p =>
-                {
-                    if (p.User?.Identity == null || !p.User.Identity.IsAuthenticated)
-                    {
-                        return false;
-                    }
-
-                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope").ToArray();
-                    if (claimRole == null && !claimScopes.Any())
-                    {
-                        return false;
-                    }
-
-                    return claimRole != null && claimRole.Value == "administrator" ||
-                           claimScopes.SelectMany(s => s.Value.Split(' ')).Any(s => s == "manage_account_filtering");
-                });
-            });
-            return authenticateOptions;
-        }
-
         private static void ConfigureSimpleIdentityServer(
             IServiceCollection services,
             IdentityServerOptions options)
         {
-            services.AddSimpleIdentityServerCore(
+            services.AddSimpleAuthServer(
                     options.OAuthConfigurationOptions,
                     clients: options.Configuration?.Clients,
                     resourceOwners: options.Configuration?.Users,

@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Helpers
             var uri = new Uri(url);
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _jsonWebKeyHelper.GetJsonWebKey(kid, uri).ConfigureAwait(false)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(async () => await _jsonWebKeyHelper.GetJsonWebKey(kid, uri).ConfigureAwait(false)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, url));

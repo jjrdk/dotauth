@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Validators
         public void When_Pass_No_Login_Then_Exception_Is_Thrown()
         {            InitializeFakeObjects();
 
-                        var exception = Assert.Throws<IdentityServerManagerException>(
+                        var exception = Assert.Throws<IdentityServerException>(
                 () => _updateResourceOwnerPasswordParameterValidator.Validate(
                     new UpdateResourceOwnerPasswordParameter
                     {
@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Validators
         public void When_Pass_No_Password_Then_Exception_Is_Thrown()
         {            InitializeFakeObjects();
 
-                        var exception = Assert.Throws<IdentityServerManagerException>(
+                        var exception = Assert.Throws<IdentityServerException>(
                 () => _updateResourceOwnerPasswordParameterValidator.Validate(
                     new UpdateResourceOwnerPasswordParameter
                     {
