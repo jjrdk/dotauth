@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace SimpleIdentityServer.UserManagement.Client.Results
+﻿namespace SimpleIdentityServer.Manager.Client.Results
 {
+    using System.Collections.Generic;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
 
