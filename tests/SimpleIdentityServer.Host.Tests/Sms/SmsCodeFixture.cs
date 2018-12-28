@@ -1,26 +1,26 @@
-﻿namespace SimpleIdentityServer.Host.Tests.Sms
+﻿namespace SimpleAuth.Server.Tests.Sms
 {
-    using Authenticate.SMS.Client;
-    using Moq;
     using System;
     using System.Net;
     using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Moq;
     using SimpleAuth;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
-    using SimpleAuth.Twilio;
-    using SimpleAuth.Twilio.Shared.Requests;
+    using SimpleIdentityServer.Authenticate.SMS.Client;
+    using Twilio;
+    using Twilio.Shared.Requests;
     using Xunit;
 
-    public class SmsCodeFixture : IClassFixture<TestOauthServerFixture>
+    public class SmsCodeFixture : IDisposable
     {
         private SidSmsAuthenticateClient _sidSmsAuthenticateClient;
         private const string baseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
 
-        public SmsCodeFixture(TestOauthServerFixture server)
+        public SmsCodeFixture()
         {
-            _server = server;
+            _server = new TestOauthServerFixture();
         }
 
         [Fact]
@@ -67,7 +67,6 @@
                     })
                 .ConfigureAwait(false);
 
-            // ASSERT : TWILIO NOT CONFIGURED
             Assert.True(twilioNotConfigured.ContainsError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, twilioNotConfigured.Error.Error);
             Assert.Equal("the twilio account is not properly configured", twilioNotConfigured.Error.ErrorDescription);
@@ -79,7 +78,6 @@
         {
             InitializeFakeObjects();
 
-            // ACT : NO CONFIRMATION CODE
             _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((ConfirmationCode)null));
             _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>()))
@@ -109,7 +107,6 @@
         {
             InitializeFakeObjects();
 
-            // ACT : UNHANDLED EXCEPTION
             _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((ConfirmationCode)null));
             _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>()))
@@ -122,7 +119,6 @@
                     })
                 .ConfigureAwait(false);
 
-            // ASSERT : UNHANDLED EXCEPTION
             Assert.True(unhandledException.ContainsError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, unhandledException.Error.Error);
             Assert.Equal("unhandled exception occured please contact the administrator",
@@ -135,7 +131,6 @@
         {
             InitializeFakeObjects();
 
-            // ACT : HAPPY PATH
             _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((ConfirmationCode)null));
             _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>()))
@@ -152,7 +147,6 @@
                     })
                 .ConfigureAwait(false);
 
-            // ASSERT : HAPPY PATH
             Assert.True(true);
             Assert.NotNull(happyPath);
             Assert.False(happyPath.ContainsError);
@@ -161,6 +155,11 @@
         private void InitializeFakeObjects()
         {
             _sidSmsAuthenticateClient = new SidSmsAuthenticateClient(_server.Client);
+        }
+
+        public void Dispose()
+        {
+            _server?.Dispose();
         }
     }
 }

@@ -1,23 +1,22 @@
-﻿using Moq;
-using System;
-using System.Net.Http.Headers;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Api.Token
+﻿namespace SimpleAuth.Tests.Api.Token
 {
+    using System;
     using System.Collections.Generic;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
+    using Logging;
+    using Moq;
+    using Parameters;
+    using Shared;
+    using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Api.Token;
     using SimpleAuth.Api.Token.Actions;
     using SimpleAuth.Authenticate;
     using SimpleAuth.Helpers;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
     using SimpleAuth.Validators;
+    using Xunit;
 
     public sealed class TokenActionsFixture
     {

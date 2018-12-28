@@ -16,11 +16,11 @@ namespace SimpleIdentityServer.Uma.Client.Policy
 {
     using System;
     using System.Threading.Tasks;
-    using Common.DTOs;
     using Configuration;
     using Helpers;
     using Results;
     using SimpleAuth.Shared;
+    using SimpleAuth.Uma.Shared.DTOs;
 
     internal class PolicyClient : IPolicyClient
     {

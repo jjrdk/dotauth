@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Client.Policy;
-using SimpleIdentityServer.Uma.Client.ResourceSet;
-using SimpleIdentityServer.Uma.Common.DTOs;
-using SimpleIdentityServer.Uma.Host.Tests.MiddleWares;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Uma.Host.Tests
+namespace SimpleAuth.Uma.Tests
 {
-    using Client.Configuration;
-    using Client.Permission;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using MiddleWares;
+    using Shared.DTOs;
+    using SimpleIdentityServer.Uma.Client.Configuration;
+    using SimpleIdentityServer.Uma.Client.Permission;
+    using SimpleIdentityServer.Uma.Client.Policy;
+    using SimpleIdentityServer.Uma.Client.ResourceSet;
+    using Xunit;
 
     public class PermissionFixture : IClassFixture<TestUmaServerFixture>
     {
@@ -38,144 +37,181 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             _server = server;
         }
 
-
         [Fact]
         public async Task When_Client_Is_Not_Authenticated_Then_Error_Is_Returned()
-        {            InitializeFakeObjects();
-            var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
+        {
+            InitializeFakeObjects();
+            var resource = await _resourceSetClient.AddByResolution(
+                    new PostResourceSet
                     {
-                        "read"
-                    }
-            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        Name = "picture",
+                        Scopes = new List<string>
+                        {
+                            "read"
+                        }
+                    },
+                    baseUrl + "/.well-known/uma2-configuration",
+                    "header")
+                .ConfigureAwait(false);
 
-                        UserStore.Instance().ClientId = null;
+            UserStore.Instance().ClientId = null;
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-            {
-                ResourceSetId = resource.Content.Id,
-                Scopes = new List<string>
                     {
-                        "read"
-                    }
-            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        ResourceSetId = resource.Content.Id,
+                        Scopes = new List<string>
+                        {
+                            "read"
+                        }
+                    },
+                    baseUrl + "/.well-known/uma2-configuration",
+                    "header")
+                .ConfigureAwait(false);
             UserStore.Instance().ClientId = "client";
 
-                        Assert.True(ticket.ContainsError);
+            Assert.True(ticket.ContainsError);
             Assert.Equal("invalid_request", ticket.Error.Error);
             Assert.Equal("the client_id cannot be extracted", ticket.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task When_ResourceSetId_Is_Null_Then_Error_Is_Returned()
-        {            InitializeFakeObjects();
-            
-                        var ticket = await _permissionClient.AddByResolution(new PostPermission
-            {
-                ResourceSetId = string.Empty
-            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+        {
+            InitializeFakeObjects();
 
-                        Assert.True(ticket.ContainsError);
+            var ticket = await _permissionClient.AddByResolution(new PostPermission
+                    {
+                        ResourceSetId = string.Empty
+                    },
+                    baseUrl + "/.well-known/uma2-configuration",
+                    "header")
+                .ConfigureAwait(false);
+
+            Assert.True(ticket.ContainsError);
             Assert.Equal("invalid_request", ticket.Error.Error);
             Assert.Equal("the parameter resource_set_id needs to be specified", ticket.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task When_Scopes_Is_Null_Then_Error_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        var ticket = await _permissionClient.AddByResolution(new PostPermission
-            {
-                ResourceSetId = "resource"
-            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var ticket = await _permissionClient.AddByResolution(new PostPermission
+                    {
+                        ResourceSetId = "resource"
+                    },
+                    baseUrl + "/.well-known/uma2-configuration",
+                    "header")
+                .ConfigureAwait(false);
 
-                        Assert.True(ticket.ContainsError);
+            Assert.True(ticket.ContainsError);
             Assert.Equal("invalid_request", ticket.Error.Error);
             Assert.Equal("the parameter scopes needs to be specified", ticket.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task When_Resource_Doesnt_Exist_Then_Error_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        var ticket = await _permissionClient.AddByResolution(new PostPermission
-            {
-                ResourceSetId = "resource",
-                Scopes = new List<string>
+            var ticket = await _permissionClient.AddByResolution(new PostPermission
                     {
-                        "scope"
-                    }
-            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        ResourceSetId = "resource",
+                        Scopes = new List<string>
+                        {
+                            "scope"
+                        }
+                    },
+                    baseUrl + "/.well-known/uma2-configuration",
+                    "header")
+                .ConfigureAwait(false);
 
-                        Assert.True(ticket.ContainsError);
+            Assert.True(ticket.ContainsError);
             Assert.Equal("invalid_resource_set_id", ticket.Error.Error);
             Assert.Equal("resource set resource doesn't exist", ticket.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task When_Scopes_Doesnt_Exist_Then_Error_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                     {
-                        "read"
-                    }
-            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        Name = "picture",
+                        Scopes = new List<string>
+                        {
+                            "read"
+                        }
+                    },
+                    baseUrl + "/.well-known/uma2-configuration",
+                    "header")
+                .ConfigureAwait(false);
 
-                        var ticket = await _permissionClient.AddByResolution(new PostPermission
-            {
-                ResourceSetId = resource.Content.Id,
-                Scopes = new List<string>
+            var ticket = await _permissionClient.AddByResolution(new PostPermission
                     {
-                        "scopescopescope"
-                    }
-            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        ResourceSetId = resource.Content.Id,
+                        Scopes = new List<string>
+                        {
+                            "scopescopescope"
+                        }
+                    },
+                    baseUrl + "/.well-known/uma2-configuration",
+                    "header")
+                .ConfigureAwait(false);
 
-                        Assert.True(ticket.ContainsError);
+            Assert.True(ticket.ContainsError);
             Assert.Equal("invalid_scope", ticket.Error.Error);
             Assert.Equal("one or more scopes are not valid", ticket.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task When_Adding_Permission_Then_TicketId_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                     {
-                        "read"
-                    }
-            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        Name = "picture",
+                        Scopes = new List<string>
+                        {
+                            "read"
+                        }
+                    },
+                    baseUrl + "/.well-known/uma2-configuration",
+                    "header")
+                .ConfigureAwait(false);
 
-                        var ticket = await _permissionClient.AddByResolution(new PostPermission
-            {
-                ResourceSetId = resource.Content.Id,
-                Scopes = new List<string>
+            var ticket = await _permissionClient.AddByResolution(new PostPermission
                     {
-                        "read"
-                    }
-            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        ResourceSetId = resource.Content.Id,
+                        Scopes = new List<string>
+                        {
+                            "read"
+                        }
+                    },
+                    baseUrl + "/.well-known/uma2-configuration",
+                    "header")
+                .ConfigureAwait(false);
 
-                        Assert.NotNull(ticket);
+            Assert.NotNull(ticket);
             Assert.NotEmpty(ticket.Content.TicketId);
         }
 
         [Fact]
         public async Task When_Adding_Permissions_Then_TicketIds_Is_Returned()
         {
-            const string baseUrl = "http://localhost:5000";            InitializeFakeObjects();
+            const string baseUrl = "http://localhost:5000";
+            InitializeFakeObjects();
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                     {
-                        "read"
-                    }
-            }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+                        Name = "picture",
+                        Scopes = new List<string>
+                        {
+                            "read"
+                        }
+                    },
+                    baseUrl + "/.well-known/uma2-configuration",
+                    "header")
+                .ConfigureAwait(false);
             var permissions = new List<PostPermission>
             {
                 new PostPermission
@@ -196,9 +232,11 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 }
             };
 
-                        var ticket = await _permissionClient.AddByResolution(permissions, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var ticket = await _permissionClient
+                .AddByResolution(permissions, baseUrl + "/.well-known/uma2-configuration", "header")
+                .ConfigureAwait(false);
 
-                        Assert.NotNull(ticket);
+            Assert.NotNull(ticket);
         }
 
         private void InitializeFakeObjects()

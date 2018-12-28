@@ -1,13 +1,13 @@
-﻿namespace SimpleIdentityServer.Uma.Host.Tests.MiddleWares
+﻿namespace SimpleAuth.Uma.Tests.MiddleWares
 {
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using SimpleIdentityServer.Uma.Host.Tests.Fakes;
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Text.Encodings.Web;
     using System.Threading.Tasks;
+    using Fakes;
     using Microsoft.AspNetCore.Authentication;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
 
     public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {

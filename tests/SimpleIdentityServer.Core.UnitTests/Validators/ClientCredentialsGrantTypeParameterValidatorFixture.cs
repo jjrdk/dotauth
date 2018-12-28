@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Validators
+namespace SimpleAuth.Tests.Validators
 {
+    using System;
+    using Errors;
+    using Exceptions;
+    using Parameters;
     using SimpleAuth;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
-    using SimpleAuth.Parameters;
     using SimpleAuth.Validators;
+    using Xunit;
 
     public class ClientCredentialsGrantTypeParameterValidatorFixture
     {

@@ -1,19 +1,18 @@
-﻿using Moq;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
+﻿namespace SimpleAuth.Tests.WebSite.Authenticate
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Exceptions;
+    using Moq;
+    using Parameters;
+    using Shared.Models;
     using SimpleAuth;
-    using SimpleAuth.Exceptions;
     using SimpleAuth.Helpers;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Shared.Models;
     using SimpleAuth.WebSite.Authenticate.Actions;
     using SimpleAuth.WebSite.Authenticate.Common;
+    using Xunit;
 
     public sealed class LocalOpenIdUserAuthenticationActionFixture
     {

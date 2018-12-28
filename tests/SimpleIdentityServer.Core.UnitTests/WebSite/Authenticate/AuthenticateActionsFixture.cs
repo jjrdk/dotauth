@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
-using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
+namespace SimpleAuth.Tests.WebSite.Authenticate
 {
-    using SimpleAuth.Parameters;
+    using System;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Moq;
+    using Parameters;
     using SimpleAuth.WebSite.Authenticate;
     using SimpleAuth.WebSite.Authenticate.Actions;
+    using Xunit;
 
     public sealed class AuthenticateActionsFixture
     {

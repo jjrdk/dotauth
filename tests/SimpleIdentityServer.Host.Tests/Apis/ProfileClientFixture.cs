@@ -1,14 +1,14 @@
-﻿namespace SimpleIdentityServer.Host.Tests.Apis
+﻿namespace SimpleAuth.Server.Tests.Apis
 {
-    using SimpleIdentityServer.Client.Operations;
     using System.Linq;
     using System.Threading.Tasks;
+    using Errors;
+    using Shared.Requests;
+    using SimpleIdentityServer.Client;
+    using SimpleIdentityServer.Client.Operations;
+    using SimpleIdentityServer.Manager.Client;
     using Xunit;
-    using Client;
-    using Manager.Client;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Shared.Requests;
-    using TokenRequest = Client.TokenRequest;
+    using TokenRequest = SimpleIdentityServer.Client.TokenRequest;
 
     public class ProfileClientFixture : IClassFixture<TestOauthServerFixture>
     {

@@ -1,23 +1,22 @@
-﻿using Moq;
-using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
+﻿namespace SimpleAuth.Tests.Api.Authorization
 {
+    using System;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Logging;
+    using Moq;
+    using Parameters;
+    using Results;
+    using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Api.Authorization.Actions;
     using SimpleAuth.Api.Authorization.Common;
     using SimpleAuth.Common;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Results;
-    using SimpleAuth.Shared.Models;
     using SimpleAuth.Validators;
-    using Client = SimpleAuth.Shared.Models.Client;
+    using Xunit;
+    using Client = Shared.Models.Client;
 
     public sealed class GetAuthorizationCodeOperationFixture
     {

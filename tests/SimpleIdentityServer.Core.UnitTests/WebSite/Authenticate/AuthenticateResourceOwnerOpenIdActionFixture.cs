@@ -12,22 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
+namespace SimpleAuth.Tests.WebSite.Authenticate
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Factories;
+    using Moq;
+    using Parameters;
+    using Results;
     using SimpleAuth;
-    using SimpleAuth.Factories;
     using SimpleAuth.Helpers;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Results;
     using SimpleAuth.WebSite.Authenticate.Actions;
     using SimpleAuth.WebSite.Authenticate.Common;
+    using Xunit;
 
     public sealed class AuthenticateResourceOwnerOpenIdActionFixture
     {

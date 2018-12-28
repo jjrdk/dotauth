@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Host.Tests.MiddleWares
+﻿namespace SimpleAuth.Server.Tests.MiddleWares
 {
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Security.Claims;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using SimpleAuth.Extensions;
 
     public class TestAuthenticationHandler : AuthenticationHandler<TestAuthenticationOptions>

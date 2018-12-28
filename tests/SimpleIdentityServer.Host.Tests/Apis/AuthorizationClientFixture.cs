@@ -12,27 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Tests.Apis
+namespace SimpleAuth.Server.Tests.Apis
 {
-    using Client;
-    using Client.Builders;
-    using Client.Operations;
+    using Encrypt;
+    using Errors;
     using Microsoft.Extensions.DependencyInjection;
     using MiddleWares;
     using Newtonsoft.Json;
+    using Shared;
+    using Shared.Requests;
+    using Shared.Responses;
+    using Signature;
+    using SimpleAuth;
+    using SimpleIdentityServer.Client;
+    using SimpleIdentityServer.Client.Builders;
+    using SimpleIdentityServer.Client.Operations;
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth;
-    using SimpleAuth.Encrypt;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
-    using SimpleAuth.Signature;
     using Xunit;
-    using TokenRequest = Client.TokenRequest;
+    using TokenRequest = SimpleIdentityServer.Client.TokenRequest;
 
-    public class AuthorizationClientFixture : IClassFixture<TestOauthServerFixture>
+    public class AuthorizationClientFixture : IDisposable
     {
         private const string baseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
@@ -40,9 +40,9 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         private IJwsGenerator _jwsGenerator;
         private IJweGenerator _jweGenerator;
 
-        public AuthorizationClientFixture(TestOauthServerFixture server)
+        public AuthorizationClientFixture()
         {
-            _server = server;
+            _server = new TestOauthServerFixture();
         }
 
         [Fact]
@@ -618,7 +618,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ConfigureAwait(false);
             var queries = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(result.Location.Fragment.TrimStart('#'));
 
-            Assert.NotNull(result);
             Assert.NotNull(result.Location);
             Assert.True(queries.ContainsKey("id_token"));
             Assert.True(queries.ContainsKey("access_token"));
@@ -632,10 +631,15 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var services = new ServiceCollection();
             services.AddSimpleIdentityServerJwt();
             var provider = services.BuildServiceProvider();
-            _jwsGenerator = (IJwsGenerator)provider.GetService(typeof(IJwsGenerator));
-            _jweGenerator = (IJweGenerator)provider.GetService(typeof(IJweGenerator));
+            _jwsGenerator = provider.GetService<IJwsGenerator>();
+            _jweGenerator = provider.GetService<IJweGenerator>();
             var getDiscoveryOperation = new GetDiscoveryOperation(_server.Client);
             _authorizationClient = new AuthorizationClient(_server.Client, getDiscoveryOperation);
+        }
+
+        public void Dispose()
+        {
+            _server?.Dispose();
         }
     }
 }

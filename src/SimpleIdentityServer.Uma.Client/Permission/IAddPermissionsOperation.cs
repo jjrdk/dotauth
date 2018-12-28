@@ -2,8 +2,8 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Common.DTOs;
     using Results;
+    using SimpleAuth.Uma.Shared.DTOs;
 
     public interface IAddPermissionsOperation
     {

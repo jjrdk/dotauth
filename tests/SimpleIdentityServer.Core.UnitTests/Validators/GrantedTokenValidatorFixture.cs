@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Validators
+namespace SimpleAuth.Tests.Validators
 {
+    using System;
+    using System.Threading.Tasks;
+    using Errors;
+    using Moq;
+    using Shared.Models;
     using SimpleAuth;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Shared.Models;
     using SimpleAuth.Validators;
+    using Xunit;
 
     public class GrantedTokenValidatorFixture
     {

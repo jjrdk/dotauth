@@ -1,19 +1,18 @@
-﻿using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Validators
+﻿namespace SimpleAuth.Tests.Validators
 {
     using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Moq;
+    using Parameters;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
     using SimpleAuth.Helpers;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Validators;
+    using Xunit;
 
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
     {

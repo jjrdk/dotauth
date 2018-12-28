@@ -1,11 +1,10 @@
-﻿using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Extensions
+﻿namespace SimpleAuth.Tests.Extensions
 {
+    using Shared;
+    using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Extensions;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
+    using Xunit;
 
     public sealed class ClientExtensionsFixture
     {

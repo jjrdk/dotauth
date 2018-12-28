@@ -1,16 +1,15 @@
-﻿using Moq;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
+﻿namespace SimpleAuth.Twilio.Tests.Actions
 {
+    using System;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Logging;
+    using Moq;
     using SimpleAuth;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Twilio;
-    using SimpleAuth.Twilio.Actions;
+    using Twilio;
+    using Twilio.Actions;
+    using Xunit;
 
     public class GenerateAndSendSmsCodeOperationFixture
     {

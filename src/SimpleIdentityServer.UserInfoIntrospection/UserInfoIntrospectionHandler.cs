@@ -1,16 +1,16 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Client;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.UserInfoIntrospection
+﻿namespace SimpleIdentityServer.UserInfoIntrospection
 {
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Newtonsoft.Json.Linq;
+    using SimpleIdentityServer.Client;
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
+
     public class UserInfoIntrospectionHandler : AuthenticationHandler<UserInfoIntrospectionOptions>
     {
         private readonly IUserInfoClient _userInfoClient;

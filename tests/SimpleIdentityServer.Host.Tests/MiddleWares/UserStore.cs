@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Host.Tests.MiddleWares
+﻿namespace SimpleAuth.Server.Tests.MiddleWares
 {
     using System;
 

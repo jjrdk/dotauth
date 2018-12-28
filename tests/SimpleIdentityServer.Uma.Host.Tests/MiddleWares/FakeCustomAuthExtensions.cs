@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Host.Tests.MiddleWares
+namespace SimpleAuth.Uma.Tests.MiddleWares
 {
-    using Microsoft.AspNetCore.Authentication;
-    using SimpleIdentityServer.Uma.Host.Tests.Fakes;
     using System;
+    using Fakes;
+    using Microsoft.AspNetCore.Authentication;
 
     public static class FakeCustomAuthExtensions
     {

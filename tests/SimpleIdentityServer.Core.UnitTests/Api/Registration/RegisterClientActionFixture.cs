@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
+namespace SimpleAuth.Tests.Api.Registration
 {
-    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Newtonsoft.Json;
+    using Repositories;
+    using Shared;
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Repositories;
     using SimpleAuth;
-    using SimpleAuth.Repositories;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Parameters;
-    using SimpleAuth.Shared.Repositories;
     using Xunit;
 
     public sealed class DefaultClientRepositoryFixture : IDisposable

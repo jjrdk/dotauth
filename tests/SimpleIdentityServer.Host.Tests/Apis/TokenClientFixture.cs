@@ -12,27 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Tests.Apis
+namespace SimpleAuth.Server.Tests.Apis
 {
-    using Authenticate.SMS.Client;
-    using Client;
-    using Client.Operations;
-    using Microsoft.Extensions.DependencyInjection;
-    using Moq;
-    using Newtonsoft.Json;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Responses;
     using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using Encrypt;
+    using Microsoft.Extensions.DependencyInjection;
+    using Moq;
+    using Newtonsoft.Json;
+    using Shared;
+    using Shared.Responses;
+    using Signature;
     using SimpleAuth;
-    using SimpleAuth.Encrypt;
     using SimpleAuth.Extensions;
-    using SimpleAuth.Signature;
-    using SimpleAuth.Twilio.Shared.Requests;
+    using SimpleIdentityServer.Authenticate.SMS.Client;
+    using SimpleIdentityServer.Client;
+    using SimpleIdentityServer.Client.Operations;
+    using Twilio.Shared.Requests;
     using Xunit;
     using JwtConstants = SimpleAuth.JwtConstants;
 

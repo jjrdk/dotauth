@@ -14,4 +14,4 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("SimpleIdentityServer.Host.Tests")]
+[assembly: InternalsVisibleTo("simpleauth.server.tests")]

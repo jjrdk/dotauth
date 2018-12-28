@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Uma.Host.Tests.Fakes;
-using System;
-using System.Net.Http;
-
-namespace SimpleIdentityServer.Uma.Host.Tests
+namespace SimpleAuth.Uma.Tests
 {
+    using System;
+    using System.Net.Http;
+    using Fakes;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.TestHost;
+    using Microsoft.Extensions.DependencyInjection;
+
     public class TestUmaServerFixture : IDisposable
     {
         public TestServer Server { get; }

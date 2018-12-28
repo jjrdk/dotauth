@@ -18,10 +18,10 @@ namespace SimpleIdentityServer.Uma.Client.Policy
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
-    using Common.DTOs;
     using Newtonsoft.Json;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
+    using SimpleAuth.Uma.Shared.DTOs;
 
     internal class AddResourceToPolicyOperation : IAddResourceToPolicyOperation
     {

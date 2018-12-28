@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication;
-
-namespace SimpleIdentityServer.Host.Tests.MiddleWares
+﻿namespace SimpleAuth.Server.Tests.MiddleWares
 {
     using System.Net.Http;
+    using Microsoft.AspNetCore.Authentication;
 
     public class FakeOAuth2IntrospectionOptions : AuthenticationSchemeOptions
     {

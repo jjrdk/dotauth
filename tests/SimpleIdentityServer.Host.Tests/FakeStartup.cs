@@ -12,9 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Tests
+namespace SimpleAuth.Server.Tests
 {
-    using Client;
+    using System;
+    using System.Net.Http;
+    using System.Reflection;
+    using System.Text;
+    using Api.Jwks;
+    using Controllers;
+    using Extensions;
+    using Logging;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -23,22 +30,15 @@ namespace SimpleIdentityServer.Host.Tests
     using MiddleWares;
     using Newtonsoft.Json;
     using Services;
+    using Shared;
     using SimpleAuth;
-    using SimpleAuth.Api.Jwks;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Server.Controllers;
-    using SimpleAuth.Server.Extensions;
     using SimpleAuth.Services;
-    using SimpleAuth.Shared;
+    using SimpleIdentityServer.Client;
     using Stores;
-    using System;
-    using System.Net.Http;
-    using System.Reflection;
-    using System.Text;
-    using SimpleAuth.Twilio;
-    using SimpleAuth.Twilio.Actions;
-    using SimpleAuth.Twilio.Controllers;
-    using SimpleAuth.Twilio.Services;
+    using Twilio;
+    using Twilio.Actions;
+    using Twilio.Controllers;
+    using Twilio.Services;
 
     public class FakeStartup : IStartup
     {

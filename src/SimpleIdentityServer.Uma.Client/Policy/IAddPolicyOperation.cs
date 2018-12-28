@@ -1,8 +1,8 @@
 ﻿namespace SimpleIdentityServer.Uma.Client.Policy
 {
     using System.Threading.Tasks;
-    using Common.DTOs;
     using Results;
+    using SimpleAuth.Uma.Shared.DTOs;
 
     public interface IAddPolicyOperation
     {

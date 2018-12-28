@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Tests.Apis
+namespace SimpleAuth.Server.Tests.Apis
 {
-    using Client;
-    using Client.Operations;
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Api.Discovery;
+    using Repositories;
+    using Shared.Models;
     using SimpleAuth;
-    using SimpleAuth.Api.Discovery;
-    using SimpleAuth.Repositories;
-    using SimpleAuth.Shared.Models;
+    using SimpleIdentityServer.Client;
+    using SimpleIdentityServer.Client.Operations;
     using Xunit;
 
     public class JwksClientFixture : IClassFixture<TestOauthServerFixture>
@@ -46,10 +46,10 @@ namespace SimpleIdentityServer.Host.Tests.Apis
         [Fact]
         public async Task When_Requesting_JWKS_Then_List_Is_Returned()
         {
-                        var jwks = await _jwksClient.ResolveAsync(new Uri(baseUrl + "/.well-known/openid-configuration"))
+            var jwks = await _jwksClient.ResolveAsync(new Uri(baseUrl + "/.well-known/openid-configuration"))
                 .ConfigureAwait(false);
 
-                        Assert.NotNull(jwks);
+            Assert.NotNull(jwks);
         }
 
         [Fact]
@@ -58,31 +58,31 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             //_httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var jwsParser = new JwsParserFactory().BuildJwsParser();
 
-                        var result =
+            var result =
                 await new TokenClient(
                         TokenCredentials.FromClientCredentials("client", "client"),
                         TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                         _httpClientFactoryStub,
-                        new GetDiscoveryOperation(
-                            _httpClientFactoryStub)) // _clientAuthSelector.UseClientSecretPostAuth("client", "client")
+                        new GetDiscoveryOperation(_httpClientFactoryStub))
                     .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
                     .ConfigureAwait(false);
             var jwks = await _jwksClient.ResolveAsync(new Uri(baseUrl + "/.well-known/openid-configuration"))
                 .ConfigureAwait(false);
 
-                        Assert.NotNull(result);
-            Assert.False(result.ContainsError);
-            Assert.NotEmpty(result.Content.AccessToken);
             var accessToken = result.Content.AccessToken;
             var payload = jwsParser.ValidateSignature(accessToken, jwks);
+            Assert.NotNull(result);
+            Assert.False(result.ContainsError);
+            Assert.NotEmpty(result.Content.AccessToken);
             Assert.NotNull(payload);
         }
 
         [Fact]
         public async Task When_Get_Access_Token_And_Rotate_JsonWebKeySet_Then_Signature_Is_Not_Correct()
-        {            var jwsParser = new JwsParserFactory().BuildJwsParser();
+        {
+            var jwsParser = new JwsParserFactory().BuildJwsParser();
 
-                        var result = await new TokenClient(
+            var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _httpClientFactoryStub,
@@ -99,7 +99,6 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var jwks = await _jwksClient.ResolveAsync(new Uri(baseUrl + "/.well-known/openid-configuration"))
                 .ConfigureAwait(false);
 
-                        Assert.NotNull(result);
             Assert.False(result.ContainsError);
             Assert.NotEmpty(result.Content.AccessToken);
             var accessToken = result.Content.AccessToken;

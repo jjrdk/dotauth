@@ -20,4 +20,4 @@ using System.Runtime.CompilerServices;
 // associated with an assembly.
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: InternalsVisibleTo("SimpleIdentityServer.Uma.Host.Tests")]
+[assembly: InternalsVisibleTo("simpleauth.uma.tests")]

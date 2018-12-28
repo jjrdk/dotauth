@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using SimpleIdentityServer.Uma.Client.Results;
-using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -9,6 +8,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Uma.Client.Policy
 {
     using SimpleAuth.Shared.Responses;
+    using SimpleAuth.Uma.Shared.DTOs;
 
     internal sealed class SearchPoliciesOperation : ISearchPoliciesOperation
     {

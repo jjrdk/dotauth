@@ -1,24 +1,23 @@
-﻿using Moq;
-using SimpleIdentityServer.Core.UnitTests.Fake;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.JwtToken
+﻿namespace SimpleAuth.Tests.JwtToken
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using Encrypt;
+    using Errors;
+    using Fake;
+    using Moq;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Shared.Requests;
     using SimpleAuth;
     using SimpleAuth.Converter;
-    using SimpleAuth.Encrypt;
-    using SimpleAuth.Errors;
     using SimpleAuth.JwtToken;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Requests;
     using SimpleAuth.Signature;
+    using Xunit;
 
     public sealed class JwtParserFixture
     {

@@ -1,18 +1,17 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Host.Tests.MiddleWares
+﻿namespace SimpleAuth.Server.Tests.MiddleWares
 {
-    using Client;
-    using Client.Operations;
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Shared;
     using SimpleAuth;
-    using SimpleAuth.Shared;
+    using SimpleIdentityServer.Client;
+    using SimpleIdentityServer.Client.Operations;
 
     public class FakeOauth2IntrospectionHandler : AuthenticationHandler<FakeOAuth2IntrospectionOptions>
     {

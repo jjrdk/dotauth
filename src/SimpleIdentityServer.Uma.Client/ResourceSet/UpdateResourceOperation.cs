@@ -18,10 +18,10 @@ namespace SimpleIdentityServer.Uma.Client.ResourceSet
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
-    using Common.DTOs;
     using Newtonsoft.Json;
     using Results;
     using SimpleAuth.Shared.Responses;
+    using SimpleAuth.Uma.Shared.DTOs;
 
     internal class UpdateResourceOperation : IUpdateResourceOperation
     {

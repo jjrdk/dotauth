@@ -1,18 +1,18 @@
-﻿namespace SimpleIdentityServer.Uma.Host.Tests
+﻿namespace SimpleAuth.Uma.Tests
 {
-    using Client.Configuration;
-    using Client.Permission;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
+    using Shared.DTOs;
+    using Signature;
+    using SimpleAuth;
     using SimpleAuth.Shared;
     using SimpleIdentityServer.Client;
     using SimpleIdentityServer.Client.Operations;
+    using SimpleIdentityServer.Uma.Client.Configuration;
+    using SimpleIdentityServer.Uma.Client.Permission;
     using SimpleIdentityServer.Uma.Client.Policy;
     using SimpleIdentityServer.Uma.Client.ResourceSet;
-    using SimpleIdentityServer.Uma.Common.DTOs;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using SimpleAuth;
-    using SimpleAuth.Signature;
     using Xunit;
 
     public class TokenFixture : IClassFixture<TestUmaServerFixture>
@@ -90,21 +90,21 @@
                 .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
                 .ConfigureAwait(false);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet // Add ressource.
-            {
-                Name = "name",
-                Scopes = new List<string>
+                    {
+                        Name = "name",
+                        Scopes = new List<string>
                         {
                             "read",
                             "write",
                             "execute"
                         }
-            },
+                    },
                     baseUrl + "/.well-known/uma2-configuration",
                     result.Content.AccessToken)
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy // Add an authorization policy.
-            {
-                Rules = new List<PostPolicyRule>
+                    {
+                        Rules = new List<PostPolicyRule>
                         {
                             new PostPolicyRule
                             {
@@ -123,11 +123,11 @@
                                 }
                             }
                         },
-                ResourceSetIds = new List<string>
+                        ResourceSetIds = new List<string>
                         {
                             resource.Content.Id
                         }
-            },
+                    },
                     baseUrl + "/.well-known/uma2-configuration",
                     result.Content.AccessToken)
                 .ConfigureAwait(false);
@@ -152,7 +152,6 @@
                 .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
                 .ConfigureAwait(false);
 
-            // ASSERTS.
             Assert.NotNull(token);
         }
 

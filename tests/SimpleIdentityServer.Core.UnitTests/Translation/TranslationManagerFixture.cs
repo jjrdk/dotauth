@@ -1,16 +1,15 @@
-﻿using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Translation
+﻿namespace SimpleAuth.Tests.Translation
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Moq;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Translation;
+    using Xunit;
 
     public sealed class TranslationManagerFixture
     {

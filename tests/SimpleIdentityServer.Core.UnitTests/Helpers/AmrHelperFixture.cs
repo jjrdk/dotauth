@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Helpers
+﻿namespace SimpleAuth.Tests.Helpers
 {
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
+    using System.Collections.Generic;
+    using Errors;
+    using Exceptions;
     using SimpleAuth.Helpers;
+    using Xunit;
 
     public class AmrHelperFixture
     {

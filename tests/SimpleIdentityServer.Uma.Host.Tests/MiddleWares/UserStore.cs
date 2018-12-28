@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Host.Tests.MiddleWares
+﻿namespace SimpleAuth.Uma.Tests.MiddleWares
 {
     public class UserStore
     {

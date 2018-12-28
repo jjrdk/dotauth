@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
-using System;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
+namespace SimpleAuth.Tests.Api.Introspection
 {
+    using System;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
+    using Moq;
+    using Parameters;
+    using Shared;
     using SimpleAuth.Api.Introspection;
     using SimpleAuth.Api.Introspection.Actions;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Shared;
     using SimpleAuth.Validators;
+    using Xunit;
 
     public class IntrospectionActionsFixture
     {

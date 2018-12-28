@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Validators
+namespace SimpleAuth.Tests.Validators
 {
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Cryptography;
+    using System.Text;
+    using Shared;
+    using Shared.Models;
     using SimpleAuth.Validators;
+    using Xunit;
 
     public class ClientValidatorFixture
     {

@@ -1,16 +1,16 @@
-namespace SimpleIdentityServer.Host.Tests.Introspection
+namespace SimpleAuth.Server.Tests.Introspection
 {
-    using Client;
-    using Client.Operations;
-    using Client.Results;
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Microsoft.Extensions.WebEncoders.Testing;
     using Moq;
     using Newtonsoft.Json.Linq;
-    using System.Threading.Tasks;
-    using UserInfoIntrospection;
+    using SimpleIdentityServer.Client;
+    using SimpleIdentityServer.Client.Operations;
+    using SimpleIdentityServer.Client.Results;
+    using SimpleIdentityServer.UserInfoIntrospection;
     using Xunit;
 
     public class UserInfoIntrospectionHandlerFixture : IClassFixture<TestOauthServerFixture>

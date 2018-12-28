@@ -12,26 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
-using System.Collections.Generic;
-using System.Security.Principal;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
+namespace SimpleAuth.Tests.Api.Authorization
 {
+    using System.Collections.Generic;
+    using System.Security.Principal;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Logging;
+    using Moq;
+    using Parameters;
+    using Results;
+    using Shared;
+    using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Api.Authorization;
     using SimpleAuth.Api.Authorization.Actions;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
     using SimpleAuth.Helpers;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Results;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
     using SimpleAuth.Validators;
+    using Xunit;
 
     public sealed class AuthorizationActionsFixture
     {

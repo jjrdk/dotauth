@@ -1,16 +1,15 @@
-﻿using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Helpers
+﻿namespace SimpleAuth.Tests.Helpers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Moq;
+    using Parameters;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth.Helpers;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using Xunit;
 
     public sealed class ConsentHelperFixture
     {

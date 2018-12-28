@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Extensions
+﻿namespace SimpleAuth.Tests.Extensions
 {
+    using System.Collections.Generic;
+    using System.Security.Claims;
     using SimpleAuth;
     using SimpleAuth.Extensions;
+    using Xunit;
 
     public sealed class ClaimPrincipalExtensionsFixture
     {

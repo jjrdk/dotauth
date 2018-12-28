@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Common
+﻿namespace SimpleAuth.Uma.Shared
 {
     using System.Collections.Generic;
 

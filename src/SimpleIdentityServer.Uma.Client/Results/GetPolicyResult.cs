@@ -1,8 +1,7 @@
-﻿using SimpleIdentityServer.Uma.Common.DTOs;
-
-namespace SimpleIdentityServer.Uma.Client.Results
+﻿namespace SimpleIdentityServer.Uma.Client.Results
 {
     using SimpleAuth.Shared;
+    using SimpleAuth.Uma.Shared.DTOs;
 
     public class GetPolicyResult : BaseResponse
     {

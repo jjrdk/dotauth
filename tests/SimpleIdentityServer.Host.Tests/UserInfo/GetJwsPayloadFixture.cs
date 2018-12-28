@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Tests.UserInfo
+namespace SimpleAuth.Server.Tests.UserInfo
 {
     using System;
     using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using JwtToken;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
+    using Server.UserInfo.Actions;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
-    using SimpleAuth.JwtToken;
-    using SimpleAuth.Server.UserInfo.Actions;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Validators;
+    using Validators;
     using Xunit;
 
     public sealed class GetJwsPayloadFixture

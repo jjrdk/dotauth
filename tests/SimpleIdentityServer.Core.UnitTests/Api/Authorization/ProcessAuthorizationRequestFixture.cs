@@ -1,25 +1,24 @@
-﻿using Moq;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
+﻿namespace SimpleAuth.Tests.Api.Authorization
 {
-    using SimpleAuth.Shared.Repositories;
+    using System;
     using System.Net.Http;
+    using System.Threading.Tasks;
+    using Encrypt;
+    using Encrypt.Encryption;
+    using Factories;
+    using Logging;
+    using Moq;
+    using Parameters;
+    using Shared.Repositories;
     using SimpleAuth;
     using SimpleAuth.Api.Authorization.Common;
     using SimpleAuth.Converter;
-    using SimpleAuth.Encrypt;
-    using SimpleAuth.Encrypt.Encryption;
-    using SimpleAuth.Factories;
     using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Parameters;
     using SimpleAuth.Signature;
     using SimpleAuth.Validators;
-    using IClientStore = SimpleAuth.Shared.Repositories.IClientStore;
+    using Xunit;
+    using IClientStore = Shared.Repositories.IClientStore;
 
     public sealed class ProcessAuthorizationRequestFixture
     {
