@@ -1,14 +1,13 @@
-﻿using Moq;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
+﻿namespace SimpleAuth.Tests.Api.Profile.Actions
 {
+    using System;
     using System.Threading;
+    using System.Threading.Tasks;
+    using Moq;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth.Api.Profile.Actions;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using Xunit;
 
     public class GetResourceOwnerClaimsActionFixture
     {

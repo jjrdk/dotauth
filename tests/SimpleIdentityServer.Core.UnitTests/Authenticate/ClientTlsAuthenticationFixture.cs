@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Authenticate
+namespace SimpleAuth.Tests.Authenticate
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Cryptography.X509Certificates;
+    using Shared.Models;
     using SimpleAuth.Authenticate;
-    using SimpleAuth.Shared.Models;
+    using Xunit;
 
     public class ClientTlsAuthenticationFixture
     {

@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net.Http.Headers;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Authenticate
+namespace SimpleAuth.Tests.Authenticate
 {
+    using System.Net.Http.Headers;
+    using Shared;
     using SimpleAuth;
-    using SimpleAuth.Shared;
+    using Xunit;
 
     public class AuthenticateInstructionGeneratorFixture
     {

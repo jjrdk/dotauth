@@ -12,33 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
-using SimpleIdentityServer.Core.UnitTests.Fake;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.JwtToken
+namespace SimpleAuth.Tests.JwtToken
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Security.Cryptography;
+    using System.Threading.Tasks;
+    using Encrypt;
+    using Encrypt.Encryption;
+    using Errors;
+    using Exceptions;
+    using Fake;
+    using Moq;
+    using Parameters;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth;
-    using SimpleAuth.Encrypt;
-    using SimpleAuth.Encrypt.Encryption;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
     using SimpleAuth.Extensions;
     using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Signature;
     using SimpleAuth.Validators;
-    using Client = SimpleAuth.Shared.Models.Client;
+    using Xunit;
+    using Client = Shared.Models.Client;
 
     public class JwtGeneratorFixture
     {
@@ -74,7 +73,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             var result = await _jwtGenerator.GenerateAccessToken(client, scopes, null, null).ConfigureAwait(false);
 
-            // ASSERTS.
+            
             Assert.NotNull(result);
         }
 
@@ -426,7 +425,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
 
-            // ACT & ASSERTS
+            
             var result = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() =>
                     _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(
                         claimsPrincipal,

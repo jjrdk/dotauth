@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.UnitTests.Api.Profile
+﻿namespace SimpleAuth.Tests.Api.Profile
 {
     public class ProfileActionsFixture
     {

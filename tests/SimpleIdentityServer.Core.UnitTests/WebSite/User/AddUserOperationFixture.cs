@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
+namespace SimpleAuth.Tests.WebSite.User
 {
+    using System;
     using System.Threading;
+    using System.Threading.Tasks;
+    using Logging;
+    using Moq;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth.Api.Profile.Actions;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
     using SimpleAuth.WebSite.User.Actions;
+    using Xunit;
 
     public class AddUserOperationFixture
     {

@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Uma.Common.DTOs
+﻿namespace SimpleAuth.Uma.Shared.DTOs
 {
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class SearchResourceSetResponse
     {

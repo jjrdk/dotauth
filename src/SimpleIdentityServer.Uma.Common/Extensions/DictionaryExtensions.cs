@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Uma.Common.Extensions
+namespace SimpleAuth.Uma.Shared.Extensions
 {
+    using System.Collections.Generic;
+
     internal static class DictionaryExtensions
     {
         public static bool GetBoolean(

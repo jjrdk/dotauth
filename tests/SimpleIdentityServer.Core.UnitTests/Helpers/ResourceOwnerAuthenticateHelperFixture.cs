@@ -1,11 +1,10 @@
-﻿using Moq;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Helpers
+﻿namespace SimpleAuth.Tests.Helpers
 {
+    using System;
+    using System.Threading.Tasks;
+    using Moq;
     using SimpleAuth.Helpers;
+    using Xunit;
 
     public class ResourceOwnerAuthenticateHelperFixture
     {

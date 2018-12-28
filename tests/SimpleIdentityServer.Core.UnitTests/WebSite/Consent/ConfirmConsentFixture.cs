@@ -1,26 +1,25 @@
-﻿using Moq;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
+﻿namespace SimpleAuth.Tests.WebSite.Consent
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
     using System.Threading;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Factories;
+    using Logging;
+    using Moq;
+    using Parameters;
+    using Results;
+    using Services;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth;
     using SimpleAuth.Common;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
-    using SimpleAuth.Factories;
     using SimpleAuth.Helpers;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Results;
-    using SimpleAuth.Services;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
     using SimpleAuth.WebSite.Consent.Actions;
+    using Xunit;
 
     public sealed class ConfirmConsentFixture
     {

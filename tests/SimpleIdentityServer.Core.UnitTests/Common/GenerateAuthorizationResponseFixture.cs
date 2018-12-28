@@ -12,28 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Common
+namespace SimpleAuth.Tests.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Security.Cryptography;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Logging;
+    using Moq;
+    using Parameters;
+    using Results;
+    using Shared;
+    using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Api.Authorization;
     using SimpleAuth.Common;
     using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Results;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using Client = SimpleAuth.Shared.Models.Client;
+    using Xunit;
+    using Client = Shared.Models.Client;
 
     public sealed  class GenerateAuthorizationResponseFixture
     {

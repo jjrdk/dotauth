@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Uma.Host.Tests.Stores
+﻿namespace SimpleAuth.Uma.Tests.Stores
 {
+    using System.Collections.Generic;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 
@@ -32,11 +31,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Stores
 
         public static List<JsonWebKey> GetJsonWebKeys(SharedContext sharedContext)
         {
-            //var serializedRsa = string.Empty;
-            //    using (var rsa = new RSAOpenSsl())
-            //    {
-            //        serializedRsa = rsa.ToXmlString(true);
-            //    }
             return new List<JsonWebKey>
             {
                 sharedContext.EncryptionKey,
@@ -48,71 +42,71 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Stores
         {
             return new List<Client>
             {
-                    // Resource server.
-                    new Client
+                // Resource server.
+                new Client
+                {
+                    ClientId = "resource_server",
+                    ClientName = "Resource server",
+                    Secrets = new List<ClientSecret>
                     {
-                        ClientId = "resource_server",
-                        ClientName = "Resource server",
-                        Secrets = new List<ClientSecret>
+                        new ClientSecret
                         {
-                            new ClientSecret
-                            {
-                                Type = ClientSecretTypes.SharedSecret,
-                                Value = "resource_server"
-                            }
-                        },
-                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                        LogoUri = null,
-                        AllowedScopes = new List<Scope>
-                        {
-                            new Scope
-                            {
-                                Name = "uma_protection"
-                            },
-                            new Scope
-                            {
-                                Name = "uma_authorization"
-                            }
-                        },
-                        GrantTypes = new List<GrantType>
-                        {
-                            GrantType.client_credentials,
-                            GrantType.uma_ticket
-                        },
-                        ResponseTypes = new List<ResponseType>
-                        {
-                            ResponseType.token
-                        },
-                        IdTokenSignedResponseAlg = "RS256",
-                        ApplicationType = ApplicationTypes.native
+                            Type = ClientSecretTypes.SharedSecret,
+                            Value = "resource_server"
+                        }
                     },
-                    // Anonymous.
-                    new Client
+                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                    LogoUri = null,
+                    AllowedScopes = new List<Scope>
                     {
-                        ClientId = "anonymous",
-                        ClientName = "Anonymous",
-                        Secrets = new List<ClientSecret>
+                        new Scope
                         {
-                            new ClientSecret
-                            {
-                                Type = ClientSecretTypes.SharedSecret,
-                                Value = "anonymous"
-                            }
+                            Name = "uma_protection"
                         },
-                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                        LogoUri = null,
-                        AllowedScopes = new List<Scope> {},
-                        GrantTypes = new List<GrantType>
+                        new Scope
                         {
-                            GrantType.client_credentials
-                        },
-                        ResponseTypes = new List<ResponseType>
+                            Name = "uma_authorization"
+                        }
+                    },
+                    GrantTypes = new List<GrantType>
+                    {
+                        GrantType.client_credentials,
+                        GrantType.uma_ticket
+                    },
+                    ResponseTypes = new List<ResponseType>
+                    {
+                        ResponseType.token
+                    },
+                    IdTokenSignedResponseAlg = "RS256",
+                    ApplicationType = ApplicationTypes.native
+                },
+                // Anonymous.
+                new Client
+                {
+                    ClientId = "anonymous",
+                    ClientName = "Anonymous",
+                    Secrets = new List<ClientSecret>
+                    {
+                        new ClientSecret
                         {
-                            ResponseType.token
-                        },
-                        IdTokenSignedResponseAlg = "RS256",
-                        ApplicationType = ApplicationTypes.native
-                    }
+                            Type = ClientSecretTypes.SharedSecret,
+                            Value = "anonymous"
+                        }
+                    },
+                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                    LogoUri = null,
+                    AllowedScopes = new List<Scope> { },
+                    GrantTypes = new List<GrantType>
+                    {
+                        GrantType.client_credentials
+                    },
+                    ResponseTypes = new List<ResponseType>
+                    {
+                        ResponseType.token
+                    },
+                    IdTokenSignedResponseAlg = "RS256",
+                    ApplicationType = ApplicationTypes.native
+                }
 
             };
         }

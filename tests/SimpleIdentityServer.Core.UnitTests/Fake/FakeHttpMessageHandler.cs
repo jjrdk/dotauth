@@ -1,11 +1,11 @@
-﻿using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.UnitTests.Fake
+﻿namespace SimpleAuth.Tests.Fake
 {
+    using System.IO;
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading;
+    using System.Threading.Tasks;
+
     public class FakeHttpMessageHandler : HttpMessageHandler
     {
         private readonly HttpResponseMessage _response;

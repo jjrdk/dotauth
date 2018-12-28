@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Common
+﻿namespace SimpleAuth.Uma.Shared
 {
     public static class PostAuthorizationNames
     {

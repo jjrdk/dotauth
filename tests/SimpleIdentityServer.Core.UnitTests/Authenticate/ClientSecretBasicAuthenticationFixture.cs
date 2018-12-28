@@ -1,11 +1,10 @@
-﻿using System;
-using Xunit;
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Core.UnitTests.Authenticate
+﻿namespace SimpleAuth.Tests.Authenticate
 {
+    using System;
+    using System.Collections.Generic;
+    using Shared.Models;
     using SimpleAuth.Authenticate;
-    using SimpleAuth.Shared.Models;
+    using Xunit;
 
     public sealed class ClientSecretBasicAuthenticationFixture
     {

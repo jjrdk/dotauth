@@ -13,24 +13,23 @@
 // limitations under the License.
 
 
-using Moq;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
+namespace SimpleAuth.Tests.WebSite.Authenticate
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
     using System.Threading;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Moq;
+    using Services;
+    using Shared;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
-    using SimpleAuth.Services;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
     using SimpleAuth.WebSite.Authenticate.Actions;
+    using Xunit;
 
     public class GenerateAndSendCodeActionFixture
     {

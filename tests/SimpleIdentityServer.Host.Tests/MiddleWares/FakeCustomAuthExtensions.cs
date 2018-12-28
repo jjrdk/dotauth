@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authentication;
-using System;
-
-namespace SimpleIdentityServer.Host.Tests.MiddleWares
+namespace SimpleAuth.Server.Tests.MiddleWares
 {
+    using System;
+    using Microsoft.AspNetCore.Authentication;
+
     public static class FakeCustomAuthExtensions
     {
         public static AuthenticationBuilder AddFakeCustomAuth(this AuthenticationBuilder builder, Action<TestAuthenticationOptions> configureOptions)

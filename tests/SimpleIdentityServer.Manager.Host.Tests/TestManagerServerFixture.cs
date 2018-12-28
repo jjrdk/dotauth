@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Net.Http;
-
-namespace SimpleIdentityServer.Manager.Host.Tests
+﻿namespace SimpleIdentityServer.Manager.Host.Tests
 {
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.TestHost;
+    using Microsoft.Extensions.DependencyInjection;
+    using System;
+    using System.Net.Http;
+
     public class TestManagerServerFixture : IDisposable
     {
         public TestServer Server { get; }
@@ -13,14 +13,14 @@ namespace SimpleIdentityServer.Manager.Host.Tests
 
         public TestManagerServerFixture()
         {
-            var startup = new FakeStartup();
+            var startup = new FakeManagerStartup();
             Server = new TestServer(new WebHostBuilder()
                 .UseUrls("http://localhost:5000")
                 .ConfigureServices(services =>
                 {
                     services.AddSingleton<IStartup>(startup);
                 })
-                .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeStartup).GetType().Assembly.FullName));
+                .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeManagerStartup).Assembly.FullName));
             Client = Server.CreateClient();
         }
 

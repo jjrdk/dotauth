@@ -17,8 +17,8 @@ namespace SimpleIdentityServer.Uma.Client.Configuration
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Common.DTOs;
     using Newtonsoft.Json;
+    using SimpleAuth.Uma.Shared.DTOs;
 
     public class GetConfigurationOperation : IGetConfigurationOperation
     {

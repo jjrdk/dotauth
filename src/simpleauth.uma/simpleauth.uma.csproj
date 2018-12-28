@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>SimpleIdentityServer.Uma.Core Class Library</Description>
+    <Authors>thierry habart</Authors>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <AssemblyName>simpleauth.uma</AssemblyName>
+    <PackageId>SimpleIdentityServer.Uma.Core</PackageId>
+    <RootNamespace>SimpleAuth.Uma</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Uma.Common\simpleauth.uma.shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+  </ItemGroup>
+
+</Project>

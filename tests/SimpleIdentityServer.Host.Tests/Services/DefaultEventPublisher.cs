@@ -1,6 +1,6 @@
-﻿namespace SimpleIdentityServer.Host.Tests.Services
+﻿namespace SimpleAuth.Server.Tests.Services
 {
-    using SimpleAuth.Shared;
+    using Shared;
 
     public class DefaultEventPublisher : IEventPublisher
     {

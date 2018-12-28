@@ -1,13 +1,12 @@
-﻿using Moq;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
+﻿namespace SimpleAuth.Tests.WebSite.Consent
 {
-    using SimpleAuth.Parameters;
+    using System;
+    using System.Threading.Tasks;
+    using Moq;
+    using Parameters;
     using SimpleAuth.WebSite.Consent;
     using SimpleAuth.WebSite.Consent.Actions;
+    using Xunit;
 
     public sealed class ConsentActionsFixture
     {

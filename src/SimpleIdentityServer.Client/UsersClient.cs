@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Client
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
 
-    internal class UsersClient : IUsersClient
+    public class UsersClient : IUsersClient
     {
         private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
         {

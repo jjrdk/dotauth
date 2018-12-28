@@ -1,17 +1,16 @@
-﻿using Moq;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
+﻿namespace SimpleAuth.Tests.Api.Profile.Actions
 {
+    using System;
+    using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
+    using Exceptions;
+    using Moq;
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Repositories;
     using SimpleAuth.Api.Profile.Actions;
-    using SimpleAuth.Exceptions;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Parameters;
-    using SimpleAuth.Shared.Repositories;
+    using Xunit;
 
     public class GetUserProfilesActionFixture
     {

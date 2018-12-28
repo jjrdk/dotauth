@@ -1,11 +1,11 @@
-﻿namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks
+﻿namespace SimpleAuth.Tests.Api.Jwks
 {
-    using SimpleAuth;
-    using SimpleAuth.Api.Jwks;
-    using SimpleAuth.Repositories;
-    using SimpleAuth.Shared;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Repositories;
+    using Shared;
+    using SimpleAuth;
+    using SimpleAuth.Api.Jwks;
     using Xunit;
 
     public sealed class JwksActionsFixture

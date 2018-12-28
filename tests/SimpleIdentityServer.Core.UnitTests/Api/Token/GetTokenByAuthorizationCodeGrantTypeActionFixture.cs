@@ -12,26 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Api.Token
+namespace SimpleAuth.Tests.Api.Token
 {
+    using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Logging;
+    using Moq;
+    using Parameters;
+    using Shared;
+    using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Api.Token.Actions;
     using SimpleAuth.Authenticate;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
     using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
     using SimpleAuth.Validators;
+    using Xunit;
 
     public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
     {

@@ -1,17 +1,17 @@
-﻿namespace SimpleIdentityServer.Core.UnitTests.Validators
+﻿namespace SimpleAuth.Tests.Validators
 {
-    using SimpleIdentityServer.Core.UnitTests.Fake;
     using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Fake;
+    using Repositories;
+    using Shared;
+    using Shared.Models;
     using SimpleAuth;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
-    using SimpleAuth.Repositories;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
     using Xunit;
 
     public sealed class ClientFactoryFixture

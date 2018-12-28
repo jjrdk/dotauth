@@ -1,16 +1,15 @@
-﻿using Moq;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
+﻿namespace SimpleAuth.Twilio.Tests.Actions
 {
+    using System;
+    using System.Threading.Tasks;
+    using Moq;
     using SimpleAuth.Services;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Twilio;
-    using SimpleAuth.Twilio.Actions;
-    using SimpleAuth.WebSite.User.Actions;
+    using Twilio;
+    using Twilio.Actions;
+    using WebSite.User.Actions;
+    using Xunit;
 
     public class SmsAuthenticationOperationFixture
     {

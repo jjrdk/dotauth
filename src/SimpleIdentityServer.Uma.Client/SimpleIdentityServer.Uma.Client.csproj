@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Uma.Common\SimpleIdentityServer.Uma.Common.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Uma.Common\simpleauth.uma.shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

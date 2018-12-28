@@ -1,9 +1,9 @@
-﻿namespace SimpleIdentityServer.Host.Tests
+﻿namespace SimpleAuth.Server.Tests
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Responses;
+    using Shared;
+    using Shared.Responses;
 
     internal class TestAccessTokenStore : IAccessTokenStore
     {

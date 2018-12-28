@@ -12,28 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
+namespace SimpleAuth.Uma.Tests.Fakes
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using System.Reflection;
+    using System.Security.Claims;
+    using Controllers;
+    using Logging;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.DependencyInjection;
-    using SimpleIdentityServer.Uma.Host.Tests.MiddleWares;
-    using SimpleIdentityServer.Uma.Host.Tests.Services;
-    using SimpleIdentityServer.Uma.Host.Tests.Stores;
-    using System;
-    using System.Collections.Generic;
-    using System.Reflection;
-    using System.Security.Claims;
-    using SimpleIdentityServer.Client.Operations;
-    using System.Net.Http;
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
+    using Microsoft.Extensions.DependencyInjection;
+    using Middlewares;
+    using MiddleWares;
+    using Services;
     using SimpleAuth;
-    using SimpleAuth.Logging;
     using SimpleAuth.Shared;
-    using SimpleAuth.Uma;
-    using SimpleAuth.Uma.Controllers;
-    using SimpleAuth.Uma.Middlewares;
+    using SimpleIdentityServer.Client.Operations;
+    using Stores;
+    using Uma;
 
     public class FakeUmaStartup : IStartup
     {

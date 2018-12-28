@@ -1,10 +1,10 @@
-﻿using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Host.Tests.Apis
+﻿namespace SimpleAuth.Server.Tests.Apis
 {
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using Xunit;
+
     public class SessionApiFixture : IClassFixture<TestOauthServerFixture>
     {
         private const string baseUrl = "http://localhost:5000";

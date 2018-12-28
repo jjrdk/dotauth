@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Tests.Apis
+namespace SimpleAuth.Server.Tests.Apis
 {
-    using Client;
-    using Client.Operations;
-    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Responses;
+    using Newtonsoft.Json;
+    using Shared;
+    using Shared.Responses;
+    using SimpleIdentityServer.Client;
+    using SimpleIdentityServer.Client.Operations;
     using Xunit;
 
     public class RevokeTokenClientFixture : IClassFixture<TestOauthServerFixture>

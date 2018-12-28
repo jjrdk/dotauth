@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Security.Cryptography;
-
-namespace SimpleIdentityServer.Host.Tests.Stores
+namespace SimpleAuth.Server.Tests.Stores
 {
     using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Security.Cryptography;
+    using Shared;
+    using Shared.Models;
     using SimpleAuth;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
 
     public static class DefaultStores
     {

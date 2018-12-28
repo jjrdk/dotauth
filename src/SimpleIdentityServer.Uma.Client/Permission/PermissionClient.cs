@@ -16,10 +16,10 @@ namespace SimpleIdentityServer.Uma.Client.Permission
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Common.DTOs;
     using Configuration;
     using Helpers;
     using Results;
+    using SimpleAuth.Uma.Shared.DTOs;
 
     internal class PermissionClient : IPermissionClient
     {

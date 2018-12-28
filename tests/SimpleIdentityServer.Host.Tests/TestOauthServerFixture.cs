@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Net.Http;
-
-namespace SimpleIdentityServer.Host.Tests
+namespace SimpleAuth.Server.Tests
 {
+    using System;
+    using System.Net.Http;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.TestHost;
+    using Microsoft.Extensions.DependencyInjection;
+
     public class TestOauthServerFixture : IDisposable
     {
         public TestServer Server { get; }

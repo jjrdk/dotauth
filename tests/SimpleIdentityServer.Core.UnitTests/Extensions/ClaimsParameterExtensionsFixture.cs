@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Extensions
+﻿namespace SimpleAuth.Tests.Extensions
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Parameters;
     using SimpleAuth;
     using SimpleAuth.Extensions;
-    using SimpleAuth.Parameters;
+    using Xunit;
 
     public sealed class ClaimsParameterExtensionsFixture
     {

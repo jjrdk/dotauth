@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Tests.Apis
+namespace SimpleAuth.Server.Tests.Apis
 {
-    using Client;
-    using Client.Operations;
     using System;
     using System.Threading.Tasks;
+    using SimpleIdentityServer.Client;
+    using SimpleIdentityServer.Client.Operations;
     using Xunit;
 
     public class DiscoveryClientFixture : IClassFixture<TestOauthServerFixture>

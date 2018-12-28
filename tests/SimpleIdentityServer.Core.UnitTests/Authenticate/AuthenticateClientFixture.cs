@@ -1,15 +1,14 @@
-﻿using Moq;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Authenticate
+﻿namespace SimpleAuth.Tests.Authenticate
 {
+    using System;
+    using System.Threading.Tasks;
+    using Errors;
+    using Logging;
+    using Moq;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth.Authenticate;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using Xunit;
 
     public sealed class AuthenticateClientFixture
     {

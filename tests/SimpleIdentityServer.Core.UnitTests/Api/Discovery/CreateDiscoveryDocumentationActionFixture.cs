@@ -1,13 +1,12 @@
-﻿using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
+﻿namespace SimpleAuth.Tests.Api.Discovery
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Moq;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth.Api.Discovery;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    using Xunit;
 
     public class CreateDiscoveryDocumentationActionFixture
     {

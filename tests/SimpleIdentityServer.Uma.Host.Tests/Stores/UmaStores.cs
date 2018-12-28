@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Host.Tests.Stores
+namespace SimpleAuth.Uma.Tests.Stores
 {
     using System.Collections.Generic;
-    using SimpleAuth.Uma.Models;
+    using Models;
 
     public static class UmaStores
     {

@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Host.Tests.Services
+namespace SimpleAuth.Server.Tests.Services
 {
     using System;
     using System.Threading.Tasks;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth.Services;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
 
     public class CustomAuthenticateResourceOwnerService : IAuthenticateResourceOwnerService
     {

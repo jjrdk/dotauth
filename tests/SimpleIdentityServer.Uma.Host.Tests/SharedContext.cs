@@ -1,14 +1,13 @@
-﻿using System.Security.Cryptography;
-
-namespace SimpleIdentityServer.Uma.Host.Tests
+﻿namespace SimpleAuth.Uma.Tests
 {
+    using System.Security.Cryptography;
     using SimpleAuth.Shared;
 
     public class SharedContext
     {
         public SharedContext()
         {
-            var serializedRsa = string.Empty;
+            string serializedRsa;
             using (var provider = new RSACryptoServiceProvider())
             {
                 serializedRsa = RsaExtensions.ToXmlString(provider, true);

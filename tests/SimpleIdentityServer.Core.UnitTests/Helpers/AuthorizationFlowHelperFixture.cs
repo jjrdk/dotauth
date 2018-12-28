@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-using Xunit;
-
-namespace SimpleIdentityServer.Core.UnitTests.Helpers
+﻿namespace SimpleAuth.Tests.Helpers
 {
+    using System.Collections.Generic;
+    using Errors;
+    using Exceptions;
+    using Shared.Models;
     using SimpleAuth.Api.Authorization;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Exceptions;
     using SimpleAuth.Helpers;
-    using SimpleAuth.Shared.Models;
+    using Xunit;
 
     public sealed class AuthorizationFlowHelperFixture
     {

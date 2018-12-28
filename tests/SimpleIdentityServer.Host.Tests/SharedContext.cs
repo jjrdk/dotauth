@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Moq;
-using System.Security.Cryptography;
-
-namespace SimpleIdentityServer.Host.Tests
+namespace SimpleAuth.Server.Tests
 {
     using System.Net.Http;
+    using System.Security.Cryptography;
+    using Moq;
+    using Shared;
     using SimpleAuth;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Twilio;
+    using Twilio;
 
     public class SharedContext
     {

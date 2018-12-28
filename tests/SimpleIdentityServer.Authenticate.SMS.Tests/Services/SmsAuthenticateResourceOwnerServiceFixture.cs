@@ -1,15 +1,14 @@
-﻿using Moq;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Authenticate.SMS.Tests.Services
+﻿namespace SimpleAuth.Twilio.Tests.Services
 {
+    using System;
+    using System.Threading.Tasks;
+    using Moq;
     using SimpleAuth;
     using SimpleAuth.Services;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Twilio.Services;
+    using Twilio.Services;
+    using Xunit;
 
     public class SmsAuthenticateResourceOwnerServiceFixture
     {
