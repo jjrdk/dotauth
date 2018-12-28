@@ -5,9 +5,9 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Errors;
+    using Manager.Client.Clients;
     using Shared.Models;
     using Shared.Requests;
-    using SimpleIdentityServer.Manager.Client.Clients;
     using Xunit;
 
     public class ClientFixture //: IClassFixture<TestManagerServerFixture>

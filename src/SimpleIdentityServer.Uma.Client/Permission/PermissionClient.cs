@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Client.Permission
+namespace SimpleAuth.Uma.Client.Permission
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Configuration;
     using Helpers;
     using Results;
-    using SimpleAuth.Uma.Shared.DTOs;
+    using Shared.DTOs;
 
     internal class PermissionClient : IPermissionClient
     {

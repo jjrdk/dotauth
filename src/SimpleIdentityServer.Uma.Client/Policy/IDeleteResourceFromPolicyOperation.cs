@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Client.Policy
+﻿namespace SimpleAuth.Uma.Client.Policy
 {
     using System.Threading.Tasks;
     using SimpleAuth.Shared;

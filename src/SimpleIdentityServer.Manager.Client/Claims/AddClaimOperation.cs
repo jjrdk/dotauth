@@ -1,14 +1,13 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Client.Claims
+﻿namespace SimpleAuth.Manager.Client.Claims
 {
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Responses;
+    using System;
+    using System.Net.Http;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using Shared;
+    using Shared.Responses;
 
     internal sealed class AddClaimOperation : IAddClaimOperation
     {

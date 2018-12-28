@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-
-namespace SimpleIdentityServer.Authenticate.SMS.Client
+﻿namespace SimpleAuth.Twilio.Client
 {
+    using System;
+    using Microsoft.Extensions.DependencyInjection;
+
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddAuthenticateSmsClient(this IServiceCollection services)

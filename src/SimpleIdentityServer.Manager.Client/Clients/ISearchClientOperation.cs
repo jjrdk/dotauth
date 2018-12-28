@@ -1,10 +1,10 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Clients
+﻿namespace SimpleAuth.Manager.Client.Clients
 {
     using System;
     using System.Threading.Tasks;
     using Results;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
+    using Shared.Requests;
+    using Shared.Responses;
 
     public interface ISearchClientOperation
     {

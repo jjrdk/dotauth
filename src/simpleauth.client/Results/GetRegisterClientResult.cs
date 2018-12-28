@@ -1,6 +1,6 @@
-﻿namespace SimpleIdentityServer.Client.Results
+﻿namespace SimpleAuth.Client.Results
 {
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public class GetRegisterClientResult : BaseSidResult
     {

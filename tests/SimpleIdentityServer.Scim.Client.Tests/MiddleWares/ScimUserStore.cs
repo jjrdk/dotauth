@@ -2,21 +2,21 @@
 {
     using System;
 
-    public class UserStore
+    public class ScimUserStore
     {
-        private static UserStore _instance;
+        private static ScimUserStore _instance;
         private static readonly string _defaultSubject = "administrator";
 
-        private UserStore()
+        private ScimUserStore()
         {
             Subject = _defaultSubject;
         }
 
-        public static UserStore Instance()
+        public static ScimUserStore Instance()
         {
             if (_instance == null)
             {
-                _instance = new UserStore();
+                _instance = new ScimUserStore();
             }
 
             return _instance;

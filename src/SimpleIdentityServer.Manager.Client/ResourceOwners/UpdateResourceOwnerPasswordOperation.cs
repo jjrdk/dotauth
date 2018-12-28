@@ -1,13 +1,13 @@
-﻿namespace SimpleIdentityServer.Manager.Client.ResourceOwners
+﻿namespace SimpleAuth.Manager.Client.ResourceOwners
 {
-    using Newtonsoft.Json;
     using System;
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
+    using Newtonsoft.Json;
+    using Shared;
+    using Shared.Requests;
+    using Shared.Responses;
 
     internal sealed class UpdateResourceOwnerPasswordOperation : IUpdateResourceOwnerPasswordOperation
     {

@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Client.Configuration
+namespace SimpleAuth.Uma.Client.Configuration
 {
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
-    using SimpleAuth.Uma.Shared.DTOs;
+    using Shared.DTOs;
 
     public class GetConfigurationOperation : IGetConfigurationOperation
     {

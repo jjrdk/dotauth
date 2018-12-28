@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
     using SimpleAuth.Shared;
     using SimpleAuth.WebSite.User.Actions;
 
-    public class FakeStartup
+    public class FakeScimStartup
     {
         public const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
 

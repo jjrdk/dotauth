@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication;
-
-namespace SimpleIdentityServer.UserInfoIntrospection
+﻿namespace SimpleAuth.UserInfoIntrospection
 {
+    using Microsoft.AspNetCore.Authentication;
+
     public class UserInfoIntrospectionOptions : AuthenticationSchemeOptions
     {
         public const string AuthenticationScheme = "UserInfoIntrospection";

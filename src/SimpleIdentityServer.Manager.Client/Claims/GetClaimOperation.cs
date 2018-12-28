@@ -1,12 +1,12 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Claims
+﻿namespace SimpleAuth.Manager.Client.Claims
 {
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-    using Results;
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Responses;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using Results;
+    using Shared.Responses;
 
     internal sealed class GetClaimOperation : IGetClaimOperation
     {

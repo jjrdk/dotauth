@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Client.Results;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Client
+namespace SimpleAuth.Client
 {
-    using Newtonsoft.Json;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Threading.Tasks;
     using Errors;
-    using SimpleAuth.Shared.Responses;
+    using Newtonsoft.Json;
+    using Operations;
+    using Results;
+    using Shared.Responses;
 
     internal class IntrospectClient : IIntrospectClient
     {

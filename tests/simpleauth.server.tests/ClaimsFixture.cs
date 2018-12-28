@@ -3,9 +3,9 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using Manager.Client.Claims;
+    using Manager.Client.Configuration;
     using Shared.Responses;
-    using SimpleIdentityServer.Manager.Client.Claims;
-    using SimpleIdentityServer.Manager.Client.Configuration;
     using Xunit;
 
     public class ClaimsFixture : IClassFixture<TestManagerServerFixture>

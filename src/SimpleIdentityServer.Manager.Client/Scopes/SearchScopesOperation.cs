@@ -1,14 +1,14 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Scopes
+﻿namespace SimpleAuth.Manager.Client.Scopes
 {
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-    using Results;
     using System;
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using Results;
+    using Shared.Requests;
+    using Shared.Responses;
 
     internal sealed class SearchScopesOperation : ISearchScopesOperation
     {

@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using System;
-
-namespace SimpleIdentityServer.OAuth2Introspection
+﻿namespace SimpleAuth.OAuth2Introspection
 {
+    using System;
+    using Microsoft.AspNetCore.Authentication;
+
     public static class OAuth2IntrospectionExtensions
     {
         public static AuthenticationBuilder AddOAuth2Introspection(this AuthenticationBuilder builder)

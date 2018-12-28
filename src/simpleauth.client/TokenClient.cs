@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Errors;
-using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Client.Results;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Client
+namespace SimpleAuth.Client
 {
-    using Newtonsoft.Json;
-    using SimpleAuth.Shared.Responses;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
+    using Errors;
+    using Newtonsoft.Json;
+    using Operations;
+    using Results;
+    using Shared.Responses;
 
     public class TokenClient : ITokenClient
     {

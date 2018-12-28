@@ -1,8 +1,7 @@
-﻿using System.Net;
-
-namespace SimpleIdentityServer.Client.Results
+﻿namespace SimpleAuth.Client.Results
 {
-    using SimpleAuth.Shared.Responses;
+    using System.Net;
+    using Shared.Responses;
 
     public class BaseSidResult
     {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Client.Helpers
+namespace SimpleAuth.Uma.Client.Helpers
 {
     using System;
     using Errors;

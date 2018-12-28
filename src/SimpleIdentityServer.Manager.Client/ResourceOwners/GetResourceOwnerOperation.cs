@@ -1,12 +1,12 @@
-﻿namespace SimpleIdentityServer.Manager.Client.ResourceOwners
+﻿namespace SimpleAuth.Manager.Client.ResourceOwners
 {
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-    using Results;
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Responses;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using Results;
+    using Shared.Responses;
 
     internal sealed class GetResourceOwnerOperation : IGetResourceOwnerOperation
     {

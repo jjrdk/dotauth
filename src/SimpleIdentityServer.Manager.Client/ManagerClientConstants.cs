@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Manager.Client
+namespace SimpleAuth.Manager.Client
 {
     internal static class ManagerClientConstants
     {

@@ -19,11 +19,11 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net.Http;
     using System.Threading.Tasks;
     using Api.Discovery;
+    using Client;
+    using Client.Operations;
     using Repositories;
     using Shared.Models;
     using SimpleAuth;
-    using SimpleIdentityServer.Client;
-    using SimpleIdentityServer.Client.Operations;
     using Xunit;
 
     public class JwksClientFixture : IClassFixture<TestOauthServerFixture>

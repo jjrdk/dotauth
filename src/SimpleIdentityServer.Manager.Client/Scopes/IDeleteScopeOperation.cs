@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Scopes
+﻿namespace SimpleAuth.Manager.Client.Scopes
 {
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
+    using Shared;
 
     public interface IDeleteScopeOperation
     {

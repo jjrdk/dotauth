@@ -19,15 +19,15 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
+    using Client;
+    using Client.Operations;
     using Errors;
     using Newtonsoft.Json;
     using Shared;
     using Shared.Models;
     using Shared.Responses;
-    using SimpleIdentityServer.Client;
-    using SimpleIdentityServer.Client.Operations;
     using Xunit;
-    using TokenRequest = SimpleIdentityServer.Client.TokenRequest;
+    using TokenRequest = Client.TokenRequest;
 
     public class RegisterClientFixture : IClassFixture<TestOauthServerFixture>
     {

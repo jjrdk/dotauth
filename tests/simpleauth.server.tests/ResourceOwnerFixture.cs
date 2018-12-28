@@ -6,9 +6,9 @@
     using System.Threading.Tasks;
     using Errors;
     using Helpers;
+    using Manager.Client.Configuration;
+    using Manager.Client.ResourceOwners;
     using Shared.Requests;
-    using SimpleIdentityServer.Manager.Client.Configuration;
-    using SimpleIdentityServer.Manager.Client.ResourceOwners;
     using Xunit;
 
     public class ResourceOwnerFixture : IClassFixture<TestManagerServerFixture>

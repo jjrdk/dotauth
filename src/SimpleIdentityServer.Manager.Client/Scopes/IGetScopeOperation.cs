@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Scopes
+﻿namespace SimpleAuth.Manager.Client.Scopes
 {
     using System;
     using System.Threading.Tasks;

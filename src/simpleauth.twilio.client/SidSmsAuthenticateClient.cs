@@ -1,13 +1,13 @@
-﻿namespace SimpleIdentityServer.Authenticate.SMS.Client
+﻿namespace SimpleAuth.Twilio.Client
 {
-    using Newtonsoft.Json;
     using System;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
+    using Newtonsoft.Json;
+    using Shared.Requests;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
-    using SimpleAuth.Twilio.Shared.Requests;
 
     internal sealed class SidSmsAuthenticateClient : ISidSmsAuthenticateClient
     {

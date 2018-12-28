@@ -19,12 +19,12 @@ namespace SimpleIdentityServer.Scim.Client.Tests
     using System;
     using System.Net;
     using System.Threading.Tasks;
+    using SimpleAuth.Client;
     using SimpleAuth.Extensions;
     using Xunit;
 
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
-    using SimpleIdentityServer.Client;
 
     public class UsersClientFixture : IClassFixture<TestScimServerFixture>
     {
@@ -55,12 +55,12 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             var scimResponse = await _usersClient.AddUser(new ScimUser {UserName = "tester1"}, "token")
                 .ConfigureAwait(false);
             var scimId = scimResponse.Content["id"].ToString();
-            UserStore.Instance().ScimId = scimId;
+            ScimUserStore.Instance().ScimId = scimId;
             var thirdResult = await _usersClient.UpdateUser(
                     baseUrl,
                     new ScimUser {Id = scimId, Roles = "onerole, secondrole, thirdrole"})
                 .ConfigureAwait(false);
-            UserStore.Instance().ScimId = null;
+            ScimUserStore.Instance().ScimId = null;
 
             Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
         }
@@ -72,12 +72,12 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
             var scimResponse = await _usersClient.AddUser(new ScimUser {UserName = "tester"}).ConfigureAwait(false);
             //var scimId = scimResponse.Content["id"].ToString();
-            //UserStore.Instance().ScimId = scimId;
+            //ScimUserStore.Instance().ScimId = scimId;
             var id = scimResponse.Content["id"].ToString();
             var thirdResult = await _usersClient.UpdateUser(baseUrl,
                     new ScimUser {Id = id, Roles = "onerole, secondrole, thirdrole"})
                 .ConfigureAwait(false);
-            UserStore.Instance().ScimId = null;
+            ScimUserStore.Instance().ScimId = null;
 
             Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
         }
@@ -89,13 +89,13 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
             var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
             var scimId = scimResponse.Content["id"].ToString();
-            UserStore.Instance().ScimId = scimId;
+            ScimUserStore.Instance().ScimId = scimId;
             var thirdResult = await _usersClient.UpdateUser(
                     baseUrl,
                     new ScimUser {Id = scimId, UserName = "other_username"},
                     "token")
                 .ConfigureAwait(false);
-            UserStore.Instance().ScimId = null;
+            ScimUserStore.Instance().ScimId = null;
 
             Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
         }
@@ -114,9 +114,9 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
         //            //    var scimResponse = await _usersClient.AddAuthenticatedUser(baseUrl, "token").ConfigureAwait(false);
         //    var scimId = scimResponse.Content["id"].ToString();
-        //    UserStore.Instance().ScimId = scimId;
+        //    ScimUserStore.Instance().ScimId = scimId;
         //    var thirdResult = await _usersClient.PartialUpdateAuthenticatedUser(baseUrl, scimId, patchOperation).ConfigureAwait(false);
-        //    UserStore.Instance().ScimId = null;
+        //    ScimUserStore.Instance().ScimId = null;
 
         //            //    Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
         //}
@@ -128,9 +128,9 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
             var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
             var scimId = scimResponse.Content["id"].ToString();
-            UserStore.Instance().ScimId = scimId;
+            ScimUserStore.Instance().ScimId = scimId;
             var removeResponse = await _usersClient.DeleteAuthenticatedUser(baseUrl, "token").ConfigureAwait(false);
-            UserStore.Instance().ScimId = null;
+            ScimUserStore.Instance().ScimId = null;
 
             Assert.Equal(HttpStatusCode.NoContent, removeResponse.StatusCode);
         }
@@ -142,9 +142,9 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
             var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
             var scimId = scimResponse.Content["id"].ToString();
-            UserStore.Instance().ScimId = scimId;
+            ScimUserStore.Instance().ScimId = scimId;
             var userResponse = await _usersClient.GetAuthenticatedUser(baseUrl, "token").ConfigureAwait(false);
-            UserStore.Instance().ScimId = null;
+            ScimUserStore.Instance().ScimId = null;
 
             Assert.Equal(HttpStatusCode.OK, userResponse.StatusCode);
         }

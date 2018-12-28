@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Client.Permission
+namespace SimpleAuth.Uma.Client.Permission
 {
     using System;
     using System.Collections.Generic;
@@ -21,8 +21,8 @@ namespace SimpleIdentityServer.Uma.Client.Permission
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using Results;
+    using Shared.DTOs;
     using SimpleAuth.Shared.Responses;
-    using SimpleAuth.Uma.Shared.DTOs;
 
     internal class AddPermissionsOperation : IAddPermissionsOperation
     {

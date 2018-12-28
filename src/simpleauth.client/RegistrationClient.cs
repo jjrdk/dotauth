@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Client
+namespace SimpleAuth.Client
 {
-    using SimpleIdentityServer.Client.Errors;
-    using SimpleIdentityServer.Client.Operations;
-    using SimpleIdentityServer.Client.Results;
     using System;
-    using System.Threading.Tasks;
-    using Newtonsoft.Json;
     using System.Net.Http;
     using System.Net.Http.Headers;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Responses;
+    using System.Threading.Tasks;
+    using Errors;
+    using Newtonsoft.Json;
+    using Operations;
+    using Results;
+    using Shared.Models;
+    using Shared.Responses;
 
     internal class RegistrationClient : IRegistrationClient
     {

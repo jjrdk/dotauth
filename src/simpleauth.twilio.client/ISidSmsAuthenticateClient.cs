@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Authenticate.SMS.Client
+﻿namespace SimpleAuth.Twilio.Client
 {
     using System.Threading.Tasks;
+    using Shared.Requests;
     using SimpleAuth.Shared;
-    using SimpleAuth.Twilio.Shared.Requests;
 
     public interface ISidSmsAuthenticateClient
     {

@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace SimpleIdentityServer.Client.Results
+﻿namespace SimpleAuth.Client.Results
 {
+    using Newtonsoft.Json.Linq;
+
     public class GetUserInfoResult : BaseSidResult
     {
         public JObject Content { get; set; }

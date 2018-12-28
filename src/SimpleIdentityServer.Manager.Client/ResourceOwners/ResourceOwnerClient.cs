@@ -1,12 +1,12 @@
-﻿namespace SimpleIdentityServer.Manager.Client.ResourceOwners
+﻿namespace SimpleAuth.Manager.Client.ResourceOwners
 {
-    using SimpleIdentityServer.Manager.Client.Configuration;
-    using SimpleIdentityServer.Manager.Client.Results;
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
+    using Configuration;
+    using Results;
+    using Shared;
+    using Shared.Requests;
+    using Shared.Responses;
 
     internal sealed class ResourceOwnerClient : IResourceOwnerClient
     {

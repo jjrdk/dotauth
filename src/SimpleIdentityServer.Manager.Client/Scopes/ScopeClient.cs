@@ -1,12 +1,12 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Scopes
+﻿namespace SimpleAuth.Manager.Client.Scopes
 {
-    using Configuration;
-    using Results;
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
+    using Configuration;
+    using Results;
+    using Shared;
+    using Shared.Requests;
+    using Shared.Responses;
 
     internal sealed class ScopeClient : IScopeClient
     {

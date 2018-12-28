@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.DependencyInjection;
-using System;
-
-namespace SimpleIdentityServer.Uma.Client
+namespace SimpleAuth.Uma.Client
 {
+    using System;
+    using Microsoft.Extensions.DependencyInjection;
+
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddUmaClient(this IServiceCollection services)

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Client.ResourceSet
+namespace SimpleAuth.Uma.Client.ResourceSet
 {
     using System;
     using System.Net.Http;
@@ -20,8 +20,8 @@ namespace SimpleIdentityServer.Uma.Client.ResourceSet
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using Results;
+    using Shared.DTOs;
     using SimpleAuth.Shared.Responses;
-    using SimpleAuth.Uma.Shared.DTOs;
 
     internal class UpdateResourceOperation : IUpdateResourceOperation
     {

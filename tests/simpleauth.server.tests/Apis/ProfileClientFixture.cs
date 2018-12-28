@@ -2,13 +2,13 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
+    using Client;
+    using Client.Operations;
     using Errors;
+    using Manager.Client;
     using Shared.Requests;
-    using SimpleIdentityServer.Client;
-    using SimpleIdentityServer.Client.Operations;
-    using SimpleIdentityServer.Manager.Client;
     using Xunit;
-    using TokenRequest = SimpleIdentityServer.Client.TokenRequest;
+    using TokenRequest = Client.TokenRequest;
 
     public class ProfileClientFixture : IClassFixture<TestOauthServerFixture>
     {

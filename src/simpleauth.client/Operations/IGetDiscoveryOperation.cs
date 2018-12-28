@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Client.Operations
+﻿namespace SimpleAuth.Client.Operations
 {
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Responses;
+    using Shared.Responses;
 
     public interface IGetDiscoveryOperation
     {

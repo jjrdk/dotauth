@@ -1,6 +1,6 @@
-﻿namespace SimpleIdentityServer.Client.Results
+﻿namespace SimpleAuth.Client.Results
 {
-    using SimpleAuth.Shared.Responses;
+    using Shared.Responses;
 
     public class GetIntrospectionResult : BaseSidResult
     {

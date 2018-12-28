@@ -1,9 +1,9 @@
-﻿namespace SimpleIdentityServer.Manager.Client.ResourceOwners
+﻿namespace SimpleAuth.Manager.Client.ResourceOwners
 {
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
+    using Shared;
+    using Shared.Requests;
 
     public interface IAddResourceOwnerOperation
     {

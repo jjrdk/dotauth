@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Uma.Client.ResourceSet
+﻿namespace SimpleAuth.Uma.Client.ResourceSet
 {
     using System.Threading.Tasks;
     using Results;
-    using SimpleAuth.Uma.Shared.DTOs;
+    using Shared.DTOs;
 
     public interface IAddResourceSetOperation
     {

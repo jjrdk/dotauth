@@ -1,14 +1,13 @@
-﻿using Newtonsoft.Json;
-using SimpleIdentityServer.Uma.Client.Results;
-using System;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Client.Policy
+﻿namespace SimpleAuth.Uma.Client.Policy
 {
+    using System;
+    using System.Net.Http;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Newtonsoft.Json;
+    using Results;
+    using Shared.DTOs;
     using SimpleAuth.Shared.Responses;
-    using SimpleAuth.Uma.Shared.DTOs;
 
     internal sealed class SearchPoliciesOperation : ISearchPoliciesOperation
     {

@@ -1,8 +1,8 @@
 ﻿namespace SimpleAuth.Server.Tests.Apis
 {
     using System.Threading.Tasks;
-    using SimpleIdentityServer.Client;
-    using SimpleIdentityServer.Client.Operations;
+    using Client;
+    using Client.Operations;
     using Xunit;
 
     public class UserInfoClientFixture : IClassFixture<TestOauthServerFixture>

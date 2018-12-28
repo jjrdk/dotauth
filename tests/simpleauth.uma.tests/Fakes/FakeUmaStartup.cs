@@ -30,8 +30,8 @@ namespace SimpleAuth.Uma.Tests.Fakes
     using MiddleWares;
     using Services;
     using SimpleAuth;
+    using SimpleAuth.Client.Operations;
     using SimpleAuth.Shared;
-    using SimpleIdentityServer.Client.Operations;
     using Stores;
     using Uma;
 

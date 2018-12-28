@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Operations;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Client
+namespace SimpleAuth.Client
 {
-    using SimpleAuth.Shared.Responses;
+    using System;
+    using System.Threading.Tasks;
+    using Operations;
+    using Shared.Responses;
 
     internal class DiscoveryClient : IDiscoveryClient
     {

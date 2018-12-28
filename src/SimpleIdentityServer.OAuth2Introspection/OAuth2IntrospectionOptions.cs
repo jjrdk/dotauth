@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using System.Net.Http;
-
-namespace SimpleIdentityServer.OAuth2Introspection
+﻿namespace SimpleAuth.OAuth2Introspection
 {
+    using System.Net.Http;
+    using Microsoft.AspNetCore.Authentication;
+
     public class OAuth2IntrospectionOptions : AuthenticationSchemeOptions
    {
         public const string AuthenticationScheme = "OAuth2Introspection";
