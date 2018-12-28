@@ -1,9 +1,9 @@
-﻿using SimpleIdentityServer.Uma.Core.Models;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace SimpleIdentityServer.Uma.Core.Extensions
+﻿namespace SimpleAuth.Uma.Extensions
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Models;
+
     public static class CopyExtensions
     {
         public static ResourceSet Copy(this ResourceSet resourceSet)

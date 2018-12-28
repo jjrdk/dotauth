@@ -1,7 +1,7 @@
-﻿namespace SimpleIdentityServer.Uma.Core.JwtToken
+﻿namespace SimpleAuth.Uma.JwtToken
 {
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
+    using Shared;
+    using Shared.Requests;
 
     public interface IJwtTokenParser
     {

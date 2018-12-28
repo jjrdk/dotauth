@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
         public async Task WhenPassNullParameterThenExceptionIsThrown()
         {            InitializeFakeObjects();
 
-            // ACTS & ASSERTS
+            
             await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceOwnerClaimsAction.Execute(null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceOwnerClaimsAction.Execute(string.Empty)).ConfigureAwait(false);
         }

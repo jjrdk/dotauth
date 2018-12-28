@@ -12,22 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Parameters;
-using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
-using SimpleIdentityServer.Uma.Core.Errors;
-using SimpleIdentityServer.Uma.Core.Exceptions;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Repositories;
-using SimpleIdentityServer.Uma.Core.Validators;
-using System;
-using System.Collections.Generic;
-using Xunit;
-using System.Threading.Tasks;
-
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
 {
     using Moq;
     using SimpleAuth.Logging;
+    using SimpleAuth.Uma.Api.ResourceSetController.Actions;
+    using SimpleAuth.Uma.Exceptions;
+    using SimpleAuth.Uma.Parameters;
+    using SimpleAuth.Uma.Repositories;
+    using SimpleAuth.Uma.Validators;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using SimpleAuth.Uma.Errors;
+    using SimpleAuth.Uma.Models;
+    using Xunit;
 
     public class AddResourceSetActionFixture
     {
@@ -38,14 +37,16 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceSetAction.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceSetAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Resource_Set_Cannot_Be_Inserted_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var addResourceParameter = new AddResouceSetParameter
             {
                 Name = "name",
@@ -56,7 +57,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             _resourceSetRepositoryStub.Setup(r => r.Insert(It.IsAny<ResourceSet>()))
                 .Returns(() => Task.FromResult(false));
 
-                        var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(addResourceParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(addResourceParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheResourceSetCannotBeInserted);
@@ -64,7 +65,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
 
         [Fact]
         public async Task When_ResourceSet_Is_Inserted_Then_Id_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var addResourceParameter = new AddResouceSetParameter
             {
                 Name = "name",
@@ -75,9 +77,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             _resourceSetRepositoryStub.Setup(r => r.Insert(It.IsAny<ResourceSet>()))
                 .Returns(Task.FromResult(true));
 
-                        var result = await _addResourceSetAction.Execute(addResourceParameter).ConfigureAwait(false);
+            var result = await _addResourceSetAction.Execute(addResourceParameter).ConfigureAwait(false);
 
-                        Assert.NotNull(result);
+            Assert.NotNull(result);
         }
 
         private void InitializeFakeObjects()

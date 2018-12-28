@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Errors;
-using SimpleIdentityServer.Uma.Core.Exceptions;
-using SimpleIdentityServer.Uma.Core.Repositories;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
+namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Repositories;
+
     internal class GetAllResourceSetAction : IGetAllResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;

@@ -1,9 +1,9 @@
-﻿namespace SimpleIdentityServer.Uma.Core
+﻿namespace SimpleAuth.Uma
 {
     using System;
     using System.Collections.Generic;
     using Models;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public class AuthorizationServerConfiguration
     {

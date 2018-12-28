@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 }
             };
 
-            // ACTS & ASSERTS
+            
             Assert.Null(_clientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, firstClient));
             Assert.Null(_clientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, secondClient));
         }

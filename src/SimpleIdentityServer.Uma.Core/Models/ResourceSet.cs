@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Uma.Core.Models
+namespace SimpleAuth.Uma.Models
 {
+    using System.Collections.Generic;
+
     public class ResourceSet
     {        
         public string Id { get; set; }    

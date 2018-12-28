@@ -14,7 +14,6 @@
 
 namespace SimpleIdentityServer.Host.Tests
 {
-    using Authenticate.SMS;
     using Client;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
@@ -31,7 +30,6 @@ namespace SimpleIdentityServer.Host.Tests
     using SimpleAuth.Server.Extensions;
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Repositories;
     using Stores;
     using System;
     using System.Net.Http;

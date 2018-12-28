@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Core.Middlewares
+namespace SimpleAuth.Uma.Middlewares
 {
     using System;
     using System.Net;
@@ -20,8 +20,8 @@ namespace SimpleIdentityServer.Uma.Core.Middlewares
     using Exceptions;
     using Extensions;
     using Microsoft.AspNetCore.Http;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Shared.Responses;
+    using Shared.Responses;
+    using ErrorCodes = SimpleAuth.Errors.ErrorCodes;
 
     internal class ExceptionHandlerMiddleware
     {

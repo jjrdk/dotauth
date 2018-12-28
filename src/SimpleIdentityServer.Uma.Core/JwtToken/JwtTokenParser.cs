@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Linq;
-
-namespace SimpleIdentityServer.Uma.Core.JwtToken
+namespace SimpleAuth.Uma.JwtToken
 {
+    using System;
+    using System.Linq;
+    using Converter;
+    using Shared;
+    using Shared.Requests;
+    using Signature;
     using SimpleAuth;
-    using SimpleAuth.Converter;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Signature;
 
     internal class JwtTokenParser : IJwtTokenParser
     {

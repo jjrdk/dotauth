@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {            InitializeFakeObjects();
 
-            // ACTS & ASSERTS
+            
             await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync(null, null, null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", null, null, null)).ConfigureAwait(false);
         }

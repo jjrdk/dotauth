@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {            InitializeFakeObjects();
             var localAuthenticationParameter = new LocalAuthenticationParameter();
 
-            // ACTS & ASSERTS
+            
             await Assert.ThrowsAsync<ArgumentNullException>(() => _localUserAuthenticationAction.Execute(null, null, null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _localUserAuthenticationAction.Execute(localAuthenticationParameter, null, null, null)).ConfigureAwait(false);
         }

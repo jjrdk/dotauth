@@ -27,13 +27,13 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
     using System.Security.Claims;
     using SimpleIdentityServer.Client.Operations;
     using System.Net.Http;
-    using Core;
-    using Core.Controllers;
-    using Core.Middlewares;
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using SimpleAuth;
     using SimpleAuth.Logging;
     using SimpleAuth.Shared;
+    using SimpleAuth.Uma;
+    using SimpleAuth.Uma.Controllers;
+    using SimpleAuth.Uma.Middlewares;
 
     public class FakeUmaStartup : IStartup
     {

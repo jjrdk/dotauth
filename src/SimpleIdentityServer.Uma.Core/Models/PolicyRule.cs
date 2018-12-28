@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Core.Models
+﻿namespace SimpleAuth.Uma.Models
 {
     using System.Collections.Generic;
 

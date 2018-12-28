@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Errors;
-using SimpleIdentityServer.Uma.Core.Exceptions;
-using SimpleIdentityServer.Uma.Core.Models;
-using System;
-using System.Linq;
-
-namespace SimpleIdentityServer.Uma.Core.Validators
+namespace SimpleAuth.Uma.Validators
 {
+    using System;
+    using System.Linq;
+    using Errors;
+    using Exceptions;
+    using Models;
+
     internal class ResourceSetParameterValidator : IResourceSetParameterValidator
     {
         public void CheckResourceSetParameter(ResourceSet resourceSet)

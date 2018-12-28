@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Errors;
-using SimpleIdentityServer.Uma.Core.Helpers;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Repositories;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
+namespace SimpleAuth.Uma.Api.PolicyController.Actions
 {
+    using System;
+    using System.Threading.Tasks;
+    using Errors;
+    using Helpers;
+    using Models;
+    using Repositories;
+
     internal class GetAuthorizationPolicyAction : IGetAuthorizationPolicyAction
     {
         private readonly IPolicyRepository _policyRepository;

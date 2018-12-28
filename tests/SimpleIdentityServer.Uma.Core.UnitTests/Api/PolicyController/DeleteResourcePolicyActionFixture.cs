@@ -12,21 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
-using SimpleIdentityServer.Uma.Core.Errors;
-using SimpleIdentityServer.Uma.Core.Exceptions;
-using SimpleIdentityServer.Uma.Core.Helpers;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Xunit;
     using Moq;
     using SimpleAuth.Logging;
+    using SimpleAuth.Uma.Api.PolicyController.Actions;
+    using SimpleAuth.Uma.Errors;
+    using SimpleAuth.Uma.Exceptions;
+    using SimpleAuth.Uma.Helpers;
+    using SimpleAuth.Uma.Models;
+    using SimpleAuth.Uma.Repositories;
 
     public class DeleteResourcePolicyActionFixture
     {
@@ -38,9 +37,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
 
         [Fact]
         public async Task When_Passing_NullOrEmpty_Parameters_Then_Exceptions_Are_Throwns()
-        {            InitializeFakeObjects();
-
-            // ACTS & ASSERTS
+        {
+            InitializeFakeObjects();
+            
             await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourcePolicyAction.Execute(null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourcePolicyAction.Execute(string.Empty, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourcePolicyAction.Execute("policy_id", null)).ConfigureAwait(false);
@@ -51,7 +50,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
         public async Task When_ResourceDoesntExist_Then_Exception_Is_Thrown()
         {
             const string policyId = "policy_id";
-            const string resourceId = "resource_id";            InitializeFakeObjects();
+            const string resourceId = "resource_id"; InitializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r =>
                 r.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId), It.IsAny<Func<Task<Policy>>>()))
                 .Returns(() => Task.FromResult(new Policy()));
@@ -59,9 +58,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 r.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceId), It.IsAny<Func<Task<ResourceSet>>>()))
                 .Returns(() => Task.FromResult((ResourceSet)null));
 
-                        var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _deleteResourcePolicyAction.Execute(policyId, resourceId)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _deleteResourcePolicyAction.Execute(policyId, resourceId)).ConfigureAwait(false);
 
-                        Assert.NotNull(exception);
+            Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidResourceSetId);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceId));
         }
@@ -70,7 +69,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
         public async Task When_PolicyDoesntContainResource_Then_Exception_Is_Thrown()
         {
             const string policyId = "policy_id";
-            const string resourceId = "invalid_resource_id";            InitializeFakeObjects();
+            const string resourceId = "invalid_resource_id"; InitializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r =>
                 r.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId), It.IsAny<Func<Task<Policy>>>()))
                 .Returns(() => Task.FromResult(new Policy
@@ -84,9 +83,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 r.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceId), It.IsAny<Func<Task<ResourceSet>>>()))
                 .Returns(() => Task.FromResult(new ResourceSet()));
 
-                        var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _deleteResourcePolicyAction.Execute(policyId, resourceId)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _deleteResourcePolicyAction.Execute(policyId, resourceId)).ConfigureAwait(false);
 
-                        Assert.NotNull(exception);
+            Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidResourceSetId);
             Assert.True(exception.Message == ErrorDescriptions.ThePolicyDoesntContainResource);
         }
@@ -94,21 +93,21 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
         [Fact]
         public async Task When_AuthorizationPolicyDoesntExist_Then_False_Is_Returned()
         {
-            const string policyId = "policy_id";            InitializeFakeObjects();
+            const string policyId = "policy_id"; InitializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r =>
                 r.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId), It.IsAny<Func<Task<Policy>>>()))
                 .Returns(() => Task.FromResult((Policy)null));
 
-                        var result = await _deleteResourcePolicyAction.Execute(policyId, "resource_id").ConfigureAwait(false);
+            var result = await _deleteResourcePolicyAction.Execute(policyId, "resource_id").ConfigureAwait(false);
 
-                        Assert.False(result);
+            Assert.False(result);
         }
 
         [Fact]
         public async Task When_ResourceIsRemovedFromPolicy_Then_True_Is_Returned()
         {
             const string policyId = "policy_id";
-            const string resourceId = "resource_id";            InitializeFakeObjects();
+            const string resourceId = "resource_id"; InitializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r =>
                 r.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId), It.IsAny<Func<Task<Policy>>>()))
                 .Returns(() => Task.FromResult(new Policy
@@ -124,9 +123,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             _policyRepositoryStub.Setup(p => p.Update(It.IsAny<Policy>()))
                 .Returns(Task.FromResult(true));
 
-                        var result = await _deleteResourcePolicyAction.Execute(policyId, resourceId).ConfigureAwait(false);
+            var result = await _deleteResourcePolicyAction.Execute(policyId, resourceId).ConfigureAwait(false);
 
-                        Assert.True(result);
+            Assert.True(result);
         }
 
         private void InitializeFakeObjects()

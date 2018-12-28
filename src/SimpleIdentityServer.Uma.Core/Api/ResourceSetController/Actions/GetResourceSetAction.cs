@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Repositories;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
+namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
 {
+    using System;
+    using System.Threading.Tasks;
+    using Models;
+    using Repositories;
+
     internal class GetResourceSetAction : IGetResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;

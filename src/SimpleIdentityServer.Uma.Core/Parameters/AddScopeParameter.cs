@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Core.Parameters
+namespace SimpleAuth.Uma.Parameters
 {
     public class AddScopeParameter
     {

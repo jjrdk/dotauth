@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
+namespace SimpleAuth.Uma.Parameters
+{
+    using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Uma.Core.Parameters
-{    
     public class UpdateResourceSetParameter
     {
         public string Id { get; set; }

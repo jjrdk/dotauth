@@ -21,7 +21,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Services
         public async Task When_Pass_Null_Parameters_Then_Exceptions_Are_Thrown()
         {            InitializeFakeObjects();
 
-            // ACTS & ASSERTS
+            
             await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync("login", null)).ConfigureAwait(false);
         }

@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Core.Api.PermissionController
+﻿namespace SimpleAuth.Uma.Api.PermissionController
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;

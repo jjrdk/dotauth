@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         public async Task When_Passing_Null_Parameter_Then_Exceptions_Are_Thrown()
         {            InitializeFakeObjects();
 
-            // ACTS & ASSERTS
+            
             await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(null, null, null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(new RevokeTokenParameter(), null, null, null)).ConfigureAwait(false);
         }

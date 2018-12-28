@@ -14,14 +14,12 @@
 
 namespace SimpleIdentityServer.Scim.Client.Tests
 {
-    using System.Net;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
     using SimpleIdentityServer.Scim.Client.Tests.MiddleWares;
     using System.Reflection;
-    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using SimpleAuth;
     using SimpleAuth.Logging;

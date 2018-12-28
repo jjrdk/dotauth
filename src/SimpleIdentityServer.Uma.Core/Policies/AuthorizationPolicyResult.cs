@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Core.Policies
+namespace SimpleAuth.Uma.Policies
 {
     public class AuthorizationPolicyResult
     {

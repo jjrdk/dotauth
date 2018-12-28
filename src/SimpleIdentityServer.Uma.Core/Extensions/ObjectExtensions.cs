@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Core.Extensions
+namespace SimpleAuth.Uma.Extensions
 {
     using System.IO;
     using System.Runtime.Serialization.Json;

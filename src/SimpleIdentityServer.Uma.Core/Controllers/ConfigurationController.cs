@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Core.Controllers
+namespace SimpleAuth.Uma.Controllers
 {
     using System.Threading.Tasks;
     using Api.ConfigurationController;
-    using Core;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
 

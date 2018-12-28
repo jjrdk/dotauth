@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
+namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Repositories;
+
     internal class GetPoliciesAction : IGetPoliciesAction
     {
         private readonly IPolicyRepository _repository;

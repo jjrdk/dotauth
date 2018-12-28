@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Core.Controllers
+namespace SimpleAuth.Uma.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -20,14 +20,13 @@ namespace SimpleIdentityServer.Uma.Core.Controllers
     using System.Net;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
-    using Core;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
+    using Shared.Requests;
+    using Shared.Responses;
+    using Shared.Serializers;
     using SimpleAuth.Api.Introspection;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
-    using SimpleAuth.Shared.Serializers;
+    using ErrorCodes = SimpleAuth.Errors.ErrorCodes;
 
     [Route(UmaConstants.RouteValues.Introspection)]
     public class IntrospectionController : Controller

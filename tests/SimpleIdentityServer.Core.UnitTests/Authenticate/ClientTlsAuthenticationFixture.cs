@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {            InitializeFakeObjects();
 
-            // ACTS & ASSERTS
+            
             Assert.Throws<ArgumentNullException>(() => _clientTlsAuthentication.AuthenticateClient(null, null));
             Assert.Throws<ArgumentNullException>(() => _clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction(), null));
         }
@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         public void When_Passing_NoSecret_Or_Certificate_Then_Null_Is_Returned()
         {            InitializeFakeObjects();
 
-            // ACTS & ASSERTS
+            
             Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction(), new Client()));
             Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
             {

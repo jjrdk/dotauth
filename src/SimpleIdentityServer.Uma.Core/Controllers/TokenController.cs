@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Core.Controllers
+﻿namespace SimpleAuth.Uma.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -8,16 +8,15 @@
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using Api.Token;
-    using Core;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Primitives;
+    using Shared.Models;
+    using Shared.Requests;
+    using Shared.Responses;
+    using Shared.Serializers;
     using SimpleAuth.Api.Token;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
-    using SimpleAuth.Shared.Serializers;
+    using ErrorCodes = SimpleAuth.Errors.ErrorCodes;
 
     [Route(UmaConstants.RouteValues.Token)]
     public class TokenController : Controller

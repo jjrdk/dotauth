@@ -1,13 +1,12 @@
-﻿namespace SimpleIdentityServer.Uma.Core.Controllers
+﻿namespace SimpleAuth.Uma.Controllers
 {
     using System.Net;
     using System.Threading.Tasks;
-    using Core;
     using Microsoft.AspNetCore.Mvc;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Responses;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Shared.Responses;
+    using ErrorCodes = SimpleAuth.Errors.ErrorCodes;
 
     [Route(UmaConstants.RouteValues.Registration)]
     public class RegistrationController : Controller

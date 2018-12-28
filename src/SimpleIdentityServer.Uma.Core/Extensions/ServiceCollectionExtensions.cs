@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Core.Extensions
+namespace SimpleAuth.Uma.Extensions
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
+    using Logging;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
+    using Shared.Models;
     using SimpleAuth;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Shared.Models;
 
     public static class ServiceCollectionExtensions
     {

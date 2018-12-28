@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Core
+﻿namespace SimpleAuth.Uma
 {
     using System;
 

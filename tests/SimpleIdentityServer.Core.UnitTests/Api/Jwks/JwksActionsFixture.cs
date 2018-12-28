@@ -1,6 +1,5 @@
 ﻿namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks
 {
-    using Moq;
     using SimpleAuth;
     using SimpleAuth.Api.Jwks;
     using SimpleAuth.Repositories;

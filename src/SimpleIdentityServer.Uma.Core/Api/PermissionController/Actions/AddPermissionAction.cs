@@ -12,22 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
-using SimpleIdentityServer.Uma.Core.Errors;
-using SimpleIdentityServer.Uma.Core.Exceptions;
-using SimpleIdentityServer.Uma.Core.Helpers;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Parameters;
-using SimpleIdentityServer.Uma.Core.Repositories;
-using SimpleIdentityServer.Uma.Core.Stores;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
+namespace SimpleAuth.Uma.Api.PermissionController.Actions
 {
-    using SimpleAuth.Logging;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Helpers;
+    using Logging;
+    using Models;
+    using Newtonsoft.Json;
+    using Parameters;
+    using Repositories;
+    using Stores;
 
     internal class AddPermissionAction : IAddPermissionAction
     {

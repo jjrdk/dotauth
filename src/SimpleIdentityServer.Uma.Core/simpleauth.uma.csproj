@@ -4,8 +4,9 @@
     <Description>SimpleIdentityServer.Uma.Core Class Library</Description>
     <Authors>thierry habart</Authors>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>SimpleIdentityServer.Uma.Core</AssemblyName>
+    <AssemblyName>simpleauth.uma</AssemblyName>
     <PackageId>SimpleIdentityServer.Uma.Core</PackageId>
+    <RootNamespace>SimpleAuth.Uma</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

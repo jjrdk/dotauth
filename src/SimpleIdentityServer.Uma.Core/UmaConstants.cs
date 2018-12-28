@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Core
+namespace SimpleAuth.Uma
 {
     internal static class UmaConstants
     {

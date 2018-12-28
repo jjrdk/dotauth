@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions;
-using SimpleIdentityServer.Uma.Core.Parameters;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Api.PermissionController
+namespace SimpleAuth.Uma.Api.PermissionController
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Actions;
+    using Parameters;
+
     internal class PermissionControllerActions : IPermissionControllerActions
     {
         private readonly IAddPermissionAction _addPermissionAction;

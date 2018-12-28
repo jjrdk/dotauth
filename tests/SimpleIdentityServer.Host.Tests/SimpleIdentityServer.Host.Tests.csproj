@@ -29,7 +29,7 @@
     <ProjectReference Include="..\..\src\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.server\simpleauth.server.csproj" />
     <ProjectReference Include="..\..\src\SimpleIdentityServer.Manager.Client\SimpleIdentityServer.Manager.Client.csproj" />
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Uma.Core\SimpleIdentityServer.Uma.Core.csproj" />
+    <ProjectReference Include="..\..\src\SimpleIdentityServer.Uma.Core\simpleauth.uma.csproj" />
     <ProjectReference Include="..\..\src\SimpleIdentityServer.UserInfoIntrospection\SimpleIdentityServer.UserInfoIntrospection.csproj" />
   </ItemGroup>
 
