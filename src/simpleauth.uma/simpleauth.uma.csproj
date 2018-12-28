@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.Uma.Core Class Library</Description>
-    <Authors>thierry habart</Authors>
+    <Description>SimpleAuth UMA Library</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>simpleauth.uma</AssemblyName>
-    <PackageId>SimpleIdentityServer.Uma.Core</PackageId>
+    <PackageId>simpleauth.uma</PackageId>
     <RootNamespace>SimpleAuth.Uma</RootNamespace>
   </PropertyGroup>
+  <Import Project="../../shared.proj"/>
 
   <ItemGroup>
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />

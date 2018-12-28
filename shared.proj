@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <Authors>Thierry Habert, Jacob Reimers</Authors>
+    <Company>Reimers.dk</Company>
+    <Product>SimpleAuth</Product>
+    <Copyright>Reimers.dk © 2018</Copyright>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <WarningsNotAsErrors>618,1701</WarningsNotAsErrors>
+  </PropertyGroup>
+</Project>
