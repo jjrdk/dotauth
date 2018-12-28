@@ -1,12 +1,11 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Client.Claims
+﻿namespace SimpleAuth.Manager.Client.Claims
 {
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Responses;
+    using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using Newtonsoft.Json;
+    using Shared;
+    using Shared.Responses;
 
     internal sealed class DeleteClaimOperation : IDeleteClaimOperation
     {

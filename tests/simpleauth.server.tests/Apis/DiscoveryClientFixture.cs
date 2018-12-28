@@ -16,8 +16,8 @@ namespace SimpleAuth.Server.Tests.Apis
 {
     using System;
     using System.Threading.Tasks;
-    using SimpleIdentityServer.Client;
-    using SimpleIdentityServer.Client.Operations;
+    using Client;
+    using Client.Operations;
     using Xunit;
 
     public class DiscoveryClientFixture : IClassFixture<TestOauthServerFixture>

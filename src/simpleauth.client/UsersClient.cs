@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Client
+namespace SimpleAuth.Client
 {
     using System;
     using System.Globalization;
@@ -21,8 +21,8 @@ namespace SimpleIdentityServer.Client
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.DTOs;
+    using Shared;
+    using Shared.DTOs;
 
     public class UsersClient : IUsersClient
     {

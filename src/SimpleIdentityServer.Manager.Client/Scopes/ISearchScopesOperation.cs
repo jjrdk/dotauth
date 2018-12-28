@@ -1,10 +1,10 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Scopes
+﻿namespace SimpleAuth.Manager.Client.Scopes
 {
     using System;
     using System.Threading.Tasks;
     using Results;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
+    using Shared.Requests;
+    using Shared.Responses;
 
     public interface ISearchScopesOperation
     {

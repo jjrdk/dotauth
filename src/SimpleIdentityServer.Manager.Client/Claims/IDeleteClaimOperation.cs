@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Claims
+﻿namespace SimpleAuth.Manager.Client.Claims
 {
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
+    using Shared;
 
     public interface IDeleteClaimOperation
     {

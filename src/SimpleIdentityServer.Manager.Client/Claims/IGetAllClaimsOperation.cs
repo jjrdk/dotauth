@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Claims
+﻿namespace SimpleAuth.Manager.Client.Claims
 {
     using System;
     using System.Threading.Tasks;

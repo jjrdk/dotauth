@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Uma.Client.Policy
+﻿namespace SimpleAuth.Uma.Client.Policy
 {
     using System.Threading.Tasks;
     using Results;
-    using SimpleAuth.Uma.Shared.DTOs;
+    using Shared.DTOs;
 
     public interface ISearchPoliciesOperation
     {

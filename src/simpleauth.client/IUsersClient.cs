@@ -1,10 +1,10 @@
-﻿namespace SimpleIdentityServer.Client
+﻿namespace SimpleAuth.Client
 {
     using System;
     using System.Threading.Tasks;
     using Newtonsoft.Json.Linq;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.DTOs;
+    using Shared;
+    using Shared.DTOs;
 
     public interface IUsersClient
     {

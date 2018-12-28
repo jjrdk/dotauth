@@ -1,18 +1,17 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using SimpleIdentityServer.Client;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.OAuth2Introspection
+﻿namespace SimpleAuth.OAuth2Introspection
 {
+    using System;
+    using System.Collections.Generic;
     using System.Globalization;
+    using System.Security.Claims;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
+    using Client;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Shared;
     using SimpleAuth;
-    using SimpleAuth.Shared;
 
     public class OAuth2IntrospectionHandler : AuthenticationHandler<OAuth2IntrospectionOptions>
     {

@@ -20,6 +20,8 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using Client;
+    using Client.Operations;
     using Encrypt;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
@@ -29,9 +31,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using Signature;
     using SimpleAuth;
     using SimpleAuth.Extensions;
-    using SimpleIdentityServer.Authenticate.SMS.Client;
-    using SimpleIdentityServer.Client;
-    using SimpleIdentityServer.Client.Operations;
+    using Twilio.Client;
     using Twilio.Shared.Requests;
     using Xunit;
     using JwtConstants = SimpleAuth.JwtConstants;

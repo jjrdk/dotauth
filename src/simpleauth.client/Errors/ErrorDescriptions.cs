@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Client.Errors
+namespace SimpleAuth.Client.Errors
 {
     internal static class ErrorDescriptions
     {

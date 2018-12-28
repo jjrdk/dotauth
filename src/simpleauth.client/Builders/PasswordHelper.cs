@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Client.Builders
+﻿namespace SimpleAuth.Client.Builders
 {
     using System.Security.Cryptography;
     using System.Text;
-    using SimpleAuth.Shared;
+    using Shared;
 
     public static class PasswordHelper
     {

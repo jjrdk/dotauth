@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Configuration
+﻿namespace SimpleAuth.Manager.Client.Configuration
 {
     using System;
     using System.Threading.Tasks;

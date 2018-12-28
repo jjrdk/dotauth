@@ -17,11 +17,11 @@ namespace SimpleAuth.Uma.Tests
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Client.Configuration;
+    using Client.ResourceSet;
     using Microsoft.Extensions.DependencyInjection;
     using Shared.DTOs;
     using SimpleAuth;
-    using SimpleIdentityServer.Uma.Client.Configuration;
-    using SimpleIdentityServer.Uma.Client.ResourceSet;
     using Xunit;
 
     public class ResourceFixture : IClassFixture<TestUmaServerFixture>

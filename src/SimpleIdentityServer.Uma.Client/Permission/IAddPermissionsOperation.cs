@@ -1,9 +1,9 @@
-﻿namespace SimpleIdentityServer.Uma.Client.Permission
+﻿namespace SimpleAuth.Uma.Client.Permission
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Results;
-    using SimpleAuth.Uma.Shared.DTOs;
+    using Shared.DTOs;
 
     public interface IAddPermissionsOperation
     {

@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Client.Results
+﻿namespace SimpleAuth.Client.Results
 {
     public class GetRevokeTokenResult : BaseSidResult
     {

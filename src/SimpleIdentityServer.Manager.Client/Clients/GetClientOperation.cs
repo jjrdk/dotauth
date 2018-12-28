@@ -1,12 +1,12 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Clients
+﻿namespace SimpleAuth.Manager.Client.Clients
 {
-    using Newtonsoft.Json;
-    using Results;
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Responses;
+    using Newtonsoft.Json;
+    using Results;
+    using Shared.Models;
+    using Shared.Responses;
 
     internal sealed class GetClientOperation : IGetClientOperation
     {

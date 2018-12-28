@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Client.ResourceSet
+﻿namespace SimpleAuth.Uma.Client.ResourceSet
 {
     using System.Threading.Tasks;
     using Results;

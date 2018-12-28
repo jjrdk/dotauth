@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Client
+﻿namespace SimpleAuth.Client
 {
     using System.Threading.Tasks;
     using Results;

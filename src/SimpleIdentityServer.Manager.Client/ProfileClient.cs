@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Manager.Client
+﻿namespace SimpleAuth.Manager.Client
 {
     using System;
     using System.Collections.Generic;
@@ -7,9 +7,9 @@
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using Results;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
+    using Shared;
+    using Shared.Requests;
+    using Shared.Responses;
 
     public sealed class ProfileClient : IProfileClient
     {

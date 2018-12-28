@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Client.Operations
+namespace SimpleAuth.Client.Operations
 {
+    using System;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading;
-    using SimpleAuth.Shared.Responses;
+    using System.Threading.Tasks;
+    using Newtonsoft.Json;
+    using Shared.Responses;
 
     internal class GetDiscoveryOperation : IGetDiscoveryOperation
     {

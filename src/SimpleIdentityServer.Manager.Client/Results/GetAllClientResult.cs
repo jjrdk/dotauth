@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Manager.Client.Results
+﻿namespace SimpleAuth.Manager.Client.Results
 {
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Responses;
+    using System.Collections.Generic;
+    using Shared;
+    using Shared.Responses;
 
     public class GetAllClientResult : BaseResponse
     {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Client.Policy
+namespace SimpleAuth.Uma.Client.Policy
 {
     using System;
     using System.Net.Http;

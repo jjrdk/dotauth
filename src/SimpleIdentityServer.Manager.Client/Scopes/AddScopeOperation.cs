@@ -1,13 +1,13 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Scopes
+﻿namespace SimpleAuth.Manager.Client.Scopes
 {
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using System;
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Responses;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using Shared;
+    using Shared.Responses;
 
     internal sealed class AddScopeOperation : IAddScopeOperation
     {

@@ -1,16 +1,16 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Clients
+﻿namespace SimpleAuth.Manager.Client.Clients
 {
-    using Configuration;
-    using Newtonsoft.Json;
-    using Results;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
     using System;
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
+    using Configuration;
+    using Newtonsoft.Json;
+    using Results;
+    using Shared;
+    using Shared.Models;
+    using Shared.Requests;
+    using Shared.Responses;
 
     internal sealed class OpenIdClients : IOpenIdClients
     {

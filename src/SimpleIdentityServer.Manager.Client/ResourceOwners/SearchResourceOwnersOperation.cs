@@ -1,15 +1,14 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Manager.Client.Results;
-using System;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Manager.Client.ResourceOwners
+﻿namespace SimpleAuth.Manager.Client.ResourceOwners
 {
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
+    using System;
+    using System.Net.Http;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using Results;
+    using Shared.Requests;
+    using Shared.Responses;
 
     internal sealed class SearchResourceOwnersOperation : ISearchResourceOwnersOperation
     {

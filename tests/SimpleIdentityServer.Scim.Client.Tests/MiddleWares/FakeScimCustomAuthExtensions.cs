@@ -17,11 +17,11 @@ namespace SimpleIdentityServer.Scim.Client.Tests.MiddleWares
     using Microsoft.AspNetCore.Authentication;
     using System;
 
-    public static class FakeCustomAuthExtensions
+    public static class FakeScimCustomAuthExtensions
     {
         public static AuthenticationBuilder AddFakeCustomAuth(this AuthenticationBuilder builder, Action<AuthenticationSchemeOptions> configureOptions)
         {
-            return builder.AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>(FakeStartup.DefaultSchema, FakeStartup.DefaultSchema, configureOptions);
+            return builder.AddScheme<AuthenticationSchemeOptions, ScimTestAuthenticationHandler>(FakeScimStartup.DefaultSchema, FakeScimStartup.DefaultSchema, configureOptions);
         }
     }
 }

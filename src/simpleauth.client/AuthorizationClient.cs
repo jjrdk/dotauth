@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Client.Errors;
-using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Client.Results;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Client
+namespace SimpleAuth.Client
 {
-    using Newtonsoft.Json;
+    using System;
     using System.Net.Http;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
-    using SimpleAuth.Shared.Serializers;
+    using System.Threading.Tasks;
+    using Errors;
+    using Newtonsoft.Json;
+    using Operations;
+    using Results;
+    using Shared.Requests;
+    using Shared.Responses;
+    using Shared.Serializers;
 
     internal class AuthorizationClient : IAuthorizationClient
     {

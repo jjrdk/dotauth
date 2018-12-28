@@ -1,15 +1,15 @@
-﻿namespace SimpleIdentityServer.UserInfoIntrospection
+﻿namespace SimpleAuth.UserInfoIntrospection
 {
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using Newtonsoft.Json.Linq;
-    using SimpleIdentityServer.Client;
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Text.Encodings.Web;
     using System.Threading.Tasks;
+    using Client;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Newtonsoft.Json.Linq;
 
     public class UserInfoIntrospectionHandler : AuthenticationHandler<UserInfoIntrospectionOptions>
     {

@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Uma.Client.Configuration
+﻿namespace SimpleAuth.Uma.Client.Configuration
 {
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Uma.Shared.DTOs;
+    using Shared.DTOs;
 
     public interface IGetConfigurationOperation
     {

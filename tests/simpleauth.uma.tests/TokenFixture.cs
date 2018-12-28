@@ -2,17 +2,17 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Client.Configuration;
+    using Client.Permission;
+    using Client.Policy;
+    using Client.ResourceSet;
     using Microsoft.Extensions.DependencyInjection;
     using Shared.DTOs;
     using Signature;
     using SimpleAuth;
+    using SimpleAuth.Client;
+    using SimpleAuth.Client.Operations;
     using SimpleAuth.Shared;
-    using SimpleIdentityServer.Client;
-    using SimpleIdentityServer.Client.Operations;
-    using SimpleIdentityServer.Uma.Client.Configuration;
-    using SimpleIdentityServer.Uma.Client.Permission;
-    using SimpleIdentityServer.Uma.Client.Policy;
-    using SimpleIdentityServer.Uma.Client.ResourceSet;
     using Xunit;
 
     public class TokenFixture : IClassFixture<TestUmaServerFixture>

@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Client.Builders
+﻿namespace SimpleAuth.Client.Builders
 {
     public class PKCE
     {

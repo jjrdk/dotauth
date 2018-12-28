@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Uma.Client.Results
+﻿namespace SimpleAuth.Uma.Client.Results
 {
+    using System.Collections.Generic;
     using SimpleAuth.Shared;
 
     public class GetResourcesResult : BaseResponse

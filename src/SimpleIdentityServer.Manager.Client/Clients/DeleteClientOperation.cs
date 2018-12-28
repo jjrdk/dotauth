@@ -1,11 +1,11 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Clients
+﻿namespace SimpleAuth.Manager.Client.Clients
 {
-    using Newtonsoft.Json;
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Responses;
+    using Newtonsoft.Json;
+    using Shared;
+    using Shared.Responses;
 
     internal sealed class DeleteClientOperation : IDeleteClientOperation
     {

@@ -7,8 +7,8 @@
     using Exceptions;
     using Moq;
     using SimpleAuth;
-    using SimpleIdentityServer.Authenticate.SMS.Client;
     using Twilio;
+    using Twilio.Client;
     using Twilio.Shared.Requests;
     using Xunit;
 

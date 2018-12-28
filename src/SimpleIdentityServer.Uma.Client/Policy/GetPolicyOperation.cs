@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Client.Policy
+namespace SimpleAuth.Uma.Client.Policy
 {
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using Results;
+    using Shared.DTOs;
     using SimpleAuth.Shared.Responses;
-    using SimpleAuth.Uma.Shared.DTOs;
 
     internal class GetPolicyOperation : IGetPolicyOperation
     {

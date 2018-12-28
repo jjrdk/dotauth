@@ -19,6 +19,7 @@ namespace SimpleAuth.Server.Tests
     using System.Reflection;
     using System.Text;
     using Api.Jwks;
+    using Client;
     using Controllers;
     using Extensions;
     using Logging;
@@ -33,7 +34,6 @@ namespace SimpleAuth.Server.Tests
     using Shared;
     using SimpleAuth;
     using SimpleAuth.Services;
-    using SimpleIdentityServer.Client;
     using Stores;
     using Twilio;
     using Twilio.Actions;

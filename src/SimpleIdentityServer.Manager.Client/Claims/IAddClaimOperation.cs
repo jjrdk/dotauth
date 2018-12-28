@@ -1,9 +1,9 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Claims
+﻿namespace SimpleAuth.Manager.Client.Claims
 {
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Responses;
+    using Shared;
+    using Shared.Responses;
 
     public interface IAddClaimOperation
     {

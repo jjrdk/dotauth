@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Client
+﻿namespace SimpleAuth.Uma.Client
 {
     using Permission;
     using Policy;

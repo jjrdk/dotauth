@@ -16,12 +16,12 @@ namespace SimpleAuth.Uma.Tests
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Client.Configuration;
+    using Client.Permission;
+    using Client.Policy;
+    using Client.ResourceSet;
     using MiddleWares;
     using Shared.DTOs;
-    using SimpleIdentityServer.Uma.Client.Configuration;
-    using SimpleIdentityServer.Uma.Client.Permission;
-    using SimpleIdentityServer.Uma.Client.Policy;
-    using SimpleIdentityServer.Uma.Client.ResourceSet;
     using Xunit;
 
     public class PermissionFixture : IClassFixture<TestUmaServerFixture>

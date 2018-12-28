@@ -1,11 +1,11 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Claims
+﻿namespace SimpleAuth.Manager.Client.Claims
 {
     using System;
     using System.Threading.Tasks;
     using Results;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
+    using Shared;
+    using Shared.Requests;
+    using Shared.Responses;
 
     public interface IClaimsClient
     {

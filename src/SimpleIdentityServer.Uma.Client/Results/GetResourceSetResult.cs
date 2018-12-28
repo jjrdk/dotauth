@@ -1,7 +1,7 @@
-﻿namespace SimpleIdentityServer.Uma.Client.Results
+﻿namespace SimpleAuth.Uma.Client.Results
 {
+    using Shared.DTOs;
     using SimpleAuth.Shared;
-    using SimpleAuth.Uma.Shared.DTOs;
 
     public class GetResourceSetResult : BaseResponse
     {

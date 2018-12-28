@@ -24,13 +24,13 @@ namespace SimpleAuth.Server.Tests.Apis
     using Shared.Responses;
     using Signature;
     using SimpleAuth;
-    using SimpleIdentityServer.Client;
-    using SimpleIdentityServer.Client.Builders;
-    using SimpleIdentityServer.Client.Operations;
     using System;
     using System.Threading.Tasks;
+    using Client;
+    using Client.Builders;
+    using Client.Operations;
     using Xunit;
-    using TokenRequest = SimpleIdentityServer.Client.TokenRequest;
+    using TokenRequest = Client.TokenRequest;
 
     public class AuthorizationClientFixture : IDisposable
     {
@@ -64,7 +64,8 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             InitializeFakeObjects();
 
-            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope")).ConfigureAwait(false);
+            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope"))
+                .ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -78,7 +79,9 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             InitializeFakeObjects();
 
-            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&client_id=client")).ConfigureAwait(false);
+            var httpResult = await _server.Client
+                .GetAsync(new Uri(baseUrl + "/authorization?scope=scope&client_id=client"))
+                .ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -93,7 +96,9 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects();
 
             var redirect = Uri.EscapeUriString("https://redirect_uri");
-            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + $"/authorization?scope=scope&client_id=client&redirect_uri={redirect}")).ConfigureAwait(false);
+            var httpResult = await _server.Client
+                .GetAsync(new Uri(baseUrl + $"/authorization?scope=scope&client_id=client&redirect_uri={redirect}"))
+                .ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -108,7 +113,10 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects();
 
             var redirect = Uri.EscapeUriString("https://redirect_uri");
-            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=invalid")).ConfigureAwait(false);
+            var httpResult = await _server.Client
+                .GetAsync(new Uri(baseUrl +
+                                  $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=invalid"))
+                .ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -123,7 +131,10 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             InitializeFakeObjects();
             var redirect = Uri.EscapeUriString("https://redirect_uri");
-            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=invalid")).ConfigureAwait(false);
+            var httpResult = await _server.Client
+                .GetAsync(new Uri(baseUrl +
+                                  $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=invalid"))
+                .ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -139,7 +150,10 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             InitializeFakeObjects();
             var redirect = "redirect_uri"; //Uri.EscapeUriString("https://redirect_uri");
-            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=none")).ConfigureAwait(false);
+            var httpResult = await _server.Client
+                .GetAsync(new Uri(baseUrl +
+                                  $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=none"))
+                .ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -152,7 +166,10 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_Not_Correct_ClientId_Is_Passed_To_Authorization_Then_Json_Is_Returned()
         {
             InitializeFakeObjects();
-            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&state=state&client_id=bad_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none")).ConfigureAwait(false);
+            var httpResult = await _server.Client
+                .GetAsync(new Uri(baseUrl +
+                                  "/authorization?scope=scope&state=state&client_id=bad_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"))
+                .ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -167,22 +184,30 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             InitializeFakeObjects();
 
-            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none")).ConfigureAwait(false);
+            var httpResult = await _server.Client
+                .GetAsync(new Uri(baseUrl +
+                                  "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"))
+                .ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
             Assert.NotNull(error);
             Assert.Equal("invalid_request", error.Error);
-            Assert.Equal("the redirect url http://localhost:5000/ doesn't exist or is not valid", error.ErrorDescription);
+            Assert.Equal("the redirect url http://localhost:5000/ doesn't exist or is not valid",
+                error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
         [Fact]
-        public async Task When_ClientRequiresPkce_And_No_CodeChallenge_Is_Passed_To_Authorization_Then_Json_Is_Returned()
+        public async Task
+            When_ClientRequiresPkce_And_No_CodeChallenge_Is_Passed_To_Authorization_Then_Json_Is_Returned()
         {
             InitializeFakeObjects();
 
-            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000/callback&response_type=token&prompt=none")).ConfigureAwait(false);
+            var httpResult = await _server.Client
+                .GetAsync(new Uri(baseUrl +
+                                  "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000/callback&response_type=token&prompt=none"))
+                .ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -197,7 +222,10 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             InitializeFakeObjects();
 
-            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none")).ConfigureAwait(false);
+            var httpResult = await _server.Client
+                .GetAsync(new Uri(baseUrl +
+                                  "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none"))
+                .ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -212,7 +240,10 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             InitializeFakeObjects();
 
-            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce")).ConfigureAwait(false);
+            var httpResult = await _server.Client
+                .GetAsync(new Uri(baseUrl +
+                                  "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"))
+                .ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -223,28 +254,35 @@ namespace SimpleAuth.Server.Tests.Apis
         }
 
         [Fact]
-        public async Task When_Use_Hybrid_And_Dont_Pass_Not_Supported_ResponseTypes_To_Authorization_Then_Json_Is_Returned()
+        public async Task
+            When_Use_Hybrid_And_Dont_Pass_Not_Supported_ResponseTypes_To_Authorization_Then_Json_Is_Returned()
         {
             InitializeFakeObjects();
 
-            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=openid api1&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce")).ConfigureAwait(false);
+            var httpResult = await _server.Client
+                .GetAsync(new Uri(baseUrl +
+                                  "/authorization?scope=openid api1&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"))
+                .ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
             Assert.NotNull(error);
             Assert.Equal("invalid_request", error.Error);
-            Assert.Equal("the client 'incomplete_authcode_client' doesn't support the response type: 'id_token,code,token'", error.ErrorDescription);
+            Assert.Equal(
+                "the client 'incomplete_authcode_client' doesn't support the response type: 'id_token,code,token'",
+                error.ErrorDescription);
             Assert.Equal("state", error.State);
         }
 
         [Fact]
         public async Task When_Requesting_AuthorizationCode_And_RedirectUri_IsNotValid_Then_Error_Is_Returned()
         {
-            const string baseUrl = "http://localhost:5000"; InitializeFakeObjects();
+            const string baseUrl = "http://localhost:5000";
+            InitializeFakeObjects();
 
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
-                    new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                    new AuthorizationRequest(new[] {"openid", "api1"},
+                        new[] {ResponseTypes.Code},
                         "implicit_client",
                         new Uri(baseUrl + "/invalid_callback"),
                         "state"))
@@ -262,8 +300,8 @@ namespace SimpleAuth.Server.Tests.Apis
 
             UserStore.Instance().IsInactive = true;
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
-                    new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                    new AuthorizationRequest(new[] {"openid", "api1"},
+                        new[] {ResponseTypes.Code},
                         "authcode_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -280,15 +318,16 @@ namespace SimpleAuth.Server.Tests.Apis
         }
 
         [Fact]
-        public async Task When_User_Is_Authenticated__And_Pass_Prompt_And_No_Consent_Has_Been_Given_Then_Error_Is_Returned()
+        public async Task
+            When_User_Is_Authenticated__And_Pass_Prompt_And_No_Consent_Has_Been_Given_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
 
 
             UserStore.Instance().Subject = "user";
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
-                    new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                    new AuthorizationRequest(new[] {"openid", "api1"},
+                        new[] {ResponseTypes.Code},
                         "authcode_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -310,8 +349,8 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects();
 
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
-                    new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                    new AuthorizationRequest(new[] {"openid", "api1"},
+                        new[] {ResponseTypes.Code},
                         "authcode_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -342,8 +381,8 @@ namespace SimpleAuth.Server.Tests.Apis
             var jws = _jwsGenerator.Generate(payload, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
 
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
-                    new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                    new AuthorizationRequest(new[] {"openid", "api1"},
+                        new[] {ResponseTypes.Code},
                         "authcode_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -356,7 +395,8 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
             Assert.Equal("invalid_request", result.Error.Error);
-            Assert.Equal("the identity token doesnt contain simple identity server in the audience", result.Error.ErrorDescription);
+            Assert.Equal("the identity token doesnt contain simple identity server in the audience",
+                result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -371,12 +411,12 @@ namespace SimpleAuth.Server.Tests.Apis
                     "sub", "adm"
                 }
             };
-            payload.Add("aud", new[] { "http://localhost:5000" });
+            payload.Add("aud", new[] {"http://localhost:5000"});
             var jws = _jwsGenerator.Generate(payload, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
 
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
-                    new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                    new AuthorizationRequest(new[] {"openid", "api1"},
+                        new[] {ResponseTypes.Code},
                         "authcode_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -389,18 +429,20 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
             Assert.Equal("invalid_request", result.Error.Error);
-            Assert.Equal("the current authenticated user doesn't match with the identity token", result.Error.ErrorDescription);
+            Assert.Equal("the current authenticated user doesn't match with the identity token",
+                result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task When_Requesting_AuthorizationCode_Then_Code_Is_Returned()
         {
-            const string baseUrl = "http://localhost:5000"; InitializeFakeObjects();
+            const string baseUrl = "http://localhost:5000";
+            InitializeFakeObjects();
 
             // NOTE : The consent has already been given in the database.
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
-                    new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                    new AuthorizationRequest(new[] {"openid", "api1"},
+                        new[] {ResponseTypes.Code},
                         "authcode_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -415,7 +457,8 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromAuthorizationCode(queries["code"], "http://localhost:5000/callback"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
             Assert.NotNull(result);
             Assert.NotNull(result.Location);
@@ -431,8 +474,8 @@ namespace SimpleAuth.Server.Tests.Apis
 
             UserStore.Instance().AuthenticationOffset = DateTimeOffset.UtcNow.AddDays(-2);
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
-                    new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                    new AuthorizationRequest(new[] {"openid", "api1"},
+                        new[] {ResponseTypes.Code},
                         "authcode_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -453,8 +496,8 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects();
 
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
-                    new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                    new AuthorizationRequest(new[] {"openid", "api1"},
+                        new[] {ResponseTypes.Code},
                         "authcode_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -474,8 +517,8 @@ namespace SimpleAuth.Server.Tests.Apis
 
             UserStore.Instance().IsInactive = true;
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
-                    new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                    new AuthorizationRequest(new[] {"openid", "api1"},
+                        new[] {ResponseTypes.Code},
                         "authcode_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -496,8 +539,8 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var result = await _authorizationClient.ResolveAsync(
                     baseUrl + "/.well-known/openid-configuration",
-                    new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                    new AuthorizationRequest(new[] {"openid", "api1"},
+                        new[] {ResponseTypes.Code},
                         "authcode_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -522,13 +565,16 @@ namespace SimpleAuth.Server.Tests.Apis
                     "sub", "administrator"
                 }
             };
-            payload.Add("aud", new[] { "http://localhost:5000" });
+            payload.Add("aud", new[] {"http://localhost:5000"});
             var jws = _jwsGenerator.Generate(payload, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
-            var jwe = _jweGenerator.GenerateJwe(jws, JweAlg.RSA1_5, JweEnc.A128CBC_HS256, _server.SharedCtx.EncryptionKey);
+            var jwe = _jweGenerator.GenerateJwe(jws,
+                JweAlg.RSA1_5,
+                JweEnc.A128CBC_HS256,
+                _server.SharedCtx.EncryptionKey);
 
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
-                    new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                    new AuthorizationRequest(new[] {"openid", "api1"},
+                        new[] {ResponseTypes.Code},
                         "authcode_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -552,8 +598,8 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypes.Code},
                         "pkce_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -567,10 +613,13 @@ namespace SimpleAuth.Server.Tests.Apis
             var queries = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(location.Query);
             var token = await new TokenClient(
                     TokenCredentials.FromClientCredentials("pkce_client", "pkce_client"),
-                    TokenRequest.FromAuthorizationCode(queries["code"], "http://localhost:5000/callback", pkce.CodeVerifier),
+                    TokenRequest.FromAuthorizationCode(queries["code"],
+                        "http://localhost:5000/callback",
+                        pkce.CodeVerifier),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
 
             Assert.NotNull(token);
             Assert.NotEmpty(token.Content.AccessToken);
@@ -579,10 +628,11 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Requesting_IdTokenAndAccessToken_Then_Tokens_Are_Returned()
         {
-            const string baseUrl = "http://localhost:5000"; InitializeFakeObjects();            // NOTE : The consent has already been given in the database.
+            const string baseUrl = "http://localhost:5000";
+            InitializeFakeObjects(); // NOTE : The consent has already been given in the database.
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
-                    new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.IdToken, ResponseTypes.Token },
+                    new AuthorizationRequest(new[] {"openid", "api1"},
+                        new[] {ResponseTypes.IdToken, ResponseTypes.Token},
                         "implicit_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -591,7 +641,8 @@ namespace SimpleAuth.Server.Tests.Apis
                         Nonce = "nonce"
                     })
                 .ConfigureAwait(false);
-            var queries = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(result.Location.Fragment.TrimStart('#'));
+            var queries =
+                Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(result.Location.Fragment.TrimStart('#'));
 
             Assert.NotNull(result);
             Assert.NotNull(result.Location);
@@ -604,10 +655,11 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_RequestingIdTokenAndAuthorizationCodeAndAccessToken_Then_Tokens_Are_Returned()
         {
-            const string baseUrl = "http://localhost:5000"; InitializeFakeObjects();            // NOTE : The consent has already been given in the database.
+            const string baseUrl = "http://localhost:5000";
+            InitializeFakeObjects(); // NOTE : The consent has already been given in the database.
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
-                    new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.IdToken, ResponseTypes.Token, ResponseTypes.Code },
+                    new AuthorizationRequest(new[] {"openid", "api1"},
+                        new[] {ResponseTypes.IdToken, ResponseTypes.Token, ResponseTypes.Code},
                         "hybrid_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -616,7 +668,8 @@ namespace SimpleAuth.Server.Tests.Apis
                         Nonce = "nonce"
                     })
                 .ConfigureAwait(false);
-            var queries = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(result.Location.Fragment.TrimStart('#'));
+            var queries =
+                Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(result.Location.Fragment.TrimStart('#'));
 
             Assert.NotNull(result.Location);
             Assert.True(queries.ContainsKey("id_token"));

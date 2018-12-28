@@ -1,8 +1,8 @@
-﻿namespace SimpleIdentityServer.Manager.Client.Clients
+﻿namespace SimpleAuth.Manager.Client.Clients
 {
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
+    using Shared;
 
     public interface IDeleteClientOperation
     {

@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Manager.Client.ResourceOwners
+﻿namespace SimpleAuth.Manager.Client.ResourceOwners
 {
     using System;
     using System.Threading.Tasks;

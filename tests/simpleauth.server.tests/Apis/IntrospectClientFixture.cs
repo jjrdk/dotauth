@@ -20,11 +20,11 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Client;
+    using Client.Operations;
     using Newtonsoft.Json;
     using Shared;
     using Shared.Responses;
-    using SimpleIdentityServer.Client;
-    using SimpleIdentityServer.Client.Operations;
     using Xunit;
 
     public class IntrospectClientFixture : IClassFixture<TestOauthServerFixture>
