@@ -1,11 +1,11 @@
-﻿namespace SimpleIdentityServer.Manager.Host.Tests
+﻿namespace SimpleAuth.Server.Tests
 {
-    using Client.Claims;
-    using Client.Configuration;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Responses;
+    using Shared.Responses;
+    using SimpleIdentityServer.Manager.Client.Claims;
+    using SimpleIdentityServer.Manager.Client.Configuration;
     using Xunit;
 
     public class ClaimsFixture : IClassFixture<TestManagerServerFixture>

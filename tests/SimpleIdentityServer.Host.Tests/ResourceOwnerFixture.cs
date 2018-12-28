@@ -1,14 +1,14 @@
-﻿namespace SimpleIdentityServer.Manager.Host.Tests
+﻿namespace SimpleAuth.Server.Tests
 {
-    using Client.Configuration;
-    using Client.ResourceOwners;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Helpers;
-    using SimpleAuth.Shared.Requests;
+    using Errors;
+    using Helpers;
+    using Shared.Requests;
+    using SimpleIdentityServer.Manager.Client.Configuration;
+    using SimpleIdentityServer.Manager.Client.ResourceOwners;
     using Xunit;
 
     public class ResourceOwnerFixture : IClassFixture<TestManagerServerFixture>
