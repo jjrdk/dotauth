@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Manager.Host.Tests
+namespace SimpleAuth.Server.Tests
 {
+    using System;
+    using System.Reflection;
+    using Controllers;
+    using Extensions;
+    using Logging;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
-    using System;
-    using System.Reflection;
     using SimpleAuth;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Server.Controllers;
-    using SimpleAuth.Server.Extensions;
 
     public class FakeManagerStartup : IStartup
     {

@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-
-namespace SimpleIdentityServer.Manager.Host.Tests
+﻿namespace SimpleAuth.Server.Tests
 {
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using Shared.Models;
     using SimpleAuth;
-    using SimpleAuth.Shared.Models;
 
     public static class DefaultStorage
     {

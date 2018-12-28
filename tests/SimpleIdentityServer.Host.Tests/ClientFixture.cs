@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SimpleIdentityServer.Manager.Host.Tests
+﻿namespace SimpleAuth.Server.Tests
 {
-    using Client.Clients;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Requests;
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
-    using SimpleAuth.Errors;
+    using System.Threading.Tasks;
+    using Errors;
+    using Shared.Models;
+    using Shared.Requests;
+    using SimpleIdentityServer.Manager.Client.Clients;
+    using Xunit;
 
     public class ClientFixture //: IClassFixture<TestManagerServerFixture>
     {

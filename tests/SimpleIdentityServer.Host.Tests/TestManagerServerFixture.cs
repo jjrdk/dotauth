@@ -1,10 +1,10 @@
-﻿namespace SimpleIdentityServer.Manager.Host.Tests
+﻿namespace SimpleAuth.Server.Tests
 {
+    using System;
+    using System.Net.Http;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
     using Microsoft.Extensions.DependencyInjection;
-    using System;
-    using System.Net.Http;
 
     public class TestManagerServerFixture : IDisposable
     {
