@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Core.Policies
+﻿namespace SimpleAuth.Uma.Policies
 {
     using System.Threading.Tasks;
     using Models;

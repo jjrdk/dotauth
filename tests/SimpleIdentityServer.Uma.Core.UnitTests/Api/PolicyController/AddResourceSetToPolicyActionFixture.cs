@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
-using SimpleIdentityServer.Uma.Core.Errors;
-using SimpleIdentityServer.Uma.Core.Exceptions;
-using SimpleIdentityServer.Uma.Core.Helpers;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Parameters;
-using SimpleIdentityServer.Uma.Core.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Xunit;
     using Moq;
     using SimpleAuth.Logging;
+    using SimpleAuth.Uma;
+    using SimpleAuth.Uma.Api.PolicyController.Actions;
+    using SimpleAuth.Uma.Errors;
+    using SimpleAuth.Uma.Exceptions;
+    using SimpleAuth.Uma.Helpers;
+    using SimpleAuth.Uma.Models;
+    using SimpleAuth.Uma.Parameters;
+    using SimpleAuth.Uma.Repositories;
 
     public class AddResourceSetToPolicyActionFixture
     {        

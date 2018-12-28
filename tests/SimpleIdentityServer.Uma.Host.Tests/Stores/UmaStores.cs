@@ -14,8 +14,8 @@
 
 namespace SimpleIdentityServer.Uma.Host.Tests.Stores
 {
-    using SimpleIdentityServer.Uma.Core.Models;
     using System.Collections.Generic;
+    using SimpleAuth.Uma.Models;
 
     public static class UmaStores
     {

@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
-using SimpleIdentityServer.Uma.Core.Errors;
-using SimpleIdentityServer.Uma.Core.Helpers;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Repositories;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
 {
+    using System;
+    using System.Threading.Tasks;
+    using Xunit;
     using Moq;
+    using SimpleAuth.Uma.Api.PolicyController.Actions;
+    using SimpleAuth.Uma.Errors;
+    using SimpleAuth.Uma.Helpers;
+    using SimpleAuth.Uma.Models;
+    using SimpleAuth.Uma.Repositories;
 
     public class GetAuthorizationPolicyActionFixture
     {
@@ -33,14 +32,16 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
 
         [Fact]
         public async Task When_Passing_Empty_Parameter_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationPolicyAction.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationPolicyAction.Execute(null)).ConfigureAwait(false);
         }
-        
+
         [Fact]
         public async Task When_Getting_Policy_Then_Policy_Is_Returned()
-        {            const string policyId = "policy_id";
+        {
+            const string policyId = "policy_id";
             var policy = new Policy
             {
                 Id = policyId
@@ -51,9 +52,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 It.IsAny<Func<Task<Policy>>>()))
                 .Returns(Task.FromResult(policy));
 
-                        var result = await _getAuthorizationPolicyAction.Execute(policyId).ConfigureAwait(false);
+            var result = await _getAuthorizationPolicyAction.Execute(policyId).ConfigureAwait(false);
 
-                        Assert.NotNull(result);
+            Assert.NotNull(result);
             Assert.True(result.Id == policyId);
         }
 

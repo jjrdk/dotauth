@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {            InitializeFakeObjects();
 
-            // ACT && ASSERT
+            
             await Assert.ThrowsAsync<ArgumentNullException>(() => _removeConsentOperation.Execute(null)).ConfigureAwait(false);
         }
 

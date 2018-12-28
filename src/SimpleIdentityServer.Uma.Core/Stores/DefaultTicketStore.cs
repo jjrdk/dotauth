@@ -1,11 +1,11 @@
-﻿using SimpleIdentityServer.Uma.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Stores
+﻿namespace SimpleAuth.Uma.Stores
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Models;
+
     internal sealed class DefaultTicketStore : ITicketStore
     {
         public List<Ticket> _tickets;

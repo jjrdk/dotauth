@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Repositories;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
 {
     using Moq;
+    using SimpleAuth.Uma.Api.ResourceSetController.Actions;
+    using SimpleAuth.Uma.Repositories;
+    using System;
+    using System.Threading.Tasks;
+    using SimpleAuth.Uma.Models;
+    using Xunit;
 
     public class GetResourceSetActionFixture
     {
@@ -30,15 +29,17 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
 
         [Fact]
         public async Task When_Passing_Null_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-            // ACT && ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceSetAction.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceSetAction.Execute(null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Execute_Operation_Then_Resource_Set_Is_Returned()
-        {            var resourceSet = new ResourceSet
+        {
+            var resourceSet = new ResourceSet
             {
                 Id = "id"
             };
@@ -46,9 +47,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult(resourceSet));
 
-                        var result = await _getResourceSetAction.Execute(resourceSet.Id).ConfigureAwait(false);
-        
-                        Assert.NotNull(result);
+            var result = await _getResourceSetAction.Execute(resourceSet.Id).ConfigureAwait(false);
+
+            Assert.NotNull(result);
             Assert.True(result.Id == resourceSet.Id);
         }
 

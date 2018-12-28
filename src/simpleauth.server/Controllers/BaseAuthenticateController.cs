@@ -31,7 +31,6 @@ namespace SimpleAuth.Server.Controllers
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.AspNetCore.Mvc.Routing;
     using Results;
-    using Services;
     using Shared;
     using Shared.Events.Openid;
     using Shared.Models;

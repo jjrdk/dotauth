@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
-namespace SimpleIdentityServer.Uma.Core.Models
+namespace SimpleAuth.Uma.Models
 {
+    using System;
+
     public class Rpt
     {
         public string Value { get; set; }

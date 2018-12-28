@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {            InitializeFakeObjects();
 
-            // ACTS & ASSERTS
+            
             await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new ResourceOwner())).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new ResourceOwner { Id = "test" })).ConfigureAwait(false);

@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
-using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
-using SimpleIdentityServer.Uma.Core.Errors;
-using SimpleIdentityServer.Uma.Core.Exceptions;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Repositories;
-using System.Collections.Generic;
-using Xunit;
-using System.Threading.Tasks;
-
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
 {
     using Moq;
+    using SimpleAuth.Uma.Api.ResourceSetController.Actions;
+    using SimpleAuth.Uma.Exceptions;
+    using SimpleAuth.Uma.Models;
+    using SimpleAuth.Uma.Repositories;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using SimpleAuth.Uma.Errors;
+    using Xunit;
 
     public class GetAllResourceSetActionFixture
     {
@@ -33,11 +32,13 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
 
         [Fact]
         public async Task When_Error_Occured_While_Trying_To_Retrieve_ResourceSet_Then_Exception_Is_Thrown()
-        {            InitializeFakeObject();
+        {
+            InitializeFakeObject();
             _resourceSetRepositoryStub.Setup(r => r.GetAll())
-                .Returns(() => Task.FromResult((ICollection<ResourceSet>)null));
+                .Returns(() => Task.FromResult((ICollection<ResourceSet>) null));
 
-                        var exception  = await Assert.ThrowsAsync<BaseUmaException>(() => _getAllResourceSetAction.Execute()).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _getAllResourceSetAction.Execute())
+                .ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheResourceSetsCannotBeRetrieved);
@@ -45,7 +46,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
 
         [Fact]
         public async Task When_ResourceSets_Are_Retrieved_Then_Ids_Are_Returned()
-        {            const string id = "id";
+        {
+            const string id = "id";
             ICollection<ResourceSet> resourceSets = new List<ResourceSet>
             {
                 new ResourceSet
@@ -57,9 +59,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             _resourceSetRepositoryStub.Setup(r => r.GetAll())
                 .Returns(Task.FromResult(resourceSets));
 
-                        var result = await _getAllResourceSetAction.Execute().ConfigureAwait(false);
+            var result = await _getAllResourceSetAction.Execute().ConfigureAwait(false);
 
-                        Assert.NotNull(result);
+            Assert.NotNull(result);
             Assert.True(result.Count() == 1);
             Assert.True(result.First() == id);
         }

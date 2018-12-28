@@ -1,11 +1,11 @@
-﻿using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Parameters;
-using SimpleIdentityServer.Uma.Core.Repositories;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
+﻿namespace SimpleAuth.Uma.Api.PolicyController.Actions
 {
+    using System;
+    using System.Threading.Tasks;
+    using Models;
+    using Parameters;
+    using Repositories;
+
     internal sealed class SearchAuthPoliciesAction : ISearchAuthPoliciesAction
     {
         private readonly IPolicyRepository _policyRepository;

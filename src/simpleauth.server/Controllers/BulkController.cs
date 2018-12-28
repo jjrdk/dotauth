@@ -16,7 +16,6 @@ namespace SimpleAuth.Server.Controllers
 {
     using System;
     using System.Threading.Tasks;
-    using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Newtonsoft.Json.Linq;

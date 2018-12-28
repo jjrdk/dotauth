@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Uma.Core.Parameters
+﻿namespace SimpleAuth.Uma.Parameters
 {
+    using System.Collections.Generic;
+
     public class SearchAuthPoliciesParameter
     {
         public SearchAuthPoliciesParameter()

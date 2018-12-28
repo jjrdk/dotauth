@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Core.Validators
+﻿namespace SimpleAuth.Uma.Validators
 {
     using Models;
 

@@ -12,33 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Errors;
-using SimpleIdentityServer.Uma.Core.Exceptions;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Validators;
-using System;
-using System.Collections.Generic;
-using Xunit;
-
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
 {
+    using SimpleAuth.Uma.Errors;
+    using SimpleAuth.Uma.Exceptions;
+    using SimpleAuth.Uma.Models;
+    using SimpleAuth.Uma.Validators;
+    using System;
+    using System.Collections.Generic;
+    using Xunit;
+
     public class ResourceSetParameterValidatorFixture
     {
         private ResourceSetParameterValidator _resourceSetParameterValidator;
 
         [Fact]
         public void When_Passing_Null_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        Assert.Throws<ArgumentNullException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(null));
+            Assert.Throws<ArgumentNullException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(null));
         }
 
         [Fact]
         public void When_Name_Is_Not_Pass_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var addResourceParameter = new ResourceSet();
 
-                        var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
+            var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "name"));
@@ -46,13 +48,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
 
         [Fact]
         public void When_Scopes_Are_Not_Specified_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var addResourceParameter = new ResourceSet
             {
                 Name = "name"
             };
 
-                        var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
+            var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"));
@@ -60,7 +63,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
 
         [Fact]
         public void When_Icon_Uri_Is_Not_Correct_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             const string iconUri = "#icon_uri";
             var addResourceParameter = new ResourceSet
             {
@@ -69,7 +73,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
                 IconUri = iconUri
             };
 
-                        var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
+            var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, iconUri));
@@ -77,7 +81,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
 
         [Fact]
         public void When_Uri_Is_Not_Correct_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             const string uri = "#uri";
             var addResourceParameter = new ResourceSet
             {
@@ -87,7 +92,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
                 Uri = uri
             };
 
-                        var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
+            var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, uri));

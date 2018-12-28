@@ -1,4 +1,4 @@
-namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController
+namespace SimpleAuth.Uma.Api.ConfigurationController
 {
     using System.Threading.Tasks;
     using Responses;

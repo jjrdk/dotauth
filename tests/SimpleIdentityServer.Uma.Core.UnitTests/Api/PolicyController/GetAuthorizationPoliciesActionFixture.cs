@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
-using SimpleIdentityServer.Uma.Core.Errors;
-using SimpleIdentityServer.Uma.Core.Helpers;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
 {
     using Moq;
+    using SimpleAuth.Uma.Api.PolicyController.Actions;
+    using SimpleAuth.Uma.Errors;
+    using SimpleAuth.Uma.Helpers;
+    using SimpleAuth.Uma.Models;
+    using SimpleAuth.Uma.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Xunit;
 
     public class GetAuthorizationPoliciesActionFixture
     {
@@ -35,7 +34,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
 
         [Fact]
         public async Task When_Getting_Authorization_Policies_Then_A_ListIds_Is_Returned()
-        {            const string policyId = "policy_id";
+        {
+            const string policyId = "policy_id";
             InitializeFakeObjects();
             ICollection<Policy> policies = new List<Policy>
             {
@@ -48,9 +48,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 It.IsAny<Func<Task<ICollection<Policy>>>>()))
                 .Returns(Task.FromResult(policies));
 
-                        var result = await _getAuthorizationPoliciesAction.Execute().ConfigureAwait(false);
+            var result = await _getAuthorizationPoliciesAction.Execute().ConfigureAwait(false);
 
-                        Assert.NotNull(result);
+            Assert.NotNull(result);
             Assert.True(result.Count() == 1);
             Assert.True(result.First() == policyId);
         }

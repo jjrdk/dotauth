@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Uma.Core.Models
+﻿namespace SimpleAuth.Uma.Models
 {
+    using System.Collections.Generic;
+
     public class SearchAuthPoliciesResult
     {
         public int TotalResults { get; set; }

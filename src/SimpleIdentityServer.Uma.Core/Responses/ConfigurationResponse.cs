@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Uma.Core.Responses
+namespace SimpleAuth.Uma.Responses
 {
+    using System.Collections.Generic;
+
     public sealed class ConfigurationResponse
     {
         public string Issuer { get; set; }

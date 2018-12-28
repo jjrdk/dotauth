@@ -12,28 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Uma.Core.Api.ConfigurationController;
-using SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions;
-using SimpleIdentityServer.Uma.Core.Api.PermissionController;
-using SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions;
-using SimpleIdentityServer.Uma.Core.Api.PolicyController;
-using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
-using SimpleIdentityServer.Uma.Core.Api.ResourceSetController;
-using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
-using SimpleIdentityServer.Uma.Core.Api.Token;
-using SimpleIdentityServer.Uma.Core.Helpers;
-using SimpleIdentityServer.Uma.Core.JwtToken;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Policies;
-using SimpleIdentityServer.Uma.Core.Repositories;
-using SimpleIdentityServer.Uma.Core.Stores;
-using SimpleIdentityServer.Uma.Core.Validators;
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Uma.Core
+namespace SimpleAuth.Uma
 {
+    using System.Collections.Generic;
+    using Api.ConfigurationController;
+    using Api.ConfigurationController.Actions;
+    using Api.PermissionController;
+    using Api.PermissionController.Actions;
+    using Api.PolicyController;
+    using Api.PolicyController.Actions;
+    using Api.ResourceSetController;
+    using Api.ResourceSetController.Actions;
+    using Api.Token;
+    using Helpers;
+    using JwtToken;
+    using Microsoft.Extensions.DependencyInjection;
+    using Models;
+    using Policies;
+    using Repositories;
     using SimpleAuth;
+    using Stores;
+    using Validators;
 
     public static class SimpleIdServerUmaCoreExtensions
     {

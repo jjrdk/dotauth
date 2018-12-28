@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Uma.Core.Policies
+﻿namespace SimpleAuth.Uma.Policies
 {
+    using System.Collections.Generic;
+
     public class TicketLineParameter
     {
         public TicketLineParameter(string clientId, IEnumerable<string> scopes = null, bool isAuthorizedByRo = false)

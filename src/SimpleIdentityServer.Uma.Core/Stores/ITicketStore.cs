@@ -1,9 +1,9 @@
-﻿using SimpleIdentityServer.Uma.Core.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Stores
+﻿namespace SimpleAuth.Uma.Stores
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Models;
+
     public interface ITicketStore
     {
         Task<bool> AddAsync(IEnumerable<Ticket> tickets);

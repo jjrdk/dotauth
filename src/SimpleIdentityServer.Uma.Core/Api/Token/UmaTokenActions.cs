@@ -1,27 +1,26 @@
-﻿using SimpleIdentityServer.Uma.Core.Parameters;
-using System.Net.Http.Headers;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Api.Token
+﻿namespace SimpleAuth.Uma.Api.Token
 {
-    using Common;
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Authenticate;
     using Errors;
     using Exceptions;
+    using Logging;
     using Models;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
+    using Parameters;
     using Policies;
-    using Stores;
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
+    using Shared.Models;
     using SimpleAuth;
-    using SimpleAuth.Authenticate;
     using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Shared.Models;
+    using SimpleIdentityServer.Uma.Common;
+    using Stores;
     using AuthenticationHeaderValueExtensions = SimpleAuth.AuthenticationHeaderValueExtensions;
 
     internal sealed class UmaTokenActions : IUmaTokenActions

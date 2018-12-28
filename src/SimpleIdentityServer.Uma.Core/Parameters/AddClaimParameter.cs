@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Core.Parameters
+﻿namespace SimpleAuth.Uma.Parameters
 {
     public class AddClaimParameter
     {

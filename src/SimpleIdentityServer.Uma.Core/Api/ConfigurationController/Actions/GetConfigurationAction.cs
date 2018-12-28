@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Responses;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
+namespace SimpleAuth.Uma.Api.ConfigurationController.Actions
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
+    using Responses;
     using SimpleAuth;
 
     public class GetConfigurationAction : IGetConfigurationAction

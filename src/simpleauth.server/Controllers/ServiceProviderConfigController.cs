@@ -15,7 +15,6 @@
 namespace SimpleAuth.Server.Controllers
 {
     using System;
-    using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Shared.DTOs;
     using ScimConstants = Scim.ScimConstants;

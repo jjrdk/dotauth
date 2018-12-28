@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Parameters;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
+namespace SimpleAuth.Uma.Api.PolicyController
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Actions;
+    using Models;
+    using Parameters;
+
     internal class PolicyActions : IPolicyActions
     {
         private readonly IAddAuthorizationPolicyAction _addAuthorizationPolicyAction;

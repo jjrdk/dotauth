@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Uma.Core.Parameters
+namespace SimpleAuth.Uma.Parameters
 {
+    using System.Collections.Generic;
+
     public class AddPolicyParameter
     {
         public List<AddPolicyRuleParameter> Rules { get; set; }

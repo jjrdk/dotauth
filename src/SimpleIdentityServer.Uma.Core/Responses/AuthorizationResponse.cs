@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Policies;
-
-namespace SimpleIdentityServer.Uma.Core.Responses
+namespace SimpleAuth.Uma.Responses
 {
+    using Policies;
+
     public class AuthorizationResponse
     {
         public AuthorizationPolicyResultEnum AuthorizationPolicyResult { get; set; }

@@ -31,8 +31,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.OAuth2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.AccountFilter.Basic.Tests", "tests\SimpleIdentityServer.AccountFilter.Basic.Tests\SimpleIdentityServer.AccountFilter.Basic.Tests.csproj", "{B32048DA-865B-408B-97E5-CAE7F46D3C20}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.AccessToken.Store.Tests", "tests\SimpleIdentityServer.AccessToken.Store.Tests\SimpleIdentityServer.AccessToken.Store.Tests.csproj", "{0027F061-1D67-4013-A2CC-9D87E07A3B52}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Host.Tests", "tests\SimpleIdentityServer.Host.Tests\SimpleIdentityServer.Host.Tests.csproj", "{E0B564B2-D240-4371-98B3-31D11B818F90}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Core.UnitTests", "tests\SimpleIdentityServer.Uma.Core.UnitTests\SimpleIdentityServer.Uma.Core.UnitTests.csproj", "{D1AA506C-0F73-4737-98B8-041FC88A55D9}"
@@ -47,7 +45,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.shared", "src\si
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Common", "src\SimpleIdentityServer.Uma.Common\SimpleIdentityServer.Uma.Common.csproj", "{2E2182BF-61A6-4987-9500-68BBA4B9D270}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Core", "src\SimpleIdentityServer.Uma.Core\SimpleIdentityServer.Uma.Core.csproj", "{6AAFC575-3939-4914-AEDB-E352160F8915}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.uma", "src\SimpleIdentityServer.Uma.Core\simpleauth.uma.csproj", "{6AAFC575-3939-4914-AEDB-E352160F8915}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Client", "src\SimpleIdentityServer.Uma.Client\SimpleIdentityServer.Uma.Client.csproj", "{435A378B-19E2-4FE2-8906-DEFB4D6E15D8}"
 EndProject
@@ -140,12 +138,6 @@ Global
 		{B32048DA-865B-408B-97E5-CAE7F46D3C20}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{B32048DA-865B-408B-97E5-CAE7F46D3C20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B32048DA-865B-408B-97E5-CAE7F46D3C20}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0027F061-1D67-4013-A2CC-9D87E07A3B52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0027F061-1D67-4013-A2CC-9D87E07A3B52}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0027F061-1D67-4013-A2CC-9D87E07A3B52}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
-		{0027F061-1D67-4013-A2CC-9D87E07A3B52}.Fake|Any CPU.Build.0 = Debug|Any CPU
-		{0027F061-1D67-4013-A2CC-9D87E07A3B52}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0027F061-1D67-4013-A2CC-9D87E07A3B52}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E0B564B2-D240-4371-98B3-31D11B818F90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E0B564B2-D240-4371-98B3-31D11B818F90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0B564B2-D240-4371-98B3-31D11B818F90}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
@@ -241,7 +233,6 @@ Global
 		{7E02195C-5656-43F4-AFC0-DADD6AFC9214} = {BFFECB1F-3326-4B55-9180-58674B3FF5D0}
 		{ED4C6A19-21F0-449B-8E43-5654EB54EC9A} = {BFFECB1F-3326-4B55-9180-58674B3FF5D0}
 		{B32048DA-865B-408B-97E5-CAE7F46D3C20} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
-		{0027F061-1D67-4013-A2CC-9D87E07A3B52} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{E0B564B2-D240-4371-98B3-31D11B818F90} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{D1AA506C-0F73-4737-98B8-041FC88A55D9} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{657BBBAE-E85B-494F-B591-FF0D8844DEE7} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}

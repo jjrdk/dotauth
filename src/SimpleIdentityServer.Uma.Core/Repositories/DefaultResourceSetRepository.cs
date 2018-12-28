@@ -1,13 +1,13 @@
-﻿using SimpleIdentityServer.Uma.Core.Extensions;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Parameters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Repositories
+﻿namespace SimpleAuth.Uma.Repositories
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Extensions;
+    using Models;
+    using Parameters;
+
     internal sealed class DefaultResourceSetRepository : IResourceSetRepository
     {
         public ICollection<ResourceSet> _resources;

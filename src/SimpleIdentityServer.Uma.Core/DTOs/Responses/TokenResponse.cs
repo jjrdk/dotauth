@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Core.DTOs.Responses
+﻿namespace SimpleAuth.Uma.DTOs.Responses
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;

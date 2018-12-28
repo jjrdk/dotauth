@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Uma.Core.Controllers
+namespace SimpleAuth.Uma.Controllers
 {
     using System.Net;
     using System.Threading.Tasks;
     using Api.ResourceSetController;
-    using Common.DTOs;
-    using Core;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Shared.Responses;
+    using Shared.Responses;
+    using SimpleIdentityServer.Uma.Common.DTOs;
+    using ErrorCodes = SimpleAuth.Errors.ErrorCodes;
 
     [Route(UmaConstants.RouteValues.ResourceSet)]
     public class ResourceSetController : Controller

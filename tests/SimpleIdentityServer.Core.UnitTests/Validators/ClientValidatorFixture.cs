@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             InitializeMockingObjects();
 
-            // ACTS & ASSERTS
+            
             Assert.Empty(_clientValidator.GetRedirectionUrls(null, null));
             Assert.Empty(_clientValidator.GetRedirectionUrls(new Client(), null));
             Assert.Empty(_clientValidator.GetRedirectionUrls(new Client(), new Uri("https://url")));
@@ -107,7 +107,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             InitializeMockingObjects();
 
-            // ACTS & ASSERTS
+            
             Assert.False(_clientValidator.CheckGrantTypes(null, null));
         }
 
@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             InitializeMockingObjects();
 
-            // ACTS & ASSERTS
+            
             Assert.True(_clientValidator.CheckGrantTypes(new Client(), null));
         }
 
@@ -133,7 +133,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 }
             };
 
-            // ACTS & ASSERTS
+            
             Assert.True(_clientValidator.CheckGrantTypes(client, GrantType.@implicit, GrantType.password));
             Assert.True(_clientValidator.CheckGrantTypes(client, GrantType.@implicit));
         }
@@ -151,7 +151,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 }
             };
 
-            // ACTS & ASSERTS
+            
             Assert.False(_clientValidator.CheckGrantTypes(client, GrantType.refresh_token));
             Assert.False(_clientValidator.CheckGrantTypes(client, GrantType.refresh_token, GrantType.password));
         }
@@ -161,7 +161,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             InitializeMockingObjects();
 
-            // ACTS & ASSERTS
+            
             Assert.Throws<ArgumentNullException>(() => _clientValidator.CheckPkce(null, null, null));
             Assert.Throws<ArgumentNullException>(() => _clientValidator.CheckPkce(new Client(), null, null));
         }

@@ -30,7 +30,7 @@
             InitializeFakeObjects();
             var getJwsParameter = new GetJwsParameter();
 
-            // ACTS & ASSERTS
+            
             await Assert.ThrowsAsync<ArgumentNullException>(() => _jwsActions.GetJwsInformation(null))
                 .ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _jwsActions.GetJwsInformation(getJwsParameter))
@@ -42,7 +42,7 @@
         {
             InitializeFakeObjects();
 
-            // ACTS & ASSERTS
+            
             await Assert.ThrowsAsync<ArgumentNullException>(() => _jwsActions.CreateJws(null)).ConfigureAwait(false);
         }
 
@@ -205,7 +205,7 @@
             InitializeFakeObjects();
             var getJwsParameter = new GetJwsParameter();
 
-            // ACTS & ASSERTS
+            
             Assert.ThrowsAsync<AggregateException>(() => _jwsActions.GetJwsInformation(null)).ConfigureAwait(false);
             Assert.ThrowsAsync<AggregateException>(() => _jwsActions.GetJwsInformation(getJwsParameter))
                 .ConfigureAwait(false);
@@ -222,7 +222,7 @@
         //        Jws = "jws"
         //    };
 
-        //    // ACTS & ASSERTS
+        //    
         //    var innerException = await Assert.ThrowsAsync<IdentityServerException>(async () =>
         //            await _jwsActions.GetJwsInformation(getJwsParameter).ConfigureAwait(false))
         //        .ConfigureAwait(false);

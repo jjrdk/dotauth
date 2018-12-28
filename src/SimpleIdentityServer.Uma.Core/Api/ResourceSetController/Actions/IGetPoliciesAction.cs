@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
+﻿namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;

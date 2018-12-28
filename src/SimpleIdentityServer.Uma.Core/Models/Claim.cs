@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Core.Models
+﻿namespace SimpleAuth.Uma.Models
 {
     public class Claim
     {

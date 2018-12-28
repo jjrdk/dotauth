@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         public async Task When_Passing_NullOrWhiteSpace_Then_Exceptions_Are_Thrown()
         {            InitializeFakeObjects();
 
-            // ACTS & ASSERTS
+            
             await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(string.Empty, null, null, null)).ConfigureAwait(false);
         }
 
@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {            InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult((Client)null));
 
-            // ACTS & ASSERTS
+            
             var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("invalid_client", null, null, null)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClient);
             Assert.True(ex.Message == ErrorDescriptions.TheClientIdDoesntExist);

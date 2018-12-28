@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.JwtToken;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Parameters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Policies
+namespace SimpleAuth.Uma.Policies
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using JwtToken;
+    using Models;
+    using Parameters;
     using SimpleAuth;
 
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy

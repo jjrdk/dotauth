@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Errors;
-using SimpleIdentityServer.Uma.Core.Exceptions;
-using System;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Helpers
+namespace SimpleAuth.Uma.Helpers
 {
+    using System;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+
     internal class RepositoryExceptionHelper : IRepositoryExceptionHelper
     {
         public Task<T> HandleException<T>(string message, Func<Task<T>> callback)

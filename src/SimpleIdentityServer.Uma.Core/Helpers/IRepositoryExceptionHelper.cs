@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Core.Helpers
+﻿namespace SimpleAuth.Uma.Helpers
 {
     using System;
     using System.Threading.Tasks;

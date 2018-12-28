@@ -43,7 +43,6 @@ namespace SimpleAuth
     using Api.Claims;
     using Api.Claims.Actions;
     using Api.Jwe;
-    using Api.Jws;
     using Api.Scopes;
     using Api.Scopes.Actions;
     using Translation;

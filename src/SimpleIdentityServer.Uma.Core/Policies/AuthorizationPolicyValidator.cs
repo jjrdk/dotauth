@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Errors;
-using SimpleIdentityServer.Uma.Core.Exceptions;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Parameters;
-using SimpleIdentityServer.Uma.Core.Repositories;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Policies
+namespace SimpleAuth.Uma.Policies
 {
-    using SimpleAuth.Logging;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Logging;
+    using Models;
+    using Parameters;
+    using Repositories;
 
     internal class AuthorizationPolicyValidator : IAuthorizationPolicyValidator
     {

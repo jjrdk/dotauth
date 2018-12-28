@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Parameters;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Uma.Core.Repositories
+namespace SimpleAuth.Uma.Repositories
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Models;
+    using Parameters;
+
     public interface IResourceSetRepository
     {
         Task<SearchResourceSetResult> Search(SearchResourceSetParameter parameter);

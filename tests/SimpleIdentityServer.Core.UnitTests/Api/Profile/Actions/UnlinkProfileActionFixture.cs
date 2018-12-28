@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
         public async Task WhenNullParametersArePassedThenExceptionsAreThrown()
         {            InitializeFakeObjects();
 
-            // ACTS & ASSERTS
+            
             await Assert.ThrowsAsync<ArgumentNullException>(() => _unlinkProfileAction.Execute(null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _unlinkProfileAction.Execute(LocalSubject, null)).ConfigureAwait(false);
         }

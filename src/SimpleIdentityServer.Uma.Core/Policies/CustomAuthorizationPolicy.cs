@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleIdentityServer.Uma.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace SimpleIdentityServer.Uma.Core.Policies
+namespace SimpleAuth.Uma.Policies
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Models;
+
     internal class CustomAuthorizationPolicy : ICustomAuthorizationPolicy
     {
         public bool Execute(

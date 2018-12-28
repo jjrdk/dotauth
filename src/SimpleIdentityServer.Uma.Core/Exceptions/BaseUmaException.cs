@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
-namespace SimpleIdentityServer.Uma.Core.Exceptions
+namespace SimpleAuth.Uma.Exceptions
 {
+    using System;
+
     public class BaseUmaException : Exception
     {    
         public BaseUmaException(string code, string message) : base(message)

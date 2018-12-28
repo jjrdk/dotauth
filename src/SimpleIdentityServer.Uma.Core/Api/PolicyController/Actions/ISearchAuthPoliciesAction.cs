@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
+﻿namespace SimpleAuth.Uma.Api.PolicyController.Actions
 {
     using System.Threading.Tasks;
     using Models;
