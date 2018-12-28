@@ -19,9 +19,9 @@
     {
         private const string baseUrl = "http://localhost:5000";
         private IJwsGenerator _jwsGenerator;
-        private IResourceSetClient _resourceSetClient;
-        private IPermissionClient _permissionClient;
-        private IPolicyClient _policyClient;
+        private ResourceSetClient _resourceSetClient;
+        private PermissionClient _permissionClient;
+        private PolicyClient _policyClient;
         private readonly TestUmaServerFixture _server;
 
         public TokenFixture(TestUmaServerFixture server)
@@ -162,25 +162,12 @@
             var provider = services.BuildServiceProvider();
             _jwsGenerator = provider.GetService<IJwsGenerator>();
 
-            _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_server.Client),
-                new DeleteResourceSetOperation(_server.Client),
-                new GetResourcesOperation(_server.Client),
-                new GetResourceOperation(_server.Client),
-                new UpdateResourceOperation(_server.Client),
-                new GetConfigurationOperation(_server.Client),
-                new SearchResourcesOperation(_server.Client));
-            _permissionClient = new PermissionClient(
-                new AddPermissionsOperation(_server.Client),
+            _resourceSetClient = new ResourceSetClient(_server.Client,
                 new GetConfigurationOperation(_server.Client));
-            _policyClient = new PolicyClient(new AddPolicyOperation(_server.Client),
-                new GetPolicyOperation(_server.Client),
-                new DeletePolicyOperation(_server.Client),
-                new GetPoliciesOperation(_server.Client),
-                new AddResourceToPolicyOperation(_server.Client),
-                new DeleteResourceFromPolicyOperation(_server.Client),
-                new UpdatePolicyOperation(_server.Client),
-                new GetConfigurationOperation(_server.Client),
-                new SearchPoliciesOperation(_server.Client));
+            _permissionClient = new PermissionClient(_server.Client,
+                new GetConfigurationOperation(_server.Client));
+            _policyClient = new PolicyClient(_server.Client,
+                new GetConfigurationOperation(_server.Client));
         }
     }
 }

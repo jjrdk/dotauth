@@ -14,20 +14,20 @@
 
 namespace SimpleAuth.Uma.Tests
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Client.Configuration;
     using Client.Policy;
     using Client.ResourceSet;
     using Shared.DTOs;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class PolicyFixture : IClassFixture<TestUmaServerFixture>
     {
         private const string baseUrl = "http://localhost:5000";
-        private IPolicyClient _policyClient;
-        private IResourceSetClient _resourceSetClient;
+        private PolicyClient _policyClient;
+        private ResourceSetClient _resourceSetClient;
         private readonly TestUmaServerFixture _server;
 
         public PolicyFixture(TestUmaServerFixture server)
@@ -41,9 +41,9 @@ namespace SimpleAuth.Uma.Tests
             InitializeFakeObjects();
 
             var response = await _policyClient.AddByResolution(new PostPolicy
-                    {
-                        ResourceSetIds = null
-                    },
+            {
+                ResourceSetIds = null
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -61,12 +61,12 @@ namespace SimpleAuth.Uma.Tests
 
 
             var response = await _policyClient.AddByResolution(new PostPolicy
-                    {
-                        ResourceSetIds = new List<string>
+            {
+                ResourceSetIds = new List<string>
                         {
                             "resource_id"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -84,19 +84,19 @@ namespace SimpleAuth.Uma.Tests
 
 
             var response = await _policyClient.AddByResolution(new PostPolicy
-                    {
-                        ResourceSetIds = new List<string>
+            {
+                ResourceSetIds = new List<string>
                         {
                             "resource_id"
                         },
-                        Rules = new List<PostPolicyRule>
+                Rules = new List<PostPolicyRule>
                         {
                             new PostPolicyRule
                             {
 
                             }
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -113,24 +113,24 @@ namespace SimpleAuth.Uma.Tests
             InitializeFakeObjects();
 
             var addResponse = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
             var response = await _policyClient.AddByResolution(new PostPolicy
-                    {
-                        ResourceSetIds = new List<string>
+            {
+                ResourceSetIds = new List<string>
                         {
                             addResponse.Content.Id
                         },
-                        Rules = new List<PostPolicyRule>
+                Rules = new List<PostPolicyRule>
                         {
                             new PostPolicyRule
                             {
@@ -140,7 +140,7 @@ namespace SimpleAuth.Uma.Tests
                                 }
                             }
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -174,9 +174,9 @@ namespace SimpleAuth.Uma.Tests
 
 
             var response = await _policyClient.UpdateByResolution(new PutPolicy
-                    {
+            {
 
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -194,9 +194,9 @@ namespace SimpleAuth.Uma.Tests
 
 
             var response = await _policyClient.UpdateByResolution(new PutPolicy
-                    {
-                        PolicyId = "policy"
-                    },
+            {
+                PolicyId = "policy"
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -214,16 +214,16 @@ namespace SimpleAuth.Uma.Tests
 
 
             var response = await _policyClient.UpdateByResolution(new PutPolicy
-                    {
-                        PolicyId = "policy",
-                        Rules = new List<PutPolicyRule>
+            {
+                PolicyId = "policy",
+                Rules = new List<PutPolicyRule>
                         {
                             new PutPolicyRule
                             {
 
                             }
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -240,19 +240,19 @@ namespace SimpleAuth.Uma.Tests
             InitializeFakeObjects();
 
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addResponse = await _policyClient.AddByResolution(new PostPolicy
-                    {
-                        Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                         {
                             new PostPolicyRule
                             {
@@ -271,19 +271,19 @@ namespace SimpleAuth.Uma.Tests
                                 }
                             }
                         },
-                        ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                         {
                             addResource.Content.Id
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
             var response = await _policyClient.UpdateByResolution(new PutPolicy
-                    {
-                        PolicyId = addResponse.Content.PolicyId,
-                        Rules = new List<PutPolicyRule>
+            {
+                PolicyId = addResponse.Content.PolicyId,
+                Rules = new List<PutPolicyRule>
                         {
                             new PutPolicyRule
                             {
@@ -293,7 +293,7 @@ namespace SimpleAuth.Uma.Tests
                                 }
                             }
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -370,19 +370,19 @@ namespace SimpleAuth.Uma.Tests
             InitializeFakeObjects();
 
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-                    {
-                        Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                         {
                             new PostPolicyRule
                             {
@@ -393,11 +393,11 @@ namespace SimpleAuth.Uma.Tests
                                 }
                             }
                         },
-                        ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                         {
                             addResource.Content.Id
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -444,19 +444,19 @@ namespace SimpleAuth.Uma.Tests
             InitializeFakeObjects();
 
             var addResponse = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-                    {
-                        Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                         {
                             new PostPolicyRule
                             {
@@ -467,11 +467,11 @@ namespace SimpleAuth.Uma.Tests
                                 }
                             }
                         },
-                        ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                         {
                             addResponse.Content.Id
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -494,20 +494,20 @@ namespace SimpleAuth.Uma.Tests
             InitializeFakeObjects();
 
             var addResponse = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
             var response = await _policyClient.AddByResolution(new PostPolicy
-                    {
-                        Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                         {
                             new PostPolicyRule
                             {
@@ -526,11 +526,11 @@ namespace SimpleAuth.Uma.Tests
                                 }
                             }
                         },
-                        ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                         {
                             addResponse.Content.Id
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -556,19 +556,19 @@ namespace SimpleAuth.Uma.Tests
             InitializeFakeObjects();
 
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-                    {
-                        Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                         {
                             new PostPolicyRule
                             {
@@ -587,11 +587,11 @@ namespace SimpleAuth.Uma.Tests
                                 }
                             }
                         },
-                        ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                         {
                             addResource.Content.Id
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -609,19 +609,19 @@ namespace SimpleAuth.Uma.Tests
             InitializeFakeObjects();
 
             var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-                    {
-                        Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                         {
                             new PostPolicyRule
                             {
@@ -640,11 +640,11 @@ namespace SimpleAuth.Uma.Tests
                                 }
                             }
                         },
-                        ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                         {
                             addResource.Content.Id
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -667,30 +667,30 @@ namespace SimpleAuth.Uma.Tests
             InitializeFakeObjects();
 
             var firstResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var secondResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-                    {
-                        Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                         {
                             new PostPolicyRule
                             {
@@ -709,11 +709,11 @@ namespace SimpleAuth.Uma.Tests
                                 }
                             }
                         },
-                        ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                         {
                             firstResource.Content.Id
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -746,30 +746,30 @@ namespace SimpleAuth.Uma.Tests
             InitializeFakeObjects();
 
             var firstResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var secondResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-                    {
-                        Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                         {
                             new PostPolicyRule
                             {
@@ -788,12 +788,12 @@ namespace SimpleAuth.Uma.Tests
                                 }
                             }
                         },
-                        ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                         {
                             firstResource.Content.Id,
                             secondResource.Content.Id
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -819,32 +819,32 @@ namespace SimpleAuth.Uma.Tests
             InitializeFakeObjects();
 
             var firstResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read",
                             "write"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var secondResource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read",
                             "write"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
-                    {
-                        Rules = new List<PostPolicyRule>
+            {
+                Rules = new List<PostPolicyRule>
                         {
                             new PostPolicyRule
                             {
@@ -863,12 +863,12 @@ namespace SimpleAuth.Uma.Tests
                                 }
                             }
                         },
-                        ResourceSetIds = new List<string>
+                ResourceSetIds = new List<string>
                         {
                             firstResource.Content.Id,
                             secondResource.Content.Id
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -877,9 +877,9 @@ namespace SimpleAuth.Uma.Tests
                 .ConfigureAwait(false);
 
             var isUpdated = await _policyClient.UpdateByResolution(new PutPolicy
-                    {
-                        PolicyId = firstInfo.Content.Id,
-                        Rules = new List<PutPolicyRule>
+            {
+                PolicyId = firstInfo.Content.Id,
+                Rules = new List<PutPolicyRule>
                         {
                             new PutPolicyRule
                             {
@@ -904,7 +904,7 @@ namespace SimpleAuth.Uma.Tests
                                 }
                             }
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -923,22 +923,9 @@ namespace SimpleAuth.Uma.Tests
 
         private void InitializeFakeObjects()
         {
-            _policyClient = new PolicyClient(new AddPolicyOperation(_server.Client),
-                new GetPolicyOperation(_server.Client),
-                new DeletePolicyOperation(_server.Client),
-                new GetPoliciesOperation(_server.Client),
-                new AddResourceToPolicyOperation(_server.Client),
-                new DeleteResourceFromPolicyOperation(_server.Client),
-                new UpdatePolicyOperation(_server.Client),
-                new GetConfigurationOperation(_server.Client),
-                new SearchPoliciesOperation(_server.Client));
-            _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_server.Client),
-                new DeleteResourceSetOperation(_server.Client),
-                new GetResourcesOperation(_server.Client),
-                new GetResourceOperation(_server.Client),
-                new UpdateResourceOperation(_server.Client),
-                new GetConfigurationOperation(_server.Client),
-                new SearchResourcesOperation(_server.Client));
+            _policyClient = new PolicyClient(_server.Client, new GetConfigurationOperation(_server.Client));
+            _resourceSetClient = new ResourceSetClient(_server.Client,
+                new GetConfigurationOperation(_server.Client));
         }
     }
 }

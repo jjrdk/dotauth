@@ -28,7 +28,7 @@ namespace SimpleAuth.Uma.Client.Helpers
 
             if (!Uri.TryCreate(value, UriKind.Absolute, out var uri))
             {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUriIsNotWellFormed, value));
+                throw new ArgumentException(string.Format(UmaClientErrorDescriptions.TheUriIsNotWellFormed, value));
             }
 
             return uri;

@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Scim.Client.Tests
+namespace SimpleAuth.Scim.Client.Tests
 {
-    using Newtonsoft.Json.Linq;
-    using SimpleIdentityServer.Scim.Client.Tests.MiddleWares;
     using System;
     using System.Net;
     using System.Threading.Tasks;
+    using Extensions;
+    using MiddleWares;
+    using Newtonsoft.Json.Linq;
+    using Shared;
+    using Shared.DTOs;
     using SimpleAuth.Client;
-    using SimpleAuth.Extensions;
     using Xunit;
-
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.DTOs;
 
     public class UsersClientFixture : IClassFixture<TestScimServerFixture>
     {

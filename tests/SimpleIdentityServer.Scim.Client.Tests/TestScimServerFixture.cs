@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using Microsoft.AspNetCore.TestHost;
-using System.Net.Http;
-using Microsoft.AspNetCore.Hosting;
-
-namespace SimpleIdentityServer.Scim.Client.Tests
+namespace SimpleAuth.Scim.Client.Tests
 {
+    using System;
+    using System.Net.Http;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.TestHost;
+
     public class TestScimServerFixture : IDisposable
     {
         public TestServer Server { get; }

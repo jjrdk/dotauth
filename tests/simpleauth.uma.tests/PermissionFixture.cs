@@ -14,22 +14,22 @@
 
 namespace SimpleAuth.Uma.Tests
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Client.Configuration;
     using Client.Permission;
     using Client.Policy;
     using Client.ResourceSet;
     using MiddleWares;
     using Shared.DTOs;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class PermissionFixture : IClassFixture<TestUmaServerFixture>
     {
         private const string baseUrl = "http://localhost:5000";
-        private IPolicyClient _policyClient;
-        private IResourceSetClient _resourceSetClient;
-        private IPermissionClient _permissionClient;
+        //private IPolicyClient _policyClient;
+        private ResourceSetClient _resourceSetClient;
+        private PermissionClient _permissionClient;
         private readonly TestUmaServerFixture _server;
 
         public PermissionFixture(TestUmaServerFixture server)
@@ -56,13 +56,13 @@ namespace SimpleAuth.Uma.Tests
 
             UserStore.Instance().ClientId = null;
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-                    {
-                        ResourceSetId = resource.Content.Id,
-                        Scopes = new List<string>
+            {
+                ResourceSetId = resource.Content.Id,
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -79,9 +79,9 @@ namespace SimpleAuth.Uma.Tests
             InitializeFakeObjects();
 
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-                    {
-                        ResourceSetId = string.Empty
-                    },
+            {
+                ResourceSetId = string.Empty
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -97,9 +97,9 @@ namespace SimpleAuth.Uma.Tests
             InitializeFakeObjects();
 
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-                    {
-                        ResourceSetId = "resource"
-                    },
+            {
+                ResourceSetId = "resource"
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -115,13 +115,13 @@ namespace SimpleAuth.Uma.Tests
             InitializeFakeObjects();
 
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-                    {
-                        ResourceSetId = "resource",
-                        Scopes = new List<string>
+            {
+                ResourceSetId = "resource",
+                Scopes = new List<string>
                         {
                             "scope"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -136,25 +136,25 @@ namespace SimpleAuth.Uma.Tests
         {
             InitializeFakeObjects();
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-                    {
-                        ResourceSetId = resource.Content.Id,
-                        Scopes = new List<string>
+            {
+                ResourceSetId = resource.Content.Id,
+                Scopes = new List<string>
                         {
                             "scopescopescope"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -169,25 +169,25 @@ namespace SimpleAuth.Uma.Tests
         {
             InitializeFakeObjects();
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-                    {
-                        ResourceSetId = resource.Content.Id,
-                        Scopes = new List<string>
+            {
+                ResourceSetId = resource.Content.Id,
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -202,13 +202,13 @@ namespace SimpleAuth.Uma.Tests
             const string baseUrl = "http://localhost:5000";
             InitializeFakeObjects();
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-                    {
-                        Name = "picture",
-                        Scopes = new List<string>
+            {
+                Name = "picture",
+                Scopes = new List<string>
                         {
                             "read"
                         }
-                    },
+            },
                     baseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
@@ -241,24 +241,9 @@ namespace SimpleAuth.Uma.Tests
 
         private void InitializeFakeObjects()
         {
-            _policyClient = new PolicyClient(new AddPolicyOperation(_server.Client),
-                new GetPolicyOperation(_server.Client),
-                new DeletePolicyOperation(_server.Client),
-                new GetPoliciesOperation(_server.Client),
-                new AddResourceToPolicyOperation(_server.Client),
-                new DeleteResourceFromPolicyOperation(_server.Client),
-                new UpdatePolicyOperation(_server.Client),
-                new GetConfigurationOperation(_server.Client),
-                new SearchPoliciesOperation(_server.Client));
-            _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_server.Client),
-                new DeleteResourceSetOperation(_server.Client),
-                new GetResourcesOperation(_server.Client),
-                new GetResourceOperation(_server.Client),
-                new UpdateResourceOperation(_server.Client),
-                new GetConfigurationOperation(_server.Client),
-                new SearchResourcesOperation(_server.Client));
-            _permissionClient = new PermissionClient(
-                new AddPermissionsOperation(_server.Client),
+            _resourceSetClient = new ResourceSetClient(_server.Client,
+                new GetConfigurationOperation(_server.Client));
+            _permissionClient = new PermissionClient(_server.Client,
                 new GetConfigurationOperation(_server.Client));
         }
     }
