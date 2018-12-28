@@ -4,7 +4,7 @@
     <Description>SimpleIdentityServer.Client</Description>
     <Authors>thabart</Authors>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>SimpleIdentityServer.Client</AssemblyName>
+    <AssemblyName>simpleauth.client</AssemblyName>
     <PackageId>SimpleIdentityServer.Client</PackageId>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
@@ -14,6 +14,7 @@
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <RootNamespace>SimpleAuth.Client</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
