@@ -1,4 +1,4 @@
-﻿// Copyright 2016 Habart Thierry
+﻿// Copyright © 2018 Habart Thierry, © 2018 Jacob Reimers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
     public class UsersClientFixture : IClassFixture<TestScimServerFixture>
     {
-        private static readonly Uri baseUrl = new Uri("http://localhost:5555");
+        private static readonly Uri BaseUrl = new Uri("http://localhost:5555");
         private readonly TestScimServerFixture _testScimServerFixture;
         private IUsersClient _usersClient;
 
@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             var scimId = scimResponse.Content["id"].ToString();
             ScimUserStore.Instance().ScimId = scimId;
             var thirdResult = await _usersClient.UpdateUser(
-                    baseUrl,
+                    BaseUrl,
                     new ScimUser {Id = scimId, Roles = "onerole, secondrole, thirdrole"})
                 .ConfigureAwait(false);
             ScimUserStore.Instance().ScimId = null;
@@ -74,7 +74,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             //var scimId = scimResponse.Content["id"].ToString();
             //ScimUserStore.Instance().ScimId = scimId;
             var id = scimResponse.Content["id"].ToString();
-            var thirdResult = await _usersClient.UpdateUser(baseUrl,
+            var thirdResult = await _usersClient.UpdateUser(BaseUrl,
                     new ScimUser {Id = id, Roles = "onerole, secondrole, thirdrole"})
                 .ConfigureAwait(false);
             ScimUserStore.Instance().ScimId = null;
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             var scimId = scimResponse.Content["id"].ToString();
             ScimUserStore.Instance().ScimId = scimId;
             var thirdResult = await _usersClient.UpdateUser(
-                    baseUrl,
+                    BaseUrl,
                     new ScimUser {Id = scimId, UserName = "other_username"},
                     "token")
                 .ConfigureAwait(false);
@@ -129,7 +129,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
             var scimId = scimResponse.Content["id"].ToString();
             ScimUserStore.Instance().ScimId = scimId;
-            var removeResponse = await _usersClient.DeleteAuthenticatedUser(baseUrl, "token").ConfigureAwait(false);
+            var removeResponse = await _usersClient.DeleteAuthenticatedUser(BaseUrl, "token").ConfigureAwait(false);
             ScimUserStore.Instance().ScimId = null;
 
             Assert.Equal(HttpStatusCode.NoContent, removeResponse.StatusCode);
@@ -143,7 +143,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             var scimResponse = await _usersClient.AddUser(new ScimUser(), "token").ConfigureAwait(false);
             var scimId = scimResponse.Content["id"].ToString();
             ScimUserStore.Instance().ScimId = scimId;
-            var userResponse = await _usersClient.GetAuthenticatedUser(baseUrl, "token").ConfigureAwait(false);
+            var userResponse = await _usersClient.GetAuthenticatedUser(BaseUrl, "token").ConfigureAwait(false);
             ScimUserStore.Instance().ScimId = null;
 
             Assert.Equal(HttpStatusCode.OK, userResponse.StatusCode);
@@ -160,7 +160,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             }
 
             var searchResult = await _usersClient.SearchUsers(
-                    baseUrl,
+                    BaseUrl,
                     new SearchParameter
                     {
                         StartIndex = 0,
@@ -194,7 +194,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             var id = firstResult.Content["id"].ToString();
             Assert.NotNull(id);
 
-            var firstSearch = await _usersClient.SearchUsers(baseUrl,
+            var firstSearch = await _usersClient.SearchUsers(BaseUrl,
                     new SearchParameter
                     {
                         StartIndex = 0,
@@ -202,7 +202,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                         Filter = $"arr co a1"
                     })
                 .ConfigureAwait(false);
-            var secondSearch = await _usersClient.SearchUsers(baseUrl,
+            var secondSearch = await _usersClient.SearchUsers(BaseUrl,
                     new SearchParameter
                     {
                         StartIndex = 0,
@@ -210,7 +210,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                         Filter = $"complexarr[test eq test2]"
                     })
                 .ConfigureAwait(false);
-            var thirdSearch = await _usersClient.SearchUsers(baseUrl,
+            var thirdSearch = await _usersClient.SearchUsers(BaseUrl,
                     new SearchParameter
                     {
                         StartIndex = 0,
@@ -219,7 +219,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                     })
                 .ConfigureAwait(false);
             var newDate = DateTime.UtcNow.AddDays(2).ToUnix().ToString();
-            var fourthSearch = await _usersClient.SearchUsers(baseUrl,
+            var fourthSearch = await _usersClient.SearchUsers(BaseUrl,
                     new SearchParameter
                     {
                         StartIndex = 0,
@@ -376,7 +376,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
         private void InitializeFakeObjects()
         {
-            _usersClient = new UsersClient(baseUrl, _testScimServerFixture.Client);
+            _usersClient = new UsersClient(BaseUrl, _testScimServerFixture.Client);
         }
     }
 }
