@@ -1,24 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>Simple identity server host</Description>
-    <Copyright>Copyrigth Thierry Habart</Copyright>
-    <AssemblyTitle>Simple identity server host</AssemblyTitle>
-    <Authors>Thierry Habart</Authors>
+    <Description>SimpleAuth Server</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>simpleauth.server</AssemblyName>
-    <PackageId>SimpleIdentityServer.Host</PackageId>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <PackageId>simpleauth.server</PackageId>
     <RootNamespace>SimpleAuth.Server</RootNamespace>
   </PropertyGroup>
+  <Import Project="../../shared.proj"/>
 
   <ItemGroup>
     <None Update="**.user;**.vspscc;node_modules\**\*;bower_components">

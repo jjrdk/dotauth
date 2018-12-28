@@ -1,20 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.Uma.Common Class Library</Description>
-    <Authors>thierry habart</Authors>
+    <Description>SimpleAuth UMA Library</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>simpleauth.uma.shared</AssemblyName>
-    <PackageId>SimpleIdentityServer.Uma.Common</PackageId>
+    <PackageId>simpleauth.uma.shared</PackageId>
     <RootNamespace>SimpleAuth.Uma.Shared</RootNamespace>
   </PropertyGroup>
+  <Import Project="../../shared.proj"/>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="1.0.2" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Runtime" />
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup></Project>
+</Project>

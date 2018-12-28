@@ -1,9 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Description>SimpleAuth Shared Library</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>simpleauth.shared</AssemblyName>
+    <PackageId>simpleauth.shared</PackageId>
     <RootNamespace>SimpleAuth.Shared</RootNamespace>
   </PropertyGroup>
+  <Import Project="../../shared.proj"/>
+
   <ItemGroup>
     <PackageReference Include="system.security.permissions" Version="4.5.0" />
   </ItemGroup>
