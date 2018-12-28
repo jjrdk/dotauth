@@ -27,7 +27,7 @@ namespace SimpleAuth.Uma.Tests
     public class ResourceFixture : IClassFixture<TestUmaServerFixture>
     {
         const string baseUrl = "http://localhost:5000";
-        private IResourceSetClient _resourceSetClient;
+        private ResourceSetClient _resourceSetClient;
         private readonly TestUmaServerFixture _server;
 
         public ResourceFixture(TestUmaServerFixture server)
@@ -381,16 +381,9 @@ namespace SimpleAuth.Uma.Tests
 
         private void InitializeFakeObjects()
         {
-            var services = new ServiceCollection();
-            services.AddSimpleIdentityServerJwt();
-            var provider = services.BuildServiceProvider();
-            _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_server.Client),
-                new DeleteResourceSetOperation(_server.Client),
-                new GetResourcesOperation(_server.Client),
-                new GetResourceOperation(_server.Client),
-                new UpdateResourceOperation(_server.Client),
-                new GetConfigurationOperation(_server.Client),
-                new SearchResourcesOperation(_server.Client));
+            _resourceSetClient = new ResourceSetClient(
+                _server.Client,
+                new GetConfigurationOperation(_server.Client));
         }
     }
 }

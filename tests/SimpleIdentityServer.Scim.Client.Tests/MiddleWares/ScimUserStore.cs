@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Scim.Client.Tests.MiddleWares
+﻿namespace SimpleAuth.Scim.Client.Tests.MiddleWares
 {
     using System;
 

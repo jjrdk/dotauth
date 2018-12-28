@@ -14,7 +14,7 @@
 
 namespace SimpleAuth.Uma.Client.Errors
 {
-    public static class ErrorDescriptions
+    internal static class UmaClientErrorDescriptions
     {
         public const string TheUriIsNotWellFormed = "the uri {0} is not well formed";
     }

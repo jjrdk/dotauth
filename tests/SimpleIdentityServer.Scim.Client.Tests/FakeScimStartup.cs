@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleIdentityServer.Scim.Client.Tests
+namespace SimpleAuth.Scim.Client.Tests
 {
+    using System.Reflection;
+    using Logging;
+    using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
-    using SimpleIdentityServer.Scim.Client.Tests.MiddleWares;
-    using System.Reflection;
-    using Microsoft.AspNetCore.Authentication.Cookies;
+    using MiddleWares;
+    using Server.Controllers;
+    using Server.Extensions;
+    using Services;
+    using Shared;
     using SimpleAuth;
-    using SimpleAuth.Logging;
-    using SimpleAuth.Server.Controllers;
-    using SimpleAuth.Server.Extensions;
-    using SimpleAuth.Services;
-    using SimpleAuth.Shared;
-    using SimpleAuth.WebSite.User.Actions;
+    using WebSite.User.Actions;
 
     public class FakeScimStartup
     {

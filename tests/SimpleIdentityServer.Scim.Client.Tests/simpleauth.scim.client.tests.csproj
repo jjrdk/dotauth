@@ -4,7 +4,7 @@
     <Description>SimpleIdentityServer.Scim.Client.Tests test project</Description>
     <Authors>thierry habart</Authors>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <AssemblyName>SimpleIdentityServer.Scim.Client.Tests</AssemblyName>
+    <AssemblyName>simpleauth.scim.client.tests</AssemblyName>
     <PackageId>SimpleIdentityServer.Scim.Client.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
@@ -15,6 +15,7 @@
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <RootNamespace>SimpleAuth.Scim.Client.Tests</RootNamespace>
   </PropertyGroup>  
 
   <ItemGroup>

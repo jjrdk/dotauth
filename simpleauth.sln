@@ -33,7 +33,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.uma.tests", "tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{BFFECB1F-3326-4B55-9180-58674B3FF5D0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Client.Tests", "tests\SimpleIdentityServer.Scim.Client.Tests\SimpleIdentityServer.Scim.Client.Tests.csproj", "{733145CA-22FA-4971-8107-F0AFF459AEAB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.scim.client.tests", "tests\SimpleIdentityServer.Scim.Client.Tests\simpleauth.scim.client.tests.csproj", "{733145CA-22FA-4971-8107-F0AFF459AEAB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.shared", "src\simpleauth.shared\simpleauth.shared.csproj", "{4B6809E0-D49A-492A-8B2D-260D46791926}"
 EndProject
