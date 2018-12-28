@@ -26,12 +26,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\simpleauth.twilio\simpleauth.twilio.csproj" />
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Authenticate.SMS.Client\SimpleIdentityServer.Authenticate.SMS.Client.csproj" />
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.server\simpleauth.server.csproj" />
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Manager.Client\SimpleIdentityServer.Manager.Client.csproj" />
+    <ProjectReference Include="..\..\src\simpleauth.twilio.client\simpleauth.twilio.client.csproj" />
+    <ProjectReference Include="..\..\src\simpleauth.client\simpleauth.client.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.uma\simpleauth.uma.csproj" />
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.UserInfoIntrospection\SimpleIdentityServer.UserInfoIntrospection.csproj" />
+    <ProjectReference Include="..\..\src\SimpleIdentityServer.Manager.Client\simpleauth.manager.client.csproj" />
+    <ProjectReference Include="..\..\src\SimpleIdentityServer.UserInfoIntrospection\simpleauth.userinfointrospection.csproj" />
   </ItemGroup>
 
   <ItemGroup>

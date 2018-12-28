@@ -9,23 +9,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{61FEE5E3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.tests", "tests\simpleauth.tests\simpleauth.tests.csproj", "{FCB0F13A-B412-4340-B077-D3E7A60A9DD7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Client", "src\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj", "{0F285AB3-E812-4AE0-9CEC-D118D10C3557}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.client", "src\simpleauth.client\simpleauth.client.csproj", "{0F285AB3-E812-4AE0-9CEC-D118D10C3557}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth", "src\simpleauth\simpleauth.csproj", "{C23BD3A1-78CE-4531-9649-19BB87C93F53}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.server", "src\simpleauth.server\simpleauth.server.csproj", "{F3EE8444-7F92-458D-8DB4-FAA7607629CB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleAuth.Twilio", "src\simpleauth.twilio\simpleauth.twilio.csproj", "{7AD38A3E-4A8A-42D2-9D1C-975676036F52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.twilio", "src\simpleauth.twilio\simpleauth.twilio.csproj", "{7AD38A3E-4A8A-42D2-9D1C-975676036F52}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.twilio.shared", "src\simpleauth.twilio.shared\simpleauth.twilio.shared.csproj", "{5D826B9E-BDC2-4BAE-A7FC-5D1A0BBF08E8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Authenticate.SMS.Client", "src\SimpleIdentityServer.Authenticate.SMS.Client\SimpleIdentityServer.Authenticate.SMS.Client.csproj", "{D6575015-95E4-41F9-9498-79C8F0102E4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.twilio.client", "src\simpleauth.twilio.client\simpleauth.twilio.client.csproj", "{D6575015-95E4-41F9-9498-79C8F0102E4D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.twilio.tests", "tests\simpleauth.twilio.tests\simpleauth.twilio.tests.csproj", "{ABE7C90B-9016-4188-86E9-9A0041949CEE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.UserInfoIntrospection", "src\SimpleIdentityServer.UserInfoIntrospection\SimpleIdentityServer.UserInfoIntrospection.csproj", "{7E02195C-5656-43F4-AFC0-DADD6AFC9214}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.userinfointrospection", "src\SimpleIdentityServer.UserInfoIntrospection\simpleauth.userinfointrospection.csproj", "{7E02195C-5656-43F4-AFC0-DADD6AFC9214}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.OAuth2Introspection", "src\SimpleIdentityServer.OAuth2Introspection\SimpleIdentityServer.OAuth2Introspection.csproj", "{ED4C6A19-21F0-449B-8E43-5654EB54EC9A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.oauth2introspection", "src\SimpleIdentityServer.OAuth2Introspection\simpleauth.oauth2introspection.csproj", "{ED4C6A19-21F0-449B-8E43-5654EB54EC9A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.server.tests", "tests\simpleauth.server.tests\simpleauth.server.tests.csproj", "{E0B564B2-D240-4371-98B3-31D11B818F90}"
 EndProject
@@ -41,13 +41,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.uma.shared", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.uma", "src\simpleauth.uma\simpleauth.uma.csproj", "{6AAFC575-3939-4914-AEDB-E352160F8915}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Client", "src\SimpleIdentityServer.Uma.Client\SimpleIdentityServer.Uma.Client.csproj", "{435A378B-19E2-4FE2-8906-DEFB4D6E15D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.uma.client", "src\SimpleIdentityServer.Uma.Client\simpleauth.uma.client.csproj", "{435A378B-19E2-4FE2-8906-DEFB4D6E15D8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "reimers.scim.query", "src\reimers.scim.query\reimers.scim.query.csproj", "{6F15FD7D-5F77-4A5C-A5A2-98C87EADF802}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "reimers.scim.query.tests", "reimers.scim.query.tests\reimers.scim.query.tests.csproj", "{C759A4A0-9E20-49B9-B12E-7C8F5584C1C0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Manager.Client", "src\SimpleIdentityServer.Manager.Client\SimpleIdentityServer.Manager.Client.csproj", "{C77BE523-DC6C-4BC8-BCE6-63B3F8D11D65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.manager.client", "src\SimpleIdentityServer.Manager.Client\simpleauth.manager.client.csproj", "{C77BE523-DC6C-4BC8-BCE6-63B3F8D11D65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
