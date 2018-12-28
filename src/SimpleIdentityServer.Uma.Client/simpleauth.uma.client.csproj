@@ -4,10 +4,11 @@
     <Description>SimpleIdentityServer.Uma.Client</Description>
     <Authors>thabart</Authors>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>SimpleIdentityServer.Uma.Client</AssemblyName>
+    <AssemblyName>simpleauth.uma.client</AssemblyName>
     <PackageId>SimpleIdentityServer.Uma.Client</PackageId>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <RootNamespace>SimpleAuth.Uma.Client</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

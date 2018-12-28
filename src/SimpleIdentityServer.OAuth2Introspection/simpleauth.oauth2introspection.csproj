@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>SimpleAuth OAuth2Introspection Library</Description>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <AssemblyName>simpleauth.oauth2introspection</AssemblyName>
+    <PackageId>simpleauth.oauth2introspection</PackageId>
+    <RootNamespace>SimpleAuth.OAuth2Introspection</RootNamespace>
+  </PropertyGroup>
+  <Import Project="../../shared.proj" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
+    <ProjectReference Include="..\simpleauth.client\simpleauth.client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Core" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.2.0" />
+  </ItemGroup>
+
+</Project>

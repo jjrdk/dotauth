@@ -16,7 +16,7 @@
 
 namespace SimpleIdentityServer.Manager.Client
 {
-    internal static class Constants
+    internal static class ManagerClientConstants
     {
         public static class ConfigurationResponseNames
         {

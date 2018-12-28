@@ -3,8 +3,9 @@
   <PropertyGroup>
     <Description>SimpleIdentityServer.Manager.Client</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>SimpleIdentityServer.Manager.Client</AssemblyName>
+    <AssemblyName>simpleauth.manager.client</AssemblyName>
     <PackageId>SimpleIdentityServer.Manager.Client</PackageId>
+    <RootNamespace>SimpleAuth.Manager.Client</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
