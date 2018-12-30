@@ -14,35 +14,35 @@
 
 namespace SimpleAuth.Authenticate
 {
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Errors;
+    using JwtToken;
     using Logging;
     using Shared.Models;
     using Shared.Repositories;
+    using Signature;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     public class AuthenticateClient : IAuthenticateClient
     {
-        private readonly IClientSecretBasicAuthentication _clientSecretBasicAuthentication;
-        private readonly IClientSecretPostAuthentication _clientSecretPostAuthentication;
-        private readonly IClientAssertionAuthentication _clientAssertionAuthentication;
-        private readonly IClientTlsAuthentication _clientTlsAuthentication;
+        private readonly ClientSecretBasicAuthentication _clientSecretBasicAuthentication;
+        private readonly ClientSecretPostAuthentication _clientSecretPostAuthentication;
+        private readonly ClientAssertionAuthentication _clientAssertionAuthentication;
+        private readonly ClientTlsAuthentication _clientTlsAuthentication;
         private readonly IClientStore _clientRepository;
         private readonly IOAuthEventSource _oauthEventSource;
 
         public AuthenticateClient(
-            IClientSecretBasicAuthentication clientSecretBasicAuthentication,
-            IClientSecretPostAuthentication clientSecretPostAuthentication,
-            IClientAssertionAuthentication clientAssertionAuthentication,
-            IClientTlsAuthentication clientTlsAuthentication,
+            IJwsParser jwsParser,
+            IJwtParser jwtParser,
             IClientStore clientRepository,
             IOAuthEventSource oAuthEventSource)
         {
-            _clientSecretBasicAuthentication = clientSecretBasicAuthentication;
-            _clientSecretPostAuthentication = clientSecretPostAuthentication;
-            _clientAssertionAuthentication = clientAssertionAuthentication;
-            _clientTlsAuthentication = clientTlsAuthentication;
+            _clientSecretBasicAuthentication = new ClientSecretBasicAuthentication();
+            _clientSecretPostAuthentication = new ClientSecretPostAuthentication();
+            _clientAssertionAuthentication = new ClientAssertionAuthentication(jwsParser, clientRepository, jwtParser);
+            _clientTlsAuthentication = new ClientTlsAuthentication();
             _clientRepository = clientRepository;
             _oauthEventSource = oAuthEventSource;
         }
@@ -91,14 +91,14 @@ namespace SimpleAuth.Authenticate
                     }
                     break;
                 case TokenEndPointAuthenticationMethods.client_secret_jwt:
-                    if (client.Secrets == null || !client.Secrets.Any(s => s.Type == ClientSecretTypes.SharedSecret))
+                    if (client.Secrets == null || client.Secrets.All(s => s.Type != ClientSecretTypes.SharedSecret))
                     {
                         errorMessage = string.Format(ErrorDescriptions.TheClientDoesntContainASharedSecret, client.ClientId);
                         break;
                     }
                     return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, client.Secrets.First(s => s.Type == ClientSecretTypes.SharedSecret).Value, issuerName).ConfigureAwait(false);
                 case TokenEndPointAuthenticationMethods.private_key_jwt:
-                   return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, issuerName).ConfigureAwait(false);
+                    return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, issuerName).ConfigureAwait(false);
                 case TokenEndPointAuthenticationMethods.tls_client_auth:
                     client = _clientTlsAuthentication.AuthenticateClient(instruction, client);
                     if (client == null)
@@ -130,7 +130,7 @@ namespace SimpleAuth.Authenticate
                 return clientId;
             }
 
-            clientId= _clientSecretBasicAuthentication.GetClientId(instruction);
+            clientId = _clientSecretBasicAuthentication.GetClientId(instruction);
             if (!string.IsNullOrWhiteSpace(clientId))
             {
                 return clientId;

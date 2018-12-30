@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Api.Profile.Actions
+﻿namespace SimpleAuth.Server.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -8,13 +8,12 @@
     using Shared.Parameters;
     using Shared.Repositories;
 
-    internal sealed class GetUserProfilesAction : IGetUserProfilesAction
+    internal sealed class GetUserProfilesAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IProfileRepository _profileRepository;
 
-        public GetUserProfilesAction(IProfileRepository profileRepository,
-            IResourceOwnerRepository resourceOwnerRepository)
+        public GetUserProfilesAction(IResourceOwnerRepository resourceOwnerRepository, IProfileRepository profileRepository)
         {
             _profileRepository = profileRepository;
             _resourceOwnerRepository = resourceOwnerRepository;

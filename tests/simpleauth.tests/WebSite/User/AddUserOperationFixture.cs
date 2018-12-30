@@ -31,25 +31,30 @@ namespace SimpleAuth.Tests.WebSite.User
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
         private Mock<IClaimRepository> _claimsRepositoryStub;
         private Mock<IAccessTokenStore> _tokenStoreStub;
-        //private Mock<IScimClientFactory> _scimClientFactoryStub;
-        private Mock<ILinkProfileAction> _linkProfileActionStub;
         private Mock<IOpenIdEventSource> _openidEventSourceStub;
         private IAddUserOperation _addResourceOwnerAction;
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-            
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(null)).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new ResourceOwner())).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new ResourceOwner { Id = "test" })).ConfigureAwait(false);
+
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(null))
+                .ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new ResourceOwner()))
+                .ConfigureAwait(false);
+            await Assert
+                .ThrowsAsync<ArgumentNullException>(() =>
+                    _addResourceOwnerAction.Execute(new ResourceOwner {Id = "test"}))
+                .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_ResourceOwner_With_Same_Credentials_Exists_Then_Returns_False()
-        {            InitializeFakeObjects();
-            var parameter = new ResourceOwner { Id = "name", Password = "password" };
+        {
+            InitializeFakeObjects();
+            var parameter = new ResourceOwner {Id = "name", Password = "password"};
 
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new ResourceOwner()));
@@ -60,7 +65,8 @@ namespace SimpleAuth.Tests.WebSite.User
 
         [Fact]
         public async Task When_ResourceOwner_Cannot_Be_Added_Then_Returns_False()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.InsertAsync(It.IsAny<ResourceOwner>()))
                 .Returns(Task.FromResult(false));
             var parameter = new ResourceOwner
@@ -75,8 +81,9 @@ namespace SimpleAuth.Tests.WebSite.User
 
         [Fact]
         public async Task When_Add_ResourceOwner_Then_Operation_Is_Called()
-        {            InitializeFakeObjects();
-            //var parameter = new AddUserParameter("name", "password", new List<Claim>());
+        {
+            InitializeFakeObjects();
+
             var parameter = new ResourceOwner
             {
                 Id = "name",
@@ -84,12 +91,13 @@ namespace SimpleAuth.Tests.WebSite.User
             };
 
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult((ResourceOwner)null));
-            _resourceOwnerRepositoryStub.Setup(r => r.InsertAsync(It.IsAny<ResourceOwner>())).Returns(Task.FromResult(true));
+                .Returns(Task.FromResult((ResourceOwner) null));
+            _resourceOwnerRepositoryStub.Setup(r => r.InsertAsync(It.IsAny<ResourceOwner>()))
+                .Returns(Task.FromResult(true));
 
-                        await _addResourceOwnerAction.Execute(parameter).ConfigureAwait(false);
+            await _addResourceOwnerAction.Execute(parameter).ConfigureAwait(false);
 
-                        _resourceOwnerRepositoryStub.Verify(r => r.InsertAsync(It.IsAny<ResourceOwner>()));
+            _resourceOwnerRepositoryStub.Verify(r => r.InsertAsync(It.IsAny<ResourceOwner>()));
             _openidEventSourceStub.Verify(o => o.AddResourceOwner("name"));
         }
 
@@ -98,7 +106,6 @@ namespace SimpleAuth.Tests.WebSite.User
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             _claimsRepositoryStub = new Mock<IClaimRepository>();
             _tokenStoreStub = new Mock<IAccessTokenStore>();
-            _linkProfileActionStub = new Mock<ILinkProfileAction>();
             _openidEventSourceStub = new Mock<IOpenIdEventSource>();
             _addResourceOwnerAction = new AddUserOperation(
                 _resourceOwnerRepositoryStub.Object,

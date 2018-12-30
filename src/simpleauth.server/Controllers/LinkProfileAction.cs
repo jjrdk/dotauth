@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Api.Profile.Actions
+﻿namespace SimpleAuth.Server.Controllers
 {
     using System;
     using System.Threading.Tasks;
@@ -6,7 +6,7 @@
     using Shared.Models;
     using Shared.Repositories;
 
-    internal sealed class LinkProfileAction : ILinkProfileAction
+    internal sealed class LinkProfileAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IProfileRepository _profileRepository;
@@ -19,21 +19,6 @@
 
         public async Task<bool> Execute(string localSubject, string externalSubject, string issuer, bool force = false)
         {
-            if (string.IsNullOrWhiteSpace(localSubject))
-            {
-                throw new ArgumentNullException(nameof(localSubject));
-            }
-
-            if (string.IsNullOrWhiteSpace(externalSubject))
-            {
-                throw new ArgumentNullException(nameof(externalSubject));
-            }
-
-            if (string.IsNullOrWhiteSpace(issuer))
-            {
-                throw new ArgumentNullException(nameof(issuer));
-            }
-
             var resourceOwner = await _resourceOwnerRepository.Get(localSubject).ConfigureAwait(false);
             if (resourceOwner == null)
             {

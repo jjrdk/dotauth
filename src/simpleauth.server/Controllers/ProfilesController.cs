@@ -1,38 +1,46 @@
 ﻿namespace SimpleAuth.Server.Controllers
 {
-    using System.Linq;
-    using System.Net;
-    using System.Threading.Tasks;
+    using System;
+    using Api.Profile.Actions;
     using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Shared.Repositories;
     using Shared.Requests;
     using Shared.Responses;
-    using SimpleAuth.Api.Profile;
     using SimpleAuth.Extensions;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
 
     [Route("profiles")]
     public class ProfilesController : Controller
     {
-        private readonly IProfileActions _profileActions;
+        private readonly GetUserProfilesAction _getUserProfiles;
+        private readonly LinkProfileAction _linkProfile;
+        private readonly UnlinkProfileAction _unlinkProfile;
 
-        public ProfilesController(IProfileActions profileActions)
+        public ProfilesController(
+            IResourceOwnerRepository resourceOwnerRepository,
+            IProfileRepository profileRepository)
         {
-            _profileActions = profileActions;
+            _getUserProfiles = new GetUserProfilesAction(resourceOwnerRepository, profileRepository);
+            _linkProfile = new LinkProfileAction(resourceOwnerRepository, profileRepository);
+            _unlinkProfile = new UnlinkProfileAction(resourceOwnerRepository, profileRepository);
         }
 
         [HttpGet(".me")]
         [Authorize("connected_user")]
-        public Task<IActionResult> GetProfiles()
+        public async Task<IActionResult> GetProfiles()
         {
             if (User?.Identity == null || !User.Identity.IsAuthenticated)
             {
-                return Task.FromResult((IActionResult)new StatusCodeResult((int)HttpStatusCode.Unauthorized));
+                return new StatusCodeResult((int)HttpStatusCode.Unauthorized);
             }
 
             var subject = User.GetSubject();
-            return GetProfiles(subject);
+            return await GetProfiles(subject).ConfigureAwait(false);
         }
 
         [HttpGet("{subject}")]
@@ -44,7 +52,7 @@
                 return BuildMissingParameter(nameof(subject));
             }
 
-            var profiles = await _profileActions.GetProfiles(subject).ConfigureAwait(false);
+            var profiles = await _getUserProfiles.Execute(subject).ConfigureAwait(false);
             return new OkObjectResult(profiles.Select(p => p.ToDto()));
         }
 
@@ -59,7 +67,7 @@
         [Authorize("manage_profile")]
         public async Task<IActionResult> AddProfile(string subject, [FromBody] LinkProfileRequest linkProfileRequest)
         {
-            if(string.IsNullOrWhiteSpace(subject))
+            if (string.IsNullOrWhiteSpace(subject))
             {
                 return BuildMissingParameter(nameof(subject));
             }
@@ -69,10 +77,20 @@
                 return BuildMissingParameter(nameof(linkProfileRequest));
             }
 
-            await _profileActions.Link(subject, linkProfileRequest.UserId, linkProfileRequest.Issuer, linkProfileRequest.Force).ConfigureAwait(false);
+            if (string.IsNullOrWhiteSpace(linkProfileRequest.UserId))
+            {
+                return BuildMissingParameter(nameof(linkProfileRequest.UserId));
+            }
+
+            if (string.IsNullOrWhiteSpace(linkProfileRequest.Issuer))
+            {
+                return BuildMissingParameter(nameof(linkProfileRequest.Issuer));
+            }
+
+            await _linkProfile.Execute(subject, linkProfileRequest.UserId, linkProfileRequest.Issuer, linkProfileRequest.Force).ConfigureAwait(false);
             return new NoContentResult();
         }
-        
+
         [HttpDelete(".me/{externalId}")]
         [Authorize("connected_user")]
         public Task<IActionResult> RemoveProfile(string externalId)
@@ -94,7 +112,7 @@
                 return BuildMissingParameter(nameof(externalId));
             }
 
-            await _profileActions.Unlink(subject, externalId).ConfigureAwait(false);
+            await _unlinkProfile.Execute(subject, externalId).ConfigureAwait(false);
             return new NoContentResult();
         }
 

@@ -91,8 +91,8 @@ namespace SimpleAuth.Server.Tests
             var mvc = services.AddMvc();
             var parts = mvc.PartManager.ApplicationParts;
             parts.Clear();
-            parts.Add(new AssemblyPart(typeof(DiscoveryController).GetTypeInfo().Assembly));
-            parts.Add(new AssemblyPart(typeof(CodeController).GetTypeInfo().Assembly));
+            parts.Add(new AssemblyPart(typeof(DiscoveryController).Assembly));
+            parts.Add(new AssemblyPart(typeof(CodeController).Assembly));
 
             return services.BuildServiceProvider();
         }
@@ -137,7 +137,13 @@ namespace SimpleAuth.Server.Tests
             services.AddTransient<IAuthenticateResourceOwnerService, CustomAuthenticateResourceOwnerService>();
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
             services.AddHostIdentityServer(_options)
-                .AddSimpleAuthServer(null, null, DefaultStores.Clients(_context), DefaultStores.Consents(), DefaultStores.JsonWebKeys(_context), null, DefaultStores.Users())
+                .AddSimpleAuthServer(null,
+                    null,
+                    DefaultStores.Clients(_context),
+                    DefaultStores.Consents(),
+                    DefaultStores.JsonWebKeys(_context),
+                    DefaultStores.Profiles(),
+                    DefaultStores.Users())
                 .AddDefaultTokenStore()
                 .AddSimpleIdentityServerJwt()
                 .AddTechnicalLogging()

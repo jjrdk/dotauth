@@ -14,11 +14,11 @@
 
 namespace SimpleAuth.Authenticate
 {
+    using Shared.Models;
     using System;
     using System.Linq;
-    using Shared.Models;
 
-    public class ClientSecretPostAuthentication : IClientSecretPostAuthentication
+    internal class ClientSecretPostAuthentication
     {
         public Client AuthenticateClient(AuthenticateInstruction instruction, Client client)
         {
@@ -27,28 +27,23 @@ namespace SimpleAuth.Authenticate
                 throw new ArgumentNullException("the instruction or client parameter cannot be null");
             }
 
-            if (client.Secrets == null)
-            {
-                return null;
-            }
-
-            var clientSecret = client.Secrets.FirstOrDefault(s => s.Type == ClientSecretTypes.SharedSecret);
+            var clientSecret = client.Secrets?.FirstOrDefault(s => s.Type == ClientSecretTypes.SharedSecret);
             if (clientSecret == null)
             {
                 return null;
             }
-            
+
             var sameSecret = string.Compare(clientSecret.Value,
                         instruction.ClientSecretFromHttpRequestBody,
                         StringComparison.CurrentCultureIgnoreCase) == 0;
             return sameSecret ? client : null;
         }
-        
+
         public string GetClientId(AuthenticateInstruction instruction)
         {
             if (instruction == null)
             {
-                throw new ArgumentNullException("the instruction parameter cannot be null");
+                throw new ArgumentNullException(nameof(instruction), "the instruction parameter cannot be null");
             }
 
             return instruction.ClientIdFromHttpRequestBody;

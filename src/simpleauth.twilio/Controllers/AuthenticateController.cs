@@ -8,6 +8,7 @@
     using System.Threading.Tasks;
     using Actions;
     using Api.Profile;
+    using Api.Profile.Actions;
     using Errors;
     using Exceptions;
     using Extensions;
@@ -41,7 +42,7 @@
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
-            IProfileActions profileActions,
+            IGetResourceOwnerClaimsAction profileActions,
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
             IOpenIdEventSource simpleIdentityServerEventSource,

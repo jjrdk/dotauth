@@ -864,5 +864,18 @@ namespace SimpleAuth.Server.Tests.Stores
                 }
             };
         }
+
+        public static IReadOnlyCollection<ResourceOwnerProfile> Profiles()
+        {
+            return new[]
+            {
+                new ResourceOwnerProfile
+                {
+                    Subject = "123",
+                    Issuer = "tester",
+                    CreateDateTime = DateTime.UtcNow
+                }
+            };
+        }
     }
 }

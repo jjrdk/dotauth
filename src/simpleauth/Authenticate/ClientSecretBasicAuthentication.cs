@@ -14,33 +14,34 @@
 
 namespace SimpleAuth.Authenticate
 {
+    using Shared.Models;
     using System;
     using System.Linq;
-    using Shared.Models;
 
-    public class ClientSecretBasicAuthentication : IClientSecretBasicAuthentication
+    internal class ClientSecretBasicAuthentication
     {
         public Client AuthenticateClient(AuthenticateInstruction instruction, Client client)
         {
-            if (client == null || instruction == null)
+            if (client == null)
             {
-                throw new ArgumentNullException("the client or instruction cannot be null");    
+                throw new ArgumentNullException(nameof(client), "The client cannot be null");
             }
 
-            if (client.Secrets == null)
+            if (instruction == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(instruction), "The instruction cannot be null");
             }
 
-            var clientSecret = client.Secrets.FirstOrDefault(s => s.Type == ClientSecretTypes.SharedSecret);
+            var clientSecret = client.Secrets?.FirstOrDefault(s => s.Type == ClientSecretTypes.SharedSecret);
             if (clientSecret == null)
             {
                 return null;
             }
 
-            var sameSecret = string.Compare(clientSecret.Value,
+            var sameSecret = string.Equals(
+                clientSecret.Value,
                 instruction.ClientSecretFromAuthorizationHeader,
-                StringComparison.CurrentCultureIgnoreCase) == 0;
+                StringComparison.CurrentCultureIgnoreCase);
             return sameSecret ? client : null;
         }
 
@@ -48,7 +49,7 @@ namespace SimpleAuth.Authenticate
         {
             if (instruction == null)
             {
-                throw new ArgumentNullException("the instruction cannot be null");
+                throw new ArgumentNullException(nameof(instruction), "the instruction cannot be null");
             }
 
             return instruction.ClientIdFromAuthorizationHeader;
