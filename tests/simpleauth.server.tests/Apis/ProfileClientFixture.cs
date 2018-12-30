@@ -1,12 +1,12 @@
 ﻿namespace SimpleAuth.Server.Tests.Apis
 {
-    using System.Linq;
-    using System.Threading.Tasks;
     using Client;
     using Client.Operations;
     using Errors;
     using Manager.Client;
     using Shared.Requests;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Xunit;
     using TokenRequest = Client.TokenRequest;
 
@@ -33,14 +33,17 @@
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
                 .ConfigureAwait(false);
 
-            var result = await _profileClient.LinkProfile(baseUrl + "/profiles", "currentSubject", new LinkProfileRequest
-            {
-
-            }, grantedToken.Content.AccessToken).ConfigureAwait(false);
+            var result = await _profileClient.LinkProfile(baseUrl + "/profiles",
+                    "user",
+                    new LinkProfileRequest
+                    {
+                    },
+                    grantedToken.Content.AccessToken)
+                .ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
             Assert.Equal("invalid_request", result.Error.Error);
-            Assert.Equal("the parameter user_id is missing", result.Error.ErrorDescription);
+            Assert.Equal("the parameter UserId is missing", result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -57,12 +60,12 @@
 
             var result = await _profileClient.LinkProfile(baseUrl + "/profiles", "currentSubject", new LinkProfileRequest
             {
-                UserId = "user_id"
+                UserId = "user_id",
             }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
             Assert.Equal("invalid_request", result.Error.Error);
-            Assert.Equal("the parameter issuer is missing", result.Error.ErrorDescription);
+            Assert.Equal("the parameter Issuer is missing", result.Error.ErrorDescription);
         }
 
         [Fact]

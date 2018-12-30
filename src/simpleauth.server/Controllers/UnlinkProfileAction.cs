@@ -1,11 +1,11 @@
-﻿namespace SimpleAuth.Api.Profile.Actions
+﻿namespace SimpleAuth.Server.Controllers
 {
     using System;
     using System.Threading.Tasks;
     using Exceptions;
     using Shared.Repositories;
 
-    internal sealed class UnlinkProfileAction : IUnlinkProfileAction
+    internal sealed class UnlinkProfileAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IProfileRepository _profileRepository;

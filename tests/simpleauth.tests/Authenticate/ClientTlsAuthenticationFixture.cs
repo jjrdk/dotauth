@@ -14,30 +14,30 @@
 
 namespace SimpleAuth.Tests.Authenticate
 {
+    using Shared.Models;
+    using SimpleAuth.Authenticate;
     using System;
     using System.Collections.Generic;
     using System.Security.Cryptography.X509Certificates;
-    using Shared.Models;
-    using SimpleAuth.Authenticate;
     using Xunit;
 
     public class ClientTlsAuthenticationFixture
     {
-        private IClientTlsAuthentication _clientTlsAuthentication;
+        private ClientTlsAuthentication _clientTlsAuthentication;
 
         [Fact]
         public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-            
             Assert.Throws<ArgumentNullException>(() => _clientTlsAuthentication.AuthenticateClient(null, null));
             Assert.Throws<ArgumentNullException>(() => _clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction(), null));
         }
 
         [Fact]
         public void When_Passing_NoSecret_Or_Certificate_Then_Null_Is_Returned()
-        {            InitializeFakeObjects();
-
+        {
+            InitializeFakeObjects();
             
             Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction(), new Client()));
             Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
@@ -48,7 +48,8 @@ namespace SimpleAuth.Tests.Authenticate
 
         [Fact]
         public void When_Client_Doesnt_Contain_ThumbprintAndName_Then_Null_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
             Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
             {

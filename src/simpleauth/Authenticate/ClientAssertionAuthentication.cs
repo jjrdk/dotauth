@@ -25,7 +25,7 @@ namespace SimpleAuth.Authenticate
     using Shared.Repositories;
     using Signature;
 
-    public class ClientAssertionAuthentication : IClientAssertionAuthentication
+    internal class ClientAssertionAuthentication
     {
         private readonly IJwsParser _jwsParser;
         private readonly IClientStore _clientRepository;

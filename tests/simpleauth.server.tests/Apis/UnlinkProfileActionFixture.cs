@@ -1,16 +1,16 @@
-﻿namespace SimpleAuth.Tests.Api.Profile.Actions
+﻿namespace SimpleAuth.Server.Tests.Apis
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Controllers;
     using Errors;
     using Exceptions;
     using Moq;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth.Api.Profile.Actions;
     using Xunit;
 
     public class UnlinkProfileActionFixture
@@ -19,7 +19,7 @@
         private const string ExternalSubject = "externalSubject";
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
         private Mock<IProfileRepository> _profileRepositoryStub;
-        private IUnlinkProfileAction _unlinkProfileAction;
+        private UnlinkProfileAction _unlinkProfileAction;
 
         [Fact]
         public async Task WhenNullParametersArePassedThenExceptionsAreThrown()

@@ -1,27 +1,29 @@
 ﻿namespace SimpleAuth.Tests.Authenticate
 {
-    using System;
-    using System.Collections.Generic;
     using Shared.Models;
     using SimpleAuth.Authenticate;
+    using System;
+    using System.Collections.Generic;
     using Xunit;
 
     public sealed class ClientSecretPostAuthenticationFixture
     {
-        private IClientSecretPostAuthentication _clientSecretPostAuthentication;
+        private ClientSecretPostAuthentication _clientSecretPostAuthentication;
 
         [Fact]
         public void When_Trying_To_Authenticate_The_Client_And_OneParameter_Is_Null_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var authenticateInstruction = new AuthenticateInstruction();
 
-                        Assert.Throws<ArgumentNullException>(() => _clientSecretPostAuthentication.AuthenticateClient(null, null));
+            Assert.Throws<ArgumentNullException>(() => _clientSecretPostAuthentication.AuthenticateClient(null, null));
             Assert.Throws<ArgumentNullException>(() => _clientSecretPostAuthentication.AuthenticateClient(authenticateInstruction, null));
         }
-        
+
         [Fact]
         public void When_Trying_To_Authenticate_The_Client_And_ThereIsNoSharedSecret_Then_Null_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var authenticateInstruction = new AuthenticateInstruction
             {
                 ClientSecretFromAuthorizationHeader = "notCorrectClientSecret"
@@ -41,14 +43,15 @@
                 }
             };
 
-            
+
             Assert.Null(_clientSecretPostAuthentication.AuthenticateClient(authenticateInstruction, firstClient));
             Assert.Null(_clientSecretPostAuthentication.AuthenticateClient(authenticateInstruction, secondClient));
         }
 
         [Fact]
         public void When_Trying_To_Authenticate_The_Client_And_Credentials_Are_Not_Correct_Then_Null_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var authenticateInstruction = new AuthenticateInstruction
             {
                 ClientSecretFromHttpRequestBody = "notCorrectClientSecret"
@@ -65,14 +68,15 @@
                 }
             };
 
-                        var result = _clientSecretPostAuthentication.AuthenticateClient(authenticateInstruction, client);
+            var result = _clientSecretPostAuthentication.AuthenticateClient(authenticateInstruction, client);
 
-                        Assert.Null(result);
+            Assert.Null(result);
         }
 
         [Fact]
         public void When_Trying_To_Authenticate_The_Client_And_Credentials_Are_Correct_Then_Client_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             const string clientSecret = "clientSecret";
             var authenticateInstruction = new AuthenticateInstruction
             {
@@ -90,36 +94,38 @@
                 }
             };
 
-                        var result = _clientSecretPostAuthentication.AuthenticateClient(authenticateInstruction, client);
+            var result = _clientSecretPostAuthentication.AuthenticateClient(authenticateInstruction, client);
 
-                        Assert.NotNull(result);
+            Assert.NotNull(result);
         }
 
         [Fact]
         public void When_Requesting_ClientId_And_Instruction_Is_Null_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        Assert.Throws<ArgumentNullException>(() => _clientSecretPostAuthentication.GetClientId(null));
+            Assert.Throws<ArgumentNullException>(() => _clientSecretPostAuthentication.GetClientId(null));
         }
 
         [Fact]
         public void When_Requesting_ClientId_Then_ClientId_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             const string clientId = "clientId";
             var instruction = new AuthenticateInstruction
             {
                 ClientIdFromHttpRequestBody = clientId
             };
 
-                        var result = _clientSecretPostAuthentication.GetClientId(instruction);
+            var result = _clientSecretPostAuthentication.GetClientId(instruction);
 
-                        Assert.True(clientId == result);
+            Assert.True(clientId == result);
 
         }
 
         private void InitializeFakeObjects()
         {
-            _clientSecretPostAuthentication = new ClientSecretPostAuthentication();   
+            _clientSecretPostAuthentication = new ClientSecretPostAuthentication();
         }
     }
 }

@@ -681,10 +681,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
         private void InitializeFakeObjects()
         {
+            
             var services = new ServiceCollection();
             services.AddSimpleIdentityServerJwt();
             var provider = services.BuildServiceProvider();
-            _jwsGenerator = provider.GetService<IJwsGenerator>();
+            _jwsGenerator = new JwsGenerator(new CreateJwsSignature()); //provider.GetService<IJwsGenerator>();
             _jweGenerator = provider.GetService<IJweGenerator>();
             var getDiscoveryOperation = new GetDiscoveryOperation(_server.Client);
             _authorizationClient = new AuthorizationClient(_server.Client, getDiscoveryOperation);

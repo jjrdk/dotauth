@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Api.Profile.Actions;
     using Exceptions;
     using Extensions;
     using Helpers;
@@ -19,7 +20,6 @@
     using Shared;
     using Shared.Requests;
     using SimpleAuth;
-    using SimpleAuth.Api.Profile;
     using SimpleAuth.Extensions;
     using SimpleAuth.Services;
     using Translation;
@@ -34,7 +34,7 @@
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
-            IProfileActions profileActions,
+            IGetResourceOwnerClaimsAction profileActions,
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
             IOpenIdEventSource simpleIdentityServerEventSource,

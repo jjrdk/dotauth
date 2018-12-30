@@ -72,6 +72,7 @@ namespace SimpleAuth
             {
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
+
             serviceCollection.AddTransient<IJweActions, JweActions>();
             serviceCollection.AddTransient<IJsonWebKeyHelper, JsonWebKeyHelper>();
             serviceCollection.AddTransient<IScopeActions, ScopeActions>();
@@ -124,15 +125,10 @@ namespace SimpleAuth
             serviceCollection.AddTransient<IJwtParser, JwtParser>();
             serviceCollection.AddTransient<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>();
             serviceCollection.AddTransient<IAuthenticateClient, AuthenticateClient>();
-            serviceCollection.AddTransient<IClientSecretBasicAuthentication, ClientSecretBasicAuthentication>();
-            serviceCollection.AddTransient<IClientSecretPostAuthentication, ClientSecretPostAuthentication>();
-            serviceCollection.AddTransient<IClientAssertionAuthentication, ClientAssertionAuthentication>();
-            serviceCollection.AddTransient<IClientTlsAuthentication, ClientTlsAuthentication>();
             serviceCollection
                 .AddTransient<IGetTokenByRefreshTokenGrantTypeAction, GetTokenByRefreshTokenGrantTypeAction>();
             serviceCollection.AddTransient<ITranslationManager, TranslationManager>();
             serviceCollection.AddTransient<IGrantedTokenHelper, GrantedTokenHelper>();
-
             serviceCollection.AddTransient<IIntrospectionActions, IntrospectionActions>();
             serviceCollection.AddTransient<IPostIntrospectionAction, PostIntrospectionAction>();
             serviceCollection.AddTransient<IIntrospectionParameterValidator, IntrospectionParameterValidator>();
@@ -148,10 +144,6 @@ namespace SimpleAuth
             serviceCollection.AddTransient<IValidateConfirmationCodeAction, ValidateConfirmationCodeAction>();
             serviceCollection.AddTransient<IRemoveConfirmationCodeAction, RemoveConfirmationCodeAction>();
             serviceCollection.AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>();
-            serviceCollection.AddTransient<IProfileActions, ProfileActions>();
-            serviceCollection.AddTransient<ILinkProfileAction, LinkProfileAction>();
-            serviceCollection.AddTransient<IUnlinkProfileAction, UnlinkProfileAction>();
-            serviceCollection.AddTransient<IGetUserProfilesAction, GetUserProfilesAction>();
             serviceCollection.AddTransient<IGetResourceOwnerClaimsAction, GetResourceOwnerClaimsAction>();
             serviceCollection.AddTransient<IUpdateUserTwoFactorAuthenticatorOperation, UpdateUserTwoFactorAuthenticatorOperation>();
             serviceCollection.AddTransient<IResourceOwnerAuthenticateHelper, ResourceOwnerAuthenticateHelper>();

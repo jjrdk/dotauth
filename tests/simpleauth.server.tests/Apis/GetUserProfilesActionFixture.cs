@@ -1,29 +1,28 @@
-﻿namespace SimpleAuth.Tests.Api.Profile.Actions
+﻿namespace SimpleAuth.Server.Tests.Apis
 {
-    using System;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
+    using Controllers;
     using Exceptions;
     using Moq;
     using Shared.Models;
     using Shared.Parameters;
     using Shared.Repositories;
-    using SimpleAuth.Api.Profile.Actions;
+    using System;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class GetUserProfilesActionFixture
     {
         private Mock<IProfileRepository> _profileRepositoryStub;
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private IGetUserProfilesAction _getProfileAction;
+        private GetUserProfilesAction _getProfileAction;
 
         [Fact]
         public async Task WhenPassingNullParameterThenExceptionIsThrown()
         {
             InitializeFakeObjects();
 
-            
             await Assert.ThrowsAsync<ArgumentNullException>(() => _getProfileAction.Execute(null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _getProfileAction.Execute(string.Empty)).ConfigureAwait(false);
         }
@@ -34,7 +33,7 @@
             InitializeFakeObjects();
 
             var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _getProfileAction.Execute("subject")).ConfigureAwait(false);
-            
+
             Assert.Equal("internal_error", ex.Code);
             Assert.Equal("The resource owner subject doesn't exist", ex.Message);
         }
@@ -54,7 +53,7 @@
         {
             _profileRepositoryStub = new Mock<IProfileRepository>();
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _getProfileAction = new GetUserProfilesAction(_profileRepositoryStub.Object, _resourceOwnerRepositoryStub.Object);
+            _getProfileAction = new GetUserProfilesAction(_resourceOwnerRepositoryStub.Object, _profileRepositoryStub.Object);
         }
     }
 }

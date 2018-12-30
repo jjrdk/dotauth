@@ -30,13 +30,14 @@ namespace SimpleAuth.Server.Tests
         {
             SharedCtx = new SharedContext();
             var startup = new FakeStartup(SharedCtx);
-            Server = new TestServer(new WebHostBuilder()
+            Server = new TestServer(
+                new WebHostBuilder()
                 .UseUrls("http://localhost:5000")
                 .ConfigureServices(services =>
                 {
                     services.AddSingleton<IStartup>(startup);
                 })
-                .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeStartup).GetType().Assembly.FullName));
+                .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeStartup).Assembly.FullName));
             Client = Server.CreateClient();
             SharedCtx.Client = Client;
         }

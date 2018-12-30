@@ -14,12 +14,6 @@
 
 namespace SimpleAuth.Server.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Extensions;
@@ -39,6 +33,13 @@ namespace SimpleAuth.Server.Controllers
     using SimpleAuth.Api.Profile;
     using SimpleAuth.Extensions;
     using SimpleAuth.Services;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Api.Profile.Actions;
     using Translation;
     using ViewModels;
     using WebSite.Authenticate;
@@ -51,7 +52,7 @@ namespace SimpleAuth.Server.Controllers
         protected const string DefaultLanguage = "en";
         protected readonly IAuthenticateHelper _authenticateHelper;
         protected readonly IAuthenticateActions _authenticateActions;
-        private readonly IProfileActions _profileActions;
+        private readonly IGetResourceOwnerClaimsAction _profileActions;
         protected readonly IDataProtector _dataProtector;
         private readonly ITranslationManager _translationManager;
         protected readonly IOpenIdEventSource _simpleIdentityServerEventSource;
@@ -70,7 +71,7 @@ namespace SimpleAuth.Server.Controllers
 
         public BaseAuthenticateController(
             IAuthenticateActions authenticateActions,
-            IProfileActions profileActions,
+            IGetResourceOwnerClaimsAction profileActions,
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
             IOpenIdEventSource simpleIdentityServerEventSource,
@@ -148,7 +149,7 @@ namespace SimpleAuth.Server.Controllers
                 .GetAuthenticatedUser(this, HostConstants.CookieNames.ExternalCookieName)
                 .ConfigureAwait(false);
             var resourceOwner =
-                await _profileActions.GetResourceOwner(authenticatedUser.GetSubject()).ConfigureAwait(false);
+                await _profileActions.Execute(authenticatedUser.GetSubject()).ConfigureAwait(false);
             string sub = null;
 
             // 2. Automatically create the resource owner.
@@ -160,7 +161,7 @@ namespace SimpleAuth.Server.Controllers
                     return RedirectToAction(
                         "Index",
                         "Error",
-                        new { code = result.Item2.Value, message = result.Item3, area = "Shell" });
+                        new { code = result.Item2.Value, message = result.Item3 });
                 }
             }
 
@@ -450,7 +451,7 @@ namespace SimpleAuth.Server.Controllers
             //var claimsIdentity = authenticatedUser.Identity as ClaimsIdentity;
             var claims = authenticatedUser.Claims.ToList();
             var resourceOwner =
-                await _profileActions.GetResourceOwner(authenticatedUser.GetSubject()).ConfigureAwait(false);
+                await _profileActions.Execute(authenticatedUser.GetSubject()).ConfigureAwait(false);
             var sub = string.Empty;
             if (resourceOwner == null)
             {
@@ -460,7 +461,7 @@ namespace SimpleAuth.Server.Controllers
                     return RedirectToAction(
                         "Index",
                         "Error",
-                        new { code = result.Item2.Value, message = result.Item3, area = "Shell" });
+                        new { code = result.Item2.Value, message = result.Item3 });
                 }
             }
 

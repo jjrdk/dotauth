@@ -14,10 +14,15 @@
     public sealed class ProfileClient : IProfileClient
     {
         private readonly HttpClient _client;
+        private readonly JsonSerializerSettings _jsonSerializerSettings;
 
         public ProfileClient(HttpClient client)
         {
             _client = client;
+            _jsonSerializerSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
         }
 
         public Task<BaseResponse> LinkMyProfile(string requestUrl, LinkProfileRequest linkProfileRequest, string authorizationHeaderValue = null)
@@ -55,10 +60,9 @@
 
         private async Task<BaseResponse> Link(string requestUrl, LinkProfileRequest linkProfileRequest, string authorizationHeaderValue = null)
         {
-            var json = JsonConvert.SerializeObject(linkProfileRequest, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            });
+            var json = JsonConvert.SerializeObject(
+                linkProfileRequest,
+                _jsonSerializerSettings);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
