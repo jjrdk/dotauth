@@ -14,12 +14,14 @@
 
 namespace SimpleAuth.Uma.Errors
 {
+    using SimpleAuth.Errors;
+
     internal static class UmaErrorCodes
     {
         public const string NeedInfo = "need_info";
         public const string NotAuthorized = "not_authorized";
         public const string RequestSubmitted = "request_submitted";
-        public const string InvalidRequestCode = "invalid_request";
+        //public const string InvalidRequestCode = ErrorCodes.InvalidRequestCode;
         public const string InternalError = "internal_error";
         public const string InvalidResourceSetId = "invalid_resource_set_id";
         public const string InvalidId = "invalid_id";

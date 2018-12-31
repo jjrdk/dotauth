@@ -50,13 +50,13 @@
             catch (Exception ex)
             {
                 _eventSource.Failure(ex);
-                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
                     "the twilio account is not properly configured");
             }
 
             if (!await _confirmationCodeStore.Add(confirmationCode).ConfigureAwait(false))
             {
-                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
                     ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
             }
 

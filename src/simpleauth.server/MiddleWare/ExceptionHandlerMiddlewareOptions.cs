@@ -18,6 +18,6 @@ namespace SimpleAuth.Server.MiddleWare
 
     public class ExceptionHandlerMiddlewareOptions
     {
-        public IOpenIdEventSource SimpleIdentityServerEventSource { get; set; }
+        public IOpenIdEventSource OpenIdEventSource { get; set; }
     }
 }

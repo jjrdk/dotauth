@@ -41,16 +41,16 @@ namespace SimpleAuth.Uma.Middlewares
             }
             catch (Exception exception)
             {
-                if (!(exception is BaseUmaException identityServerException))
+                if (!(exception is BaseUmaException serverException))
                 {
-                    identityServerException = new BaseUmaException(ErrorCodes.UnhandledExceptionCode, exception.Message);
+                    serverException = new BaseUmaException(ErrorCodes.UnhandledExceptionCode, exception.Message);
                 }
 
-                _options.UmaEventSource.Failure(identityServerException);
+                _options.UmaEventSource.Failure(serverException);
                 var error = new ErrorResponse
                 {
-                    Error = identityServerException.Code,
-                    ErrorDescription = identityServerException.Message
+                    Error = serverException.Code,
+                    ErrorDescription = serverException.Message
                 };
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 context.Response.ContentType = "application/json";

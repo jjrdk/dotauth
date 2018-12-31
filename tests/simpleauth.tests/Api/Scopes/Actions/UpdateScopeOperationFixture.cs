@@ -37,7 +37,7 @@ namespace SimpleAuth.Tests.Api.Scopes.Actions
         }
 
         [Fact]
-        public async Task When_Scope_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_Scope_Does_Not_Exist_Then_Exception_Is_Thrown()
         {            const string name = "scope_name";
             Scope scope = null;
             InitializeFakeObjects();
@@ -45,7 +45,7 @@ namespace SimpleAuth.Tests.Api.Scopes.Actions
                 .Returns(Task.FromResult(scope));
 
             
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _updateScopeOperation.Execute(new Scope
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _updateScopeOperation.Execute(new Scope
             {
                 Name = name
             })).ConfigureAwait(false);

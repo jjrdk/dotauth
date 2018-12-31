@@ -91,7 +91,7 @@
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(responseTypes);
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
+                        var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
                 claimsPrincipal, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
@@ -100,7 +100,7 @@
         }
 
         [Fact]
-        public async Task When_No_Consent_Has_Been_Given_And_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_No_Consent_Has_Been_Given_And_Client_Does_Not_Exist_Then_Exception_Is_Thrown()
         {            InitializeFakeObjects();
             const string clientId = "clientId";
             const string state = "state";
@@ -117,7 +117,7 @@
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>())).
                 Returns(Task.FromResult((Client)null));
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
+                        var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
                 claimsPrincipal, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, clientId));

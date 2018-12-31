@@ -5,11 +5,11 @@
     public class UserStore
     {
         private static UserStore _instance;
-        private static readonly string _defaultSubject = "administrator";
+        private static readonly string DefaultSubject = "administrator";
 
         private UserStore()
         {
-            Subject = _defaultSubject;
+            Subject = DefaultSubject;
         }
 
         public static UserStore Instance()

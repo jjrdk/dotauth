@@ -12,15 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Exceptions
+namespace SimpleAuth.Results
 {
-    public class IdentityServerExceptionWithState : IdentityServerException
+    public enum SimpleAuthEndPoints
     {
-        public IdentityServerExceptionWithState(string code, string message, string state) : base(code, message)
-        {
-            State = state;
-        }
-
-        public string State { get; }
+        // Consent screen
+        ConsentIndex,
+        // Authenticate screen
+        AuthenticateIndex,
+        // Form screen
+        FormIndex,
+        // Send code screen
+        SendCode
     }
 }

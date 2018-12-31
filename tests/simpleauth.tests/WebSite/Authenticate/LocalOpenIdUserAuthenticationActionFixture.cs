@@ -37,7 +37,7 @@
             var authorizationParameter = new AuthorizationParameter();
             _resourceOwnerAuthenticateHelperStub.Setup(r => r.Authenticate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).Returns(Task.FromResult((ResourceOwner)null));
 
-                        await Assert.ThrowsAsync<IdentityServerAuthenticationException>(() => _localUserAuthenticationAction.Execute(localAuthenticationParameter, authorizationParameter, null, null)).ConfigureAwait(false);
+                        await Assert.ThrowsAsync<AuthServerAuthenticationException>(() => _localUserAuthenticationAction.Execute(localAuthenticationParameter, authorizationParameter, null, null)).ConfigureAwait(false);
         }
 
         [Fact]

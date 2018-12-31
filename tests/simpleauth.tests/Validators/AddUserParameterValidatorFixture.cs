@@ -1,6 +1,7 @@
 ﻿namespace SimpleAuth.Tests.Validators
 {
     using System;
+    using Errors;
     using Exceptions;
     using Parameters;
     using SimpleAuth.Validators;
@@ -24,11 +25,11 @@
             InitializeFakeObjects();
 
             var exception = Assert
-                .Throws<IdentityServerException>(() =>
+                .Throws<SimpleAuthException>(() =>
                     _addUserParameterValidator.Validate(new AddUserParameter(null, null)));
 
                         Assert.NotNull(exception);
-            Assert.Equal("invalid_request", exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.Equal("the parameter login is missing", exception.Message);
         }
 
@@ -37,11 +38,11 @@
         {
             InitializeFakeObjects();
 
-            var exception = Assert.Throws<IdentityServerException>(() =>
+            var exception = Assert.Throws<SimpleAuthException>(() =>
                     _addUserParameterValidator.Validate(new AddUserParameter("login", null)));
 
                         Assert.NotNull(exception);
-            Assert.Equal("invalid_request", exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.Equal("the parameter password is missing", exception.Message);
         }
 

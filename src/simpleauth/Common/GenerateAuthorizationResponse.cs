@@ -195,7 +195,7 @@ namespace SimpleAuth.Common
             if (authorizationParameter.ResponseMode == ResponseMode.form_post)
             {
                 endpointResult.Type = TypeActionResult.RedirectToAction;
-                endpointResult.RedirectInstruction.Action = IdentityServerEndPoints.FormIndex;
+                endpointResult.RedirectInstruction.Action = SimpleAuthEndPoints.FormIndex;
                 endpointResult.RedirectInstruction.AddParameter("redirect_uri", authorizationParameter.RedirectUrl.AbsoluteUri);
             }
 

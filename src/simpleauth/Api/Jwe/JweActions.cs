@@ -62,7 +62,7 @@ namespace SimpleAuth.Api.Jwe
 
             if (!Uri.TryCreate(getJweParameter.Url, UriKind.Absolute, out var uri))
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, getJweParameter.Url));
             }
@@ -71,7 +71,7 @@ namespace SimpleAuth.Api.Jwe
             var jweHeader = _jweParser.GetHeader(jwe);
             if (jweHeader == null)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheTokenIsNotAValidJwe);
             }
@@ -79,7 +79,7 @@ namespace SimpleAuth.Api.Jwe
             var jsonWebKey = await _jsonWebKeyHelper.GetJsonWebKey(jweHeader.Kid, uri).ConfigureAwait(false);
             if (jsonWebKey == null)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, jweHeader.Kid, uri.AbsoluteUri));
             }
@@ -90,7 +90,7 @@ namespace SimpleAuth.Api.Jwe
 
             if (string.IsNullOrWhiteSpace(content))
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheContentCannotBeExtractedFromJweToken);
             }
@@ -134,7 +134,7 @@ namespace SimpleAuth.Api.Jwe
 
             if (!Uri.TryCreate(createJweParameter.Url, UriKind.Absolute, out var uri))
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, createJweParameter.Url));
             }
@@ -142,7 +142,7 @@ namespace SimpleAuth.Api.Jwe
             var jsonWebKey = await _jsonWebKeyHelper.GetJsonWebKey(createJweParameter.Kid, uri).ConfigureAwait(false);
             if (jsonWebKey == null)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, createJweParameter.Kid, uri.AbsoluteUri));
             }

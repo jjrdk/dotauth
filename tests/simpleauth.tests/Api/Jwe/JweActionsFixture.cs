@@ -66,7 +66,7 @@ namespace SimpleAuth.Tests.Api.Jwe
             };
 
             
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(async () =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(async () =>
                     await _jweActions.GetJweInformation(getJweParameter).ConfigureAwait(false))
                 .ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
@@ -86,7 +86,7 @@ namespace SimpleAuth.Tests.Api.Jwe
                 .Returns(() => null);
 
             
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(async () =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(async () =>
                     await _jweActions.GetJweInformation(getJweParameter).ConfigureAwait(false))
                 .ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
@@ -112,7 +112,7 @@ namespace SimpleAuth.Tests.Api.Jwe
                 .Returns(Task.FromResult<JsonWebKey>(null));
 
             
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(async () =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(async () =>
                     await _jweActions.GetJweInformation(getJweParameter).ConfigureAwait(false))
                 .ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
@@ -144,7 +144,7 @@ namespace SimpleAuth.Tests.Api.Jwe
                 .Returns(string.Empty);
 
             
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(async () =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(async () =>
                     await _jweActions.GetJweInformation(getJweParameter).ConfigureAwait(false))
                 .ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
@@ -228,7 +228,7 @@ namespace SimpleAuth.Tests.Api.Jwe
                 Kid = "kid"
             };
 
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(async () =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(async () =>
                     await _jweActions.CreateJwe(createJweParameter).ConfigureAwait(false))
                 .ConfigureAwait(false);
             Assert.NotNull(exception);
@@ -237,7 +237,7 @@ namespace SimpleAuth.Tests.Api.Jwe
         }
 
         [Fact]
-        public async Task When_JsonWebKey_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_JsonWebKey_Does_Not_Exist_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
             const string url = "http://google.be/";
@@ -251,7 +251,7 @@ namespace SimpleAuth.Tests.Api.Jwe
             _jsonWebKeyHelperStub.Setup(j => j.GetJsonWebKey(It.IsAny<string>(), It.IsAny<Uri>()))
                 .Returns(Task.FromResult<JsonWebKey>(null));
 
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(async () =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(async () =>
                     await _jweActions.CreateJwe(createJweParameter).ConfigureAwait(false))
                 .ConfigureAwait(false);
             Assert.NotNull(exception);

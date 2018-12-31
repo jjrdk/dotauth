@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Uma.Api.PolicyController.Actions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Helpers;
@@ -26,6 +22,12 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
     using Newtonsoft.Json;
     using Parameters;
     using Repositories;
+    using SimpleAuth.Errors;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using ErrorDescriptions = Errors.ErrorDescriptions;
 
     internal class AddAuthorizationPolicyAction : IAddAuthorizationPolicyAction
     {
@@ -45,7 +47,7 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
             _repositoryExceptionHelper = repositoryExceptionHelper;
             _umaServerEventSource = umaServerEventSource;
         }
-        
+
         public async Task<string> Execute(AddPolicyParameter addPolicyParameter)
         {
             var json = addPolicyParameter == null ? string.Empty : JsonConvert.SerializeObject(addPolicyParameter);
@@ -57,13 +59,13 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
 
             if (addPolicyParameter.ResourceSetIds == null || !addPolicyParameter.ResourceSetIds.Any())
             {
-                throw new BaseUmaException(UmaErrorCodes.InvalidRequestCode,
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
                         string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.ResourceSetIds));
             }
 
             if (addPolicyParameter.Rules == null || !addPolicyParameter.Rules.Any())
             {
-                throw new BaseUmaException(UmaErrorCodes.InvalidRequestCode,
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
                         string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.Rules));
             }
 
@@ -86,7 +88,7 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
             }
 
             var rules = new List<PolicyRule>();
-            foreach(var ruleParameter in addPolicyParameter.Rules)
+            foreach (var ruleParameter in addPolicyParameter.Rules)
             {
                 var claims = new List<Claim>();
                 if (ruleParameter.Claims != null)

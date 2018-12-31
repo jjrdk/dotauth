@@ -57,7 +57,7 @@ namespace SimpleAuth.Server.Tests.UserInfo
         }
 
         [Fact]
-        public async Task When_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_Client_Does_Not_Exist_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
             _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
@@ -68,7 +68,7 @@ namespace SimpleAuth.Server.Tests.UserInfo
                 .Returns(() => Task.FromResult((Client) null));
 
             var exception = await Assert
-                .ThrowsAsync<IdentityServerException>(() => _getJwsPayload.Execute("access_token"))
+                .ThrowsAsync<SimpleAuthException>(() => _getJwsPayload.Execute("access_token"))
                 .ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidToken);
@@ -87,7 +87,7 @@ namespace SimpleAuth.Server.Tests.UserInfo
                 .Returns(() => Task.FromResult(new Client()));
 
             var exception = await Assert
-                .ThrowsAsync<IdentityServerException>(() => _getJwsPayload.Execute("access_token"))
+                .ThrowsAsync<SimpleAuthException>(() => _getJwsPayload.Execute("access_token"))
                 .ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidToken);

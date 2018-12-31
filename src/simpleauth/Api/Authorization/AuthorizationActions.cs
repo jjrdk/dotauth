@@ -81,7 +81,7 @@ namespace SimpleAuth.Api.Authorization
                     parameter.Claims == null ? string.Empty : parameter.Claims.ToString());
                 if (client.RequirePkce && (string.IsNullOrWhiteSpace(parameter.CodeChallenge) || parameter.CodeChallengeMethod == null))
                 {
-                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheClientRequiresPkce, parameter.ClientId), parameter.State);
+                    throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheClientRequiresPkce, parameter.ClientId), parameter.State);
                 }
 
                 var responseTypes = _parameterParserHelper.ParseResponseTypes(parameter.ResponseType);
@@ -106,7 +106,7 @@ namespace SimpleAuth.Api.Authorization
                     if (endpointResult.Type == TypeActionResult.RedirectToAction)
                     {
                         var actionEnum = endpointResult.RedirectInstruction.Action;
-                        actionName = Enum.GetName(typeof(IdentityServerEndPoints), actionEnum);
+                        actionName = Enum.GetName(typeof(SimpleAuthEndPoints), actionEnum);
                     }
 
                     var serializedParameters = endpointResult.RedirectInstruction?.Parameters == null ? string.Empty :
@@ -121,7 +121,7 @@ namespace SimpleAuth.Api.Authorization
                 endpointResult.Amr = _amrHelper.GetAmr(_resourceOwnerAuthenticateHelper.GetAmrs(), parameter.AmrValues);
                 return endpointResult;
             }
-            catch(IdentityServerException ex)
+            catch(SimpleAuthException ex)
             {
                 _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;

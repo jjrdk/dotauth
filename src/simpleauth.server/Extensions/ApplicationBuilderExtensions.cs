@@ -33,31 +33,31 @@ namespace SimpleAuth.Server.Extensions
 
             app.UseSimpleAuthExceptionHandler(new ExceptionHandlerMiddlewareOptions
             {
-                SimpleIdentityServerEventSource = app.ApplicationServices.GetService<IOpenIdEventSource>()
+                OpenIdEventSource = app.ApplicationServices.GetService<IOpenIdEventSource>()
                 // ManagerEventSource = (IManagerEventSource)app.ApplicationServices.GetService(typeof(IManagerEventSource))
             });
             return app;
         }
 
-        public static void UseOpenIdApi(this IApplicationBuilder app, Action<IdentityServerOptions> optionsCallback, ILoggerFactory loggerFactory)
+        public static void UseOpenIdApi(this IApplicationBuilder app, Action<SimpleAuthOptions> optionsCallback, ILoggerFactory loggerFactory)
         {
             if (optionsCallback == null)
             {
                 throw new ArgumentNullException(nameof(optionsCallback));
             }
 
-            var hostingOptions = new IdentityServerOptions();
+            var hostingOptions = new SimpleAuthOptions();
             optionsCallback(hostingOptions);
             app.UseOpenIdApi(hostingOptions,
                 loggerFactory);
         }
 
-        public static void UseOpenIdApi(this IApplicationBuilder app, IdentityServerOptions options, ILoggerFactory loggerFactory)
+        public static void UseOpenIdApi(this IApplicationBuilder app, SimpleAuthOptions options, ILoggerFactory loggerFactory)
         {
             UseOpenIdApi(app, options);
         }
 
-        public static void UseOpenIdApi(this IApplicationBuilder app, IdentityServerOptions options)
+        public static void UseOpenIdApi(this IApplicationBuilder app, SimpleAuthOptions options)
         {
             if (options == null)
             {
@@ -66,7 +66,7 @@ namespace SimpleAuth.Server.Extensions
 
             app.UseSimpleAuthExceptionHandler(new ExceptionHandlerMiddlewareOptions
             {
-                SimpleIdentityServerEventSource = app.ApplicationServices.GetService<IOpenIdEventSource>()
+                OpenIdEventSource = app.ApplicationServices.GetService<IOpenIdEventSource>()
             });
             var httpContextAccessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
             UriHelperExtensions.Configure(httpContextAccessor);

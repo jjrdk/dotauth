@@ -26,7 +26,7 @@
         {
             InitializeFakeObjects();
 
-            await Assert.ThrowsAsync<IdentityServerException>(() => _linkProfileAction.Execute(null, null, null, false))
+            await Assert.ThrowsAsync<SimpleAuthException>(() => _linkProfileAction.Execute(null, null, null, false))
                 .ConfigureAwait(false);
         }
 
@@ -36,7 +36,7 @@
             InitializeFakeObjects();
 
             await Assert
-                .ThrowsAsync<IdentityServerException>(() => _linkProfileAction.Execute(LocalSubject, null, null, false))
+                .ThrowsAsync<SimpleAuthException>(() => _linkProfileAction.Execute(LocalSubject, null, null, false))
                 .ConfigureAwait(false);
         }
 
@@ -46,7 +46,7 @@
             InitializeFakeObjects();
 
             await Assert
-                .ThrowsAsync<IdentityServerException>(() =>
+                .ThrowsAsync<SimpleAuthException>(() =>
                     _linkProfileAction.Execute(LocalSubject, ExternalSubject, null, false))
                 .ConfigureAwait(false);
         }
@@ -59,7 +59,7 @@
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             var exception = await Assert
-                .ThrowsAsync<IdentityServerException>(() =>
+                .ThrowsAsync<SimpleAuthException>(() =>
                     _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer", false))
                 .ConfigureAwait(false);
 
@@ -101,7 +101,7 @@
                 }));
 
             var exception = await Assert
-                .ThrowsAsync<IdentityServerException>(() =>
+                .ThrowsAsync<SimpleAuthException>(() =>
                     _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer", false))
                 .ConfigureAwait(false);
 

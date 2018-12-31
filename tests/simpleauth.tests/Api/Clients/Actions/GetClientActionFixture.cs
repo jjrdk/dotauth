@@ -27,7 +27,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
     //    }
 
     //    [Fact]
-    //    public async Task When_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
+    //    public async Task When_Client_Does_Not_Exist_Then_Exception_Is_Thrown()
     //    {
     //        const string clientId = "client_id";
     //        InitializeFakeObjects();
@@ -35,7 +35,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
     //            .Returns(Task.FromResult((Client)null));
 
     //        
-    //        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _clientRepositoryStub.Object.GetById(clientId)).ConfigureAwait(false);
+    //        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _clientRepositoryStub.Object.GetById(clientId)).ConfigureAwait(false);
     //        Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
     //        Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntExist, clientId));
     //    }

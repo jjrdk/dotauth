@@ -1,6 +1,6 @@
 ﻿namespace SimpleAuth.Exceptions
 {
-    public class ClaimRequiredException : IdentityServerException
+    public class ClaimRequiredException : SimpleAuthException
     {
         public ClaimRequiredException(string claim)
         {

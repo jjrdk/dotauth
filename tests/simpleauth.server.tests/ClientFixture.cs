@@ -182,7 +182,7 @@
 
             Assert.NotNull(newClient);
             Assert.True(newClient.ContainsError);
-            Assert.Equal("invalid_request", newClient.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, newClient.Error.Error);
             Assert.Equal(ErrorDescriptions.TheClientDoesntExist, newClient.Error.ErrorDescription);
         }
 
@@ -197,7 +197,7 @@
                 .ConfigureAwait(false);
 
             Assert.True(newClient.ContainsError);
-            //Assert.Equal("invalid_request", newClient.Error.Error);
+            //Assert.Equal(ErrorCodes.InvalidRequestCode, newClient.Error.Error);
             //Assert.Equal("the client 'unknown_client' doesn't exist", newClient.Error.ErrorDescription);
         }
 

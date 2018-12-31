@@ -61,7 +61,7 @@
             {
                 new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
-            var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
+            var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Client
             {
@@ -94,7 +94,7 @@
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(new List<ResponseType> { ResponseType.id_token, ResponseType.id_token });
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() => _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
@@ -124,7 +124,7 @@
             {
                 new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
-            var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
+            var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Client
             {
@@ -180,7 +180,7 @@
             {
                 new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
-            var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
+            var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Client
             {

@@ -68,14 +68,14 @@ namespace SimpleAuth.Server.UserInfo.Actions
             var client = await _clientRepository.GetById(grantedToken.ClientId).ConfigureAwait(false);
             if (client == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidToken, string.Format(ErrorDescriptions.TheClientIdDoesntExist, grantedToken.ClientId));
+                throw new SimpleAuthException(ErrorCodes.InvalidToken, string.Format(ErrorDescriptions.TheClientIdDoesntExist, grantedToken.ClientId));
             }
 
             var signedResponseAlg = client.GetUserInfoSignedResponseAlg();
             var userInformationPayload = grantedToken.UserInfoPayLoad;
             if (userInformationPayload == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidToken, ErrorDescriptions.TheTokenIsNotAValidResourceOwnerToken);
+                throw new SimpleAuthException(ErrorCodes.InvalidToken, ErrorDescriptions.TheTokenIsNotAValidResourceOwnerToken);
             }
 
             if (signedResponseAlg == null

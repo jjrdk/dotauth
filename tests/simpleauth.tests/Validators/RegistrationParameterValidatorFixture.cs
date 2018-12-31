@@ -38,7 +38,7 @@
                 RequestUris = null
             };
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequestUriCode, ex.Code);
             Assert.Equal(string.Format(ErrorDescriptions.MissingParameter, ClientNames.RequestUris), ex.Message);
         }
@@ -56,7 +56,7 @@
         //        }
         //    };
 
-        //    var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+        //    var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
         //    Assert.True(ex.Code == ErrorCodes.InvalidRedirectUri);
         //    Assert.True(ex.Message == string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, httpsInvalid));
         //}
@@ -76,7 +76,7 @@
                 RequestUris = new[] { new Uri("https://localhost"), }
             };
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRedirectUri, ex.Code);
             Assert.Equal(string.Format(ErrorDescriptions.TheRedirectUrlCannotContainsFragment, localhost), ex.Message);
         }
@@ -155,7 +155,7 @@
         //        LogoUri = new Uri("https://logo_uri")
         //    };
 
-        //    var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+        //    var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
         //    Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
         //    Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.LogoUri));
         //}
@@ -173,7 +173,7 @@
         //        ClientUri = new Uri("https://client_uri")
         //    };
 
-        //    var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+        //    var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
         //    Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
         //    Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.ClientUri));
         //}
@@ -191,7 +191,7 @@
         //        TosUri = new Uri("https://tos_uri/")
         //    };
 
-        //    var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+        //    var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
         //    Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
         //    Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.TosUri));
         //}
@@ -210,7 +210,7 @@
                 RequestUris = new[] { new Uri("https://localhost"), }
             };
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
             Assert.Equal(string.Format(ErrorDescriptions.TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed, ClientNames.JwksUri), ex.Message);
         }
@@ -230,7 +230,7 @@
                 RequestUris = new[] { new Uri("https://localhost"), }
             };
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed);
         }
@@ -248,13 +248,13 @@
                 SectorIdentifierUri = new Uri("https://sector_identifier_uri/")
             };
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
             Assert.Equal(ErrorDescriptions.TheSectorIdentifierUrisCannotBeRetrieved, ex.Message);
         }
 
         [Fact]
-        public async Task When_SectorIdentifierUri_Doesnt_Have_Https_Scheme_Then_Exception_Is_Thrown()
+        public async Task When_SectorIdentifierUri_Does_Not_Have_Https_Scheme_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
             var parameter = new Client
@@ -266,7 +266,7 @@
                 SectorIdentifierUri = new Uri("http://localhost/identity")
             };
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.SectorIdentifierUri));
         }
@@ -289,7 +289,7 @@
             var httpClientFake = new HttpClient(handler);
             _httpClientFactoryFake = httpClientFake;
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheSectorIdentifierUrisCannotBeRetrieved);
         }
@@ -320,7 +320,7 @@
             var httpClientFake = new HttpClient(handler);
             _factory = new ClientFactory(httpClientFake, new DefaultScopeRepository());
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.OneOrMoreSectorIdentifierUriIsNotARedirectUri);
         }
@@ -338,7 +338,7 @@
                 IdTokenEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256
             };
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
         }
@@ -357,7 +357,7 @@
                 IdTokenEncryptedResponseAlg = "not_correct"
             };
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
         }
@@ -375,7 +375,7 @@
                 UserInfoEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256
             };
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified);
         }
@@ -394,7 +394,7 @@
                 UserInfoEncryptedResponseAlg = "user_info_encrypted_response_alg_not_correct"
             };
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified);
         }
@@ -412,7 +412,7 @@
                 RequestObjectEncryptionEnc = JwtConstants.JweEncNames.A128CBC_HS256
             };
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheParameterRequestObjectEncryptionAlgMustBeSpecified);
         }
@@ -431,7 +431,7 @@
                 RequestObjectEncryptionAlg = "request_object_encryption_alg_not_valid"
             };
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == ErrorDescriptions.TheParameterRequestObjectEncryptionAlgMustBeSpecified);
         }
@@ -449,13 +449,13 @@
         //        InitiateLoginUri = new Uri("https://sector_identifier_uri")
         //    };
 
-        //    var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+        //    var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
         //    Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
         //    Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.InitiateLoginUri));
         //}
 
         [Fact]
-        public async Task When_InitiateLoginUri_Doesnt_Have_Https_Scheme_Then_Exception_Is_Thrown()
+        public async Task When_InitiateLoginUri_Does_Not_Have_Https_Scheme_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
             var parameter = new Client
@@ -467,7 +467,7 @@
                 InitiateLoginUri = new Uri("http://localhost/identity")
             };
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.InitiateLoginUri));
         }
@@ -488,7 +488,7 @@
         //        }
         //    };
 
-        //    var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _factory.Build(parameter)).ConfigureAwait(false);
+        //    var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
         //    Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
         //    Assert.True(ex.Message == ErrorDescriptions.OneOfTheRequestUriIsNotValid);
         //}

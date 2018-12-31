@@ -46,12 +46,12 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         }
 
         [Fact]
-        public async Task When_ResourceOwner_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_ResourceOwner_Does_Not_Exist_Then_Exception_Is_Thrown()
         {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
             Assert.True(exception.Message == ErrorDescriptions.TheRoDoesntExist);
@@ -66,14 +66,14 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                     TwoFactorAuthentication = string.Empty
                 }));
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
             Assert.True(exception.Message == ErrorDescriptions.TwoFactorAuthenticationIsNotEnabled);
         }
 
         [Fact]
-        public async Task When_ResourceOwner_Doesnt_Have_The_Required_Claim_Then_Exception_Is_Thrown()
+        public async Task When_ResourceOwner_Does_Not_Have_The_Required_Claim_Then_Exception_Is_Thrown()
         {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new ResourceOwner
@@ -114,7 +114,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             _confirmationCodeStoreStub.Setup(r => r.Add(It.IsAny<ConfirmationCode>()))
                 .Returns(Task.FromResult(false));
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);

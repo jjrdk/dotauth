@@ -25,12 +25,12 @@
             var claim = await _claimRepository.GetAsync(claimCode).ConfigureAwait(false);
             if (claim == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, ErrorDescriptions.ClaimDoesntExist);
+                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, ErrorDescriptions.ClaimDoesntExist);
             }
 
             if (claim.IsIdentifier)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, ErrorDescriptions.CannotRemoveClaimIdentifier);
+                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, ErrorDescriptions.CannotRemoveClaimIdentifier);
             }
 
             return await _claimRepository.Delete(claimCode).ConfigureAwait(false);

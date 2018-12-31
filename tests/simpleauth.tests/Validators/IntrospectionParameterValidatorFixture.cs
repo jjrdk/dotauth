@@ -39,7 +39,7 @@ namespace SimpleAuth.Tests.Validators
         {            InitializeFakeObjects();
             var parameter = new IntrospectionParameter();
 
-                        var exception = Assert.Throws<IdentityServerException>(() => _introspectionParameterValidator.Validate(parameter));
+                        var exception = Assert.Throws<SimpleAuthException>(() => _introspectionParameterValidator.Validate(parameter));
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, CoreConstants.IntrospectionRequestNames.Token));
         }

@@ -63,7 +63,7 @@
                 prompts.Contains(PromptParameter.consent))
             {
                 result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
-                result.RedirectInstruction.Action = IdentityServerEndPoints.ConsentIndex;
+                result.RedirectInstruction.Action = SimpleAuthEndPoints.ConsentIndex;
                 result.RedirectInstruction.AddParameter("code", code);
                 return result;
             }
@@ -75,7 +75,7 @@
             if (assignedConsent != null)
             {
                 result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-                var claimsIdentity = new ClaimsIdentity(claims, "simpleIdentityServer");
+                var claimsIdentity = new ClaimsIdentity(claims, "simpleAuth");
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 await _generateAuthorizationResponse
                     .ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName)
@@ -94,7 +94,7 @@
 
             // If there's no consent & there's no consent prompt then redirect to the consent screen.
             result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
-            result.RedirectInstruction.Action = IdentityServerEndPoints.ConsentIndex;
+            result.RedirectInstruction.Action = SimpleAuthEndPoints.ConsentIndex;
             result.RedirectInstruction.AddParameter("code", code);
             return result;
         }
@@ -103,7 +103,7 @@
         {
             if (responseTypes == null)
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
                     state);
@@ -113,7 +113,7 @@
                 .SingleOrDefault(k => k.Count == responseTypes.Count && k.All(key => responseTypes.Contains(key)));
             if (record == null)
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
                     state);

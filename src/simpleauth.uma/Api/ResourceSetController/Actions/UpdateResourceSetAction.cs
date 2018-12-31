@@ -23,7 +23,9 @@ namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
     using Newtonsoft.Json;
     using Parameters;
     using Repositories;
+    using SimpleAuth.Errors;
     using Validators;
+    using ErrorDescriptions = Errors.ErrorDescriptions;
 
     internal class UpdateResourceSetAction : IUpdateResourceSetAction
     {
@@ -62,7 +64,7 @@ namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
 
             if (string.IsNullOrWhiteSpace(udpateResourceSetParameter.Id))
             {
-                throw new BaseUmaException(UmaErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
             }
             _resourceSetParameterValidator.CheckResourceSetParameter(resourceSet);
             if (await _resourceSetRepository.Get(udpateResourceSetParameter.Id).ConfigureAwait(false) == null)

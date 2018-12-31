@@ -54,7 +54,7 @@ namespace SimpleAuth.Helpers
             var client = await _clientRepository.GetById(clientId).ConfigureAwait(false);
             if (client == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidClient, ErrorDescriptions.TheClientIdDoesntExist);
+                throw new SimpleAuthException(ErrorCodes.InvalidClient, ErrorDescriptions.TheClientIdDoesntExist);
             }
 
             return await GenerateTokenAsync(

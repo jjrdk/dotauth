@@ -75,7 +75,7 @@
             createJwsParameter.Payload.Add("sub", "sub");
 
             var exception = await Assert
-                .ThrowsAsync<IdentityServerException>(async () =>
+                .ThrowsAsync<SimpleAuthException>(async () =>
                     await _jwsActions.CreateJws(createJwsParameter).ConfigureAwait(false))
                 .ConfigureAwait(false);
             Assert.NotNull(exception);
@@ -98,7 +98,7 @@
             createJwsParameter.Payload.Add("sub", "sub");
 
             var exception = await Assert
-                .ThrowsAsync<IdentityServerException>(async () =>
+                .ThrowsAsync<SimpleAuthException>(async () =>
                     await _jwsActions.CreateJws(createJwsParameter).ConfigureAwait(false))
                 .ConfigureAwait(false);
             Assert.NotNull(exception);
@@ -124,7 +124,7 @@
                 .Returns(Task.FromResult<JsonWebKey>(null));
 
             var exception = await Assert
-                .ThrowsAsync<IdentityServerException>(async () =>
+                .ThrowsAsync<SimpleAuthException>(async () =>
                     await _jwsActions.CreateJws(createJwsParameter).ConfigureAwait(false))
                 .ConfigureAwait(false);
             Assert.NotNull(exception);
@@ -223,7 +223,7 @@
         //    };
 
         //    
-        //    var innerException = await Assert.ThrowsAsync<IdentityServerException>(async () =>
+        //    var innerException = await Assert.ThrowsAsync<SimpleAuthException>(async () =>
         //            await _jwsActions.GetJwsInformation(getJwsParameter).ConfigureAwait(false))
         //        .ConfigureAwait(false);
         //    Assert.NotNull(innerException);
@@ -244,7 +244,7 @@
                 .Returns(() => null);
 
 
-            var innerException = await Assert.ThrowsAsync<IdentityServerException>(async () =>
+            var innerException = await Assert.ThrowsAsync<SimpleAuthException>(async () =>
                     await _jwsActions.GetJwsInformation(getJwsParameter).ConfigureAwait(false))
                 .ConfigureAwait(false);
             Assert.NotNull(innerException);
@@ -269,7 +269,7 @@
                 .Returns(jwsProtectedHeader);
 
 
-            var innerException = await Assert.ThrowsAsync<IdentityServerException>(async () =>
+            var innerException = await Assert.ThrowsAsync<SimpleAuthException>(async () =>
                     await _jwsActions.GetJwsInformation(getJwsParameter).ConfigureAwait(false))
                 .ConfigureAwait(false);
             Assert.NotNull(innerException);
@@ -278,7 +278,7 @@
         }
 
         [Fact]
-        public async Task When_JsonWebKey_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_JsonWebKey_Does_Not_Exist_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
             var url = new Uri("http://google.com/");
@@ -299,7 +299,7 @@
                 .Returns(Task.FromResult<JsonWebKey>(null));
 
 
-            var innerException = await Assert.ThrowsAsync<IdentityServerException>(async () =>
+            var innerException = await Assert.ThrowsAsync<SimpleAuthException>(async () =>
                     await _jwsActions.GetJwsInformation(getJwsParameter).ConfigureAwait(false))
                 .ConfigureAwait(false);
             Assert.True(innerException.Code == ErrorCodes.InvalidRequestCode);
@@ -335,7 +335,7 @@
             _jwsParserStub.Setup(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()))
                 .Returns(() => null);
 
-            var innerException = await Assert.ThrowsAsync<IdentityServerException>(async () =>
+            var innerException = await Assert.ThrowsAsync<SimpleAuthException>(async () =>
                     await _jwsActions.GetJwsInformation(getJwsParameter).ConfigureAwait(false))
                 .ConfigureAwait(false);
             Assert.NotNull(innerException);
@@ -453,7 +453,7 @@
                 Jws = "jws"
             };
             var exception = await Assert
-                .ThrowsAsync<IdentityServerException>(() => _jwsActions.GetJwsInformation(parameter))
+                .ThrowsAsync<SimpleAuthException>(() => _jwsActions.GetJwsInformation(parameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidParameterCode, exception.Code);
         }

@@ -15,7 +15,7 @@
     public class SmsCodeFixture : IDisposable
     {
         private SidSmsAuthenticateClient _sidSmsAuthenticateClient;
-        private const string baseUrl = "http://localhost:5000";
+        private const string BaseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
 
         public SmsCodeFixture()
@@ -29,7 +29,7 @@
             InitializeFakeObjects();
 
             // ACT : NO PHONE NUMBER
-            var noPhoneNumberResult = await _sidSmsAuthenticateClient.Send(baseUrl,
+            var noPhoneNumberResult = await _sidSmsAuthenticateClient.Send(BaseUrl,
                     new ConfirmationCodeRequest
                     {
                         PhoneNumber = string.Empty
@@ -40,7 +40,7 @@
             Assert.NotNull(noPhoneNumberResult);
             Assert.True(noPhoneNumberResult.ContainsError);
             Assert.Equal(HttpStatusCode.BadRequest, noPhoneNumberResult.HttpStatus);
-            Assert.Equal("invalid_request", noPhoneNumberResult.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, noPhoneNumberResult.Error.Error);
             Assert.Equal("parameter phone_number is missing", noPhoneNumberResult.Error.ErrorDescription);
         }
 
@@ -58,9 +58,9 @@
                 .Returns(() => Task.FromResult(true));
             _server.SharedCtx.TwilioClient.Setup(h =>
                     h.SendMessage(It.IsAny<TwilioSmsCredentials>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback(() => throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                .Callback(() => throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
                     "the twilio account is not properly configured"));
-            var twilioNotConfigured = await _sidSmsAuthenticateClient.Send(baseUrl,
+            var twilioNotConfigured = await _sidSmsAuthenticateClient.Send(BaseUrl,
                     new ConfirmationCodeRequest
                     {
                         PhoneNumber = "phone"
@@ -87,7 +87,7 @@
                     h.SendMessage(It.IsAny<TwilioSmsCredentials>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(() => { })
                 .Returns(Task.FromResult(true));
-            var cannotInsertConfirmationCode = await _sidSmsAuthenticateClient.Send(baseUrl,
+            var cannotInsertConfirmationCode = await _sidSmsAuthenticateClient.Send(BaseUrl,
                     new ConfirmationCodeRequest
                     {
                         PhoneNumber = "phone"
@@ -112,7 +112,7 @@
             _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>()))
                 .Callback(() => throw new Exception())
                 .Returns(() => Task.FromResult(false));
-            var unhandledException = await _sidSmsAuthenticateClient.Send(baseUrl,
+            var unhandledException = await _sidSmsAuthenticateClient.Send(BaseUrl,
                     new ConfirmationCodeRequest
                     {
                         PhoneNumber = "phone"
@@ -140,7 +140,7 @@
                     h.SendMessage(It.IsAny<TwilioSmsCredentials>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(() => { })
                 .Returns(Task.FromResult(true));
-            var happyPath = await _sidSmsAuthenticateClient.Send(baseUrl,
+            var happyPath = await _sidSmsAuthenticateClient.Send(BaseUrl,
                     new ConfirmationCodeRequest
                     {
                         PhoneNumber = "phone"

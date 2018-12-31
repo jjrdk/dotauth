@@ -99,11 +99,11 @@ namespace SimpleAuth.Server.Controllers
                 }
                 case TypeActionResult.RedirectToAction:
                 {
-                    if (actionResult.RedirectInstruction.Action == IdentityServerEndPoints.AuthenticateIndex ||
-                        actionResult.RedirectInstruction.Action == IdentityServerEndPoints.ConsentIndex)
+                    if (actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.AuthenticateIndex ||
+                        actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.ConsentIndex)
                     {
                         // Force the resource owner to be reauthenticated
-                        if (actionResult.RedirectInstruction.Action == IdentityServerEndPoints.AuthenticateIndex)
+                        if (actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.AuthenticateIndex)
                         {
                             authorizationRequest.Prompt = Enum.GetName(typeof(PromptParameter), PromptParameter.login);
                         }
@@ -158,13 +158,13 @@ namespace SimpleAuth.Server.Controllers
 
         private static string GetRedirectionUrl(Microsoft.AspNetCore.Http.HttpRequest request,
             string amr,
-            IdentityServerEndPoints identityServerEndPoints)
+            SimpleAuthEndPoints simpleAuthEndPoints)
         {
             var uri = request.GetAbsoluteUriWithVirtualPath();
-            var partialUri = HostConstants.MappingIdentityServerEndPointToPartialUrl[identityServerEndPoints];
+            var partialUri = HostConstants.MappingEndPointToPartialUrl[simpleAuthEndPoints];
             if (!string.IsNullOrWhiteSpace(amr) &&
-                identityServerEndPoints != IdentityServerEndPoints.ConsentIndex &&
-                identityServerEndPoints != IdentityServerEndPoints.FormIndex)
+                simpleAuthEndPoints != SimpleAuthEndPoints.ConsentIndex &&
+                simpleAuthEndPoints != SimpleAuthEndPoints.FormIndex)
             {
                 partialUri = "/" + amr + partialUri;
             }
@@ -188,7 +188,7 @@ namespace SimpleAuth.Server.Controllers
                         .ConfigureAwait(false);
                 if (result == null)
                 {
-                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode,
+                    throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidRequestCode,
                         ErrorDescriptions.TheRequestParameterIsNotCorrect,
                         authorizationRequest.State);
                 }
@@ -214,7 +214,7 @@ namespace SimpleAuth.Server.Controllers
                             .ConfigureAwait(false);
                         if (result == null)
                         {
-                            throw new IdentityServerExceptionWithState(
+                            throw new SimpleAuthExceptionWithState(
                                 ErrorCodes.InvalidRequestCode,
                                 ErrorDescriptions.TheRequestDownloadedFromRequestUriIsNotValid,
                                 authorizationRequest.State);
@@ -224,14 +224,14 @@ namespace SimpleAuth.Server.Controllers
                     }
                     catch (Exception)
                     {
-                        throw new IdentityServerExceptionWithState(
+                        throw new SimpleAuthExceptionWithState(
                             ErrorCodes.InvalidRequestCode,
                             ErrorDescriptions.TheRequestDownloadedFromRequestUriIsNotValid,
                             authorizationRequest.State);
                     }
                 }
 
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestUriCode,
                     ErrorDescriptions.TheRequestUriParameterIsNotWellFormed,
                     authorizationRequest.State);

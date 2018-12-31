@@ -40,7 +40,7 @@ namespace SimpleAuth.Tests.Helpers
         }
 
         [Fact]
-        public async Task When_Valid_Token_Doesnt_Exist_Then_Null_Is_Returned()
+        public async Task When_Valid_Token_Does_Not_Exist_Then_Null_Is_Returned()
         {            InitializeFakeObjects();
             _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult((GrantedToken)null));

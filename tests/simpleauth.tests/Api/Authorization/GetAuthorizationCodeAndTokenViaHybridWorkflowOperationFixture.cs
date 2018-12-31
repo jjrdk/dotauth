@@ -51,7 +51,7 @@
                 State = "state"
             };
 
-                        var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() =>
+                        var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
                     _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter,
                         null,
                         new Client(),
@@ -77,7 +77,7 @@
                 .Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(false);
 
-                        var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+                        var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter,
                         null,
                         new Client(),
@@ -114,7 +114,7 @@
                     c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
-                        var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+                        var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter,
                         null,
                         new Client(),
@@ -143,7 +143,7 @@
                 Type = TypeActionResult.RedirectToCallBackUrl,
                 RedirectInstruction = new RedirectInstruction
                 {
-                    Action = IdentityServerEndPoints.AuthenticateIndex
+                    Action = SimpleAuthEndPoints.AuthenticateIndex
                 }
             };
 
@@ -171,7 +171,7 @@
                 It.IsAny<string>()));
             _oauthEventSource.Verify(s => s.EndHybridFlow(authorizationParameter.ClientId,
                 Enum.GetName(typeof(TypeActionResult), actionResult.Type),
-                Enum.GetName(typeof(IdentityServerEndPoints), actionResult.RedirectInstruction.Action)));
+                Enum.GetName(typeof(SimpleAuthEndPoints), actionResult.RedirectInstruction.Action)));
         }
 
         private void InitializeFakeObjects()

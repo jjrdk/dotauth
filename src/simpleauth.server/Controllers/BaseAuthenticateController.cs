@@ -55,7 +55,7 @@ namespace SimpleAuth.Server.Controllers
         private readonly IGetResourceOwnerClaimsAction _profileActions;
         protected readonly IDataProtector _dataProtector;
         private readonly ITranslationManager _translationManager;
-        protected readonly IOpenIdEventSource _simpleIdentityServerEventSource;
+        protected readonly IOpenIdEventSource _openIdEventSource;
         private readonly IUrlHelper _urlHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
@@ -74,7 +74,7 @@ namespace SimpleAuth.Server.Controllers
             IGetResourceOwnerClaimsAction profileActions,
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
-            IOpenIdEventSource simpleIdentityServerEventSource,
+            IOpenIdEventSource openIdEventSource,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IEventPublisher eventPublisher,
@@ -93,7 +93,7 @@ namespace SimpleAuth.Server.Controllers
             _profileActions = profileActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _translationManager = translationManager;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _openIdEventSource = openIdEventSource;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _eventPublisher = eventPublisher;
             _authenticationSchemeProvider = authenticationSchemeProvider;
@@ -140,7 +140,7 @@ namespace SimpleAuth.Server.Controllers
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
-                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
                     string.Format(ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
@@ -190,7 +190,7 @@ namespace SimpleAuth.Server.Controllers
                 try
                 {
                     var code = await _authenticateActions.GenerateAndSendCode(resourceOwner.Id).ConfigureAwait(false);
-                    _simpleIdentityServerEventSource.GetConfirmationCode(code);
+                    _openIdEventSource.GetConfirmationCode(code);
                     return RedirectToAction("SendCode");
                 }
                 catch (ClaimRequiredException)
@@ -220,7 +220,7 @@ namespace SimpleAuth.Server.Controllers
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
                     ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
             }
 
@@ -266,7 +266,7 @@ namespace SimpleAuth.Server.Controllers
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
                     ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
             }
 
@@ -287,7 +287,7 @@ namespace SimpleAuth.Server.Controllers
                     .ConfigureAwait(false);
                 var code = await _authenticateActions.GenerateAndSendCode(authenticatedUser.GetSubject())
                     .ConfigureAwait(false);
-                _simpleIdentityServerEventSource.GetConfirmationCode(code);
+                _openIdEventSource.GetConfirmationCode(code);
                 return View(codeViewModel);
             }
 
@@ -296,7 +296,7 @@ namespace SimpleAuth.Server.Controllers
             {
                 await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 ModelState.AddModelError("Code", "confirmation code is not valid");
-                _simpleIdentityServerEventSource.ConfirmationCodeNotValid(codeViewModel.Code);
+                _openIdEventSource.ConfirmationCodeNotValid(codeViewModel.Code);
                 return View(codeViewModel);
             }
 
@@ -416,7 +416,7 @@ namespace SimpleAuth.Server.Controllers
             var request = Request.Cookies[string.Format(ExternalAuthenticateCookieName, code)];
             if (request == null)
             {
-                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
                     ErrorDescriptions.TheRequestCannotBeExtractedFromTheCookie);
             }
 
@@ -431,7 +431,7 @@ namespace SimpleAuth.Server.Controllers
             // 3 : Raise an exception is there's an authentication error
             if (!string.IsNullOrWhiteSpace(error))
             {
-                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
                     string.Format(ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
@@ -443,7 +443,7 @@ namespace SimpleAuth.Server.Controllers
                 !authenticatedUser.Identity.IsAuthenticated ||
                 !(authenticatedUser.Identity is ClaimsIdentity))
             {
-                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
                     ErrorDescriptions.TheUserNeedsToBeAuthenticated);
             }
 
@@ -483,7 +483,7 @@ namespace SimpleAuth.Server.Controllers
                 await SetTwoFactorCookie(claims).ConfigureAwait(false);
                 var confirmationCode =
                     await _authenticateActions.GenerateAndSendCode(resourceOwner.Id).ConfigureAwait(false);
-                _simpleIdentityServerEventSource.GetConfirmationCode(confirmationCode);
+                _openIdEventSource.GetConfirmationCode(confirmationCode);
                 return RedirectToAction("SendCode", new { code = request });
             }
 
@@ -610,7 +610,7 @@ namespace SimpleAuth.Server.Controllers
                     || string.IsNullOrWhiteSpace(_basicAuthenticateOptions.ClientSecret)
                     || _basicAuthenticateOptions.ScimBaseUrl == null))
             {
-                throw new IdentityServerException(ErrorCodes.InternalError,
+                throw new SimpleAuthException(ErrorCodes.InternalError,
                     ErrorDescriptions.TheScimConfigurationMustBeSpecified);
             }
         }

@@ -48,7 +48,7 @@
             _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(false);
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
 
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
@@ -77,7 +77,7 @@
             _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
-                        var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+                        var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                 () => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(ex.Message ==
@@ -95,7 +95,7 @@
                 Type = TypeActionResult.RedirectToAction,
                 RedirectInstruction = new RedirectInstruction
                 {
-                    Action = IdentityServerEndPoints.FormIndex
+                    Action = SimpleAuthEndPoints.FormIndex
                 }
             };
             var client = new Client();

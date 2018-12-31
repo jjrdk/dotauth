@@ -7,7 +7,7 @@
 
     public class SessionApiFixture : IClassFixture<TestOauthServerFixture>
     {
-        private const string baseUrl = "http://localhost:5000";
+        private const string BaseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
 
         public SessionApiFixture(TestOauthServerFixture server)
@@ -21,7 +21,7 @@
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new System.Uri($"{baseUrl}/check_session")
+                RequestUri = new System.Uri($"{BaseUrl}/check_session")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -36,7 +36,7 @@
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new System.Uri($"{baseUrl}/end_session")
+                RequestUri = new System.Uri($"{BaseUrl}/end_session")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);

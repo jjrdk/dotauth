@@ -17,7 +17,7 @@
         {            const string state = "state";
             InitializeFakeObjects();
 
-                        var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _authorizationFlowHelper.GetAuthorizationFlow(null, state));
+                        var exception = Assert.Throws<SimpleAuthExceptionWithState>(() => _authorizationFlowHelper.GetAuthorizationFlow(null, state));
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
             Assert.True(exception.State == state);
@@ -28,7 +28,7 @@
         {            const string state = "state";
             InitializeFakeObjects();
 
-                        var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _authorizationFlowHelper.GetAuthorizationFlow(
+                        var exception = Assert.Throws<SimpleAuthExceptionWithState>(() => _authorizationFlowHelper.GetAuthorizationFlow(
                 new List<ResponseType>(),
                 state));
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);

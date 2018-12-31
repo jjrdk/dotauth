@@ -42,7 +42,7 @@ namespace SimpleAuth.Tests.Api.Token
         }
 
         [Fact]
-        public async Task When_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_Client_Does_Not_Exist_Then_Exception_Is_Thrown()
         {            InitializeFakeObjects();
             var parameter = new RevokeTokenParameter
             {
@@ -52,13 +52,13 @@ namespace SimpleAuth.Tests.Api.Token
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _revokeTokenAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
         }
 
         [Fact]
-        public async Task When_Token_Doesnt_Exist_Then_Exception_Is_Returned()
+        public async Task When_Token_Does_Not_Exist_Then_Exception_Is_Returned()
         {            InitializeFakeObjects();
             var parameter = new RevokeTokenParameter
             {
@@ -72,7 +72,7 @@ namespace SimpleAuth.Tests.Api.Token
             _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
-                        var result = await Assert.ThrowsAsync<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
+                        var result = await Assert.ThrowsAsync<SimpleAuthException>(() => _revokeTokenAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
 
                         Assert.NotNull(result);
             Assert.Equal("invalid_token", result.Code);

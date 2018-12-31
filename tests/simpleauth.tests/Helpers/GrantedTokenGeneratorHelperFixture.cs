@@ -28,7 +28,7 @@ namespace SimpleAuth.Tests.Helpers
 
     public class GrantedTokenGeneratorHelperFixture
     {
-        private OAuthConfigurationOptions _simpleIdentityServerConfiguratorStub;
+        private OAuthConfigurationOptions _oauthConfigurationOptions;
         private Mock<IJwtGenerator> _jwtGeneratorStub;
         private Mock<IClientHelper> _clientHelperStub;
         private Mock<IClientStore> _clientRepositoryStub;
@@ -43,12 +43,12 @@ namespace SimpleAuth.Tests.Helpers
         }
 
         [Fact]
-        public async Task When_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_Client_DoesNot_Exist_Then_Exception_Is_Thrown()
         {            InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult((Client)null));
 
             
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("invalid_client", null, null, null)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("invalid_client", null, null, null)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClient);
             Assert.True(ex.Message == ErrorDescriptions.TheClientIdDoesntExist);
         }
@@ -71,12 +71,12 @@ namespace SimpleAuth.Tests.Helpers
 
         private void InitializeFakeObjects()
         {
-            _simpleIdentityServerConfiguratorStub = new OAuthConfigurationOptions(tokenValidity:TimeSpan.FromSeconds(3700));
+            _oauthConfigurationOptions = new OAuthConfigurationOptions(tokenValidity:TimeSpan.FromSeconds(3700));
             _jwtGeneratorStub = new Mock<IJwtGenerator>();
             _clientHelperStub = new Mock<IClientHelper>();
             _clientRepositoryStub = new Mock<IClientStore>();
             _grantedTokenGeneratorHelper = new GrantedTokenGeneratorHelper(
-                _simpleIdentityServerConfiguratorStub,
+                _oauthConfigurationOptions,
                 _jwtGeneratorStub.Object,
                 _clientHelperStub.Object,
                 _clientRepositoryStub.Object);

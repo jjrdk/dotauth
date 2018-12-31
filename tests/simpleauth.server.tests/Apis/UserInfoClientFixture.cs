@@ -7,7 +7,7 @@
 
     public class UserInfoClientFixture : IClassFixture<TestOauthServerFixture>
     {
-        private const string baseUrl = "http://localhost:5000";
+        private const string BaseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
         private IUserInfoClient _userInfoClient;
 
@@ -20,7 +20,7 @@
         public async Task When_Pass_Invalid_Token_To_UserInfo_Then_Error_Is_Returned()
         {            InitializeFakeObjects();
 
-                        var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", "invalid_access_token").ConfigureAwait(false);
+                        var getUserInfoResult = await _userInfoClient.Resolve(BaseUrl + "/.well-known/openid-configuration", "invalid_access_token").ConfigureAwait(false);
 
                         Assert.NotNull(getUserInfoResult);
             Assert.True(getUserInfoResult.ContainsError);
@@ -37,8 +37,8 @@
                     TokenRequest.FromScopes("openid"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient.Resolve(BaseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
 
                         Assert.NotNull(getUserInfoResult);
             Assert.True(getUserInfoResult.ContainsError);
@@ -55,8 +55,8 @@
                     TokenRequest.FromPassword("administrator", "password", new []{"scim"}),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient.Resolve(BaseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
 
                         Assert.NotNull(getUserInfoResult);
         }
@@ -70,8 +70,8 @@
                     TokenRequest.FromPassword("administrator", "password", new []{"scim"}),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient.Resolve(BaseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
 
                         Assert.NotNull(getUserInfoResult);
             Assert.NotNull(getUserInfoResult.JwtToken);
@@ -86,8 +86,8 @@
                     TokenRequest.FromPassword("administrator", "password", new []{"scim"}),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient.Resolve(BaseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
 
                         Assert.NotNull(getUserInfoResult);
             Assert.NotNull(getUserInfoResult.JwtToken);

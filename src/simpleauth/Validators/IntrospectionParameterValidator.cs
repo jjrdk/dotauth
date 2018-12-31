@@ -31,7 +31,7 @@ namespace SimpleAuth.Validators
             // Read this RFC for more information
             if (string.IsNullOrWhiteSpace(introspectionParameter.Token))
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.MissingParameter, CoreConstants.IntrospectionRequestNames.Token));
             }

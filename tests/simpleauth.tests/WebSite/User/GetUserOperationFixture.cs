@@ -44,7 +44,7 @@ namespace SimpleAuth.Tests.WebSite.User
         {            InitializeFakeObjects();
             var emptyClaimsPrincipal = new ClaimsPrincipal();
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getUserOperation.Execute(emptyClaimsPrincipal)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getUserOperation.Execute(emptyClaimsPrincipal)).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
@@ -58,7 +58,7 @@ namespace SimpleAuth.Tests.WebSite.User
             claimsIdentity.AddClaim(new Claim("test", "test"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-                        var exception = await  Assert.ThrowsAsync<IdentityServerException>(() => _getUserOperation.Execute(claimsPrincipal)).ConfigureAwait(false);
+                        var exception = await  Assert.ThrowsAsync<SimpleAuthException>(() => _getUserOperation.Execute(claimsPrincipal)).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);

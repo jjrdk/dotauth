@@ -22,7 +22,7 @@
         }
 
         [Fact]
-        public async Task When_Resource_Owner_Doesnt_Exist_Then_ReturnsFalse()
+        public async Task When_Resource_Owner_Does_Not_Exist_Then_ReturnsFalse()
         {
             const string subject = "invalid_subject";
             InitializeFakeObjects();

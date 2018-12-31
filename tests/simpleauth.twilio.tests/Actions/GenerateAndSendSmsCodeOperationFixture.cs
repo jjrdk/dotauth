@@ -34,7 +34,7 @@
             _twilioClientStub.Setup(s => s.SendMessage(It.IsAny<TwilioSmsCredentials>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(() => throw new TwilioException("problem"));
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber")).ConfigureAwait(false);
 
                         _eventSourceStub.Verify(e => e.Failure(It.Is<Exception>((f) => f.Message == "problem")));
             Assert.NotNull(exception);
@@ -47,7 +47,7 @@
         {            InitializeFakeObjects();
             _confirmationCodeStoreStub.Setup(c => c.Add(It.IsAny<ConfirmationCode>())).Returns(() => Task.FromResult(false));
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber")).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);

@@ -360,7 +360,7 @@ namespace SimpleAuth.JwtToken
                     var isClaimValid = ValidateClaimValue(resourceOwnerClaimValue, resourceOwnerClaimParameter);
                     if (!isClaimValid)
                     {
-                        throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                        throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidGrant,
                             string.Format(ErrorDescriptions.TheClaimIsNotValid, resourceOwnerClaimParameter.Name),
                             state);
                     }
@@ -428,7 +428,7 @@ namespace SimpleAuth.JwtToken
                 var issuerIsValid = ValidateClaimValue(issuerName, issuerClaimParameter);
                 if (!issuerIsValid)
                 {
-                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                    throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidGrant,
                         string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Issuer),
                         state);
                 }
@@ -444,7 +444,7 @@ namespace SimpleAuth.JwtToken
                 var audiencesIsValid = ValidateClaimValues(audiences.ToArray(), audiencesClaimParameter);
                 if (!audiencesIsValid)
                 {
-                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                    throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidGrant,
                         string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Audiences),
                         state);
                 }
@@ -455,7 +455,7 @@ namespace SimpleAuth.JwtToken
                 var expirationInSecondsIsValid = ValidateClaimValue(expirationInSeconds.ToString(CultureInfo.InvariantCulture), expirationTimeClaimParameter);
                 if (!expirationInSecondsIsValid)
                 {
-                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                    throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidGrant,
                         string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.ExpirationTime),
                         state);
                 }
@@ -466,7 +466,7 @@ namespace SimpleAuth.JwtToken
                 var issuedAtTimeIsValid = ValidateClaimValue(issuedAtTime.ToString(), issuedAtTimeClaimParameter);
                 if (!issuedAtTimeIsValid)
                 {
-                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                    throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidGrant,
                         string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Iat),
                         state);
                 }
@@ -477,7 +477,7 @@ namespace SimpleAuth.JwtToken
                 var isAuthenticationTimeValid = ValidateClaimValue(authenticationInstantValue, authenticationTimeParameter);
                 if (!isAuthenticationTimeValid)
                 {
-                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                    throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidGrant,
                         string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.AuthenticationTime),
                         state);
                 }
@@ -488,7 +488,7 @@ namespace SimpleAuth.JwtToken
                 var isAcrParameterValid = ValidateClaimValue(acrValues, acrParameter);
                 if (!isAcrParameterValid)
                 {
-                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                    throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidGrant,
                         string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Acr),
                         state);
                 }
@@ -499,7 +499,7 @@ namespace SimpleAuth.JwtToken
                 var isNonceParameterValid = ValidateClaimValue(nonce, nonceParameter);
                 if (!isNonceParameterValid)
                 {
-                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                    throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidGrant,
                         string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Nonce),
                         state);
                 }
@@ -510,7 +510,7 @@ namespace SimpleAuth.JwtToken
                 var isAmrParameterValid = ValidateClaimValues(amr, amrParameter);
                 if (!isAmrParameterValid)
                 {
-                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                    throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidGrant,
                         string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Amr),
                         state);
                 }
@@ -522,7 +522,7 @@ namespace SimpleAuth.JwtToken
                 var isAzpParameterValid = ValidateClaimValue(azp, azpParameter);
                 if (!isAzpParameterValid)
                 {
-                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                    throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidGrant,
                         string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Azp),
                         state);
                 }

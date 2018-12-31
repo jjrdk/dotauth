@@ -67,7 +67,7 @@ namespace SimpleAuth.Api.Authorization.Actions
             var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
             if (!_clientValidator.CheckGrantTypes(client, GrantType.authorization_code)) // 1. Check the client is authorized to use the authorization_code flow.
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
@@ -79,7 +79,7 @@ namespace SimpleAuth.Api.Authorization.Actions
             {
                 if (claimsPrincipal == null)
                 {
-                    throw new IdentityServerExceptionWithState(
+                    throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidRequestCode,
                         ErrorDescriptions.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated,
                         authorizationParameter.State);
@@ -92,7 +92,7 @@ namespace SimpleAuth.Api.Authorization.Actions
             _oAuthEventSource.EndAuthorizationCodeFlow(
                 authorizationParameter.ClientId,
                 actionTypeName,
-                result.RedirectInstruction == null ? string.Empty : Enum.GetName(typeof(IdentityServerEndPoints), result.RedirectInstruction.Action));
+                result.RedirectInstruction == null ? string.Empty : Enum.GetName(typeof(SimpleAuthEndPoints), result.RedirectInstruction.Action));
 
             return result;
         }

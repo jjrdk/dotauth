@@ -31,7 +31,7 @@
             var resourceOwner = await _resourceOwnerRepository.Get(localSubject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     Errors.ErrorCodes.InternalError,
                     string.Format(Errors.ErrorDescriptions.TheResourceOwnerDoesntExist, localSubject));
             }
@@ -39,12 +39,12 @@
             var profile = await _profileRepository.Get(externalSubject).ConfigureAwait(false);
             if (profile == null || profile.ResourceOwnerId != localSubject)
             {
-                throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.NotAuthorizedToRemoveTheProfile);
+                throw new SimpleAuthException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.NotAuthorizedToRemoveTheProfile);
             }
 
             if (profile.Subject == localSubject)
             {
-                throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheExternalAccountAccountCannotBeUnlinked);
+                throw new SimpleAuthException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheExternalAccountAccountCannotBeUnlinked);
             }
 
             return await _profileRepository.Remove(new[] { externalSubject }).ConfigureAwait(false);

@@ -115,7 +115,7 @@
         }
 
         [Fact]
-        public async Task When_Update_Claims_And_Resource_Owner_Doesnt_Exist_Then_Error_Is_Returned()
+        public async Task When_Update_Claims_And_Resource_Owner_Does_Not_Exist_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
 
@@ -168,7 +168,7 @@
         }
 
         [Fact]
-        public async Task When_Update_Password_And_Resource_Owner_Doesnt_Exist_Then_Error_Is_Returned()
+        public async Task When_Update_Password_And_Resource_Owner_Does_Not_Exist_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
 
@@ -311,7 +311,7 @@
         }
 
         [Fact]
-        public async Task When_Delete_ResourceOwner_Then_ResourceOwner_Doesnt_Exist()
+        public async Task When_Delete_ResourceOwner_Then_ResourceOwner_Does_Not_Exist()
         {
             InitializeFakeObjects();
 

@@ -32,7 +32,7 @@
 //        #region Get
 
 //        [Fact]
-//        public async Task When_Get_Filter_And_Doesnt_Exist_Then_Not_Found_Is_Returned()
+//        public async Task When_Get_Filter_And_Does_Not_Exist_Then_Not_Found_Is_Returned()
 //        {
 ////            InitializeFakeObjects();
 //            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
@@ -52,7 +52,7 @@
 //        #region Delete
 
 //        [Fact]
-//        public async Task When_Delete_Filter_And_Doesnt_Exist_Then_Not_Found_Is_Returned()
+//        public async Task When_Delete_Filter_And_Does_Not_Exist_Then_Not_Found_Is_Returned()
 //        {
 ////            InitializeFakeObjects();
 //            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
@@ -87,7 +87,7 @@
 //            }, grantedToken.Content.AccessToken);
 
 //            //            Assert.True(result.ContainsError);
-//            Assert.Equal("invalid_request", result.Error.Error);
+//            Assert.Equal(ErrorCodes.InvalidRequestCode, result.Error.Error);
 //            Assert.Equal("the parameter name is missing", result.Error.ErrorDescription);
 //        }
 
@@ -110,7 +110,7 @@
 //            }, grantedToken.Content.AccessToken);
 
 //            //            Assert.True(result.ContainsError);
-//            Assert.Equal("invalid_request", result.Error.Error);
+//            Assert.Equal(ErrorCodes.InvalidRequestCode, result.Error.Error);
 //            Assert.Equal("the parameter id is missing", result.Error.ErrorDescription);
 //        }
 
@@ -130,12 +130,12 @@
 //            }, grantedToken.Content.AccessToken);
 
 //            //            Assert.True(result.ContainsError);
-//            Assert.Equal("invalid_request", result.Error.Error);
+//            Assert.Equal(ErrorCodes.InvalidRequestCode, result.Error.Error);
 //            Assert.Equal("the parameter name is missing", result.Error.ErrorDescription);
 //        }
 
 //        [Fact]
-//        public async Task When_Update_Filter_And_Filter_Doesnt_Exist_Then_Error_Is_Returned()
+//        public async Task When_Update_Filter_And_Filter_Does_Not_Exist_Then_Error_Is_Returned()
 //        {
 //            InitializeFakeObjects();
 //            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);

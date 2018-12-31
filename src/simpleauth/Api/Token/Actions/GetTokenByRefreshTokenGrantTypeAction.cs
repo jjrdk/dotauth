@@ -66,13 +66,13 @@ namespace SimpleAuth.Api.Token.Actions
             if (authResult.Client == null)
             {
                 _oauthEventSource.Info(authResult.ErrorMessage);
-                throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
+                throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
             // 2. Check client
             if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.refresh_token))
             {
-                throw new IdentityServerException(ErrorCodes.InvalidClient,
+                throw new SimpleAuthException(ErrorCodes.InvalidClient,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.refresh_token));
             }
 
@@ -80,7 +80,7 @@ namespace SimpleAuth.Api.Token.Actions
             var grantedToken = await ValidateParameter(refreshTokenGrantTypeParameter).ConfigureAwait(false);
             if (grantedToken.ClientId != client.ClientId)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidGrant, ErrorDescriptions.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer);
+                throw new SimpleAuthException(ErrorCodes.InvalidGrant, ErrorDescriptions.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer);
             }
 
             // 4. Generate a new access token & insert it
@@ -112,7 +112,7 @@ namespace SimpleAuth.Api.Token.Actions
             var grantedToken = await _tokenStore.GetRefreshToken(refreshTokenGrantTypeParameter.RefreshToken).ConfigureAwait(false);
             if (grantedToken == null)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidGrant,
                     ErrorDescriptions.TheRefreshTokenIsNotValid);
             }

@@ -170,7 +170,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
         {
             if (responseTypes == null)
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
                     state);
@@ -180,7 +180,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                 .SingleOrDefault(k => k.Count == responseTypes.Count && k.All(key => responseTypes.Contains(key)));
             if (record == null)
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
                     state);

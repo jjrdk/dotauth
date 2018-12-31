@@ -65,7 +65,7 @@ namespace SimpleAuth.WebSite.User.Actions
             if (await _resourceOwnerRepository.Get(resourceOwner.Id).ConfigureAwait(false) != null)
             {
                 return false;
-                //throw new IdentityServerException(
+                //throw new SimpleAuthException(
                 //    Errors.ErrorCodes.UnhandledExceptionCode,
                 //    Errors.ErrorDescriptions.TheRoWithCredentialsAlreadyExists);
             }
@@ -112,7 +112,7 @@ namespace SimpleAuth.WebSite.User.Actions
                 if (!isFilterValid)
                 {
                     return false;
-                    //throw new IdentityServerException(Errors.ErrorCodes.InternalError,
+                    //throw new SimpleAuthException(Errors.ErrorCodes.InternalError,
                     //    Errors.ErrorDescriptions.TheUserIsNotAuthorized);
                 }
             }
@@ -151,7 +151,7 @@ namespace SimpleAuth.WebSite.User.Actions
             if (!await _resourceOwnerRepository.InsertAsync(newResourceOwner).ConfigureAwait(false))
             {
                 return false;
-                //throw new IdentityServerException(Errors.ErrorCodes.UnhandledExceptionCode,
+                //throw new SimpleAuthException(Errors.ErrorCodes.UnhandledExceptionCode,
                 //    Errors.ErrorDescriptions.TheResourceOwnerCannotBeAdded);
             }
 

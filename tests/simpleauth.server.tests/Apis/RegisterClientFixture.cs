@@ -31,7 +31,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
     public class RegisterClientFixture : IClassFixture<TestOauthServerFixture>
     {
-        private const string baseUrl = "http://localhost:5000";
+        private const string BaseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
         private IRegistrationClient _registrationClient;
 
@@ -50,7 +50,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromScopes("register_client"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration")
                 .ConfigureAwait(false);
             var obj = new { fake = "fake" };
             var fakeJson = JsonConvert.SerializeObject(
@@ -62,7 +62,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri($"{baseUrl}/registration"),
+                RequestUri = new Uri($"{BaseUrl}/registration"),
                 Content = new StringContent(fakeJson)
             };
             httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -87,7 +87,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromScopes("register_client"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration")
                 .ConfigureAwait(false);
             var obj = new
             {
@@ -109,7 +109,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri($"{baseUrl}/registration"),
+                RequestUri = new Uri($"{BaseUrl}/registration"),
                 Content = new StringContent(fakeJson)
             };
             httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -132,7 +132,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromScopes("register_client"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration")
                 .ConfigureAwait(false);
             var obj = new
             {
@@ -150,7 +150,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri($"{baseUrl}/registration"),
+                RequestUri = new Uri($"{BaseUrl}/registration"),
                 Content = new StringContent(fakeJson)
             };
             httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -176,7 +176,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromScopes("register_client"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration")
                 .ConfigureAwait(false);
             var obj = new
             {
@@ -196,7 +196,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri($"{baseUrl}/registration"),
+                RequestUri = new Uri($"{BaseUrl}/registration"),
                 Content = new StringContent(fakeJson)
             };
             httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -220,7 +220,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromScopes("register_client"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration")
                 .ConfigureAwait(false);
             var obj = new
             {
@@ -238,7 +238,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri($"{baseUrl}/registration"),
+                RequestUri = new Uri($"{BaseUrl}/registration"),
                 Content = new StringContent(fakeJson)
             };
             httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -262,7 +262,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromScopes("register_client"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration")
                 .ConfigureAwait(false);
             var obj = new
             {
@@ -281,7 +281,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri($"{baseUrl}/registration"),
+                RequestUri = new Uri($"{BaseUrl}/registration"),
                 Content = new StringContent(fakeJson)
             };
             httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -305,7 +305,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromScopes("register_client"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration")
                 .ConfigureAwait(false);
             var obj = new
             {
@@ -325,7 +325,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri($"{baseUrl}/registration"),
+                RequestUri = new Uri($"{BaseUrl}/registration"),
                 Content = new StringContent(fakeJson)
             };
             httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -349,7 +349,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromScopes("register_client"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration")
                 .ConfigureAwait(false);
 
             var client = await _registrationClient.ResolveAsync(
@@ -365,7 +365,7 @@ namespace SimpleAuth.Server.Tests.Apis
                         RequestUris = new[] {new Uri("https://localhost")},
                         ScimProfile = true
                     },
-                    baseUrl + "/.well-known/openid-configuration",
+                    BaseUrl + "/.well-known/openid-configuration",
                     grantedToken.Content.AccessToken)
                 .ConfigureAwait(false);
 

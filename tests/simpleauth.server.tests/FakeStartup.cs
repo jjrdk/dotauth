@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Server.Tests
 {
-    using System;
-    using System.Net.Http;
-    using System.Reflection;
-    using System.Text;
     using Api.Jwks;
     using Client;
     using Controllers;
@@ -35,6 +31,9 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth;
     using SimpleAuth.Services;
     using Stores;
+    using System;
+    using System.Net.Http;
+    using System.Text;
     using Twilio;
     using Twilio.Actions;
     using Twilio.Controllers;
@@ -44,12 +43,12 @@ namespace SimpleAuth.Server.Tests
     {
         public const string ScimEndPoint = "http://localhost:5555/";
         public const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
-        private readonly IdentityServerOptions _options;
+        private readonly SimpleAuthOptions _options;
         private readonly SharedContext _context;
 
         public FakeStartup(SharedContext context)
         {
-            _options = new IdentityServerOptions
+            _options = new SimpleAuthOptions
             {
                 Scim = new ScimOptions
                 {
@@ -66,7 +65,7 @@ namespace SimpleAuth.Server.Tests
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
-            // 2. Configure Simple identity server
+            // 2. Configure server
             ConfigureIdServer(services);
             services.AddAuthentication(opts =>
             {
@@ -128,6 +127,14 @@ namespace SimpleAuth.Server.Tests
 
         private void ConfigureIdServer(IServiceCollection services)
         {
+            _options.Configuration = new OpenIdServerConfiguration
+            {
+                Clients = DefaultStores.Clients(_context),
+                Consents = DefaultStores.Consents(),
+                JsonWebKeys = DefaultStores.JsonWebKeys(_context),
+                Profiles =    DefaultStores.Profiles(),
+                Users = DefaultStores.Users()
+            };
             services.AddSingleton(new SmsAuthenticationOptions());
             services.AddTransient<IEventPublisher, DefaultEventPublisher>();
             services.AddSingleton(_context.TwilioClient.Object);
@@ -136,16 +143,16 @@ namespace SimpleAuth.Server.Tests
             services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();
             services.AddTransient<IAuthenticateResourceOwnerService, CustomAuthenticateResourceOwnerService>();
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
-            services.AddHostIdentityServer(_options)
-                .AddSimpleAuthServer(null,
-                    null,
-                    DefaultStores.Clients(_context),
-                    DefaultStores.Consents(),
-                    DefaultStores.JsonWebKeys(_context),
-                    DefaultStores.Profiles(),
-                    DefaultStores.Users())
+            services.UseSimpleAuth(_options)
+                //.AddSimpleAuthServer(null,
+                //    null,
+                //    DefaultStores.Clients(_context),
+                //    DefaultStores.Consents(),
+                //    DefaultStores.JsonWebKeys(_context),
+                //    DefaultStores.Profiles(),
+                //    DefaultStores.Users())
                 .AddDefaultTokenStore()
-                .AddSimpleIdentityServerJwt()
+                //.AddSimpleAuthJwt()
                 .AddTechnicalLogging()
                 .AddOpenidLogging()
                 .AddOAuthLogging()

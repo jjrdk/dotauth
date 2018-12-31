@@ -14,9 +14,6 @@
 
 namespace SimpleAuth.Uma.Tests.Api.PolicyController
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Helpers;
@@ -25,9 +22,14 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
     using Moq;
     using Parameters;
     using Repositories;
+    using SimpleAuth.Errors;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Uma;
     using Uma.Api.PolicyController.Actions;
     using Xunit;
+    using ErrorDescriptions = Errors.ErrorDescriptions;
 
     public class AddAuthorizationPolicyActionFixture
     {
@@ -53,7 +55,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
 
             var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == UmaErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.ResourceSetIds));
         }
 
@@ -74,12 +76,12 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
 
             var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == UmaErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.Rules));
         }
 
         [Fact]
-        public async Task When_ResourceSetId_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_ResourceSetId_Does_Not_Exist_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
             const string resourceSetId = "resource_set_id";

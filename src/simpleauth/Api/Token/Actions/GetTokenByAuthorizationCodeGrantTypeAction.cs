@@ -132,18 +132,18 @@ namespace SimpleAuth.Api.Token.Actions
             if (client == null)
             {
                 _oauthEventSource.Info(authResult.ErrorMessage);
-                throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
+                throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
             // 2. Check the client
             if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.authorization_code))
             {
-                throw new IdentityServerException(ErrorCodes.InvalidClient, string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.authorization_code));
+                throw new SimpleAuthException(ErrorCodes.InvalidClient, string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.authorization_code));
             }
 
             if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseType.code))
             {
-                throw new IdentityServerException(ErrorCodes.InvalidClient,
+                throw new SimpleAuthException(ErrorCodes.InvalidClient,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, ResponseType.code));
             }
 
@@ -151,28 +151,28 @@ namespace SimpleAuth.Api.Token.Actions
             // 2. Check if the authorization code is valid
             if (authorizationCode == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidGrant,
+                throw new SimpleAuthException(ErrorCodes.InvalidGrant,
                     ErrorDescriptions.TheAuthorizationCodeIsNotCorrect);
             }
 
             // 3. Check PKCE
             if (!_clientValidator.CheckPkce(client, authorizationCodeGrantTypeParameter.CodeVerifier, authorizationCode))
             {
-                throw new IdentityServerException(ErrorCodes.InvalidGrant, ErrorDescriptions.TheCodeVerifierIsNotCorrect);
+                throw new SimpleAuthException(ErrorCodes.InvalidGrant, ErrorDescriptions.TheCodeVerifierIsNotCorrect);
             }
 
             // 4. Ensure the authorization code was issued to the authenticated client.
             var authorizationClientId = authorizationCode.ClientId;
             if (authorizationClientId != client.ClientId)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidGrant,
+                throw new SimpleAuthException(ErrorCodes.InvalidGrant,
                     string.Format(ErrorDescriptions.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
                         client.ClientId));
             }
 
             if (authorizationCode.RedirectUri != authorizationCodeGrantTypeParameter.RedirectUri)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidGrant,
+                throw new SimpleAuthException(ErrorCodes.InvalidGrant,
                     ErrorDescriptions.TheRedirectionUrlIsNotTheSame);
             }
 
@@ -182,7 +182,7 @@ namespace SimpleAuth.Api.Token.Actions
             var currentDateTime = DateTime.UtcNow;
             if (currentDateTime > expirationDateTime)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidGrant,
+                throw new SimpleAuthException(ErrorCodes.InvalidGrant,
                     ErrorDescriptions.TheAuthorizationCodeIsObsolete);
             }
 
@@ -190,7 +190,7 @@ namespace SimpleAuth.Api.Token.Actions
             var redirectionUrl = _clientValidator.GetRedirectionUrls(client, authorizationCodeGrantTypeParameter.RedirectUri);
             if (!redirectionUrl.Any())
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidGrant,
                     string.Format(ErrorDescriptions.RedirectUrlIsNotValid, authorizationCodeGrantTypeParameter.RedirectUri));
             }

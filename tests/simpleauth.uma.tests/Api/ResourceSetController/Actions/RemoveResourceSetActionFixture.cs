@@ -26,7 +26,7 @@
         }
 
         [Fact]
-        public async Task When_ResourceSet_Doesnt_Exist_Then_False_Is_Returned()
+        public async Task When_ResourceSet_Does_Not_Exist_Then_False_Is_Returned()
         {
             const string resourceSetId = "resourceSetId";
             InitializeFakeObjects();

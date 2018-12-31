@@ -60,7 +60,7 @@ namespace SimpleAuth.Api.Introspection
                 //_eventPublisher.Publish(new IntrospectionResultReturned(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
                 return result;
             }
-            catch (IdentityServerException ex)
+            catch (SimpleAuthException ex)
             {
                 _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(),
                     processId,

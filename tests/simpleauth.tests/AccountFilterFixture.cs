@@ -25,7 +25,7 @@
         }
 
         [Fact]
-        public async Task When_Claim_Doesnt_Exist_Then_Error_Is_Returned()
+        public async Task When_Claim_Does_Not_Exist_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
             IEnumerable<Filter> filters = new List<Filter>
@@ -121,7 +121,7 @@
         }
 
         [Fact]
-        public async Task When_Filter_Claim_Value_Doesnt_Match_Regular_Expression_Is_Wrong_Then_Error_Is_Returned()
+        public async Task When_Filter_Claim_Value_Does_Not_Match_Regular_Expression_Is_Wrong_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
             IEnumerable<Filter> filters = new List<Filter>

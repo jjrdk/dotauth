@@ -33,7 +33,7 @@
         }
 
         [Fact]
-        public async Task When_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_Client_Does_Not_Exist_Then_Exception_Is_Thrown()
         {            InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult((Client)null));
@@ -73,7 +73,7 @@
                 subject,
                 claims, null).ConfigureAwait(false);
 
-                        Assert.True(actionResult.RedirectInstruction.Action == IdentityServerEndPoints.ConsentIndex);
+                        Assert.True(actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.ConsentIndex);
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == code && p.Value == code);
         }
 
@@ -143,7 +143,7 @@
                 subject,
                 claims, null).ConfigureAwait(false);
 
-                        Assert.True(actionResult.RedirectInstruction.Action == IdentityServerEndPoints.ConsentIndex);
+                        Assert.True(actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.ConsentIndex);
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == code && p.Value == code);
         }
 

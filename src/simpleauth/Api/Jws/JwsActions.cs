@@ -54,7 +54,7 @@ namespace SimpleAuth.Api.Jws
 
             if (getJwsParameter.Url != null && !getJwsParameter.Url.IsAbsoluteUri)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, getJwsParameter.Url));
             }
@@ -63,7 +63,7 @@ namespace SimpleAuth.Api.Jws
             var jwsHeader = _jwsParser.GetHeader(jws);
             if (jwsHeader == null)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheTokenIsNotAValidJws);
             }
@@ -71,7 +71,7 @@ namespace SimpleAuth.Api.Jws
             if (!string.Equals(jwsHeader.Alg, JwtConstants.JwsAlgNames.NONE, StringComparison.CurrentCultureIgnoreCase)
                 && getJwsParameter.Url == null)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheSignatureCannotBeChecked);
             }
@@ -88,7 +88,7 @@ namespace SimpleAuth.Api.Jws
                     .ConfigureAwait(false);
                 if (jsonWebKey == null)
                 {
-                    throw new IdentityServerException(
+                    throw new SimpleAuthException(
                         ErrorCodes.InvalidRequestCode,
                         string.Format(
                             ErrorDescriptions.TheJsonWebKeyCannotBeFound,
@@ -99,7 +99,7 @@ namespace SimpleAuth.Api.Jws
                 payload = _jwsParser.ValidateSignature(jws, jsonWebKey);
                 if (payload == null)
                 {
-                    throw new IdentityServerException(
+                    throw new SimpleAuthException(
                         ErrorCodes.InvalidRequestCode,
                         ErrorDescriptions.TheSignatureIsNotCorrect);
                 }
@@ -133,14 +133,14 @@ namespace SimpleAuth.Api.Jws
             if (createJwsParameter.Alg != JwsAlg.none &&
                 (string.IsNullOrWhiteSpace(createJwsParameter.Kid) || string.IsNullOrWhiteSpace(createJwsParameter.Url)))
             {
-                throw new IdentityServerException(ErrorCodes.InvalidRequestCode,
+                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheJwsCannotBeGeneratedBecauseMissingParameters);
             }
 
             Uri uri = null;
             if (createJwsParameter.Alg != JwsAlg.none && !Uri.TryCreate(createJwsParameter.Url, UriKind.Absolute, out uri))
             {
-                throw new IdentityServerException(ErrorCodes.InvalidRequestCode,
+                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheUrlIsNotWellFormed);
             }
 
@@ -150,7 +150,7 @@ namespace SimpleAuth.Api.Jws
                 jsonWebKey = await _jsonWebKeyHelper.GetJsonWebKey(createJwsParameter.Kid, uri).ConfigureAwait(false);
                 if (jsonWebKey == null)
                 {
-                    throw new IdentityServerException(
+                    throw new SimpleAuthException(
                         ErrorCodes.InvalidRequestCode,
                         string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, createJwsParameter.Kid, uri.AbsoluteUri));
                 }
@@ -185,7 +185,7 @@ namespace SimpleAuth.Api.Jws
 
                 if (!_mappingKeyTypeAndPublicKeyEnricher.ContainsKey(jsonWebKey.Kty))
                 {
-                    throw new IdentityServerException(ErrorCodes.InvalidParameterCode,
+                    throw new SimpleAuthException(ErrorCodes.InvalidParameterCode,
                         string.Format(ErrorDescriptions.TheKtyIsNotSupported, jsonWebKey.Kty));
                 }
 

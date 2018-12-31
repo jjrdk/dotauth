@@ -38,7 +38,7 @@ namespace SimpleAuth.Tests.Validators
         {            InitializeFakeObjects();
             var parameter = new ClientCredentialsGrantTypeParameter();
 
-                        var exception = Assert.Throws<IdentityServerException>(() => _clientCredentialsGrantTypeParameterValidator.Validate(parameter));
+                        var exception = Assert.Throws<SimpleAuthException>(() => _clientCredentialsGrantTypeParameterValidator.Validate(parameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardTokenRequestParameterNames.ScopeName));

@@ -33,7 +33,7 @@
                 State = state
             };
 
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter))
                 .ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
@@ -54,7 +54,7 @@
                 Scope = "scope"
             };
 
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter))
                 .ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
@@ -76,7 +76,7 @@
                 ClientId = "clientId"
             };
 
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter))
                 .ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
@@ -99,7 +99,7 @@
                 RedirectUrl = new Uri("https://redirectUrl")
             };
 
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter))
                 .ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
@@ -123,7 +123,7 @@
                 ResponseType = "invalid_response_type"
             };
 
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
                     _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter))
                 .ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
@@ -146,7 +146,7 @@
                 Prompt = "invalid_prompt"
             };
 
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter))
                 .ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
@@ -176,7 +176,7 @@
                     PromptParameter.login
                 });
 
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter))
                 .ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
@@ -205,7 +205,7 @@
         //            PromptParameter.none
         //        });
 
-        //    var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+        //    var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
         //            () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter))
         //        .ConfigureAwait(false);
         //    Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
@@ -236,7 +236,7 @@
             _clientRepository.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Client)null));
 
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
                     _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter))
                 .ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
@@ -272,7 +272,7 @@
             _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<Uri[]>()))
                 .Returns(() => new Uri[0]);
 
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
                     _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);

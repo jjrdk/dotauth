@@ -23,9 +23,8 @@
     public sealed class ProcessAuthorizationRequestFixture
     {
         private ProcessAuthorizationRequest _processAuthorizationRequest;
-        private OAuthConfigurationOptions _simpleIdentityServerConfiguratorStub;
+        private OAuthConfigurationOptions _oAuthConfiguration;
         private Mock<IOAuthEventSource> _oauthEventSource;
-        private JwtGenerator _jwtGenerator;
 
         [Fact]
         public async Task When_Passing_NullAuthorization_To_Function_Then_ArgumentNullException_Is_Thrown()
@@ -77,7 +76,7 @@
                 Scope = "email"
             };
 
-            var exception =await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+            var exception =await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
         () => _processAuthorizationRequest.ProcessAsync(authorizationParameter, null));
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidScope));
             Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, CoreConstants.StandardScopes.OpenId.Name)));
@@ -100,7 +99,7 @@
             };
 
                         var exception =
-                Assert.Throws<IdentityServerExceptionWithState>(
+                Assert.Throws<SimpleAuthExceptionWithState>(
                     () => _processAuthorizationRequest.Process(authorizationParameter, null));
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
             Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.MissingParameter
@@ -129,7 +128,7 @@
             client.ResponseTypes.Remove(ResponseType.code);
 
                         var exception =
-                Assert.Throws<IdentityServerExceptionWithState>(
+                Assert.Throws<SimpleAuthExceptionWithState>(
                     () => _processAuthorizationRequest.Process(authorizationParameter, null));
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
             Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType
@@ -154,7 +153,7 @@
             };
 
                         var exception =
-                Assert.Throws<IdentityServerExceptionWithState>(
+                Assert.Throws<SimpleAuthExceptionWithState>(
                     () => _processAuthorizationRequest.Process(authorizationParameter, null));
             Assert.True(exception.Code.Equals(ErrorCodes.LoginRequiredCode));
             Assert.True(exception.Message.Equals(ErrorDescriptions.TheUserNeedsToBeAuthenticated));
@@ -180,7 +179,7 @@
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
 
                         var exception =
-                Assert.Throws<IdentityServerExceptionWithState>(
+                Assert.Throws<SimpleAuthExceptionWithState>(
                     () => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
             Assert.True(exception.Code.Equals(ErrorCodes.InteractionRequiredCode));
             Assert.True(exception.Message.Equals(ErrorDescriptions.TheUserNeedsToGiveHisConsent));
@@ -227,7 +226,7 @@
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
 
-                        var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
+                        var exception = Assert.Throws<SimpleAuthExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
             Assert.True(exception.Message.Equals(ErrorDescriptions.TheIdTokenHintParameterIsNotAValidToken));
         }
@@ -280,9 +279,9 @@
 
             authorizationParameter.IdTokenHint = _jwtGenerator.Sign(jwtPayload, JwsAlg.RS256);
 
-                        var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
+                        var exception = Assert.Throws<SimpleAuthExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
-            Assert.True(exception.Message.Equals(ErrorDescriptions.TheIdentityTokenDoesntContainSimpleIdentityServerAsAudience));
+            Assert.True(exception.Message.Equals(ErrorDescriptions.TheIdentityTokenDoesntContainSimpleAuthAsAudience));
         }
         
         [Fact]
@@ -334,10 +333,10 @@
                     Jwt.JwtConstants.StandardClaimNames.Audiences, new [] {  issuerName }
                 }
             };
-            _simpleIdentityServerConfiguratorStub.Setup(s => s.GetIssuerName()).Returns(issuerName);
+            _oAuthConfiguration.Setup(s => s.GetIssuerName()).Returns(issuerName);
             authorizationParameter.IdTokenHint = _jwtGenerator.Sign(jwtPayload, JwsAlg.RS256);
 
-                        var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
+                        var exception = Assert.Throws<SimpleAuthExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
             Assert.True(exception.Message.Equals(ErrorDescriptions.TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken));
         }
@@ -361,7 +360,7 @@
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
 
                         var exception =
-                Assert.Throws<IdentityServerExceptionWithState>(
+                Assert.Throws<SimpleAuthExceptionWithState>(
                     () => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
             Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.ThePromptParameterIsNotSupported, "select_account")));
@@ -401,7 +400,7 @@
                         var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
 
                         Assert.NotNull(result);
-            Assert.True(result.RedirectInstruction.Action.Equals(IdentityServerEndPoints.AuthenticateIndex));
+            Assert.True(result.RedirectInstruction.Action.Equals(SimpleAuthEndPoints.AuthenticateIndex));
         }
 
         [Fact]
@@ -422,7 +421,7 @@
                         var result = _processAuthorizationRequest.Process(authorizationParameter, null);
 
                         Assert.NotNull(result);
-            Assert.True(result.RedirectInstruction.Action.Equals(Core.Results.IdentityServerEndPoints.AuthenticateIndex));
+            Assert.True(result.RedirectInstruction.Action.Equals(Core.Results.SimpleAuthEndPoints.AuthenticateIndex));
         }
 
         [Fact]
@@ -446,7 +445,7 @@
                         var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
 
                         Assert.NotNull(result);
-            Assert.True(result.RedirectInstruction.Action.Equals(Core.Results.IdentityServerEndPoints.ConsentIndex));
+            Assert.True(result.RedirectInstruction.Action.Equals(Core.Results.SimpleAuthEndPoints.ConsentIndex));
         }
 
         [Fact]
@@ -468,7 +467,7 @@
                         var result = _processAuthorizationRequest.Process(authorizationParameter, null);
 
                         Assert.NotNull(result);
-            Assert.True(result.RedirectInstruction.Action.Equals(Core.Results.IdentityServerEndPoints.AuthenticateIndex));
+            Assert.True(result.RedirectInstruction.Action.Equals(Core.Results.SimpleAuthEndPoints.AuthenticateIndex));
         }
 
         [Fact]
@@ -553,7 +552,7 @@
                         var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
 
                         Assert.NotNull(result);
-            Assert.True(result.RedirectInstruction.Action.Equals(IdentityServerEndPoints.AuthenticateIndex));
+            Assert.True(result.RedirectInstruction.Action.Equals(SimpleAuthEndPoints.AuthenticateIndex));
             _simpleIdentityServerEventSource.Verify(s => s.StartProcessingAuthorizationRequest(jsonAuthorizationParameter));
             _simpleIdentityServerEventSource.Verify(s => s.EndProcessingAuthorizationRequest(jsonAuthorizationParameter, "RedirectToAction", "AuthenticateIndex"));
         }
@@ -563,7 +562,7 @@
         private void InitializeMockingObjects()
         {
             var clientValidator = new ClientValidator();
-            _simpleIdentityServerConfiguratorStub = new OAuthConfigurationOptions();
+            _oAuthConfiguration = new OAuthConfigurationOptions();
             _oauthEventSource = new Mock<IOAuthEventSource>();
             var scopeRepository = new Mock<IScopeRepository>();
             var clientRepository = new Mock<IClientStore>();
@@ -588,8 +587,8 @@
                 clientStore.Object,
                 jsonWebKeyConverter,
                 jsonWebKeyRepository.Object);
-            var jwsGenerator = new JwsGenerator(createJwsSignature);
-            var jweGenerator = new JweGenerator(jweHelper);
+            //var jwsGenerator = new JwsGenerator(createJwsSignature);
+            //var jweGenerator = new JweGenerator(jweHelper);
 
             _processAuthorizationRequest = new ProcessAuthorizationRequest(
                 parameterParserHelper,
@@ -598,17 +597,17 @@
                 actionResultFactory,
                 consentHelper,
                 jwtParser,
-                _simpleIdentityServerConfiguratorStub,
+                _oAuthConfiguration,
                 _oauthEventSource.Object);
-            _jwtGenerator = new JwtGenerator(
-                _simpleIdentityServerConfiguratorStub,
-                clientRepository.Object,
-                clientValidator,
-                jsonWebKeyRepository.Object,
-                scopeRepository.Object,
-                parameterParserHelper,
-                jwsGenerator,
-                jweGenerator);
+            //_jwtGenerator = new JwtGenerator(
+            //    _oAuthConfiguration,
+            //    clientRepository.Object,
+            //    clientValidator,
+            //    jsonWebKeyRepository.Object,
+            //    scopeRepository.Object,
+            //    parameterParserHelper,
+            //    jwsGenerator,
+            //    jweGenerator);
         }
     }
 }

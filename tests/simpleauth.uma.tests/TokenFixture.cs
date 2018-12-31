@@ -30,7 +30,7 @@
         }
 
         [Fact]
-        public async Task When_Ticket_Id_Doesnt_Exist_Then_Error_Is_Returned()
+        public async Task When_Ticket_Id_Does_Not_Exist_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
 
@@ -158,7 +158,7 @@
         private void InitializeFakeObjects()
         {
             var services = new ServiceCollection();
-            services.AddSimpleIdentityServerJwt();
+            services.AddSimpleAuthJwt();
             var provider = services.BuildServiceProvider();
             _jwsGenerator = provider.GetService<IJwsGenerator>();
 

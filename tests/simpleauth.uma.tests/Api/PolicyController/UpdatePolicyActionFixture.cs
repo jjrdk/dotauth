@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Uma.Tests.Api.PolicyController
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using Errors;
     using Exceptions;
     using Helpers;
     using Logging;
@@ -25,9 +21,14 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
     using Moq;
     using Parameters;
     using Repositories;
+    using SimpleAuth.Errors;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Uma;
     using Uma.Api.PolicyController.Actions;
     using Xunit;
+    using ErrorDescriptions = Errors.ErrorDescriptions;
 
     public class UpdatePolicyActionFixture
     {
@@ -36,17 +37,19 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
         private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
         private IUpdatePolicyAction _updatePolicyAction;
-        
+
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        await Assert.ThrowsAsync<ArgumentNullException>(() => _updatePolicyAction.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updatePolicyAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Id_Is_Not_Passed_Then_Exception_Is_Thrown()
-        {            var updatePolicyParameter = new UpdatePolicyParameter
+        {
+            var updatePolicyParameter = new UpdatePolicyParameter
             {
             };
             InitializeFakeObjects();
@@ -54,15 +57,16 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
                 It.IsAny<Func<Task<Policy>>>())).Returns(() => Task.FromResult((Policy)null));
 
-                        var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == UmaErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
         }
 
         [Fact]
         public async Task When_Rules_Are_Not_Passed_Then_Exception_Is_Thrown()
-        {            var updatePolicyParameter = new UpdatePolicyParameter
+        {
+            var updatePolicyParameter = new UpdatePolicyParameter
             {
                 PolicyId = "not_valid_policy_id"
             };
@@ -71,15 +75,16 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
                 It.IsAny<Func<Task<Policy>>>())).Returns(() => Task.FromResult((Policy)null));
 
-                        var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == UmaErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.Rules));
         }
-        
+
         [Fact]
-        public async Task When_Authorization_Policy_Doesnt_Exist_Then_False_Is_Returned()
-        {            var updatePolicyParameter = new UpdatePolicyParameter
+        public async Task When_Authorization_Policy_Does_Not_Exist_Then_False_Is_Returned()
+        {
+            var updatePolicyParameter = new UpdatePolicyParameter
             {
                 PolicyId = "not_valid_policy_id",
                 Rules = new List<UpdatePolicyRuleParameter>
@@ -92,14 +97,15 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
                 It.IsAny<Func<Task<Policy>>>())).Returns(() => Task.FromResult((Policy)null));
 
-                        var result = await _updatePolicyAction.Execute(updatePolicyParameter).ConfigureAwait(false);
+            var result = await _updatePolicyAction.Execute(updatePolicyParameter).ConfigureAwait(false);
 
-                        Assert.False(result);
+            Assert.False(result);
         }
 
         [Fact]
         public async Task When_Scope_Is_Not_Valid_Then_Exception_Is_Thrown()
-        {            var updatePolicyParameter = new UpdatePolicyParameter
+        {
+            var updatePolicyParameter = new UpdatePolicyParameter
             {
                 PolicyId = "policy_id",
                 Rules = new List<UpdatePolicyRuleParameter>
@@ -131,16 +137,17 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
                 }
             }));
 
-                        var result = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
+            var result = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
 
-                        Assert.NotNull(result);
+            Assert.NotNull(result);
             Assert.Equal("invalid_scope", result.Code);
             Assert.Equal("one or more scopes don't belong to a resource set", result.Message);
         }
 
         [Fact]
         public async Task When_Authorization_Policy_Is_Updated_Then_True_Is_Returned()
-        {            var updatePolicyParameter = new UpdatePolicyParameter
+        {
+            var updatePolicyParameter = new UpdatePolicyParameter
             {
                 PolicyId = "valid_policy_id",
                 Rules = new List<UpdatePolicyRuleParameter>
@@ -184,9 +191,9 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
                 }
             }));
 
-                        var result = await _updatePolicyAction.Execute(updatePolicyParameter).ConfigureAwait(false);
+            var result = await _updatePolicyAction.Execute(updatePolicyParameter).ConfigureAwait(false);
 
-                        Assert.True(result);
+            Assert.True(result);
         }
 
         private void InitializeFakeObjects()

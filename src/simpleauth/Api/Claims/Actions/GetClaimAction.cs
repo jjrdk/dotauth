@@ -26,7 +26,7 @@
             var claim = await _claimRepository.GetAsync(claimCode).ConfigureAwait(false);
             if (claim == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, ErrorDescriptions.ClaimDoesntExist);
+                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, ErrorDescriptions.ClaimDoesntExist);
             }
 
             return await _claimRepository.GetAsync(claimCode).ConfigureAwait(false);

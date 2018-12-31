@@ -73,7 +73,7 @@ namespace SimpleAuth.Server.Tests
                 });
             });
             //serviceCollection.AddDefaultAccessTokenStore();
-            serviceCollection.AddSimpleIdentityServerJwt();
+            serviceCollection.AddSimpleAuthJwt();
             //serviceCollection.AddTechnicalLogging();
         }
     }

@@ -1,6 +1,6 @@
 ﻿namespace SimpleAuth.Exceptions
 {
-    public class ProfileAssignedAnotherAccountException : IdentityServerException
+    public class ProfileAssignedAnotherAccountException : SimpleAuthException
     {
     }
 }

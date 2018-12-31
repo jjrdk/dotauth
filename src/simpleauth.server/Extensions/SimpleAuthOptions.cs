@@ -16,9 +16,9 @@ namespace SimpleAuth.Server.Extensions
 {
     using SimpleAuth;
 
-    public class IdentityServerOptions
+    public class SimpleAuthOptions
     {
-        public IdentityServerOptions()
+        public SimpleAuthOptions()
         {
             Scim = new ScimOptions();
         }

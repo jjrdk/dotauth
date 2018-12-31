@@ -53,9 +53,6 @@ namespace SimpleAuth.Uma.JwtToken
                 return null;
             }
 
-            //var jsonWebKeySet = await _client // _identityServerClientFactory.CreateJwksClient()
-            //    .ResolveAsync(openidUrl)
-            //    .ConfigureAwait(false);
             var jsonWebKeys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
             if (jsonWebKeys == null ||
                 !jsonWebKeys.Any(j => j.Kid == protectedHeader.Kid))

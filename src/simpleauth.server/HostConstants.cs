@@ -28,18 +28,18 @@ namespace SimpleAuth.Server
             public const string TwoFactorCookieName = "sa2fa";
         }
 
-        public static Dictionary<IdentityServerEndPoints, string> MappingIdentityServerEndPointToPartialUrl = new Dictionary<IdentityServerEndPoints, string>
+        public static Dictionary<SimpleAuthEndPoints, string> MappingEndPointToPartialUrl = new Dictionary<SimpleAuthEndPoints, string>
         {
             {
-                IdentityServerEndPoints.AuthenticateIndex,
+                SimpleAuthEndPoints.AuthenticateIndex,
                 "/Authenticate/OpenId"
             },
             {
-                IdentityServerEndPoints.ConsentIndex,
+                SimpleAuthEndPoints.ConsentIndex,
                 "/Consent"
             },
             {
-                IdentityServerEndPoints.FormIndex,
+                SimpleAuthEndPoints.FormIndex,
                 "/Form"
             }
         };

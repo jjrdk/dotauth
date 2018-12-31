@@ -30,7 +30,7 @@ namespace SimpleAuth.Validators
 
             if (string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardTokenRequestParameterNames.ScopeName));
             }

@@ -35,7 +35,7 @@
         {            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult((ResourceOwner)null));
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _unlinkProfileAction.Execute(LocalSubject, ExternalSubject)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _unlinkProfileAction.Execute(LocalSubject, ExternalSubject)).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InternalError, exception.Code);
@@ -51,7 +51,7 @@
                 ResourceOwnerId = "otherSubject"
             }));
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _unlinkProfileAction.Execute(LocalSubject, ExternalSubject)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _unlinkProfileAction.Execute(LocalSubject, ExternalSubject)).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InternalError, exception.Code);

@@ -83,7 +83,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             var client = await _clientRepository.GetById(authorizationParameter.ClientId).ConfigureAwait(false);
             if (client == null)
             {
-                throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode,
+                throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.ClientIsNotValid, authorizationParameter.ClientId),
                     authorizationParameter.State);
             }
@@ -152,7 +152,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
         {
             if (responseTypes == null)
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
                     state);
@@ -162,7 +162,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                 .SingleOrDefault(k => k.Count == responseTypes.Count && k.All(key => responseTypes.Contains(key)));
             if (record == null)
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
                     state);

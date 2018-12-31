@@ -60,7 +60,7 @@ namespace SimpleAuth.Helpers
             }
             catch (Exception)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, uri.AbsoluteUri));
             }

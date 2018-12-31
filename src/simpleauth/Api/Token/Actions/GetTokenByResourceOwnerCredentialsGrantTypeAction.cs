@@ -77,19 +77,19 @@ namespace SimpleAuth.Api.Token.Actions
             if (authResult.Client == null)
             {                
                 _oauthEventSource.Info(authResult.ErrorMessage);
-                throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
+                throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
             // 2. Check the client.
             if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.password))
             {
-                throw new IdentityServerException(ErrorCodes.InvalidClient,
+                throw new SimpleAuthException(ErrorCodes.InvalidClient,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.password));
             }
 
             if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseType.token) || !client.ResponseTypes.Contains(ResponseType.id_token))
             {
-                throw new IdentityServerException(ErrorCodes.InvalidClient, string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, "token id_token"));
+                throw new SimpleAuthException(ErrorCodes.InvalidClient, string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, "token id_token"));
             }
 
             // 3. Try to authenticate a resource owner
@@ -98,7 +98,7 @@ namespace SimpleAuth.Api.Token.Actions
                 resourceOwnerGrantTypeParameter.AmrValues).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidGrant, ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
+                throw new SimpleAuthException(ErrorCodes.InvalidGrant, ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
             }
 
             // 4. Check if the requested scopes are valid
@@ -108,7 +108,7 @@ namespace SimpleAuth.Api.Token.Actions
                 var scopeValidation = _scopeValidator.Check(resourceOwnerGrantTypeParameter.Scope, client);
                 if (!scopeValidation.IsValid)
                 {
-                    throw new IdentityServerException(ErrorCodes.InvalidScope, scopeValidation.ErrorMessage);
+                    throw new SimpleAuthException(ErrorCodes.InvalidScope, scopeValidation.ErrorMessage);
                 }
 
                 allowedTokenScopes = string.Join(" ", scopeValidation.Scopes);
@@ -116,7 +116,7 @@ namespace SimpleAuth.Api.Token.Actions
 
             // 5. Generate the user information payload and store it.
             var claims = resourceOwner.Claims;
-            var claimsIdentity = new ClaimsIdentity(claims, "simpleIdentityServer");
+            var claimsIdentity = new ClaimsIdentity(claims, "simpleAuth");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var authorizationParameter = new AuthorizationParameter
             {

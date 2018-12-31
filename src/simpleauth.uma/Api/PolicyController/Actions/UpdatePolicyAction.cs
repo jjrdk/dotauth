@@ -26,6 +26,8 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
     using Newtonsoft.Json;
     using Parameters;
     using Repositories;
+    using SimpleAuth.Errors;
+    using ErrorDescriptions = Errors.ErrorDescriptions;
 
     internal class UpdatePolicyAction : IUpdatePolicyAction
     {
@@ -53,12 +55,12 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
 
             if (string.IsNullOrWhiteSpace(updatePolicyParameter.PolicyId))
             {
-                throw new BaseUmaException(UmaErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
             }
 
             if (updatePolicyParameter.Rules == null || !updatePolicyParameter.Rules.Any())
             {
-                throw new BaseUmaException(UmaErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.Rules));
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.Rules));
             }
             
             _umaServerEventSource.StartUpdateAuthorizationPolicy(JsonConvert.SerializeObject(updatePolicyParameter));

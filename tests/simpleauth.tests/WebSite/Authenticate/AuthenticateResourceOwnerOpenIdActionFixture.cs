@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Tests.WebSite.Authenticate
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Factories;
     using Moq;
     using Parameters;
@@ -26,6 +22,10 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
     using SimpleAuth.Helpers;
     using SimpleAuth.WebSite.Authenticate.Actions;
     using SimpleAuth.WebSite.Authenticate.Common;
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using Xunit;
 
     public sealed class AuthenticateResourceOwnerOpenIdActionFixture
@@ -37,40 +37,44 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerOpenIdAction.Execute(null, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerOpenIdAction.Execute(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_No_Resource_Owner_Is_Passed_Then_Redirect_To_Index_Page()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
 
-                        await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null, null).ConfigureAwait(false);
+            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null, null).ConfigureAwait(false);
 
-                        _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
+            _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
         }
 
         [Fact]
         public async Task When_Resource_Owner_Is_Not_Authenticated_Then_Redirect_To_Index_Page()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-                        await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, 
-                claimsPrincipal, 
-                null, null).ConfigureAwait(false);
+            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
+    claimsPrincipal,
+    null, null).ConfigureAwait(false);
 
-                        _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
+            _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
         }
 
         [Fact]
         public async Task When_Prompt_Parameter_Contains_Login_Value_Then_Redirect_To_Index_Page()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
-            var claimsIdentity = new ClaimsIdentity("identityServer");
+            var claimsIdentity = new ClaimsIdentity("authServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var promptParameters = new List<PromptParameter>
             {
@@ -79,16 +83,17 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(promptParameters);
 
-                        await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
-                claimsPrincipal,
-                null, null).ConfigureAwait(false);
+            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
+    claimsPrincipal,
+    null, null).ConfigureAwait(false);
 
-                        _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
+            _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
         }
 
         [Fact]
-        public async Task When_Prompt_Parameter_Doesnt_Contain_Login_Value_And_Resource_Owner_Is_Authenticated_Then_Helper_Is_Called()
-        {            InitializeFakeObjects();
+        public async Task When_Prompt_Parameter_Does_Not_Contain_Login_Value_And_Resource_Owner_Is_Authenticated_Then_Helper_Is_Called()
+        {
+            InitializeFakeObjects();
             const string code = "code";
             const string subject = "subject";
             var authorizationParameter = new AuthorizationParameter();
@@ -96,7 +101,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             {
                 new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
             };
-            var claimsIdentity = new ClaimsIdentity(claims, "identityServer");
+            var claimsIdentity = new ClaimsIdentity(claims, "authServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var promptParameters = new List<PromptParameter>
             {
@@ -111,14 +116,14 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirection())
                 .Returns(actionResult);
 
-                        await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
-                claimsPrincipal,
-                code, null).ConfigureAwait(false);
+            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
+    claimsPrincipal,
+    code, null).ConfigureAwait(false);
 
-                        _authenticateHelperFake.Verify(a => a.ProcessRedirection(authorizationParameter, 
-                code, 
-                subject,
-                It.IsAny<List<Claim>>(), null));
+            _authenticateHelperFake.Verify(a => a.ProcessRedirection(authorizationParameter,
+    code,
+    subject,
+    It.IsAny<List<Claim>>(), null));
         }
 
         private void InitializeFakeObjects()

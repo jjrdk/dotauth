@@ -16,15 +16,22 @@ namespace SimpleAuth.Exceptions
 {
     using System;
 
-    public class InternalIdentityServerException : Exception
-    {        
-        public InternalIdentityServerException(string message) : base(message)
+    public class SimpleAuthException : Exception
+    {
+        protected SimpleAuthException()
         {
         }
 
-        public InternalIdentityServerException(string message, Exception innerException)
-            : base(message, innerException)
+        public SimpleAuthException(string code, string message) : base(message)
         {
+            Code = code;
         }
+
+        public SimpleAuthException(string code, string message, Exception innerException) : base(message, innerException)
+        {
+            Code = code;
+        }
+
+        public string Code { get; }
     }
 }

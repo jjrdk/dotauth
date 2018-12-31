@@ -40,7 +40,7 @@
                 var sectorIdentifierUris = await GetSectorIdentifierUris(newClient.SectorIdentifierUri).ConfigureAwait(false);
                 if (sectorIdentifierUris.Any(sectorIdentifierUri => !newClient.RedirectionUrls.Contains(sectorIdentifierUri)))
                 {
-                    throw new IdentityServerException(
+                    throw new SimpleAuthException(
                         ErrorCodes.InvalidClientMetaData,
                         ErrorDescriptions.OneOrMoreSectorIdentifierUriIsNotARedirectUri);
                 }
@@ -52,7 +52,7 @@
                 if (string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseAlg) ||
                     !JwtConstants.MappingNameToJweAlgEnum.ContainsKey(newClient.IdTokenEncryptedResponseAlg))
                 {
-                    throw new IdentityServerException(
+                    throw new SimpleAuthException(
                         ErrorCodes.InvalidClientMetaData,
                         ErrorDescriptions.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
                 }
@@ -64,7 +64,7 @@
                 if (string.IsNullOrWhiteSpace(newClient.UserInfoEncryptedResponseAlg) ||
                     !JwtConstants.MappingNameToJweAlgEnum.ContainsKey(newClient.UserInfoEncryptedResponseAlg))
                 {
-                    throw new IdentityServerException(
+                    throw new SimpleAuthException(
                         ErrorCodes.InvalidClientMetaData,
                         ErrorDescriptions.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified);
                 }
@@ -76,7 +76,7 @@
                 if (string.IsNullOrWhiteSpace(newClient.RequestObjectEncryptionAlg) ||
                     !JwtConstants.MappingNameToJweAlgEnum.ContainsKey(newClient.RequestObjectEncryptionAlg))
                 {
-                    throw new IdentityServerException(
+                    throw new SimpleAuthException(
                         ErrorCodes.InvalidClientMetaData,
                         ErrorDescriptions.TheParameterRequestObjectEncryptionAlgMustBeSpecified);
                 }
@@ -89,14 +89,14 @@
 
             if (newClient.RequestUris == null || !newClient.RequestUris.Any())
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestUriCode,
                     string.Format(ErrorDescriptions.MissingParameter, ClientNames.RequestUris));
             }
 
             if (newClient.RequestUris.Any(requestUri => !requestUri.IsAbsoluteUri))
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidClientMetaData,
                     ErrorDescriptions.OneOfTheRequestUriIsNotValid);
             }
@@ -176,7 +176,7 @@
             {
                 if (newClient.JwksUri != null)
                 {
-                    throw new IdentityServerException(
+                    throw new SimpleAuthException(
                         ErrorCodes.InvalidClientMetaData,
                         ErrorDescriptions.TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed);
                 }
@@ -190,7 +190,7 @@
 
             if (newClient.AllowedScopes == null || newClient.AllowedScopes.Count == 0)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidScope,
                     string.Format(ErrorDescriptions.MissingParameter, ClientNames.AllowedScopes));
             }
@@ -199,7 +199,7 @@
             if (scopes.Count != newClient.AllowedScopes.Count)
             {
                 var enumerable = newClient.AllowedScopes.Select(x => x.Name).Except(scopes.Select(x => x.Name));
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidScope,
                     $"Unknown scopes: {string.Join(",", enumerable)}");
             }
@@ -208,7 +208,7 @@
 
             if (newClient.RedirectionUrls == null || newClient.RedirectionUrls.Count == 0)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRedirectUri,
                     string.Format(ErrorDescriptions.MissingParameter, ClientNames.RedirectUris));
             }
@@ -219,12 +219,12 @@
                 {
                     if (!Uri.IsWellFormedUriString(redirectUri.AbsoluteUri, UriKind.Absolute))
                     {
-                        throw new IdentityServerException(ErrorCodes.InvalidRedirectUri, string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, redirectUri));
+                        throw new SimpleAuthException(ErrorCodes.InvalidRedirectUri, string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, redirectUri));
                     }
 
                     if (!string.IsNullOrWhiteSpace(redirectUri.Fragment))
                     {
-                        throw new IdentityServerException(ErrorCodes.InvalidRedirectUri, string.Format(ErrorDescriptions.TheRedirectUrlCannotContainsFragment, redirectUri));
+                        throw new SimpleAuthException(ErrorCodes.InvalidRedirectUri, string.Format(ErrorDescriptions.TheRedirectUrlCannotContainsFragment, redirectUri));
                     }
                     client.RedirectionUrls.Add(redirectUri);
                 }
@@ -235,7 +235,7 @@
                 {
                     if (!Uri.IsWellFormedUriString(redirectUri.AbsoluteUri, UriKind.Absolute))
                     {
-                        throw new IdentityServerException(ErrorCodes.InvalidRedirectUri, string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, redirectUri));
+                        throw new SimpleAuthException(ErrorCodes.InvalidRedirectUri, string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, redirectUri));
                     }
 
                     client.RedirectionUrls.Add(redirectUri);
@@ -375,7 +375,7 @@
             }
             catch (Exception ex)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidClientMetaData,
                     ErrorDescriptions.TheSectorIdentifierUrisCannotBeRetrieved,
                     ex);
@@ -394,14 +394,14 @@
 
             if (!uri.IsAbsoluteUri || !Uri.IsWellFormedUriString(uri.AbsoluteUri, UriKind.Absolute))
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidClientMetaData,
                     string.Format(ErrorDescriptions.ParameterIsNotCorrect, newClientName));
             }
 
             if (checkSchemeIsHttps && uri.Scheme != Uri.UriSchemeHttps)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidClientMetaData,
                     string.Format(ErrorDescriptions.ParameterIsNotCorrect, newClientName));
             }

@@ -55,7 +55,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
         }
 
         [Fact]
-        public async Task When_Client_Doesnt_Exist_Then_ReturnsNull()
+        public async Task When_Client_Does_Not_Exist_Then_ReturnsNull()
         {
             const string clientId = "invalid_client_id";
             InitializeFakeObjects();
@@ -112,7 +112,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
                     }
                 }));
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _clientRepositoryMock.Update(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _clientRepositoryMock.Update(parameter)).ConfigureAwait(false);
 
             Assert.Equal("Unknown scopes: not_supported_scope", ex.Message);
         }
