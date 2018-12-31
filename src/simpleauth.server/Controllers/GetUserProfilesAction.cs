@@ -34,7 +34,7 @@
             var resourceOwner = await _resourceOwnerRepository.Get(subject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     Errors.ErrorCodes.InternalError,
                     string.Format(Errors.ErrorDescriptions.TheResourceOwnerDoesntExist, subject));
             }

@@ -16,10 +16,10 @@ namespace SimpleAuth.Uma.Tests
 {
     using Client.Configuration;
     using Client.Permission;
-    using Client.Policy;
     using Client.ResourceSet;
     using MiddleWares;
     using Shared.DTOs;
+    using SimpleAuth.Errors;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Xunit;
@@ -69,7 +69,7 @@ namespace SimpleAuth.Uma.Tests
             UserStore.Instance().ClientId = "client";
 
             Assert.True(ticket.ContainsError);
-            Assert.Equal("invalid_request", ticket.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, ticket.Error.Error);
             Assert.Equal("the client_id cannot be extracted", ticket.Error.ErrorDescription);
         }
 
@@ -87,7 +87,7 @@ namespace SimpleAuth.Uma.Tests
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
-            Assert.Equal("invalid_request", ticket.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, ticket.Error.Error);
             Assert.Equal("the parameter resource_set_id needs to be specified", ticket.Error.ErrorDescription);
         }
 
@@ -105,12 +105,12 @@ namespace SimpleAuth.Uma.Tests
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
-            Assert.Equal("invalid_request", ticket.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, ticket.Error.Error);
             Assert.Equal("the parameter scopes needs to be specified", ticket.Error.ErrorDescription);
         }
 
         [Fact]
-        public async Task When_Resource_Doesnt_Exist_Then_Error_Is_Returned()
+        public async Task When_Resource_Does_Not_Exist_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
 
@@ -132,7 +132,7 @@ namespace SimpleAuth.Uma.Tests
         }
 
         [Fact]
-        public async Task When_Scopes_Doesnt_Exist_Then_Error_Is_Returned()
+        public async Task When_Scopes_Does_Not_Exist_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet

@@ -36,7 +36,7 @@ namespace SimpleAuth.Tests.Validators
         }
 
         [Fact]
-        public async Task When_AccessToken_Doesnt_Exist_Then_False_Is_Returned()
+        public async Task When_AccessToken_Does_Not_Exist_Then_False_Is_Returned()
         {            InitializeFakeObjects();
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
@@ -90,7 +90,7 @@ namespace SimpleAuth.Tests.Validators
         }
 
         [Fact]
-        public async Task When_RefreshToken_Doesnt_Exist_Then_False_Is_Returned()
+        public async Task When_RefreshToken_Does_Not_Exist_Then_False_Is_Returned()
         {            InitializeFakeObjects();
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));

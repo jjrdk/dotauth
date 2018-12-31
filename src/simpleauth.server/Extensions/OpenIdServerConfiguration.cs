@@ -1,14 +1,16 @@
 ﻿namespace SimpleAuth.Server.Extensions
 {
-    using System.Collections.Generic;
     using Shared;
     using Shared.Models;
+    using System.Collections.Generic;
 
     public class OpenIdServerConfiguration
     {
-        public List<ResourceOwner> Users { get; set; }
-        public List<Client> Clients { get; set; }
-        public List<Translation> Translations { get; set; }
-        public List<JsonWebKey> JsonWebKeys { get; set; }
+        public IReadOnlyCollection<ResourceOwner> Users { get; set; }
+        public IReadOnlyCollection<Client> Clients { get; set; }
+        public IReadOnlyCollection<Translation> Translations { get; set; }
+        public IReadOnlyCollection<JsonWebKey> JsonWebKeys { get; set; }
+        public IReadOnlyCollection<Consent> Consents { get; set; }
+        public IReadOnlyCollection<ResourceOwnerProfile> Profiles { get; set; }
     }
 }

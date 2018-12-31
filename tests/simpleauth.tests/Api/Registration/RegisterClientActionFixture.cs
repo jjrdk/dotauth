@@ -39,7 +39,7 @@ namespace SimpleAuth.Tests.Api.Registration
         }
 
         [Fact]
-        public async Task When_Client_Doesnt_Exist_Then_ReturnsEmptyResult()
+        public async Task When_Client_Does_Not_Exist_Then_ReturnsEmptyResult()
         {
             const string clientId = "client_id";
             InitializeFakeObjects();

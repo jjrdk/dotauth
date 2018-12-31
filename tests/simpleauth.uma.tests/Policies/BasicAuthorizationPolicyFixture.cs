@@ -49,7 +49,7 @@ namespace SimpleAuth.Uma.Tests.Policies
         }
 
         [Fact]
-        public async Task When_Doesnt_have_Permission_To_Access_To_Scope_Then_NotAuthorized_Is_Returned()
+        public async Task When_Does_Not_have_Permission_To_Access_To_Scope_Then_NotAuthorized_Is_Returned()
         {
             InitializeFakeObjects();
             var ticket = new TicketLineParameter("client_id")

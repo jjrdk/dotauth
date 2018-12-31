@@ -47,7 +47,7 @@ namespace SimpleAuth.Tests.Authenticate
         }
 
         [Fact]
-        public void When_Client_Doesnt_Contain_ThumbprintAndName_Then_Null_Is_Returned()
+        public void When_Client_Does_Not_Contain_ThumbprintAndName_Then_Null_Is_Returned()
         {
             InitializeFakeObjects();
 

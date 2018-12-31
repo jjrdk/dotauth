@@ -44,32 +44,32 @@ namespace SimpleAuth.Server.MiddleWare
             }
             catch (Exception exception)
             {
-                var simpleIdentityServerEventSource = _options.SimpleIdentityServerEventSource;
-                var identityServerExceptionWithState = exception as IdentityServerExceptionWithState;
-                if (!(exception is IdentityServerException identityServerException))
+                var openIdEventSource = _options.OpenIdEventSource;
+                var exceptionWithState = exception as SimpleAuthExceptionWithState;
+                if (!(exception is SimpleAuthException serverException))
                 {
-                    identityServerException = new IdentityServerException(ErrorCodes.UnhandledExceptionCode, exception.Message);
-                    simpleIdentityServerEventSource.Failure(exception);
+                    serverException = new SimpleAuthException(ErrorCodes.UnhandledExceptionCode, exception.Message);
+                    openIdEventSource.Failure(exception);
                 }
                 else
                 {
-                    var code = identityServerException.Code;
-                    var message = identityServerException.Message;
-                    var state = identityServerExceptionWithState == null
+                    var code = serverException.Code;
+                    var message = serverException.Message;
+                    var state = exceptionWithState == null
                         ? string.Empty
-                        : identityServerExceptionWithState.State;
-                    simpleIdentityServerEventSource.OpenIdFailure(code, message, state);
+                        : exceptionWithState.State;
+                    openIdEventSource.OpenIdFailure(code, message, state);
                 }
 
                 context.Response.Clear();
-                if (identityServerExceptionWithState != null)
+                if (exceptionWithState != null)
                 {
                     ErrorResponse errorResponseWithState = new ErrorResponseWithState
                     {
-                        State = identityServerExceptionWithState.State
+                        State = exceptionWithState.State
                     };
 
-                    PopulateError(errorResponseWithState, identityServerExceptionWithState);
+                    PopulateError(errorResponseWithState, exceptionWithState);
                     context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                     context.Response.ContentType = "application/json";
                     var serializedError = errorResponseWithState.SerializeWithDataContract();
@@ -78,7 +78,7 @@ namespace SimpleAuth.Server.MiddleWare
                 else
                 {
                     var error = new ErrorResponse();
-                    PopulateError(error, identityServerException);
+                    PopulateError(error, serverException);
                     context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                     context.Response.ContentType = "application/json";
                     var serializedError = error.SerializeWithDataContract();
@@ -87,7 +87,7 @@ namespace SimpleAuth.Server.MiddleWare
             }
         }
 
-        private static void PopulateError(ErrorResponse errorResponse, IdentityServerException exception)
+        private static void PopulateError(ErrorResponse errorResponse, SimpleAuthException exception)
         {
             errorResponse.Error = exception.Code;
             errorResponse.ErrorDescription = exception.Message;

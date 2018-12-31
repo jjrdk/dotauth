@@ -14,9 +14,9 @@
 
 namespace SimpleAuth.Exceptions
 {
-    public class IdentityServerAuthenticationException : InternalIdentityServerException
+    public class AuthServerAuthenticationException : InternalAuthServerException
     {
-        public IdentityServerAuthenticationException(string message) : base(message)
+        public AuthServerAuthenticationException(string message) : base(message)
         {
         }
     }

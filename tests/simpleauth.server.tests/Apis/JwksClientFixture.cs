@@ -28,7 +28,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
     public class JwksClientFixture : IClassFixture<TestOauthServerFixture>
     {
-        private const string baseUrl = "http://localhost:5000";
+        private const string BaseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
         private readonly HttpClient _httpClientFactoryStub;
         private readonly IJwksClient _jwksClient;
@@ -46,7 +46,7 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Requesting_JWKS_Then_List_Is_Returned()
         {
-            var jwks = await _jwksClient.ResolveAsync(new Uri(baseUrl + "/.well-known/openid-configuration"))
+            var jwks = await _jwksClient.ResolveAsync(new Uri(BaseUrl + "/.well-known/openid-configuration"))
                 .ConfigureAwait(false);
 
             Assert.NotNull(jwks);
@@ -64,9 +64,9 @@ namespace SimpleAuth.Server.Tests.Apis
                         TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                         _httpClientFactoryStub,
                         new GetDiscoveryOperation(_httpClientFactoryStub))
-                    .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                    .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
                     .ConfigureAwait(false);
-            var jwks = await _jwksClient.ResolveAsync(new Uri(baseUrl + "/.well-known/openid-configuration"))
+            var jwks = await _jwksClient.ResolveAsync(new Uri(BaseUrl + "/.well-known/openid-configuration"))
                 .ConfigureAwait(false);
 
             var accessToken = result.Content.AccessToken;
@@ -88,15 +88,15 @@ namespace SimpleAuth.Server.Tests.Apis
                     _httpClientFactoryStub,
                     new GetDiscoveryOperation(
                         _httpClientFactoryStub))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
                 .ConfigureAwait(false);
             var httpRequestMessage = new HttpRequestMessage
             {
-                RequestUri = new Uri(baseUrl + "/jwks"),
+                RequestUri = new Uri(BaseUrl + "/jwks"),
                 Method = HttpMethod.Put
             };
             await _server.Client.SendAsync(httpRequestMessage).ConfigureAwait(false);
-            var jwks = await _jwksClient.ResolveAsync(new Uri(baseUrl + "/.well-known/openid-configuration"))
+            var jwks = await _jwksClient.ResolveAsync(new Uri(BaseUrl + "/.well-known/openid-configuration"))
                 .ConfigureAwait(false);
 
             Assert.False(result.ContainsError);

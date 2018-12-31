@@ -42,7 +42,7 @@
                 State = "state"
             };
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() => _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.NonceName));
             Assert.True(exception.State == authorizationParameter.State);
@@ -60,7 +60,7 @@
             _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(false);
 
-                        var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
+                        var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() => _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, null, new Client(), null)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(ex.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
@@ -86,7 +86,7 @@
                 Type = TypeActionResult.RedirectToAction,
                 RedirectInstruction = new RedirectInstruction
                 {
-                    Action = IdentityServerEndPoints.ConsentIndex
+                    Action = SimpleAuthEndPoints.ConsentIndex
                 }
             };
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));

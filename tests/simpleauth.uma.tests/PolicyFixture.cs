@@ -21,6 +21,7 @@ namespace SimpleAuth.Uma.Tests
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using SimpleAuth.Errors;
     using Xunit;
 
     public class PolicyFixture : IClassFixture<TestUmaServerFixture>
@@ -50,7 +51,7 @@ namespace SimpleAuth.Uma.Tests
 
             Assert.NotNull(response);
             Assert.True(response.ContainsError);
-            Assert.Equal("invalid_request", response.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Error);
             Assert.Equal("the parameter resource_set_ids needs to be specified", response.Error.ErrorDescription);
         }
 
@@ -73,12 +74,12 @@ namespace SimpleAuth.Uma.Tests
 
             Assert.NotNull(response);
             Assert.True(response.ContainsError);
-            Assert.Equal("invalid_request", response.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Error);
             Assert.Equal("the parameter rules needs to be specified", response.Error.ErrorDescription);
         }
 
         [Fact]
-        public async Task When_Add_Policy_And_ResourceOwner_Doesnt_Exists_Then_Error_Is_Returned()
+        public async Task When_Add_Policy_And_ResourceOwner_Does_Not_Exists_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
 
@@ -108,7 +109,7 @@ namespace SimpleAuth.Uma.Tests
         }
 
         [Fact]
-        public async Task When_Add_Policy_And_Scope_Doesnt_Exists_Then_Error_Is_Returned()
+        public async Task When_Add_Policy_And_Scope_Does_Not_Exists_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
 
@@ -183,7 +184,7 @@ namespace SimpleAuth.Uma.Tests
 
             Assert.NotNull(response);
             Assert.True(response.ContainsError);
-            Assert.Equal("invalid_request", response.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Error);
             Assert.Equal("the parameter id needs to be specified", response.Error.ErrorDescription);
         }
 
@@ -203,7 +204,7 @@ namespace SimpleAuth.Uma.Tests
 
             Assert.NotNull(response);
             Assert.True(response.ContainsError);
-            Assert.Equal("invalid_request", response.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Error);
             Assert.Equal("the parameter rules needs to be specified", response.Error.ErrorDescription);
         }
 
@@ -235,7 +236,7 @@ namespace SimpleAuth.Uma.Tests
         }
 
         [Fact]
-        public async Task When_Update_Policy_And_Scope_Doesnt_Exist_Then_Error_Is_Returned()
+        public async Task When_Update_Policy_And_Scope_Does_Not_Exist_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
 
@@ -337,7 +338,7 @@ namespace SimpleAuth.Uma.Tests
 
             Assert.NotNull(response);
             Assert.True(response.ContainsError);
-            Assert.Equal("invalid_request", response.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Error);
             Assert.Equal("the parameter resources needs to be specified", response.Error.ErrorDescription);
         }
 
@@ -604,7 +605,7 @@ namespace SimpleAuth.Uma.Tests
         }
 
         [Fact]
-        public async Task When_Removing_Policy_Then_Information_Doesnt_Exist()
+        public async Task When_Removing_Policy_Then_Information_Does_Not_Exist()
         {
             InitializeFakeObjects();
 

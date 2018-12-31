@@ -55,7 +55,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                .Returns(Task.FromResult(new AuthenticationResult(null, null)));
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null, null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _postIntrospectionAction.Execute(parameter, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
         }
 
@@ -75,7 +75,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null, null)).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _postIntrospectionAction.Execute(parameter, null, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidToken);
             Assert.True(exception.Message == ErrorDescriptions.TheTokenIsNotValid);
         }

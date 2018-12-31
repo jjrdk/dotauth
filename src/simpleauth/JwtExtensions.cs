@@ -20,9 +20,9 @@ namespace SimpleAuth
     using Microsoft.Extensions.DependencyInjection;
     using Signature;
 
-    public static class SimpleIdentityServerJwtExtensions
+    public static class JwtExtensions
     {
-        public static IServiceCollection AddSimpleIdentityServerJwt(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddSimpleAuthJwt(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<IJweGenerator, JweGenerator>();
             serviceCollection.AddTransient<IJweParser, JweParser>();

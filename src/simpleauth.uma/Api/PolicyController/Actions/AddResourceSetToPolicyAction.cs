@@ -23,6 +23,8 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
     using Logging;
     using Parameters;
     using Repositories;
+    using SimpleAuth.Errors;
+    using ErrorDescriptions = Errors.ErrorDescriptions;
 
     internal class AddResourceSetToPolicyAction : IAddResourceSetToPolicyAction
     {
@@ -52,13 +54,13 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
 
             if (string.IsNullOrWhiteSpace(addResourceSetParameter.PolicyId))
             {
-                throw new BaseUmaException(UmaErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddResourceSetParameterNames.PolicyId));
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddResourceSetParameterNames.PolicyId));
             }
 
             if (addResourceSetParameter.ResourceSets == null  ||
                 !addResourceSetParameter.ResourceSets.Any())
             {
-                throw new BaseUmaException(UmaErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddResourceSetParameterNames.ResourceSet));
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddResourceSetParameterNames.ResourceSet));
             }
 
             _umaServerEventSource.StartAddResourceToAuthorizationPolicy(addResourceSetParameter.PolicyId, string.Join(",", addResourceSetParameter.ResourceSets));

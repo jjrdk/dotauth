@@ -30,13 +30,13 @@
 
             if (request.IsIdentifier)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, ErrorDescriptions.CannotInsertClaimIdentifier);
+                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, ErrorDescriptions.CannotInsertClaimIdentifier);
             }
 
             var claim = await _claimRepository.GetAsync(request.Code).ConfigureAwait(false);
             if (claim != null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, ErrorDescriptions.ClaimExists);
+                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, ErrorDescriptions.ClaimExists);
             }
 
             return await _claimRepository.InsertAsync(request).ConfigureAwait(false);

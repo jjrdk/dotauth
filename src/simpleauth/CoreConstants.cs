@@ -194,13 +194,6 @@ namespace SimpleAuth
             StandardTokenTypeHintNames.RefreshToken
         };
 
-        public static List<string> AllStandardClaimParameterValueNames = new List<string>
-        {
-            StandardClaimParameterValueNames.ValueName,
-            StandardClaimParameterValueNames.ValuesName,
-            StandardClaimParameterValueNames.EssentialName
-        };
-
         /// <summary>
         /// Parameter names of an authorization request
         /// </summary>
@@ -225,12 +218,6 @@ namespace SimpleAuth
             public static string RequestUriName = "request_uri";
         }
 
-        public static class RevokeTokenParameterNames
-        {
-            public const string Token = "token";
-            public const string TokenTypeHint = "token_type_hint";
-        }
-
         public static class IntrospectionRequestNames
         {
             public const string Token = "token";
@@ -252,14 +239,6 @@ namespace SimpleAuth
             public static string AuthorizationCodeName = "code";
             public static string RefreshToken = "refresh_token";
             public static string ScopeName = "scope";
-        }
-
-        public const string AnonymousClientId = "Anonymous";
-
-        // Custom authentication policies defined by Simple Identity Server
-        public static class CustomAuthenticationPolicies
-        {
-            public static string CustomPasswordAuth = "http://schemas.simpleidentityserver.net/pape/policies/2015/05/password";
         }
 
         public static class StandardTranslationCodes

@@ -12,7 +12,7 @@
 
     public class ProfileClientFixture : IClassFixture<TestOauthServerFixture>
     {
-        private const string baseUrl = "http://localhost:5000";
+        private const string BaseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
         private IProfileClient _profileClient;
 
@@ -30,10 +30,10 @@
                     TokenRequest.FromScopes("manage_profile"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration")
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration")
                 .ConfigureAwait(false);
 
-            var result = await _profileClient.LinkProfile(baseUrl + "/profiles",
+            var result = await _profileClient.LinkProfile(BaseUrl + "/profiles",
                     "user",
                     new LinkProfileRequest
                     {
@@ -42,7 +42,7 @@
                 .ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
-            Assert.Equal("invalid_request", result.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, result.Error.Error);
             Assert.Equal("the parameter UserId is missing", result.Error.ErrorDescription);
         }
 
@@ -56,20 +56,20 @@
                     TokenRequest.FromScopes("manage_profile"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
-            var result = await _profileClient.LinkProfile(baseUrl + "/profiles", "currentSubject", new LinkProfileRequest
+            var result = await _profileClient.LinkProfile(BaseUrl + "/profiles", "currentSubject", new LinkProfileRequest
             {
                 UserId = "user_id",
             }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
-            Assert.Equal("invalid_request", result.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, result.Error.Error);
             Assert.Equal("the parameter Issuer is missing", result.Error.ErrorDescription);
         }
 
         [Fact]
-        public async Task When_Link_Profile_And_User_Doesnt_Exist_Then_Error_Is_Returned()
+        public async Task When_Link_Profile_And_User_Does_Not_Exist_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
 
@@ -78,10 +78,10 @@
                     TokenRequest.FromScopes("manage_profile"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             var currentSubject = "currentSubject";
-            var result = await _profileClient.LinkProfile(baseUrl + "/profiles", currentSubject, new LinkProfileRequest
+            var result = await _profileClient.LinkProfile(BaseUrl + "/profiles", currentSubject, new LinkProfileRequest
             {
                 UserId = "user_id",
                 Issuer = "issuer"
@@ -93,7 +93,7 @@
         }
 
         [Fact]
-        public async Task When_Unlink_Profile_And_User_Doesnt_Exist_Then_Error_Is_Returned()
+        public async Task When_Unlink_Profile_And_User_Does_Not_Exist_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
 
@@ -102,10 +102,10 @@
                     TokenRequest.FromScopes("manage_profile"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             var currentSubject = "currentSubject";
-            var result = await _profileClient.UnlinkProfile(baseUrl + "/profiles", "externalSubject", currentSubject, grantedToken.Content.AccessToken).ConfigureAwait(false);
+            var result = await _profileClient.UnlinkProfile(BaseUrl + "/profiles", "externalSubject", currentSubject, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
             Assert.Equal("internal_error", result.Error.Error);
@@ -113,7 +113,7 @@
         }
 
         [Fact]
-        public async Task When_Unlink_Profile_And_Doesnt_Exist_Then_Error_Is_Returned()
+        public async Task When_Unlink_Profile_And_Does_Not_Exist_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
 
@@ -122,9 +122,9 @@
                     TokenRequest.FromScopes("manage_profile"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
-            var result = await _profileClient.UnlinkProfile(baseUrl + "/profiles", "invalid_external_subject", "administrator", grantedToken.Content.AccessToken).ConfigureAwait(false);
+            var result = await _profileClient.UnlinkProfile(BaseUrl + "/profiles", "invalid_external_subject", "administrator", grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
             Assert.Equal("internal_error", result.Error.Error);
@@ -132,7 +132,7 @@
         }
 
         [Fact]
-        public async Task When_Get_Profiles_And_User_Doesnt_Exist_Then_Error_Is_Returned()
+        public async Task When_Get_Profiles_And_User_Does_Not_Exist_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
 
@@ -141,10 +141,10 @@
                     TokenRequest.FromScopes("manage_profile"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             var currentSubject = "notvalid";
-            var result = await _profileClient.GetProfiles(baseUrl + "/profiles", currentSubject, grantedToken.Content.AccessToken).ConfigureAwait(false);
+            var result = await _profileClient.GetProfiles(BaseUrl + "/profiles", currentSubject, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
             Assert.Equal("internal_error", result.Error.Error);
@@ -162,9 +162,9 @@
                     TokenRequest.FromScopes("manage_profile"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
-            var result = await _profileClient.LinkProfile(baseUrl + "/profiles", "administrator", new LinkProfileRequest
+            var result = await _profileClient.LinkProfile(BaseUrl + "/profiles", "administrator", new LinkProfileRequest
             {
                 UserId = "user_id_1",
                 Issuer = "issuer"
@@ -183,14 +183,14 @@
                     TokenRequest.FromScopes("manage_profile"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
-            var linkResult = await _profileClient.LinkProfile(baseUrl + "/profiles", "administrator", new LinkProfileRequest
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
+            var linkResult = await _profileClient.LinkProfile(BaseUrl + "/profiles", "administrator", new LinkProfileRequest
             {
                 UserId = "user_id",
                 Issuer = "issuer"
             }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
-            var unlinkResult = await _profileClient.UnlinkProfile(baseUrl + "/profiles", "user_id", "administrator", grantedToken.Content.AccessToken).ConfigureAwait(false);
+            var unlinkResult = await _profileClient.UnlinkProfile(BaseUrl + "/profiles", "user_id", "administrator", grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             Assert.False(unlinkResult.ContainsError);
         }
@@ -205,14 +205,14 @@
                     TokenRequest.FromScopes("manage_profile"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
-            var linkResult = await _profileClient.LinkProfile(baseUrl + "/profiles", "administrator", new LinkProfileRequest
+                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
+            var linkResult = await _profileClient.LinkProfile(BaseUrl + "/profiles", "administrator", new LinkProfileRequest
             {
                 UserId = "user_id",
                 Issuer = "issuer"
             }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
-            var getProfilesResult = await _profileClient.GetProfiles(baseUrl + "/profiles", "administrator", grantedToken.Content.AccessToken).ConfigureAwait(false);
+            var getProfilesResult = await _profileClient.GetProfiles(BaseUrl + "/profiles", "administrator", grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             Assert.False(getProfilesResult.ContainsError);
             Assert.True(getProfilesResult.Content.Any());

@@ -39,7 +39,7 @@ namespace SimpleAuth.Api.Scopes.Actions
 
             if (await _scopeRepository.Get(scope.Name).ConfigureAwait(false) == null)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidParameterCode,
                     string.Format(ErrorDescriptions.TheScopeDoesntExist, scope.Name));
             }

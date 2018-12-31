@@ -219,7 +219,7 @@
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
-                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
                     string.Format(ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
@@ -339,7 +339,7 @@
                         id)
                     .ConfigureAwait(false);
             }
-            catch (IdentityServerException ex)
+            catch (SimpleAuthException ex)
             {
                 return RedirectToAction("Index", "Error", new { code = ex.Code, message = ex.Message });
             }
@@ -478,7 +478,7 @@
             var resourceOwner = await _resourceOwnerRepository.Get(subject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     Errors.ErrorCodes.InternalError,
                     string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, subject));
             }
@@ -506,7 +506,7 @@
             var resourceOwner = await _resourceOwnerRepository.Get(localSubject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     Errors.ErrorCodes.InternalError,
                     string.Format(Errors.ErrorDescriptions.TheResourceOwnerDoesntExist, localSubject));
             }
@@ -514,12 +514,12 @@
             var profile = await _profileRepository.Get(externalSubject).ConfigureAwait(false);
             if (profile == null || profile.ResourceOwnerId != localSubject)
             {
-                throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.NotAuthorizedToRemoveTheProfile);
+                throw new SimpleAuthException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.NotAuthorizedToRemoveTheProfile);
             }
 
             if (profile.Subject == localSubject)
             {
-                throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheExternalAccountAccountCannotBeUnlinked);
+                throw new SimpleAuthException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheExternalAccountAccountCannotBeUnlinked);
             }
 
             return await _profileRepository.Remove(new[] { externalSubject }).ConfigureAwait(false);
@@ -545,7 +545,7 @@
             var resourceOwner = await _resourceOwnerRepository.Get(localSubject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     Errors.ErrorCodes.InternalError,
                     string.Format(Errors.ErrorDescriptions.TheResourceOwnerDoesntExist, localSubject));
             }
@@ -569,7 +569,7 @@
 
             if (profile != null)
             {
-                throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheProfileAlreadyLinked);
+                throw new SimpleAuthException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheProfileAlreadyLinked);
             }
 
             return await _profileRepository.Add(new[]

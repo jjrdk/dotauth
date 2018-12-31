@@ -36,8 +36,8 @@ namespace SimpleAuth.Scim.Client.Tests
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSimpleAuthServer()
-                .AddOpenidLogging()
-                .AddScimHost();
+                .AddOpenidLogging();
+                //.AddScimHost();
             services.AddAuthentication(opts =>
             {
                 opts.DefaultAuthenticateScheme = DefaultSchema;

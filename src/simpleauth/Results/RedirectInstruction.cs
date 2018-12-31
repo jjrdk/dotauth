@@ -25,7 +25,7 @@ namespace SimpleAuth.Results
         }
 
         public IList<Parameter> Parameters { get; }
-        public IdentityServerEndPoints Action { get; set; }
+        public SimpleAuthEndPoints Action { get; set; }
         public ResponseMode ResponseMode { get; set; }
 
         public void AddParameter(string name, string value)

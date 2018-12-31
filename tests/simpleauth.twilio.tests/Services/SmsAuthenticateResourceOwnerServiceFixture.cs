@@ -26,7 +26,7 @@
         }
 
         [Fact]
-        public async Task When_ConfirmationCode_Doesnt_Exist_Then_Null_Is_Returned()
+        public async Task When_ConfirmationCode_Does_Not_Exist_Then_Null_Is_Returned()
         {            InitializeFakeObjects();
             _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>())).Returns(() => Task.FromResult((ConfirmationCode)null));
 

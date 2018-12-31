@@ -41,7 +41,7 @@ namespace SimpleAuth.Twilio.Controllers
                 await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber).ConfigureAwait(false);
                 result = new OkResult();
             }
-            catch(IdentityServerException ex)
+            catch(SimpleAuthException ex)
             {
                 result = BuildError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
             }

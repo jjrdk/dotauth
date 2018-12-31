@@ -45,7 +45,7 @@ namespace SimpleAuth.Tests.Api.Scopes.Actions
                 .Returns(Task.FromResult(scope));
 
             
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _addScopeOperation.Execute(new Scope
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _addScopeOperation.Execute(new Scope
             {
                 Name = name
             })).ConfigureAwait(false);

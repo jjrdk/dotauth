@@ -33,7 +33,7 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
         //}
 
         [Fact]
-        public async Task When_ResourceOwner_Doesnt_Exist_Then_ReturnsFalse()
+        public async Task When_ResourceOwner_Does_Not_Exist_Then_ReturnsFalse()
         {
             const string subject = "invalid_subject";
             InitializeFakeObjects();

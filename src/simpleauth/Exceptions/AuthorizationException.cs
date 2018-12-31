@@ -14,7 +14,7 @@
 
 namespace SimpleAuth.Exceptions
 {
-    public class AuthorizationException : IdentityServerException
+    public class AuthorizationException : SimpleAuthException
     {
         public AuthorizationException(string code, string message) : base(code, message)
         {

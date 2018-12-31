@@ -67,7 +67,7 @@ namespace SimpleAuth.Tests.Api.Authorization
                 Scope = scope,
             };
 
-                        var result = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationActions.GetAuthorization(authorizationParameter, null, null)).ConfigureAwait(false);
+                        var result = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() => _authorizationActions.GetAuthorization(authorizationParameter, null, null)).ConfigureAwait(false);
             Assert.True(result.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(result.Message == string.Format(ErrorDescriptions.TheClientRequiresPkce, clientId));
         }
@@ -80,7 +80,7 @@ namespace SimpleAuth.Tests.Api.Authorization
                 Type = TypeActionResult.RedirectToAction,
                 RedirectInstruction = new RedirectInstruction
                 {
-                    Action = IdentityServerEndPoints.ConsentIndex
+                    Action = SimpleAuthEndPoints.ConsentIndex
                 }
             };
 
@@ -129,7 +129,7 @@ namespace SimpleAuth.Tests.Api.Authorization
                 Type = TypeActionResult.RedirectToAction,
                 RedirectInstruction = new RedirectInstruction
                 {
-                    Action = IdentityServerEndPoints.ConsentIndex
+                    Action = SimpleAuthEndPoints.ConsentIndex
                 }
             };
 
@@ -178,7 +178,7 @@ namespace SimpleAuth.Tests.Api.Authorization
                 Type = TypeActionResult.RedirectToAction,
                 RedirectInstruction = new RedirectInstruction
                 {
-                    Action = IdentityServerEndPoints.ConsentIndex
+                    Action = SimpleAuthEndPoints.ConsentIndex
                 }
             };
 

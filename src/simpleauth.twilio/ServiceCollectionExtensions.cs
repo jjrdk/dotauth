@@ -53,7 +53,7 @@
                 opts.FileProviders.Add(embeddedFileProvider);
                 //opts.CompilationCallback = (context) =>
                 //{
-                //    var assm = MetadataReference.CreateFromFile(Assembly.Load("SimpleIdentityServer.Authenticate.Basic").Location);
+                //    var assm = MetadataReference.CreateFromFile(Assembly.Load("").Location);
                 //    context.Compilation = context.Compilation.AddReferences(assm);
                 //};
             });

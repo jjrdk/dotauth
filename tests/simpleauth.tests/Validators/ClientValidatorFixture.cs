@@ -29,7 +29,7 @@ namespace SimpleAuth.Tests.Validators
         private IClientValidator _clientValidator;
 
         [Fact]
-        public void When_Client_Doesnt_Contain_RedirectionUri_Then_EmptyArray_Is_Returned()
+        public void When_Client_Does_Not_Contain_RedirectionUri_Then_EmptyArray_Is_Returned()
         {
             InitializeMockingObjects();
 
@@ -73,7 +73,7 @@ namespace SimpleAuth.Tests.Validators
         }
 
         [Fact]
-        public void When_Client_Doesnt_Have_GrantType_Then_AuthorizationCode_Is_Assigned()
+        public void When_Client_Does_Not_Have_GrantType_Then_AuthorizationCode_Is_Assigned()
         {
             InitializeMockingObjects();
             var client = new Client();

@@ -30,7 +30,7 @@
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserTwoFactorAuthenticatorOperation.Execute("subject", "two_factor")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _updateUserTwoFactorAuthenticatorOperation.Execute("subject", "two_factor")).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);

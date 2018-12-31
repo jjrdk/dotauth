@@ -59,7 +59,7 @@ namespace SimpleAuth.Tests.Api.Token
                 .Returns(Task.FromResult(new AuthenticationResult(null, "error")));
 
                         var ex = await Assert
-                .ThrowsAsync<IdentityServerException>(() =>
+                .ThrowsAsync<SimpleAuthException>(() =>
                     _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
                 .ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClient);
@@ -67,7 +67,7 @@ namespace SimpleAuth.Tests.Api.Token
         }
 
         [Fact]
-        public async Task When_Client_Doesnt_Support_GrantType_RefreshToken_Then_Exception_Is_Thrown()
+        public async Task When_Client_Does_Not_Support_GrantType_RefreshToken_Then_Exception_Is_Thrown()
         {            InitializeFakeObjects();
 
             var parameter = new RefreshTokenGrantTypeParameter();
@@ -83,7 +83,7 @@ namespace SimpleAuth.Tests.Api.Token
                     null)));
 
                         var ex = await Assert
-                .ThrowsAsync<IdentityServerException>(() =>
+                .ThrowsAsync<SimpleAuthException>(() =>
                     _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
                 .ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClient);
@@ -112,7 +112,7 @@ namespace SimpleAuth.Tests.Api.Token
                 .Returns(() => Task.FromResult((GrantedToken) null));
 
                         var ex = await Assert
-                .ThrowsAsync<IdentityServerException>(() =>
+                .ThrowsAsync<SimpleAuthException>(() =>
                     _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
                 .ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidGrant);
@@ -141,7 +141,7 @@ namespace SimpleAuth.Tests.Api.Token
                 }));
 
                         var ex = await Assert
-                .ThrowsAsync<IdentityServerException>(() =>
+                .ThrowsAsync<SimpleAuthException>(() =>
                     _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
                 .ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidGrant);

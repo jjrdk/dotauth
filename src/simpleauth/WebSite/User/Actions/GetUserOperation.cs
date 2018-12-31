@@ -42,7 +42,7 @@ namespace SimpleAuth.WebSite.User.Actions
                 !claimsPrincipal.Identity.IsAuthenticated ||
                 !(claimsPrincipal.Identity is ClaimsIdentity))
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                       Errors.ErrorCodes.UnhandledExceptionCode,
                       Errors.ErrorDescriptions.TheUserNeedsToBeAuthenticated);
             }
@@ -50,7 +50,7 @@ namespace SimpleAuth.WebSite.User.Actions
             var subject = claimsPrincipal.GetSubject();
             if (string.IsNullOrWhiteSpace(subject))
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     Errors.ErrorCodes.UnhandledExceptionCode,
                     Errors.ErrorDescriptions.TheSubjectCannotBeRetrieved);
             }

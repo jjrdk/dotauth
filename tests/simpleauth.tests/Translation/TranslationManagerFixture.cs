@@ -13,7 +13,7 @@
 
     public sealed class TranslationManagerFixture
     {
-        private OAuthConfigurationOptions _simpleIdentityServerConfiguratorFake;
+        private OAuthConfigurationOptions _oauthConfigurationOptions;
         private Mock<ITranslationRepository> _translationRepositoryFake;
         private ITranslationManager _translationManager;
 
@@ -67,10 +67,10 @@
 
         private void InitializeFakeObjects()
         {
-            _simpleIdentityServerConfiguratorFake = new OAuthConfigurationOptions();
+            _oauthConfigurationOptions = new OAuthConfigurationOptions();
             _translationRepositoryFake = new Mock<ITranslationRepository>();
             _translationManager = new TranslationManager(
-                _simpleIdentityServerConfiguratorFake,
+                _oauthConfigurationOptions,
                 _translationRepositoryFake.Object);
         }
     }

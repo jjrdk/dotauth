@@ -1,10 +1,5 @@
 ﻿namespace SimpleAuth.Server.Controllers
 {
-    using System;
-    using System.Globalization;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Api.Profile.Actions;
     using Exceptions;
     using Extensions;
@@ -22,6 +17,11 @@
     using SimpleAuth;
     using SimpleAuth.Extensions;
     using SimpleAuth.Services;
+    using System;
+    using System.Globalization;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using Translation;
     using ViewModels;
     using WebSite.Authenticate;
@@ -37,7 +37,7 @@
             IGetResourceOwnerClaimsAction profileActions,
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
-            IOpenIdEventSource simpleIdentityServerEventSource,
+            IOpenIdEventSource openIdEventSource,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IEventPublisher eventPublisher,
@@ -57,7 +57,7 @@
                 profileActions,
                 dataProtectionProvider,
                 translationManager,
-                simpleIdentityServerEventSource,
+                openIdEventSource,
                 urlHelperFactory,
                 actionContextAccessor,
                 eventPublisher,
@@ -83,7 +83,7 @@
                 await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 var viewModel = new AuthorizeViewModel();
                 await SetIdProviders(viewModel).ConfigureAwait(false);
-                return View(viewModel);
+                return View("Index", viewModel);
             }
 
             return RedirectToAction("Index", "User");
@@ -118,7 +118,7 @@
                     .ConfigureAwait(false);
                 if (resourceOwner == null)
                 {
-                    throw new IdentityServerAuthenticationException("the resource owner credentials are not correct");
+                    throw new AuthServerAuthenticationException("the resource owner credentials are not correct");
                 }
 
                 var claims = resourceOwner.Claims;
@@ -130,7 +130,7 @@
                 if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
                 {
                     await SetLocalCookie(claims, Guid.NewGuid().ToString()).ConfigureAwait(false);
-                    _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
+                    _openIdEventSource.AuthenticateResourceOwner(subject);
                     return RedirectToAction("Index", "User");
                 }
 
@@ -140,7 +140,7 @@
                 try
                 {
                     var code = await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
-                    _simpleIdentityServerEventSource.GetConfirmationCode(code);
+                    _openIdEventSource.GetConfirmationCode(code);
                     return RedirectToAction("SendCode");
                 }
                 catch (ClaimRequiredException)
@@ -154,7 +154,7 @@
             }
             catch (Exception exception)
             {
-                _simpleIdentityServerEventSource.Failure(exception.Message);
+                _openIdEventSource.Failure(exception.Message);
                 await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 ModelState.AddModelError("invalid_credentials", exception.Message);
                 var viewModel = new AuthorizeViewModel();
@@ -217,12 +217,12 @@
                     {
                         await SetTwoFactorCookie(actionResult.Claims).ConfigureAwait(false);
                         var code = await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
-                        _simpleIdentityServerEventSource.GetConfirmationCode(code);
-                        return RedirectToAction("SendCode", new {code = viewModel.Code});
+                        _openIdEventSource.GetConfirmationCode(code);
+                        return RedirectToAction("SendCode", new { code = viewModel.Code });
                     }
                     catch (ClaimRequiredException)
                     {
-                        return RedirectToAction("SendCode", new {code = viewModel.Code});
+                        return RedirectToAction("SendCode", new { code = viewModel.Code });
                     }
                     catch (Exception)
                     {
@@ -234,7 +234,7 @@
                 {
                     // 6. Authenticate the user by adding a cookie
                     await SetLocalCookie(actionResult.Claims, request.SessionId).ConfigureAwait(false);
-                    _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
+                    _openIdEventSource.AuthenticateResourceOwner(subject);
 
                     // 7. Redirect the user agent
                     var result = this.CreateRedirectionFromActionResult(actionResult.EndpointResult,
@@ -248,7 +248,7 @@
             }
             catch (Exception ex)
             {
-                _simpleIdentityServerEventSource.Failure(ex.Message);
+                _openIdEventSource.Failure(ex.Message);
                 ModelState.AddModelError("invalid_credentials", ex.Message);
             }
 

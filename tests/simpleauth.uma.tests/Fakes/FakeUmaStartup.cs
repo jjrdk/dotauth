@@ -123,7 +123,7 @@ namespace SimpleAuth.Uma.Tests.Fakes
                 .AddSimpleAuthServer(clients: OAuthStores.GetClients(),
                     jsonWebKeys: OAuthStores.GetJsonWebKeys(_context),
                     scopes: OAuthStores.GetScopes())
-                .AddSimpleIdentityServerJwt()
+                .AddSimpleAuthJwt()
                 //.AddIdServerClient()
                 //.AddDefaultSimpleBus()
                 .AddDefaultTokenStore();

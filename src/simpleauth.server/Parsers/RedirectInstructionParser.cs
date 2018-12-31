@@ -21,18 +21,18 @@ namespace SimpleAuth.Server.Parsers
 
     public class RedirectInstructionParser : IRedirectInstructionParser
     {
-        private readonly Dictionary<IdentityServerEndPoints, ActionInformation> _mappingEnumToActionInformations = new Dictionary<IdentityServerEndPoints, ActionInformation>
+        private readonly Dictionary<SimpleAuthEndPoints, ActionInformation> _mappingEnumToActionInformations = new Dictionary<SimpleAuthEndPoints, ActionInformation>
         {
             {
-                IdentityServerEndPoints.ConsentIndex,
+                SimpleAuthEndPoints.ConsentIndex,
                 new ActionInformation("Consent", "Index", "Shell")
             }, 
             {
-                IdentityServerEndPoints.AuthenticateIndex,
+                SimpleAuthEndPoints.AuthenticateIndex,
                 new ActionInformation("Authenticate", "Index", "Authentication")
             },
             {
-                IdentityServerEndPoints.FormIndex,
+                SimpleAuthEndPoints.FormIndex,
                 new ActionInformation("Form", "Index", "Shell")
             }
         };

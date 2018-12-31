@@ -26,7 +26,9 @@ namespace SimpleAuth.Uma.Api.PermissionController.Actions
     using Newtonsoft.Json;
     using Parameters;
     using Repositories;
+    using SimpleAuth.Errors;
     using Stores;
+    using ErrorDescriptions = Errors.ErrorDescriptions;
 
     internal class AddPermissionAction : IAddPermissionAction
     {
@@ -110,13 +112,13 @@ namespace SimpleAuth.Uma.Api.PermissionController.Actions
             {
                 if (string.IsNullOrWhiteSpace(addPermissionParameter.ResourceSetId))
                 {
-                    throw new BaseUmaException(UmaErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.ResourceSetId));
+                    throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.ResourceSetId));
                 }
 
                 if (addPermissionParameter.Scopes == null ||
                     !addPermissionParameter.Scopes.Any())
                 {
-                    throw new BaseUmaException(UmaErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.Scopes));
+                    throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.Scopes));
                 }
 
                 var resourceSet = resourceSets.FirstOrDefault(r => addPermissionParameter.ResourceSetId == r.Id);

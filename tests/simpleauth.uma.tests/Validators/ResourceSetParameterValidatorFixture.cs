@@ -14,13 +14,14 @@
 
 namespace SimpleAuth.Uma.Tests.Validators
 {
-    using System;
-    using System.Collections.Generic;
-    using Errors;
     using Exceptions;
     using Models;
+    using SimpleAuth.Errors;
+    using System;
+    using System.Collections.Generic;
     using Uma.Validators;
     using Xunit;
+    using ErrorDescriptions = Errors.ErrorDescriptions;
 
     public class ResourceSetParameterValidatorFixture
     {
@@ -42,7 +43,7 @@ namespace SimpleAuth.Uma.Tests.Validators
 
             var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == UmaErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "name"));
         }
 
@@ -57,7 +58,7 @@ namespace SimpleAuth.Uma.Tests.Validators
 
             var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == UmaErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"));
         }
 
@@ -75,7 +76,7 @@ namespace SimpleAuth.Uma.Tests.Validators
 
             var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == UmaErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, iconUri));
         }
 
@@ -94,7 +95,7 @@ namespace SimpleAuth.Uma.Tests.Validators
 
             var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == UmaErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, uri));
         }
 

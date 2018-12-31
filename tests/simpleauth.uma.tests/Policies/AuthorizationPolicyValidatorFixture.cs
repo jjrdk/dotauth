@@ -45,7 +45,7 @@ namespace SimpleAuth.Uma.Tests.Policies
         }
 
         [Fact]
-        public async Task When_ResourceSet_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_ResourceSet_Does_Not_Exist_Then_Exception_Is_Thrown()
         {
             var ticket = new Ticket
             {
@@ -68,7 +68,7 @@ namespace SimpleAuth.Uma.Tests.Policies
         }
 
         [Fact]
-        public async Task When_Policy_Doesnt_Exist_Then_Authorized_Is_Returned()
+        public async Task When_Policy_Does_Not_Exist_Then_Authorized_Is_Returned()
         {
             var ticket = new Ticket
             {

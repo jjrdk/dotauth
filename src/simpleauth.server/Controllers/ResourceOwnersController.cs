@@ -71,7 +71,7 @@ namespace SimpleAuth.Server.Controllers
             var resourceOwner = await _resourceOwnerRepository.Get(id).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, id));
+                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, id));
             }
 
             return Ok(resourceOwner.ToDto());
@@ -113,7 +113,7 @@ namespace SimpleAuth.Server.Controllers
             var resourceOwner = await _resourceOwnerRepository.Get(request.Login).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidParameterCode, string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Login));
+                throw new SimpleAuthException(ErrorCodes.InvalidParameterCode, string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Login));
             }
 
             resourceOwner.UpdateDateTime = DateTime.UtcNow;
@@ -151,7 +151,7 @@ namespace SimpleAuth.Server.Controllers
             if (!result)
             {
                 return BadRequest(ErrorDescriptions.TheClaimsCannotBeUpdated);
-                //throw new IdentityServerException(Core.Errors.ErrorCodes.InternalErrorCode, ErrorDescriptions.TheClaimsCannotBeUpdated);
+                //throw new SimpleAuthException(Core.Errors.ErrorCodes.InternalErrorCode, ErrorDescriptions.TheClaimsCannotBeUpdated);
             }
 
             return new OkResult();
@@ -169,7 +169,7 @@ namespace SimpleAuth.Server.Controllers
             var resourceOwner = await _resourceOwnerRepository.Get(request.Login).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidParameterCode, string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Login));
+                throw new SimpleAuthException(ErrorCodes.InvalidParameterCode, string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Login));
             }
 
             resourceOwner.Password = request.Password.ToSha256Hash();

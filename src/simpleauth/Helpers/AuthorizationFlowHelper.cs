@@ -27,7 +27,7 @@ namespace SimpleAuth.Helpers
         {
             if (responseTypes == null)
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
                     state);
@@ -37,7 +37,7 @@ namespace SimpleAuth.Helpers
                 .SingleOrDefault(k => k.Count == responseTypes.Count && k.All(key => responseTypes.Contains(key)));
             if (record == null)
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
                     state);

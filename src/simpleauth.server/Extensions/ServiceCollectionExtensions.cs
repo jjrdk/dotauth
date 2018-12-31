@@ -27,27 +27,25 @@ namespace SimpleAuth.Server.Extensions
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Shared.DTOs;
     using UserInfo;
     using UserInfo.Actions;
-    using Validators;
 
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddScimHost(this IServiceCollection services)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+        //public static IServiceCollection AddScimHost(this IServiceCollection services)
+        //{
+        //    if (services == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(services));
+        //    }
 
-            services.AddTransient<IParametersValidator, ParametersValidator>();
-            services.AddSingleton(new InMemoryGroupsRepository());
-            services.AddSingleton<IProvide<GroupResource>>(sp => sp.GetService<InMemoryGroupsRepository>());
-            services.AddSingleton<IPersist<GroupResource>>(sp => sp.GetService<InMemoryGroupsRepository>());
-            services.AddSingleton<IStore<GroupResource>>(sp => sp.GetService<InMemoryGroupsRepository>());
-            return services;
-        }
+        //    services.AddTransient<IParametersValidator, ParametersValidator>();
+        //    services.AddSingleton(new InMemoryGroupsRepository());
+        //    services.AddSingleton<IProvide<GroupResource>>(sp => sp.GetService<InMemoryGroupsRepository>());
+        //    services.AddSingleton<IPersist<GroupResource>>(sp => sp.GetService<InMemoryGroupsRepository>());
+        //    services.AddSingleton<IStore<GroupResource>>(sp => sp.GetService<InMemoryGroupsRepository>());
+        //    return services;
+        //}
 
         public static AuthorizationOptions AddAuthPolicies(this AuthorizationOptions options, string cookieName)
         {
@@ -193,92 +191,32 @@ namespace SimpleAuth.Server.Extensions
             return services;
         }
 
-        public static IServiceCollection AddOpenIdApi(this IServiceCollection serviceCollection, Action<IdentityServerOptions> optionsCallback)
+        public static IServiceCollection UseSimpleAuth(
+            this IServiceCollection services,
+            SimpleAuthOptions options)
         {
-            if (serviceCollection == null)
-            {
-                throw new ArgumentNullException(nameof(serviceCollection));
-            }
-
-            if (optionsCallback == null)
-            {
-                throw new ArgumentNullException(nameof(optionsCallback));
-            }
-
-            var options = new IdentityServerOptions();
-            optionsCallback(options);
-            serviceCollection.AddOpenIdApi(options);
-            return serviceCollection;
-        }
-
-        /// <summary>
-        /// Add the OPENID API.
-        /// </summary>
-        /// <param name="serviceCollection"></param>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddOpenIdApi(this IServiceCollection serviceCollection, IdentityServerOptions options)
-        {
-            if (serviceCollection == null)
-            {
-                throw new ArgumentNullException(nameof(serviceCollection));
-            }
-
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            ConfigureSimpleIdentityServer(
-                serviceCollection,
-                options);
-            return serviceCollection;
-        }
-
-        private static void ConfigureSimpleIdentityServer(
-            IServiceCollection services,
-            IdentityServerOptions options)
-        {
-            services.AddSimpleAuthServer(
-                    options.OAuthConfigurationOptions,
-                    clients: options.Configuration?.Clients,
-                    resourceOwners: options.Configuration?.Users,
-                    translations: options.Configuration?.Translations,
-                    jsonWebKeys: options.Configuration?.JsonWebKeys)
-                .AddSimpleIdentityServerJwt()
-                .AddHostIdentityServer(options)
-                //.AddIdServerClient()
-                .AddDefaultTokenStore()
-                //.AddDefaultAccessTokenStore()
-                //.AddDefaultSimpleBus()
-                .AddTechnicalLogging()
-                .AddOpenidLogging()
-                .AddOAuthLogging()
-                .AddDataProtection();
-        }
-
-        public static IServiceCollection AddHostIdentityServer(this IServiceCollection serviceCollection, IdentityServerOptions options)
-        {
-            if (serviceCollection == null)
-            {
-                throw new ArgumentNullException(nameof(serviceCollection));
-            }
-
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-            serviceCollection.AddTransient<IUserInfoActions, UserInfoActions>();
-            serviceCollection.AddTransient<IGetJwsPayload, GetJwsPayload>();
-
-            serviceCollection
-                .AddSingleton(options.Scim)
-                .AddTransient<IRedirectInstructionParser, RedirectInstructionParser>()
-                .AddTransient<IActionResultParser, ActionResultParser>()
-                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-                .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
-                .AddDataProtection();
-            return serviceCollection;
+            var s = services.AddSimpleAuthServer(
+                     options.OAuthConfigurationOptions,
+                     clients: options.Configuration?.Clients,
+                     consents: options.Configuration?.Consents,
+                     profiles: options.Configuration?.Profiles,
+                     resourceOwners: options.Configuration?.Users,
+                     translations: options.Configuration?.Translations,
+                     jsonWebKeys: options.Configuration?.JsonWebKeys)
+                 .AddSimpleAuthJwt()
+                 .AddSingleton(options.Scim)
+                 .AddTransient<IUserInfoActions, UserInfoActions>()
+                 .AddTransient<IGetJwsPayload, GetJwsPayload>()
+                 .AddTransient<IRedirectInstructionParser, RedirectInstructionParser>()
+                 .AddTransient<IActionResultParser, ActionResultParser>()
+                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
+                 .AddDefaultTokenStore()
+                 .AddTechnicalLogging()
+                 .AddOpenidLogging()
+                 .AddOAuthLogging();
+            services.AddDataProtection();
+            return s;
         }
     }
 }

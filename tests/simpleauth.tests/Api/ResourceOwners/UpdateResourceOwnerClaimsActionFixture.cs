@@ -37,7 +37,7 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
         }
 
         [Fact]
-        public async Task When_ResourceOwner_Doesnt_Exist_Then_ReturnsNull()
+        public async Task When_ResourceOwner_Does_Not_Exist_Then_ReturnsNull()
         {
             const string subject = "invalid_subject";
 

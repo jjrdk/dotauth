@@ -45,7 +45,7 @@
             IGetResourceOwnerClaimsAction profileActions,
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
-            IOpenIdEventSource simpleIdentityServerEventSource,
+            IOpenIdEventSource openIdEventSource,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IEventPublisher eventPublisher,
@@ -65,7 +65,7 @@
                 profileActions,
                 dataProtectionProvider,
                 translationManager,
-                simpleIdentityServerEventSource,
+                openIdEventSource,
                 urlHelperFactory,
                 actionContextAccessor,
                 eventPublisher,
@@ -124,7 +124,7 @@
                 }
                 catch (Exception ex)
                 {
-                    _simpleIdentityServerEventSource.Failure(ex.Message);
+                    _openIdEventSource.Failure(ex.Message);
                     ModelState.AddModelError("message_error", ex.Message);
                 }
 
@@ -141,7 +141,7 @@
                     }
                     catch (Exception ex)
                     {
-                        _simpleIdentityServerEventSource.Failure(ex.Message);
+                        _openIdEventSource.Failure(ex.Message);
                         ModelState.AddModelError("message_error", "TWILIO account is not valid");
                     }
                 }
@@ -167,7 +167,7 @@
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
                     "SMS authentication cannot be performed");
             }
 
@@ -198,7 +198,7 @@
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
                     "SMS authentication cannot be performed");
             }
 
@@ -247,7 +247,7 @@
                 }
             }
 
-            _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
+            _openIdEventSource.AuthenticateResourceOwner(subject);
             if (!string.IsNullOrWhiteSpace(confirmCodeViewModel.Code)) // Execute OPENID workflow
             {
                 var request = _dataProtector.Unprotect<AuthorizationRequest>(confirmCodeViewModel.Code);
@@ -300,7 +300,7 @@
                 }
                 catch (Exception ex)
                 {
-                    _simpleIdentityServerEventSource.Failure(ex.Message);
+                    _openIdEventSource.Failure(ex.Message);
                     ModelState.AddModelError("message_error", ex.Message);
                 }
 
@@ -317,7 +317,7 @@
                     }
                     catch (Exception ex)
                     {
-                        _simpleIdentityServerEventSource.Failure(ex.Message);
+                        _openIdEventSource.Failure(ex.Message);
                         ModelState.AddModelError("message_error", "TWILIO account is not valid");
                     }
                 }

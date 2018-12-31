@@ -42,7 +42,7 @@ namespace SimpleAuth.WebSite.Authenticate.Actions
         /// <summary>
         /// Authenticate local user account.
         /// Exceptions :
-        /// Throw the exception <see cref="IdentityServerAuthenticationException "/> if the user cannot be authenticated
+        /// Throw the exception <see cref="AuthServerAuthenticationException "/> if the user cannot be authenticated
         /// </summary>
         /// <param name="localAuthenticationParameter">User's credentials</param>
         /// <param name="authorizationParameter">Authorization parameters</param>
@@ -67,7 +67,7 @@ namespace SimpleAuth.WebSite.Authenticate.Actions
             var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(localAuthenticationParameter.UserName, localAuthenticationParameter.Password, authorizationParameter.AmrValues).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new IdentityServerAuthenticationException("the resource owner credentials are not correct");
+                throw new AuthServerAuthenticationException("the resource owner credentials are not correct");
             }
 
             var claims = resourceOwner.Claims == null ? new List<Claim>() : resourceOwner.Claims.ToList();

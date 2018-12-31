@@ -28,11 +28,11 @@
         }
 
         [Fact]
-        public async Task When_User_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_User_Does_Not_Exist_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
 
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _getProfileAction.Execute("subject")).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _getProfileAction.Execute("subject")).ConfigureAwait(false);
 
             Assert.Equal("internal_error", ex.Code);
             Assert.Equal("The resource owner subject doesn't exist", ex.Message);

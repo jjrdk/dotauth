@@ -14,9 +14,6 @@
 
 namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Helpers;
@@ -25,10 +22,15 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
     using Moq;
     using Parameters;
     using Repositories;
+    using SimpleAuth.Errors;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Uma;
     using Uma.Api.PermissionController.Actions;
     using Uma.Stores;
     using Xunit;
+    using ErrorDescriptions = Errors.ErrorDescriptions;
 
     public class AddPermissionActionFixture
     {
@@ -58,7 +60,7 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
 
             var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == UmaErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.ResourceSetId));
         }
 
@@ -74,12 +76,12 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
 
             var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == UmaErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.Scopes));
         }
 
         [Fact]
-        public async Task When_ResourceSet_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_ResourceSet_Does_Not_Exist_Then_Exception_Is_Thrown()
         {
             const string clientId = "client_id";
             const string resourceSetId = "resource_set_id";
@@ -102,7 +104,7 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
         }
 
         [Fact]
-        public async Task When_Scope_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_Scope_Does_Not_Exist_Then_Exception_Is_Thrown()
         {
             const string clientId = "client_id";
             const string resourceSetId = "resource_set_id";

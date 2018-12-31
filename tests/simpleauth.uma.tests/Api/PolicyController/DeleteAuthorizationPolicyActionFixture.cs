@@ -41,7 +41,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         }
 
         [Fact]
-        public async Task When_AuthorizationPolicy_Doesnt_Exist_Then_False_Is_Returned()
+        public async Task When_AuthorizationPolicy_Does_Not_Exist_Then_False_Is_Returned()
         {
             const string policyId = "policy_id";
             IntializeFakeObjects();

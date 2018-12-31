@@ -38,14 +38,14 @@ namespace SimpleAuth.Tests.Api.Scopes.Actions
         }
 
         [Fact]
-        public async Task When_Scope_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_Scope_Does_Not_Exist_Then_Exception_Is_Thrown()
         {            const string scopeName = "invalid_scope_name";
             InitializeFakeObjects();
             _scopeRepositoryStub.Setup(s => s.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult((Scope)null));
 
             
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getScopeOperation.Execute(scopeName)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getScopeOperation.Execute(scopeName)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheScopeDoesntExist, scopeName));
         }

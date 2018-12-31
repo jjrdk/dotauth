@@ -43,7 +43,7 @@ namespace SimpleAuth.Server.UserInfo
                 _eventPublisher.Publish(new UserInformationReturned(Guid.NewGuid().ToString(), processId, result, 1));
                 return result;
             }
-            catch(IdentityServerException ex)
+            catch(SimpleAuthException ex)
             {
                 _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;

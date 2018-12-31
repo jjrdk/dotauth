@@ -45,7 +45,7 @@ namespace SimpleAuth.Tests.WebSite.User
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserCredentialsOperation.Execute("subject", "password")).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _updateUserCredentialsOperation.Execute("subject", "password")).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);

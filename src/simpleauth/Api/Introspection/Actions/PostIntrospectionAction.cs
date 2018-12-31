@@ -69,7 +69,7 @@ namespace SimpleAuth.Api.Introspection.Actions
             var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             if (authResult.Client == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
+                throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
             // 3. Retrieve the token type hint
@@ -95,7 +95,7 @@ namespace SimpleAuth.Api.Introspection.Actions
             // 5. Throw an exception if there's no granted token
             if (grantedToken == null)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidToken,
                     ErrorDescriptions.TheTokenIsNotValid);
             }

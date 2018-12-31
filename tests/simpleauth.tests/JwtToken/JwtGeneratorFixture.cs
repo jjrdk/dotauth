@@ -272,7 +272,7 @@ namespace SimpleAuth.Tests.JwtToken
             };
             _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
 
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
                     _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(
                         claimsPrincipal,
                         authorizationParameter,
@@ -324,7 +324,7 @@ namespace SimpleAuth.Tests.JwtToken
             };
             _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
 
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
                     _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(
                         claimsPrincipal,
                         authorizationParameter,
@@ -376,7 +376,7 @@ namespace SimpleAuth.Tests.JwtToken
             };
             _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
 
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
                     _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(
                         claimsPrincipal,
                         authorizationParameter,
@@ -426,7 +426,7 @@ namespace SimpleAuth.Tests.JwtToken
             _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
 
             
-            var result = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() =>
+            var result = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
                     _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(
                         claimsPrincipal,
                         authorizationParameter,
@@ -624,7 +624,7 @@ namespace SimpleAuth.Tests.JwtToken
             _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
 
-            var exception = Assert.Throws<IdentityServerExceptionWithState>(() =>
+            var exception = Assert.Throws<SimpleAuthExceptionWithState>(() =>
                 _jwtGenerator.GenerateFilteredUserInfoPayload(
                     claimsParameter,
                     claimsPrincipal,
@@ -675,7 +675,7 @@ namespace SimpleAuth.Tests.JwtToken
             _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
 
-            var exception = Assert.Throws<IdentityServerExceptionWithState>(() =>
+            var exception = Assert.Throws<SimpleAuthExceptionWithState>(() =>
                 _jwtGenerator.GenerateFilteredUserInfoPayload(
                     claimsParameter,
                     claimsPrincipal,
@@ -725,7 +725,7 @@ namespace SimpleAuth.Tests.JwtToken
             _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
 
-            var exception = Assert.Throws<IdentityServerExceptionWithState>(
+            var exception = Assert.Throws<SimpleAuthExceptionWithState>(
                 () => _jwtGenerator.GenerateFilteredUserInfoPayload(
                     claimsParameter,
                     claimsPrincipal,
@@ -787,7 +787,7 @@ namespace SimpleAuth.Tests.JwtToken
             _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
 
-            var exception = Assert.Throws<IdentityServerExceptionWithState>(() =>
+            var exception = Assert.Throws<SimpleAuthExceptionWithState>(() =>
                 _jwtGenerator.GenerateFilteredUserInfoPayload(
                     claimsParameter,
                     claimsPrincipal,

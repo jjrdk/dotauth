@@ -96,7 +96,7 @@ namespace SimpleAuth.Uma.Extensions
                         ? DEFAULT_SCOPES
                         : authorizationServerOptions.Configuration.Scopes,
                     claims: new List<ClaimAggregate>())
-                .AddSimpleIdentityServerJwt()
+                .AddSimpleAuthJwt()
                 //.AddIdServerClient()
                 .AddDefaultTokenStore();
             //.AddDefaultSimpleBus()

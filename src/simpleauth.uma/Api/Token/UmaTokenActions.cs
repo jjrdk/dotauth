@@ -17,10 +17,12 @@
     using Policies;
     using Shared;
     using SimpleAuth;
+    using SimpleAuth.Errors;
     using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
     using SimpleAuth.Shared.Models;
     using Stores;
+    using ErrorDescriptions = Errors.ErrorDescriptions;
 
     internal sealed class UmaTokenActions : IUmaTokenActions
     {
@@ -65,7 +67,7 @@
 
             if (string.IsNullOrWhiteSpace(parameter.Ticket))
             {
-                throw new BaseUmaException(UmaErrorCodes.InvalidRequestCode,
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, PostAuthorizationNames.TicketId));
             }
 

@@ -16,9 +16,10 @@ namespace SimpleAuth.Uma.Validators
 {
     using System;
     using System.Linq;
-    using Errors;
     using Exceptions;
     using Models;
+    using SimpleAuth.Errors;
+    using ErrorDescriptions = Errors.ErrorDescriptions;
 
     internal class ResourceSetParameterValidator : IResourceSetParameterValidator
     {
@@ -31,28 +32,28 @@ namespace SimpleAuth.Uma.Validators
 
             if (string.IsNullOrWhiteSpace(resourceSet.Name))
             {
-                throw new BaseUmaException(UmaErrorCodes.InvalidRequestCode,
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "name"));
             }
 
             if (resourceSet.Scopes == null ||
                 !resourceSet.Scopes.Any())
             {
-                throw new BaseUmaException(UmaErrorCodes.InvalidRequestCode,
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"));
             }
 
             if (!string.IsNullOrWhiteSpace(resourceSet.IconUri) &&
                 !Uri.IsWellFormedUriString(resourceSet.IconUri, UriKind.Absolute))
             {
-                throw new BaseUmaException(UmaErrorCodes.InvalidRequestCode,
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, resourceSet.IconUri));
             }
 
             if (!string.IsNullOrWhiteSpace(resourceSet.Uri) &&
                 !Uri.IsWellFormedUriString(resourceSet.Uri, UriKind.Absolute))
             {
-                throw new BaseUmaException(UmaErrorCodes.InvalidRequestCode,
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, resourceSet.Uri));
             }
         }

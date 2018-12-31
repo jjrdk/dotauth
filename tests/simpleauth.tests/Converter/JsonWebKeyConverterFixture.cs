@@ -132,7 +132,7 @@ namespace SimpleAuth.Tests.Converter
 
         [Fact]
         public void
-            When_Passing_JsonWeb_Key_Used_For_The_Signature_With_Rsa_Key_But_Wich_Doesnt_Contain_Modulus_Then_Exception_Is_Thrown()
+            When_Passing_JsonWeb_Key_Used_For_The_Signature_With_Rsa_Key_But_Wich_Does_Not_Contain_Modulus_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
             var jsonWebKey = new Dictionary<string, object>
@@ -167,7 +167,7 @@ namespace SimpleAuth.Tests.Converter
 
         [Fact]
         public void
-            When_Passing_JsonWeb_Key_Used_For_The_Signature_With_Ec_Key_But_Which_Doesnt_Contains_XCoordinate_Then_Exception_Is_Thrown()
+            When_Passing_JsonWeb_Key_Used_For_The_Signature_With_Ec_Key_But_Which_Does_Not_Contains_XCoordinate_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
             var jsonWebKey = new Dictionary<string, object>

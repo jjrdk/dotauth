@@ -24,7 +24,7 @@
             var resourceOwner = await _resourceOwnerRepository.Get(subject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheRoDoesntExist);
+                throw new SimpleAuthException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheRoDoesntExist);
             }
 
             resourceOwner.TwoFactorAuthentication = twoFactorAuth;

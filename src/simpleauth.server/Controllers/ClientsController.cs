@@ -130,7 +130,7 @@ namespace SimpleAuth.Server.Controllers
                     })
                     : Ok(result);
             }
-            catch (IdentityServerException e)
+            catch (SimpleAuthException e)
             {
                 return BuildError(e.Code, e.Message, HttpStatusCode.BadRequest);
             }

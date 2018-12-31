@@ -22,6 +22,7 @@ namespace SimpleAuth.Uma.Tests
     using Microsoft.Extensions.DependencyInjection;
     using Shared.DTOs;
     using SimpleAuth;
+    using SimpleAuth.Errors;
     using Xunit;
 
     public class ResourceFixture : IClassFixture<TestUmaServerFixture>
@@ -50,7 +51,7 @@ namespace SimpleAuth.Uma.Tests
 
             Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
-            Assert.Equal("invalid_request", resource.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Error);
             Assert.Equal("the parameter name needs to be specified", resource.Error.ErrorDescription);
         }
 
@@ -69,7 +70,7 @@ namespace SimpleAuth.Uma.Tests
 
             Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
-            Assert.Equal("invalid_request", resource.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Error);
             Assert.Equal("the parameter scopes needs to be specified", resource.Error.ErrorDescription);
         }
 
@@ -94,7 +95,7 @@ namespace SimpleAuth.Uma.Tests
 
             Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
-            Assert.Equal("invalid_request", resource.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Error);
             Assert.Equal("the url invalid is not well formed", resource.Error.ErrorDescription);
         }
 
@@ -144,7 +145,7 @@ namespace SimpleAuth.Uma.Tests
 
             Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
-            Assert.Equal("invalid_request", resource.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Error);
             Assert.Equal("the parameter id needs to be specified", resource.Error.ErrorDescription);
         }
 
@@ -165,7 +166,7 @@ namespace SimpleAuth.Uma.Tests
 
             Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
-            Assert.Equal("invalid_request", resource.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Error);
             Assert.Equal("the parameter name needs to be specified", resource.Error.ErrorDescription);
         }
 
@@ -186,7 +187,7 @@ namespace SimpleAuth.Uma.Tests
 
             Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
-            Assert.Equal("invalid_request", resource.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Error);
             Assert.Equal("the parameter scopes needs to be specified", resource.Error.ErrorDescription);
         }
 
@@ -212,7 +213,7 @@ namespace SimpleAuth.Uma.Tests
 
             Assert.NotNull(resource);
             Assert.True(resource.ContainsError);
-            Assert.Equal("invalid_request", resource.Error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Error);
             Assert.Equal("the url invalid is not well formed", resource.Error.ErrorDescription);
         }
 
@@ -275,7 +276,7 @@ namespace SimpleAuth.Uma.Tests
         }
 
         [Fact]
-        public async Task When_Deleting_ResourceInformation_Then_It_Doesnt_Exist()
+        public async Task When_Deleting_ResourceInformation_Then_It_Does_Not_Exist()
         {
             InitializeFakeObjects();
 

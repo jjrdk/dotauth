@@ -67,7 +67,7 @@ namespace SimpleAuth.Tests.Helpers
             var uri = new Uri(url);
             
             var exception = await Assert
-                .ThrowsAsync<IdentityServerException>(async () =>
+                .ThrowsAsync<SimpleAuthException>(async () =>
                     await _jsonWebKeyHelper.GetJsonWebKey(kid, uri).ConfigureAwait(false))
                 .ConfigureAwait(false);
             Assert.NotNull(exception);

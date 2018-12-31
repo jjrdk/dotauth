@@ -35,7 +35,7 @@
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
 
-                        var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserClaimsOperation.Execute("subject", new List<ClaimAggregate>())).ConfigureAwait(false);
+                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _updateUserClaimsOperation.Execute("subject", new List<ClaimAggregate>())).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);

@@ -21,6 +21,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Threading.Tasks;
     using Client;
     using Client.Operations;
+    using Errors;
     using Newtonsoft.Json;
     using Shared;
     using Shared.Responses;
@@ -28,7 +29,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
     public class RevokeTokenClientFixture : IClassFixture<TestOauthServerFixture>
     {
-        private const string baseUrl = "http://localhost:5000";
+        private const string BaseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
 
         public RevokeTokenClientFixture(TestOauthServerFixture server)
@@ -41,7 +42,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {            var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri($"{baseUrl}/token/revoke")
+                RequestUri = new Uri($"{BaseUrl}/token/revoke")
             };
 
                         var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -50,7 +51,7 @@ namespace SimpleAuth.Server.Tests.Apis
                         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
             Assert.NotNull(error);
-            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
             Assert.Equal("no parameter in body request", error.ErrorDescription);
         }
 
@@ -65,7 +66,7 @@ namespace SimpleAuth.Server.Tests.Apis
             {
                 Method = HttpMethod.Post,
                 Content = body,
-                RequestUri = new Uri($"{baseUrl}/token/revoke")
+                RequestUri = new Uri($"{BaseUrl}/token/revoke")
             };
 
                         var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -73,7 +74,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
                         var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
             Assert.NotNull(error);
-            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
             Assert.Equal("the parameter token is missing", error.ErrorDescription);
         }
 
@@ -85,7 +86,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     RevokeTokenRequest.RevokeToken("access_token", TokenTypes.AccessToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
                 .ConfigureAwait(false);
 
                         Assert.True(ex.ContainsError);
@@ -94,14 +95,14 @@ namespace SimpleAuth.Server.Tests.Apis
         }
 
         [Fact]
-        public async Task When_Token_Doesnt_Exist_Then_Error_Is_Returned()
+        public async Task When_Token_Does_Not_Exist_Then_Error_Is_Returned()
         {
                         var ex = await new RevokeTokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     RevokeTokenRequest.RevokeToken("access_token", TokenTypes.AccessToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
                         Assert.True(ex.ContainsError);
             Assert.Equal("invalid_token", ex.Error.Error);
@@ -116,13 +117,13 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var ex = await new RevokeTokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     RevokeTokenRequest.RevokeToken(result.Content.AccessToken, TokenTypes.AccessToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
                         Assert.True(ex.ContainsError);
             Assert.Equal("invalid_token", ex.Error.Error);
@@ -137,19 +138,19 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var revoke = await new RevokeTokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     RevokeTokenRequest.RevokeToken(result.Content.AccessToken, TokenTypes.AccessToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var ex = await new IntrospectClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
                         Assert.False(revoke.ContainsError);
             Assert.True(ex.ContainsError);
@@ -163,19 +164,19 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromPassword("administrator", "password", new []{"scim"}),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var revoke = await new RevokeTokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     RevokeTokenRequest.RevokeToken(result.Content.RefreshToken, TokenTypes.RefreshToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var ex = await new IntrospectClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     IntrospectionRequest.Create(result.Content.RefreshToken, TokenTypes.RefreshToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
                         Assert.False(revoke.ContainsError);
             Assert.True(ex.ContainsError);

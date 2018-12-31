@@ -35,7 +35,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         }
         
         [Fact]
-        public async Task When_Code_Doesnt_Exist_Then_False_Is_Returned()
+        public async Task When_Code_Does_Not_Exist_Then_False_Is_Returned()
         {            InitializeFakeObjects();
             _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult((ConfirmationCode)null));

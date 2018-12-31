@@ -1,6 +1,7 @@
 ﻿namespace SimpleAuth.Tests.Validators
 {
     using System;
+    using Errors;
     using Exceptions;
     using Parameters;
     using SimpleAuth.Validators;
@@ -21,10 +22,10 @@
         public void When_Login_Is_Null_Then_Exception_Is_Thrown()
         {            InitializeFakeObjects();
 
-                        var ex = Assert.Throws<IdentityServerException>(() => _updateResourceOwnerClaimsParameterValidator.Validate(new UpdateResourceOwnerClaimsParameter()));
+                        var ex = Assert.Throws<SimpleAuthException>(() => _updateResourceOwnerClaimsParameterValidator.Validate(new UpdateResourceOwnerClaimsParameter()));
 
                         Assert.NotNull(ex);
-            Assert.Equal("invalid_request", ex.Code);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, ex.Code);
             Assert.Equal("the parameter login is missing", ex.Message);
         }
 

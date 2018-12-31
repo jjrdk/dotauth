@@ -110,7 +110,7 @@ namespace SimpleAuth.Errors
         public const string TheIdTokenHintParameterCannotBeDecrypted = "the id_token_hint parameter cannot be decrypted";
         public const string TheIdTokenHintParameterIsNotAValidToken = "the id_token_hint parameter is not a valid token";
         public const string TheSignatureOfIdTokenHintParameterCannotBeChecked = "the signature of id token hint parameter cannot be checked";
-        public const string TheIdentityTokenDoesntContainSimpleIdentityServerAsAudience = "the identity token doesnt contain simple identity server in the audience";
+        public const string TheIdentityTokenDoesntContainSimpleAuthAsAudience = "The identity token does not contain SimpleAuth in the audience";
         public const string TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken = "the current authenticated user doesn't match with the identity token";
         public const string TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated =
             "the response cannot be generated because the resource owner needs to be authenticated";

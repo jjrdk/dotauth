@@ -45,7 +45,7 @@ namespace SimpleAuth.Validators
             // Check the required parameters. Read this RFC : http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
             if (string.IsNullOrWhiteSpace(parameter.Scope))
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName),
                     parameter.State);
@@ -53,7 +53,7 @@ namespace SimpleAuth.Validators
 
             if (string.IsNullOrWhiteSpace(parameter.ClientId))
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName),
                     parameter.State);
@@ -61,7 +61,7 @@ namespace SimpleAuth.Validators
 
             if (parameter.RedirectUrl == null)
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName),
                     parameter.State);
@@ -69,7 +69,7 @@ namespace SimpleAuth.Validators
 
             if (string.IsNullOrWhiteSpace(parameter.ResponseType))
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
                     parameter.State);
@@ -83,7 +83,7 @@ namespace SimpleAuth.Validators
             var redirectUrlIsCorrect = parameter.RedirectUrl.IsAbsoluteUri;
             if (!redirectUrlIsCorrect)
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheRedirectionUriIsNotWellFormed,
                     parameter.State);
@@ -92,7 +92,7 @@ namespace SimpleAuth.Validators
             var client = await _clientRepository.GetById(parameter.ClientId).ConfigureAwait(false);
             if (client == null)
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.ClientIsNotValid, parameter.ClientId),
                     parameter.State);
@@ -100,7 +100,7 @@ namespace SimpleAuth.Validators
 
             if (!_clientValidator.GetRedirectionUrls(client, parameter.RedirectUrl).Any())
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.RedirectUrlIsNotValid, parameter.RedirectUrl),
                     parameter.State);
@@ -129,7 +129,7 @@ namespace SimpleAuth.Validators
                 .Any(r => !string.IsNullOrWhiteSpace(r) && !responseTypeNames.Contains(r));
             if (atLeastOneResonseTypeIsNotSupported)
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.AtLeastOneResponseTypeIsNotSupported,
                     state);
@@ -155,7 +155,7 @@ namespace SimpleAuth.Validators
                 .Any(r => !string.IsNullOrWhiteSpace(r) && !promptNames.Contains(r));
             if (atLeastOnePromptIsNotSupported)
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.AtLeastOnePromptIsNotSupported,
                     state);
@@ -167,7 +167,7 @@ namespace SimpleAuth.Validators
                 prompts.Contains(PromptParameter.consent) ||
                 prompts.Contains(PromptParameter.select_account)))
             {
-                throw new IdentityServerExceptionWithState(
+                throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.PromptParameterShouldHaveOnlyNoneValue,
                     state);

@@ -96,7 +96,7 @@ namespace SimpleAuth.Api.Token
                     resourceOwnerGrantTypeParameter.Password);
                 if (string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.UserName))
                 {
-                    throw new IdentityServerException(
+                    throw new SimpleAuthException(
                         ErrorCodes.InvalidRequestCode,
                         string.Format(ErrorDescriptions.MissingParameter,
                             CoreConstants.StandardTokenRequestParameterNames.UserName));
@@ -104,7 +104,7 @@ namespace SimpleAuth.Api.Token
 
                 if (string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Password))
                 {
-                    throw new IdentityServerException(
+                    throw new SimpleAuthException(
                         ErrorCodes.InvalidRequestCode,
                         string.Format(ErrorDescriptions.MissingParameter,
                             CoreConstants.StandardTokenRequestParameterNames.PasswordName));
@@ -112,7 +112,7 @@ namespace SimpleAuth.Api.Token
 
                 if (string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Scope))
                 {
-                    throw new IdentityServerException(
+                    throw new SimpleAuthException(
                         ErrorCodes.InvalidRequestCode,
                         string.Format(ErrorDescriptions.MissingParameter,
                             CoreConstants.StandardTokenRequestParameterNames.ScopeName));
@@ -129,7 +129,7 @@ namespace SimpleAuth.Api.Token
                 _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result.AccessToken, 1));
                 return result;
             }
-            catch (IdentityServerException ex)
+            catch (SimpleAuthException ex)
             {
                 _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(),
                     processId,
@@ -168,7 +168,7 @@ namespace SimpleAuth.Api.Token
                 _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result.AccessToken, 1));
                 return result;
             }
-            catch (IdentityServerException ex)
+            catch (SimpleAuthException ex)
             {
                 _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(),
                     processId,
@@ -198,7 +198,7 @@ namespace SimpleAuth.Api.Token
                 // Read this RFC for more information
                 if (string.IsNullOrWhiteSpace(refreshTokenGrantTypeParameter.RefreshToken))
                 {
-                    throw new IdentityServerException(
+                    throw new SimpleAuthException(
                         ErrorCodes.InvalidRequestCode,
                         string.Format(ErrorDescriptions.MissingParameter,
                             CoreConstants.StandardTokenRequestParameterNames.RefreshToken));
@@ -213,7 +213,7 @@ namespace SimpleAuth.Api.Token
                 _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result.AccessToken, 1));
                 return result;
             }
-            catch (IdentityServerException ex)
+            catch (SimpleAuthException ex)
             {
                 _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(),
                     processId,
@@ -253,7 +253,7 @@ namespace SimpleAuth.Api.Token
                 _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result.AccessToken, 1));
                 return result;
             }
-            catch (IdentityServerException ex)
+            catch (SimpleAuthException ex)
             {
                 _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(),
                     processId,
@@ -289,7 +289,7 @@ namespace SimpleAuth.Api.Token
                 _eventPublisher.Publish(new TokenRevoked(Guid.NewGuid().ToString(), processId, 1));
                 return result;
             }
-            catch (IdentityServerException ex)
+            catch (SimpleAuthException ex)
             {
                 _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(),
                     processId,
@@ -320,13 +320,13 @@ namespace SimpleAuth.Api.Token
             var client = authResult.Client;
             if (client == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
+                throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
             // 2. Check client
             if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.client_credentials))
             {
-                throw new IdentityServerException(ErrorCodes.InvalidClient,
+                throw new SimpleAuthException(ErrorCodes.InvalidClient,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                         client.ClientId,
                         GrantType.client_credentials));
@@ -334,7 +334,7 @@ namespace SimpleAuth.Api.Token
 
             if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseType.token))
             {
-                throw new IdentityServerException(ErrorCodes.InvalidClient,
+                throw new SimpleAuthException(ErrorCodes.InvalidClient,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType,
                         client.ClientId,
                         ResponseType.token));
@@ -347,7 +347,7 @@ namespace SimpleAuth.Api.Token
                 var scopeValidation = _scopeValidator.Check(clientCredentialsGrantTypeParameter.Scope, client);
                 if (!scopeValidation.IsValid)
                 {
-                    throw new IdentityServerException(
+                    throw new SimpleAuthException(
                         ErrorCodes.InvalidScope,
                         scopeValidation.ErrorMessage);
                 }
@@ -374,7 +374,7 @@ namespace SimpleAuth.Api.Token
         {
             if (string.IsNullOrWhiteSpace(parameter.Code))
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.MissingParameter,
                         CoreConstants.StandardTokenRequestParameterNames.AuthorizationCodeName));
@@ -385,7 +385,7 @@ namespace SimpleAuth.Api.Token
             var redirectUrlIsCorrect = parameter.RedirectUri?.IsAbsoluteUri;
             if (redirectUrlIsCorrect != true)
             {
-                throw new IdentityServerException(
+                throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheRedirectionUriIsNotWellFormed);
             }

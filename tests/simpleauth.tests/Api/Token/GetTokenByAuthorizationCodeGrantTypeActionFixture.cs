@@ -36,7 +36,7 @@ namespace SimpleAuth.Tests.Api.Token
     {
         private Mock<IClientValidator> _clientValidatorFake;
         private Mock<IAuthorizationCodeStore> _authorizationCodeStoreFake;
-        private OAuthConfigurationOptions _simpleIdentityServerConfiguratorFake;
+        private OAuthConfigurationOptions _oauthConfigurationOptions;
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
         private Mock<ITokenStore> _tokenStoreFake;
         private Mock<IAuthenticateClient> _authenticateClientFake;
@@ -72,7 +72,7 @@ namespace SimpleAuth.Tests.Api.Token
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
 
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() =>
                     _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter,
                         null,
                         null,
@@ -82,7 +82,7 @@ namespace SimpleAuth.Tests.Api.Token
         }
 
         [Fact]
-        public async Task When_Client_Doesnt_Support_Grant_Type_Code_Then_Exception_Is_Thrown()
+        public async Task When_Client_Does_Not_Support_Grant_Type_Code_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
             var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
@@ -100,7 +100,7 @@ namespace SimpleAuth.Tests.Api.Token
                 },
                     null)));
 
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() =>
                     _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter,
                         null,
                         null,
@@ -114,7 +114,7 @@ namespace SimpleAuth.Tests.Api.Token
         }
 
         [Fact]
-        public async Task When_Client_Doesnt_Support_ResponseType_Code_Then_Exception_Is_Thrown()
+        public async Task When_Client_Does_Not_Support_ResponseType_Code_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
             var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
@@ -136,7 +136,7 @@ namespace SimpleAuth.Tests.Api.Token
                 },
                     null)));
 
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() =>
                     _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter,
                         null,
                         null,
@@ -179,7 +179,7 @@ namespace SimpleAuth.Tests.Api.Token
             _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((AuthorizationCode)null));
 
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() =>
                     _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter,
                         null,
                         null,
@@ -226,7 +226,7 @@ namespace SimpleAuth.Tests.Api.Token
                     c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
                 .Returns(false);
 
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() =>
                     _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter,
                         null,
                         null,
@@ -274,7 +274,7 @@ namespace SimpleAuth.Tests.Api.Token
             _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(authorizationCode));
 
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() =>
                     _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter,
                         null,
                         null,
@@ -326,7 +326,7 @@ namespace SimpleAuth.Tests.Api.Token
             _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(Task.FromResult(authorizationCode));
 
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() =>
                     _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter,
                         null,
                         null,
@@ -376,7 +376,7 @@ namespace SimpleAuth.Tests.Api.Token
             _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(Task.FromResult(authorizationCode));
 
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() =>
                     _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter,
                         null,
                         null,
@@ -430,7 +430,7 @@ namespace SimpleAuth.Tests.Api.Token
             _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<Uri[]>()))
                 .Returns(new Uri[0]);
 
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() =>
                     _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter,
                         null,
                         null,
@@ -555,7 +555,7 @@ namespace SimpleAuth.Tests.Api.Token
                 .Returns(Task.FromResult(authResult));
             _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(Task.FromResult(authorizationCode));
-            _simpleIdentityServerConfiguratorFake =
+            _oauthConfigurationOptions =
                 new OAuthConfigurationOptions(authorizationCodeValidity: TimeSpan.FromSeconds(3000));
             //.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
             //.Returns(Task.FromResult((double)3000));
@@ -594,7 +594,7 @@ namespace SimpleAuth.Tests.Api.Token
             _tokenStoreFake = new Mock<ITokenStore>();
             _authenticateClientFake = new Mock<IAuthenticateClient>();
             _clientHelper = new Mock<IClientHelper>();
-            _simpleIdentityServerConfiguratorFake = new OAuthConfigurationOptions(
+            _oauthConfigurationOptions = new OAuthConfigurationOptions(
                 authorizationCodeValidity: authorizationCodeValidity == default(TimeSpan)
                     ? TimeSpan.FromSeconds(3600)
                     : authorizationCodeValidity);
@@ -604,7 +604,7 @@ namespace SimpleAuth.Tests.Api.Token
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
                 _clientValidatorFake.Object,
                 _authorizationCodeStoreFake.Object,
-                _simpleIdentityServerConfiguratorFake,
+                _oauthConfigurationOptions,
                 _grantedTokenGeneratorHelperFake.Object,
                 _authenticateClientFake.Object,
                 _clientHelper.Object,
