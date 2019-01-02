@@ -2,10 +2,10 @@
 {
     using System.Collections.Generic;
     using Api.Authorization;
-    using Shared.Models;
+    using Shared.Requests;
 
     public interface IAuthorizationFlowHelper
     {
-        AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state);
+        AuthorizationFlow GetAuthorizationFlow(ICollection<string> responseTypes, string state);
     }
 }

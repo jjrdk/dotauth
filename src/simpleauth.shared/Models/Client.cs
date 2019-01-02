@@ -16,6 +16,7 @@ namespace SimpleAuth.Shared.Models
 {
     using System;
     using System.Collections.Generic;
+    using Requests;
 
     public class Client
     {
@@ -74,7 +75,7 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Gets or sets an array containing a list of OAUTH2.0 response_type values
         /// </summary>
-        public IList<ResponseType> ResponseTypes { get; set; } = new List<ResponseType>();
+        public IList<string> ResponseTypes { get; set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets an array containing a list of OAUTH2.0 grant types

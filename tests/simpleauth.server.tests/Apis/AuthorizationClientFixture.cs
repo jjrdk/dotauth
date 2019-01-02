@@ -282,7 +282,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                        new[] { ResponseTypeNames.Code },
                         "implicit_client",
                         new Uri(baseUrl + "/invalid_callback"),
                         "state"))
@@ -301,7 +301,7 @@ namespace SimpleAuth.Server.Tests.Apis
             UserStore.Instance().IsInactive = true;
             var result = await _authorizationClient.ResolveAsync(BaseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                        new[] { ResponseTypeNames.Code },
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         "state")
@@ -327,7 +327,7 @@ namespace SimpleAuth.Server.Tests.Apis
             UserStore.Instance().Subject = "user";
             var result = await _authorizationClient.ResolveAsync(BaseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                        new[] { ResponseTypeNames.Code },
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         "state")
@@ -350,7 +350,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var result = await _authorizationClient.ResolveAsync(BaseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                        new[] { ResponseTypeNames.Code },
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         "state")
@@ -382,7 +382,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var result = await _authorizationClient.ResolveAsync(BaseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                        new[] { ResponseTypeNames.Code },
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         "state")
@@ -415,7 +415,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var result = await _authorizationClient.ResolveAsync(BaseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                        new[] { ResponseTypeNames.Code },
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         "state")
@@ -441,7 +441,7 @@ namespace SimpleAuth.Server.Tests.Apis
             // NOTE : The consent has already been given in the database.
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                        new[] { ResponseTypeNames.Code },
                         "authcode_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -474,7 +474,7 @@ namespace SimpleAuth.Server.Tests.Apis
             UserStore.Instance().AuthenticationOffset = DateTimeOffset.UtcNow.AddDays(-2);
             var result = await _authorizationClient.ResolveAsync(BaseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                        new[] { ResponseTypeNames.Code },
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         "state")
@@ -496,7 +496,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var result = await _authorizationClient.ResolveAsync(BaseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                        new[] { ResponseTypeNames.Code },
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         "state")
@@ -517,7 +517,7 @@ namespace SimpleAuth.Server.Tests.Apis
             UserStore.Instance().IsInactive = true;
             var result = await _authorizationClient.ResolveAsync(BaseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                        new[] { ResponseTypeNames.Code },
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         "state")
@@ -539,7 +539,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var result = await _authorizationClient.ResolveAsync(
                     BaseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                        new[] { ResponseTypeNames.Code },
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         "state")
@@ -573,7 +573,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var result = await _authorizationClient.ResolveAsync(BaseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                        new[] { ResponseTypeNames.Code },
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         "state")
@@ -597,7 +597,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var result = await _authorizationClient.ResolveAsync(BaseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(
                         new[] { "openid", "api1" },
-                        new[] { ResponseTypes.Code },
+                        new[] { ResponseTypeNames.Code },
                         "pkce_client",
                         new Uri(BaseUrl + "/callback"),
                         "state")
@@ -629,7 +629,7 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects(); // NOTE : The consent has already been given in the database.
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.IdToken, ResponseTypes.Token },
+                        new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token },
                         "implicit_client",
                         new Uri(baseUrl + "/callback"),
                         "state")
@@ -655,7 +655,7 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects(); // NOTE : The consent has already been given in the database.
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
                     new AuthorizationRequest(new[] { "openid", "api1" },
-                        new[] { ResponseTypes.IdToken, ResponseTypes.Token, ResponseTypes.Code },
+                        new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token, ResponseTypeNames.Code },
                         "hybrid_client",
                         new Uri(baseUrl + "/callback"),
                         "state")

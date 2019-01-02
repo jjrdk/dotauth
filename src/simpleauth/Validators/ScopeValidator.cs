@@ -14,24 +14,22 @@
 
 namespace SimpleAuth.Validators
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using Errors;
     using Helpers;
     using Shared.Models;
+    using System.Linq;
 
-    internal class ScopeValidator : IScopeValidator
+    internal class ScopeValidator
     {
-        private readonly IParameterParserHelper _parameterParserHelper;
+        private readonly ParameterParserHelper _parameterParserHelper;
 
-        public ScopeValidator(IParameterParserHelper parameterParserHelper)
+        public ScopeValidator()
         {
-            _parameterParserHelper = parameterParserHelper;
+            _parameterParserHelper = new ParameterParserHelper();
         }
 
         public ScopeValidationResult Check(string scope, Client client)
         {
-            var emptyList = new List<string>();
             var scopes = _parameterParserHelper.ParseScopes(scope);
             if (!scopes.Any())
             {
@@ -42,7 +40,7 @@ namespace SimpleAuth.Validators
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)
                 .ToList();
-            if (duplicates.Any())
+            if (duplicates.Count > 1)
             {
                 return new ScopeValidationResult(
                     string.Format(ErrorDescriptions.DuplicateScopeValues,

@@ -18,8 +18,6 @@
     {
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
         private Mock<IClientStore> _clientRepository;
-        private Mock<IClientValidator> _clientValidatorFake;
-
         private IAuthorizationCodeGrantTypeParameterAuthEdpValidator
             _authorizationCodeGrantTypeParameterAuthEdpValidator;
 
@@ -269,8 +267,8 @@
                 });
             _clientRepository.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<Uri[]>()))
-                .Returns(() => new Uri[0]);
+            //_clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<Uri[]>()))
+            //    .Returns(() => new Uri[0]);
 
             var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
                     _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter))
@@ -283,13 +281,11 @@
         private void InitializeFakeObjects()
         {
             _parameterParserHelperFake = new Mock<IParameterParserHelper>();
-            _clientValidatorFake = new Mock<IClientValidator>();
             _clientRepository = new Mock<IClientStore>();
             _authorizationCodeGrantTypeParameterAuthEdpValidator =
                 new AuthorizationCodeGrantTypeParameterAuthEdpValidator(
                     _parameterParserHelperFake.Object,
-                    _clientRepository.Object,
-                    _clientValidatorFake.Object);
+                    _clientRepository.Object);
         }
     }
 }

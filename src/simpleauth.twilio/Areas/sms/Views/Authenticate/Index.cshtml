@@ -44,7 +44,7 @@
         </div>
         <div>
             @Html.ValidationMessage("message_error")
-            <form name="form" method="POST" action="@System.Security.Policy.Url.Action("LocalLogin")">
+            <form name="form" method="POST" action="@Url.Action("LocalLogin")">
                 <fieldset>
                     @if (phoneNumberState != null && phoneNumberState.Errors.Any())
                     {

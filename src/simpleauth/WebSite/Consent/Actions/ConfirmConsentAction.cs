@@ -14,23 +14,22 @@
 
 namespace SimpleAuth.WebSite.Consent.Actions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Api.Authorization;
     using Common;
     using Errors;
     using Exceptions;
     using Extensions;
-    using Factories;
     using Helpers;
     using Logging;
     using Parameters;
     using Results;
     using Shared.Models;
     using Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
 
     public class ConfirmConsentAction : IConfirmConsentAction
     {
@@ -39,7 +38,6 @@ namespace SimpleAuth.WebSite.Consent.Actions
         private readonly IScopeRepository _scopeRepository;
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IParameterParserHelper _parameterParserHelper;
-        private readonly IActionResultFactory _actionResultFactory;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
         private readonly IConsentHelper _consentHelper;
         private readonly IOpenIdEventSource _openidEventSource;
@@ -50,7 +48,6 @@ namespace SimpleAuth.WebSite.Consent.Actions
             IScopeRepository scopeRepository,
             IResourceOwnerRepository resourceOwnerRepository,
             IParameterParserHelper parameterParserHelper,
-            IActionResultFactory actionResultFactory,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
             IConsentHelper consentHelper,
             IOpenIdEventSource openidEventSource)
@@ -60,7 +57,6 @@ namespace SimpleAuth.WebSite.Consent.Actions
             _scopeRepository = scopeRepository;
             _resourceOwnerRepository = resourceOwnerRepository;
             _parameterParserHelper = parameterParserHelper;
-            _actionResultFactory = actionResultFactory;
             _generateAuthorizationResponse = generateAuthorizationResponse;
             _consentHelper = consentHelper;
             _openidEventSource = openidEventSource;
@@ -78,7 +74,8 @@ namespace SimpleAuth.WebSite.Consent.Actions
         /// <returns>Redirects the authorization code to the callback.</returns>
         public async Task<EndpointResult> Execute(
             AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal, string issuerName)
+            ClaimsPrincipal claimsPrincipal,
+            string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -97,7 +94,8 @@ namespace SimpleAuth.WebSite.Consent.Actions
             }
 
             var subject = claimsPrincipal.GetSubject();
-            var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
+            var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter)
+                .ConfigureAwait(false);
             // Insert a new consent.
             if (assignedConsent == null)
             {
@@ -134,8 +132,10 @@ namespace SimpleAuth.WebSite.Consent.Actions
                     assignedConsent.Id);
             }
 
-            var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-            await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
+            var result = EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
+            await _generateAuthorizationResponse
+                .ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName)
+                .ConfigureAwait(false);
 
             // If redirect to the callback and the responde mode has not been set.
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)
@@ -153,7 +153,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
 
             return result;
         }
-        
+
         /// <summary>
         /// Returns a list of scopes from a concatenate list of scopes separated by whitespaces.
         /// </summary>
@@ -161,12 +161,11 @@ namespace SimpleAuth.WebSite.Consent.Actions
         /// <returns>List of scopes</returns>
         private async Task<ICollection<Scope>> GetScopes(string concatenateListOfScopes)
         {
-            var result = new List<Scope>();
             var scopeNames = _parameterParserHelper.ParseScopes(concatenateListOfScopes);
             return await _scopeRepository.SearchByNames(scopeNames).ConfigureAwait(false);
         }
 
-        private static AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state)
+        private static AuthorizationFlow GetAuthorizationFlow(ICollection<string> responseTypes, string state)
         {
             if (responseTypes == null)
             {
@@ -177,7 +176,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             }
 
             var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys
-                .SingleOrDefault(k => k.Count == responseTypes.Count && k.All(key => responseTypes.Contains(key)));
+                .SingleOrDefault(k => k.Length == responseTypes.Count && k.All(responseTypes.Contains));
             if (record == null)
             {
                 throw new SimpleAuthExceptionWithState(

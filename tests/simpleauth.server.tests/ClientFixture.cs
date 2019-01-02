@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using Errors;
     using Manager.Client.Clients;
+    using Shared;
     using Shared.Models;
     using Shared.Requests;
     using Xunit;
@@ -48,11 +49,11 @@
                     new Uri(OpenidmanagerConfiguration),
                     new Client
                     {
-                        AllowedScopes = new[] { new Scope { Name = "openid" } },
+                        AllowedScopes = new[] {new Scope {Name = "openid"}},
                         ClientId = "test",
                         ClientName = "name",
-                        RedirectionUrls = new[] { new Uri("http://localhost#fragment") },
-                        RequestUris = new[] { new Uri("https://localhost") }
+                        RedirectionUrls = new[] {new Uri("http://localhost#fragment")},
+                        RequestUris = new[] {new Uri("https://localhost")}
                     },
                     null)
                 .ConfigureAwait(false);
@@ -131,8 +132,8 @@
             InitializeFakeObjects();
             var client = new Client
             {
-                AllowedScopes = new[] { new Scope { Name = "openid" } },
-                RequestUris = new[] { new Uri("https://localhost"), },
+                AllowedScopes = new[] {new Scope {Name = "openid"}},
+                RequestUris = new[] {new Uri("https://localhost"),},
                 ApplicationType = ApplicationTypes.web,
                 ClientName = "client_name",
                 ClientUri = new Uri("http://clienturi.com"),
@@ -148,8 +149,8 @@
                     GrantType.@implicit,
                     GrantType.refresh_token
                 },
-                RedirectionUrls = new[] { new Uri("http://localhost") },
-                PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+                RedirectionUrls = new[] {new Uri("http://localhost")},
+                PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback")},
                 LogoUri = new Uri("http://logouri.com")
             };
             var addClientResult = await _openidClients.ResolveAdd(
@@ -158,7 +159,7 @@
                     null)
                 .ConfigureAwait(false);
             client = addClientResult.Content;
-            client.AllowedScopes = new[] { new Scope { Name = "not_valid" } };
+            client.AllowedScopes = new[] {new Scope {Name = "not_valid"}};
             var result = await _openidClients.ResolveUpdate(
                     new Uri(OpenidmanagerConfiguration),
                     client,
@@ -209,7 +210,7 @@
                     new Uri(OpenidmanagerConfiguration),
                     new Client
                     {
-                        AllowedScopes = new[] { new Scope { Name = "openid" } },
+                        AllowedScopes = new[] {new Scope {Name = "openid"}},
                         ApplicationType = ApplicationTypes.web,
                         ClientName = "client_name",
                         IdTokenSignedResponseAlg = "RS256",
@@ -236,15 +237,15 @@
                             GrantType.@implicit,
                             GrantType.refresh_token
                         },
-                        ResponseTypes = new List<ResponseType>
+                        ResponseTypes = new[]
                         {
-                            ResponseType.code,
-                            ResponseType.id_token,
-                            ResponseType.token
+                            ResponseTypeNames.Code,
+                            ResponseTypeNames.IdToken,
+                            ResponseTypeNames.Token
                         },
-                        RequestUris = new[] { new Uri("https://localhost"), },
-                        RedirectionUrls = new[] { new Uri("http://localhost"), },
-                        PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback"), },
+                        RequestUris = new[] {new Uri("https://localhost"),},
+                        RedirectionUrls = new[] {new Uri("http://localhost"),},
+                        PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback"),},
                         LogoUri = new Uri("http://logouri.com")
                     },
                     null)
@@ -267,8 +268,8 @@
             Assert.Single(newClient.Content.Contacts);
             Assert.Single(newClient.Content.RedirectionUrls);
             Assert.Single(newClient.Content.PostLogoutRedirectUris);
-            Assert.Equal(3, newClient.Content.GrantTypes.Count());
-            Assert.Equal(3, newClient.Content.ResponseTypes.Count());
+            Assert.Equal(3, newClient.Content.GrantTypes.Count);
+            Assert.Equal(3, newClient.Content.ResponseTypes.Count);
         }
 
         [Fact]
@@ -277,7 +278,7 @@
             InitializeFakeObjects();
             var client = new Client
             {
-                AllowedScopes = new[] { new Scope { Name = "openid" } },
+                AllowedScopes = new[] {new Scope {Name = "openid"}},
                 ApplicationType = ApplicationTypes.web,
                 ClientName = "client_name",
                 ClientUri = new Uri("http://clienturi.com"),
@@ -293,9 +294,9 @@
                     GrantType.@implicit,
                     GrantType.refresh_token
                 },
-                RequestUris = new[] { new Uri("https://localhost") },
-                RedirectionUrls = new[] { new Uri("http://localhost") },
-                PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+                RequestUris = new[] {new Uri("https://localhost")},
+                RedirectionUrls = new[] {new Uri("http://localhost")},
+                PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback")},
                 LogoUri = new Uri("http://logouri.com")
             };
 
@@ -339,7 +340,7 @@
                     new Uri(OpenidmanagerConfiguration),
                     new Client
                     {
-                        AllowedScopes = new[] { new Scope { Name = "openid" } },
+                        AllowedScopes = new[] {new Scope {Name = "openid"}},
                         ApplicationType = ApplicationTypes.web,
                         ClientName = "client_name",
                         ClientUri = new Uri("http://clienturi.com"),
@@ -355,9 +356,9 @@
                             GrantType.@implicit,
                             GrantType.refresh_token
                         },
-                        RequestUris = new[] { new Uri("https://localhost"), },
-                        RedirectionUrls = new[] { new Uri("http://localhost") },
-                        PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+                        RequestUris = new[] {new Uri("https://localhost"),},
+                        RedirectionUrls = new[] {new Uri("http://localhost")},
+                        PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback")},
                         LogoUri = new Uri("http://logouri.com")
                     },
                     null)
@@ -380,8 +381,8 @@
                     new Uri(OpenidmanagerConfiguration),
                     new Client
                     {
-                        AllowedScopes = new[] { new Scope { Name = "openid" } },
-                        RequestUris = new[] { new Uri("https://localhost"), },
+                        AllowedScopes = new[] {new Scope {Name = "openid"}},
+                        RequestUris = new[] {new Uri("https://localhost"),},
                         ApplicationType = ApplicationTypes.web,
                         ClientName = "client_name",
                         IdTokenSignedResponseAlg = "RS256",
@@ -408,14 +409,14 @@
                             GrantType.@implicit,
                             GrantType.refresh_token
                         },
-                        ResponseTypes = new List<ResponseType>
+                        ResponseTypes = new[]
                         {
-                            ResponseType.code,
-                            ResponseType.id_token,
-                            ResponseType.token
+                            ResponseTypeNames.Code,
+                            ResponseTypeNames.IdToken,
+                            ResponseTypeNames.Token
                         },
-                        RedirectionUrls = new[] { new Uri("http://localhost") },
-                        PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+                        RedirectionUrls = new[] {new Uri("http://localhost")},
+                        PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback")},
                         LogoUri = new Uri("http://logouri.com")
                     },
                     null)

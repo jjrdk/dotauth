@@ -14,11 +14,6 @@
 
 namespace SimpleAuth.Api.Token.Actions
 {
-    using System;
-    using System.Net.Http.Headers;
-    using System.Security.Claims;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Threading.Tasks;
     using Authenticate;
     using Errors;
     using Exceptions;
@@ -27,12 +22,19 @@ namespace SimpleAuth.Api.Token.Actions
     using Logging;
     using Parameters;
     using Shared.Models;
+    using Shared.Requests;
+    using System;
+    using System.Net.Http.Headers;
+    using System.Security.Claims;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
+    using Shared;
     using Validators;
 
     public class GetTokenByResourceOwnerCredentialsGrantTypeAction : IGetTokenByResourceOwnerCredentialsGrantTypeAction
     {
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
-        private readonly IScopeValidator _scopeValidator;
+        private readonly ScopeValidator _scopeValidator;
         private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
         private readonly IOAuthEventSource _oauthEventSource;
         private readonly IAuthenticateClient _authenticateClient;
@@ -43,7 +45,6 @@ namespace SimpleAuth.Api.Token.Actions
 
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
-            IScopeValidator scopeValidator,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             IOAuthEventSource oauthEventSource,
             IAuthenticateClient authenticateClient,
@@ -53,7 +54,7 @@ namespace SimpleAuth.Api.Token.Actions
             IGrantedTokenHelper grantedTokenHelper)
         {
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
-            _scopeValidator = scopeValidator;
+            _scopeValidator = new ScopeValidator();
             _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
             _oauthEventSource = oauthEventSource;
             _authenticateClient = authenticateClient;
@@ -75,7 +76,7 @@ namespace SimpleAuth.Api.Token.Actions
             var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (authResult.Client == null)
-            {                
+            {
                 _oauthEventSource.Info(authResult.ErrorMessage);
                 throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
@@ -87,13 +88,13 @@ namespace SimpleAuth.Api.Token.Actions
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.password));
             }
 
-            if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseType.token) || !client.ResponseTypes.Contains(ResponseType.id_token))
+            if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseTypeNames.Token) || !client.ResponseTypes.Contains(ResponseTypeNames.IdToken))
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidClient, string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, "token id_token"));
             }
 
             // 3. Try to authenticate a resource owner
-            var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(resourceOwnerGrantTypeParameter.UserName, 
+            var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(resourceOwnerGrantTypeParameter.UserName,
                 resourceOwnerGrantTypeParameter.Password,
                 resourceOwnerGrantTypeParameter.AmrValues).ConfigureAwait(false);
             if (resourceOwner == null)

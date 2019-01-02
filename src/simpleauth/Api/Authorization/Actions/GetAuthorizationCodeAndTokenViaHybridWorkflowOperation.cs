@@ -28,22 +28,21 @@ namespace SimpleAuth.Api.Authorization.Actions
     using SimpleAuth.Common;
     using Validators;
 
-    public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperation : IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation
+    internal sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperation
     {
         private readonly IOAuthEventSource _oauthEventSource;
-        private readonly IProcessAuthorizationRequest _processAuthorizationRequest;
-        private readonly IClientValidator _clientValidator;
+        private readonly ProcessAuthorizationRequest _processAuthorizationRequest;
+        private readonly ClientValidator _clientValidator;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
 
         public GetAuthorizationCodeAndTokenViaHybridWorkflowOperation(
             IOAuthEventSource oauthEventSource,
-            IProcessAuthorizationRequest processAuthorizationRequest,
-            IClientValidator clientValidator,
+            ProcessAuthorizationRequest processAuthorizationRequest,
             IGenerateAuthorizationResponse generateAuthorizationResponse)
         {
             _oauthEventSource = oauthEventSource;
             _processAuthorizationRequest = processAuthorizationRequest;
-            _clientValidator = clientValidator;
+            _clientValidator = new ClientValidator();
             _generateAuthorizationResponse = generateAuthorizationResponse;
         }
 
@@ -80,7 +79,7 @@ namespace SimpleAuth.Api.Authorization.Actions
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
-                        "implicit"),
+                        $"{GrantType.@implicit} and {GrantType.authorization_code}"),
                     authorizationParameter.State);
             }
 

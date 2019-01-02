@@ -1,6 +1,6 @@
 ﻿namespace SimpleAuth.Shared
 {
-    internal static class SharedConstants
+    public static class SharedConstants
     {
         public static class ConfigurationResponseNames
         {

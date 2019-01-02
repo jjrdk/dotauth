@@ -3,11 +3,11 @@
     public class UserStore
     {
         private static UserStore _instance;
-        private static readonly string _defaultClient = "client";
+        private static readonly string DefaultClient = "client";
 
         private UserStore()
         {
-            ClientId = _defaultClient;
+            ClientId = DefaultClient;
         }
 
         public static UserStore Instance()

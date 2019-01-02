@@ -8,30 +8,27 @@
     using Api.Authorization;
     using Errors;
     using Exceptions;
-    using Factories;
     using Helpers;
     using Parameters;
     using Results;
     using Shared.Models;
     using Shared.Repositories;
+    using Shared.Requests;
     using SimpleAuth.Common;
 
     public sealed class AuthenticateHelper : IAuthenticateHelper
     {
         private readonly IParameterParserHelper _parameterParserHelper;
-        private readonly IActionResultFactory _actionResultFactory;
         private readonly IConsentHelper _consentHelper;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
         private readonly IClientStore _clientRepository;
 
         public AuthenticateHelper(IParameterParserHelper parameterParserHelper,
-            IActionResultFactory actionResultFactory,
             IConsentHelper consentHelper,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
             IClientStore clientRepository)
         {
             _parameterParserHelper = parameterParserHelper;
-            _actionResultFactory = actionResultFactory;
             _consentHelper = consentHelper;
             _generateAuthorizationResponse = generateAuthorizationResponse;
             _clientRepository = clientRepository;
@@ -62,7 +59,7 @@
             if (prompts != null &&
                 prompts.Contains(PromptParameter.consent))
             {
-                result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
+                result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
                 result.RedirectInstruction.Action = SimpleAuthEndPoints.ConsentIndex;
                 result.RedirectInstruction.AddParameter("code", code);
                 return result;
@@ -74,7 +71,7 @@
             // If there's already one consent then redirect to the callback
             if (assignedConsent != null)
             {
-                result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
+                result = EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
                 var claimsIdentity = new ClaimsIdentity(claims, "simpleAuth");
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 await _generateAuthorizationResponse
@@ -93,13 +90,13 @@
             }
 
             // If there's no consent & there's no consent prompt then redirect to the consent screen.
-            result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
+            result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
             result.RedirectInstruction.Action = SimpleAuthEndPoints.ConsentIndex;
             result.RedirectInstruction.AddParameter("code", code);
             return result;
         }
 
-        private static AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state)
+        private static AuthorizationFlow GetAuthorizationFlow(ICollection<string> responseTypes, string state)
         {
             if (responseTypes == null)
             {
@@ -110,7 +107,7 @@
             }
 
             var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys
-                .SingleOrDefault(k => k.Count == responseTypes.Count && k.All(key => responseTypes.Contains(key)));
+                .SingleOrDefault(k => k.Length == responseTypes.Count && k.All(responseTypes.Contains));
             if (record == null)
             {
                 throw new SimpleAuthExceptionWithState(

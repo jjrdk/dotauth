@@ -15,20 +15,16 @@
 namespace SimpleAuth
 {
     using Api.Authorization;
-    using Api.Authorization.Actions;
-    using Api.Authorization.Common;
     using Api.Discovery;
     using Api.Introspection;
     using Api.Introspection.Actions;
     using Api.Jwks;
-    using Api.Profile;
     using Api.Profile.Actions;
     using Api.Token;
     using Api.Token.Actions;
     using Authenticate;
     using Common;
     using Converter;
-    using Factories;
     using Helpers;
     using JwtToken;
     using Microsoft.Extensions.DependencyInjection;
@@ -96,20 +92,14 @@ namespace SimpleAuth
             serviceCollection.AddTransient<IClientHelper, ClientHelper>();
             serviceCollection.AddTransient<IAuthorizationFlowHelper, AuthorizationFlowHelper>();
             serviceCollection.AddTransient<IClientCredentialsGrantTypeParameterValidator, ClientCredentialsGrantTypeParameterValidator>();
-            serviceCollection.AddTransient<IClientValidator, ClientValidator>();
-            serviceCollection.AddTransient<IScopeValidator, ScopeValidator>();
             serviceCollection.AddTransient<IGrantedTokenValidator, GrantedTokenValidator>();
             serviceCollection.AddTransient<IAuthorizationCodeGrantTypeParameterAuthEdpValidator, AuthorizationCodeGrantTypeParameterAuthEdpValidator>();
             //serviceCollection.AddTransient<ICompressor, Compressor>();
             serviceCollection.AddTransient<IParameterParserHelper, ParameterParserHelper>();
-            serviceCollection.AddTransient<IActionResultFactory, ActionResultFactory>();
             serviceCollection.AddTransient<IAuthorizationActions, AuthorizationActions>();
-            serviceCollection.AddTransient<IGetAuthorizationCodeOperation, GetAuthorizationCodeOperation>();
-            serviceCollection.AddTransient<IGetTokenViaImplicitWorkflowOperation, GetTokenViaImplicitWorkflowOperation>();
             serviceCollection.AddTransient<ITokenActions, TokenActions>();
             serviceCollection.AddTransient<IGetTokenByResourceOwnerCredentialsGrantTypeAction, GetTokenByResourceOwnerCredentialsGrantTypeAction>();
             serviceCollection.AddTransient<IGetTokenByAuthorizationCodeGrantTypeAction, GetTokenByAuthorizationCodeGrantTypeAction>();
-            serviceCollection.AddTransient<IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation, GetAuthorizationCodeAndTokenViaHybridWorkflowOperation>();
             serviceCollection.AddTransient<IConsentActions, ConsentActions>();
             serviceCollection.AddTransient<IConfirmConsentAction, ConfirmConsentAction>();
             serviceCollection.AddTransient<IDisplayConsentAction, DisplayConsentAction>();
@@ -120,7 +110,6 @@ namespace SimpleAuth
             serviceCollection.AddTransient<ILocalOpenIdUserAuthenticationAction, LocalOpenIdUserAuthenticationAction>();
             serviceCollection.AddTransient<IAuthenticateHelper, AuthenticateHelper>();
             serviceCollection.AddTransient<IDiscoveryActions, DiscoveryActions>();
-            serviceCollection.AddTransient<IProcessAuthorizationRequest, ProcessAuthorizationRequest>();
             serviceCollection.AddTransient<IJwtGenerator, JwtGenerator>();
             serviceCollection.AddTransient<IJwtParser, JwtParser>();
             serviceCollection.AddTransient<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>();

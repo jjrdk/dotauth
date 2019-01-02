@@ -14,10 +14,12 @@
 
 namespace SimpleAuth
 {
-    using System.Collections.Generic;
     using Api.Authorization;
     using Parameters;
     using Shared.Models;
+    using Shared.Requests;
+    using System.Collections.Generic;
+    using Shared;
 
     public static class CoreConstants
     {
@@ -76,7 +78,7 @@ namespace SimpleAuth
                 IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the profile",
-                Claims = new List<string>
+                Claims = new []
                 {
                     JwtConstants.StandardResourceOwnerClaimNames.Name,
                     JwtConstants.StandardResourceOwnerClaimNames.FamilyName,
@@ -103,7 +105,7 @@ namespace SimpleAuth
                 IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the email",
-                Claims = new List<string>
+                Claims = new []
                 {
                     JwtConstants.StandardResourceOwnerClaimNames.Email,
                     JwtConstants.StandardResourceOwnerClaimNames.EmailVerified
@@ -118,7 +120,7 @@ namespace SimpleAuth
                 IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the address",
-                Claims = new List<string>
+                Claims = new []
                 {
                     JwtConstants.StandardResourceOwnerClaimNames.Address
                 },
@@ -132,7 +134,7 @@ namespace SimpleAuth
                 IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the phone",
-                Claims = new List<string>
+                Claims = new []
                 {
                     JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber,
                     JwtConstants.StandardResourceOwnerClaimNames.PhoneNumberVerified
@@ -188,7 +190,7 @@ namespace SimpleAuth
             public const string RefreshToken = "refresh_token";
         }
 
-        public static List<string> AllStandardTokenTypeHintNames = new List<string>
+        public static string[] AllStandardTokenTypeHintNames = new []
         {
             StandardTokenTypeHintNames.AccessToken,
             StandardTokenTypeHintNames.RefreshToken
@@ -283,56 +285,57 @@ namespace SimpleAuth
             public const string NoTwoFactorAuthenticatorSelected = "no_two_factor_authenticator_selected";
         }
 
-        public static readonly Dictionary<List<ResponseType>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseType>, AuthorizationFlow>
-        {
+        public static readonly Dictionary<string[], AuthorizationFlow> MappingResponseTypesToAuthorizationFlows =
+            new Dictionary<string[], AuthorizationFlow>
             {
-                new List<ResponseType>
                 {
-                    ResponseType.code
+                    new[]
+                    {
+                        ResponseTypeNames.Code
+                    },
+                    AuthorizationFlow.AuthorizationCodeFlow
                 },
-                AuthorizationFlow.AuthorizationCodeFlow
-            },
-            {
-                new List<ResponseType>
                 {
-                    ResponseType.id_token
+                    new[]
+                    {
+                        ResponseTypeNames.IdToken
+                    },
+                    AuthorizationFlow.ImplicitFlow
                 },
-                AuthorizationFlow.ImplicitFlow
-            },
-            {
-                new List<ResponseType>
                 {
-                    ResponseType.id_token,
-                    ResponseType.token
+                    new[]
+                    {
+                        ResponseTypeNames.IdToken,
+                        ResponseTypeNames.Token
+                    },
+                    AuthorizationFlow.ImplicitFlow
                 },
-                AuthorizationFlow.ImplicitFlow
-            },
-            {
-                new List<ResponseType>
                 {
-                    ResponseType.code,
-                    ResponseType.id_token
+                    new[]
+                    {
+                        ResponseTypeNames.Code,
+                        ResponseTypeNames.IdToken
+                    },
+                    AuthorizationFlow.HybridFlow
                 },
-                AuthorizationFlow.HybridFlow
-            },
-            {
-                new List<ResponseType>
                 {
-                    ResponseType.code,
-                    ResponseType.token
+                    new[]
+                    {
+                        ResponseTypeNames.Code,
+                        ResponseTypeNames.Token
+                    },
+                    AuthorizationFlow.HybridFlow
                 },
-                AuthorizationFlow.HybridFlow
-            },
-            {
-                new List<ResponseType>
                 {
-                    ResponseType.code,
-                    ResponseType.id_token,
-                    ResponseType.token
-                },
-                AuthorizationFlow.HybridFlow
-            }
-        };
+                    new[]
+                    {
+                        ResponseTypeNames.Code,
+                        ResponseTypeNames.IdToken,
+                        ResponseTypeNames.Token
+                    },
+                    AuthorizationFlow.HybridFlow
+                }
+            };
 
         public static Dictionary<AuthorizationFlow, ResponseMode> MappingAuthorizationFlowAndResponseModes = new Dictionary<AuthorizationFlow, ResponseMode>
         {
@@ -371,29 +374,29 @@ namespace SimpleAuth
                 GrantType.@implicit
             };
 
-            public static List<string> SupportedResponseModes = new List<string>
+            public static string[] SupportedResponseModes = new []
             {
                 "query"
             };
 
-            public static List<string> SupportedSubjectTypes = new List<string>
+            public static string[] SupportedSubjectTypes = new []
             {
                 // Same subject value to all clients.
                 SubjectTypeNames.Public,
                 SubjectTypeNames.PairWise
             };
 
-            public static List<string> SupportedJwsAlgs = new List<string>
+            public static string[] SupportedJwsAlgs = new []
             {
                 JwtConstants.JwsAlgNames.RS256
             };
 
-            public static List<string> SupportedJweAlgs = new List<string>
+            public static string[] SupportedJweAlgs = new []
             {
                 JwtConstants.JweAlgNames.RSA1_5
             };
 
-            public static List<string> SupportedJweEncs = new List<string>
+            public static string[] SupportedJweEncs = new []
             {
                 JwtConstants.JweEncNames.A128CBC_HS256
             };
@@ -408,7 +411,7 @@ namespace SimpleAuth
                 TokenEndPointAuthenticationMethods.tls_client_auth
             };
 
-            public static List<string> SupportedClaims = new List<string>
+            public static string[] SupportedClaims = new []
             {
                 JwtConstants.StandardResourceOwnerClaimNames.Subject,
                 JwtConstants.StandardResourceOwnerClaimNames.Name,

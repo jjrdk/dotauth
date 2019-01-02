@@ -28,6 +28,7 @@ namespace SimpleAuth.Api.Token
     using Shared;
     using Shared.Events.OAuth;
     using Shared.Models;
+    using Shared.Requests;
     using Validators;
 
     public class TokenActions : ITokenActions
@@ -39,7 +40,7 @@ namespace SimpleAuth.Api.Token
         private readonly IAuthenticateClient _authenticateClient;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly IRevokeTokenParameterValidator _revokeTokenParameterValidator;
-        private readonly IScopeValidator _scopeValidator;
+        private readonly ScopeValidator _scopeValidator;
         private readonly IRevokeTokenAction _revokeTokenAction;
         private readonly IOAuthEventSource _oauthEventSource;
         private readonly IGrantedTokenHelper _grantedTokenHelper;
@@ -54,7 +55,6 @@ namespace SimpleAuth.Api.Token
             IAuthenticateClient authenticateClient,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IRevokeTokenParameterValidator revokeTokenParameterValidator,
-            IScopeValidator scopeValidator,
             IOAuthEventSource oauthEventSource,
             IRevokeTokenAction revokeTokenAction,
             IEventPublisher eventPublisher,
@@ -67,7 +67,7 @@ namespace SimpleAuth.Api.Token
             _oauthEventSource = oauthEventSource;
             _authenticateClient = authenticateClient;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
-            _scopeValidator = scopeValidator;
+            _scopeValidator = new ScopeValidator();
             _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
             _revokeTokenParameterValidator = revokeTokenParameterValidator;
             _revokeTokenAction = revokeTokenAction;
@@ -332,12 +332,12 @@ namespace SimpleAuth.Api.Token
                         GrantType.client_credentials));
             }
 
-            if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseType.token))
+            if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseTypeNames.Token))
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidClient,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType,
                         client.ClientId,
-                        ResponseType.token));
+                        ResponseTypeNames.Token));
             }
 
             // 3. Check scopes

@@ -1,10 +1,5 @@
 ﻿namespace SimpleAuth.Tests.Api.Token
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Net.Http.Headers;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Threading.Tasks;
     using Logging;
     using Moq;
     using Parameters;
@@ -16,6 +11,11 @@
     using SimpleAuth.Authenticate;
     using SimpleAuth.Helpers;
     using SimpleAuth.Validators;
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
     using Xunit;
 
     public sealed class TokenActionsFixture
@@ -32,14 +32,16 @@
 
         [Fact]
         public async Task When_Passing_No_Request_To_ResourceOwner_Grant_Type_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(null, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Requesting_Token_Via_Resource_Owner_Credentials_Grant_Type_Then_Events_Are_Logged()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             const string clientId = "clientId";
             const string userName = "userName";
             const string password = "password";
@@ -61,22 +63,24 @@
                 g => g.Execute(It.IsAny<ResourceOwnerGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>(), It.IsAny<X509Certificate2>(), null))
                 .Returns(Task.FromResult(grantedToken));
 
-                        await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(parameter, null, null, null).ConfigureAwait(false);
+            await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(parameter, null, null, null).ConfigureAwait(false);
 
-                        _oauthEventSource.Verify(s => s.StartGetTokenByResourceOwnerCredentials(clientId, userName, password));
+            _oauthEventSource.Verify(s => s.StartGetTokenByResourceOwnerCredentials(clientId, userName, password));
             _oauthEventSource.Verify(s => s.EndGetTokenByResourceOwnerCredentials(accessToken, identityToken));
         }
 
         [Fact]
         public async Task When_Passing_No_Request_To_AuthorizationCode_Grant_Type_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByAuthorizationCodeGrantType(null, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByAuthorizationCodeGrantType(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Requesting_Token_Via_AuthorizationCode_Grant_Type_Then_Events_Are_Logged()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             const string clientId = "clientId";
             const string code = "code";
             const string accessToken = "accessToken";
@@ -96,22 +100,24 @@
                 g => g.Execute(It.IsAny<AuthorizationCodeGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>(), It.IsAny<X509Certificate2>(), null))
                 .Returns(Task.FromResult(grantedToken));
 
-                        await _tokenActions.GetTokenByAuthorizationCodeGrantType(parameter, null, null, null).ConfigureAwait(false);
+            await _tokenActions.GetTokenByAuthorizationCodeGrantType(parameter, null, null, null).ConfigureAwait(false);
 
-                        _oauthEventSource.Verify(s => s.StartGetTokenByAuthorizationCode(clientId, code));
+            _oauthEventSource.Verify(s => s.StartGetTokenByAuthorizationCode(clientId, code));
             _oauthEventSource.Verify(s => s.EndGetTokenByAuthorizationCode(accessToken, identityToken));
         }
 
         [Fact]
         public async Task When_Passing_No_Request_To_Refresh_Token_Grant_Type_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByRefreshTokenGrantType(null, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByRefreshTokenGrantType(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Passing_Request_To_Refresh_Token_Grant_Type_Then_Events_Are_Logged()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             const string refreshToken = "refresh_token";
             const string accessToken = "accessToken";
             const string identityToken = "identityToken";
@@ -128,22 +134,24 @@
                 g => g.Execute(It.IsAny<RefreshTokenGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>(), It.IsAny<X509Certificate2>(), null))
                 .Returns(Task.FromResult(grantedToken));
 
-                        await _tokenActions.GetTokenByRefreshTokenGrantType(parameter, null, null, null).ConfigureAwait(false);
+            await _tokenActions.GetTokenByRefreshTokenGrantType(parameter, null, null, null).ConfigureAwait(false);
 
-                        _oauthEventSource.Verify(s => s.StartGetTokenByRefreshToken(refreshToken));
+            _oauthEventSource.Verify(s => s.StartGetTokenByRefreshToken(refreshToken));
             _oauthEventSource.Verify(s => s.EndGetTokenByRefreshToken(accessToken, identityToken));
         }
 
         [Fact]
         public async Task When_Passing_Null_Parameter_To_ClientCredentials_GrantType_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByClientCredentialsGrantType(null, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByClientCredentialsGrantType(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Getting_Token_Via_ClientCredentials_GrantType_Then_GrantedToken_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             const string scope = "valid_scope";
             const string clientId = "valid_client_id";
             var parameter = new ClientCredentialsGrantTypeParameter
@@ -161,9 +169,9 @@
             //            null))
             //    .Returns(Task.FromResult(grantedToken));
 
-                        var result = await _tokenActions.GetTokenByClientCredentialsGrantType(parameter, null, null, null).ConfigureAwait(false);
+            var result = await _tokenActions.GetTokenByClientCredentialsGrantType(parameter, null, null, null).ConfigureAwait(false);
 
-                        _oauthEventSource.Verify(s => s.StartGetTokenByClientCredentials(scope));
+            _oauthEventSource.Verify(s => s.StartGetTokenByClientCredentials(scope));
             _oauthEventSource.Verify(s => s.EndGetTokenByClientCredentials(clientId, scope));
             Assert.NotNull(result);
             Assert.True(result.ClientId == clientId);
@@ -171,22 +179,24 @@
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.RevokeToken(null, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.RevokeToken(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public void When_Revoking_Token_Then_Action_Is_Executed()
-        {            const string accessToken = "access_token";
+        {
+            const string accessToken = "access_token";
             InitializeFakeObjects();
 
-                        _tokenActions.RevokeToken(new RevokeTokenParameter
+            _tokenActions.RevokeToken(new RevokeTokenParameter
             {
                 Token = accessToken
             }, null, null, null);
 
-                        _oauthEventSource.Verify(s => s.StartRevokeToken(accessToken));
+            _oauthEventSource.Verify(s => s.StartRevokeToken(accessToken));
             _oauthEventSource.Verify(s => s.EndRevokeToken(accessToken));
         }
 
@@ -209,14 +219,14 @@
                         new Client
                         {
                             ClientId = clientId,
-                            AllowedScopes = new List<Scope> { new Scope { Name = scope } },
-                            ResponseTypes = new List<ResponseType> { ResponseType.token },
+                            AllowedScopes = new[] { new Scope { Name = scope } },
+                            ResponseTypes = new[] { ResponseTypeNames.Token },
                             GrantTypes = new List<GrantType> { GrantType.client_credentials }
                         },
                         null));
-            var scopeValidatorMock = new Mock<IScopeValidator>();
-            scopeValidatorMock.Setup(x => x.Check(It.IsAny<string>(), It.IsAny<Client>()))
-                .Returns(new ScopeValidationResult(new[] { scope }));
+            //var scopeValidatorMock = new Mock<IScopeValidator>();
+            //scopeValidatorMock.Setup(x => x.Check(It.IsAny<string>(), It.IsAny<Client>()))
+            //    .Returns(new ScopeValidationResult(new[] { scope }));
             var grantedTokenHelperMock = new Mock<IGrantedTokenHelper>();
             grantedTokenHelperMock.Setup(x => x.GetValidGrantedTokenAsync(
                     It.IsAny<string>(),
@@ -235,7 +245,6 @@
                 mock.Object,
                 new Mock<IGrantedTokenGeneratorHelper>().Object,
                 _revokeTokenParameterValidator.Object,
-                scopeValidatorMock.Object,
                 _oauthEventSource.Object,
                 _revokeTokenActionStub.Object,
                 eventPublisher.Object,

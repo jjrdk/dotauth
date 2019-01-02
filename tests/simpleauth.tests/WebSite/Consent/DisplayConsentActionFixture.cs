@@ -1,20 +1,19 @@
 ﻿namespace SimpleAuth.Tests.WebSite.Consent
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Factories;
     using Moq;
     using Parameters;
-    using Results;
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth.Common;
     using SimpleAuth.Helpers;
     using SimpleAuth.WebSite.Consent.Actions;
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Shared.Requests;
     using Xunit;
 
     public sealed class DisplayConsentActionFixture
@@ -24,31 +23,33 @@
         private Mock<IConsentHelper> _consentHelperFake;
         private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
-        private Mock<IActionResultFactory> _actionResultFactoryFake;
         private IDisplayConsentAction _displayConsentAction;
 
         [Fact]
         public async Task When_Parameter_Is_Null_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
 
-                        await Assert.ThrowsAsync<ArgumentNullException>(() => _displayConsentAction.Execute(
-                null,
-                null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _displayConsentAction.Execute(
-                authorizationParameter,
-                null, null)).ConfigureAwait(false);
+                    null,
+                    null,
+                    null))
+                .ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _displayConsentAction.Execute(
+                    authorizationParameter,
+                    null,
+                    null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_A_Consent_Has_Been_Given_Then_Redirect_To_Callback()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var actionResult = new EndpointResult
-            {
-                RedirectInstruction = new RedirectInstruction()
-            };
+
             var authorizationParameter = new AuthorizationParameter
             {
                 ResponseMode = ResponseMode.fragment
@@ -57,25 +58,25 @@
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(new Client()));
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
-                It.IsAny<AuthorizationParameter>()))
+                    It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult(consent));
-            _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
-                .Returns(actionResult);
+            
+            var result = await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null)
+                .ConfigureAwait(false);
 
-                        var result = await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null).ConfigureAwait(false);
-
-                        _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl());
-            Assert.True(result.EndpointResult.RedirectInstruction.ResponseMode == ResponseMode.fragment);
+            Assert.Equal(ResponseMode.fragment, result.EndpointResult.RedirectInstruction.ResponseMode);
         }
 
         [Fact]
-        public async Task When_A_Consent_Has_Been_Given_And_The_AuthorizationFlow_Is_Not_Supported_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        public async Task
+            When_A_Consent_Has_Been_Given_And_The_AuthorizationFlow_Is_Not_Supported_Then_Exception_Is_Thrown()
+        {
+            InitializeFakeObjects();
             const string clientId = "clientId";
             const string state = "state";
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var responseTypes = new List<ResponseType>();
+            var responseTypes = new List<string>();
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = clientId,
@@ -86,13 +87,16 @@
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(new Client()));
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
-                It.IsAny<AuthorizationParameter>()))
+                    It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult(consent));
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(responseTypes);
 
-                        var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
-                claimsPrincipal, null)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
+                    _displayConsentAction.Execute(authorizationParameter,
+                        claimsPrincipal,
+                        null))
+                .ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
             Assert.True(exception.State == state);
@@ -101,7 +105,8 @@
 
         [Fact]
         public async Task When_No_Consent_Has_Been_Given_And_Client_Does_Not_Exist_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             const string clientId = "clientId";
             const string state = "state";
             var claimsIdentity = new ClaimsIdentity();
@@ -112,13 +117,15 @@
                 State = state
             };
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
-                It.IsAny<AuthorizationParameter>()))
+                    It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult((Consent)null));
-            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>())).
-                Returns(Task.FromResult((Client)null));
+            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult((Client)null));
 
-                        var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
-                claimsPrincipal, null)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
+                    _displayConsentAction.Execute(authorizationParameter,
+                        claimsPrincipal,
+                        null))
+                .ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
             Assert.True(exception.State == state);
@@ -126,7 +133,8 @@
 
         [Fact]
         public async Task When_No_Consent_Has_Been_Given_Then_Redirect_To_Consent_Screen()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             const string clientId = "clientId";
             const string state = "state";
             const string scopeName = "profile";
@@ -140,24 +148,27 @@
                 Claims = null,
                 Scope = scopeName
             };
-            ICollection<Scope> scopes = new List<Scope> { new Scope
+            ICollection<Scope> scopes = new List<Scope>
             {
-                IsDisplayedInConsent = true,
-                Name = scopeName
-            } };
+                new Scope
+                {
+                    IsDisplayedInConsent = true,
+                    Name = scopeName
+                }
+            };
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
-                It.IsAny<AuthorizationParameter>()))
+                    It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult((Consent)null));
-            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>())).
-                Returns(Task.FromResult(client));
+            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult(client));
             _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
 
-                        await _displayConsentAction.Execute(authorizationParameter,
-                claimsPrincipal, null).ConfigureAwait(false);
+            await _displayConsentAction.Execute(authorizationParameter,
+                    claimsPrincipal,
+                    null)
+                .ConfigureAwait(false);
 
-                        Assert.Contains(scopes, s => s.Name == scopeName);
-            _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithOutput());
+            Assert.Contains(scopes, s => s.Name == scopeName);
         }
 
         private void InitializeFakeObjects()
@@ -167,14 +178,12 @@
             _consentHelperFake = new Mock<IConsentHelper>();
             _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
             _parameterParserHelperFake = new Mock<IParameterParserHelper>();
-            _actionResultFactoryFake = new Mock<IActionResultFactory>();
             _displayConsentAction = new DisplayConsentAction(
                 _scopeRepositoryFake.Object,
                 _clientRepositoryFake.Object,
                 _consentHelperFake.Object,
                 _generateAuthorizationResponseFake.Object,
-                _parameterParserHelperFake.Object,
-                _actionResultFactoryFake.Object);
+                _parameterParserHelperFake.Object);
         }
     }
 }

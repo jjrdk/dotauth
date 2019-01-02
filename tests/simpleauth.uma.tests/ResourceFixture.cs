@@ -27,7 +27,7 @@ namespace SimpleAuth.Uma.Tests
 
     public class ResourceFixture : IClassFixture<TestUmaServerFixture>
     {
-        const string baseUrl = "http://localhost:5000";
+        const string BaseUrl = "http://localhost:5000";
         private ResourceSetClient _resourceSetClient;
         private readonly TestUmaServerFixture _server;
 
@@ -45,7 +45,7 @@ namespace SimpleAuth.Uma.Tests
                     {
                         Name = string.Empty
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -64,7 +64,7 @@ namespace SimpleAuth.Uma.Tests
                     {
                         Name = "name"
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -89,7 +89,7 @@ namespace SimpleAuth.Uma.Tests
                         },
                         IconUri = "invalid"
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -106,7 +106,7 @@ namespace SimpleAuth.Uma.Tests
 
 
             var resource = await _resourceSetClient.GetByResolution("unknown",
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -123,7 +123,7 @@ namespace SimpleAuth.Uma.Tests
 
 
             var resource = await _resourceSetClient.DeleteByResolution("unknown",
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -140,7 +140,7 @@ namespace SimpleAuth.Uma.Tests
 
 
             var resource = await _resourceSetClient
-                .UpdateByResolution(new PutResourceSet(), baseUrl + "/.well-known/uma2-configuration", "header")
+                .UpdateByResolution(new PutResourceSet(), BaseUrl + "/.well-known/uma2-configuration", "header")
                 .ConfigureAwait(false);
 
             Assert.NotNull(resource);
@@ -160,7 +160,7 @@ namespace SimpleAuth.Uma.Tests
                         Id = "invalid",
                         Name = string.Empty
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -181,7 +181,7 @@ namespace SimpleAuth.Uma.Tests
                         Id = "invalid",
                         Name = "name"
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -207,7 +207,7 @@ namespace SimpleAuth.Uma.Tests
                         },
                         IconUri = "invalid"
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -232,7 +232,7 @@ namespace SimpleAuth.Uma.Tests
                             "scope"
                         }
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -249,7 +249,7 @@ namespace SimpleAuth.Uma.Tests
 
 
             var resources = await _resourceSetClient.GetAllByResolution(
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "token")
                 .ConfigureAwait(false);
 
@@ -264,11 +264,11 @@ namespace SimpleAuth.Uma.Tests
 
 
             var resources = await _resourceSetClient.GetAllByResolution(
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var resource = await _resourceSetClient.GetByResolution(resources.Content.First(),
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -282,15 +282,15 @@ namespace SimpleAuth.Uma.Tests
 
 
             var resources = await _resourceSetClient.GetAllByResolution(
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var resource = await _resourceSetClient.DeleteByResolution(resources.Content.First(),
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var information = await _resourceSetClient.GetByResolution(resources.Content.First(),
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -313,7 +313,7 @@ namespace SimpleAuth.Uma.Tests
                             "scope"
                         }
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -326,7 +326,7 @@ namespace SimpleAuth.Uma.Tests
             InitializeFakeObjects();
 
 
-            var resource = await _resourceSetClient.ResolveSearch(baseUrl + "/.well-known/uma2-configuration",
+            var resource = await _resourceSetClient.ResolveSearch(BaseUrl + "/.well-known/uma2-configuration",
                     new SearchResourceSet
                     {
                         StartIndex = 0,
@@ -353,7 +353,7 @@ namespace SimpleAuth.Uma.Tests
                             "scope"
                         }
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -367,11 +367,11 @@ namespace SimpleAuth.Uma.Tests
                             "scope2"
                         }
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var information = await _resourceSetClient
-                .GetByResolution(updateResult.Content.Id, baseUrl + "/.well-known/uma2-configuration", "header")
+                .GetByResolution(updateResult.Content.Id, BaseUrl + "/.well-known/uma2-configuration", "header")
                 .ConfigureAwait(false);
 
             Assert.NotNull(information);

@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using Parameters;
     using Shared.Models;
+    using Shared.Requests;
 
     public interface IParameterParserHelper
     {
@@ -17,7 +18,7 @@
         /// </summary>
         /// <param name="parameter">List of response types separated by whitespace</param>
         /// <returns>List of response types</returns>
-        ICollection<ResponseType> ParseResponseTypes(string parameter);
+        ICollection<string> ParseResponseTypes(string parameter);
         /// <summary>
         /// Parse the parameter and returns a list of scopes.
         /// </summary>

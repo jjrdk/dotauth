@@ -14,11 +14,11 @@
 
 namespace SimpleAuth.Helpers
 {
+    using Parameters;
+    using Shared;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Parameters;
-    using Shared.Models;
 
     public class ParameterParserHelper : IParameterParserHelper
     {
@@ -48,18 +48,17 @@ namespace SimpleAuth.Helpers
         /// </summary>
         /// <param name="parameter">List of response types separated by whitespace</param>
         /// <returns>List of response types</returns>
-        public ICollection<ResponseType> ParseResponseTypes(string parameter)
+        public ICollection<string> ParseResponseTypes(string parameter)
         {
-            var responseTypeNames = Enum.GetNames(typeof (ResponseType));
+            //var responseTypeNames = Enum.GetNames(typeof (string));
             if (string.IsNullOrWhiteSpace(parameter))
             {
-                return new List<ResponseType>();
+                return Array.Empty<string>();
             }
 
             var responses = parameter.Split(' ')
-                .Where(r => !string.IsNullOrWhiteSpace(r) && responseTypeNames.Contains(r))
-                .Select(r => (ResponseType) Enum.Parse(typeof (ResponseType), r))
-                .ToList();
+                .Where(r => !string.IsNullOrWhiteSpace(r) && ResponseTypeNames.All.Contains(r))
+               .ToArray();
             return responses;
         }
 

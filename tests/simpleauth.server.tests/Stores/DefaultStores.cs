@@ -20,6 +20,7 @@ namespace SimpleAuth.Server.Tests.Stores
     using System.Security.Cryptography;
     using Shared;
     using Shared.Models;
+    using Shared.Requests;
     using SimpleAuth;
 
     public static class DefaultStores
@@ -227,11 +228,11 @@ namespace SimpleAuth.Server.Tests.Stores
                         GrantType.refresh_token,
                         GrantType.password
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.code,
-                        ResponseType.token,
-                        ResponseType.id_token
+                        ResponseTypeNames.Code,
+                        ResponseTypeNames.Token,
+                        ResponseTypeNames.IdToken
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
@@ -280,11 +281,11 @@ namespace SimpleAuth.Server.Tests.Stores
                         GrantType.refresh_token,
                         GrantType.password
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.code,
-                        ResponseType.token,
-                        ResponseType.id_token
+                        ResponseTypeNames.Code,
+                        ResponseTypeNames.Token,
+                        ResponseTypeNames.IdToken
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     UserInfoSignedResponseAlg = "RS256",
@@ -331,11 +332,11 @@ namespace SimpleAuth.Server.Tests.Stores
                         GrantType.refresh_token,
                         GrantType.password
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.code,
-                        ResponseType.token,
-                        ResponseType.id_token
+                        ResponseTypeNames.Code,
+                        ResponseTypeNames.Token,
+                        ResponseTypeNames.IdToken
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     UserInfoSignedResponseAlg = "RS256",
@@ -384,9 +385,9 @@ namespace SimpleAuth.Server.Tests.Stores
                         GrantType.refresh_token,
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.id_token
+                        ResponseTypeNames.IdToken
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
@@ -420,9 +421,9 @@ namespace SimpleAuth.Server.Tests.Stores
                         GrantType.refresh_token,
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.token
+                        ResponseTypeNames.Token
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
@@ -455,9 +456,9 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.token
+                        ResponseTypeNames.Token
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
@@ -490,9 +491,9 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.token
+                        ResponseTypeNames.Token
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
@@ -525,9 +526,9 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.token
+                        ResponseTypeNames.Token
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
@@ -565,9 +566,9 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.token
+                        ResponseTypeNames.Token
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
@@ -605,11 +606,11 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.authorization_code
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.code,
-                        ResponseType.token,
-                        ResponseType.id_token
+                        ResponseTypeNames.Code,
+                        ResponseTypeNames.Token,
+                        ResponseTypeNames.IdToken
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
@@ -646,9 +647,9 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.authorization_code
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.id_token
+                        ResponseTypeNames.IdToken
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
@@ -685,10 +686,10 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.@implicit
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.token,
-                        ResponseType.id_token
+                        ResponseTypeNames.Token,
+                        ResponseTypeNames.IdToken
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
@@ -725,11 +726,11 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.authorization_code
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.code,
-                        ResponseType.token,
-                        ResponseType.id_token
+                        ResponseTypeNames.Code,
+                        ResponseTypeNames.Token,
+                        ResponseTypeNames.IdToken
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
@@ -768,11 +769,11 @@ namespace SimpleAuth.Server.Tests.Stores
                         GrantType.authorization_code,
                         GrantType.@implicit
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.code,
-                        ResponseType.token,
-                        ResponseType.id_token
+                        ResponseTypeNames.Code,
+                        ResponseTypeNames.Token,
+                        ResponseTypeNames.IdToken
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.web,
@@ -809,10 +810,10 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.password
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.token,
-                        ResponseType.id_token
+                        ResponseTypeNames.Token,
+                        ResponseTypeNames.IdToken
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.native
@@ -855,9 +856,9 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.token
+                        ResponseTypeNames.Token
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.native

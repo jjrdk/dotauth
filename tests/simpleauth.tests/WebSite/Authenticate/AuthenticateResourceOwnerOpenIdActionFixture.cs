@@ -14,8 +14,8 @@
 
 namespace SimpleAuth.Tests.WebSite.Authenticate
 {
-    using Factories;
     using Moq;
+    using Newtonsoft.Json;
     using Parameters;
     using Results;
     using SimpleAuth;
@@ -31,7 +31,6 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
     public sealed class AuthenticateResourceOwnerOpenIdActionFixture
     {
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
-        private Mock<IActionResultFactory> _actionResultFactoryFake;
         private Mock<IAuthenticateHelper> _authenticateHelperFake;
         private IAuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenIdAction;
 
@@ -40,7 +39,10 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         {
             InitializeFakeObjects();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerOpenIdAction.Execute(null, null, null, null)).ConfigureAwait(false);
+            await Assert
+                .ThrowsAsync<ArgumentNullException>(() =>
+                    _authenticateResourceOwnerOpenIdAction.Execute(null, null, null, null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
@@ -49,9 +51,12 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
 
-            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null, null).ConfigureAwait(false);
+            var result = await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null, null)
+                .ConfigureAwait(false);
 
-            _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
+            Assert.Equal(JsonConvert.SerializeObject(
+                    EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
+                JsonConvert.SerializeObject(result));
         }
 
         [Fact]
@@ -62,11 +67,15 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
-    claimsPrincipal,
-    null, null).ConfigureAwait(false);
+            var result = await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
+                    claimsPrincipal,
+                    null,
+                    null)
+                .ConfigureAwait(false);
 
-            _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
+            Assert.Equal(
+                JsonConvert.SerializeObject(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
+                JsonConvert.SerializeObject(result));
         }
 
         [Fact]
@@ -83,15 +92,20 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(promptParameters);
 
-            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
-    claimsPrincipal,
-    null, null).ConfigureAwait(false);
+            var result = await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
+                    claimsPrincipal,
+                    null,
+                    null)
+                .ConfigureAwait(false);
 
-            _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
+            Assert.Equal(
+                JsonConvert.SerializeObject(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
+                JsonConvert.SerializeObject(result));
         }
 
         [Fact]
-        public async Task When_Prompt_Parameter_Does_Not_Contain_Login_Value_And_Resource_Owner_Is_Authenticated_Then_Helper_Is_Called()
+        public async Task
+            When_Prompt_Parameter_Does_Not_Contain_Login_Value_And_Resource_Owner_Is_Authenticated_Then_Helper_Is_Called()
         {
             InitializeFakeObjects();
             const string code = "code";
@@ -107,33 +121,29 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             {
                 PromptParameter.consent
             };
-            var actionResult = new EndpointResult
-            {
-                RedirectInstruction = new RedirectInstruction()
-            };
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(promptParameters);
-            _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirection())
-                .Returns(actionResult);
 
-            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
-    claimsPrincipal,
-    code, null).ConfigureAwait(false);
+            await _authenticateResourceOwnerOpenIdAction.Execute(
+                    authorizationParameter,
+                    claimsPrincipal,
+                    code,
+                    null)
+                .ConfigureAwait(false);
 
             _authenticateHelperFake.Verify(a => a.ProcessRedirection(authorizationParameter,
-    code,
-    subject,
-    It.IsAny<List<Claim>>(), null));
+                code,
+                subject,
+                It.IsAny<List<Claim>>(),
+                null));
         }
 
         private void InitializeFakeObjects()
         {
             _parameterParserHelperFake = new Mock<IParameterParserHelper>();
-            _actionResultFactoryFake = new Mock<IActionResultFactory>();
             _authenticateHelperFake = new Mock<IAuthenticateHelper>();
             _authenticateResourceOwnerOpenIdAction = new AuthenticateResourceOwnerOpenIdAction(
                 _parameterParserHelperFake.Object,
-                _actionResultFactoryFake.Object,
                 _authenticateHelperFake.Object);
         }
     }

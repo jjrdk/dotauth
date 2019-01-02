@@ -22,7 +22,6 @@ namespace SimpleAuth.Tests.WebSite.User
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth.Api.Profile.Actions;
     using SimpleAuth.WebSite.User.Actions;
     using Xunit;
 

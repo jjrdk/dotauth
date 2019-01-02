@@ -26,13 +26,12 @@ namespace SimpleAuth.Tests.Validators
 
     public class ClientValidatorFixture
     {
-        private IClientValidator _clientValidator;
+        private ClientValidator _clientValidator;
 
         [Fact]
         public void When_Client_Does_Not_Contain_RedirectionUri_Then_EmptyArray_Is_Returned()
         {
             InitializeMockingObjects();
-
             
             Assert.Empty(_clientValidator.GetRedirectionUrls(null, null));
             Assert.Empty(_clientValidator.GetRedirectionUrls(new Client(), null));

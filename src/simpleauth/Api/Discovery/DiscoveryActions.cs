@@ -14,14 +14,16 @@
 
 namespace SimpleAuth.Api.Discovery
 {
+    using Authorization;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Shared.Requests;
+    using Shared.Responses;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Authorization;
-    using Shared.Models;
-    using Shared.Repositories;
-    using Shared.Responses;
+    using Shared;
 
     public class DiscoveryActions : IDiscoveryActions
     {
@@ -109,7 +111,8 @@ namespace SimpleAuth.Api.Discovery
             {
                 if (authorizationFlows.Contains(mapping.Value))
                 {
-                    var record = string.Join(" ", mapping.Key.Select(k => Enum.GetName(typeof(ResponseType), k)));
+                    var record = string.Join(" ", mapping.Key.Where(ResponseTypeNames.All.Contains));
+                        //.Select(k => Enum.GetName(typeof(string), k)));
                     result.Add(record);
                 }
             }

@@ -27,6 +27,6 @@ namespace SimpleAuth.Shared.Models
         public ScopeType Type { get; set; }
         public DateTime CreateDateTime { get; set; }
         public DateTime UpdateDateTime { get; set; }
-        public List<string> Claims { get; set; }
+        public IList<string> Claims { get; set; } = new List<string>();
     }
 }
