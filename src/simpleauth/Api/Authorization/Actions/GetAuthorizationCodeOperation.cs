@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Api.Authorization.Actions
 {
-    using System;
-    using System.Security.Claims;
-    using System.Security.Principal;
-    using System.Threading.Tasks;
     using Common;
     using Errors;
     using Exceptions;
@@ -26,23 +22,26 @@ namespace SimpleAuth.Api.Authorization.Actions
     using Results;
     using Shared.Models;
     using SimpleAuth.Common;
+    using System;
+    using System.Security.Claims;
+    using System.Security.Principal;
+    using System.Threading.Tasks;
     using Validators;
 
-    public class GetAuthorizationCodeOperation : IGetAuthorizationCodeOperation
+    internal sealed class GetAuthorizationCodeOperation
     {
-        private readonly IProcessAuthorizationRequest _processAuthorizationRequest;
-        private readonly IClientValidator _clientValidator;
+        private readonly ProcessAuthorizationRequest _processAuthorizationRequest;
+        private readonly ClientValidator _clientValidator;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
         private readonly IOAuthEventSource _oAuthEventSource;
 
         public GetAuthorizationCodeOperation(
-            IProcessAuthorizationRequest processAuthorizationRequest,
-            IClientValidator clientValidator,
+            ProcessAuthorizationRequest processAuthorizationRequest,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
             IOAuthEventSource oAuthEventSource)
         {
             _processAuthorizationRequest = processAuthorizationRequest;
-            _clientValidator = clientValidator;
+            _clientValidator = new ClientValidator();
             _generateAuthorizationResponse = generateAuthorizationResponse;
             _oAuthEventSource = oAuthEventSource;
         }

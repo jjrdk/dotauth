@@ -14,30 +14,31 @@
 
 namespace SimpleAuth.Validators
 {
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Helpers;
     using Parameters;
     using Shared.Models;
     using Shared.Repositories;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Shared;
+    using Shared.Requests;
 
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator : IAuthorizationCodeGrantTypeParameterAuthEdpValidator
     {
         private readonly IParameterParserHelper _parameterParserHelper;
         private readonly IClientStore _clientRepository;
-        private readonly IClientValidator _clientValidator;
+        private readonly ClientValidator _clientValidator;
 
         public AuthorizationCodeGrantTypeParameterAuthEdpValidator(
             IParameterParserHelper parameterParserHelper,
-            IClientStore clientRepository,
-            IClientValidator clientValidator)
+            IClientStore clientRepository)
         {
             _parameterParserHelper = parameterParserHelper;
             _clientRepository = clientRepository;
-            _clientValidator = clientValidator;
+            _clientValidator = new ClientValidator();
         }
 
         public async Task<Client> ValidateAsync(AuthorizationParameter parameter)
@@ -124,9 +125,9 @@ namespace SimpleAuth.Validators
                 return;
             }
 
-            var responseTypeNames = Enum.GetNames(typeof(ResponseType));
+            //var responseTypeNames = Enum.GetNames(typeof(string));
             var atLeastOneResonseTypeIsNotSupported = responseType.Split(' ')
-                .Any(r => !string.IsNullOrWhiteSpace(r) && !responseTypeNames.Contains(r));
+                .Any(r => !string.IsNullOrWhiteSpace(r) && !ResponseTypeNames.All.Contains(r));
             if (atLeastOneResonseTypeIsNotSupported)
             {
                 throw new SimpleAuthExceptionWithState(

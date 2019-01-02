@@ -14,9 +14,6 @@
 
 namespace SimpleAuth.Server.Extensions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.AspNetCore.Authentication;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -29,13 +26,16 @@ namespace SimpleAuth.Server.Extensions
     using Shared.Responses;
     using Shared.Results;
     using SimpleAuth;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using CodeChallengeMethods = Shared.Models.CodeChallengeMethods;
 
     public static class MappingExtensions
     {
         public static AuthproviderResponse ToDto(this AuthenticationScheme authenticationScheme)
         {
-            if(authenticationScheme == null)
+            if (authenticationScheme == null)
             {
                 throw new ArgumentNullException(nameof(authenticationScheme));
             }
@@ -59,7 +59,7 @@ namespace SimpleAuth.Server.Extensions
 
         public static ProfileResponse ToDto(this ResourceOwnerProfile profile)
         {
-            if(profile == null)
+            if (profile == null)
             {
                 throw new ArgumentNullException(nameof(profile));
             }
@@ -69,10 +69,10 @@ namespace SimpleAuth.Server.Extensions
                 Issuer = profile.Issuer,
                 UserId = profile.Subject,
                 CreateDateTime = profile.CreateDateTime,
-                UpdateTime = profile.UpdateTime                
+                UpdateTime = profile.UpdateTime
             };
         }
-    
+
         public static AddClaimParameter ToParameter(this ClaimResponse request)
         {
             if (request == null)
@@ -328,7 +328,7 @@ namespace SimpleAuth.Server.Extensions
         {
             return new ScopeResponse
             {
-                Claims = scope.Claims,
+                Claims = scope.Claims.ToList(),
                 Description = scope.Description,
                 IsDisplayedInConsent = scope.IsDisplayedInConsent,
                 IsExposed = scope.IsExposed,

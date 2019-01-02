@@ -14,11 +14,6 @@
 
 namespace SimpleAuth.Tests.Api.Registration
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Threading.Tasks;
     using Newtonsoft.Json;
     using Repositories;
     using Shared;
@@ -26,6 +21,11 @@ namespace SimpleAuth.Tests.Api.Registration
     using Shared.Parameters;
     using Shared.Repositories;
     using SimpleAuth;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Threading.Tasks;
     using Xunit;
 
     public sealed class DefaultClientRepositoryFixture : IDisposable
@@ -44,7 +44,8 @@ namespace SimpleAuth.Tests.Api.Registration
             const string clientId = "client_id";
             InitializeFakeObjects();
 
-            var result = await _clientRepositoryFake.Search(new SearchClientParameter { ClientIds = new[] { clientId } }).ConfigureAwait(false);
+            var result = await _clientRepositoryFake.Search(new SearchClientParameter { ClientIds = new[] { clientId } })
+                .ConfigureAwait(false);
             Assert.Empty(result.Content);
         }
 
@@ -63,7 +64,7 @@ namespace SimpleAuth.Tests.Api.Registration
             await _clientRepositoryFake.Insert(client).ConfigureAwait(false);
 
             var result = await _clientRepositoryFake.Search(
-                new SearchClientParameter { ClientIds = new[] { clientId } })
+                    new SearchClientParameter { ClientIds = new[] { clientId } })
                 .ConfigureAwait(false);
 
             Assert.True(result.Content.First().ClientId == clientId);
@@ -74,7 +75,8 @@ namespace SimpleAuth.Tests.Api.Registration
         {
             InitializeFakeObjects();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientRepositoryFake.Insert(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientRepositoryFake.Insert(null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
@@ -98,9 +100,9 @@ namespace SimpleAuth.Tests.Api.Registration
             {
                 ClientId = "testclient",
                 ClientName = clientName,
-                ResponseTypes = new List<ResponseType>
+                ResponseTypes = new[]
                 {
-                    ResponseType.token
+                    ResponseTypeNames.Token
                 },
                 GrantTypes = new List<GrantType>
                 {
@@ -108,7 +110,7 @@ namespace SimpleAuth.Tests.Api.Registration
                 },
                 Secrets = new List<ClientSecret>
                 {
-                    new ClientSecret{ Type = ClientSecretTypes.SharedSecret, Value = "test"}
+                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}
                 },
                 AllowedScopes = new[] { new Scope { Name = "scope" } },
                 ApplicationType = ApplicationTypes.native,

@@ -17,7 +17,6 @@ namespace SimpleAuth.Api.Authorization.Common
     using Errors;
     using Exceptions;
     using Extensions;
-    using Factories;
     using Helpers;
     using JwtToken;
     using Logging;
@@ -31,49 +30,30 @@ namespace SimpleAuth.Api.Authorization.Common
     using System.Threading.Tasks;
     using Validators;
 
-    public class ProcessAuthorizationRequest : IProcessAuthorizationRequest
+    internal sealed class ProcessAuthorizationRequest
     {
-        private readonly IParameterParserHelper _parameterParserHelper;
-        private readonly IClientValidator _clientValidator;
-        private readonly IScopeValidator _scopeValidator;
-        private readonly IActionResultFactory _actionResultFactory;
+        private readonly ParameterParserHelper _parameterParserHelper;
+        private readonly ClientValidator _clientValidator;
+        private readonly ScopeValidator _scopeValidator;
         private readonly IConsentHelper _consentHelper;
         private readonly IJwtParser _jwtParser;
-        private readonly OAuthConfigurationOptions _configurationService;
         private readonly IOAuthEventSource _oauthEventSource;
 
         public ProcessAuthorizationRequest(
-            IParameterParserHelper parameterParserHelper,
-            IClientValidator clientValidator,
-            IScopeValidator scopeValidator,
-            IActionResultFactory actionResultFactory,
             IConsentHelper consentHelper,
             IJwtParser jwtParser,
-            OAuthConfigurationOptions configurationService,
             IOAuthEventSource oauthEventSource)
         {
-            _parameterParserHelper = parameterParserHelper;
-            _clientValidator = clientValidator;
-            _scopeValidator = scopeValidator;
-            _actionResultFactory = actionResultFactory;
+            _parameterParserHelper = new ParameterParserHelper();
+            _clientValidator = new ClientValidator();
+            _scopeValidator = new ScopeValidator();
             _consentHelper = consentHelper;
             _jwtParser = jwtParser;
-            _configurationService = configurationService;
             _oauthEventSource = oauthEventSource;
         }
 
         public async Task<EndpointResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName)
         {
-            if (authorizationParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationParameter));
-            }
-
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
             var endUserIsAuthenticated = IsAuthenticated(claimsPrincipal);
             Consent confirmedConsent = null;
             if (endUserIsAuthenticated)
@@ -116,13 +96,14 @@ namespace SimpleAuth.Api.Authorization.Common
                     authorizationParameter.State);
             }
 
-            if (!scopeValidationResult.Scopes.Contains(CoreConstants.StandardScopes.OpenId.Name))
-            {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidScope,
-                    string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, CoreConstants.StandardScopes.OpenId.Name),
-                    authorizationParameter.State);
-            }
+            // TODO: Investigate
+            //if (!scopeValidationResult.Scopes.Contains(CoreConstants.StandardScopes.OpenId.Name))
+            //{
+            //    throw new SimpleAuthExceptionWithState(
+            //        ErrorCodes.InvalidScope,
+            //        string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, CoreConstants.StandardScopes.OpenId.Name),
+            //        authorizationParameter.State);
+            //}
 
             var responseTypes = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
             if (!responseTypes.Any())
@@ -144,7 +125,7 @@ namespace SimpleAuth.Api.Authorization.Common
             }
 
             // Check if the user connection is still valid.
-            if (endUserIsAuthenticated && !authorizationParameter.MaxAge.Equals(default(double)))
+            if (endUserIsAuthenticated && !authorizationParameter.MaxAge.Equals(default))
             {
                 var authenticationDateTimeClaim = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
                 if (authenticationDateTimeClaim != null)
@@ -154,7 +135,7 @@ namespace SimpleAuth.Api.Authorization.Common
                     var authenticationDateTime = long.Parse(authenticationDateTimeClaim.Value);
                     if (maxAge < currentDateTimeUtc - authenticationDateTime)
                     {
-                        result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
+                        result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
                         result.RedirectInstruction.Action = SimpleAuthEndPoints.AuthenticateIndex;
                     }
                 }
@@ -293,7 +274,7 @@ namespace SimpleAuth.Api.Authorization.Common
                             authorizationParameter.State);
                 }
 
-                var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
+                var result = EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
                 return result;
             }
 
@@ -302,14 +283,14 @@ namespace SimpleAuth.Api.Authorization.Common
             // The user is not authenticated AND the prompt authorizationParameter is different from "none"
             if (prompts.Contains(PromptParameter.login))
             {
-                var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
+                var result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
                 result.RedirectInstruction.Action = SimpleAuthEndPoints.AuthenticateIndex;
                 return result;
             }
 
             if (prompts.Contains(PromptParameter.consent))
             {
-                var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
+                var result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
                 if (!endUserIsAuthenticated)
                 {
                     result.RedirectInstruction.Action = SimpleAuthEndPoints.AuthenticateIndex;
@@ -334,9 +315,7 @@ namespace SimpleAuth.Api.Authorization.Common
 
         private static bool IsAuthenticated(ClaimsPrincipal principal)
         {
-            return principal?.Identity == null ?
-                false :
-                principal.Identity.IsAuthenticated;
+            return principal?.Identity?.IsAuthenticated ?? false;
         }
     }
 }

@@ -22,16 +22,16 @@ namespace SimpleAuth.Shared.Requests
     [DataContract]
     public class AuthorizationRequest
     {
-        private readonly Dictionary<ResponseTypes, string> _mappingResponseTypesToNames = new Dictionary<ResponseTypes, string>
+        private readonly Dictionary<string, string> _mappingResponseTypesToNames = new Dictionary<string, string>
         {
-            { ResponseTypes.Code, ResponseTypeNames.Code },
-            { ResponseTypes.Token, ResponseTypeNames.Token },
-            { ResponseTypes.IdToken, ResponseTypeNames.IdToken }
+            { ResponseTypeNames.Code, ResponseTypeNames.Code },
+            { ResponseTypeNames.Token, ResponseTypeNames.Token },
+            { ResponseTypeNames.IdToken, ResponseTypeNames.IdToken }
         };
 
         public AuthorizationRequest() { }
 
-        public AuthorizationRequest(IEnumerable<string> scopes, IEnumerable<ResponseTypes> responseTypes, string clientId, Uri redirectUri, string state)
+        public AuthorizationRequest(IEnumerable<string> scopes, IEnumerable<string> responseTypes, string clientId, Uri redirectUri, string state)
         {
             Scope = string.Join(" ", scopes);
             ResponseType = string.Join(" ", responseTypes.Select(s => _mappingResponseTypesToNames[s]));

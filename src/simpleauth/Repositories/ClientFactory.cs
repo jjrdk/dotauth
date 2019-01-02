@@ -1,15 +1,15 @@
 ﻿namespace SimpleAuth.Repositories
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Threading.Tasks;
 
     public class ClientFactory
     {
@@ -28,17 +28,20 @@
             {
                 throw new ArgumentNullException(nameof(newClient));
             }
-            ValidateNotMandatoryUri(newClient.LogoUri, ClientNames.LogoUri);
-            ValidateNotMandatoryUri(newClient.ClientUri, ClientNames.ClientUri);
-            ValidateNotMandatoryUri(newClient.TosUri, ClientNames.TosUri);
-            ValidateNotMandatoryUri(newClient.JwksUri, ClientNames.JwksUri);
-            ValidateNotMandatoryUri(newClient.SectorIdentifierUri, ClientNames.SectorIdentifierUri, true);
+
+            ValidateNotMandatoryUri(newClient.LogoUri, SharedConstants.ClientNames.LogoUri);
+            ValidateNotMandatoryUri(newClient.ClientUri, SharedConstants.ClientNames.ClientUri);
+            ValidateNotMandatoryUri(newClient.TosUri, SharedConstants.ClientNames.TosUri);
+            ValidateNotMandatoryUri(newClient.JwksUri, SharedConstants.ClientNames.JwksUri);
+            ValidateNotMandatoryUri(newClient.SectorIdentifierUri, SharedConstants.ClientNames.SectorIdentifierUri, true);
 
             // Based on the RFC : http://openid.net/specs/openid-connect-registration-1_0.html#SectorIdentifierValidation validate the sector_identifier_uri
             if (newClient.SectorIdentifierUri != null)
             {
-                var sectorIdentifierUris = await GetSectorIdentifierUris(newClient.SectorIdentifierUri).ConfigureAwait(false);
-                if (sectorIdentifierUris.Any(sectorIdentifierUri => !newClient.RedirectionUrls.Contains(sectorIdentifierUri)))
+                var sectorIdentifierUris =
+                    await GetSectorIdentifierUris(newClient.SectorIdentifierUri).ConfigureAwait(false);
+                if (sectorIdentifierUris.Any(sectorIdentifierUri =>
+                    !newClient.RedirectionUrls.Contains(sectorIdentifierUri)))
                 {
                     throw new SimpleAuthException(
                         ErrorCodes.InvalidClientMetaData,
@@ -84,14 +87,14 @@
 
             ValidateNotMandatoryUri(
                 newClient.InitiateLoginUri,
-                ClientNames.InitiateLoginUri,
+               SharedConstants.ClientNames.InitiateLoginUri,
                 true);
 
             if (newClient.RequestUris == null || !newClient.RequestUris.Any())
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestUriCode,
-                    string.Format(ErrorDescriptions.MissingParameter, ClientNames.RequestUris));
+                    string.Format(ErrorDescriptions.MissingParameter, SharedConstants.ClientNames.RequestUris));
             }
 
             if (newClient.RequestUris.Any(requestUri => !requestUri.IsAbsoluteUri))
@@ -192,10 +195,11 @@
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidScope,
-                    string.Format(ErrorDescriptions.MissingParameter, ClientNames.AllowedScopes));
+                    string.Format(ErrorDescriptions.MissingParameter, SharedConstants.ClientNames.AllowedScopes));
             }
 
-            var scopes = await _scopeRepository.SearchByNames(newClient.AllowedScopes.Select(s => s.Name)).ConfigureAwait(false);
+            var scopes = await _scopeRepository.SearchByNames(newClient.AllowedScopes.Select(s => s.Name))
+                .ConfigureAwait(false);
             if (scopes.Count != newClient.AllowedScopes.Count)
             {
                 var enumerable = newClient.AllowedScopes.Select(x => x.Name).Except(scopes.Select(x => x.Name));
@@ -210,8 +214,9 @@
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRedirectUri,
-                    string.Format(ErrorDescriptions.MissingParameter, ClientNames.RedirectUris));
+                    string.Format(ErrorDescriptions.MissingParameter, SharedConstants.ClientNames.RedirectUris));
             }
+
             // Check the newClients when the application type is web
             if (client.ApplicationType == ApplicationTypes.web)
             {
@@ -219,13 +224,16 @@
                 {
                     if (!Uri.IsWellFormedUriString(redirectUri.AbsoluteUri, UriKind.Absolute))
                     {
-                        throw new SimpleAuthException(ErrorCodes.InvalidRedirectUri, string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, redirectUri));
+                        throw new SimpleAuthException(ErrorCodes.InvalidRedirectUri,
+                            string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, redirectUri));
                     }
 
                     if (!string.IsNullOrWhiteSpace(redirectUri.Fragment))
                     {
-                        throw new SimpleAuthException(ErrorCodes.InvalidRedirectUri, string.Format(ErrorDescriptions.TheRedirectUrlCannotContainsFragment, redirectUri));
+                        throw new SimpleAuthException(ErrorCodes.InvalidRedirectUri,
+                            string.Format(ErrorDescriptions.TheRedirectUrlCannotContainsFragment, redirectUri));
                     }
+
                     client.RedirectionUrls.Add(redirectUri);
                 }
             }
@@ -235,7 +243,8 @@
                 {
                     if (!Uri.IsWellFormedUriString(redirectUri.AbsoluteUri, UriKind.Absolute))
                     {
-                        throw new SimpleAuthException(ErrorCodes.InvalidRedirectUri, string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, redirectUri));
+                        throw new SimpleAuthException(ErrorCodes.InvalidRedirectUri,
+                            string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, redirectUri));
                     }
 
                     client.RedirectionUrls.Add(redirectUri);
@@ -252,9 +261,9 @@
             // If omitted then the default value is authorization code response type
             if (newClient.ResponseTypes?.Any() != true)
             {
-                client.ResponseTypes = new List<ResponseType>
+                client.ResponseTypes = new[]
                 {
-                    ResponseType.code
+                    ResponseTypeNames.Code
                 };
             }
             else
@@ -267,7 +276,8 @@
             client.SectorIdentifierUri = newClient.SectorIdentifierUri;
             client.SubjectType = newClient.SubjectType;
 
-            if (client.Secrets.Count == 0 && client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.private_key_jwt)
+            if (client.Secrets.Count == 0 &&
+                client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.private_key_jwt)
             {
                 client.Secrets = new List<ClientSecret>
                 {

@@ -26,7 +26,7 @@ namespace SimpleAuth.Uma.Tests
 
     public class PermissionFixture : IClassFixture<TestUmaServerFixture>
     {
-        private const string baseUrl = "http://localhost:5000";
+        private const string BaseUrl = "http://localhost:5000";
         //private IPolicyClient _policyClient;
         private ResourceSetClient _resourceSetClient;
         private PermissionClient _permissionClient;
@@ -50,7 +50,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -63,7 +63,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             UserStore.Instance().ClientId = "client";
@@ -82,7 +82,7 @@ namespace SimpleAuth.Uma.Tests
             {
                 ResourceSetId = string.Empty
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -100,7 +100,7 @@ namespace SimpleAuth.Uma.Tests
             {
                 ResourceSetId = "resource"
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -122,7 +122,7 @@ namespace SimpleAuth.Uma.Tests
                             "scope"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -143,7 +143,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -155,7 +155,7 @@ namespace SimpleAuth.Uma.Tests
                             "scopescopescope"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -176,7 +176,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -188,7 +188,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 

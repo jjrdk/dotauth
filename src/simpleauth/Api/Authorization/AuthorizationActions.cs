@@ -14,27 +14,31 @@
 
 namespace SimpleAuth.Api.Authorization
 {
-    using System;
-    using System.Security.Principal;
-    using System.Threading.Tasks;
     using Actions;
+    using Common;
     using Errors;
     using Exceptions;
     using Helpers;
+    using JwtToken;
     using Logging;
     using Parameters;
     using Results;
     using Shared;
     using Shared.Events.OAuth;
+    using Shared.Repositories;
+    using SimpleAuth.Common;
+    using System;
+    using System.Security.Principal;
+    using System.Threading.Tasks;
     using Validators;
 
     public class AuthorizationActions : IAuthorizationActions
     {
-        private readonly IGetAuthorizationCodeOperation _getAuthorizationCodeOperation;
-        private readonly IGetTokenViaImplicitWorkflowOperation _getTokenViaImplicitWorkflowOperation;
-        private readonly IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation
+        private readonly GetAuthorizationCodeOperation _getAuthorizationCodeOperation;
+        private readonly GetTokenViaImplicitWorkflowOperation _getTokenViaImplicitWorkflowOperation;
+        private readonly GetAuthorizationCodeAndTokenViaHybridWorkflowOperation
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperation;
-        private readonly IAuthorizationCodeGrantTypeParameterAuthEdpValidator _authorizationCodeGrantTypeParameterValidator;
+        private readonly AuthorizationCodeGrantTypeParameterAuthEdpValidator _authorizationCodeGrantTypeParameterValidator;
         private readonly IParameterParserHelper _parameterParserHelper;
         private readonly IOAuthEventSource _oauthEventSource;
         private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
@@ -43,22 +47,38 @@ namespace SimpleAuth.Api.Authorization
         private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
 
         public AuthorizationActions(
-            IGetAuthorizationCodeOperation getAuthorizationCodeOperation,
-            IGetTokenViaImplicitWorkflowOperation getTokenViaImplicitWorkflowOperation,
-            IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation getAuthorizationCodeAndTokenViaHybridWorkflowOperation,
-            IAuthorizationCodeGrantTypeParameterAuthEdpValidator authorizationCodeGrantTypeParameterValidator,
+            IConsentHelper consentHelper,
+            IGenerateAuthorizationResponse generateAuthorizationResponse,
             IParameterParserHelper parameterParserHelper,
+            IClientStore clientStore,
             IOAuthEventSource oauthEventSource,
+            IJwtParser jwtParser,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IEventPublisher eventPublisher,
             IAmrHelper amrHelper,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper)
         {
-            _getAuthorizationCodeOperation = getAuthorizationCodeOperation;
-            _getTokenViaImplicitWorkflowOperation = getTokenViaImplicitWorkflowOperation;
+            var clientValidator = new ClientValidator();
+            var processAuthorizationRequest = new ProcessAuthorizationRequest(
+                consentHelper,
+                jwtParser,
+                oauthEventSource);
+            _getAuthorizationCodeOperation = new GetAuthorizationCodeOperation(
+                processAuthorizationRequest,
+                generateAuthorizationResponse,
+                oauthEventSource);
+            _getTokenViaImplicitWorkflowOperation = new GetTokenViaImplicitWorkflowOperation(
+                processAuthorizationRequest,
+                generateAuthorizationResponse,
+                oauthEventSource);
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperation =
-                getAuthorizationCodeAndTokenViaHybridWorkflowOperation;
-            _authorizationCodeGrantTypeParameterValidator = authorizationCodeGrantTypeParameterValidator;
+                new GetAuthorizationCodeAndTokenViaHybridWorkflowOperation(
+                    oauthEventSource,
+                    processAuthorizationRequest,
+                    generateAuthorizationResponse);
+            _authorizationCodeGrantTypeParameterValidator = new AuthorizationCodeGrantTypeParameterAuthEdpValidator(
+                parameterParserHelper,
+                clientStore);
             _parameterParserHelper = parameterParserHelper;
             _oauthEventSource = oauthEventSource;
             _authorizationFlowHelper = authorizationFlowHelper;
@@ -98,7 +118,7 @@ namespace SimpleAuth.Api.Authorization
                         endpointResult = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(parameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
                         break;
                 }
-                
+
                 if (endpointResult != null)
                 {
                     var actionTypeName = Enum.GetName(typeof(TypeActionResult), endpointResult.Type);
@@ -116,12 +136,12 @@ namespace SimpleAuth.Api.Authorization
                         serializedParameters);
                 }
 
-                _eventPublisher.Publish(new AuthorizationGranted(Guid.NewGuid().ToString(), processId,endpointResult, 1));
+                _eventPublisher.Publish(new AuthorizationGranted(Guid.NewGuid().ToString(), processId, endpointResult, 1));
                 endpointResult.ProcessId = processId;
                 endpointResult.Amr = _amrHelper.GetAmr(_resourceOwnerAuthenticateHelper.GetAmrs(), parameter.AmrValues);
                 return endpointResult;
             }
-            catch(SimpleAuthException ex)
+            catch (SimpleAuthException ex)
             {
                 _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;

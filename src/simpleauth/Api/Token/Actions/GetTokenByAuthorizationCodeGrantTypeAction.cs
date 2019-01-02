@@ -26,7 +26,9 @@ namespace SimpleAuth.Api.Token.Actions
     using JwtToken;
     using Logging;
     using Parameters;
+    using Shared;
     using Shared.Models;
+    using Shared.Requests;
     using Validators;
 
     public class GetTokenByAuthorizationCodeGrantTypeAction : IGetTokenByAuthorizationCodeGrantTypeAction
@@ -37,7 +39,7 @@ namespace SimpleAuth.Api.Token.Actions
             public Client Client { get; set; }
         }
 
-        private readonly IClientValidator _clientValidator;
+        private readonly ClientValidator _clientValidator;
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
         private readonly OAuthConfigurationOptions _configurationService;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
@@ -49,7 +51,6 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly IJwtGenerator _jwtGenerator;
 
         public GetTokenByAuthorizationCodeGrantTypeAction(
-            IClientValidator clientValidator,
             IAuthorizationCodeStore authorizationCodeStore,
             OAuthConfigurationOptions configurationService,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
@@ -60,7 +61,7 @@ namespace SimpleAuth.Api.Token.Actions
             IGrantedTokenHelper grantedTokenHelper,
             IJwtGenerator jwtGenerator)
         {
-            _clientValidator = clientValidator;
+            _clientValidator = new ClientValidator();
             _authorizationCodeStore = authorizationCodeStore;
             _configurationService = configurationService;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
@@ -141,10 +142,10 @@ namespace SimpleAuth.Api.Token.Actions
                 throw new SimpleAuthException(ErrorCodes.InvalidClient, string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.authorization_code));
             }
 
-            if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseType.code))
+            if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseTypeNames.Code))
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidClient,
-                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, ResponseType.code));
+                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, ResponseTypeNames.Code));
             }
 
             var authorizationCode = await _authorizationCodeStore.GetAuthorizationCode(authorizationCodeGrantTypeParameter.Code).ConfigureAwait(false);

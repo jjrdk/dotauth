@@ -1,5 +1,7 @@
 ﻿namespace SimpleAuth.Logging
 {
+    using Shared.Models;
+
     public interface IOAuthEventSource : IEventSource
     {
         void StartAuthorization(

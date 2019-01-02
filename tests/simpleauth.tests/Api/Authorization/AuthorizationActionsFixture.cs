@@ -14,31 +14,27 @@
 
 namespace SimpleAuth.Tests.Api.Authorization
 {
-    using System.Collections.Generic;
-    using System.Security.Principal;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Logging;
     using Moq;
     using Parameters;
-    using Results;
     using Shared;
     using Shared.Models;
-    using SimpleAuth;
+    using Shared.Repositories;
     using SimpleAuth.Api.Authorization;
-    using SimpleAuth.Api.Authorization.Actions;
+    using SimpleAuth.Common;
     using SimpleAuth.Helpers;
-    using SimpleAuth.Validators;
+    using SimpleAuth.JwtToken;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public sealed class AuthorizationActionsFixture
     {
-        private Mock<IGetAuthorizationCodeOperation> _getAuthorizationCodeOperationFake;
-        private Mock<IGetTokenViaImplicitWorkflowOperation> _getTokenViaImplicitWorkflowOperationFake;
-        private Mock<IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation>
-            _getAuthorizationCodeAndTokenViaHybridWorkflowOperationFake;
-        private Mock<IAuthorizationCodeGrantTypeParameterAuthEdpValidator> _authorizationCodeGrantTypeParameterAuthEdpValidatorFake;
+        private const string OpenIdScope = "openid";
+        private const string HttpsLocalhost = "https://localhost";
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
         private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
@@ -46,199 +42,237 @@ namespace SimpleAuth.Tests.Api.Authorization
         private Mock<IAmrHelper> _amrHelperStub;
         private Mock<IResourceOwnerAuthenticateHelper> _resourceOwnerAuthenticateHelperStub;
         private IAuthorizationActions _authorizationActions;
+        private Mock<IClientStore> _clientStore;
+        private Mock<IConsentHelper> _consentHelper;
 
         [Fact]
         public async Task When_Client_Require_PKCE_And_NoCodeChallenge_Is_Passed_Then_Exception_Is_Thrown()
-        {            const string clientId = "clientId";
-            const string responseType = "id_token";
-            const string scope = "openid";
-            InitializeFakeObjects();
-            _authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Setup(a => a.ValidateAsync(It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult(new Client
+        {
+            const string clientId = "clientId";
+            const string scope = OpenIdScope;
+
+            var redirectUrl = new Uri(HttpsLocalhost);
+            InitializeFakeObjects(
+                new Client
                 {
+                    ResponseTypes = new[] { ResponseTypeNames.IdToken },
+                    ClientId = clientId,
                     RequirePkce = true,
-                    ClientId = clientId
-                }));
+                    RedirectionUrls = new[] { redirectUrl }
+                });
 
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = clientId,
-                ResponseType = responseType,
+                ResponseType = ResponseTypeNames.IdToken,
                 Scope = scope,
+                RedirectUrl = redirectUrl
             };
 
-                        var result = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() => _authorizationActions.GetAuthorization(authorizationParameter, null, null)).ConfigureAwait(false);
-            Assert.True(result.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(result.Message == string.Format(ErrorDescriptions.TheClientRequiresPkce, clientId));
+            var result = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() => _authorizationActions.GetAuthorization(authorizationParameter, null, null)).ConfigureAwait(false);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, result.Code);
+            Assert.Equal(string.Format(ErrorDescriptions.TheClientRequiresPkce, clientId), result.Message);
         }
 
         [Fact]
-        public void When_Starting_Implicit_Authorization_Process_Then_Event_Is_Started_And_Ended()
-        {            InitializeFakeObjects();
-            var actionResult = new EndpointResult
-            {
-                Type = TypeActionResult.RedirectToAction,
-                RedirectInstruction = new RedirectInstruction
-                {
-                    Action = SimpleAuthEndPoints.ConsentIndex
-                }
-            };
+        public async Task When_Starting_Implicit_Authorization_Process_Then_Event_Is_Started_And_Ended()
+        {
+            const string clientId = "clientId";
+            const string responseType = ResponseTypeNames.IdToken;
+            const string scope = OpenIdScope;
+            const string actionType = "RedirectToAction";
+            const string controllerAction = "AuthenticateIndex"; //"ConsentIndex";
+            var redirectUrl = new Uri(HttpsLocalhost);
 
-            _authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Setup(a => a.ValidateAsync(It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult(new Client
+            InitializeFakeObjects(
+                new Client
                 {
-                    RequirePkce = false
-                }));
-            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new List<ResponseType>
-                {
-                    ResponseType.id_token
+                    ClientId = clientId,
+                    RequirePkce = false,
+                    ResponseTypes = new[] { responseType },
+                    GrantTypes = new[] { GrantType.@implicit, GrantType.authorization_code },
+                    RedirectionUrls = new[] { redirectUrl },
+                    AllowedScopes = new[] { new Scope { Name = "openid" } }
                 });
-            _getTokenViaImplicitWorkflowOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<IPrincipal>(), It.IsAny<Client>(), null)).Returns(Task.FromResult(actionResult));
-            _authorizationFlowHelperFake.Setup(a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(),
+            //var actionResult = new EndpointResult
+            //{
+            //    Type = TypeActionResult.RedirectToAction,
+            //    RedirectInstruction = new RedirectInstruction
+            //    {
+            //        Action = SimpleAuthEndPoints.ConsentIndex
+            //    }
+            //};
+
+            //_authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Setup(a => a.ValidateAsync(It.IsAny<AuthorizationParameter>()))
+            //    .Returns(Task.FromResult(new Client
+            //    {
+            //        RequirePkce = false
+            //    }));
+            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
+                .Returns(new[]
+                {
+                    ResponseTypeNames.IdToken
+                });
+            //_getTokenViaImplicitWorkflowOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
+            //    It.IsAny<IPrincipal>(), It.IsAny<Client>(), null)).Returns(Task.FromResult(actionResult));
+            _authorizationFlowHelperFake.Setup(a => a.GetAuthorizationFlow(It.IsAny<ICollection<string>>(),
                 It.IsAny<string>()))
                 .Returns(AuthorizationFlow.ImplicitFlow);
 
-            const string clientId = "clientId";
-            const string responseType = "id_token";
-            const string scope = "openid";
-            const string actionType = "RedirectToAction";
-            const string controllerAction = "ConsentIndex";
-
             var authorizationParameter = new AuthorizationParameter
             {
+                Nonce = "nonce",
                 ClientId = clientId,
                 ResponseType = responseType,
                 Scope = scope,
-                Claims = null
+                Claims = null,
+                RedirectUrl = redirectUrl
             };
-            var serializedParameter = actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
+            var serializedParameter = "[]"; //actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
 
-                        _authorizationActions.GetAuthorization(authorizationParameter, null, null);
+            var result = await _authorizationActions.GetAuthorization(authorizationParameter, null, null).ConfigureAwait(false);
 
-                        _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
+            _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
             _oauthEventSource.Verify(s => s.EndAuthorization(actionType, controllerAction, serializedParameter));
         }
 
         [Fact]
-        public void When_Starting_AuthorizationCode_Authorization_Process_Then_Event_Is_Started_And_Ended()
-        {            InitializeFakeObjects();
-            var actionResult = new EndpointResult
-            {
-                Type = TypeActionResult.RedirectToAction,
-                RedirectInstruction = new RedirectInstruction
+        public async Task When_Starting_AuthorizationCode_Authorization_Process_Then_Event_Is_Started_And_Ended()
+        {
+            var redirectUrl = new Uri(HttpsLocalhost);
+            InitializeFakeObjects(
+                new Client
                 {
-                    Action = SimpleAuthEndPoints.ConsentIndex
-                }
-            };
-
-            _authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Setup(a => a.ValidateAsync(It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult(new Client
-                {
-                    RequirePkce = false
-                }));
-            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new List<ResponseType>
-                {
-                    ResponseType.id_token
+                    RequirePkce = false,
+                    RedirectionUrls = new[] { redirectUrl, },
+                    AllowedScopes = new[] { new Scope { Name = OpenIdScope } },
+                    ResponseTypes = new[] { ResponseTypeNames.IdToken }
                 });
-            _getAuthorizationCodeOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<IPrincipal>(), It.IsAny<Client>(), null)).Returns(Task.FromResult(actionResult));
-            _authorizationFlowHelperFake.Setup(a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(),
+            //var actionResult = new EndpointResult
+            //{
+            //    Type = TypeActionResult.RedirectToAction,
+            //    RedirectInstruction = new RedirectInstruction
+            //    {
+            //        Action = SimpleAuthEndPoints.ConsentIndex
+            //    }
+            //};
+
+            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
+                .Returns(new List<string>
+                {
+                    ResponseTypeNames.IdToken
+                });
+            _parameterParserHelperFake.Setup(x => x.ParseScopes(It.IsAny<string>())).Returns(new[] { OpenIdScope });
+            //_getAuthorizationCodeOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
+            //    It.IsAny<IPrincipal>(), It.IsAny<Client>(), null)).Returns(Task.FromResult(actionResult));
+            _authorizationFlowHelperFake.Setup(a => a.GetAuthorizationFlow(It.IsAny<ICollection<string>>(),
                 It.IsAny<string>()))
                 .Returns(AuthorizationFlow.AuthorizationCodeFlow);
 
             const string clientId = "clientId";
-            const string responseType = "id_token";
-            const string scope = "openid";
+            const string responseType = ResponseTypeNames.IdToken;
             const string actionType = "RedirectToAction";
-            const string controllerAction = "ConsentIndex";
+            const string controllerAction = "AuthenticateIndex";// "ConsentIndex";
 
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = clientId,
                 ResponseType = responseType,
-                Scope = scope,
-                Claims = null
+                Scope = OpenIdScope,
+                Claims = null,
+                RedirectUrl = redirectUrl
             };
-            var serializedParameter = actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
+            var serializedParameter = "[]"; //actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
 
-                        _authorizationActions.GetAuthorization(authorizationParameter, null, null);
+            await _authorizationActions.GetAuthorization(authorizationParameter, null, null).ConfigureAwait(false);
 
-                        _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
+            _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, OpenIdScope, string.Empty));
             _oauthEventSource.Verify(s => s.EndAuthorization(actionType, controllerAction, serializedParameter));
         }
 
         [Fact]
-        public void When_Starting_Hybrid_Authorization_Process_Then_Event_Is_Started_And_Ended()
-        {            InitializeFakeObjects();
-            var actionResult = new EndpointResult
-            {
-                Type = TypeActionResult.RedirectToAction,
-                RedirectInstruction = new RedirectInstruction
-                {
-                    Action = SimpleAuthEndPoints.ConsentIndex
-                }
-            };
+        public async Task When_Starting_Hybrid_Authorization_Process_Then_Event_Is_Started_And_Ended()
+        {
+            const string clientId = "clientId";
+            const string scope = OpenIdScope;
+            const string actionType = "RedirectToAction";
+            const string controllerAction = "AuthenticateIndex"; //"ConsentIndex";
 
-            _authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Setup(a => a.ValidateAsync(It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult(new Client
+            var redirectUrl = new Uri(HttpsLocalhost);
+            var responseType = ResponseTypeNames.IdToken;
+            InitializeFakeObjects(
+                new Client
                 {
-                    RequirePkce = false
-                }));
-            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new List<ResponseType>
-                {
-                    ResponseType.id_token
+                    ClientId = clientId,
+                    RequirePkce = false,
+                    ResponseTypes = new[] { responseType },
+                    GrantTypes = new[] { GrantType.@implicit, GrantType.authorization_code },
+                    RedirectionUrls = new[] { redirectUrl },
+                    AllowedScopes = new[] { new Scope { Name = "openid" } }
                 });
-            _getAuthorizationCodeAndTokenViaHybridWorkflowOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<IPrincipal>(), It.IsAny<Client>(), null)).Returns(Task.FromResult(actionResult));
-            _authorizationFlowHelperFake.Setup(a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(),
+            //var actionResult = new EndpointResult
+            //{
+            //    Type = TypeActionResult.RedirectToAction,
+            //    RedirectInstruction = new RedirectInstruction
+            //    {
+            //        Action = SimpleAuthEndPoints.ConsentIndex
+            //    }
+            //};
+
+            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
+                .Returns(new List<string>
+                {
+                    responseType
+                });
+            //_getAuthorizationCodeAndTokenViaHybridWorkflowOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
+            //    It.IsAny<IPrincipal>(), It.IsAny<Client>(), null)).Returns(Task.FromResult(actionResult));
+            _authorizationFlowHelperFake.Setup(a => a.GetAuthorizationFlow(It.IsAny<ICollection<string>>(),
                 It.IsAny<string>()))
                 .Returns(AuthorizationFlow.HybridFlow);
 
-            const string clientId = "clientId";
-            const string responseType = "id_token";
-            const string scope = "openid";
-            const string actionType = "RedirectToAction";
-            const string controllerAction = "ConsentIndex";
-
             var authorizationParameter = new AuthorizationParameter
             {
+                Nonce = "nonce",
                 ClientId = clientId,
                 ResponseType = responseType,
                 Scope = scope,
-                Claims = null
+                Claims = null,
+                RedirectUrl = redirectUrl
             };
-            var serializedParameter = actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
+            var serializedParameter = "[]"; //actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
 
-                        _authorizationActions.GetAuthorization(authorizationParameter, null, null);
+            var result = await _authorizationActions.GetAuthorization(authorizationParameter, null, null).ConfigureAwait(false);
 
-                        _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
+            _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
             _oauthEventSource.Verify(s => s.EndAuthorization(actionType, controllerAction, serializedParameter));
         }
 
-        private void InitializeFakeObjects()
+        private void InitializeFakeObjects(Client client = null)
         {
-            _getAuthorizationCodeOperationFake = new Mock<IGetAuthorizationCodeOperation>();
-            _getTokenViaImplicitWorkflowOperationFake = new Mock<IGetTokenViaImplicitWorkflowOperation>();
-            _getAuthorizationCodeAndTokenViaHybridWorkflowOperationFake = new Mock<IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation>();
-            _authorizationCodeGrantTypeParameterAuthEdpValidatorFake =
-                new Mock<IAuthorizationCodeGrantTypeParameterAuthEdpValidator>();
             _parameterParserHelperFake = new Mock<IParameterParserHelper>();
             _oauthEventSource = new Mock<IOAuthEventSource>();
             _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
             _eventPublisherStub = new Mock<IEventPublisher>();
             _amrHelperStub = new Mock<IAmrHelper>();
             _resourceOwnerAuthenticateHelperStub = new Mock<IResourceOwnerAuthenticateHelper>();
+            _clientStore = new Mock<IClientStore>();
+            if (client != null)
+            {
+                _clientStore.Setup(x => x.GetById(It.IsAny<string>()))
+                    .ReturnsAsync(client);
+            }
+
+            _consentHelper = new Mock<IConsentHelper>();
+            _consentHelper
+                .Setup(x => x.GetConfirmedConsentsAsync(It.IsAny<string>(), It.IsAny<AuthorizationParameter>()))
+                .ReturnsAsync(new Consent { });
             _authorizationActions = new AuthorizationActions(
-                _getAuthorizationCodeOperationFake.Object,
-                _getTokenViaImplicitWorkflowOperationFake.Object,
-                _getAuthorizationCodeAndTokenViaHybridWorkflowOperationFake.Object,
-                _authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Object,
+                _consentHelper.Object,
+                new Mock<IGenerateAuthorizationResponse>().Object,
                 _parameterParserHelperFake.Object,
+                _clientStore.Object,
                 _oauthEventSource.Object,
+                new Mock<IJwtParser>().Object,
                 _authorizationFlowHelperFake.Object,
                 _eventPublisherStub.Object,
                 _amrHelperStub.Object,

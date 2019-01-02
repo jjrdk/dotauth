@@ -14,12 +14,12 @@
 
 namespace SimpleAuth.Tests.Fake
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Security.Cryptography;
     using Shared;
     using Shared.Models;
     using SimpleAuth;
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Cryptography;
 
     public static class FakeOpenIdAssets
     {
@@ -131,16 +131,16 @@ namespace SimpleAuth.Tests.Fake
                             Type = ScopeType.ResourceOwner
                         }
                     },
-                    GrantTypes = new List<GrantType>
+                    GrantTypes = new []
                     {
                         GrantType.@implicit,
                         GrantType.authorization_code
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.token,
-                        ResponseType.code,
-                        ResponseType.id_token
+                        ResponseTypeNames.Token,
+                        ResponseTypeNames.Code,
+                        ResponseTypeNames.IdToken
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     // IdTokenEncryptedResponseAlg = "RSA1_5",

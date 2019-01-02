@@ -14,13 +14,13 @@
 
 namespace SimpleAuth.Helpers
 {
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Extensions;
     using Parameters;
     using Shared.Models;
     using Shared.Repositories;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     public class ConsentHelper : IConsentHelper
     {
@@ -50,15 +50,15 @@ namespace SimpleAuth.Helpers
             if (consents != null && consents.Any())
             {
                 var claimsParameter = authorizationParameter.Claims;
-                if (claimsParameter.IsAnyUserInfoClaimParameter() ||
-                    claimsParameter.IsAnyIdentityTokenClaimParameter())
+                if (claimsParameter.IsAnyUserInfoClaimParameter() 
+                    ||claimsParameter.IsAnyIdentityTokenClaimParameter())
                 {
                     var expectedClaims = claimsParameter.GetClaimNames();
                     confirmedConsent = consents.FirstOrDefault(
                         c =>
                             c.Client.ClientId == authorizationParameter.ClientId &&
-                            c.Claims != null && c.Claims.Any() &&
-                            expectedClaims.Count() == c.Claims.Count() &&
+                            c.Claims != null && c.Claims.Count > 0 &&
+                            expectedClaims.Count == c.Claims.Count &&
                             expectedClaims.All(cl => c.Claims.Contains(cl)));
                 }
                 else
@@ -68,8 +68,8 @@ namespace SimpleAuth.Helpers
                     confirmedConsent = consents.FirstOrDefault(
                         c =>
                             c.Client.ClientId == authorizationParameter.ClientId &&
-                            c.GrantedScopes != null && c.GrantedScopes.Any() &&
-                            scopeNames.Count() == c.GrantedScopes.Count() &&
+                            c.GrantedScopes != null && c.GrantedScopes.Count > 0 &&
+                            scopeNames.Count == c.GrantedScopes.Count &&
                             c.GrantedScopes.All(g => scopeNames.Contains(g.Name)));
                 }
             }

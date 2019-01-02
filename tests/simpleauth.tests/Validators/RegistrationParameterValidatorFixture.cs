@@ -11,6 +11,7 @@
     using Repositories;
     using Shared;
     using Shared.Models;
+    using Shared.Requests;
     using SimpleAuth;
     using Xunit;
 
@@ -40,7 +41,7 @@
 
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequestUriCode, ex.Code);
-            Assert.Equal(string.Format(ErrorDescriptions.MissingParameter, ClientNames.RequestUris), ex.Message);
+            Assert.Equal(string.Format(ErrorDescriptions.MissingParameter, SharedConstants.ClientNames.RequestUris), ex.Message);
         }
 
         //[Fact(Skip = "No longer valid test case")]
@@ -98,7 +99,7 @@
             parameter = await _factory.Build(parameter).ConfigureAwait(false);
 
             Assert.True(parameter.ResponseTypes.Count == 1);
-            Assert.Contains(ResponseType.code, parameter.ResponseTypes);
+            Assert.Contains(ResponseTypeNames.Code, parameter.ResponseTypes);
         }
 
         [Fact]
@@ -212,7 +213,7 @@
 
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(string.Format(ErrorDescriptions.TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed, ClientNames.JwksUri), ex.Message);
+            Assert.Equal(string.Format(ErrorDescriptions.TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed, SharedConstants.ClientNames.JwksUri), ex.Message);
         }
 
         [Fact]
@@ -268,7 +269,7 @@
 
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-            Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.SectorIdentifierUri));
+            Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, SharedConstants.ClientNames.SectorIdentifierUri));
         }
 
         [Fact]
@@ -469,7 +470,7 @@
 
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-            Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.InitiateLoginUri));
+            Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, SharedConstants.ClientNames.InitiateLoginUri));
         }
 
         //[Fact(Skip = "No longer valid test case")]

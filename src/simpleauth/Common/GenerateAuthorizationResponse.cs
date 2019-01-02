@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Common
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Api.Authorization;
     using Extensions;
     using Helpers;
@@ -27,6 +23,11 @@ namespace SimpleAuth.Common
     using Results;
     using Shared;
     using Shared.Models;
+    using Shared.Requests;
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
 
     public class GenerateAuthorizationResponse : IGenerateAuthorizationResponse
     {
@@ -92,18 +93,18 @@ namespace SimpleAuth.Common
             GrantedToken grantedToken = null;
             var newAuthorizationCodeGranted = false;
             AuthorizationCode authorizationCode = null;
-            _oauthEventSource.StartGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
+            _oauthEventSource.StartGeneratingAuthorizationResponseToClient(
+                authorizationParameter.ClientId,
                 authorizationParameter.ResponseType);
             var responses = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
             var idTokenPayload = await GenerateIdTokenPayload(claimsPrincipal, authorizationParameter, issuerName).ConfigureAwait(false);
             var userInformationPayload = await GenerateUserInformationPayload(claimsPrincipal, authorizationParameter).ConfigureAwait(false);
-            if (responses.Contains(ResponseType.token)) // 1. Generate an access token.
+            if (responses.Contains(ResponseTypeNames.Token)) // 1. Generate an access token.
             {
                 if (!string.IsNullOrWhiteSpace(authorizationParameter.Scope))
                 {
                     allowedTokenScopes = string.Join(" ", _parameterParserHelper.ParseScopes(authorizationParameter.Scope));
                 }
-
 
                 grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId,
                     userInformationPayload, idTokenPayload).ConfigureAwait(false);
@@ -124,7 +125,7 @@ namespace SimpleAuth.Common
                     grantedToken.AccessToken);
             }
 
-            if (responses.Contains(ResponseType.code)) // 2. Generate an authorization code.
+            if (responses.Contains(ResponseTypeNames.Code)) // 2. Generate an authorization code.
             {
                 var subject = claimsPrincipal.GetSubject();
                 var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
@@ -144,12 +145,14 @@ namespace SimpleAuth.Common
                     };
 
                     newAuthorizationCodeGranted = true;
-                    endpointResult.RedirectInstruction.AddParameter(CoreConstants.StandardAuthorizationResponseNames.AuthorizationCodeName,
+                    endpointResult.RedirectInstruction.AddParameter(
+                        CoreConstants.StandardAuthorizationResponseNames.AuthorizationCodeName,
                         authorizationCode.Code);
                 }
             }
 
-            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(idTokenPayload,
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(
+                idTokenPayload,
                 authorizationCode == null ? string.Empty : authorizationCode.Code,
                 grantedToken == null ? string.Empty : grantedToken.AccessToken, client);
 
@@ -175,7 +178,7 @@ namespace SimpleAuth.Common
                     authorizationParameter.Scope);
             }
 
-            if (responses.Contains(ResponseType.id_token))
+            if (responses.Contains(ResponseTypeNames.IdToken))
             {
                 var idToken = await GenerateIdToken(idTokenPayload, authorizationParameter).ConfigureAwait(false);
                 endpointResult.RedirectInstruction.AddParameter(CoreConstants.StandardAuthorizationResponseNames.IdTokenName, idToken);
@@ -206,7 +209,8 @@ namespace SimpleAuth.Common
                 if (responseMode == ResponseMode.None)
                 {
                     var responseTypes = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
-                    var authorizationFlow = _authorizationFlowHelper.GetAuthorizationFlow(responseTypes,
+                    var authorizationFlow = _authorizationFlowHelper.GetAuthorizationFlow(
+                        responseTypes,
                         authorizationParameter.State);
                     responseMode = GetResponseMode(authorizationFlow);
                 }
@@ -215,7 +219,7 @@ namespace SimpleAuth.Common
             }
 
             _oauthEventSource.EndGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
-               endpointResult.RedirectInstruction.Parameters.SerializeWithJavascript());
+                endpointResult.RedirectInstruction.Parameters.SerializeWithJavascript());
         }
 
         private string GetSessionState(string clientId, string originUrl, string sessionId)
@@ -248,22 +252,6 @@ namespace SimpleAuth.Common
             //var hex = ToHexString(hash);
             return hex.Base64Encode() + "==." + salt;
         }
-
-        //public static string ToHexString(IEnumerable<byte> arr)
-        //{
-        //    if (arr == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(arr));
-        //    }
-
-        //    var sb = new StringBuilder();
-        //    foreach (var s in arr)
-        //    {
-        //        sb.Append(s.ToString("x2"));
-        //    }
-
-        //    return sb.ToString();
-        //}
 
         /// <summary>
         /// Generate the JWS payload for identity token.

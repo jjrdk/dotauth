@@ -26,7 +26,7 @@ namespace SimpleAuth.Uma.Tests
 
     public class PolicyFixture : IClassFixture<TestUmaServerFixture>
     {
-        private const string baseUrl = "http://localhost:5000";
+        private const string BaseUrl = "http://localhost:5000";
         private PolicyClient _policyClient;
         private ResourceSetClient _resourceSetClient;
         private readonly TestUmaServerFixture _server;
@@ -45,7 +45,7 @@ namespace SimpleAuth.Uma.Tests
             {
                 ResourceSetIds = null
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -68,7 +68,7 @@ namespace SimpleAuth.Uma.Tests
                             "resource_id"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -98,7 +98,7 @@ namespace SimpleAuth.Uma.Tests
                             }
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -121,7 +121,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -142,7 +142,7 @@ namespace SimpleAuth.Uma.Tests
                             }
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -159,7 +159,7 @@ namespace SimpleAuth.Uma.Tests
 
 
             var response = await _policyClient
-                .GetByResolution("unknown", baseUrl + "/.well-known/uma2-configuration", "header")
+                .GetByResolution("unknown", BaseUrl + "/.well-known/uma2-configuration", "header")
                 .ConfigureAwait(false);
 
             Assert.NotNull(response);
@@ -178,7 +178,7 @@ namespace SimpleAuth.Uma.Tests
             {
 
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -198,7 +198,7 @@ namespace SimpleAuth.Uma.Tests
             {
                 PolicyId = "policy"
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -225,7 +225,7 @@ namespace SimpleAuth.Uma.Tests
                             }
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -248,7 +248,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addResponse = await _policyClient.AddByResolution(new PostPolicy
@@ -277,7 +277,7 @@ namespace SimpleAuth.Uma.Tests
                             addResource.Content.Id
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -295,7 +295,7 @@ namespace SimpleAuth.Uma.Tests
                             }
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -312,7 +312,7 @@ namespace SimpleAuth.Uma.Tests
 
 
             var response = await _policyClient
-                .DeleteByResolution("unknown", baseUrl + "/.well-known/uma2-configuration", "header")
+                .DeleteByResolution("unknown", BaseUrl + "/.well-known/uma2-configuration", "header")
                 .ConfigureAwait(false);
 
             Assert.NotNull(response);
@@ -332,7 +332,7 @@ namespace SimpleAuth.Uma.Tests
                     {
                         ResourceSets = null
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -356,7 +356,7 @@ namespace SimpleAuth.Uma.Tests
                             "resource"
                         }
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -378,7 +378,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
@@ -399,7 +399,7 @@ namespace SimpleAuth.Uma.Tests
                             addResource.Content.Id
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -411,7 +411,7 @@ namespace SimpleAuth.Uma.Tests
                             "resource"
                         }
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -429,7 +429,7 @@ namespace SimpleAuth.Uma.Tests
             var response = await _policyClient
                 .DeleteResourceByResolution("unknown",
                     "resource_id",
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -452,7 +452,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
@@ -473,13 +473,13 @@ namespace SimpleAuth.Uma.Tests
                             addResponse.Content.Id
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
             var response = await _policyClient.DeleteResourceByResolution(addPolicy.Content.PolicyId,
                     "resource_id",
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -502,7 +502,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -532,11 +532,11 @@ namespace SimpleAuth.Uma.Tests
                             addResponse.Content.Id
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var information = await _policyClient
-                .GetByResolution(response.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header")
+                .GetByResolution(response.Content.PolicyId, BaseUrl + "/.well-known/uma2-configuration", "header")
                 .ConfigureAwait(false);
 
             Assert.NotNull(response);
@@ -564,7 +564,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
@@ -593,11 +593,11 @@ namespace SimpleAuth.Uma.Tests
                             addResource.Content.Id
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
-            var response = await _policyClient.GetAllByResolution(baseUrl + "/.well-known/uma2-configuration", "header")
+            var response = await _policyClient.GetAllByResolution(BaseUrl + "/.well-known/uma2-configuration", "header")
                 .ConfigureAwait(false);
 
             Assert.NotNull(response);
@@ -617,7 +617,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
@@ -646,15 +646,15 @@ namespace SimpleAuth.Uma.Tests
                             addResource.Content.Id
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
             var isRemoved = await _policyClient
-                .DeleteByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header")
+                .DeleteByResolution(addPolicy.Content.PolicyId, BaseUrl + "/.well-known/uma2-configuration", "header")
                 .ConfigureAwait(false);
             var ex = await _policyClient
-                .GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header")
+                .GetByResolution(addPolicy.Content.PolicyId, BaseUrl + "/.well-known/uma2-configuration", "header")
                 .ConfigureAwait(false);
 
             Assert.False(isRemoved.ContainsError);
@@ -675,7 +675,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var secondResource = await _resourceSetClient.AddByResolution(new PostResourceSet
@@ -686,7 +686,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
@@ -715,7 +715,7 @@ namespace SimpleAuth.Uma.Tests
                             firstResource.Content.Id
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
@@ -727,11 +727,11 @@ namespace SimpleAuth.Uma.Tests
                             secondResource.Content.Id
                         }
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var information = await _policyClient
-                .GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header")
+                .GetByResolution(addPolicy.Content.PolicyId, BaseUrl + "/.well-known/uma2-configuration", "header")
                 .ConfigureAwait(false);
 
             Assert.False(isUpdated.ContainsError);
@@ -754,7 +754,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var secondResource = await _resourceSetClient.AddByResolution(new PostResourceSet
@@ -765,7 +765,7 @@ namespace SimpleAuth.Uma.Tests
                             "read"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
@@ -795,17 +795,17 @@ namespace SimpleAuth.Uma.Tests
                             secondResource.Content.Id
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
 
             var isUpdated = await _policyClient.DeleteResourceByResolution(addPolicy.Content.PolicyId,
                     secondResource.Content.Id,
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var information = await _policyClient
-                .GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header")
+                .GetByResolution(addPolicy.Content.PolicyId, BaseUrl + "/.well-known/uma2-configuration", "header")
                 .ConfigureAwait(false);
 
             Assert.False(isUpdated.ContainsError);
@@ -828,7 +828,7 @@ namespace SimpleAuth.Uma.Tests
                             "write"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var secondResource = await _resourceSetClient.AddByResolution(new PostResourceSet
@@ -840,7 +840,7 @@ namespace SimpleAuth.Uma.Tests
                             "write"
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy
@@ -870,11 +870,11 @@ namespace SimpleAuth.Uma.Tests
                             secondResource.Content.Id
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var firstInfo = await _policyClient
-                .GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header")
+                .GetByResolution(addPolicy.Content.PolicyId, BaseUrl + "/.well-known/uma2-configuration", "header")
                 .ConfigureAwait(false);
 
             var isUpdated = await _policyClient.UpdateByResolution(new PutPolicy
@@ -906,11 +906,11 @@ namespace SimpleAuth.Uma.Tests
                             }
                         }
             },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var updatedInformation = await _policyClient
-                .GetByResolution(addPolicy.Content.PolicyId, baseUrl + "/.well-known/uma2-configuration", "header")
+                .GetByResolution(addPolicy.Content.PolicyId, BaseUrl + "/.well-known/uma2-configuration", "header")
                 .ConfigureAwait(false);
 
 

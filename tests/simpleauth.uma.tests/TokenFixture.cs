@@ -17,7 +17,7 @@
 
     public class TokenFixture : IClassFixture<TestUmaServerFixture>
     {
-        private const string baseUrl = "http://localhost:5000";
+        private const string BaseUrl = "http://localhost:5000";
         private IJwsGenerator _jwsGenerator;
         private ResourceSetClient _resourceSetClient;
         private PermissionClient _permissionClient;
@@ -40,7 +40,7 @@
                     _server.Client,
                     new GetDiscoveryOperation(_server
                         .Client)) // Try to get the access token via "ticket_id" grant-type.
-                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
+                .ResolveAsync(BaseUrl + "/.well-known/uma2-configuration")
                 .ConfigureAwait(false);
 
             Assert.NotNull(token);
@@ -59,7 +59,7 @@
                     TokenRequest.FromScopes("uma_protection", "uma_authorization"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
+                .ResolveAsync(BaseUrl + "/.well-known/uma2-configuration")
                 .ConfigureAwait(false);
 
             Assert.NotNull(result);
@@ -87,7 +87,7 @@
                     TokenRequest.FromScopes("uma_protection", "uma_authorization"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
+                .ResolveAsync(BaseUrl + "/.well-known/uma2-configuration")
                 .ConfigureAwait(false);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet // Add ressource.
                     {
@@ -99,7 +99,7 @@
                             "execute"
                         }
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     result.Content.AccessToken)
                 .ConfigureAwait(false);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy // Add an authorization policy.
@@ -128,7 +128,7 @@
                             resource.Content.Id
                         }
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     result.Content.AccessToken)
                 .ConfigureAwait(false);
             var ticket = await _permissionClient.AddByResolution(
@@ -140,7 +140,7 @@
                             "read"
                         }
                     },
-                    baseUrl + "/.well-known/uma2-configuration",
+                    BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
             var token = await new TokenClient(
@@ -149,7 +149,7 @@
                     TokenRequest.FromTicketId(ticket.Content.TicketId, jwt),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration")
+                .ResolveAsync(BaseUrl + "/.well-known/uma2-configuration")
                 .ConfigureAwait(false);
 
             Assert.NotNull(token);

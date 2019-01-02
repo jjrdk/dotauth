@@ -1025,7 +1025,6 @@ namespace SimpleAuth.Tests.JwtToken
             _clientRepositoryStub = new Mock<IClientStore>();
             _jsonWebKeyRepositoryStub = new Mock<IJsonWebKeyRepository>();
             _scopeRepositoryStub = new Mock<IScopeRepository>();
-            var clientValidator = new ClientValidator();
             var parameterParserHelper = new ParameterParserHelper();
             var createJwsSignature = new CreateJwsSignature();
             var aesEncryptionHelper = new AesEncryptionHelper();
@@ -1037,7 +1036,6 @@ namespace SimpleAuth.Tests.JwtToken
                 new OAuthConfigurationOptions(
                     authorizationCodeValidity: TimeSpan.FromMinutes(60)),
                 _clientRepositoryStub.Object,
-                clientValidator,
                 _jsonWebKeyRepositoryStub.Object,
                 _scopeRepositoryStub.Object,
                 parameterParserHelper,

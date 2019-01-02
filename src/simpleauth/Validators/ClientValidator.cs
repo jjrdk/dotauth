@@ -14,15 +14,17 @@
 
 namespace SimpleAuth.Validators
 {
+    using Helpers;
+    using Shared;
+    using Shared.Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using Helpers;
-    using Shared.Models;
+    using CodeChallengeMethods = Shared.Models.CodeChallengeMethods;
 
-    public class ClientValidator : IClientValidator
-    {        
+    public class ClientValidator
+    {
         public IEnumerable<Uri> GetRedirectionUrls(Client client, params Uri[] urls)
         {
             if (urls == null || client?.RedirectionUrls == null || !client.RedirectionUrls.Any())
@@ -40,7 +42,10 @@ namespace SimpleAuth.Validators
                 return false;
             }
 
-            grantTypes = grantTypes ?? Array.Empty<GrantType>();
+            if (grantTypes == null)
+            {
+                return true;
+            }
 
             if (client.GrantTypes == null || !client.GrantTypes.Any())
             {
@@ -52,8 +57,8 @@ namespace SimpleAuth.Validators
 
             return grantTypes.All(gt => client.GrantTypes.Contains(gt));
         }
-        
-        public bool CheckResponseTypes(Client client, params ResponseType[] responseTypes)
+
+        public bool CheckResponseTypes(Client client, params string[] responseTypes)
         {
             if (client == null)
             {
@@ -62,9 +67,9 @@ namespace SimpleAuth.Validators
 
             if (client.ResponseTypes == null || !client.ResponseTypes.Any())
             {
-                client.ResponseTypes = new List<ResponseType>
+                client.ResponseTypes = new[]
                 {
-                    ResponseType.code
+                    ResponseTypeNames.Code
                 };
             }
 
@@ -88,7 +93,7 @@ namespace SimpleAuth.Validators
                 return true;
             }
 
-            if (code.CodeChallengeMethod.Value == CodeChallengeMethods.Plain)
+            if (code.CodeChallengeMethod == CodeChallengeMethods.Plain)
             {
                 return codeVerifier == code.CodeChallenge;
             }

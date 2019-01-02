@@ -20,7 +20,6 @@ namespace SimpleAuth.WebSite.Authenticate.Actions
     using System.Threading.Tasks;
     using Common;
     using Extensions;
-    using Factories;
     using Helpers;
     using Parameters;
     using Results;
@@ -28,16 +27,13 @@ namespace SimpleAuth.WebSite.Authenticate.Actions
     public class AuthenticateResourceOwnerOpenIdAction : IAuthenticateResourceOwnerOpenIdAction
     {
         private readonly IParameterParserHelper _parameterParserHelper;
-        private readonly IActionResultFactory _actionResultFactory;
         private readonly IAuthenticateHelper _authenticateHelper;
 
         public AuthenticateResourceOwnerOpenIdAction(
             IParameterParserHelper parameterParserHelper,
-            IActionResultFactory actionResultFactory,
             IAuthenticateHelper authenticateHelper)
         {
             _parameterParserHelper = parameterParserHelper;
-            _actionResultFactory = actionResultFactory;
             _authenticateHelper = authenticateHelper;
         }
 
@@ -78,7 +74,7 @@ namespace SimpleAuth.WebSite.Authenticate.Actions
             }
 
             // 2).
-            return _actionResultFactory.CreateAnEmptyActionResultWithNoEffect();
+            return EndpointResult.CreateAnEmptyActionResultWithNoEffect();
         }
     }
 }

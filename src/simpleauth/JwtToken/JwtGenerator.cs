@@ -14,14 +14,6 @@
 
 namespace SimpleAuth.JwtToken
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Security.Cryptography;
-    using System.Text;
-    using System.Threading.Tasks;
     using Encrypt;
     using Errors;
     using Exceptions;
@@ -32,11 +24,19 @@ namespace SimpleAuth.JwtToken
     using Shared.Models;
     using Shared.Repositories;
     using Signature;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Security.Cryptography;
+    using System.Text;
+    using System.Threading.Tasks;
     using Validators;
 
     public class JwtGenerator : IJwtGenerator
     {
-        private readonly IClientValidator _clientValidator;
+        private readonly ClientValidator _clientValidator;
         private readonly IParameterParserHelper _parameterParserHelper;
         private readonly IJwsGenerator _jwsGenerator;
         private readonly IJweGenerator _jweGenerator;
@@ -87,7 +87,6 @@ namespace SimpleAuth.JwtToken
         public JwtGenerator(
             OAuthConfigurationOptions configurationOptions,
             IClientStore clientRepository,
-            IClientValidator clientValidator,
             IJsonWebKeyRepository jsonWebKeyRepository,
             IScopeRepository scopeRepository,
             IParameterParserHelper parameterParserHelper,
@@ -96,7 +95,7 @@ namespace SimpleAuth.JwtToken
         {
             _configurationOptions = configurationOptions;
             _clientRepository = clientRepository;
-            _clientValidator = clientValidator;
+            _clientValidator = new ClientValidator();
             _jsonWebKeyRepository = jsonWebKeyRepository;
             _scopeRepository = scopeRepository;
             _parameterParserHelper = parameterParserHelper;
@@ -407,10 +406,10 @@ namespace SimpleAuth.JwtToken
 
             var clients = await _clientRepository.GetAllAsync().ConfigureAwait(false);
             var audiences = (from client in clients
-                let isClientSupportIdTokenResponseType =
-                    _clientValidator.CheckResponseTypes(client, ResponseType.id_token)
-                where isClientSupportIdTokenResponseType || client.ClientId == authorizationParameter.ClientId
-                select client.ClientId).ToList();
+                             let isClientSupportIdTokenResponseType =
+                                 _clientValidator.CheckResponseTypes(client, ResponseTypeNames.IdToken)
+                             where isClientSupportIdTokenResponseType || client.ClientId == authorizationParameter.ClientId
+                             select client.ClientId).ToList();
 
             // The identity token can be reused by the identity server.
             if (!string.IsNullOrWhiteSpace(issuerName))
@@ -434,7 +433,7 @@ namespace SimpleAuth.JwtToken
                 }
             }
 
-            if (audiences.Count > 1 || (audiences.Count == 1 && audiences.First() != clientId))
+            if (audiences.Count > 1 || (audiences.Count == 1 && audiences[0] != clientId))
             {
                 azp = clientId;
             }
@@ -535,7 +534,7 @@ namespace SimpleAuth.JwtToken
 
             // Set the auth_time if it's requested as an essential claim OR the max_age request is specified
             if (((authenticationTimeParameter != null && authenticationTimeParameter.Essential) ||
-                !maxAge.Equals(default(double))) && !string.IsNullOrWhiteSpace(authenticationInstantValue))
+                !maxAge.Equals(default)) && !string.IsNullOrWhiteSpace(authenticationInstantValue))
             {
                 jwsPayload.Add(StandardClaimNames.AuthenticationTime, double.Parse(authenticationInstantValue));
             }
@@ -608,7 +607,7 @@ namespace SimpleAuth.JwtToken
             var returnedScopes = await _scopeRepository.SearchByNames(scopes).ConfigureAwait(false);
             foreach (var returnedScope in returnedScopes)
             {
-                result.AddRange(GetClaims(returnedScope.Claims, claimsPrincipal));
+                result.AddRange(GetClaims(returnedScope.Claims.ToArray(), claimsPrincipal));
             }
 
             return result;
@@ -639,7 +638,7 @@ namespace SimpleAuth.JwtToken
             var jsonWebKeys = await _jsonWebKeyRepository.GetByAlgorithmAsync(
                     use,
                     alg,
-                    new[] {operation})
+                    new[] { operation })
                 .ConfigureAwait(false);
             if (jsonWebKeys != null && jsonWebKeys.Any())
             {

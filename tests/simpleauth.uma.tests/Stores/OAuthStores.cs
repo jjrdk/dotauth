@@ -1,8 +1,8 @@
 ﻿namespace SimpleAuth.Uma.Tests.Stores
 {
-    using System.Collections.Generic;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
+    using System.Collections.Generic;
 
     public static class OAuthStores
     {
@@ -68,14 +68,14 @@
                             Name = "uma_authorization"
                         }
                     },
-                    GrantTypes = new List<GrantType>
+                    GrantTypes = new []
                     {
                         GrantType.client_credentials,
                         GrantType.uma_ticket
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.token
+                        ResponseTypeNames.Token
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.native
@@ -85,7 +85,7 @@
                 {
                     ClientId = "anonymous",
                     ClientName = "Anonymous",
-                    Secrets = new List<ClientSecret>
+                    Secrets = new []
                     {
                         new ClientSecret
                         {
@@ -100,9 +100,9 @@
                     {
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new []
                     {
-                        ResponseType.token
+                        ResponseTypeNames.Token
                     },
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.native

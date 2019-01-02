@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Api.Authorization.Actions
 {
-    using System;
-    using System.Security.Claims;
-    using System.Security.Principal;
-    using System.Threading.Tasks;
     using Common;
     using Errors;
     using Exceptions;
@@ -26,25 +22,28 @@ namespace SimpleAuth.Api.Authorization.Actions
     using Results;
     using Shared.Models;
     using SimpleAuth.Common;
+    using System;
+    using System.Security.Claims;
+    using System.Security.Principal;
+    using System.Threading.Tasks;
     using Validators;
 
-    public class GetTokenViaImplicitWorkflowOperation : IGetTokenViaImplicitWorkflowOperation
+    internal sealed class GetTokenViaImplicitWorkflowOperation
     {
-        private readonly IProcessAuthorizationRequest _processAuthorizationRequest;
+        private readonly ProcessAuthorizationRequest _processAuthorizationRequest;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
-        private readonly IClientValidator _clientValidator;
+        private readonly ClientValidator _clientValidator;
         private readonly IOAuthEventSource _oAuthEventSource;
 
         public GetTokenViaImplicitWorkflowOperation(
-            IProcessAuthorizationRequest processAuthorizationRequest,
+            ProcessAuthorizationRequest processAuthorizationRequest,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
-            IClientValidator clientValidator,
             IOAuthEventSource oAuthEventSource)
         {
             _processAuthorizationRequest = processAuthorizationRequest;
             _generateAuthorizationResponse = generateAuthorizationResponse;
             _oAuthEventSource = oAuthEventSource;
-            _clientValidator = clientValidator;
+            _clientValidator = new ClientValidator();
         }
 
         public async Task<EndpointResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client, string issuerName)
@@ -68,7 +67,7 @@ namespace SimpleAuth.Api.Authorization.Actions
             }
 
             _oAuthEventSource.StartImplicitFlow(
-                authorizationParameter.ClientId, 
+                authorizationParameter.ClientId,
                 authorizationParameter.Scope,
                 authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
 
@@ -88,7 +87,7 @@ namespace SimpleAuth.Api.Authorization.Actions
                 var claimsPrincipal = principal as ClaimsPrincipal;
                 await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
             }
-            
+
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
             _oAuthEventSource.EndImplicitFlow(
                 authorizationParameter.ClientId,

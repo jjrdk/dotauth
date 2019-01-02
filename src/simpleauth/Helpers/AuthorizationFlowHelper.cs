@@ -14,16 +14,15 @@
 
 namespace SimpleAuth.Helpers
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using Api.Authorization;
     using Errors;
     using Exceptions;
-    using Shared.Models;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public class AuthorizationFlowHelper : IAuthorizationFlowHelper
     {
-        public AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state)
+        public AuthorizationFlow GetAuthorizationFlow(ICollection<string> responseTypes, string state)
         {
             if (responseTypes == null)
             {
@@ -34,7 +33,7 @@ namespace SimpleAuth.Helpers
             }
 
             var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys
-                .SingleOrDefault(k => k.Count == responseTypes.Count && k.All(key => responseTypes.Contains(key)));
+                .SingleOrDefault(k => k.Length == responseTypes.Count && k.All(responseTypes.Contains));
             if (record == null)
             {
                 throw new SimpleAuthExceptionWithState(
