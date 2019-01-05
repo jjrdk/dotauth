@@ -14,14 +14,14 @@
 
 namespace SimpleAuth.Server.Tests.Stores
 {
+    using Microsoft.IdentityModel.Tokens;
+    using Shared;
+    using Shared.Models;
+    using SimpleAuth;
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
-    using System.Security.Cryptography;
-    using Shared;
-    using Shared.Models;
-    using Shared.Requests;
-    using SimpleAuth;
+    using System.Security.Cryptography.X509Certificates;
 
     public static class DefaultStores
     {
@@ -124,59 +124,59 @@ namespace SimpleAuth.Server.Tests.Stores
             };
         }
 
-        public static List<JsonWebKey> JsonWebKeys(SharedContext sharedContext)
-        {
-            var serializedRsa = string.Empty;
-            using (var provider = new RSACryptoServiceProvider())
-            {
-                serializedRsa = RsaExtensions.ToXmlString(provider, true);
-            }
+        //public static List<JsonWebKey> JsonWebKeys(SharedContext sharedContext)
+        //{
+        //    var serializedRsa = string.Empty;
+        //    using (var provider = new RSACryptoServiceProvider())
+        //    {
+        //        serializedRsa = RsaExtensions.ToXmlString(provider, true);
+        //    }
 
-            return new List<JsonWebKey>
-            {
-                sharedContext.SignatureKey,
-                sharedContext.EncryptionKey
-            };
-        }
+        //    return new List<JsonWebKey>
+        //    {
+        //        sharedContext.SignatureKey,
+        //        sharedContext.EncryptionKey
+        //    };
+        //}
 
         public static List<ResourceOwner> Users()
         {
             return new List<ResourceOwner>
             {
-                    new ResourceOwner
+                new ResourceOwner
+                {
+                    Id = "administrator",
+                    Claims = new List<Claim>
                     {
-                        Id = "administrator",
-                        Claims = new List<Claim>
-                        {
-                            new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "administrator"),
-                            new Claim(JwtConstants.StandardResourceOwnerClaimNames.Role, "administrator"),
-                            new Claim(JwtConstants.StandardResourceOwnerClaimNames.Address, "{ country : 'france' }")
-                        },
-                        Password = "password",
-                        IsLocalAccount = true
+                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "administrator"),
+                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Role, "administrator"),
+                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Address, "{ country : 'france' }")
                     },
-                    new ResourceOwner
+                    Password = "password",
+                    IsLocalAccount = true
+                },
+                new ResourceOwner
+                {
+                    Id = "user",
+                    Password = "password",
+                    Claims = new List<Claim>
                     {
-                        Id = "user",
-                        Password = "password",
-                        Claims = new List<Claim>
-                        {
-                            new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "user")
-                        },
-                        IsLocalAccount = true
+                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "user")
                     },
-                    new ResourceOwner
+                    IsLocalAccount = true
+                },
+                new ResourceOwner
+                {
+                    Id = "superuser",
+                    Password = "password",
+                    Claims = new List<Claim>
                     {
-                        Id = "superuser",
-                        Password = "password",
-                        Claims = new List<Claim>
-                        {
-                            new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "superuser"),
-                            new Claim(JwtConstants.StandardResourceOwnerClaimNames.Role, "administrator"),
-                            new Claim(JwtConstants.StandardResourceOwnerClaimNames.Role, "role")
-                        },
-                        IsLocalAccount = true
-                    }
+                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "superuser"),
+                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Role, "administrator"),
+                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Role, "role")
+                    },
+                    IsLocalAccount = true
+                }
             };
         }
 
@@ -197,7 +197,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = null,
+                    //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
@@ -228,13 +228,16 @@ namespace SimpleAuth.Server.Tests.Stores
                         GrantType.refresh_token,
                         GrantType.password
                     },
-                    ResponseTypes = new []
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.Code,
                         ResponseTypeNames.Token,
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateJwk(JsonWebKeyUseNames.Sig,
+                        KeyOperations.Sign,
+                        KeyOperations.Verify)),
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha512, //SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.web,
                     RedirectionUrls = new List<Uri>
                     {
@@ -254,7 +257,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = null,
+                    //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
@@ -281,16 +284,17 @@ namespace SimpleAuth.Server.Tests.Stores
                         GrantType.refresh_token,
                         GrantType.password
                     },
-                    ResponseTypes = new []
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.Code,
                         ResponseTypeNames.Token,
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = "RS256",
-                    UserInfoSignedResponseAlg = "RS256",
+                    JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                    UserInfoSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") }
+                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
                 },
                 new Client
                 {
@@ -305,7 +309,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = null,
+                    //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
@@ -332,18 +336,20 @@ namespace SimpleAuth.Server.Tests.Stores
                         GrantType.refresh_token,
                         GrantType.password
                     },
-                    ResponseTypes = new []
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.Code,
                         ResponseTypeNames.Token,
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = "RS256",
-                    UserInfoSignedResponseAlg = "RS256",
-                    UserInfoEncryptedResponseAlg = "RSA1_5",
-                    UserInfoEncryptedResponseEnc = "A128CBC-HS256",
+                    JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk())
+                        .AddKey(TestKeys.SecretKey.CreateEncryptionJwk()),
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                    UserInfoSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                    UserInfoEncryptedResponseAlg = SecurityAlgorithms.EcdsaSha256,
+                    UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") }
+                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
                 },
                 new Client
                 {
@@ -358,7 +364,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = null,
+                    //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
@@ -385,13 +391,13 @@ namespace SimpleAuth.Server.Tests.Stores
                         GrantType.refresh_token,
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new []
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") }
+                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
                 },
                 new Client
                 {
@@ -406,7 +412,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = null,
+                    //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
@@ -421,13 +427,13 @@ namespace SimpleAuth.Server.Tests.Stores
                         GrantType.refresh_token,
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new []
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.Token
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") }
+                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
                 },
                 new Client
                 {
@@ -442,7 +448,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
-                    LogoUri = null,
+                    //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
@@ -456,13 +462,14 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new []
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.Token
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha384, //SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") }
+                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
                 },
                 new Client
                 {
@@ -477,7 +484,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = null,
+                    //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
@@ -491,13 +498,13 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new []
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.Token
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") }
+                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
                 },
                 new Client
                 {
@@ -512,7 +519,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_jwt,
-                    LogoUri = null,
+                    //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
@@ -526,18 +533,18 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new []
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.Token
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") },
-                    JsonWebKeys = new List<JsonWebKey>
+                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")},
+                    JsonWebKeys = new[]
                     {
                         sharedCtx.ModelSignatureKey,
                         sharedCtx.ModelEncryptionKey
-                    }
+                    }.ToJwks()
                 },
                 new Client
                 {
@@ -552,7 +559,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.private_key_jwt,
-                    LogoUri = null,
+                    //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
@@ -566,14 +573,15 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new []
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.Token
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256Signature, //SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<Uri> { new Uri("https://localhost:4200/callback") },
-                    JwksUri = new Uri("http://localhost:5000/jwks_client")
+                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")},
+                    //JwksUri = new Uri("http://localhost:5000/jwks_client")
                 },
                 new Client
                 {
@@ -588,7 +596,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = null,
+                    //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
@@ -606,15 +614,16 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.authorization_code
                     },
-                    ResponseTypes = new []
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.Code,
                         ResponseTypeNames.Token,
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet().AddKey(TestKeys.SuperSecretKey.CreateEncryptionJwk()),
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, //SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<Uri> { new Uri("http://localhost:5000/callback") }
+                    RedirectionUrls = new List<Uri> {new Uri("http://localhost:5000/callback")}
                 },
                 new Client
                 {
@@ -629,7 +638,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = null,
+                    //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
@@ -647,13 +656,13 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.authorization_code
                     },
-                    ResponseTypes = new []
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<Uri> { new Uri("http://localhost:5000/callback") }
+                    RedirectionUrls = new List<Uri> {new Uri("http://localhost:5000/callback")}
                 },
                 new Client
                 {
@@ -667,8 +676,9 @@ namespace SimpleAuth.Server.Tests.Stores
                             Value = "implicit_client"
                         }
                     },
+                    JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = null,
+                    //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
@@ -686,14 +696,14 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.@implicit
                     },
-                    ResponseTypes = new []
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.Token,
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<Uri> { new Uri("http://localhost:5000/callback") }
+                    RedirectionUrls = new List<Uri> {new Uri("http://localhost:5000/callback")}
                 },
                 new Client
                 {
@@ -708,7 +718,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = null,
+                    //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
@@ -726,15 +736,16 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.authorization_code
                     },
-                    ResponseTypes = new []
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.Code,
                         ResponseTypeNames.Token,
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<Uri> { new Uri("http://localhost:5000/callback") },
+                    RedirectionUrls = new List<Uri> {new Uri("http://localhost:5000/callback")},
                     RequirePkce = true
                 },
                 new Client
@@ -749,11 +760,12 @@ namespace SimpleAuth.Server.Tests.Stores
                             Value = "hybrid_client"
                         }
                     },
+                    JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = null,
+                    //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new List<Scope>
+                    AllowedScopes = new[]
                     {
                         new Scope
                         {
@@ -764,41 +776,45 @@ namespace SimpleAuth.Server.Tests.Stores
                             Name = "openid"
                         }
                     },
-                    GrantTypes = new List<GrantType>
+                    GrantTypes = new[]
                     {
                         GrantType.authorization_code,
                         GrantType.@implicit
                     },
-                    ResponseTypes = new []
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.Code,
                         ResponseTypeNames.Token,
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.web,
-                    RedirectionUrls = new List<Uri> { new Uri("http://localhost:5000/callback") },
+                    RedirectionUrls = new List<Uri> {new Uri("http://localhost:5000/callback")},
                 },
                 // Certificate test client.
                 new Client
                 {
                     ClientId = "certificate_client",
                     ClientName = "Certificate test client",
-                    Secrets = new List<ClientSecret>
+                    Secrets = new[]
                     {
                         new ClientSecret
                         {
                             Type = ClientSecretTypes.X509Thumbprint,
-                            Value = "E831DB1512E5AE431B6CDC6355CDA4CBBDB9CAAC"
+                            Value = "0772F57C594FA1EFD619AF8D84A48F4C1741C715"
                         },
                         new ClientSecret
                         {
                             Type = ClientSecretTypes.X509Name,
-                            Value = "CN=localhost"
+                            Value = "O=reimers.dk, L=Zurich, S=ZH, C=CH"
                         }
                     },
+                    JsonWebKeys = new JsonWebKeySet().AddKey(
+                        new X509Certificate2("mycert.pfx", "simpleauth").CreateJwk(JsonWebKeyUseNames.Sig,
+                            KeyOperations.Sign,
+                            KeyOperations.Verify)),
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.tls_client_auth,
-                    LogoUri = null,
+                    //LogoUri = null,
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -810,12 +826,12 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.password
                     },
-                    ResponseTypes = new []
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.Token,
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, //SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.native
                 },
                 // Client credentials + stateless access token.
@@ -832,7 +848,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = null,
+                    //LogoUri = null,
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -856,11 +872,14 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new []
+                    JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateJwk(JsonWebKeyUseNames.Sig,
+                        KeyOperations.Sign,
+                        KeyOperations.Verify)),
+                    ResponseTypes = new[]
                     {
                         ResponseTypeNames.Token
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.native
                 }
             };

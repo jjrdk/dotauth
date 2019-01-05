@@ -14,10 +14,10 @@
 
 namespace SimpleAuth.Server.Tests.Apis
 {
-    using System;
-    using System.Threading.Tasks;
     using Client;
     using Client.Operations;
+    using System;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class DiscoveryClientFixture : IClassFixture<TestOauthServerFixture>
@@ -33,13 +33,15 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Retrieving_DiscoveryInformation_Then_No_Exception_Is_Thrown()
         {
-            const string baseUrl = "http://localhost:5000";            InitializeFakeObjects();
+            const string baseUrl = "http://localhost:5000";
+            InitializeFakeObjects();
 
-                        var discovery =
+            var discovery =
                 await _discoveryClient.GetDiscoveryInformationAsync(
-                    new Uri(baseUrl + "/.well-known/openid-configuration")).ConfigureAwait(false);
+                        new Uri(baseUrl + "/.well-known/openid-configuration"))
+                    .ConfigureAwait(false);
 
-                        Assert.NotNull(discovery);
+            Assert.NotNull(discovery);
             Assert.True(discovery.ScimEndpoint == FakeStartup.ScimEndPoint);
         }
 

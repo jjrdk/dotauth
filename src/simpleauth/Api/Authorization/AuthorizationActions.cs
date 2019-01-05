@@ -52,16 +52,14 @@ namespace SimpleAuth.Api.Authorization
             IParameterParserHelper parameterParserHelper,
             IClientStore clientStore,
             IOAuthEventSource oauthEventSource,
-            IJwtParser jwtParser,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IEventPublisher eventPublisher,
             IAmrHelper amrHelper,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper)
         {
-            var clientValidator = new ClientValidator();
             var processAuthorizationRequest = new ProcessAuthorizationRequest(
+                clientStore,
                 consentHelper,
-                jwtParser,
                 oauthEventSource);
             _getAuthorizationCodeOperation = new GetAuthorizationCodeOperation(
                 processAuthorizationRequest,

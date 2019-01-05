@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Uma
 {
-    using System.Collections.Generic;
     using Api.ConfigurationController;
     using Api.ConfigurationController.Actions;
     using Api.PermissionController;
@@ -25,13 +24,14 @@ namespace SimpleAuth.Uma
     using Api.ResourceSetController.Actions;
     using Api.Token;
     using Helpers;
-    using JwtToken;
     using Microsoft.Extensions.DependencyInjection;
     using Models;
     using Policies;
     using Repositories;
     using SimpleAuth;
     using Stores;
+    using System.Collections.Generic;
+    using SimpleAuth.Shared.Repositories;
     using Validators;
 
     public static class SimpleIdServerUmaCoreExtensions
@@ -49,7 +49,7 @@ namespace SimpleAuth.Uma
             serviceCollection.AddTransient<IAddPermissionAction, AddPermissionAction>();
             serviceCollection.AddTransient<IRepositoryExceptionHelper, RepositoryExceptionHelper>();
             serviceCollection.AddTransient<IAuthorizationPolicyValidator, AuthorizationPolicyValidator>();
-            serviceCollection.AddTransient<IBasicAuthorizationPolicy>(sp => new BasicAuthorizationPolicy(sp.GetService<IJwtTokenParser>(), sp.GetService<IJwksClient>()));
+            serviceCollection.AddTransient<IBasicAuthorizationPolicy, BasicAuthorizationPolicy>();
             serviceCollection.AddTransient<ICustomAuthorizationPolicy, CustomAuthorizationPolicy>();
             serviceCollection.AddTransient<IAddAuthorizationPolicyAction, AddAuthorizationPolicyAction>();
             serviceCollection.AddTransient<IPolicyActions, PolicyActions>();
@@ -59,7 +59,6 @@ namespace SimpleAuth.Uma
             serviceCollection.AddTransient<IUpdatePolicyAction, UpdatePolicyAction>();
             serviceCollection.AddTransient<IConfigurationActions, ConfigurationActions>();
             serviceCollection.AddTransient<IGetConfigurationAction, GetConfigurationAction>();
-            serviceCollection.AddTransient<IJwtTokenParser, JwtTokenParser>();
             serviceCollection.AddTransient<IAddResourceSetToPolicyAction, AddResourceSetToPolicyAction>();
             serviceCollection.AddTransient<IDeleteResourcePolicyAction, DeleteResourcePolicyAction>();
             serviceCollection.AddTransient<IGetPoliciesAction, GetPoliciesAction>();
@@ -69,7 +68,6 @@ namespace SimpleAuth.Uma
             serviceCollection.AddSingleton(umaConfigurationOptions);
             serviceCollection.AddSingleton<IPolicyRepository>(new DefaultPolicyRepository(policies));
             serviceCollection.AddSingleton<IResourceSetRepository>(new DefaultResourceSetRepository(resources));
-            serviceCollection.AddTransient<IJwksClient, JwksClient>();
             serviceCollection.AddSingleton<ITicketStore>(new DefaultTicketStore());
 
             return serviceCollection;

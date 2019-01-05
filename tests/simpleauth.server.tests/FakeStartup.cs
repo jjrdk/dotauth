@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Server.Tests
 {
-    using Api.Jwks;
     using Client;
     using Controllers;
     using Extensions;
@@ -103,24 +102,24 @@ namespace SimpleAuth.Server.Tests
             // 4. Use simple identity server.
             app.UseOpenIdApi(_options);
             //// 5. Client JWKS endpoint
-            app.Map("/jwks_client", a =>
-            {
-                a.Run(async ctx =>
-                {
-                    var jwks = new[]
-                    {
-                        _context.EncryptionKey,
-                        _context.SignatureKey
-                    };
-                    var repo = app.ApplicationServices.GetService<IJwksActions>();
-                    var result = await repo.GetJwks().ConfigureAwait(false);
+            //app.Map("/jwks_client", a =>
+            //{
+            //    a.Run(async ctx =>
+            //    {
+            //        var jwks = new[]
+            //        {
+            //            _context.EncryptionKey,
+            //            _context.SignatureKey
+            //        };
+            //        var repo = app.ApplicationServices.GetService<IJwksActions>();
+            //        var result = await repo.GetJwks().ConfigureAwait(false);
 
-                    var json = JsonConvert.SerializeObject(result);
-                    var data = Encoding.UTF8.GetBytes(json);
-                    ctx.Response.ContentType = "application/json";
-                    await ctx.Response.Body.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
-                });
-            });
+            //        var json = JsonConvert.SerializeObject(result);
+            //        var data = Encoding.UTF8.GetBytes(json);
+            //        ctx.Response.ContentType = "application/json";
+            //        await ctx.Response.Body.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
+            //    });
+            //});
             // 5. Use MVC.
             app.UseMvc();
         }
@@ -131,7 +130,7 @@ namespace SimpleAuth.Server.Tests
             {
                 Clients = DefaultStores.Clients(_context),
                 Consents = DefaultStores.Consents(),
-                JsonWebKeys = DefaultStores.JsonWebKeys(_context),
+                //JsonWebKeys = DefaultStores.JsonWebKeys(_context),
                 Profiles =    DefaultStores.Profiles(),
                 Users = DefaultStores.Users()
             };
@@ -144,7 +143,7 @@ namespace SimpleAuth.Server.Tests
             services.AddTransient<IAuthenticateResourceOwnerService, CustomAuthenticateResourceOwnerService>();
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
             services.UseSimpleAuth(_options)
-                //.AddSimpleAuthServer(null,
+                //.AddSimpleAuth(null,
                 //    null,
                 //    DefaultStores.Clients(_context),
                 //    DefaultStores.Consents(),

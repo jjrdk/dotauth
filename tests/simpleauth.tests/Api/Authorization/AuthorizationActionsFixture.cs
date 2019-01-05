@@ -272,7 +272,6 @@ namespace SimpleAuth.Tests.Api.Authorization
                 _parameterParserHelperFake.Object,
                 _clientStore.Object,
                 _oauthEventSource.Object,
-                new Mock<IJwtParser>().Object,
                 _authorizationFlowHelperFake.Object,
                 _eventPublisherStub.Object,
                 _amrHelperStub.Object,

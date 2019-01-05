@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Extensions;
     using Shared.Models;
     using Shared.Repositories;
 
@@ -43,7 +42,7 @@
                 throw new ArgumentNullException(nameof(subject));
             }
 
-            return Task.FromResult(_consents.Where(c => c.ResourceOwner.Id == subject).Select(r => r.Copy()));
+            return Task.FromResult(_consents.Where(c => c.ResourceOwner.Id == subject));
         }
 
         public Task<bool> InsertAsync(Consent record)
@@ -53,7 +52,7 @@
                 throw new ArgumentNullException(nameof(record));
             }
 
-            _consents.Add(record.Copy());
+            _consents.Add(record);
             return Task.FromResult(true);
         }
     }

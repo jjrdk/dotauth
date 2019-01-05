@@ -14,8 +14,6 @@
 
 namespace SimpleAuth.Uma.Errors
 {
-    using SimpleAuth.Errors;
-
     internal static class UmaErrorCodes
     {
         public const string NeedInfo = "need_info";

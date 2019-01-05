@@ -15,25 +15,23 @@
 namespace SimpleAuth.Api.Discovery
 {
     using Authorization;
+    using Microsoft.IdentityModel.Tokens;
+    using Shared;
     using Shared.Models;
     using Shared.Repositories;
-    using Shared.Requests;
     using Shared.Responses;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Shared;
 
     public class DiscoveryActions : IDiscoveryActions
     {
         private readonly IScopeRepository _scopeRepository;
-        private readonly IClaimRepository _claimRepository;
 
-        public DiscoveryActions(IScopeRepository scopeRepository, IClaimRepository claimRepository)
+        public DiscoveryActions(IScopeRepository scopeRepository)
         {
             _scopeRepository = scopeRepository;
-            _claimRepository = claimRepository;
         }
 
         public async Task<DiscoveryInformation> CreateDiscoveryInformation(string issuer, string scimEndpoint = null)
@@ -43,10 +41,13 @@ namespace SimpleAuth.Api.Discovery
             // Returns only the exposed scopes
             var scopes = await _scopeRepository.GetAll().ConfigureAwait(false);
             var scopeSupportedNames = new string[0];
-            if (scopes != null ||
-                scopes.Any())
+            if (scopes != null && scopes.Any())
             {
                 scopeSupportedNames = scopes.Where(s => s.IsExposed).Select(s => s.Name).ToArray();
+            }
+            else
+            {
+                scopeSupportedNames = Array.Empty<string>();
             }
 
             var responseTypesSupported = GetSupportedResponseTypes(CoreConstants.Supported.SupportedAuthorizationFlows);
@@ -58,14 +59,14 @@ namespace SimpleAuth.Api.Discovery
             result.RequestParameterSupported = true;
             result.RequestUriParameterSupported = true;
             result.RequireRequestUriRegistration = true;
-            result.ClaimsSupported = (await _claimRepository.GetAllAsync().ConfigureAwait(false)).Select(c => c.Code).ToArray();
+            result.ClaimsSupported = new string[0]; //(await _claimRepository.GetAllAsync().ConfigureAwait(false)).ToArray();
             result.ScopesSupported = scopeSupportedNames;
             result.ResponseTypesSupported = responseTypesSupported;
             result.ResponseModesSupported = CoreConstants.Supported.SupportedResponseModes.ToArray();
             result.GrantTypesSupported = grantTypesSupported;
             result.SubjectTypesSupported = CoreConstants.Supported.SupportedSubjectTypes.ToArray();
             result.TokenEndpointAuthMethodSupported = tokenAuthMethodSupported;
-            result.IdTokenSigningAlgValuesSupported = CoreConstants.Supported.SupportedJwsAlgs.ToArray();
+            result.IdTokenSigningAlgValuesSupported = new[] { SecurityAlgorithms.RsaSha256, SecurityAlgorithms.EcdsaSha256 };
             //var issuer = Request.GetAbsoluteUriWithVirtualPath();
             var authorizationEndPoint = issuer + "/" + CoreConstants.EndPoints.Authorization;
             var tokenEndPoint = issuer + "/" + CoreConstants.EndPoints.Token;
@@ -112,7 +113,7 @@ namespace SimpleAuth.Api.Discovery
                 if (authorizationFlows.Contains(mapping.Value))
                 {
                     var record = string.Join(" ", mapping.Key.Where(ResponseTypeNames.All.Contains));
-                        //.Select(k => Enum.GetName(typeof(string), k)));
+                    //.Select(k => Enum.GetName(typeof(string), k)));
                     result.Add(record);
                 }
             }

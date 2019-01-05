@@ -6,7 +6,6 @@
     using Moq;
     using Shared.Models;
     using Shared.Repositories;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -121,7 +120,7 @@
 
             await _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer", false).ConfigureAwait(false);
 
-            _profileRepositoryStub.Verify(p => p.Add(It.Is<IEnumerable<ResourceOwnerProfile>>(r =>
+            _profileRepositoryStub.Verify(p => p.Add(It.Is<ResourceOwnerProfile[]>(r =>
                 r.First().ResourceOwnerId == LocalSubject &&
                 r.First().Subject == ExternalSubject &&
                 r.First().Issuer == "issuer")));
@@ -142,7 +141,7 @@
             await _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer", true).ConfigureAwait(false);
 
             _profileRepositoryStub.Verify(p => p.Remove(It.Is<IEnumerable<string>>(r => r.Contains(ExternalSubject))));
-            _profileRepositoryStub.Verify(p => p.Add(It.Is<IEnumerable<ResourceOwnerProfile>>(r =>
+            _profileRepositoryStub.Verify(p => p.Add(It.Is<ResourceOwnerProfile[]>(r =>
                 r.First().ResourceOwnerId == LocalSubject &&
                 r.First().Subject == ExternalSubject &&
                 r.First().Issuer == "issuer")));

@@ -15,8 +15,8 @@
 namespace SimpleAuth.Helpers
 {
     using System;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Threading.Tasks;
-    using Shared;
     using Shared.Models;
     using Validators;
 
@@ -31,7 +31,7 @@ namespace SimpleAuth.Helpers
             _grantedTokenValidator = grantedTokenValidator;
         }
 
-        public async Task<GrantedToken> GetValidGrantedTokenAsync(string scopes, string clientId, JwsPayload idTokenJwsPayload = null, JwsPayload userInfoJwsPayload = null)
+        public async Task<GrantedToken> GetValidGrantedTokenAsync(string scopes, string clientId, JwtPayload idTokenJwsPayload = null, JwtPayload userInfoJwsPayload = null)
         {
             if (string.IsNullOrWhiteSpace(scopes))
             {

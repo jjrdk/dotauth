@@ -13,6 +13,7 @@
     using SimpleAuth.Validators;
     using System;
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
@@ -231,8 +232,8 @@
             grantedTokenHelperMock.Setup(x => x.GetValidGrantedTokenAsync(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<JwsPayload>(),
-                    It.IsAny<JwsPayload>()))
+                    It.IsAny<JwtPayload>(),
+                    It.IsAny<JwtPayload>()))
                 .ReturnsAsync(new GrantedToken
                 {
                     ClientId = clientId

@@ -24,7 +24,6 @@ namespace SimpleAuth.Validators
     using System.Linq;
     using System.Threading.Tasks;
     using Shared;
-    using Shared.Requests;
 
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator : IAuthorizationCodeGrantTypeParameterAuthEdpValidator
     {

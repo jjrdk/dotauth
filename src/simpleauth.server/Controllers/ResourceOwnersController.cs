@@ -37,16 +37,13 @@ namespace SimpleAuth.Server.Controllers
     public class ResourceOwnersController : Controller
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IClaimRepository _claimRepository;
         private readonly IAddUserOperation _addUserOperation;
 
         public ResourceOwnersController(
             IResourceOwnerRepository resourceOwnerRepository,
-            IClaimRepository claimRepository,
             IAddUserOperation addUserOperation)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _claimRepository = claimRepository;
             _addUserOperation = addUserOperation;
         }
 
@@ -118,20 +115,20 @@ namespace SimpleAuth.Server.Controllers
 
             resourceOwner.UpdateDateTime = DateTime.UtcNow;
             var claims = new List<Claim>();
-            var existingClaims = (await _claimRepository.GetAllAsync().ConfigureAwait(false)).ToArray();
-            if (existingClaims.Any() && request.Claims != null && request.Claims.Any())
-            {
+            //var existingClaims = (await _claimRepository.GetAllAsync().ConfigureAwait(false)).ToArray();
+            //if (existingClaims.Any() && request.Claims != null && request.Claims.Any())
+            //{
                 foreach (var claim in request.Claims)
                 {
-                    var cl = existingClaims.FirstOrDefault(c => c.Code == claim.Key);
-                    if (cl == null)
-                    {
-                        continue;
-                    }
+                    //var cl = existingClaims.FirstOrDefault(c => c.Code == claim.Key);
+                    //if (cl == null)
+                    //{
+                    //    continue;
+                    //}
 
                     claims.Add(new Claim(claim.Key, claim.Value));
                 }
-            }
+            //}
 
             resourceOwner.Claims = claims;
             Claim updatedClaim, subjectClaim;

@@ -14,12 +14,15 @@
 
   <ItemGroup>
     <None Include="..\testCert.pfx" Link="testCert.pfx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\mycert.pfx" Link="mycert.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="appsettings.json;testCert.pfx">
+    <None Update="appsettings.json;testCert.pfx;mycert.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

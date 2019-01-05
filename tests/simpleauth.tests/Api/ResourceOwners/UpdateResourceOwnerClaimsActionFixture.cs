@@ -26,7 +26,6 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
     public class UpdateResourceOwnerClaimsActionFixture
     {
         private IResourceOwnerRepository _resourceOwnerRepositoryStub;
-        private Mock<IClaimRepository> _claimRepositoryStub;
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
@@ -62,7 +61,6 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
         private void InitializeFakeObjects(params ResourceOwner[] resourceOwners)
         {
             _resourceOwnerRepositoryStub = new DefaultResourceOwnerRepository(new List<ResourceOwner>(resourceOwners));
-            _claimRepositoryStub = new Mock<IClaimRepository>();
         }
     }
 }

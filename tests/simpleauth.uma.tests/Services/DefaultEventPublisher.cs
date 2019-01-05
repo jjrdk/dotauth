@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Uma.Tests.Services
 {
-    using Shared;
     using SimpleAuth.Shared;
 
     internal sealed class DefaultEventPublisher : IEventPublisher

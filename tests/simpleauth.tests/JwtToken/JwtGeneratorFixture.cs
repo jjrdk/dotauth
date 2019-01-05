@@ -14,17 +14,11 @@
 
 namespace SimpleAuth.Tests.JwtToken
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Security.Cryptography;
-    using System.Threading.Tasks;
-    using Encrypt;
-    using Encrypt.Encryption;
     using Errors;
     using Exceptions;
     using Fake;
+    using Helpers;
+    using Microsoft.IdentityModel.Tokens;
     using Moq;
     using Parameters;
     using Shared;
@@ -34,46 +28,48 @@ namespace SimpleAuth.Tests.JwtToken
     using SimpleAuth.Extensions;
     using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
-    using SimpleAuth.Signature;
-    using SimpleAuth.Validators;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using Xunit;
-    using Client = Shared.Models.Client;
+    using JwtConstants = SimpleAuth.JwtConstants;
 
     public class JwtGeneratorFixture
     {
         private IJwtGenerator _jwtGenerator;
         private Mock<IClientStore> _clientRepositoryStub;
-        private Mock<IJsonWebKeyRepository> _jsonWebKeyRepositoryStub;
         private Mock<IScopeRepository> _scopeRepositoryStub;
 
         [Fact]
-        public async Task When_Passing_Null_Parameters_To_GenerateAccessToken_Then_Exception_Is_Thrown()
+        public void When_Passing_Null_Parameters_To_GenerateAccessToken_Then_Exception_Is_Thrown()
         {
             InitializeMockObjects();
 
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateAccessToken(null, null, null, null))
-                .ConfigureAwait(false);
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(() =>
-                    _jwtGenerator.GenerateAccessToken(new Client(), null, null, null))
-                .ConfigureAwait(false);
+            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateAccessToken(null, null, null, null));
+
+            Assert.Throws<ArgumentNullException>(
+                () => _jwtGenerator.GenerateAccessToken(new Client(), null, null, null));
         }
 
         [Fact]
-        public async Task When_Generate_AccessToken()
+        public void WhenSignatureParametersAreConfigedThenCanGenerateAccessToken()
         {
             const string clientId = "client_id";
             var scopes = new List<string> { "openid", "role" };
             InitializeMockObjects();
             var client = new Client
             {
+                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 ClientId = clientId
             };
 
-            var result = await _jwtGenerator.GenerateAccessToken(client, scopes, null, null).ConfigureAwait(false);
+            var result = _jwtGenerator.GenerateAccessToken(client, scopes, "issuer", null);
 
-            
             Assert.NotNull(result);
         }
 
@@ -98,7 +94,7 @@ namespace SimpleAuth.Tests.JwtToken
             When_Requesting_IdentityToken_JwsPayload_And_IndicateTheMaxAge_Then_TheJwsPayload_Contains_AuthenticationTime()
         {
             InitializeMockObjects();
-            const string subject = "habarthierry@hotmail.fr";
+            const string subject = "john.doe@email.com";
             var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
             var claims = new List<Claim>
             {
@@ -109,8 +105,12 @@ namespace SimpleAuth.Tests.JwtToken
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var authorizationParameter = new AuthorizationParameter
             {
+                ClientId = "test",
                 MaxAge = 2
             };
+            _clientRepositoryStub
+                .Setup(c => c.GetById(It.IsAny<string>()))
+                .ReturnsAsync(FakeOpenIdAssets.GetClients().First());
             _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
 
             var result = await _jwtGenerator.GenerateIdTokenPayloadForScopesAsync(
@@ -119,11 +119,10 @@ namespace SimpleAuth.Tests.JwtToken
                     null)
                 .ConfigureAwait(false);
 
-            Assert.NotNull(result);
-            Assert.True(result.HasClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject));
-            Assert.True(result.HasClaim(StandardClaimNames.AuthenticationTime));
-            Assert.Equal(subject, result.GetStringClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject));
-            Assert.NotEmpty(result.GetStringClaim(StandardClaimNames.AuthenticationTime));
+            Assert.Contains(result.Claims, c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject);
+            Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.AuthenticationTime);
+            Assert.Equal(subject, result.Claims.First(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject).Value);
+            Assert.NotEmpty(result.Claims.First(c => c.Type == StandardClaimNames.AuthenticationTime).Value);
         }
 
         [Fact]
@@ -133,7 +132,7 @@ namespace SimpleAuth.Tests.JwtToken
             InitializeMockObjects();
             const string issuerName = "IssuerName";
             var clientId = FakeOpenIdAssets.GetClients().First().ClientId;
-            const string subject = "habarthierry@hotmail.fr";
+            const string subject = "john.doe@email.com";
             var claims = new List<Claim>
             {
                 new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
@@ -144,7 +143,8 @@ namespace SimpleAuth.Tests.JwtToken
             {
                 ClientId = clientId
             };
-            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).ReturnsAsync(FakeOpenIdAssets.GetClients().First());
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).ReturnsAsync(FakeOpenIdAssets.GetClients());
 
             var result = await _jwtGenerator.GenerateIdTokenPayloadForScopesAsync(
                     claimsPrincipal,
@@ -152,10 +152,9 @@ namespace SimpleAuth.Tests.JwtToken
                     issuerName)
                 .ConfigureAwait(false);
 
-            Assert.NotNull(result);
-            Assert.True(result.HasClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject));
-            Assert.True(result.Audiences.Length > 1);
-            Assert.True(result.Azp == clientId);
+            Assert.Contains(result.Claims, c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject);
+            Assert.True(result.Aud.Count > 1);
+            Assert.Equal(clientId, result.Azp);
         }
 
         [Fact]
@@ -164,7 +163,7 @@ namespace SimpleAuth.Tests.JwtToken
             InitializeMockObjects();
             const string issuerName = "IssuerName";
             const string clientId = "clientId";
-            const string subject = "habarthierry@hotmail.fr";
+            const string subject = "john.doe@email.com";
             var claims = new List<Claim>
             {
                 new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
@@ -175,8 +174,8 @@ namespace SimpleAuth.Tests.JwtToken
             {
                 ClientId = clientId
             };
-            _clientRepositoryStub.Setup(c => c.GetAllAsync())
-                .Returns(Task.FromResult((IEnumerable<Client>)new List<Client>()));
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).ReturnsAsync((Client)null);
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).ReturnsAsync(new List<Client>());
 
             var result = await _jwtGenerator.GenerateIdTokenPayloadForScopesAsync(
                     claimsPrincipal,
@@ -185,9 +184,9 @@ namespace SimpleAuth.Tests.JwtToken
                 .ConfigureAwait(false);
 
             Assert.NotNull(result);
-            Assert.True(result.HasClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject));
-            Assert.True(result.Audiences.Count() == 1);
-            Assert.True(result.Azp == clientId);
+            Assert.Contains(result.Claims, c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject);
+            Assert.Single(result.Aud);
+            Assert.Equal(clientId, result.Azp);
         }
 
         [Fact]
@@ -195,7 +194,7 @@ namespace SimpleAuth.Tests.JwtToken
             When_Requesting_IdentityToken_JwsPayload_With_No_Authorization_Request_Then_MandatoriesClaims_Are_Returned()
         {
             InitializeMockObjects();
-            const string subject = "habarthierry@hotmail.fr";
+            const string subject = "john.doe@email.com";
             var authorizationParameter = new AuthorizationParameter();
             var claims = new List<Claim>
             {
@@ -203,7 +202,8 @@ namespace SimpleAuth.Tests.JwtToken
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).ReturnsAsync(FakeOpenIdAssets.GetClients().First());
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).ReturnsAsync(FakeOpenIdAssets.GetClients());
 
             var result = await _jwtGenerator.GenerateIdTokenPayloadForScopesAsync(
                     claimsPrincipal,
@@ -211,12 +211,11 @@ namespace SimpleAuth.Tests.JwtToken
                     null)
                 .ConfigureAwait(false);
 
-            Assert.NotNull(result);
-            Assert.True(result.HasClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject));
-            Assert.True(result.HasClaim(StandardClaimNames.Audiences));
-            Assert.True(result.HasClaim(StandardClaimNames.ExpirationTime));
-            Assert.True(result.HasClaim(StandardClaimNames.Iat));
-            Assert.True(result.GetStringClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject) == subject);
+            Assert.Contains(result.Claims, c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject);
+            Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.Audiences);
+            Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.ExpirationTime);
+            Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.Iat);
+            Assert.Equal(subject, result.Sub);
         }
 
         [Fact]
@@ -238,7 +237,7 @@ namespace SimpleAuth.Tests.JwtToken
         public async Task When_Requesting_Identity_Token_And_Audiences_Is_Not_Correct_Then_Exception_Is_Thrown()
         {
             InitializeMockObjects();
-            const string subject = "habarthierry@hotmail.fr";
+            const string subject = "john.doe@email.com";
             const string state = "state";
             var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
             var claims = new List<Claim>
@@ -270,7 +269,8 @@ namespace SimpleAuth.Tests.JwtToken
                     }
                 }
             };
-            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).ReturnsAsync(FakeOpenIdAssets.GetClients().First());
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).ReturnsAsync(FakeOpenIdAssets.GetClients());
 
             var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
                     _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(
@@ -280,7 +280,7 @@ namespace SimpleAuth.Tests.JwtToken
                         null))
                 .ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.True(exception.Message ==
                         string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Audiences));
             Assert.True(exception.State == state);
@@ -290,7 +290,7 @@ namespace SimpleAuth.Tests.JwtToken
         public async Task When_Requesting_Identity_Token_And_Issuer_Claim_Is_Not_Correct_Then_Exception_Is_Thrown()
         {
             InitializeMockObjects();
-            const string subject = "habarthierry@hotmail.fr";
+            const string subject = "john.doe@email.com";
             const string state = "state";
             var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
             var claims = new List<Claim>
@@ -322,7 +322,8 @@ namespace SimpleAuth.Tests.JwtToken
                     }
                 }
             };
-            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).ReturnsAsync(FakeOpenIdAssets.GetClients().First());
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).ReturnsAsync(FakeOpenIdAssets.GetClients());
 
             var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
                     _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(
@@ -332,7 +333,7 @@ namespace SimpleAuth.Tests.JwtToken
                         null))
                 .ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.True(exception.Message ==
                         string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Issuer));
             Assert.True(exception.State == state);
@@ -342,7 +343,7 @@ namespace SimpleAuth.Tests.JwtToken
         public async Task When_Requesting_Identity_Token_And_ExpirationTime_Is_Not_Correct_Then_Exception_Is_Thrown()
         {
             InitializeMockObjects();
-            const string subject = "habarthierry@hotmail.fr";
+            const string subject = "john.doe@email.com";
             const string state = "state";
             var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
             var claims = new List<Claim>
@@ -374,7 +375,8 @@ namespace SimpleAuth.Tests.JwtToken
                     }
                 }
             };
-            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).ReturnsAsync(FakeOpenIdAssets.GetClients().First());
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).ReturnsAsync(FakeOpenIdAssets.GetClients());
 
             var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
                     _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(
@@ -384,7 +386,7 @@ namespace SimpleAuth.Tests.JwtToken
                         null))
                 .ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.True(exception.Message ==
                         string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.ExpirationTime));
             Assert.True(exception.State == state);
@@ -395,8 +397,8 @@ namespace SimpleAuth.Tests.JwtToken
             When_Requesting_IdentityToken_JwsPayload_And_PassingANotValidClaimValue_Then_An_Exception_Is_Thrown()
         {
             InitializeMockObjects();
-            const string subject = "habarthierry@hotmail.fr";
-            const string notValidSubject = "habarthierry@hotmail.be";
+            const string subject = "john.doe@email.com";
+            const string notValidSubject = "jane.doe@email.com";
             var claims = new List<Claim>
             {
                 new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
@@ -423,9 +425,9 @@ namespace SimpleAuth.Tests.JwtToken
                     }
                 }
             };
-            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).ReturnsAsync(FakeOpenIdAssets.GetClients().First());
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).ReturnsAsync(FakeOpenIdAssets.GetClients());
 
-            
             var result = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
                     _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(
                         claimsPrincipal,
@@ -445,12 +447,12 @@ namespace SimpleAuth.Tests.JwtToken
             When_Requesting_IdentityToken_JwsPayload_And_Pass_AuthTime_As_ClaimEssential_Then_TheJwsPayload_Contains_AuthenticationTime()
         {
             InitializeMockObjects();
-            const string subject = "habarthierry@hotmail.fr";
+            const string subject = "john.doe@email.com";
             const string nonce = "nonce";
-            var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
+            var currentDateTimeOffset = (double)DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
+                new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString(CultureInfo.InvariantCulture)),
                 new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject),
                 new Claim(JwtConstants.StandardResourceOwnerClaimNames.Role,
                     "['role1', 'role2']",
@@ -509,7 +511,8 @@ namespace SimpleAuth.Tests.JwtToken
                     }
                 }
             };
-            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).ReturnsAsync(FakeOpenIdAssets.GetClients().First());
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).ReturnsAsync(FakeOpenIdAssets.GetClients());
 
             var result = await _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(
                     claimsPrincipal,
@@ -518,14 +521,13 @@ namespace SimpleAuth.Tests.JwtToken
                     null)
                 .ConfigureAwait(false);
 
-            Assert.NotNull(result);
-            Assert.True(result.HasClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject));
-            Assert.True(result.HasClaim(JwtConstants.StandardResourceOwnerClaimNames.Role));
-            Assert.True(result.HasClaim(StandardClaimNames.AuthenticationTime));
-            Assert.True(result.HasClaim(StandardClaimNames.Nonce));
-            Assert.Equal(subject, result.GetStringClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject));
-            Assert.True(long.Parse(result.GetStringClaim(StandardClaimNames.AuthenticationTime))
-                .Equals(currentDateTimeOffset));
+
+            Assert.Equal(subject, result.Claims.First(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject).Value);
+            Assert.Equal(currentDateTimeOffset, double.Parse(result.Claims.First(c => c.Type == StandardClaimNames.AuthenticationTime).Value));
+
+            Assert.Contains(result.Claims, c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Role);
+            Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.AuthenticationTime);
+            Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.Nonce);
         }
 
         [Fact]
@@ -547,7 +549,7 @@ namespace SimpleAuth.Tests.JwtToken
         public async Task When_Requesting_UserInformation_JwsPayload_For_Scopes_Then_The_JwsPayload_Is_Correct()
         {
             InitializeMockObjects();
-            const string subject = "habarthierry@hotmail.fr";
+            const string subject = "john.doe@email.com";
             const string name = "Habart Thierry";
             var claims = new List<Claim>
             {
@@ -569,11 +571,8 @@ namespace SimpleAuth.Tests.JwtToken
                 .GenerateUserInfoPayloadForScopeAsync(claimsPrincipal, authorizationParameter)
                 .ConfigureAwait(false);
 
-            Assert.NotNull(result);
-            Assert.True(result.HasClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject));
-            Assert.True(result.HasClaim(JwtConstants.StandardResourceOwnerClaimNames.Name));
-            Assert.Equal(result.GetStringClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject), subject);
-            Assert.Equal(result.GetStringClaim(JwtConstants.StandardResourceOwnerClaimNames.Name), name);
+            Assert.Equal(subject, result.Claims.First(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject).Value);
+            Assert.Equal(name, result.Claims.First(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Name).Value);
         }
 
         [Fact]
@@ -630,7 +629,7 @@ namespace SimpleAuth.Tests.JwtToken
                     claimsPrincipal,
                     authorizationParameter));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.True(exception.Message ==
                         string.Format(ErrorDescriptions.TheClaimIsNotValid,
                             JwtConstants.StandardResourceOwnerClaimNames.Subject));
@@ -681,7 +680,7 @@ namespace SimpleAuth.Tests.JwtToken
                     claimsPrincipal,
                     authorizationParameter));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.True(exception.Message ==
                         string.Format(ErrorDescriptions.TheClaimIsNotValid,
                             JwtConstants.StandardResourceOwnerClaimNames.Subject));
@@ -692,7 +691,7 @@ namespace SimpleAuth.Tests.JwtToken
         public void When_Requesting_UserInformation_But_The_Essential_Claim_Name_Is_Empty_Then_Exception_Is_Thrown()
         {
             InitializeMockObjects();
-            const string subject = "habarthierry@hotmail.fr";
+            const string subject = "john.doe@email.com";
             const string state = "state";
             var claims = new List<Claim>
             {
@@ -731,7 +730,7 @@ namespace SimpleAuth.Tests.JwtToken
                     claimsPrincipal,
                     authorizationParameter));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.True(exception.Message ==
                         string.Format(ErrorDescriptions.TheClaimIsNotValid,
                             JwtConstants.StandardResourceOwnerClaimNames.Name));
@@ -793,7 +792,7 @@ namespace SimpleAuth.Tests.JwtToken
                     claimsPrincipal,
                     authorizationParameter));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.True(exception.Message ==
                         string.Format(ErrorDescriptions.TheClaimIsNotValid,
                             JwtConstants.StandardResourceOwnerClaimNames.Name));
@@ -804,8 +803,8 @@ namespace SimpleAuth.Tests.JwtToken
         public void When_Requesting_UserInformation_For_Some_Valid_Claims_Then_The_JwsPayload_Is_Correct()
         {
             InitializeMockObjects();
-            const string subject = "habarthierry@hotmail.fr";
-            const string name = "Habart Thierry";
+            const string subject = "john.doe@email.com";
+            const string name = "John Doe";
             var claims = new List<Claim>
             {
                 new Claim(JwtConstants.StandardResourceOwnerClaimNames.Name, name),
@@ -857,11 +856,8 @@ namespace SimpleAuth.Tests.JwtToken
                 claimsPrincipal,
                 authorizationParameter);
 
-            Assert.NotNull(result);
-            Assert.True(result.HasClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject));
-            Assert.True(result.HasClaim(JwtConstants.StandardResourceOwnerClaimNames.Name));
-            Assert.Equal(subject, result.GetStringClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject));
-            Assert.Equal(name, result.GetStringClaim(JwtConstants.StandardResourceOwnerClaimNames.Name));
+            Assert.Equal(subject, result.Claims.First(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject).Value);
+            Assert.Equal(name, result.Claims.First(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Name).Value);
         }
 
         [Fact]
@@ -872,7 +868,7 @@ namespace SimpleAuth.Tests.JwtToken
             Assert.Throws<ArgumentNullException>(() =>
                 _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(null, null, null, null));
             Assert.Throws<ArgumentNullException>(() =>
-                _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(new JwsPayload(), null, null, null));
+                _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(new JwtPayload(), null, null, null));
         }
 
         [Fact]
@@ -881,11 +877,12 @@ namespace SimpleAuth.Tests.JwtToken
             InitializeMockObjects();
             var client = FakeOpenIdAssets.GetClients().First();
             client.IdTokenSignedResponseAlg = "none";
-            var jwsPayload = new JwsPayload();
+            var jwsPayload = new JwtPayload();
 
             _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, null, null, new Client());
-            Assert.False(jwsPayload.HasClaim(StandardClaimNames.AtHash));
-            Assert.False(jwsPayload.HasClaim(StandardClaimNames.CHash));
+
+            Assert.DoesNotContain(jwsPayload.Claims, c => c.Type == StandardClaimNames.AtHash);
+            Assert.DoesNotContain(jwsPayload.Claims, c => c.Type == StandardClaimNames.CHash);
         }
 
         [Fact]
@@ -894,15 +891,16 @@ namespace SimpleAuth.Tests.JwtToken
         {
             InitializeMockObjects();
             var client = FakeOpenIdAssets.GetClients().First();
-            client.IdTokenSignedResponseAlg = JwtConstants.JwsAlgNames.RS256;
-            var jwsPayload = new JwsPayload();
+            client.IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256;
+            var jwsPayload = new JwtPayload();
 
-            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(
+                jwsPayload,
                 "authorization_code",
                 "access_token",
                 client);
-            Assert.True(jwsPayload.HasClaim(StandardClaimNames.AtHash));
-            Assert.True(jwsPayload.HasClaim(StandardClaimNames.CHash));
+            Assert.Contains(jwsPayload.Claims, c => c.Type == StandardClaimNames.AtHash);
+            Assert.Contains(jwsPayload.Claims, c => c.Type == StandardClaimNames.CHash);
         }
 
         [Fact]
@@ -911,15 +909,15 @@ namespace SimpleAuth.Tests.JwtToken
         {
             InitializeMockObjects();
             var client = FakeOpenIdAssets.GetClients().First();
-            client.IdTokenSignedResponseAlg = JwtConstants.JwsAlgNames.RS384;
-            var jwsPayload = new JwsPayload();
+            client.IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha384;
+            var jwsPayload = new JwtPayload();
 
             _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
                 "authorization_code",
                 "access_token",
                 client);
-            Assert.True(jwsPayload.HasClaim(StandardClaimNames.AtHash));
-            Assert.True(jwsPayload.HasClaim(StandardClaimNames.CHash));
+            Assert.Contains(jwsPayload.Claims, c => c.Type == StandardClaimNames.AtHash);
+            Assert.Contains(jwsPayload.Claims, c => c.Type == StandardClaimNames.CHash);
         }
 
         [Fact]
@@ -928,119 +926,115 @@ namespace SimpleAuth.Tests.JwtToken
         {
             InitializeMockObjects();
             var client = FakeOpenIdAssets.GetClients().First();
-            client.IdTokenSignedResponseAlg = JwtConstants.JwsAlgNames.RS512;
-            var jwsPayload = new JwsPayload();
+            client.IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha512;
+            var jwsPayload = new JwtPayload();
 
             _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
                 "authorization_code",
                 "access_token",
                 client);
-            Assert.True(jwsPayload.HasClaim(StandardClaimNames.AtHash));
-            Assert.True(jwsPayload.HasClaim(StandardClaimNames.CHash));
+            Assert.Contains(jwsPayload.Claims, c => c.Type == StandardClaimNames.AtHash);
+            Assert.Contains(jwsPayload.Claims, c => c.Type == StandardClaimNames.CHash);
         }
 
-        [Fact]
-        public async Task When_Encrypt_Jws_Then_Jwe_Is_Returned()
-        {
-            InitializeMockObjects();
-            var client = FakeOpenIdAssets.GetClients().First();
-            client.IdTokenEncryptedResponseAlg = JwtConstants.JweAlgNames.RSA1_5;
-            var serializedRsa = string.Empty;
-            using (var provider = new RSACryptoServiceProvider())
-            {
-                serializedRsa = RsaExtensions.ToXmlString(provider, true); //.ToXmlString(true);
-            }
+        //[Fact]
+        //public async Task When_Encrypt_Jws_Then_Jwe_Is_Returned()
+        //{
+        //    InitializeMockObjects();
+        //    var client = FakeOpenIdAssets.GetClients().First();
+        //    client.IdTokenEncryptedResponseAlg = SecurityAlgorithms.RsaPKCS1;
+        //    using (var provider = new RSACryptoServiceProvider())
+        //    {
+        //        var jsonWebKey = provider.CreateJwk(
+        //            JsonWebKeyUseNames.Enc,
+        //            new[] { KeyOperations.Encrypt, KeyOperations.Decrypt },
+        //            true);
+        //        //    new JsonWebKey
+        //        //{
+        //        //    Alg = SecurityAlgorithms.RsaPKCS1,
+        //        //    KeyOps = new[]
+        //        //    {
+        //        //        KeyOperations.Encrypt,
+        //        //        KeyOperations.Decrypt
+        //        //    },
+        //        //    Kid = "3",
+        //        //    Kty = JwtConstants.KeyTypeValues.RSA,
+        //        //    Use = "enc",
+        //        //    SerializedKey = serializedRsa,
+        //        //};
+        //        var jws = new JwtPayload(); //"jws";
+        //        //var jwks = new JsonWebKeySet();
+        //        //jwks.Keys.Add(jsonWebKey);
 
-            ;
+        //        //_jsonWebKeyRepositoryStub.Setup(j =>
+        //        //        j.GetByAlgorithmAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+        //        //    .Returns(Task.FromResult(jwks));
+        //        //_clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult(client));
 
-            var jsonWebKey = new JsonWebKey
-            {
-                Alg = AllAlg.RSA1_5,
-                KeyOps = new[]
-                {
-                    KeyOperations.Encrypt,
-                    KeyOperations.Decrypt
-                },
-                Kid = "3",
-                Kty = KeyType.RSA,
-                Use = Use.Enc,
-                SerializedKey = serializedRsa,
-            };
-            var jws = "jws";
-            ICollection<JsonWebKey> jwks = new List<JsonWebKey> { jsonWebKey };
-            _jsonWebKeyRepositoryStub.Setup(j =>
-                    j.GetByAlgorithmAsync(It.IsAny<Use>(), It.IsAny<AllAlg>(), It.IsAny<KeyOperations[]>()))
-                .Returns(Task.FromResult(jwks));
-            //_clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult(client));
+        //        var jwe = await _jwtGenerator.EncryptAsync(
+        //                jws,
+        //                SecurityAlgorithms.RsaPKCS1,
+        //                SecurityAlgorithms.Aes128CbcHmacSha256)
+        //            .ConfigureAwait(false);
 
-            var jwe = await _jwtGenerator.EncryptAsync(jws,
-                    JweAlg.RSA1_5,
-                    JweEnc.A128CBC_HS256)
-                .ConfigureAwait(false);
+        //        Assert.NotEmpty(jwe);
+        //    }
+        //}
 
-            Assert.NotEmpty(jwe);
-        }
+        //[Fact]
+        //public async Task When_Sign_Payload_Then_Jws_Is_Returned()
+        //{
+        //    InitializeMockObjects();
+        //    var client = FakeOpenIdAssets.GetClients().First();
+        //    client.IdTokenEncryptedResponseAlg = SecurityAlgorithms.RsaSha256;
 
-        [Fact]
-        public async Task When_Sign_Payload_Then_Jws_Is_Returned()
-        {
-            InitializeMockObjects();
-            var client = FakeOpenIdAssets.GetClients().First();
-            client.IdTokenEncryptedResponseAlg = JwtConstants.JwsAlgNames.RS256;
-            var serializedRsa = string.Empty;
-            using (var provider = new RSACryptoServiceProvider())
-            {
-                serializedRsa = RsaExtensions.ToXmlString(provider, true);
-            }
+        //    using (var provider = new RSACryptoServiceProvider())
+        //    {
+        //        //   serializedRsa = RsaExtensions.ToXmlString(provider, true);
 
-            var jsonWebKey = new JsonWebKey
-            {
-                Alg = AllAlg.RS256,
-                KeyOps = new[]
-                {
-                    KeyOperations.Sign,
-                    KeyOperations.Verify
-                },
-                Kid = "a3rMUgMFv9tPclLa6yF3zAkfquE",
-                Kty = KeyType.RSA,
-                Use = Use.Sig,
-                SerializedKey = serializedRsa
-            };
-            ICollection<JsonWebKey> jwks = new List<JsonWebKey> { jsonWebKey };
-            _jsonWebKeyRepositoryStub.Setup(j =>
-                    j.GetByAlgorithmAsync(It.IsAny<Use>(), It.IsAny<AllAlg>(), It.IsAny<KeyOperations[]>()))
-                .Returns(Task.FromResult(jwks));
-            //_clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult(client));
-            var jwsPayload = new JwsPayload();
+        //        var jsonWebKey = provider.CreateJwk(
+        //            JsonWebKeyUseNames.Sig,
+        //            new[] { KeyOperations.Sign, KeyOperations.Verify },
+        //            true);
+        //        //    new JsonWebKey
+        //        //{
+        //        //    Alg = SecurityAlgorithms.RsaSha256,
+        //        //    KeyOps = new[]
+        //        //    {
+        //        //        KeyOperations.Sign,
+        //        //        KeyOperations.Verify
+        //        //    },
+        //        //    Kid = "a3rMUgMFv9tPclLa6yF3zAkfquE",
+        //        //    Kty = KeyType.RSA,
+        //        //    Use = Use.Sig,
+        //        //    SerializedKey = serializedRsa
+        //        //};
+        //        var jwks = new JsonWebKeySet();
+        //        jwks.Keys.Add(jsonWebKey);
+        //        //_jsonWebKeyRepositoryStub.Setup(j =>
+        //        //        j.GetByAlgorithmAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+        //        //    .ReturnsAsync(jwks);
+        //        //_clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult(client));
+        //        var jwsPayload = new JwtPayload();
 
-            var jws = await _jwtGenerator.SignAsync(jwsPayload,
-                    JwsAlg.RS256)
-                .ConfigureAwait(false);
+        //        var jws = await _jwtGenerator.SignAsync(
+        //                jwsPayload,
+        //                SecurityAlgorithms.RsaSha256)
+        //            .ConfigureAwait(false);
 
-            Assert.NotEmpty(jws);
-        }
+        //        Assert.NotEmpty(jws);
+        //    }
+        //}
 
         private void InitializeMockObjects()
         {
             _clientRepositoryStub = new Mock<IClientStore>();
-            _jsonWebKeyRepositoryStub = new Mock<IJsonWebKeyRepository>();
             _scopeRepositoryStub = new Mock<IScopeRepository>();
             var parameterParserHelper = new ParameterParserHelper();
-            var createJwsSignature = new CreateJwsSignature();
-            var aesEncryptionHelper = new AesEncryptionHelper();
-            var jweHelper = new JweHelper(aesEncryptionHelper);
-            var jwsGenerator = new JwsGenerator(createJwsSignature);
-            var jweGenerator = new JweGenerator(jweHelper);
 
-            _jwtGenerator = new JwtGenerator(
-                new OAuthConfigurationOptions(
-                    authorizationCodeValidity: TimeSpan.FromMinutes(60)),
-                _clientRepositoryStub.Object,
-                _jsonWebKeyRepositoryStub.Object,
+            _jwtGenerator = new JwtGenerator(_clientRepositoryStub.Object,
                 _scopeRepositoryStub.Object,
-                parameterParserHelper,
-                jwsGenerator,
-                jweGenerator);
+                parameterParserHelper);
         }
     }
 }

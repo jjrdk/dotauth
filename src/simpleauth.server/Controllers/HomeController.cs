@@ -4,7 +4,6 @@
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Mvc;
 
-    [Area("Shell")]
     public class HomeController : BaseController
     {
         public HomeController(IAuthenticationService authenticationService) : base(authenticationService)

@@ -1,33 +1,31 @@
 ﻿namespace SimpleAuth.Server.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Extensions;
-    using JwtToken;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.IdentityModel.Tokens;
     using Shared;
     using Shared.Repositories;
     using Shared.Requests;
     using Shared.Serializers;
     using SimpleAuth;
+    using System;
+    using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     public class SessionController : Controller
     {
         private readonly IAuthenticationService _authenticationService;
         private readonly IClientStore _clientRepository;
-        private readonly IJwtParser _jwtParser;
 
         public SessionController(
             IAuthenticationService authenticationService,
-            IClientStore clientRepository,
-            IJwtParser jwtParser)
+            IClientStore clientRepository)
         {
             _authenticationService = authenticationService;
             _clientRepository = clientRepository;
-            _jwtParser = jwtParser;
         }
 
         [HttpGet(CoreConstants.EndPoints.CheckSession)]
@@ -85,8 +83,12 @@
                 && request.PostLogoutRedirectUri != null
                 && !string.IsNullOrWhiteSpace(request.IdTokenHint))
             {
-                var jws = await _jwtParser.UnSignAsync(request.IdTokenHint).ConfigureAwait(false);
-                var claim = jws?.GetStringClaim(StandardClaimNames.Azp);
+                var handler = new JwtSecurityTokenHandler();
+                var tokenValidationParameters = new TokenValidationParameters();
+                handler.ValidateToken(request.IdTokenHint, tokenValidationParameters, out var token);
+                var jws = (token as JwtSecurityToken)?.Payload;
+                //var jws = await _jwtParser.UnSignAsync(request.IdTokenHint).ConfigureAwait(false);
+                var claim = jws?.GetClaimValue(StandardClaimNames.Azp);
                 if (claim != null)
                 {
                     var client = await _clientRepository.GetById(claim).ConfigureAwait(false);

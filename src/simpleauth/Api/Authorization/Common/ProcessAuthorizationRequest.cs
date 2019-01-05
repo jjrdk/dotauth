@@ -18,17 +18,19 @@ namespace SimpleAuth.Api.Authorization.Common
     using Exceptions;
     using Extensions;
     using Helpers;
-    using JwtToken;
     using Logging;
     using Parameters;
     using Results;
     using Shared.Models;
+    using Shared.Repositories;
     using System;
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Validators;
+    using JwtConstants = SimpleAuth.JwtConstants;
 
     internal sealed class ProcessAuthorizationRequest
     {
@@ -36,19 +38,19 @@ namespace SimpleAuth.Api.Authorization.Common
         private readonly ClientValidator _clientValidator;
         private readonly ScopeValidator _scopeValidator;
         private readonly IConsentHelper _consentHelper;
-        private readonly IJwtParser _jwtParser;
         private readonly IOAuthEventSource _oauthEventSource;
+        private IClientStore _clientStore;
 
         public ProcessAuthorizationRequest(
+            IClientStore clientStore,
             IConsentHelper consentHelper,
-            IJwtParser jwtParser,
             IOAuthEventSource oauthEventSource)
         {
+            _clientStore = clientStore;
             _parameterParserHelper = new ParameterParserHelper();
             _clientValidator = new ClientValidator();
             _scopeValidator = new ScopeValidator();
             _consentHelper = consentHelper;
-            _jwtParser = jwtParser;
             _oauthEventSource = oauthEventSource;
         }
 
@@ -179,9 +181,10 @@ namespace SimpleAuth.Api.Authorization.Common
                 prompts.Contains(PromptParameter.none) &&
                 endpointResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
+                var handler = new JwtSecurityTokenHandler();
                 var token = authorizationParameter.IdTokenHint;
-                if (!_jwtParser.IsJweToken(token) &&
-                    !_jwtParser.IsJwsToken(token))
+                var canRead = handler.CanReadToken(token);
+                if (!canRead)
                 {
                     throw new SimpleAuthExceptionWithState(
                             ErrorCodes.InvalidRequestCode,
@@ -189,35 +192,37 @@ namespace SimpleAuth.Api.Authorization.Common
                             authorizationParameter.State);
                 }
 
-                string jwsToken;
-                if (_jwtParser.IsJweToken(token))
-                {
-                    jwsToken = await _jwtParser.DecryptAsync(token).ConfigureAwait(false);
-                    if (string.IsNullOrWhiteSpace(jwsToken))
-                    {
-                        throw new SimpleAuthExceptionWithState(
-                            ErrorCodes.InvalidRequestCode,
-                            ErrorDescriptions.TheIdTokenHintParameterCannotBeDecrypted,
-                            authorizationParameter.State);
-                    }
-                }
-                else
-                {
-                    jwsToken = token;
-                }
+                var client = await _clientStore.GetById(authorizationParameter.ClientId).ConfigureAwait(false);
+                handler.ValidateToken(token, client.CreateValidationParameters(issuerName), out var securityToken);
+                var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
+                //string jwsToken;
+                //if (token.IsJweToken())
+                //{
 
-                var jwsPayload = await _jwtParser.UnSignAsync(jwsToken).ConfigureAwait(false);
-                if (jwsPayload == null)
-                {
-                    throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidRequestCode,
-                        ErrorDescriptions.TheSignatureOfIdTokenHintParameterCannotBeChecked,
-                        authorizationParameter.State);
-                }
+                //    // jwsToken = await _jwtParser.DecryptAsync(token).ConfigureAwait(false);
+                //    if (string.IsNullOrWhiteSpace(jwsToken))
+                //    {
+                //        throw new SimpleAuthExceptionWithState(
+                //            ErrorCodes.InvalidRequestCode,
+                //            ErrorDescriptions.TheIdTokenHintParameterCannotBeDecrypted,
+                //            authorizationParameter.State);
+                //    }
+                //}
+                //else
+                //{
+                //    jwsToken = token;
+                //}
 
-                if (jwsPayload.Audiences == null
-                    || !jwsPayload.Audiences.Any()
-                    || !jwsPayload.Audiences.Contains(issuerName))
+                //var jwsPayload = await _jwtParser.UnSignAsync(jwsToken).ConfigureAwait(false);
+                //if (jwsPayload == null)
+                //{
+                //    throw new SimpleAuthExceptionWithState(
+                //        ErrorCodes.InvalidRequestCode,
+                //        ErrorDescriptions.TheSignatureOfIdTokenHintParameterCannotBeChecked,
+                //        authorizationParameter.State);
+                //}
+
+                if (jwsPayload?.Aud == null || !jwsPayload.Aud.Contains(issuerName))
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidRequestCode,
@@ -226,7 +231,7 @@ namespace SimpleAuth.Api.Authorization.Common
                 }
 
                 var currentSubject = string.Empty;
-                var expectedSubject = jwsPayload.GetStringClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject);
+                var expectedSubject = jwsPayload.GetClaimValue(JwtConstants.StandardResourceOwnerClaimNames.Subject);
                 if (claimsPrincipal != null && claimsPrincipal.IsAuthenticated())
                 {
                     currentSubject = claimsPrincipal.GetSubject();

@@ -99,7 +99,7 @@ namespace SimpleAuth.Validators
             }
 
             var codeChallenge = codeVerifier.ToSha256SimplifiedBase64(Encoding.ASCII);
-            //var hashed = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes(codeVerifier));
+            //var hashed = SHA256.CreateJwk().ComputeHash(Encoding.ASCII.GetBytes(codeVerifier));
             //var codeChallenge = hashed.ToBase64Simplified();
             return code.CodeChallenge == codeChallenge;
         }

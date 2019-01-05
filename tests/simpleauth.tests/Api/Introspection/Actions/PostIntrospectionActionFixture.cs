@@ -15,6 +15,7 @@
 namespace SimpleAuth.Tests.Api.Introspection.Actions
 {
     using System;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
     using Errors;
@@ -29,6 +30,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
     using SimpleAuth.Authenticate;
     using SimpleAuth.Validators;
     using Xunit;
+    using JwtConstants = SimpleAuth.JwtConstants;
 
     public class PostIntrospectionActionFixture
     {
@@ -56,7 +58,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
                .Returns(Task.FromResult(new AuthenticationResult(null, null)));
 
                         var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _postIntrospectionAction.Execute(parameter, null, null)).ConfigureAwait(false);
-            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
         }
 
         [Fact]
@@ -76,7 +78,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
                         var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _postIntrospectionAction.Execute(parameter, null, null)).ConfigureAwait(false);
-            Assert.True(exception.Code == ErrorCodes.InvalidToken);
+            Assert.Equal(ErrorCodes.InvalidToken, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.TheTokenIsNotValid);
         }
 
@@ -100,7 +102,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             {
                 ClientId = clientId
             }, null);
-            var idtp = new JwsPayload
+            var idtp = new JwtPayload
             {
                 { JwtConstants.StandardResourceOwnerClaimNames.Subject, subject },
                 { StandardClaimNames.Audiences, audiences }
@@ -150,7 +152,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             var grantedToken = new GrantedToken
             {
                 ClientId = clientId,
-                IdTokenPayLoad = new JwsPayload
+                IdTokenPayLoad = new JwtPayload
                 {
                     {
                         JwtConstants.StandardResourceOwnerClaimNames.Subject,

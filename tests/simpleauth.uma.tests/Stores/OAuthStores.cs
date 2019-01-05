@@ -3,6 +3,7 @@
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using System.Collections.Generic;
+    using Microsoft.IdentityModel.Tokens;
 
     public static class OAuthStores
     {
@@ -56,7 +57,7 @@
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = null,
+                    //LogoUri = null,
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -77,7 +78,8 @@
                     {
                         ResponseTypeNames.Token
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    JsonWebKeys = "verylongsecretkey".CreateSignatureJwk().ToSet(),
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, //"RS256",
                     ApplicationType = ApplicationTypes.native
                 },
                 // Anonymous.
@@ -94,7 +96,7 @@
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = null,
+                    //LogoUri = null,
                     AllowedScopes = new List<Scope> { },
                     GrantTypes = new List<GrantType>
                     {

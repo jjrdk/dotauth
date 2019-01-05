@@ -154,7 +154,7 @@ namespace SimpleAuth.Server.Extensions
         }
 
         /// <summary>
-        /// Create a redirection HTTP response message based on the response mode.
+        /// CreateJwk a redirection HTTP response message based on the response mode.
         /// </summary>
         /// <param name="controller"></param>
         /// <param name="uri"></param>

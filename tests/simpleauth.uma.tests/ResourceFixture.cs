@@ -19,9 +19,7 @@ namespace SimpleAuth.Uma.Tests
     using System.Threading.Tasks;
     using Client.Configuration;
     using Client.ResourceSet;
-    using Microsoft.Extensions.DependencyInjection;
     using Shared.DTOs;
-    using SimpleAuth;
     using SimpleAuth.Errors;
     using Xunit;
 

@@ -8,7 +8,6 @@
     using Services;
     using Shared.Models;
     using Shared.Repositories;
-    using Shared.Requests;
     using SimpleAuth;
     using SimpleAuth.Common;
     using SimpleAuth.Helpers;
@@ -96,7 +95,7 @@
                     _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null))
                 .ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
             Assert.True(exception.State == state);
         }

@@ -14,24 +14,32 @@
 
 namespace SimpleAuth.Uma.Policies
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using JwtToken;
     using Models;
     using Parameters;
     using SimpleAuth;
+    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
 
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy
     {
-        private readonly IJwtTokenParser _jwtTokenParser;
-        private readonly IJwksClient _jwksClient;
+        private readonly IClientStore _clientStore;
+        //private readonly IJwtTokenParser _jwtTokenParser;
+        //private readonly IJwksClient _jwksClient;
 
-        public BasicAuthorizationPolicy(IJwtTokenParser jwtTokenParser, IJwksClient jwksClient)
+        //public BasicAuthorizationPolicy(IJwksClient jwksClient)
+        //{
+        //    _jwtTokenParser = jwtTokenParser;
+        //    _jwksClient = jwksClient;
+        //}
+
+        public BasicAuthorizationPolicy(IClientStore clientStore)
         {
-            _jwtTokenParser = jwtTokenParser;
-            _jwksClient = jwksClient;
+            _clientStore = clientStore;
         }
 
         public async Task<AuthorizationPolicyResult> Execute(
@@ -96,7 +104,7 @@ namespace SimpleAuth.Uma.Policies
 
             // 3. Check claims are correct
             var claimAuthorizationResult =
-                await CheckClaims(authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
+                await CheckClaims(ticketLineParameter.ClientId, authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
             if (claimAuthorizationResult != null &&
                 claimAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
@@ -153,11 +161,12 @@ namespace SimpleAuth.Uma.Policies
             };
         }
 
-        private async Task<AuthorizationPolicyResult> CheckClaims(PolicyRule authorizationPolicy,
+        private async Task<AuthorizationPolicyResult> CheckClaims(
+            string clientId,
+            PolicyRule authorizationPolicy,
             ClaimTokenParameter claimTokenParameter)
         {
-            if (authorizationPolicy.Claims == null ||
-                !authorizationPolicy.Claims.Any())
+            if (authorizationPolicy.Claims == null || !authorizationPolicy.Claims.Any())
             {
                 return null;
             }
@@ -167,9 +176,16 @@ namespace SimpleAuth.Uma.Policies
                 return GetNeedInfoResult(authorizationPolicy.Claims, authorizationPolicy.OpenIdProvider);
             }
 
-            var idToken = claimTokenParameter.Token;
-            var keyset = await _jwksClient.ResolveAsync(new Uri(authorizationPolicy.OpenIdProvider)).ConfigureAwait(false);
-            var jwsPayload = _jwtTokenParser.UnSign(idToken, authorizationPolicy.OpenIdProvider, keyset);
+            var client = await _clientStore.GetById(clientId).ConfigureAwait(false);
+            //var idToken = claimTokenParameter.Token;
+            //var keyset = await _jwksClient.ResolveAsync(new Uri(authorizationPolicy.OpenIdProvider)).ConfigureAwait(false);
+            var handler = new JwtSecurityTokenHandler();
+            handler.ValidateToken(
+                claimTokenParameter.Token,
+                client.CreateValidationParameters(),
+                out var securityToken);
+            var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
+            //var jwsPayload = _jwtTokenParser.UnSign(idToken, authorizationPolicy.OpenIdProvider, keyset);
             if (jwsPayload == null)
             {
                 return new AuthorizationPolicyResult
@@ -180,8 +196,7 @@ namespace SimpleAuth.Uma.Policies
 
             foreach (var claim in authorizationPolicy.Claims)
             {
-                var payload = jwsPayload
-                    .FirstOrDefault(j => j.Key == claim.Type);
+                var payload = jwsPayload.FirstOrDefault(j => j.Key == claim.Type);
                 if (payload.Equals(default(KeyValuePair<string, object>)))
                 {
                     return new AuthorizationPolicyResult

@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Shared.Requests
 {
+    using System.IdentityModel.Tokens.Jwt;
     using System.Runtime.Serialization;
 
     [DataContract]
@@ -29,7 +30,7 @@ namespace SimpleAuth.Shared.Requests
         /// Gets or sets the sign alg
         /// </summary>
         [DataMember(Name = SharedConstants.CreateJwsRequestNames.Alg)]
-        public JwsAlg Alg { get; set; }
+        public string Alg { get; set; }
 
         /// <summary>
         /// Gets or sets the JWKS URL
@@ -41,6 +42,6 @@ namespace SimpleAuth.Shared.Requests
         /// Gets or sets the Payload
         /// </summary>
         [DataMember(Name = SharedConstants.CreateJwsRequestNames.Payload)]
-        public JwsPayload Payload { get; set; }
+        public JwtPayload Payload { get; set; }
     }
 }

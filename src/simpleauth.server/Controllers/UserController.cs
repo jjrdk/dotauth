@@ -128,7 +128,7 @@
                 return await GetEditView(authenticatedUser).ConfigureAwait(false);
             }
 
-            // 2. Create a new user if he doesn't exist or update the credentials.
+            // 2. CreateJwk a new user if he doesn't exist or update the credentials.
             //var resourceOwner = await _getUserOperation.Execute(authenticatedUser).ConfigureAwait(false);
             var subject = authenticatedUser.GetSubject();
             await _updateUserCredentialsOperation.Execute(subject, viewModel.Password).ConfigureAwait(false);
@@ -393,7 +393,7 @@
                                         ? new List<string>()
                                         : scopes.Select(g => g.Description).ToList(),
                                     AllowedIndividualClaims = claims ?? new List<string>(),
-                                    LogoUri = client?.LogoUri?.AbsoluteUri,
+                                    //LogoUri = client?.LogoUri?.AbsoluteUri,
                                     PolicyUri = client?.PolicyUri?.AbsoluteUri,
                                     TosUri = client?.TosUri?.AbsoluteUri
                                 });

@@ -45,7 +45,7 @@
 //                ExportPolicy = CngExportPolicies.None
 //            };
 
-//            var cnk = CngKey.Create(CngAlgorithm.ECDsaP256, null, keyCreationParameter);
+//            var cnk = CngKey.CreateJwk(CngAlgorithm.ECDsaP256, null, keyCreationParameter);
 //            var isExceptionRaised = false;
 //            try
 //            {
@@ -68,7 +68,7 @@
 //                ExportPolicy = CngExportPolicies.AllowPlaintextExport
 //            };
 
-//            var cnk = CngKey.Create(CngAlgorithm.ECDsaP256, null, keyCreationParameter);
+//            var cnk = CngKey.CreateJwk(CngAlgorithm.ECDsaP256, null, keyCreationParameter);
 
 //            //            var result = _cngKeySerializer.SerializeCngKeyWithPrivateKey(cnk);
 
@@ -96,7 +96,7 @@
 //                ExportPolicy = CngExportPolicies.AllowPlaintextExport
 //            };
 
-//            var cnk = CngKey.Create(CngAlgorithm.ECDsaP256, null, keyCreationParameter);
+//            var cnk = CngKey.CreateJwk(CngAlgorithm.ECDsaP256, null, keyCreationParameter);
 //            var serializedXml = _cngKeySerializer.SerializeCngKeyWithPrivateKey(cnk);
 
 //            //            var result = _cngKeySerializer.DeserializeCngKeyWithPrivateKey(serializedXml);
@@ -125,7 +125,7 @@
 //                ExportPolicy = CngExportPolicies.AllowPlaintextExport
 //            };
 
-//            var cnk = CngKey.Create(CngAlgorithm.ECDsaP256, null, keyCreationParameter);
+//            var cnk = CngKey.CreateJwk(CngAlgorithm.ECDsaP256, null, keyCreationParameter);
 
 //            //            var result = _cngKeySerializer.SerializeCngKeyWithPublicKey(cnk);
 
@@ -154,7 +154,7 @@
 //                ExportPolicy = CngExportPolicies.None
 //            };
 
-//            var cnk = CngKey.Create(CngAlgorithm.ECDsaP521, null, keyCreationParameter);
+//            var cnk = CngKey.CreateJwk(CngAlgorithm.ECDsaP521, null, keyCreationParameter);
 
 //            var serialized = _cngKeySerializer.SerializeCngKeyWithPublicKey(cnk);
 

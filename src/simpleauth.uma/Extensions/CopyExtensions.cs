@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
     using Models;
 
     public static class CopyExtensions
@@ -41,13 +42,7 @@
                 Scopes = policyRule.Scopes == null ? new List<string>() : policyRule.Scopes.ToList(),
                 Script = policyRule.Script,
                 OpenIdProvider = policyRule.OpenIdProvider,
-                Claims = policyRule.Claims == null ? new List<Claim>() : policyRule.Claims.Select(c =>
-                    new Claim
-                    {
-                        Type = c.Type,
-                        Value = c.Value
-                    }
-                ).ToList()
+                Claims = policyRule.Claims == null ? new List<Claim>() : policyRule.Claims.ToList()
             };
         }
     }

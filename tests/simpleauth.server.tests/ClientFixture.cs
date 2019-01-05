@@ -1,14 +1,13 @@
 ﻿namespace SimpleAuth.Server.Tests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Errors;
     using Manager.Client.Clients;
     using Shared;
     using Shared.Models;
     using Shared.Requests;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class ClientFixture //: IClassFixture<TestManagerServerFixture>
@@ -49,11 +48,12 @@
                     new Uri(OpenidmanagerConfiguration),
                     new Client
                     {
-                        AllowedScopes = new[] {new Scope {Name = "openid"}},
+                        JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                        AllowedScopes = new[] { new Scope { Name = "openid" } },
                         ClientId = "test",
                         ClientName = "name",
-                        RedirectionUrls = new[] {new Uri("http://localhost#fragment")},
-                        RequestUris = new[] {new Uri("https://localhost")}
+                        RedirectionUrls = new[] { new Uri("http://localhost#fragment") },
+                        RequestUris = new[] { new Uri("https://localhost") }
                     },
                     null)
                 .ConfigureAwait(false);
@@ -63,48 +63,6 @@
             Assert.Equal("The redirect_uri http://localhost/#fragment cannot contain fragment",
                 result.Error.ErrorDescription);
         }
-
-        //[Fact]
-        //public async Task When_Add_User_And_Redirect_Uri_Is_Not_Valid_And_Client_Is_Native_Then_Error_Is_Returned()
-        //{
-        //    InitializeFakeObjects();
-
-        //    var result = await _openidClients.ResolveAdd(
-        //            new Uri("http://localhost:5000/.well-known/openid-configuration"),
-        //            new Client
-        //            {
-        //                RedirectionUrls = new List<string> { "invalid_redirect_uri" },
-        //                ApplicationType = ApplicationTypes.native
-        //            },
-        //            null)
-        //        .ConfigureAwait(false);
-
-        //    Assert.NotNull(result);
-        //    Assert.True(result.ContainsError);
-        //    Assert.Equal("invalid_redirect_uri", result.Error.Error);
-        //    Assert.Equal("the redirect_uri invalid_redirect_uri is not well formed", result.Error.ErrorDescription);
-        //}
-
-        //[Fact]
-        //public async Task When_Add_User_And_And_Logo_Uri_Is_Not_Valid_Then_Error_Is_Returned()
-        //{
-        //    InitializeFakeObjects();
-
-        //    var result = await _openidClients.ResolveAdd(
-        //            new Uri("http://localhost:5000/.well-known/openid-configuration"),
-        //            new Client
-        //            {
-        //                RedirectUris = new List<string> { "http://localhost" },
-        //                LogoUri = "logo_uri"
-        //            },
-        //            null)
-        //        .ConfigureAwait(false);
-
-        //    Assert.NotNull(result);
-        //    Assert.True(result.ContainsError);
-        //    Assert.Equal("invalid_client_metadata", result.Error.Error);
-        //    Assert.Equal("the parameter logo_uri is not correct", result.Error.ErrorDescription);
-        //}
 
         [Fact]
         public async Task When_Update_And_Pass_No_Parameter_Then_Error_Is_Returned()
@@ -132,8 +90,9 @@
             InitializeFakeObjects();
             var client = new Client
             {
-                AllowedScopes = new[] {new Scope {Name = "openid"}},
-                RequestUris = new[] {new Uri("https://localhost"),},
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                AllowedScopes = new[] { new Scope { Name = "openid" } },
+                RequestUris = new[] { new Uri("https://localhost"), },
                 ApplicationType = ApplicationTypes.web,
                 ClientName = "client_name",
                 ClientUri = new Uri("http://clienturi.com"),
@@ -142,16 +101,16 @@
                     "contact"
                 },
                 DefaultAcrValues = "sms",
-                DefaultMaxAge = 10,
+                //DefaultMaxAge = 10,
                 GrantTypes = new List<GrantType>
                 {
                     GrantType.authorization_code,
                     GrantType.@implicit,
                     GrantType.refresh_token
                 },
-                RedirectionUrls = new[] {new Uri("http://localhost")},
-                PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback")},
-                LogoUri = new Uri("http://logouri.com")
+                RedirectionUrls = new[] { new Uri("http://localhost") },
+                PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+                //LogoUri = new Uri("http://logouri.com")
             };
             var addClientResult = await _openidClients.ResolveAdd(
                     new Uri(OpenidmanagerConfiguration),
@@ -159,7 +118,7 @@
                     null)
                 .ConfigureAwait(false);
             client = addClientResult.Content;
-            client.AllowedScopes = new[] {new Scope {Name = "not_valid"}};
+            client.AllowedScopes = new[] { new Scope { Name = "not_valid" } };
             var result = await _openidClients.ResolveUpdate(
                     new Uri(OpenidmanagerConfiguration),
                     client,
@@ -206,48 +165,50 @@
         public async Task When_Add_Client_Then_Informations_Are_Correct()
         {
             InitializeFakeObjects();
+            var client = new Client
+            {
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                AllowedScopes = new[] { new Scope { Name = "openid" } },
+                ApplicationType = ApplicationTypes.web,
+                ClientName = "client_name",
+                IdTokenSignedResponseAlg = "RS256",
+                IdTokenEncryptedResponseAlg = "RSA1_5",
+                IdTokenEncryptedResponseEnc = "A128CBC-HS256",
+                UserInfoSignedResponseAlg = "RS256",
+                UserInfoEncryptedResponseAlg = "RSA1_5",
+                UserInfoEncryptedResponseEnc = "A128CBC-HS256",
+                RequestObjectSigningAlg = "RS256",
+                RequestObjectEncryptionAlg = "RSA1_5",
+                RequestObjectEncryptionEnc = "A128CBC-HS256",
+                TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                InitiateLoginUri = new Uri("https://initloginuri"),
+                ClientUri = new Uri("http://clienturi.com"),
+                Contacts = new[]
+                {
+                    "contact"
+                },
+                DefaultAcrValues = "sms",
+                //DefaultMaxAge = 10,
+                GrantTypes = new[]
+                {
+                    GrantType.authorization_code,
+                    GrantType.@implicit,
+                    GrantType.refresh_token
+                },
+                ResponseTypes = new[]
+                {
+                    ResponseTypeNames.Code,
+                    ResponseTypeNames.IdToken,
+                    ResponseTypeNames.Token
+                },
+                RequestUris = new[] { new Uri("https://localhost"), },
+                RedirectionUrls = new[] { new Uri("http://localhost"), },
+                PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback"), },
+                //LogoUri = new Uri("http://logouri.com")
+            };
             var result = await _openidClients.ResolveAdd(
                     new Uri(OpenidmanagerConfiguration),
-                    new Client
-                    {
-                        AllowedScopes = new[] {new Scope {Name = "openid"}},
-                        ApplicationType = ApplicationTypes.web,
-                        ClientName = "client_name",
-                        IdTokenSignedResponseAlg = "RS256",
-                        IdTokenEncryptedResponseAlg = "RSA1_5",
-                        IdTokenEncryptedResponseEnc = "A128CBC-HS256",
-                        UserInfoSignedResponseAlg = "RS256",
-                        UserInfoEncryptedResponseAlg = "RSA1_5",
-                        UserInfoEncryptedResponseEnc = "A128CBC-HS256",
-                        RequestObjectSigningAlg = "RS256",
-                        RequestObjectEncryptionAlg = "RSA1_5",
-                        RequestObjectEncryptionEnc = "A128CBC-HS256",
-                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                        InitiateLoginUri = new Uri("https://initloginuri"),
-                        ClientUri = new Uri("http://clienturi.com"),
-                        Contacts = new List<string>
-                        {
-                            "contact"
-                        },
-                        DefaultAcrValues = "sms",
-                        DefaultMaxAge = 10,
-                        GrantTypes = new List<GrantType>
-                        {
-                            GrantType.authorization_code,
-                            GrantType.@implicit,
-                            GrantType.refresh_token
-                        },
-                        ResponseTypes = new[]
-                        {
-                            ResponseTypeNames.Code,
-                            ResponseTypeNames.IdToken,
-                            ResponseTypeNames.Token
-                        },
-                        RequestUris = new[] {new Uri("https://localhost"),},
-                        RedirectionUrls = new[] {new Uri("http://localhost"),},
-                        PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback"),},
-                        LogoUri = new Uri("http://logouri.com")
-                    },
+                    client,
                     null)
                 .ConfigureAwait(false);
 
@@ -262,8 +223,8 @@
             Assert.Equal(ApplicationTypes.web, newClient.Content.ApplicationType);
             Assert.Equal("client_name", newClient.Content.ClientName);
             Assert.Equal(new Uri("http://clienturi.com"), newClient.Content.ClientUri);
-            Assert.Equal(new Uri("http://logouri.com"), newClient.Content.LogoUri);
-            Assert.Equal(10, newClient.Content.DefaultMaxAge);
+            //Assert.Equal(new Uri("http://logouri.com"), newClient.Content.LogoUri);
+            //Assert.Equal(10, newClient.Content.DefaultMaxAge);
             Assert.Equal("sms", newClient.Content.DefaultAcrValues);
             Assert.Single(newClient.Content.Contacts);
             Assert.Single(newClient.Content.RedirectionUrls);
@@ -278,7 +239,8 @@
             InitializeFakeObjects();
             var client = new Client
             {
-                AllowedScopes = new[] {new Scope {Name = "openid"}},
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                AllowedScopes = new[] { new Scope { Name = "openid" } },
                 ApplicationType = ApplicationTypes.web,
                 ClientName = "client_name",
                 ClientUri = new Uri("http://clienturi.com"),
@@ -287,17 +249,17 @@
                     "contact"
                 },
                 DefaultAcrValues = "sms",
-                DefaultMaxAge = 10,
+                // DefaultMaxAge = 10,
                 GrantTypes = new[]
                 {
                     GrantType.authorization_code,
                     GrantType.@implicit,
                     GrantType.refresh_token
                 },
-                RequestUris = new[] {new Uri("https://localhost")},
-                RedirectionUrls = new[] {new Uri("http://localhost")},
-                PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback")},
-                LogoUri = new Uri("http://logouri.com")
+                RequestUris = new[] { new Uri("https://localhost") },
+                RedirectionUrls = new[] { new Uri("http://localhost") },
+                PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+                //LogoUri = new Uri("http://logouri.com")
             };
 
             var addClientResult = await _openidClients.ResolveAdd(
@@ -340,7 +302,8 @@
                     new Uri(OpenidmanagerConfiguration),
                     new Client
                     {
-                        AllowedScopes = new[] {new Scope {Name = "openid"}},
+                        JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                        AllowedScopes = new[] { new Scope { Name = "openid" } },
                         ApplicationType = ApplicationTypes.web,
                         ClientName = "client_name",
                         ClientUri = new Uri("http://clienturi.com"),
@@ -349,17 +312,17 @@
                             "contact"
                         },
                         DefaultAcrValues = "sms",
-                        DefaultMaxAge = 10,
+                        //DefaultMaxAge = 10,
                         GrantTypes = new List<GrantType>
                         {
                             GrantType.authorization_code,
                             GrantType.@implicit,
                             GrantType.refresh_token
                         },
-                        RequestUris = new[] {new Uri("https://localhost"),},
-                        RedirectionUrls = new[] {new Uri("http://localhost")},
-                        PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback")},
-                        LogoUri = new Uri("http://logouri.com")
+                        RequestUris = new[] { new Uri("https://localhost"), },
+                        RedirectionUrls = new[] { new Uri("http://localhost") },
+                        PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+                        //LogoUri = new Uri("http://logouri.com")
                     },
                     null)
                 .ConfigureAwait(false);
@@ -381,8 +344,8 @@
                     new Uri(OpenidmanagerConfiguration),
                     new Client
                     {
-                        AllowedScopes = new[] {new Scope {Name = "openid"}},
-                        RequestUris = new[] {new Uri("https://localhost"),},
+                        AllowedScopes = new[] { new Scope { Name = "openid" } },
+                        RequestUris = new[] { new Uri("https://localhost"), },
                         ApplicationType = ApplicationTypes.web,
                         ClientName = "client_name",
                         IdTokenSignedResponseAlg = "RS256",
@@ -402,7 +365,7 @@
                             "contact"
                         },
                         DefaultAcrValues = "sms",
-                        DefaultMaxAge = 10,
+                        //DefaultMaxAge = 10,
                         GrantTypes = new List<GrantType>
                         {
                             GrantType.authorization_code,
@@ -415,9 +378,10 @@
                             ResponseTypeNames.IdToken,
                             ResponseTypeNames.Token
                         },
-                        RedirectionUrls = new[] {new Uri("http://localhost")},
-                        PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback")},
-                        LogoUri = new Uri("http://logouri.com")
+                        JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                        RedirectionUrls = new[] { new Uri("http://localhost") },
+                        PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+                        //LogoUri = new Uri("http://logouri.com")
                     },
                     null)
                 .ConfigureAwait(false);
@@ -432,7 +396,6 @@
                     null)
                 .ConfigureAwait(false);
 
-            Assert.NotNull(searchResult);
             Assert.False(searchResult.ContainsError);
             Assert.Single(searchResult.Content.Content);
         }

@@ -1,18 +1,19 @@
 ﻿namespace SimpleAuth.Tests.Validators
 {
+    using Errors;
+    using Exceptions;
+    using Fake;
+    using Helpers;
+    using Microsoft.IdentityModel.Tokens;
+    using Repositories;
+    using Shared;
+    using Shared.Models;
+    using SimpleAuth;
     using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Errors;
-    using Exceptions;
-    using Fake;
-    using Repositories;
-    using Shared;
-    using Shared.Models;
-    using Shared.Requests;
-    using SimpleAuth;
     using Xunit;
 
     public sealed class ClientFactoryFixture
@@ -34,7 +35,7 @@
             InitializeFakeObjects();
             var parameter = new Client
             {
-                RedirectionUrls = new[]{new Uri("https://localhost"), },
+                RedirectionUrls = new[] { new Uri("https://localhost"), },
                 AllowedScopes = new[] { new Scope { Name = "test" } },
                 RequestUris = null
             };
@@ -69,6 +70,7 @@
             var localhost = "http://localhost/#localhost";
             var parameter = new Client
             {
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 RedirectionUrls = new List<Uri>
                 {
                     new Uri(localhost)
@@ -88,17 +90,19 @@
             InitializeFakeObjects();
             var parameter = new Client
             {
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 RedirectionUrls = new List<Uri>
                 {
-                    new Uri("https://google.fr")
+                    new Uri("https://google.com")
                 },
+                ResponseTypes = new string[0],
                 AllowedScopes = new[] { new Scope { Name = "test" } },
                 RequestUris = new[] { new Uri("https://localhost"), }
             };
 
             parameter = await _factory.Build(parameter).ConfigureAwait(false);
 
-            Assert.True(parameter.ResponseTypes.Count == 1);
+            Assert.Single(parameter.ResponseTypes);
             Assert.Contains(ResponseTypeNames.Code, parameter.ResponseTypes);
         }
 
@@ -108,9 +112,10 @@
             InitializeFakeObjects();
             var parameter = new Client
             {
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 RedirectionUrls = new List<Uri>
                 {
-                    new Uri("https://google.fr")
+                    new Uri("https://google.com")
                 },
                 AllowedScopes = new[] { new Scope { Name = "test" } },
                 RequestUris = new[] { new Uri("https://localhost"), }
@@ -129,111 +134,19 @@
             InitializeFakeObjects();
             var parameter = new Client
             {
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 RedirectionUrls = new List<Uri>
                 {
-                    new Uri("https://google.fr")
+                    new Uri("https://google.com")
                 },
                 AllowedScopes = new[] { new Scope { Name = "test" } },
-                RequestUris = new[]{new Uri("https://localhost"), }
+                RequestUris = new[] { new Uri("https://localhost"), }
             };
 
             parameter = await _factory.Build(parameter).ConfigureAwait(false);
 
             Assert.NotNull(parameter);
             Assert.Equal(ApplicationTypes.web, parameter.ApplicationType);
-        }
-
-        //[Fact(Skip = "No longer valid test case")]
-        //public async Task When_Logo_Uri_Is_Not_Valid_Then_Exception_Is_Thrown()
-        //{
-        //    InitializeFakeObjects();
-        //    var parameter = new Client
-        //    {
-        //        RedirectionUrls = new List<Uri>
-        //        {
-        //            new Uri("https://google.fr")
-        //        },
-        //        LogoUri = new Uri("https://logo_uri")
-        //    };
-
-        //    var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
-        //    Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-        //    Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.LogoUri));
-        //}
-
-        //[Fact(Skip = "No longer valid test case")]
-        //public async Task When_Client_Uri_Is_Not_Valid_Then_Exception_Is_Thrown()
-        //{
-        //    InitializeFakeObjects();
-        //    var parameter = new Client
-        //    {
-        //        RedirectionUrls = new List<Uri>
-        //        {
-        //            new Uri("https://google.fr")
-        //        },
-        //        ClientUri = new Uri("https://client_uri")
-        //    };
-
-        //    var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
-        //    Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-        //    Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.ClientUri));
-        //}
-
-        //[Fact(Skip = "No longer valid test case")]
-        //public async Task When_Tos_Uri_Is_Not_Valid_Then_Exception_Is_Thrown()
-        //{
-        //    InitializeFakeObjects();
-        //    var parameter = new Client
-        //    {
-        //        RedirectionUrls = new List<Uri>
-        //        {
-        //            new Uri("https://google.fr")
-        //        },
-        //        TosUri = new Uri("https://tos_uri/")
-        //    };
-
-        //    var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
-        //    Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-        //    Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.TosUri));
-        //}
-
-        [Fact]
-        public async Task When_Jwks_Uri_Is_Not_Valid_Then_Exception_Is_Thrown()
-        {
-            InitializeFakeObjects();
-            var parameter = new Client
-            {
-                RedirectionUrls = new List<Uri>
-                {
-                    new Uri("https://google.fr")
-                },
-                JwksUri = new Uri("https://jwks_uri"),
-                RequestUris = new[] { new Uri("https://localhost"), }
-            };
-
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(string.Format(ErrorDescriptions.TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed, SharedConstants.ClientNames.JwksUri), ex.Message);
-        }
-
-        [Fact]
-        public async Task When_Set_Jwks_And_Jwks_Uri_Then_Exception_Is_Thrown()
-        {
-            InitializeFakeObjects();
-            var parameter = new Client
-            {
-                RedirectionUrls = new List<Uri>
-                {
-                    new Uri("https://google.fr")
-                },
-                JwksUri = new Uri("http://localhost/identity"),
-                JsonWebKeys = new List<JsonWebKey>(),
-                RequestUris = new[] { new Uri("https://localhost"), }
-            };
-
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
-            Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-            Assert.True(ex.Message == ErrorDescriptions.TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed);
         }
 
         [Fact]
@@ -244,7 +157,7 @@
             {
                 RedirectionUrls = new List<Uri>
                 {
-                    new Uri("https://google.fr")
+                    new Uri("https://google.com")
                 },
                 SectorIdentifierUri = new Uri("https://sector_identifier_uri/")
             };
@@ -262,7 +175,7 @@
             {
                 RedirectionUrls = new List<Uri>
                 {
-                    new Uri("https://google.fr")
+                    new Uri("https://google.com")
                 },
                 SectorIdentifierUri = new Uri("http://localhost/identity")
             };
@@ -280,7 +193,7 @@
             {
                 RedirectionUrls = new List<Uri>
                 {
-                    new Uri("https://google.fr")
+                    new Uri("https://google.com")
                 },
                 SectorIdentifierUri = new Uri("https://localhost/identity")
             };
@@ -303,7 +216,7 @@
             {
                 RedirectionUrls = new List<Uri>
                 {
-                    new Uri("https://google.fr")
+                    new Uri("https://google.com")
                 },
                 SectorIdentifierUri = new Uri("https://localhost/identity")
             };
@@ -334,9 +247,9 @@
             {
                 RedirectionUrls = new List<Uri>
                 {
-                    new Uri("https://google.fr")
+                    new Uri("https://google.com")
                 },
-                IdTokenEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256
+                IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
@@ -350,17 +263,19 @@
             InitializeFakeObjects();
             var parameter = new Client
             {
+                AllowedScopes = new[] { new Scope { Name = "test" } },
+                RequestUris = new[] { new Uri("https://localhost"), },
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 RedirectionUrls = new List<Uri>
                 {
-                    new Uri("https://google.fr")
+                    new Uri("https://google.com")
                 },
-                IdTokenEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256,
-                IdTokenEncryptedResponseAlg = "not_correct"
+                IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
-            Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-            Assert.True(ex.Message == ErrorDescriptions.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
+            Assert.Equal(ErrorDescriptions.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified, ex.Message);
         }
 
         [Fact]
@@ -371,9 +286,9 @@
             {
                 RedirectionUrls = new List<Uri>
                 {
-                    new Uri("https://google.fr")
+                    new Uri("https://google.com")
                 },
-                UserInfoEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256
+                UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
@@ -389,15 +304,15 @@
             {
                 RedirectionUrls = new List<Uri>
                 {
-                    new Uri("https://google.fr")
+                    new Uri("https://google.com")
                 },
-                UserInfoEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256,
-                UserInfoEncryptedResponseAlg = "user_info_encrypted_response_alg_not_correct"
+                UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
+                //UserInfoEncryptedResponseAlg = "user_info_encrypted_response_alg_not_correct"
             };
 
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
-            Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-            Assert.True(ex.Message == ErrorDescriptions.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified);
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
+            Assert.Equal(ErrorDescriptions.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified, ex.Message);
         }
 
         [Fact]
@@ -408,9 +323,9 @@
             {
                 RedirectionUrls = new List<Uri>
                 {
-                    new Uri("https://google.fr")
+                    new Uri("https://google.com")
                 },
-                RequestObjectEncryptionEnc = JwtConstants.JweEncNames.A128CBC_HS256
+                RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
@@ -424,36 +339,21 @@
             InitializeFakeObjects();
             var parameter = new Client
             {
+                AllowedScopes = new[] { new Scope { Name = "test" } },
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                RequestUris = new[] { new Uri("https://localhost") },
                 RedirectionUrls = new List<Uri>
                 {
-                    new Uri("https://google.fr")
+                    new Uri("https://google.com")
                 },
-                RequestObjectEncryptionEnc = JwtConstants.JweEncNames.A128CBC_HS256,
-                RequestObjectEncryptionAlg = "request_object_encryption_alg_not_valid"
+                RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
+                //RequestObjectEncryptionAlg = "request_object_encryption_alg_not_valid"
             };
 
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
-            Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-            Assert.True(ex.Message == ErrorDescriptions.TheParameterRequestObjectEncryptionAlgMustBeSpecified);
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
+            Assert.Equal(ErrorDescriptions.TheParameterRequestObjectEncryptionAlgMustBeSpecified, ex.Message);
         }
-
-        //[Fact(Skip = "No longer valid test case")]
-        //public async Task When_InitiateLoginUri_Is_Not_Valid_Then_Exception_Is_Thrown()
-        //{
-        //    InitializeFakeObjects();
-        //    var parameter = new Client
-        //    {
-        //        RedirectionUrls = new List<Uri>
-        //        {
-        //            new Uri("https://google.fr")
-        //        },
-        //        InitiateLoginUri = new Uri("https://sector_identifier_uri")
-        //    };
-
-        //    var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
-        //    Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-        //    Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, ClientNames.InitiateLoginUri));
-        //}
 
         [Fact]
         public async Task When_InitiateLoginUri_Does_Not_Have_Https_Scheme_Then_Exception_Is_Thrown()
@@ -463,7 +363,7 @@
             {
                 RedirectionUrls = new List<Uri>
                 {
-                    new Uri("https://google.fr")
+                    new Uri("https://google.com")
                 },
                 InitiateLoginUri = new Uri("http://localhost/identity")
             };
@@ -472,27 +372,6 @@
             Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
             Assert.True(ex.Message == string.Format(ErrorDescriptions.ParameterIsNotCorrect, SharedConstants.ClientNames.InitiateLoginUri));
         }
-
-        //[Fact(Skip = "No longer valid test case")]
-        //public async Task When_Passing_One_Not_Valid_Request_Uri_Then_Exception_Is_Thrown()
-        //{
-        //    InitializeFakeObjects();
-        //    var parameter = new Client
-        //    {
-        //        RedirectionUrls = new List<Uri>
-        //        {
-        //            new Uri("https://google.fr")
-        //        },
-        //        RequestUris = new List<Uri>
-        //        {
-        //            new Uri("https://not_valid_uri")
-        //        }
-        //    };
-
-        //    var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter)).ConfigureAwait(false);
-        //    Assert.True(ex.Code == ErrorCodes.InvalidClientMetaData);
-        //    Assert.True(ex.Message == ErrorDescriptions.OneOfTheRequestUriIsNotValid);
-        //}
 
         [Fact]
         public async Task When_Passing_Valid_Request_Then_No_Exception_Is_Thrown()
@@ -506,13 +385,13 @@
                 },
                 AllowedScopes = new[] { new Scope { Name = "openid" } },
                 ApplicationType = ApplicationTypes.native,
-                JsonWebKeys = new List<JsonWebKey>(), //new JsonWebKeySet(),
-                IdTokenEncryptedResponseAlg = JwtConstants.JweAlgNames.A128KW,
-                IdTokenEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256,
-                UserInfoEncryptedResponseAlg = JwtConstants.JweAlgNames.A128KW,
-                UserInfoEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256,
-                RequestObjectEncryptionAlg = JwtConstants.JweAlgNames.A128KW,
-                RequestObjectEncryptionEnc = JwtConstants.JweEncNames.A128CBC_HS256,
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(), //new JsonWebKeySet(),
+                IdTokenEncryptedResponseAlg = SecurityAlgorithms.Aes128KW,
+                IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
+                UserInfoEncryptedResponseAlg = SecurityAlgorithms.Aes128KW,
+                UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
+                RequestObjectEncryptionAlg = SecurityAlgorithms.Aes128KW,
+                RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
                 RequestUris = new List<Uri>
                 {
                     new Uri("http://localhost")

@@ -14,16 +14,17 @@
 
 namespace SimpleAuth.Tests.Api.Clients.Actions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Net.Http;
-    using System.Threading.Tasks;
     using Exceptions;
+    using Helpers;
     using Moq;
     using Newtonsoft.Json;
     using Repositories;
     using Shared.Models;
     using Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class UpdateClientActionFixture
@@ -90,6 +91,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
             };
             var parameter = new Client
             {
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 ClientId = clientId,
                 AllowedScopes = new List<Scope>
                 {
@@ -99,7 +101,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
                     }
                 },
                 RequestUris = new[] { new Uri("https://localhost"), },
-                RedirectionUrls = new [] { new Uri("https://localhost") }
+                RedirectionUrls = new[] { new Uri("https://localhost") }
             };
             InitializeFakeObjects(new[] { client });
 
@@ -112,14 +114,17 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
                     }
                 }));
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _clientRepositoryMock.Update(parameter)).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _clientRepositoryMock.Update(parameter))
+                .ConfigureAwait(false);
 
             Assert.Equal("Unknown scopes: not_supported_scope", ex.Message);
         }
 
         private void InitializeFakeObjects(IReadOnlyCollection<Client> clients = null)
         {
-            _clientRepositoryMock = new DefaultClientRepository(clients ?? new Client[0], new HttpClient(), new DefaultScopeRepository());
+            _clientRepositoryMock = new DefaultClientRepository(clients ?? new Client[0],
+                new HttpClient(),
+                new DefaultScopeRepository());
             _scopeRepositoryStub = new Mock<IScopeRepository>();
         }
     }

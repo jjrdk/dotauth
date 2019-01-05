@@ -79,7 +79,7 @@
 //                Value = "new_value"
 //            };
 
-//            // ACT : Create group
+//            // ACT : CreateJwk group
 //            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
 //            var id = firstResult.Content["id"].ToString();
@@ -117,7 +117,7 @@
 //            const string baseUrl = "http://localhost:5555";
 ////            InitializeFakeObjects();
 
-//            // ACT : Create group
+//            // ACT : CreateJwk group
 //            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
 //            //            Assert.NotNull(firstResult);
@@ -138,7 +138,7 @@
 //            const string baseUrl = "http://localhost:5555";
 ////            InitializeFakeObjects();
 
-//            // ACT : Create group
+//            // ACT : CreateJwk group
 //            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
 //            var id = firstResult.Content["id"].ToString();
@@ -164,7 +164,7 @@
 //                    $"[{{\'{ScimConstants.MultiValueAttributeNames.Type}\' : \'group\',\'{ScimConstants.MultiValueAttributeNames.Value}\' : \'value\'}},{{\'{ScimConstants.MultiValueAttributeNames.Type}\' : \'group2\',\'{ScimConstants.MultiValueAttributeNames.Value}\' : \'value2\'}}]")
 //            };
 
-//            // ACT : Create group
+//            // ACT : CreateJwk group
 //            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
 //            var id = firstResult.Content["id"].ToString();
@@ -216,7 +216,7 @@
 //            const string baseUrl = "http://localhost:5555";
 ////            InitializeFakeObjects();
 
-//            // ACT : Create group
+//            // ACT : CreateJwk group
 //            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
 //            var id = firstResult.Content["id"].ToString();
@@ -257,7 +257,7 @@
 //                                     "' : 'value2'}]")
 //            };
 
-//            // ACT : Create group
+//            // ACT : CreateJwk group
 //            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
 
@@ -309,7 +309,7 @@
 //                Path = "members[type eq group2]"
 //            };
 
-//            // ACT : Create group
+//            // ACT : CreateJwk group
 //            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
 //            var id = firstResult.Content["id"].ToString();
@@ -365,7 +365,7 @@
 //                                     "' : 'value3'}]")
 //            };
 
-//            // ACT : Create group
+//            // ACT : CreateJwk group
 //            var firstResult = await _groupsClient.AddGroup(new Uri(baseUrl), "external_id").ConfigureAwait(false);
 
 //            var id = firstResult.Content["id"].ToString();

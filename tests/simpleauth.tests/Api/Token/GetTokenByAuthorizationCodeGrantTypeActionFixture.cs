@@ -17,6 +17,7 @@ namespace SimpleAuth.Tests.Api.Token
     using Errors;
     using Exceptions;
     using Logging;
+    using Microsoft.IdentityModel.Tokens;
     using Moq;
     using Parameters;
     using Shared;
@@ -28,6 +29,7 @@ namespace SimpleAuth.Tests.Api.Token
     using SimpleAuth.JwtToken;
     using System;
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Threading.Tasks;
     using Xunit;
 
@@ -76,7 +78,7 @@ namespace SimpleAuth.Tests.Api.Token
                         null,
                         null))
                 .ConfigureAwait(false);
-            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
         }
 
         [Fact]
@@ -104,7 +106,7 @@ namespace SimpleAuth.Tests.Api.Token
                         null,
                         null))
                 .ConfigureAwait(false);
-            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
             Assert.True(exception.Message ==
                         string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                             "id",
@@ -126,6 +128,7 @@ namespace SimpleAuth.Tests.Api.Token
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(new Client
                 {
+                    ResponseTypes = new string[0],
                     ClientId = "id",
                     GrantTypes = new List<GrantType>
                         {
@@ -140,11 +143,10 @@ namespace SimpleAuth.Tests.Api.Token
                         null,
                         null))
                 .ConfigureAwait(false);
-            Assert.True(exception.Code == ErrorCodes.InvalidClient);
-            Assert.True(exception.Message ==
-                        string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType,
-                            "id",
-                            ResponseTypeNames.Code));
+            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
+            Assert.Equal(
+                string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, "id", ResponseTypeNames.Code),
+                exception.Message);
         }
 
         [Fact]
@@ -183,7 +185,7 @@ namespace SimpleAuth.Tests.Api.Token
                         null,
                         null))
                 .ConfigureAwait(false);
-            Assert.True(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationCodeIsNotCorrect);
         }
 
@@ -281,7 +283,7 @@ namespace SimpleAuth.Tests.Api.Token
                         null,
                         null))
                 .ConfigureAwait(false);
-            Assert.True(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.True(exception.Message ==
                         string.Format(ErrorDescriptions.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
                             authorizationCodeGrantTypeParameter.ClientId));
@@ -470,9 +472,9 @@ namespace SimpleAuth.Tests.Api.Token
                     {
                         ResponseTypeNames.Code
                     },
-                IdTokenSignedResponseAlg = JwtConstants.JwsAlgNames.RS256,
-                IdTokenEncryptedResponseAlg = JwtConstants.JweAlgNames.RSA1_5,
-                IdTokenEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
+                IdTokenEncryptedResponseAlg = SecurityAlgorithms.RsaPKCS1,
+                IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             },
                 null);
             var authorizationCode = new AuthorizationCode
@@ -486,7 +488,7 @@ namespace SimpleAuth.Tests.Api.Token
                 ClientId = clientId,
                 AccessToken = accessToken,
                 IdToken = identityToken,
-                IdTokenPayLoad = new JwsPayload()
+                IdTokenPayLoad = new JwtPayload()
             };
 
             //_clientValidatorFake.Setup(c =>
@@ -501,8 +503,8 @@ namespace SimpleAuth.Tests.Api.Token
             _grantedTokenHelperStub.Setup(g => g.GetValidGrantedTokenAsync(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<JwsPayload>(),
-                    It.IsAny<JwsPayload>()))
+                    It.IsAny<JwtPayload>(),
+                    It.IsAny<JwtPayload>()))
                 .Returns(Task.FromResult(grantedToken));
 
             var r = await _getTokenByAuthorizationCodeGrantTypeAction
@@ -566,17 +568,17 @@ namespace SimpleAuth.Tests.Api.Token
             //.Returns(Task.FromResult((double)3000));
             //_clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<Uri>()))
             //    .Returns(new[] { new Uri("https://redirectUri") });
-            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateTokenAsync(It.IsAny<Client>(),
+            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateToken(It.IsAny<Client>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<IDictionary<string, object>>(),
-                    It.IsAny<JwsPayload>(),
-                    It.IsAny<JwsPayload>()))
+                    It.IsAny<JwtPayload>(),
+                    It.IsAny<JwtPayload>()))
                 .Returns(Task.FromResult(grantedToken));
             _grantedTokenHelperStub.Setup(g => g.GetValidGrantedTokenAsync(It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<JwsPayload>(),
-                    It.IsAny<JwsPayload>()))
+                    It.IsAny<JwtPayload>(),
+                    It.IsAny<JwtPayload>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             var result = await _getTokenByAuthorizationCodeGrantTypeAction

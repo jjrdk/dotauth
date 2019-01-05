@@ -14,75 +14,83 @@
 
 namespace SimpleAuth.Server.Tests
 {
-    using System.Net.Http;
-    using System.Security.Cryptography;
+    using Microsoft.IdentityModel.Tokens;
     using Moq;
     using Shared;
     using SimpleAuth;
+    using System.Net.Http;
+    using System.Security.Cryptography;
     using Twilio;
+
+    internal static class TestKeys
+    {
+        public const string SecretKey = "verysecretlongkey";
+        public const string SuperSecretKey = "verysecretlongkeyverysecretlongk";
+    }
 
     public class SharedContext
     {
         public SharedContext()
         {
-            var serializedRsa = string.Empty;
-            using (var provider = new RSACryptoServiceProvider())
-            {
-                serializedRsa = RsaExtensions.ToXmlString(provider, true);
-            }
-
-            SignatureKey = new JsonWebKey
-            {
-                Alg = AllAlg.RS256,
-                KeyOps = new []
-                {
-                    KeyOperations.Sign,
-                    KeyOperations.Verify
-                },
-                Kid = "1",
-                Kty = KeyType.RSA,
-                Use = Use.Sig,
-                SerializedKey = serializedRsa,
-            };
-            ModelSignatureKey = new JsonWebKey
-            {
-                Alg = AllAlg.RS256,
-                KeyOps = new []
-                {
-                    KeyOperations.Encrypt,
-                    KeyOperations.Decrypt
-                },
-                Kid = "2",
-                Kty = KeyType.RSA,
-                Use = Use.Sig,
-                SerializedKey = serializedRsa,
-            };
-            EncryptionKey = new JsonWebKey
-            {
-                Alg = AllAlg.RSA1_5,
-                KeyOps = new[]
-                {
-                    KeyOperations.Decrypt,
-                    KeyOperations.Encrypt
-                },
-                Kid = "3",
-                Kty = KeyType.RSA,
-                Use = Use.Enc,
-                SerializedKey = serializedRsa,
-            };
-            ModelEncryptionKey = new JsonWebKey
-            {
-                Alg = AllAlg.RSA1_5,
-                KeyOps = new[]
-                {
-                    KeyOperations.Encrypt,
-                    KeyOperations.Decrypt
-                },
-                Kid = "4",
-                Kty = KeyType.RSA,
-                Use = Use.Enc,
-                SerializedKey = serializedRsa,
-            };
+            SignatureKey = TestKeys.SecretKey.CreateSignatureJwk();
+            //new JsonWebKey
+            //{
+            //    Alg = SecurityAlgorithms.RsaSha256,
+            //    KeyOps = new[]
+            //    {
+            //        KeyOperations.Sign,
+            //        KeyOperations.Verify
+            //    },
+            //    Kid = "1",
+            //    Kty = KeyType.RSA,
+            //    Use = Use.Sig,
+            //    SerializedKey = serializedRsa,
+            //};
+            ModelSignatureKey = TestKeys.SecretKey.CreateSignatureJwk();
+            //    new JsonWebKey
+            //{
+            //    Alg = SecurityAlgorithms.RsaSha256,
+            //    KeyOps = new[]
+            //    {
+            //        KeyOperations.Encrypt,
+            //        KeyOperations.Decrypt
+            //    },
+            //    Kid = "2",
+            //    Kty = KeyType.RSA,
+            //    Use = Use.Sig,
+            //    SerializedKey = serializedRsa,
+            //};
+            EncryptionKey = TestKeys.SecretKey.CreateEncryptionJwk();
+            //    new JsonWebKey
+            //{
+            //    Alg = SecurityAlgorithms.RsaPKCS1,
+            //    KeyOps = new[]
+            //    {
+            //        KeyOperations.Decrypt,
+            //        KeyOperations.Encrypt
+            //    },
+            //    Kid = "3",
+            //    Kty = KeyType.RSA,
+            //    Use = Use.Enc,
+            //    SerializedKey = serializedRsa,
+            //};
+            ModelEncryptionKey = TestKeys.SuperSecretKey.CreateJwk(
+                JsonWebKeyUseNames.Enc,
+                KeyOperations.Decrypt,
+                KeyOperations.Encrypt);
+            //    new JsonWebKey
+            //{
+            //    Alg = SecurityAlgorithms.RsaPKCS1,
+            //    KeyOps = new[]
+            //    {
+            //        KeyOperations.Encrypt,
+            //        KeyOperations.Decrypt
+            //    },
+            //    Kid = "4",
+            //    Kty = KeyType.RSA,
+            //    Use = Use.Enc,
+            //    SerializedKey = serializedRsa,
+            //};
             ConfirmationCodeStore = new Mock<IConfirmationCodeStore>();
             TwilioClient = new Mock<ITwilioClient>();
         }

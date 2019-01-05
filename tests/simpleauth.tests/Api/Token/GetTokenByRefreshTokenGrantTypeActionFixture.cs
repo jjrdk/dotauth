@@ -16,13 +16,13 @@ namespace SimpleAuth.Tests.Api.Token
 {
     using System;
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Logging;
     using Moq;
     using Parameters;
-    using Shared;
     using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Api.Token.Actions;
@@ -155,7 +155,7 @@ namespace SimpleAuth.Tests.Api.Token
             var parameter = new RefreshTokenGrantTypeParameter();
             var grantedToken = new GrantedToken
             {
-                IdTokenPayLoad = new JwsPayload(),
+                IdTokenPayLoad = new JwtPayload(),
                 ClientId = "id"
             };
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
@@ -170,13 +170,13 @@ namespace SimpleAuth.Tests.Api.Token
                     null)));
             _tokenStoreStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
-            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(
+            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateToken(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<IDictionary<string, object>>(),
-                    It.IsAny<JwsPayload>(),
-                    It.IsAny<JwsPayload>()))
+                    It.IsAny<JwtPayload>(),
+                    It.IsAny<JwtPayload>()))
                 .Returns(Task.FromResult(grantedToken));
 
                         await _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null).ConfigureAwait(false);

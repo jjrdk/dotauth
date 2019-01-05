@@ -25,5 +25,6 @@ namespace SimpleAuth.Shared
         public static string CHash = "c_hash";
         public static string ClientId = "client_id";
         public static string Scopes = "scope";
+        public static string Subject = "sub";
     }
 }

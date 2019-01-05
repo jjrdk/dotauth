@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Client
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Net.Http;
-    using System.Threading.Tasks;
     using Errors;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -25,6 +21,10 @@ namespace SimpleAuth.Client
     using Results;
     using Shared;
     using Shared.Responses;
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using System.Threading.Tasks;
 
     internal class UserInfoClient : IUserInfoClient
     {
@@ -106,10 +106,22 @@ namespace SimpleAuth.Client
                 };
             }
 
+            if (!string.IsNullOrWhiteSpace(json))
+            {
+                return new GetUserInfoResult
+                {
+                    ContainsError = false,
+                    Content = string.IsNullOrWhiteSpace(json) ? null : JObject.Parse(json)
+                };
+            }
             return new GetUserInfoResult
             {
-                ContainsError = false,
-                Content = JObject.Parse(json)
+                ContainsError = true,
+                Error = new ErrorResponseWithState
+                {
+                    Error = "invalid_token",
+                    ErrorDescription = "Not a valid resource owner token"
+                }
             };
         }
     }

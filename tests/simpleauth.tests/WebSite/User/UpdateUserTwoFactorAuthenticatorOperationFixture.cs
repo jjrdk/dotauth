@@ -33,7 +33,7 @@
                         var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _updateUserTwoFactorAuthenticatorOperation.Execute("subject", "two_factor")).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InternalError);
+            Assert.Equal(ErrorCodes.InternalError, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.TheRoDoesntExist);
         }
 

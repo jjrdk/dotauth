@@ -23,9 +23,8 @@ namespace SimpleAuth.Common
     using Results;
     using Shared;
     using Shared.Models;
-    using Shared.Requests;
     using System;
-    using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Threading.Tasks;
 
@@ -110,7 +109,7 @@ namespace SimpleAuth.Common
                     userInformationPayload, idTokenPayload).ConfigureAwait(false);
                 if (grantedToken == null)
                 {
-                    grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(
+                    grantedToken = await _grantedTokenGeneratorHelper.GenerateToken(
                             client,
                             allowedTokenScopes,
                             issuerName,
@@ -244,7 +243,7 @@ namespace SimpleAuth.Common
             var hex = s.ToSha256Hash();
             //var bytes = Encoding.UTF8.GetBytes(s);
             //byte[] hash;
-            //using (var sha = SHA256.Create())
+            //using (var sha = SHA256.CreateJwk())
             //{
             //    hash = sha.ComputeHash(bytes);
             //}
@@ -262,23 +261,23 @@ namespace SimpleAuth.Common
         /// <param name="authorizationParameter"></param>
         /// <returns></returns>
         private async Task<string> GenerateIdToken(
-            JwsPayload jwsPayload,
+            JwtPayload jwsPayload,
             AuthorizationParameter authorizationParameter)
         {
             return await _clientHelper.GenerateIdTokenAsync(authorizationParameter.ClientId,
                 jwsPayload).ConfigureAwait(false);
         }
 
-        private async Task<JwsPayload> GenerateIdTokenPayload(
+        private async Task<JwtPayload> GenerateIdTokenPayload(
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter,
             string issuerName)
         {
-            JwsPayload jwsPayload;
+            JwtPayload jwsPayload;
             if (authorizationParameter.Claims != null &&
                 authorizationParameter.Claims.IsAnyIdentityTokenClaimParameter())
             {
-                jwsPayload = await _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(claimsPrincipal, authorizationParameter, Clone(authorizationParameter.Claims.IdToken), issuerName).ConfigureAwait(false);
+                jwsPayload = await _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(claimsPrincipal, authorizationParameter, authorizationParameter.Claims.IdToken, issuerName).ConfigureAwait(false);
             }
             else
             {
@@ -296,14 +295,14 @@ namespace SimpleAuth.Common
         /// <param name="claimsPrincipal"></param>
         /// <param name="authorizationParameter"></param>
         /// <returns></returns>
-        private async Task<JwsPayload> GenerateUserInformationPayload(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
+        private async Task<JwtPayload> GenerateUserInformationPayload(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
         {
-            JwsPayload jwsPayload;
+            JwtPayload jwsPayload;
             if (authorizationParameter.Claims != null &&
                 authorizationParameter.Claims.IsAnyUserInfoClaimParameter())
             {
                 jwsPayload = _jwtGenerator.GenerateFilteredUserInfoPayload(
-                    Clone(authorizationParameter.Claims.UserInfo),
+                    authorizationParameter.Claims.UserInfo,
                     claimsPrincipal,
                     authorizationParameter);
             }
@@ -318,13 +317,6 @@ namespace SimpleAuth.Common
         private static ResponseMode GetResponseMode(AuthorizationFlow authorizationFlow)
         {
             return CoreConstants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
-        }
-
-        private static List<ClaimParameter> Clone(List<ClaimParameter> claims)
-        {
-            var result = new List<ClaimParameter>();
-            claims.ForEach(result.Add);
-            return result;
         }
     }
 }

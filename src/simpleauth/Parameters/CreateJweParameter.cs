@@ -14,15 +14,13 @@
 
 namespace SimpleAuth.Parameters
 {
-    using Shared;
-
     public class CreateJweParameter
     {
         public string Jws { get; set; }
         public string Url { get; set; }
         public string Kid { get; set; }
-        public JweAlg Alg { get; set; }
-        public JweEnc Enc { get; set; }
+        public string Alg { get; set; }
+        public string Enc { get; set; }
         public string Password { get; set; }
     }
 }

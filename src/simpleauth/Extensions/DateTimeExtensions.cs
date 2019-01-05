@@ -18,30 +18,39 @@ namespace SimpleAuth.Extensions
 
     public static class DateTimeExtensions
     {
+        private static DateTime UnixStart;
+
+        static DateTimeExtensions()
+        {
+            UnixStart = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        }
+
         public static double ToUnix(this DateTime dateTime)
         {
-            var epochTicks = new TimeSpan(new DateTime(1970, 1, 1).Ticks);
+            var epochTicks = new TimeSpan(UnixStart.Ticks);
             var unixTicks = new TimeSpan(dateTime.Ticks) - epochTicks;
             return unixTicks.TotalSeconds;
         }
 
         public static DateTime ToDateTime(this double unixTime)
         {
-            var unixStart = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             var unixTimeStampInTicks = (long)(unixTime * TimeSpan.TicksPerSecond);
-            return new DateTime(unixStart.Ticks + unixTimeStampInTicks, DateTimeKind.Utc);
+            return new DateTime(UnixStart.Ticks + unixTimeStampInTicks, DateTimeKind.Utc);
         }
-		
+
         public static DateTime ConvertFromUnixTimestamp(this double timestamp)
         {
-            var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            return origin.AddSeconds(timestamp);
+            return UnixStart.AddSeconds(timestamp);
+        }
+
+        public static DateTime ConvertFromUnixTimestamp(this int timestamp)
+        {
+            return UnixStart.AddSeconds(timestamp);
         }
 
         public static double ConvertToUnixTimestamp(this DateTime date)
         {
-            var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            var diff = date.ToUniversalTime() - origin;
+            var diff = date.ToUniversalTime() - UnixStart;
             return Math.Floor(diff.TotalSeconds);
         }
     }

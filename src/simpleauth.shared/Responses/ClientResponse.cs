@@ -17,7 +17,7 @@ namespace SimpleAuth.Shared.Responses
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
-    using Requests;
+    using Microsoft.IdentityModel.Tokens;
 
     [DataContract]
     public class ClientResponse

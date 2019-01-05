@@ -70,7 +70,7 @@
 
 //            //            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
-//            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+//            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
 //        }
 
 //        [Fact]
@@ -96,7 +96,7 @@
 
 //            //            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
-//            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+//            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
 //            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.Client.ClientId, GrantType.client_credentials));
 //        }
 
@@ -127,7 +127,7 @@
 
 //            //            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
-//            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+//            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
 //            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.Client.ClientId, ResponseType.token));
 //        }
 
@@ -165,7 +165,7 @@
 
 //            //            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
-//            Assert.True(exception.Code == ErrorCodes.InvalidScope);
+//            Assert.Equal(ErrorCodes.InvalidScope, exception.Code);
 //            Assert.True(exception.Message == messageDescription);
 //        }
 
@@ -197,7 +197,7 @@
 //            {
 //                ClientId = clientId,
 //                AccessToken = accessToken,
-//                IdTokenPayLoad = new JwsPayload()
+//                IdTokenPayLoad = new JwtSecurityToken()
 //            };
 //            var authenticateInstruction = new AuthenticateInstruction();
 //            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
@@ -209,13 +209,13 @@
 //                {
 //                    Scopes = scopes
 //                });
-//            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(
+//            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateToken(
 //                    It.IsAny<Client>(),
 //                    It.IsAny<string>(),
 //                    It.IsAny<string>(),
 //                    It.IsAny<IDictionary<string, object>>(),
-//                    It.IsAny<JwsPayload>(),
-//                    It.IsAny<JwsPayload>()))
+//                    It.IsAny<JwtSecurityToken>(),
+//                    It.IsAny<JwtSecurityToken>()))
 //                .Returns(Task.FromResult(grantedToken));
 
 //            //            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
@@ -231,7 +231,7 @@
 ////            const string scope = "valid_scope";
 //            const string clientId = "client_id";
 //            const string accessToken = "access_token";
-//            var jwsPayload = new JwsPayload();
+//            var jwsPayload = new JwtSecurityToken();
 //            var scopes = new List<string> { scope };
 //            InitializeFakeObjects();
 //            var clientCredentialsGrantTypeParameter = new ClientCredentialsGrantTypeParameter
@@ -272,14 +272,14 @@
 //                    It.IsAny<IDictionary<string, object>>()))
 //                .Returns(Task.FromResult(jwsPayload));
 //            _clientHelperStub.Setup(g => g.GenerateIdTokenAsync(It.IsAny<Client>(),
-//                It.IsAny<JwsPayload>()))
+//                It.IsAny<JwtSecurityToken>()))
 //                .Returns(Task.FromResult(accessToken));
-//            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(It.IsAny<Client>(),
+//            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateToken(It.IsAny<Client>(),
 //                It.IsAny<string>(),
 //                It.IsAny<string>(),
 //                It.IsAny<IDictionary<string, object>>(),
-//                It.IsAny<JwsPayload>(),
-//                It.IsAny<JwsPayload>())).Returns(Task.FromResult(grantedToken));
+//                It.IsAny<JwtSecurityToken>(),
+//                It.IsAny<JwtSecurityToken>())).Returns(Task.FromResult(grantedToken));
 
 //            //            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
 

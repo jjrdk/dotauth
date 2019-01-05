@@ -7,7 +7,6 @@
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Actions;
-    using Api.Profile;
     using Api.Profile.Actions;
     using Errors;
     using Exceptions;

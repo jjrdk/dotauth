@@ -14,7 +14,7 @@
 
 namespace SimpleAuth.Parameters
 {
-    using Shared;
+    using System.IdentityModel.Tokens.Jwt;
 
     public class CreateJwsParameter
     {
@@ -25,7 +25,7 @@ namespace SimpleAuth.Parameters
         /// <summary>
         /// Gets or sets the sign alg
         /// </summary>
-        public JwsAlg Alg { get; set; }
+        public string Alg { get; set; }
         /// <summary>
         /// Gets or sets the JWKS URL
         /// </summary>
@@ -33,6 +33,6 @@ namespace SimpleAuth.Parameters
         /// <summary>
         /// Gets or sets the Payload
         /// </summary>
-        public JwsPayload Payload { get; set; }
+        public JwtPayload Payload { get; set; }
     }
 }

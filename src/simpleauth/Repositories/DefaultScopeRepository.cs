@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Extensions;
     using Shared.Models;
     using Shared.Parameters;
     using Shared.Repositories;
@@ -175,7 +174,7 @@
 
         public Task<ICollection<Scope>> GetAll()
         {
-            ICollection<Scope> res = _scopes.Select(s => s.Copy()).ToList();
+            ICollection<Scope> res = _scopes.ToList();
             return Task.FromResult(res);
         }
 
@@ -192,7 +191,7 @@
                 return Task.FromResult((Scope)null);
             }
 
-            return Task.FromResult(scope.Copy());
+            return Task.FromResult(scope);
         }
 
         public Task<bool> Insert(Scope scope)
@@ -203,7 +202,7 @@
             }
 
             scope.CreateDateTime = DateTime.UtcNow;
-            _scopes.Add(scope.Copy());
+            _scopes.Add(scope);
             return Task.FromResult(true);
         }
 
@@ -256,7 +255,7 @@
 
             return Task.FromResult(new SearchScopeResult
             {
-                Content = result.Select(r => r.Copy()),
+                Content = result,
                 StartIndex = parameter.StartIndex,
                 TotalResults = nbResult
             });
@@ -269,7 +268,7 @@
                 throw new ArgumentNullException(nameof(names));
             }
 
-            ICollection<Scope> result = _scopes.Where(s => names.Contains(s.Name)).Select(s => s.Copy()).ToList();
+            ICollection<Scope> result = _scopes.Where(s => names.Contains(s.Name)).ToList();
             return Task.FromResult(result);
         }
 

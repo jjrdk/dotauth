@@ -17,6 +17,7 @@
     using System;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Shared.Repositories;
     using Xunit;
     //using Client = Shared.Models.Client;
 
@@ -233,8 +234,8 @@
                 new GetAuthorizationCodeAndTokenViaHybridWorkflowOperation(
                     _oauthEventSource.Object,
                     new ProcessAuthorizationRequest(
+                        new Mock<IClientStore>().Object,
                         _consentHelper.Object,
-                        new Mock<IJwtParser>().Object,
                         _oauthEventSource.Object),
                     _generateAuthorizationResponseFake.Object);
         }

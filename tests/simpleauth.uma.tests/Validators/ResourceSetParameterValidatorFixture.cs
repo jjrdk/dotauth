@@ -43,7 +43,7 @@ namespace SimpleAuth.Uma.Tests.Validators
 
             var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "name"));
         }
 
@@ -58,7 +58,7 @@ namespace SimpleAuth.Uma.Tests.Validators
 
             var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"));
         }
 
@@ -76,7 +76,7 @@ namespace SimpleAuth.Uma.Tests.Validators
 
             var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, iconUri));
         }
 
@@ -95,7 +95,7 @@ namespace SimpleAuth.Uma.Tests.Validators
 
             var exception = Assert.Throws<BaseUmaException>(() => _resourceSetParameterValidator.CheckResourceSetParameter(addResourceParameter));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, uri));
         }
 

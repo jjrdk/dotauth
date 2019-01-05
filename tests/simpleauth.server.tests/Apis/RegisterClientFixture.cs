@@ -14,18 +14,17 @@
 
 namespace SimpleAuth.Server.Tests.Apis
 {
+    using Client;
+    using Client.Operations;
+    using Errors;
+    using Newtonsoft.Json;
+    using Shared.Models;
+    using Shared.Responses;
     using System;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
-    using Client;
-    using Client.Operations;
-    using Errors;
-    using Newtonsoft.Json;
-    using Shared;
-    using Shared.Models;
-    using Shared.Responses;
     using Xunit;
     using TokenRequest = Client.TokenRequest;
 
@@ -94,11 +93,9 @@ namespace SimpleAuth.Server.Tests.Apis
                 AllowedScopes = new[] { new Scope { Name = "openid" } },
                 RequestUris = new[] { new Uri("https://localhost") },
                 RedirectionUrls = new[] { "localhost" },
-                LogoUri = "https://logo",
                 ClientUri = new Uri("http://google.com"),
                 TosUri = new Uri("http://google.com"),
-                JwksUri = "https://invalid_jwks_uri",
-                JsonWebKeys = new[] { new JsonWebKey { } }
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet()
             };
             var fakeJson = JsonConvert.SerializeObject(
                 obj,
@@ -136,11 +133,12 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
             var obj = new
             {
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 AllowedScopes = new[] { new Scope { Name = "openid" } },
                 RequestUris = new[] { new Uri("https://localhost") },
                 RedirectionUrls = new[] { new Uri("http://localhost#fragment") },
-                LogoUri = "http://google.com",
-                ClientUri = "https://valid"
+                //LogoUri = "http://google.com",
+                ClientUri = new Uri("https://valid")
             };
             var fakeJson = JsonConvert.SerializeObject(obj,
                 new JsonSerializerSettings
@@ -166,49 +164,49 @@ namespace SimpleAuth.Server.Tests.Apis
                 error.ErrorDescription);
         }
 
-        [Fact]
-        public async Task When_Pass_Invalid_Logo_Uri_Then_Error_Is_Returned()
-        {
-            InitializeFakeObjects();
+        //[Fact]
+        //public async Task When_Pass_Invalid_Logo_Uri_Then_Error_Is_Returned()
+        //{
+        //    InitializeFakeObjects();
 
-            var grantedToken = await new TokenClient(
-                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
-                    TokenRequest.FromScopes("register_client"),
-                    _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration")
-                .ConfigureAwait(false);
-            var obj = new
-            {
-                AllowedScopes = new[] { new Scope { Name = "openid" } },
-                RequestUris = new[] { new Uri("https://localhost") },
-                RedirectionUrls = new[] { new Uri("http://localhost") },
-                LogoUri = "logo",
-                ClientUri = new Uri("http://google.com"),
-                TosUri = new Uri("http://google.com"),
-                JwksUri = "https://invalid_jwks_uri"
-            };
-            var fakeJson = JsonConvert.SerializeObject(obj,
-                new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
-            var httpRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri($"{BaseUrl}/registration"),
-                Content = new StringContent(fakeJson)
-            };
-            httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
+        //    var grantedToken = await new TokenClient(
+        //            TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
+        //            TokenRequest.FromScopes("register_client"),
+        //            _server.Client,
+        //            new GetDiscoveryOperation(_server.Client))
+        //        .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration")
+        //        .ConfigureAwait(false);
+        //    var obj = new
+        //    {
+        //        AllowedScopes = new[] { new Scope { Name = "openid" } },
+        //        RequestUris = new[] { new Uri("https://localhost") },
+        //        RedirectionUrls = new[] { new Uri("http://localhost") },
+        //        LogoUri = "logo",
+        //        ClientUri = new Uri("http://google.com"),
+        //        TosUri = new Uri("http://google.com"),
+        //        JwksUri = "https://invalid_jwks_uri"
+        //    };
+        //    var fakeJson = JsonConvert.SerializeObject(obj,
+        //        new JsonSerializerSettings
+        //        {
+        //            NullValueHandling = NullValueHandling.Ignore
+        //        });
+        //    var httpRequest = new HttpRequestMessage
+        //    {
+        //        Method = HttpMethod.Post,
+        //        RequestUri = new Uri($"{BaseUrl}/registration"),
+        //        Content = new StringContent(fakeJson)
+        //    };
+        //    httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        //    httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
-            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+        //    var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+        //    var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+        //    var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
-            Assert.Equal("invalid_client_metadata", error.Error);
-            Assert.Equal("the parameter logo_uri is not correct", error.ErrorDescription);
-        }
+        //    Assert.Equal("invalid_client_metadata", error.Error);
+        //    Assert.Equal("the parameter logo_uri is not correct", error.ErrorDescription);
+        //}
 
         [Fact]
         public async Task When_Pass_Invalid_Client_Uri_Then_Error_Is_Returned()
@@ -296,50 +294,6 @@ namespace SimpleAuth.Server.Tests.Apis
         }
 
         [Fact]
-        public async Task When_Pass_Invalid_Jwks_Uri_Then_Error_Is_Returned()
-        {
-            InitializeFakeObjects();
-
-            var grantedToken = await new TokenClient(
-                    TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
-                    TokenRequest.FromScopes("register_client"),
-                    _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync($"{BaseUrl}/.well-known/openid-configuration")
-                .ConfigureAwait(false);
-            var obj = new
-            {
-                AllowedScopes = new[] { new Scope { Name = "openid" } },
-                RequestUris = new[] { new Uri("https://localhost") },
-                RedirectionUrls = new[] { new Uri("http://localhost") },
-                LogoUri = "http://google.com",
-                ClientUri = new Uri("http://google.com"),
-                TosUri = new Uri("http://google.com"),
-                JwksUri = "invalid_jwks_uri"
-            };
-            var fakeJson = JsonConvert.SerializeObject(obj,
-                new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
-            var httpRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri($"{BaseUrl}/registration"),
-                Content = new StringContent(fakeJson)
-            };
-            httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
-
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
-            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
-
-            Assert.Equal("invalid_client_metadata", error.Error);
-            Assert.Equal("the parameter jwks_uri is not correct", error.ErrorDescription);
-        }
-
-        [Fact]
         public async Task When_Registering_A_Client_Then_No_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
@@ -355,21 +309,21 @@ namespace SimpleAuth.Server.Tests.Apis
             var client = await _registrationClient.ResolveAsync(
                     new Client
                     {
-                        AllowedScopes = new[] {new Scope {Name = "openid"}},
+                        JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                        AllowedScopes = new[] { new Scope { Name = "openid" } },
                         ClientName = "Test",
                         ClientId = "id",
                         RedirectionUrls = new[]
                         {
                             new Uri("https://localhost"),
                         },
-                        RequestUris = new[] {new Uri("https://localhost")},
+                        RequestUris = new[] { new Uri("https://localhost") },
                         ScimProfile = true
                     },
                     BaseUrl + "/.well-known/openid-configuration",
                     grantedToken.Content.AccessToken)
                 .ConfigureAwait(false);
 
-            Assert.NotNull(client);
             Assert.True(client.Content.ScimProfile);
         }
 

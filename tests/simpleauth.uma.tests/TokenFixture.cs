@@ -1,32 +1,31 @@
 ﻿namespace SimpleAuth.Uma.Tests
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Client.Configuration;
     using Client.Permission;
-    using Client.Policy;
     using Client.ResourceSet;
-    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.IdentityModel.Logging;
+    using Microsoft.IdentityModel.Tokens;
     using Shared.DTOs;
-    using Signature;
-    using SimpleAuth;
     using SimpleAuth.Client;
     using SimpleAuth.Client.Operations;
-    using SimpleAuth.Shared;
+    using System;
+    using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Xunit;
 
-    public class TokenFixture : IClassFixture<TestUmaServerFixture>
+    public class TokenFixture : IDisposable
     {
         private const string BaseUrl = "http://localhost:5000";
-        private IJwsGenerator _jwsGenerator;
         private ResourceSetClient _resourceSetClient;
         private PermissionClient _permissionClient;
-        private PolicyClient _policyClient;
         private readonly TestUmaServerFixture _server;
 
-        public TokenFixture(TestUmaServerFixture server)
+        public TokenFixture()
         {
-            _server = server;
+            IdentityModelEventSource.ShowPII = true;
+            _server = new TestUmaServerFixture();
         }
 
         [Fact]
@@ -71,7 +70,7 @@
         {
             InitializeFakeObjects();
 
-            var jwsPayload = new JwsPayload
+            var jwsPayload = new JwtPayload
             {
                 {"iss", "http://server.example.com"},
                 {"sub", "248289761001"},
@@ -80,7 +79,14 @@
                 {"exp", "1311281970"},
                 {"iat", "1311280970"}
             };
-            var jwt = _jwsGenerator.Generate(jwsPayload, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
+            var handler = new JwtSecurityTokenHandler();
+            var set = new JsonWebKeySet();
+            set.Keys.Add(_server.SharedCtx.SignatureKey);
+            var header =
+                new JwtHeader(new SigningCredentials(set.GetSignKeys().First(), SecurityAlgorithms.HmacSha256));
+            var securityToken = new JwtSecurityToken(header, jwsPayload);
+            var jwt = handler.WriteToken(securityToken);
+            //_jwsGenerator.Generate(jwsPayload, SecurityAlgorithms.RsaSha256, _server.SharedCtx.SignatureKey);
 
             var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("resource_server", "resource_server"), // Get PAT.
@@ -90,47 +96,47 @@
                 .ResolveAsync(BaseUrl + "/.well-known/uma2-configuration")
                 .ConfigureAwait(false);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet // Add ressource.
-                    {
-                        Name = "name",
-                        Scopes = new List<string>
+            {
+                Name = "name",
+                Scopes = new List<string>
                         {
                             "read",
                             "write",
                             "execute"
                         }
-                    },
+            },
                     BaseUrl + "/.well-known/uma2-configuration",
                     result.Content.AccessToken)
                 .ConfigureAwait(false);
-            var addPolicy = await _policyClient.AddByResolution(new PostPolicy // Add an authorization policy.
-                    {
-                        Rules = new List<PostPolicyRule>
-                        {
-                            new PostPolicyRule
-                            {
-                                IsResourceOwnerConsentNeeded = false,
-                                Scopes = new List<string>
-                                {
-                                    "read"
-                                },
-                                ClientIdsAllowed = new List<string>
-                                {
-                                    "resource_server"
-                                },
-                                Claims = new List<PostClaim>
-                                {
-                                    new PostClaim {Type = "sub", Value = "248289761001"}
-                                }
-                            }
-                        },
-                        ResourceSetIds = new List<string>
-                        {
-                            resource.Content.Id
-                        }
-                    },
-                    BaseUrl + "/.well-known/uma2-configuration",
-                    result.Content.AccessToken)
-                .ConfigureAwait(false);
+            //var addPolicy = await _policyClient.AddByResolution(new PostPolicy // Add an authorization policy.
+            //{
+            //    Rules = new List<PostPolicyRule>
+            //            {
+            //                new PostPolicyRule
+            //                {
+            //                    IsResourceOwnerConsentNeeded = false,
+            //                    Scopes = new List<string>
+            //                    {
+            //                        "read"
+            //                    },
+            //                    ClientIdsAllowed = new List<string>
+            //                    {
+            //                        "resource_server"
+            //                    },
+            //                    Claims = new List<PostClaim>
+            //                    {
+            //                        new PostClaim {Type = "sub", Value = "248289761001"}
+            //                    }
+            //                }
+            //            },
+            //    ResourceSetIds = new List<string>
+            //            {
+            //                resource.Content.Id
+            //            }
+            //},
+            //        BaseUrl + "/.well-known/uma2-configuration",
+            //        result.Content.AccessToken)
+            //    .ConfigureAwait(false);
             var ticket = await _permissionClient.AddByResolution(
                     new PostPermission // Add permission & retrieve a ticket id.
                     {
@@ -143,6 +149,9 @@
                     BaseUrl + "/.well-known/uma2-configuration",
                     "header")
                 .ConfigureAwait(false);
+
+            Assert.NotNull(ticket.Content);
+
             var token = await new TokenClient(
                     TokenCredentials.FromClientCredentials("resource_server",
                         "resource_server"), // Try to get the access token via "ticket_id" grant-type.
@@ -157,17 +166,13 @@
 
         private void InitializeFakeObjects()
         {
-            var services = new ServiceCollection();
-            services.AddSimpleAuthJwt();
-            var provider = services.BuildServiceProvider();
-            _jwsGenerator = provider.GetService<IJwsGenerator>();
+            _resourceSetClient = new ResourceSetClient(_server.Client, new GetConfigurationOperation(_server.Client));
+            _permissionClient = new PermissionClient(_server.Client, new GetConfigurationOperation(_server.Client));
+        }
 
-            _resourceSetClient = new ResourceSetClient(_server.Client,
-                new GetConfigurationOperation(_server.Client));
-            _permissionClient = new PermissionClient(_server.Client,
-                new GetConfigurationOperation(_server.Client));
-            _policyClient = new PolicyClient(_server.Client,
-                new GetConfigurationOperation(_server.Client));
+        public void Dispose()
+        {
+            _server?.Dispose();
         }
     }
 }

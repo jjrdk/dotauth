@@ -51,7 +51,7 @@
                 return resourceOwner;
             }
 
-            // 3. Create a new resource owner.
+            // 3. CreateJwk a new resource owner.
             var claims = new List<Claim>
             {
                 new Claim(JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber),

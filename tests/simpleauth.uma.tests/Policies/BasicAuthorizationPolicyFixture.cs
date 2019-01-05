@@ -14,18 +14,16 @@
 
 namespace SimpleAuth.Uma.Tests.Policies
 {
+    using Models;
+    using Moq;
+    using Parameters;
+    using SimpleAuth;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading.Tasks;
-    using JwtToken;
-    using Models;
-    using Moq;
-    using Newtonsoft.Json.Linq;
-    using Parameters;
-    using SimpleAuth;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Repositories;
     using Uma;
     using Uma.Policies;
     using Xunit;
@@ -33,7 +31,7 @@ namespace SimpleAuth.Uma.Tests.Policies
     public class BasicAuthorizationPolicyFixture
     {
         //private Mock<IIdentityServerClientFactory> _identityServerClientFactoryStub;
-        private Mock<IJwtTokenParser> _jwtTokenParserStub;
+        //private Mock<IJwtTokenParser> _jwtTokenParserStub;
         private IBasicAuthorizationPolicy _basicAuthorizationPolicy;
 
         [Fact]
@@ -156,14 +154,8 @@ namespace SimpleAuth.Uma.Tests.Policies
                         },
                         Claims = new List<Claim>
                         {
-                            new Claim
-                            {
-                                Type = "name"
-                            },
-                            new Claim
-                            {
-                                Type = "email"
-                            }
+                             new Claim("name",""),
+                             new Claim("email", "")
                         },
                         OpenIdProvider = configurationUrl
                     }
@@ -237,14 +229,8 @@ namespace SimpleAuth.Uma.Tests.Policies
                         },
                         Claims = new List<Claim>
                         {
-                            new Claim
-                            {
-                                Type = "name"
-                            },
-                            new Claim
-                            {
-                                Type = "email"
-                            }
+                            new Claim("name",""),
+                            new Claim("email","")
                         },
                         OpenIdProvider = configurationUrl
                     }
@@ -255,8 +241,8 @@ namespace SimpleAuth.Uma.Tests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
-                .Returns((JwsPayload) null);
+            //_jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
+            //    .Returns((JwtSecurityToken)null);
 
             var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters)
                 .ConfigureAwait(false);
@@ -297,16 +283,8 @@ namespace SimpleAuth.Uma.Tests.Policies
                         },
                         Claims = new List<Claim>
                         {
-                            new Claim
-                            {
-                                Type = "role",
-                                Value = "role1"
-                            },
-                            new Claim
-                            {
-                                Type = "role",
-                                Value = "role2"
-                            }
+                            new Claim( "role", "role1"),
+                            new Claim( "role", "role2")
                         },
                         OpenIdProvider = configurationUrl
                     }
@@ -317,13 +295,13 @@ namespace SimpleAuth.Uma.Tests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
-                .Returns(new JwsPayload
-                {
-                    {
-                        "role", new[] {"role1", "role3"}
-                    }
-                });
+            //_jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
+            //    .Returns(new JwtSecurityToken
+            //    {
+            //        {
+            //            "role", new[] {"role1", "role3"}
+            //        }
+            //    });
 
             var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter)
                 .ConfigureAwait(false);
@@ -364,16 +342,8 @@ namespace SimpleAuth.Uma.Tests.Policies
                         },
                         Claims = new List<Claim>
                         {
-                            new Claim
-                            {
-                                Type = "role",
-                                Value = "role1"
-                            },
-                            new Claim
-                            {
-                                Type = "role",
-                                Value = "role2"
-                            }
+                            new Claim( "role", "role1"),
+                            new Claim( "role", "role2")
                         },
                         OpenIdProvider = configurationUrl
                     }
@@ -384,8 +354,8 @@ namespace SimpleAuth.Uma.Tests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
-                .Returns(new JwsPayload());
+            //_jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
+            //    .Returns(new JwtSecurityToken());
 
             var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters)
                 .ConfigureAwait(false);
@@ -426,16 +396,8 @@ namespace SimpleAuth.Uma.Tests.Policies
                         },
                         Claims = new List<Claim>
                         {
-                            new Claim
-                            {
-                                Type = "role",
-                                Value = "role1"
-                            },
-                            new Claim
-                            {
-                                Type = "role",
-                                Value = "role2"
-                            }
+                            new Claim( "role", "role1"),
+                            new Claim( "role", "role2")
                         },
                         OpenIdProvider = configurationUrl
                     }
@@ -446,9 +408,9 @@ namespace SimpleAuth.Uma.Tests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            var payload = new JwsPayload {{"role", new JArray("role3")}};
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
-                .Returns(payload);
+            //var payload = new JwtSecurityToken { { "role", new JArray("role3") } };
+            //_jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
+            //    .Returns(payload);
 
             var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters)
                 .ConfigureAwait(false);
@@ -489,16 +451,8 @@ namespace SimpleAuth.Uma.Tests.Policies
                         },
                         Claims = new List<Claim>
                         {
-                            new Claim
-                            {
-                                Type = "role",
-                                Value = "role1"
-                            },
-                            new Claim
-                            {
-                                Type = "role",
-                                Value = "role2"
-                            }
+                            new Claim( "role", "role1"),
+                            new Claim( "role", "role2")
                         },
                         OpenIdProvider = configurationUrl
                     }
@@ -509,12 +463,12 @@ namespace SimpleAuth.Uma.Tests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            var payload = new JwsPayload
-            {
-                {"role", new[] {"role3"}}
-            };
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
-                .Returns(payload);
+            //var payload = new JwtSecurityToken
+            //{
+            //    {"role", new[] {"role3"}}
+            //};
+            //_jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
+            //    .Returns(payload);
 
             var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter)
                 .ConfigureAwait(false);
@@ -555,16 +509,8 @@ namespace SimpleAuth.Uma.Tests.Policies
                         },
                         Claims = new List<Claim>
                         {
-                            new Claim
-                            {
-                                Type = "name",
-                                Value = "name"
-                            },
-                            new Claim
-                            {
-                                Type = "email",
-                                Value = "email"
-                            }
+                            new Claim( "name", "name"),
+                            new Claim( "email", "email")
                         },
                         OpenIdProvider = configurationUrl
                     }
@@ -575,13 +521,13 @@ namespace SimpleAuth.Uma.Tests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
-                .Returns(new JwsPayload
-                {
-                    {
-                        "name", "bad_name"
-                    }
-                });
+            //_jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JsonWebKeySet>()))
+            //    .Returns(new JwtSecurityToken
+            //    {
+            //        {
+            //            "name", "bad_name"
+            //        }
+            //    });
 
             var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter)
                 .ConfigureAwait(false);
@@ -671,10 +617,10 @@ namespace SimpleAuth.Uma.Tests.Policies
 
         private void InitializeFakeObjects()
         {
-            _jwtTokenParserStub = new Mock<IJwtTokenParser>();
+            //_jwtTokenParserStub = new Mock<IJwtTokenParser>();
             _basicAuthorizationPolicy = new BasicAuthorizationPolicy(
-                _jwtTokenParserStub.Object,
-                new Mock<IJwksClient>().Object);
+                //_jwtTokenParserStub.Object,
+                new Mock<IClientStore>().Object);
         }
     }
 }

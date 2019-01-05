@@ -2,17 +2,6 @@
 {
     public static class SharedConstants
     {
-        public static class ConfigurationResponseNames
-        {
-            public const string JwsEndpoint = "/jws";
-            public const string JweEndpoint = "/jwe";
-            public const string ClientsEndpoint = "/clients";
-            public const string ScopesEndpoint = "/scopes";
-            public const string ResourceOwnersEndpoint = "/resource_owners";
-            public const string ManageEndpoint = "/manage";
-            public const string ClaimsEndpoint = "/claims";
-        }
-
         public static class ClaimResponseNames
         {
             public const string Code = "key";

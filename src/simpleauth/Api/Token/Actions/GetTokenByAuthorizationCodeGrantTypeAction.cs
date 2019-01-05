@@ -14,11 +14,6 @@
 
 namespace SimpleAuth.Api.Token.Actions
 {
-    using System;
-    using System.Linq;
-    using System.Net.Http.Headers;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Threading.Tasks;
     using Authenticate;
     using Errors;
     using Exceptions;
@@ -28,7 +23,11 @@ namespace SimpleAuth.Api.Token.Actions
     using Parameters;
     using Shared;
     using Shared.Models;
-    using Shared.Requests;
+    using System;
+    using System.Linq;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
     using Validators;
 
     public class GetTokenByAuthorizationCodeGrantTypeAction : IGetTokenByAuthorizationCodeGrantTypeAction
@@ -89,7 +88,7 @@ namespace SimpleAuth.Api.Token.Actions
                 result.AuthCode.UserInfoPayLoad).ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(
+                grantedToken = await _grantedTokenGeneratorHelper.GenerateToken(
                         result.Client,
                         result.AuthCode.Scopes,
                         issuerName,
@@ -104,7 +103,7 @@ namespace SimpleAuth.Api.Token.Actions
                 // Fill-in the id-token
                 if (grantedToken.IdTokenPayLoad != null)
                 {
-                    await _jwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad).ConfigureAwait(false);
+                    _jwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad, result.Client);
                     grantedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(result.Client, grantedToken.IdTokenPayLoad).ConfigureAwait(false);
                 }
 
@@ -119,6 +118,8 @@ namespace SimpleAuth.Api.Token.Actions
         /// </summary>
         /// <param name="authorizationCodeGrantTypeParameter"></param>
         /// <param name="authenticationHeaderValue"></param>
+        /// <param name="certificate"></param>
+        /// <param name="issuerName"></param>
         /// <returns></returns>
         private async Task<ValidationResult> ValidateParameter(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
