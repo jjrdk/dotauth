@@ -21,10 +21,6 @@ namespace SimpleAuth.Shared.Serializers
     using System.Reflection;
     using System.Runtime.Serialization;
 
-    internal class SharedErrorDescriptions{
-        public const string TheRedirectionUriIsNotWellFormed = "Based on the RFC-3986 the redirection-uri is not well formed";
-    }
-
     public class ParamSerializer
     {
         public string Serialize(object obj)

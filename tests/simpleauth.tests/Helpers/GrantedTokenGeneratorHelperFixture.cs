@@ -20,16 +20,10 @@ namespace SimpleAuth.Tests.Helpers
     using Moq;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth;
     using SimpleAuth.Helpers;
     using System;
     using System.Threading.Tasks;
     using Xunit;
-
-    internal static class TestKeys
-    {
-        public const string SecretKey = "verylongsecretkey";
-    }
 
     public class GrantedTokenGeneratorHelperFixture
     {
