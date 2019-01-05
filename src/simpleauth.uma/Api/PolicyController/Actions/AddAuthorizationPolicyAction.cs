@@ -26,6 +26,7 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using ErrorDescriptions = Errors.ErrorDescriptions;
 
@@ -93,11 +94,7 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
                 var claims = new List<Claim>();
                 if (ruleParameter.Claims != null)
                 {
-                    claims = ruleParameter.Claims.Select(c => new Claim
-                    {
-                        Type = c.Type,
-                        Value = c.Value
-                    }).ToList();
+                    claims = ruleParameter.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
                 }
 
                 rules.Add(new PolicyRule

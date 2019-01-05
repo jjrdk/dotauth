@@ -14,35 +14,44 @@
 
 namespace SimpleAuth.Server.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net.Http.Headers;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Primitives;
     using SimpleAuth;
-    using UserInfo;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
+    using Shared.Responses;
 
     [Route(CoreConstants.EndPoints.UserInfo)]
     public class UserInfoController : Controller
     {
-        private readonly IUserInfoActions _userInfoActions;
+        private readonly ITokenStore _tokenStore;
 
-        public UserInfoController(IUserInfoActions userInfoActions)
+        public UserInfoController(ITokenStore tokenStore)
         {
-            _userInfoActions = userInfoActions;
+            _tokenStore = tokenStore;
         }
 
+        //private readonly IUserInfoActions _userInfoActions;
+
+        //public UserInfoController(IUserInfoActions userInfoActions)
+        //{
+        //    _userInfoActions = userInfoActions;
+        //}
+
         [HttpGet]
+        //[Authorize(Policy = "authenticated")]
         public async Task<IActionResult> Get()
         {
             return await ProcessRequest().ConfigureAwait(false);
         }
 
         [HttpPost]
+        //[Authorize(Policy = "authenticated")]
         public async Task<IActionResult> Post()
         {
             return await ProcessRequest().ConfigureAwait(false);
@@ -56,8 +65,16 @@ namespace SimpleAuth.Server.Controllers
                 throw new AuthorizationException(ErrorCodes.InvalidToken, string.Empty);
             }
 
-            var result = await _userInfoActions.GetUserInformation(accessToken).ConfigureAwait(false);
-            return result;
+            var grantedToken = await _tokenStore.GetAccessToken(accessToken).ConfigureAwait(false);
+            return grantedToken == null
+                ? (IActionResult)BadRequest(new ErrorResponseWithState
+                {
+                    ErrorDescription = ErrorDescriptions.TheTokenIsNotValid,
+                    Error = ErrorCodes.InvalidToken
+                })
+                : new ObjectResult(grantedToken.IdTokenPayLoad);
+            //var result = await _userInfoActions.GetUserInformation(accessToken).ConfigureAwait(false);
+            //return result;
         }
 
         private async Task<string> TryToGetTheAccessToken()

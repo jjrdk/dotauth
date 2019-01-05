@@ -276,7 +276,7 @@ namespace SimpleAuth.Scim.Client.Tests
         //    //.SetPath("emails[type eq work]")
         //    //.Build();
 
-        //    // ACT : Create user
+        //    // ACT : CreateJwk user
         //    var firstResult = await _usersClient.AddUser(baseUrl,
         //            "external_id",
         //            null,

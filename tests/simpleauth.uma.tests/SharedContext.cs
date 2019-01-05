@@ -1,44 +1,42 @@
 ﻿namespace SimpleAuth.Uma.Tests
 {
     using System.Security.Cryptography;
+    using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Shared;
 
     public class SharedContext
     {
+        private const string SecretKey = "verylongsecretkey";
         public SharedContext()
         {
-            string serializedRsa;
-            using (var provider = new RSACryptoServiceProvider())
-            {
-                serializedRsa = RsaExtensions.ToXmlString(provider, true);
-            }
-
-            SignatureKey = new JsonWebKey
-            {
-                Alg = AllAlg.RS256,
-                KeyOps = new[]
-                {
-                    KeyOperations.Sign,
-                    KeyOperations.Verify
-                },
-                Kid = "11",
-                Kty = KeyType.RSA,
-                Use = Use.Sig,
-                SerializedKey = serializedRsa,
-            };
-            EncryptionKey = new JsonWebKey
-            {
-                Alg = AllAlg.RSA1_5,
-                KeyOps = new[]
-                {
-                    KeyOperations.Decrypt,
-                    KeyOperations.Encrypt
-                },
-                Kid = "10",
-                Kty = KeyType.RSA,
-                Use = Use.Enc,
-                SerializedKey = serializedRsa,
-            };
+                SignatureKey = SecretKey.CreateSignatureJwk();
+                //    new JsonWebKey
+                //{
+                //    Alg = SecurityAlgorithms.RsaSha256,
+                //    KeyOps = new[]
+                //    {
+                //        KeyOperations.Sign,
+                //        KeyOperations.Verify
+                //    },
+                //    Kid = "11",
+                //    Kty = KeyType.RSA,
+                //    Use = Use.Sig,
+                //    SerializedKey = serializedRsa,
+                //};
+                EncryptionKey = SecretKey.CreateEncryptionJwk();
+                //    new JsonWebKey
+                //{
+                //    Alg = SecurityAlgorithms.RsaPKCS1,
+                //    KeyOps = new[]
+                //    {
+                //        KeyOperations.Decrypt,
+                //        KeyOperations.Encrypt
+                //    },
+                //    Kid = "10",
+                //    Kty = KeyType.RSA,
+                //    Use = Use.Enc,
+                //    SerializedKey = serializedRsa,
+                //};
         }
 
         public JsonWebKey EncryptionKey { get; }

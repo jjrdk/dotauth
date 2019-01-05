@@ -21,14 +21,13 @@ namespace SimpleAuth.Api.Token.Actions
     using JwtToken;
     using Logging;
     using Parameters;
+    using Shared;
     using Shared.Models;
-    using Shared.Requests;
     using System;
     using System.Net.Http.Headers;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
-    using Shared;
     using Validators;
 
     public class GetTokenByResourceOwnerCredentialsGrantTypeAction : IGetTokenByResourceOwnerCredentialsGrantTypeAction
@@ -127,10 +126,10 @@ namespace SimpleAuth.Api.Token.Actions
             var generatedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId, payload, payload).ConfigureAwait(false);
             if (generatedToken == null)
             {
-                generatedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes, issuerName, null, payload, payload).ConfigureAwait(false);
+                generatedToken = await _grantedTokenGeneratorHelper.GenerateToken(client, allowedTokenScopes, issuerName, null, payload, payload).ConfigureAwait(false);
                 if (generatedToken.IdTokenPayLoad != null)
                 {
-                    await _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad).ConfigureAwait(false);
+                    _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, client);
                     generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(client, generatedToken.IdTokenPayLoad).ConfigureAwait(false);
                 }
 

@@ -42,17 +42,23 @@ namespace SimpleAuth.Shared
 
         public static void FromXmlString(this RSA rsa, string xmlString)
         {
-            var xdoc = XDocument.Parse(xmlString).Root;
-            var d = xdoc.Element("D");
-            var dp = xdoc.Element("DP");
-            var dq = xdoc.Element("DQ");
-            var p = xdoc.Element("P");
-            var q = xdoc.Element("Q");
-            var inverseQ = xdoc.Element("InverseQ");
-            var parameters = new RSAParameters
+            var parameters = xmlString.ToRSAParameters();
+            rsa.ImportParameters(parameters);
+        }
+
+        public static RSAParameters ToRSAParameters(this string xml)
+        {
+            var doc = XDocument.Parse(xml).Root;
+            var d = doc.Element("D");
+            var dp = doc.Element("DP");
+            var dq = doc.Element("DQ");
+            var p = doc.Element("P");
+            var q = doc.Element("Q");
+            var inverseQ = doc.Element("InverseQ");
+            return new RSAParameters
             {
-                Modulus = Convert.FromBase64String(xdoc.Element("Modulus").Value),
-                Exponent = Convert.FromBase64String(xdoc.Element("Exponent").Value),
+                Modulus = Convert.FromBase64String(doc.Element("Modulus").Value),
+                Exponent = Convert.FromBase64String(doc.Element("Exponent").Value),
                 D = d == null ? null : Convert.FromBase64String(d.Value),
                 DP = dp == null ? null : Convert.FromBase64String(dp.Value),
                 DQ = dq == null ? null : Convert.FromBase64String(dq.Value),
@@ -60,7 +66,6 @@ namespace SimpleAuth.Shared
                 Q = q == null ? null : Convert.FromBase64String(q.Value),
                 InverseQ = inverseQ == null ? null : Convert.FromBase64String(inverseQ.Value),
             };
-            rsa.ImportParameters(parameters);
         }
     }
 }

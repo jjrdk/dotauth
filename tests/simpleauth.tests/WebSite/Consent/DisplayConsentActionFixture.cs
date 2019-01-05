@@ -13,7 +13,6 @@
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Shared.Requests;
     using Xunit;
 
     public sealed class DisplayConsentActionFixture
@@ -97,7 +96,7 @@
                         claimsPrincipal,
                         null))
                 .ConfigureAwait(false);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
             Assert.True(exception.State == state);
 
@@ -126,7 +125,7 @@
                         claimsPrincipal,
                         null))
                 .ConfigureAwait(false);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
             Assert.True(exception.State == state);
         }

@@ -15,6 +15,7 @@
 namespace SimpleAuth.Shared.Models
 {
     using System;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Runtime.Serialization;
 
     [DataContract]
@@ -29,8 +30,8 @@ namespace SimpleAuth.Shared.Models
         public string Scope { get; set; }
         public DateTime CreateDateTime { get; set; }
         public string ClientId { get; set; }
-        public JwsPayload UserInfoPayLoad { get; set; }
-        public JwsPayload IdTokenPayLoad { get; set; }
+        public JwtPayload UserInfoPayLoad { get; set; }
+        public JwtPayload IdTokenPayLoad { get; set; }
         public string ParentTokenId { get; set; }
     }
 }

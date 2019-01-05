@@ -53,7 +53,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
 
                         var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.TheRoDoesntExist);
         }
 
@@ -68,7 +68,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
 
                         var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.TwoFactorAuthenticationIsNotEnabled);
         }
 
@@ -117,7 +117,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                         var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _generateAndSendCodeAction.ExecuteAsync("subject")).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
         }
 

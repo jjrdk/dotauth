@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using Api.Authorization;
-    using Shared.Requests;
 
     public interface IAuthorizationFlowHelper
     {

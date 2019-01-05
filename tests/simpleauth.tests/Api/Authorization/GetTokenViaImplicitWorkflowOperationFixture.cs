@@ -15,6 +15,7 @@
     using System;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Shared.Repositories;
     using Xunit;
     using Client = Shared.Models.Client;
 
@@ -128,8 +129,8 @@
             _oauthEventSource = new Mock<IOAuthEventSource>();
             _getTokenViaImplicitWorkflowOperation = new GetTokenViaImplicitWorkflowOperation(
                 new ProcessAuthorizationRequest(
+                    new Mock<IClientStore>().Object,
                     new Mock<IConsentHelper>().Object,
-                    null,
                     _oauthEventSource.Object),
                 _generateAuthorizationResponseFake.Object,
                 _oauthEventSource.Object);

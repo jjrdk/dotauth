@@ -48,7 +48,7 @@ namespace SimpleAuth.Tests.Api.Scopes.Actions
                 .Returns(Task.FromResult((Scope)null));
 
                         var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _deleteScopeOperation.Execute(scopeName)).ConfigureAwait(false);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheScopeDoesntExist, scopeName));
         }
 

@@ -22,7 +22,7 @@ namespace SimpleAuth
 
     public static class ObjectExtensions
     {
-        private static readonly JsonConverter[] Converters = { new JwsPayloadConverter(), new StringEnumConverter() };
+        private static readonly JsonConverter[] Converters = { new StringEnumConverter() };
 
         public static string SerializeWithDataContract(this object parameter)
         {

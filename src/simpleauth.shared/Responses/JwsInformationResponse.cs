@@ -15,6 +15,7 @@
 namespace SimpleAuth.Shared.Responses
 {
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Runtime.Serialization;
     using Requests;
 
@@ -25,7 +26,7 @@ namespace SimpleAuth.Shared.Responses
         public JwsProtectedHeader Header { get; set; }
 
         [DataMember(Name = SharedConstants.JwsInformationResponseNames.Payload)]
-        public JwsPayload Payload { get; set; }
+        public JwtPayload Payload { get; set; }
 
         [DataMember(Name = SharedConstants.JwsInformationResponseNames.JsonWebKey)]
         public Dictionary<string, object> JsonWebKey { get; set; }

@@ -14,14 +14,14 @@
 
 namespace SimpleAuth.Tests.Helpers
 {
-    using System;
-    using System.Threading.Tasks;
     using Moq;
-    using Shared;
     using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Helpers;
     using SimpleAuth.Validators;
+    using System;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class GrantedTokenHelperFixture
@@ -32,28 +32,31 @@ namespace SimpleAuth.Tests.Helpers
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-            
+
             await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync(null, null, null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Valid_Token_Does_Not_Exist_Then_Null_Is_Returned()
-        {            InitializeFakeObjects();
-            _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
+        {
+            InitializeFakeObjects();
+            _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwtPayload>(), It.IsAny<JwtPayload>()))
                 .Returns(Task.FromResult((GrantedToken)null));
 
-                        var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
+            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
 
-                        Assert.Null(result);
+            Assert.Null(result);
         }
 
         [Fact]
         public async Task When_GrantedToken_Is_Expired_Then_Null_Is_Returned()
-        {            InitializeFakeObjects();
-            _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
+        {
+            InitializeFakeObjects();
+            _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwtPayload>(), It.IsAny<JwtPayload>()))
                 .Returns(Task.FromResult(new GrantedToken()));
 
             _grantedTokenValidatorStub.Setup(g => g.CheckGrantedToken(It.IsAny<GrantedToken>()))
@@ -62,15 +65,16 @@ namespace SimpleAuth.Tests.Helpers
                     IsValid = false
                 });
 
-                        var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
+            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
 
-                        Assert.Null(result);
+            Assert.Null(result);
         }
 
         [Fact]
         public async Task When_Token_Exists_Then_GrantedToken_Is_Returned()
-        {            InitializeFakeObjects();
-            _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
+        {
+            InitializeFakeObjects();
+            _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwtPayload>(), It.IsAny<JwtPayload>()))
                 .Returns(Task.FromResult(new GrantedToken()));
             _grantedTokenValidatorStub.Setup(g => g.CheckGrantedToken(It.IsAny<GrantedToken>()))
                 .Returns(new GrantedTokenValidationResult
@@ -78,9 +82,9 @@ namespace SimpleAuth.Tests.Helpers
                     IsValid = true
                 });
 
-                        var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
+            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
 
-                        Assert.NotNull(result);
+            Assert.NotNull(result);
         }
 
         private void InitializeFakeObjects()

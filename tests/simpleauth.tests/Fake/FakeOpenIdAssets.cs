@@ -20,6 +20,8 @@ namespace SimpleAuth.Tests.Fake
     using System;
     using System.Collections.Generic;
     using System.Security.Cryptography;
+    using Helpers;
+    using Microsoft.IdentityModel.Tokens;
 
     public static class FakeOpenIdAssets
     {
@@ -142,7 +144,8 @@ namespace SimpleAuth.Tests.Fake
                         ResponseTypeNames.Code,
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = "RS256",
+                    JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, //"RS256",
                     // IdTokenEncryptedResponseAlg = "RSA1_5",
                     // IdTokenEncryptedResponseEnc = "A128CBC-HS256",
                     RedirectionUrls = new List<Uri>
@@ -256,48 +259,48 @@ namespace SimpleAuth.Tests.Fake
             };
         }
 
-        public static List<Consent> GetConsents()
-        {
-            return new List<Consent>();
-        }
+        //public static List<Consent> GetConsents()
+        //{
+        //    return new List<Consent>();
+        //}
 
-        public static List<JsonWebKey> GetJsonWebKeys()
-        {
-            var serializedRsa = string.Empty;
-            using (var provider = new RSACryptoServiceProvider())
-            {
-                serializedRsa = provider.ToXmlString(true);
-            }
+        //public static List<JsonWebKey> GetJsonWebKeys()
+        //{
+        //    var serializedRsa = string.Empty;
+        //    using (var provider = new RSACryptoServiceProvider())
+        //    {
+        //        serializedRsa = provider.ToXmlString(true);
+        //    }
 
-            return new List<JsonWebKey>
-            {
-                new JsonWebKey
-                {
-                    Alg = AllAlg.RS256,
-                    KeyOps = new []
-                    {
-                        KeyOperations.Sign,
-                        KeyOperations.Verify
-                    },
-                    Kid = "a3rMUgMFv9tPclLa6yF3zAkfquE",
-                    Kty = KeyType.RSA,
-                    Use = Use.Sig,
-                    SerializedKey = serializedRsa,
-                },
-                new JsonWebKey
-                {
-                    Alg = AllAlg.RSA1_5,
-                    KeyOps = new []
-                    {
-                        KeyOperations.Encrypt,
-                        KeyOperations.Decrypt
-                    },
-                    Kid = "3",
-                    Kty = KeyType.RSA,
-                    Use = Use.Enc,
-                    SerializedKey = serializedRsa,
-                }
-            };
-        }
+        //    return new List<JsonWebKey>
+        //    {
+        //        new JsonWebKey
+        //        {
+        //            Alg = SecurityAlgorithms.RsaSha256,
+        //            KeyOps = new []
+        //            {
+        //                KeyOperations.Sign,
+        //                KeyOperations.Verify
+        //            },
+        //            Kid = "a3rMUgMFv9tPclLa6yF3zAkfquE",
+        //            Kty = KeyType.RSA,
+        //            Use = Use.Sig,
+        //            SerializedKey = serializedRsa,
+        //        },
+        //        new JsonWebKey
+        //        {
+        //            Alg = SecurityAlgorithms.RsaPKCS1,
+        //            KeyOps = new []
+        //            {
+        //                KeyOperations.Encrypt,
+        //                KeyOperations.Decrypt
+        //            },
+        //            Kid = "3",
+        //            Kty = KeyType.RSA,
+        //            Use = Use.Enc,
+        //            SerializedKey = serializedRsa,
+        //        }
+        //    };
+        //}
     }
 }

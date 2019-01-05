@@ -14,37 +14,36 @@
 
 namespace SimpleAuth.Helpers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using JwtToken;
+    using Microsoft.IdentityModel.Tokens;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Text;
+    using System.Threading.Tasks;
 
     public class GrantedTokenGeneratorHelper : IGrantedTokenGeneratorHelper
     {
-        private readonly OAuthConfigurationOptions _configurationService;
-        private readonly IJwtGenerator _jwtGenerator;
-        private readonly IClientHelper _clientHelper;
         private readonly IClientStore _clientRepository;
 
-        public GrantedTokenGeneratorHelper(
-            OAuthConfigurationOptions configurationService,
-            IJwtGenerator jwtGenerator,
-            IClientHelper clientHelper,
-            IClientStore clientRepository)
+        public GrantedTokenGeneratorHelper(IClientStore clientRepository)
         {
-            _configurationService = configurationService;
-            _jwtGenerator = jwtGenerator;
-            _clientHelper = clientHelper;
             _clientRepository = clientRepository;
         }
 
-        public async Task<GrantedToken> GenerateTokenAsync(string clientId, string scope, string issuerName, IDictionary<string, object> additionalClaims, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null)
+        public async Task<GrantedToken> GenerateToken(
+            string clientId,
+            string scope,
+            string issuerName,
+            IDictionary<string, object> additionalClaims,
+            JwtPayload userInformationPayload = null,
+            JwtPayload idTokenPayload = null)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -57,7 +56,7 @@ namespace SimpleAuth.Helpers
                 throw new SimpleAuthException(ErrorCodes.InvalidClient, ErrorDescriptions.TheClientIdDoesntExist);
             }
 
-            return await GenerateTokenAsync(
+            return await GenerateToken(
                     client,
                     scope,
                     issuerName,
@@ -67,7 +66,13 @@ namespace SimpleAuth.Helpers
                 .ConfigureAwait(false);
         }
 
-        public async Task<GrantedToken> GenerateTokenAsync(Client client, string scope, string issuerName, IDictionary<string, object> additionalClaims, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null)
+        public Task<GrantedToken> GenerateToken(
+            Client client,
+            string scope,
+            string issuerName,
+            IDictionary<string, object> additionalClaims,
+            JwtPayload userInformationPayload = null,
+            JwtPayload idTokenPayload = null)
         {
             if (client == null)
             {
@@ -79,16 +84,36 @@ namespace SimpleAuth.Helpers
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            var expiresIn = _configurationService.TokenValidityPeriod; // 1. Retrieve the expiration time of the granted token.
-            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName, additionalClaims).ConfigureAwait(false); // 2. Construct the JWT token (client).
-            var accessToken = await _clientHelper.GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
-            
-            var refreshTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()); // 3. Construct the refresh token.
-            return new GrantedToken
+            //var expiresIn =
+            //    _configurationService.TokenValidityPeriod; // 1. Retrieve the expiration time of the granted token.
+            //var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName, additionalClaims).ConfigureAwait(false); // 2. Construct the JWT token (client).
+            var handler = new JwtSecurityTokenHandler();
+            var enumerable = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, client.ClientId),
+                new Claim(StandardClaimNames.Scopes, scope)
+            };
+            //.Concat(additionalClaims?.Select(x => new Claim(x.Key, x.Value.ToString())));
+
+            var signingCredentials = client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First();
+
+            var accessToken = handler.CreateEncodedJwt(
+                issuerName,
+                client.ClientId,
+                new ClaimsIdentity(enumerable),
+                DateTime.UtcNow,
+                DateTime.UtcNow.Add(client.TokenLifetime),
+                DateTime.UtcNow,
+                signingCredentials);
+            //var accessToken = await _clientHelper.GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
+
+            var refreshTokenId =
+                Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()); // 3. Construct the refresh token.
+            return Task.FromResult(new GrantedToken
             {
                 AccessToken = accessToken,
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
-                ExpiresIn = (int)expiresIn.TotalSeconds,
+                ExpiresIn = (int)client.TokenLifetime.TotalSeconds,
                 TokenType = CoreConstants.StandardTokenTypes.Bearer,
                 CreateDateTime = DateTime.UtcNow,
                 // IDS
@@ -96,7 +121,7 @@ namespace SimpleAuth.Helpers
                 UserInfoPayLoad = userInformationPayload,
                 IdTokenPayLoad = idTokenPayload,
                 ClientId = client.ClientId
-            };
+            });
         }
     }
 }

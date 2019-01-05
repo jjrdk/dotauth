@@ -28,6 +28,7 @@ namespace SimpleAuth.Tests.Api.Token
     using SimpleAuth.JwtToken;
     using System;
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Xunit;
@@ -82,7 +83,7 @@ namespace SimpleAuth.Tests.Api.Token
                         null))
                 .ConfigureAwait(false);
             _oauthEventSource.Verify(s => s.Info("error"));
-            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
             Assert.True(exception.Message == "error");
         }
 
@@ -121,7 +122,7 @@ namespace SimpleAuth.Tests.Api.Token
                         null,
                         null))
                 .ConfigureAwait(false);
-            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
             Assert.True(exception.Message ==
                         string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, "id", GrantType.password));
         }
@@ -145,6 +146,7 @@ namespace SimpleAuth.Tests.Api.Token
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(new Client
                 {
+                    ResponseTypes = new string[0],
                     ClientId = "id",
                     GrantTypes = new List<GrantType>
                         {
@@ -161,9 +163,8 @@ namespace SimpleAuth.Tests.Api.Token
                         null,
                         null))
                 .ConfigureAwait(false);
-            Assert.True(exception.Code == ErrorCodes.InvalidClient);
-            Assert.True(exception.Message ==
-                        string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, "id", "token id_token"));
+            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
+            Assert.Equal(string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, "id", "token id_token"), exception.Message);
         }
 
         [Fact]
@@ -208,7 +209,7 @@ namespace SimpleAuth.Tests.Api.Token
                         null,
                         null))
                 .ConfigureAwait(false);
-            Assert.True(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
         }
 
@@ -259,7 +260,7 @@ namespace SimpleAuth.Tests.Api.Token
                         null,
                         null))
                 .ConfigureAwait(false);
-            Assert.True(exception.Code == ErrorCodes.InvalidScope);
+            Assert.Equal(ErrorCodes.InvalidScope, exception.Code);
         }
 
         [Fact]
@@ -296,11 +297,11 @@ namespace SimpleAuth.Tests.Api.Token
             },
                 null);
             var resourceOwner = new ResourceOwner();
-            var userInformationJwsPayload = new JwsPayload();
+            var userInformationJwsPayload = new JwtPayload();
             var grantedToken = new GrantedToken
             {
                 AccessToken = accessToken,
-                IdTokenPayLoad = new JwsPayload()
+                IdTokenPayLoad = new JwtPayload()
             };
 
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
@@ -316,16 +317,16 @@ namespace SimpleAuth.Tests.Api.Token
                 .Returns(() => Task.FromResult(userInformationJwsPayload));
             _grantedTokenHelperStub.Setup(g => g.GetValidGrantedTokenAsync(It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<JwsPayload>(),
-                    It.IsAny<JwsPayload>()))
+                    It.IsAny<JwtPayload>(),
+                    It.IsAny<JwtPayload>()))
                 .Returns(Task.FromResult((GrantedToken)null));
-            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateTokenAsync(
+            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateToken(
                     It.IsAny<Client>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<IDictionary<string, object>>(),
-                    It.IsAny<JwsPayload>(),
-                    It.IsAny<JwsPayload>()))
+                    It.IsAny<JwtPayload>(),
+                    It.IsAny<JwtPayload>()))
                 .Returns(Task.FromResult(grantedToken));
 
             await _getTokenByResourceOwnerCredentialsGrantTypeAction
@@ -334,7 +335,7 @@ namespace SimpleAuth.Tests.Api.Token
 
             _tokenStoreStub.Verify(g => g.AddToken(grantedToken));
             _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, invalidScope));
-            _clientHelperStub.Verify(c => c.GenerateIdTokenAsync(It.IsAny<Client>(), It.IsAny<JwsPayload>()));
+            _clientHelperStub.Verify(c => c.GenerateIdTokenAsync(It.IsAny<Client>(), It.IsAny<JwtPayload>()));
         }
 
         private void InitializeFakeObjects()

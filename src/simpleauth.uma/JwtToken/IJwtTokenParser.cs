@@ -1,10 +1,10 @@
-﻿namespace SimpleAuth.Uma.JwtToken
-{
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
+﻿//namespace SimpleAuth.Uma.JwtToken
+//{
+//    using System.IdentityModel.Tokens.Jwt;
+//    using Microsoft.IdentityModel.Tokens;
 
-    public interface IJwtTokenParser
-    {
-        JwsPayload UnSign(string jws, string openidUrl, JsonWebKeySet jsonWebKeySet);
-    }
-}
+//    public interface IJwtTokenParser
+//    {
+//        JwtSecurityToken UnSign(string jws, string openidUrl, JsonWebKeySet jsonWebKeySet);
+//    }
+//}

@@ -7,7 +7,6 @@
     using Shared.Repositories;
     using SimpleAuth.Authenticate;
     using SimpleAuth.JwtToken;
-    using SimpleAuth.Signature;
     using System;
     using System.Threading.Tasks;
     using Xunit;
@@ -131,8 +130,6 @@
             _clientRepositoryStub = new Mock<IClientStore>();
             _oauthEventSource = new Mock<IOAuthEventSource>();
             _authenticateClient = new AuthenticateClient(
-                new Mock<IJwsParser>().Object,
-                new Mock<IJwtParser>().Object,
                 _clientRepositoryStub.Object,
                 _oauthEventSource.Object);
         }

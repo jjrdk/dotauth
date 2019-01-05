@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Server.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Extensions;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
@@ -30,11 +26,14 @@ namespace SimpleAuth.Server.Controllers
     using Shared.Models;
     using Shared.Requests;
     using SimpleAuth;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Translation;
     using ViewModels;
     using WebSite.Consent;
 
-    [Area("Shell")]
     [Authorize("Connected")]
     public class ConsentController : BaseController
     {
@@ -81,7 +80,7 @@ namespace SimpleAuth.Server.Controllers
                     ? new List<string>()
                     : actionResult.Scopes.Select(s => s.Description).ToList(),
                 AllowedIndividualClaims = actionResult.AllowedClaims ?? new List<string>(),
-                LogoUri = client?.LogoUri?.AbsoluteUri,
+                //LogoUri = client?.LogoUri?.AbsoluteUri,
                 PolicyUri = client?.PolicyUri?.AbsoluteUri,
                 TosUri = client?.TosUri?.AbsoluteUri,
                 Code = code
@@ -146,10 +145,12 @@ namespace SimpleAuth.Server.Controllers
                 return;
             }
 
-            _eventPublisher.Publish(new ConsentAccepted(Guid.NewGuid().ToString(),
-                processId,
-                act,
-                10));
+            _eventPublisher.Publish(
+                new ConsentAccepted(
+                    Guid.NewGuid().ToString(),
+                    processId,
+                    act,
+                    10));
         }
 
         private void LogConsentRejected(string processId)

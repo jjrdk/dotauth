@@ -47,7 +47,7 @@ namespace SimpleAuth.Tests.WebSite.User
                         var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getUserOperation.Execute(emptyClaimsPrincipal)).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.TheUserNeedsToBeAuthenticated);
         }
 
@@ -61,7 +61,7 @@ namespace SimpleAuth.Tests.WebSite.User
                         var exception = await  Assert.ThrowsAsync<SimpleAuthException>(() => _getUserOperation.Execute(claimsPrincipal)).ConfigureAwait(false);
 
                         Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.TheSubjectCannotBeRetrieved);
         }
         

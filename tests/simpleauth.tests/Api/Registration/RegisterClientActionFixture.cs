@@ -14,6 +14,8 @@
 
 namespace SimpleAuth.Tests.Api.Registration
 {
+    using Helpers;
+    using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
     using Repositories;
     using Shared;
@@ -55,6 +57,7 @@ namespace SimpleAuth.Tests.Api.Registration
             const string clientId = "clientId";
             var client = new Client
             {
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 ClientId = clientId,
                 AllowedScopes = new[] { new Scope { Name = "scope" } },
                 RedirectionUrls = new[] { new Uri("https://localhost"), },
@@ -87,10 +90,8 @@ namespace SimpleAuth.Tests.Api.Registration
             var clientUri = new Uri("https://client_uri", UriKind.Absolute);
             var policyUri = new Uri("https://policy_uri", UriKind.Absolute);
             var tosUri = new Uri("https://tos_uri", UriKind.Absolute);
-            var jwksUri = new Uri("https://jwks_uri", UriKind.Absolute);
             const string kid = "kid";
             //var sectorIdentifierUri = new Uri("https://sector_identifier_uri", UriKind.Absolute);
-            const double defaultMaxAge = 3;
             const string defaultAcrValues = "default_acr_values";
             const bool requireAuthTime = false;
             var initiateLoginUri = new Uri("https://initiate_login_uri", UriKind.Absolute);
@@ -117,28 +118,28 @@ namespace SimpleAuth.Tests.Api.Registration
                 ClientUri = clientUri,
                 PolicyUri = policyUri,
                 TosUri = tosUri,
-                JwksUri = jwksUri,
+                //JwksUri = jwksUri,
                 JsonWebKeys = new List<JsonWebKey>
                 {
                     new JsonWebKey
                     {
                         Kid = kid
                     }
-                },
+                }.ToJwks(),
                 RedirectionUrls = new[] { new Uri("https://localhost"), },
                 //SectorIdentifierUri = sectorIdentifierUri,
-                IdTokenSignedResponseAlg = JwtConstants.JwsAlgNames.RS256,
-                IdTokenEncryptedResponseAlg = JwtConstants.JweAlgNames.RSA1_5,
-                IdTokenEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256,
-                UserInfoSignedResponseAlg = JwtConstants.JwsAlgNames.RS256,
-                UserInfoEncryptedResponseAlg = JwtConstants.JweAlgNames.RSA1_5,
-                UserInfoEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256,
-                RequestObjectSigningAlg = JwtConstants.JwsAlgNames.RS256,
-                RequestObjectEncryptionAlg = JwtConstants.JweAlgNames.RSA1_5,
-                RequestObjectEncryptionEnc = JwtConstants.JweEncNames.A128CBC_HS256,
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
+                IdTokenEncryptedResponseAlg = SecurityAlgorithms.RsaPKCS1,
+                IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
+                UserInfoSignedResponseAlg = SecurityAlgorithms.RsaSha256,
+                UserInfoEncryptedResponseAlg = SecurityAlgorithms.RsaPKCS1,
+                UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
+                RequestObjectSigningAlg = SecurityAlgorithms.RsaSha256,
+                RequestObjectEncryptionAlg = SecurityAlgorithms.RsaPKCS1,
+                RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
-                TokenEndPointAuthSigningAlg = JwtConstants.JwsAlgNames.RS256,
-                DefaultMaxAge = defaultMaxAge,
+                TokenEndPointAuthSigningAlg = SecurityAlgorithms.RsaSha256,
+                //DefaultMaxAge = defaultMaxAge,
                 DefaultAcrValues = defaultAcrValues,
                 RequireAuthTime = requireAuthTime,
                 InitiateLoginUri = initiateLoginUri,

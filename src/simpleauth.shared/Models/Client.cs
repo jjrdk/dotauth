@@ -16,7 +16,7 @@ namespace SimpleAuth.Shared.Models
 {
     using System;
     using System.Collections.Generic;
-    using Requests;
+    using Microsoft.IdentityModel.Tokens;
 
     public class Client
     {
@@ -32,7 +32,7 @@ namespace SimpleAuth.Shared.Models
 
         public string ClientName { get; set; }
 
-        public Uri LogoUri { get; set; }
+        public TimeSpan TokenLifetime { get; set; } = TimeSpan.FromMinutes(30);
 
         /// <summary>
         /// Gets or sets the home page of the client.
@@ -70,12 +70,13 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Gets or sets the client authentication method for the Token Endpoint. 
         /// </summary>
-        public TokenEndPointAuthenticationMethods TokenEndPointAuthMethod { get; set; }
+        public TokenEndPointAuthenticationMethods TokenEndPointAuthMethod { get; set; } =
+            TokenEndPointAuthenticationMethods.client_secret_basic;
 
         /// <summary>
         /// Gets or sets an array containing a list of OAUTH2.0 response_type values
         /// </summary>
-        public IList<string> ResponseTypes { get; set; } = new List<string>();
+        public IList<string> ResponseTypes { get; set; } = ResponseTypeNames.All;
 
         /// <summary>
         /// Gets or sets an array containing a list of OAUTH2.0 grant types
@@ -97,15 +98,15 @@ namespace SimpleAuth.Shared.Models
         /// </summary>
         public ApplicationTypes ApplicationType { get; set; } = ApplicationTypes.web;
 
-        /// <summary>
-        /// Url for the Client's JSON Web Key Set document
-        /// </summary>
-        public Uri JwksUri { get; set; }
+        ///// <summary>
+        ///// Url for the Client's JSON Web Key Set document
+        ///// </summary>
+        //public Uri JwksUri { get; set; }
 
         /// <summary>
         /// Gets or sets the list of json web keys
         /// </summary>
-        public IList<JsonWebKey> JsonWebKeys { get; set; } = new List<JsonWebKey>();
+        public JsonWebKeySet JsonWebKeys { get; set; } = new JsonWebKeySet();
 
         /// <summary>
         /// Gets or sets the list of contacts
@@ -117,10 +118,10 @@ namespace SimpleAuth.Shared.Models
         /// </summary>
         public Uri SectorIdentifierUri { get; set; }
 
-        /// <summary>
-        /// Gets or sets the subject type
-        /// </summary>
-        public string SubjectType { get; set; }
+        ///// <summary>
+        ///// Gets or sets the subject type
+        ///// </summary>
+        //public string SubjectType { get; set; }
 
         /// <summary>
         /// Gets or sets the user info signed response algorithm
@@ -157,10 +158,10 @@ namespace SimpleAuth.Shared.Models
         /// </summary>
         public string TokenEndPointAuthSigningAlg { get; set; }
 
-        /// <summary>
-        /// Gets or sets the default max age
-        /// </summary>
-        public double DefaultMaxAge { get; set; }
+        ///// <summary>
+        ///// Gets or sets the default max age
+        ///// </summary>
+        //public double DefaultMaxAge { get; set; }
 
         /// <summary>
         /// Gets or sets the require authentication time

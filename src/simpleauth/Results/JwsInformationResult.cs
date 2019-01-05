@@ -14,14 +14,14 @@
 
 namespace SimpleAuth.Results
 {
-    using System.Collections.Generic;
-    using Shared;
     using Shared.Requests;
+    using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
 
     public class JwsInformationResult
     {
         public JwsProtectedHeader Header { get; set; }
-        public JwsPayload Payload { get; set; }
+        public JwtPayload Payload { get; set; }
         public Dictionary<string, object> JsonWebKey { get; set; }
     }
 }

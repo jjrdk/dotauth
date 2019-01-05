@@ -36,7 +36,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
 
     //        
     //        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _clientRepositoryStub.Object.GetById(clientId)).ConfigureAwait(false);
-    //        Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+    //        Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
     //        Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntExist, clientId));
     //    }
 

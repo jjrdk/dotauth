@@ -18,29 +18,24 @@ namespace SimpleAuth
     using Api.Discovery;
     using Api.Introspection;
     using Api.Introspection.Actions;
-    using Api.Jwks;
     using Api.Profile.Actions;
     using Api.Token;
     using Api.Token.Actions;
     using Authenticate;
     using Common;
-    using Converter;
     using Helpers;
     using JwtToken;
     using Microsoft.Extensions.DependencyInjection;
     using Repositories;
     using Services;
-    using Shared;
     using Shared.Models;
     using Shared.Repositories;
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
-    using Api.Claims;
-    using Api.Claims.Actions;
-    using Api.Jwe;
     using Api.Scopes;
     using Api.Scopes.Actions;
+    using Microsoft.IdentityModel.Tokens;
     using Translation;
     using Validators;
     using WebSite.Authenticate;
@@ -52,13 +47,11 @@ namespace SimpleAuth
 
     public static class SimpleAuthServerExtensions
     {
-        public static IServiceCollection AddSimpleAuthServer(
+        public static IServiceCollection AddSimpleAuth(
             this IServiceCollection serviceCollection,
             OAuthConfigurationOptions configurationOptions = null,
-            IReadOnlyCollection<ClaimAggregate> claims = null,
             IReadOnlyCollection<Client> clients = null,
             IReadOnlyCollection<Consent> consents = null,
-            IReadOnlyCollection<JsonWebKey> jsonWebKeys = null,
             IReadOnlyCollection<ResourceOwnerProfile> profiles = null,
             IReadOnlyCollection<ResourceOwner> resourceOwners = null,
             IReadOnlyCollection<Scope> scopes = null,
@@ -69,8 +62,6 @@ namespace SimpleAuth
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
 
-            serviceCollection.AddTransient<IJweActions, JweActions>();
-            serviceCollection.AddTransient<IJsonWebKeyHelper, JsonWebKeyHelper>();
             serviceCollection.AddTransient<IScopeActions, ScopeActions>();
             serviceCollection.AddTransient<IDeleteScopeOperation, DeleteScopeOperation>();
             serviceCollection.AddTransient<IGetScopeOperation, GetScopeOperation>();
@@ -81,12 +72,6 @@ namespace SimpleAuth
             serviceCollection.AddTransient<IAddScopeOperation, AddScopeOperation>();
             serviceCollection.AddTransient<IUpdateScopeOperation, UpdateScopeOperation>();
             serviceCollection.AddTransient<ISearchScopesOperation, SearchScopesOperation>();
-            serviceCollection.AddTransient<IClaimActions, ClaimActions>();
-            serviceCollection.AddTransient<IAddClaimAction, AddClaimAction>();
-            serviceCollection.AddTransient<IDeleteClaimAction, DeleteClaimAction>();
-            serviceCollection.AddTransient<IGetClaimAction, GetClaimAction>();
-            serviceCollection.AddTransient<ISearchClaimsAction, SearchClaimsAction>();
-            serviceCollection.AddTransient<IGetClaimsAction, GetClaimsAction>();
             serviceCollection.AddTransient<IGrantedTokenGeneratorHelper, GrantedTokenGeneratorHelper>();
             serviceCollection.AddTransient<IConsentHelper, ConsentHelper>();
             serviceCollection.AddTransient<IClientHelper, ClientHelper>();
@@ -103,7 +88,6 @@ namespace SimpleAuth
             serviceCollection.AddTransient<IConsentActions, ConsentActions>();
             serviceCollection.AddTransient<IConfirmConsentAction, ConfirmConsentAction>();
             serviceCollection.AddTransient<IDisplayConsentAction, DisplayConsentAction>();
-            serviceCollection.AddSingleton<IJwksActions, JwksActions>();
             serviceCollection.AddTransient<IAuthenticateActions, AuthenticateActions>();
             serviceCollection
                 .AddTransient<IAuthenticateResourceOwnerOpenIdAction, AuthenticateResourceOwnerOpenIdAction>();
@@ -111,7 +95,6 @@ namespace SimpleAuth
             serviceCollection.AddTransient<IAuthenticateHelper, AuthenticateHelper>();
             serviceCollection.AddTransient<IDiscoveryActions, DiscoveryActions>();
             serviceCollection.AddTransient<IJwtGenerator, JwtGenerator>();
-            serviceCollection.AddTransient<IJwtParser, JwtParser>();
             serviceCollection.AddTransient<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>();
             serviceCollection.AddTransient<IAuthenticateClient, AuthenticateClient>();
             serviceCollection
@@ -121,7 +104,6 @@ namespace SimpleAuth
             serviceCollection.AddTransient<IIntrospectionActions, IntrospectionActions>();
             serviceCollection.AddTransient<IPostIntrospectionAction, PostIntrospectionAction>();
             serviceCollection.AddTransient<IIntrospectionParameterValidator, IntrospectionParameterValidator>();
-            serviceCollection.AddTransient<IJsonWebKeyConverter, JsonWebKeyConverter>();
             serviceCollection.AddTransient<IGetConsentsOperation, GetConsentsOperation>();
             serviceCollection.AddTransient<IRemoveConsentOperation, RemoveConsentOperation>();
             serviceCollection.AddTransient<IRevokeTokenAction, RevokeTokenAction>();
@@ -139,13 +121,11 @@ namespace SimpleAuth
             serviceCollection.AddTransient<IAmrHelper, AmrHelper>();
             serviceCollection.AddTransient<IRevokeTokenParameterValidator, RevokeTokenParameterValidator>();
             serviceCollection.AddSingleton(configurationOptions ?? new OAuthConfigurationOptions());
-            serviceCollection.AddSingleton<IClaimRepository>(new DefaultClaimRepository(claims));
 
             serviceCollection.AddSingleton(sp => new DefaultClientRepository(clients, sp.GetService<HttpClient>(), sp.GetService<IScopeStore>()));
             serviceCollection.AddSingleton(typeof(IClientStore), sp => sp.GetService<DefaultClientRepository>());
             serviceCollection.AddSingleton(typeof(IClientRepository), sp => sp.GetService<DefaultClientRepository>());
             serviceCollection.AddSingleton<IConsentRepository>(new DefaultConsentRepository(consents));
-            serviceCollection.AddSingleton<IJsonWebKeyRepository>(new DefaultJsonWebKeyRepository(jsonWebKeys));
             serviceCollection.AddSingleton<IProfileRepository>(new DefaultProfileRepository(profiles));
             serviceCollection.AddSingleton<IResourceOwnerRepository>(
                 new DefaultResourceOwnerRepository(resourceOwners));

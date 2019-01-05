@@ -16,10 +16,9 @@ namespace SimpleAuth
 {
     using Api.Authorization;
     using Parameters;
-    using Shared.Models;
-    using Shared.Requests;
-    using System.Collections.Generic;
     using Shared;
+    using Shared.Models;
+    using System.Collections.Generic;
 
     public static class CoreConstants
     {
@@ -78,7 +77,7 @@ namespace SimpleAuth
                 IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the profile",
-                Claims = new []
+                Claims = new[]
                 {
                     JwtConstants.StandardResourceOwnerClaimNames.Name,
                     JwtConstants.StandardResourceOwnerClaimNames.FamilyName,
@@ -105,7 +104,7 @@ namespace SimpleAuth
                 IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the email",
-                Claims = new []
+                Claims = new[]
                 {
                     JwtConstants.StandardResourceOwnerClaimNames.Email,
                     JwtConstants.StandardResourceOwnerClaimNames.EmailVerified
@@ -120,7 +119,7 @@ namespace SimpleAuth
                 IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the address",
-                Claims = new []
+                Claims = new[]
                 {
                     JwtConstants.StandardResourceOwnerClaimNames.Address
                 },
@@ -134,7 +133,7 @@ namespace SimpleAuth
                 IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the phone",
-                Claims = new []
+                Claims = new[]
                 {
                     JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber,
                     JwtConstants.StandardResourceOwnerClaimNames.PhoneNumberVerified
@@ -190,7 +189,7 @@ namespace SimpleAuth
             public const string RefreshToken = "refresh_token";
         }
 
-        public static string[] AllStandardTokenTypeHintNames = new []
+        public static string[] AllStandardTokenTypeHintNames = new[]
         {
             StandardTokenTypeHintNames.AccessToken,
             StandardTokenTypeHintNames.RefreshToken
@@ -374,66 +373,41 @@ namespace SimpleAuth
                 GrantType.@implicit
             };
 
-            public static string[] SupportedResponseModes = new []
+            public static string[] SupportedResponseModes = new[]
             {
                 "query"
             };
 
-            public static string[] SupportedSubjectTypes = new []
+            public static string[] SupportedSubjectTypes = new[]
             {
                 // Same subject value to all clients.
                 SubjectTypeNames.Public,
                 SubjectTypeNames.PairWise
             };
 
-            public static string[] SupportedJwsAlgs = new []
-            {
-                JwtConstants.JwsAlgNames.RS256
-            };
+            //public static string[] SupportedJwsAlgs = new[]
+            //{
+            //    SecurityAlgorithms.RsaSha256 //JwtConstants.JwsAlgNames.RS256
+            //};
 
-            public static string[] SupportedJweAlgs = new []
-            {
-                JwtConstants.JweAlgNames.RSA1_5
-            };
+            //public static string[] SupportedJweAlgs = new[]
+            //{
+            //    SecurityAlgorithms.RsaPKCS1
+            //};
 
-            public static string[] SupportedJweEncs = new []
-            {
-                JwtConstants.JweEncNames.A128CBC_HS256
-            };
+            //public static string[] SupportedJweEncs = new[]
+            //{
+            //    SecurityAlgorithms.Aes128CbcHmacSha256
+            //};
 
-            public static List<TokenEndPointAuthenticationMethods> SupportedTokenEndPointAuthenticationMethods = new List
-                <TokenEndPointAuthenticationMethods>
+            public static List<TokenEndPointAuthenticationMethods> SupportedTokenEndPointAuthenticationMethods =
+                new List<TokenEndPointAuthenticationMethods>
             {
                 TokenEndPointAuthenticationMethods.client_secret_basic,
                 TokenEndPointAuthenticationMethods.client_secret_post,
                 TokenEndPointAuthenticationMethods.client_secret_jwt,
                 TokenEndPointAuthenticationMethods.private_key_jwt,
                 TokenEndPointAuthenticationMethods.tls_client_auth
-            };
-
-            public static string[] SupportedClaims = new []
-            {
-                JwtConstants.StandardResourceOwnerClaimNames.Subject,
-                JwtConstants.StandardResourceOwnerClaimNames.Name,
-                JwtConstants.StandardResourceOwnerClaimNames.FamilyName,
-                JwtConstants.StandardResourceOwnerClaimNames.GivenName,
-                JwtConstants.StandardResourceOwnerClaimNames.MiddleName,
-                JwtConstants.StandardResourceOwnerClaimNames.NickName,
-                JwtConstants.StandardResourceOwnerClaimNames.PreferredUserName,
-                JwtConstants.StandardResourceOwnerClaimNames.Profile,
-                JwtConstants.StandardResourceOwnerClaimNames.Picture,
-                JwtConstants.StandardResourceOwnerClaimNames.WebSite,
-                JwtConstants.StandardResourceOwnerClaimNames.Gender,
-                JwtConstants.StandardResourceOwnerClaimNames.BirthDate,
-                JwtConstants.StandardResourceOwnerClaimNames.ZoneInfo,
-                JwtConstants.StandardResourceOwnerClaimNames.Locale,
-                JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt,
-                JwtConstants.StandardResourceOwnerClaimNames.Email,
-                JwtConstants.StandardResourceOwnerClaimNames.EmailVerified,
-                JwtConstants.StandardResourceOwnerClaimNames.Address,
-                JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber,
-                JwtConstants.StandardResourceOwnerClaimNames.PhoneNumberVerified,
-                JwtConstants.StandardResourceOwnerClaimNames.Role
             };
         }
 

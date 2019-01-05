@@ -89,14 +89,12 @@ namespace SimpleAuth.Uma.Extensions
                 authorizationServerOptions.UmaConfigurationOptions,
                     authorizationServerOptions.Configuration?.Resources,
                     authorizationServerOptions.Configuration?.Policies)
-                .AddSimpleAuthServer(
+                .AddSimpleAuth(
                 authorizationServerOptions.OAuthConfigurationOptions,
                     clients: authorizationServerOptions.Configuration?.Clients,
                     scopes: authorizationServerOptions.Configuration == null
                         ? DEFAULT_SCOPES
-                        : authorizationServerOptions.Configuration.Scopes,
-                    claims: new List<ClaimAggregate>())
-                .AddSimpleAuthJwt()
+                        : authorizationServerOptions.Configuration.Scopes)
                 //.AddIdServerClient()
                 .AddDefaultTokenStore();
             //.AddDefaultSimpleBus()

@@ -1,8 +1,8 @@
 ﻿namespace SimpleAuth.Server.Tests.Apis
 {
-    using System.Threading.Tasks;
     using Client;
     using Client.Operations;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class UserInfoClientFixture : IClassFixture<TestOauthServerFixture>
@@ -18,11 +18,13 @@
 
         [Fact]
         public async Task When_Pass_Invalid_Token_To_UserInfo_Then_Error_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        var getUserInfoResult = await _userInfoClient.Resolve(BaseUrl + "/.well-known/openid-configuration", "invalid_access_token").ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient
+                .Resolve(BaseUrl + "/.well-known/openid-configuration", "invalid_access_token")
+                .ConfigureAwait(false);
 
-                        Assert.NotNull(getUserInfoResult);
             Assert.True(getUserInfoResult.ContainsError);
             Assert.Equal("invalid_token", getUserInfoResult.Error.Error);
             Assert.Equal("the token is not valid", getUserInfoResult.Error.ErrorDescription);
@@ -30,67 +32,80 @@
 
         [Fact]
         public async Task When_Pass_Client_Access_Token_To_UserInfo_Then_Error_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        var result = await new TokenClient(
+            var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
                     TokenRequest.FromScopes("openid"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.Resolve(BaseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient
+                .Resolve(BaseUrl + "/.well-known/openid-configuration", result.Content.AccessToken)
+                .ConfigureAwait(false);
 
-                        Assert.NotNull(getUserInfoResult);
             Assert.True(getUserInfoResult.ContainsError);
             Assert.Equal("invalid_token", getUserInfoResult.Error.Error);
-            Assert.Equal("not a valid resource owner token", getUserInfoResult.Error.ErrorDescription);
+            Assert.Equal("Not a valid resource owner token", getUserInfoResult.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task When_Pass_Access_Token_Then_Json_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        var result = await new TokenClient(
+            var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    TokenRequest.FromPassword("administrator", "password", new []{"scim"}),
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.Resolve(BaseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient
+                .Resolve(BaseUrl + "/.well-known/openid-configuration", result.Content.AccessToken)
+                .ConfigureAwait(false);
 
-                        Assert.NotNull(getUserInfoResult);
+            Assert.NotNull(getUserInfoResult);
         }
 
         [Fact]
         public async Task When_Pass_Access_Token_Then_Jws_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        var result = await new TokenClient(
+            var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client_userinfo_sig_rs256", "client_userinfo_sig_rs256"),
-                    TokenRequest.FromPassword("administrator", "password", new []{"scim"}),
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.Resolve(BaseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient
+                .Resolve(BaseUrl + "/.well-known/openid-configuration", result.Content.AccessToken)
+                .ConfigureAwait(false);
 
-                        Assert.NotNull(getUserInfoResult);
-            Assert.NotNull(getUserInfoResult.JwtToken);
+            Assert.NotNull(getUserInfoResult.Content);
         }
 
         [Fact]
         public async Task When_Pass_Access_Token_Then_Jwe_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        var result = await new TokenClient(
+            var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client_userinfo_enc_rsa15", "client_userinfo_enc_rsa15"),
-                    TokenRequest.FromPassword("administrator", "password", new []{"scim"}),
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.Resolve(BaseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
+                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient
+                .Resolve(BaseUrl + "/.well-known/openid-configuration", result.Content.AccessToken)
+                .ConfigureAwait(false);
 
-                        Assert.NotNull(getUserInfoResult);
-            Assert.NotNull(getUserInfoResult.JwtToken);
+            Assert.NotNull(getUserInfoResult.Content);
         }
 
         private void InitializeFakeObjects()

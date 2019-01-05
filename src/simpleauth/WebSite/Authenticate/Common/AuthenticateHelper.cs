@@ -11,9 +11,7 @@
     using Helpers;
     using Parameters;
     using Results;
-    using Shared.Models;
     using Shared.Repositories;
-    using Shared.Requests;
     using SimpleAuth.Common;
 
     public sealed class AuthenticateHelper : IAuthenticateHelper

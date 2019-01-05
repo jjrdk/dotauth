@@ -29,7 +29,6 @@ namespace SimpleAuth.WebSite.Consent.Actions
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Shared.Requests;
 
     public class DisplayConsentAction : IDisplayConsentAction
     {

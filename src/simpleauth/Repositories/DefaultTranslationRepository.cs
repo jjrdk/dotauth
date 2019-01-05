@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Extensions;
     using Shared.Models;
     using Shared.Repositories;
 
@@ -174,12 +173,12 @@
                 return Task.FromResult((Translation)null);
             }
 
-            return Task.FromResult(translation.Copy());
+            return Task.FromResult(translation);
         }
 
         public Task<ICollection<Translation>> GetAsync(string languageTag)
         {
-            ICollection<Translation> result = _translations.Where(t => t.LanguageTag == languageTag).Select(t => t.Copy()).ToList();
+            ICollection<Translation> result = _translations.Where(t => t.LanguageTag == languageTag).ToList();
             return Task.FromResult(result);
         }
 

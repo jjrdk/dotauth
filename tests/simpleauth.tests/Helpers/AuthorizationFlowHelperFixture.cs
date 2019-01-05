@@ -2,7 +2,6 @@
 {
     using Errors;
     using Exceptions;
-    using Shared.Requests;
     using SimpleAuth.Api.Authorization;
     using SimpleAuth.Helpers;
     using System.Collections.Generic;
@@ -22,7 +21,7 @@
             var exception =
                 Assert.Throws<SimpleAuthExceptionWithState>(() =>
                     _authorizationFlowHelper.GetAuthorizationFlow(null, state));
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
             Assert.True(exception.State == state);
         }
@@ -37,7 +36,7 @@
                 _authorizationFlowHelper.GetAuthorizationFlow(
                     new List<string>(),
                     state));
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
             Assert.True(exception.State == state);
         }

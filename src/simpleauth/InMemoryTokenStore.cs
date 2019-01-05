@@ -2,9 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Threading.Tasks;
-    using Shared;
     using Shared.Models;
 
     internal sealed class InMemoryTokenStore : ITokenStore
@@ -20,7 +20,7 @@
             _mappingStrToAccessTokens = new Dictionary<string, string>();
         }
 
-        public Task<GrantedToken> GetToken(string scopes, string clientId, JwsPayload idTokenJwsPayload, JwsPayload userInfoJwsPayload)
+        public Task<GrantedToken> GetToken(string scopes, string clientId, JwtPayload idTokenJwsPayload, JwtPayload userInfoJwsPayload)
         {
             if (_tokens == null || !_tokens.Any())
             {
@@ -159,7 +159,7 @@
             return Task.FromResult(true);
         }
 
-        private static bool CompareJwsPayload(JwsPayload firstJwsPayload, JwsPayload secondJwsPayload)
+        private static bool CompareJwsPayload(JwtPayload firstJwsPayload, JwtPayload secondJwsPayload)
         {
             return firstJwsPayload.All(secondJwsPayload.Contains);
         }

@@ -2,6 +2,7 @@
 {
     using Errors;
     using Exceptions;
+    using Microsoft.IdentityModel.Tokens;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
@@ -29,10 +30,10 @@
                 throw new ArgumentNullException(nameof(newClient));
             }
 
-            ValidateNotMandatoryUri(newClient.LogoUri, SharedConstants.ClientNames.LogoUri);
+            //ValidateNotMandatoryUri(newClient.LogoUri, SharedConstants.ClientNames.LogoUri);
             ValidateNotMandatoryUri(newClient.ClientUri, SharedConstants.ClientNames.ClientUri);
             ValidateNotMandatoryUri(newClient.TosUri, SharedConstants.ClientNames.TosUri);
-            ValidateNotMandatoryUri(newClient.JwksUri, SharedConstants.ClientNames.JwksUri);
+            //ValidateNotMandatoryUri(newClient.JwksUri, SharedConstants.ClientNames.JwksUri);
             ValidateNotMandatoryUri(newClient.SectorIdentifierUri, SharedConstants.ClientNames.SectorIdentifierUri, true);
 
             // Based on the RFC : http://openid.net/specs/openid-connect-registration-1_0.html#SectorIdentifierValidation validate the sector_identifier_uri
@@ -49,11 +50,9 @@
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseEnc) &&
-                JwtConstants.MappingNameToJweEncEnum.Keys.Contains(newClient.IdTokenEncryptedResponseEnc))
+            if (!string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseEnc))
             {
-                if (string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseAlg) ||
-                    !JwtConstants.MappingNameToJweAlgEnum.ContainsKey(newClient.IdTokenEncryptedResponseAlg))
+                if (string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseAlg))
                 {
                     throw new SimpleAuthException(
                         ErrorCodes.InvalidClientMetaData,
@@ -61,11 +60,9 @@
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(newClient.UserInfoEncryptedResponseEnc) &&
-                JwtConstants.MappingNameToJweEncEnum.Keys.Contains(newClient.UserInfoEncryptedResponseEnc))
+            if (!string.IsNullOrWhiteSpace(newClient.UserInfoEncryptedResponseEnc))
             {
-                if (string.IsNullOrWhiteSpace(newClient.UserInfoEncryptedResponseAlg) ||
-                    !JwtConstants.MappingNameToJweAlgEnum.ContainsKey(newClient.UserInfoEncryptedResponseAlg))
+                if (string.IsNullOrWhiteSpace(newClient.UserInfoEncryptedResponseAlg))
                 {
                     throw new SimpleAuthException(
                         ErrorCodes.InvalidClientMetaData,
@@ -73,11 +70,9 @@
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(newClient.RequestObjectEncryptionEnc) &&
-                JwtConstants.MappingNameToJweEncEnum.Keys.Contains(newClient.RequestObjectEncryptionEnc))
+            if (!string.IsNullOrWhiteSpace(newClient.RequestObjectEncryptionEnc))
             {
-                if (string.IsNullOrWhiteSpace(newClient.RequestObjectEncryptionAlg) ||
-                    !JwtConstants.MappingNameToJweAlgEnum.ContainsKey(newClient.RequestObjectEncryptionAlg))
+                if (string.IsNullOrWhiteSpace(newClient.RequestObjectEncryptionAlg))
                 {
                     throw new SimpleAuthException(
                         ErrorCodes.InvalidClientMetaData,
@@ -120,11 +115,12 @@
                 client.ClientName = newClient.ClientName;
             }
 
+            client.TokenLifetime = newClient.TokenLifetime;
             client.ApplicationType = newClient.ApplicationType;
             client.ClientUri = newClient.ClientUri;
             client.Contacts = newClient.Contacts;
             client.DefaultAcrValues = newClient.DefaultAcrValues;
-            client.DefaultMaxAge = newClient.DefaultMaxAge;
+            //client.DefaultMaxAge = newClient.DefaultMaxAge;
 
             // If omitted then the default value is authorization code grant type
             if (newClient.GrantTypes == null ||
@@ -140,54 +136,40 @@
                 client.GrantTypes = newClient.GrantTypes;
             }
 
-            if (!string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseAlg) &&
-                CoreConstants.Supported.SupportedJweAlgs.Contains(newClient.IdTokenEncryptedResponseAlg))
-            {
-                client.IdTokenEncryptedResponseAlg = newClient.IdTokenEncryptedResponseAlg;
-            }
-            else
-            {
-                client.IdTokenEncryptedResponseAlg = string.Empty;
-            }
+            client.IdTokenEncryptedResponseAlg = !string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseAlg)
+                ? newClient.IdTokenEncryptedResponseAlg
+                : string.Empty;
 
             if (!string.IsNullOrWhiteSpace(client.IdTokenEncryptedResponseAlg))
             {
-                if (!string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseEnc) &&
-                    CoreConstants.Supported.SupportedJweEncs.Contains(newClient.IdTokenEncryptedResponseEnc))
-                {
-                    client.IdTokenEncryptedResponseEnc = newClient.IdTokenEncryptedResponseEnc;
-                }
-                else
-                {
-                    client.IdTokenEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256;
-                }
+                client.IdTokenEncryptedResponseEnc = !string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseEnc)
+                    ? newClient.IdTokenEncryptedResponseEnc
+                    : SecurityAlgorithms.Aes128CbcHmacSha256;
+            }
+            else if(!string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseEnc))
+            {
+                throw new SimpleAuthException(ErrorCodes.InvalidClientMetaData,
+                    ErrorDescriptions.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
             }
 
-            if (!string.IsNullOrWhiteSpace(newClient.IdTokenSignedResponseAlg) &&
-                CoreConstants.Supported.SupportedJwsAlgs.Contains(newClient.IdTokenSignedResponseAlg))
-            {
-                client.IdTokenSignedResponseAlg = newClient.IdTokenSignedResponseAlg;
-            }
-            else
-            {
-                client.IdTokenSignedResponseAlg = JwtConstants.JwsAlgNames.RS256;
-            }
+            client.IdTokenSignedResponseAlg = !string.IsNullOrWhiteSpace(newClient.IdTokenSignedResponseAlg) ? newClient.IdTokenSignedResponseAlg : SecurityAlgorithms.RsaSha256;
 
             client.InitiateLoginUri = newClient.InitiateLoginUri;
 
-            if (newClient.JsonWebKeys?.Any() != true)
+            if (newClient.JsonWebKeys.Keys.Any() != true)
             {
-                if (newClient.JwksUri != null)
-                {
-                    throw new SimpleAuthException(
-                        ErrorCodes.InvalidClientMetaData,
-                        ErrorDescriptions.TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed);
-                }
+                throw new SimpleAuthException(ErrorCodes.InvalidClientMetaData, ErrorDescriptions.JwkIsInvalid);
+                //if (newClient.JwksUri != null)
+                //{
+                //    throw new SimpleAuthException(
+                //        ErrorCodes.InvalidClientMetaData,
+                //        ErrorDescriptions.TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed);
+                //}
             }
 
             client.JsonWebKeys = newClient.JsonWebKeys;
-            client.JwksUri = newClient.JwksUri;
-            client.LogoUri = newClient.LogoUri;
+            //client.JwksUri = newClient.JwksUri;
+            //client.LogoUri = newClient.LogoUri;
             client.PolicyUri = newClient.PolicyUri;
             client.PostLogoutRedirectUris = newClient.PostLogoutRedirectUris;
 
@@ -274,7 +256,7 @@
             client.ScimProfile = newClient.ScimProfile;
             client.Secrets = newClient.Secrets;
             client.SectorIdentifierUri = newClient.SectorIdentifierUri;
-            client.SubjectType = newClient.SubjectType;
+            //client.SubjectType = newClient.SubjectType;
 
             if (client.Secrets.Count == 0 &&
                 client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.private_key_jwt)
@@ -295,18 +277,16 @@
             client.UserInfoEncryptedResponseAlg = newClient.UserInfoEncryptedResponseAlg;
             client.UserInfoEncryptedResponseEnc = newClient.UserInfoEncryptedResponseEnc;
 
-            if (!string.IsNullOrWhiteSpace(newClient.UserInfoSignedResponseAlg) &&
-                CoreConstants.Supported.SupportedJwsAlgs.Contains(newClient.UserInfoSignedResponseAlg))
+            if (!string.IsNullOrWhiteSpace(newClient.UserInfoSignedResponseAlg))
             {
                 client.UserInfoSignedResponseAlg = newClient.UserInfoSignedResponseAlg;
             }
             else
             {
-                client.UserInfoSignedResponseAlg = JwtConstants.JwsAlgNames.NONE;
+                client.UserInfoSignedResponseAlg = SecurityAlgorithms.None;
             }
 
-            if (!string.IsNullOrWhiteSpace(newClient.UserInfoEncryptedResponseAlg) &&
-                CoreConstants.Supported.SupportedJweAlgs.Contains(newClient.UserInfoEncryptedResponseAlg))
+            if (!string.IsNullOrWhiteSpace(newClient.UserInfoEncryptedResponseAlg))
             {
                 client.UserInfoEncryptedResponseAlg = newClient.UserInfoEncryptedResponseAlg;
             }
@@ -317,19 +297,17 @@
 
             if (!string.IsNullOrWhiteSpace(client.UserInfoEncryptedResponseAlg))
             {
-                if (!string.IsNullOrWhiteSpace(newClient.UserInfoEncryptedResponseEnc) &&
-                    CoreConstants.Supported.SupportedJweEncs.Contains(newClient.UserInfoEncryptedResponseEnc))
+                if (!string.IsNullOrWhiteSpace(newClient.UserInfoEncryptedResponseEnc))
                 {
                     client.UserInfoEncryptedResponseEnc = newClient.UserInfoEncryptedResponseEnc;
                 }
                 else
                 {
-                    client.UserInfoEncryptedResponseEnc = JwtConstants.JweEncNames.A128CBC_HS256;
+                    client.UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256;
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(newClient.RequestObjectSigningAlg) &&
-                CoreConstants.Supported.SupportedJwsAlgs.Contains(newClient.RequestObjectSigningAlg))
+            if (!string.IsNullOrWhiteSpace(newClient.RequestObjectSigningAlg))
             {
                 client.RequestObjectSigningAlg = newClient.RequestObjectSigningAlg;
             }
@@ -338,8 +316,7 @@
                 client.RequestObjectSigningAlg = string.Empty;
             }
 
-            if (!string.IsNullOrWhiteSpace(newClient.RequestObjectEncryptionAlg) &&
-                CoreConstants.Supported.SupportedJweAlgs.Contains(newClient.RequestObjectEncryptionAlg))
+            if (!string.IsNullOrWhiteSpace(newClient.RequestObjectEncryptionAlg))
             {
                 client.RequestObjectEncryptionAlg = newClient.RequestObjectEncryptionAlg;
             }
@@ -350,19 +327,17 @@
 
             if (!string.IsNullOrWhiteSpace(client.RequestObjectEncryptionAlg))
             {
-                if (!string.IsNullOrWhiteSpace(newClient.RequestObjectEncryptionEnc) &&
-                    CoreConstants.Supported.SupportedJweEncs.Contains(newClient.RequestObjectEncryptionEnc))
+                if (!string.IsNullOrWhiteSpace(newClient.RequestObjectEncryptionEnc))
                 {
                     client.RequestObjectEncryptionEnc = newClient.RequestObjectEncryptionEnc;
                 }
                 else
                 {
-                    client.RequestObjectEncryptionEnc = JwtConstants.JweEncNames.A128CBC_HS256;
+                    client.RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256;
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(newClient.TokenEndPointAuthSigningAlg) &&
-                CoreConstants.Supported.SupportedJwsAlgs.Contains(newClient.TokenEndPointAuthSigningAlg))
+            if (!string.IsNullOrWhiteSpace(newClient.TokenEndPointAuthSigningAlg))
             {
                 client.TokenEndPointAuthSigningAlg = newClient.TokenEndPointAuthSigningAlg;
             }

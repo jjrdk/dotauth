@@ -15,6 +15,7 @@
 namespace SimpleAuth.Shared.Models
 {
     using System;
+    using System.IdentityModel.Tokens.Jwt;
 
     public class AuthorizationCode
     {
@@ -41,12 +42,12 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Gets or sets the id token payload.
         /// </summary>
-        public JwsPayload IdTokenPayload { get; set; }
+        public JwtPayload IdTokenPayload { get; set; }
 
         /// <summary>
         /// Gets or sets the user information payload.
         /// </summary>
-        public JwsPayload UserInfoPayLoad { get; set; }
+        public JwtPayload UserInfoPayLoad { get; set; }
 
         /// <summary>
         /// Gets or sets the concatenated list of scopes.

@@ -35,7 +35,7 @@ namespace SimpleAuth.Server.Tests
             var mvc = services.AddMvcCore(o => { }).AddJsonFormatters();
             var parts = mvc.PartManager.ApplicationParts;
             parts.Clear();
-            parts.Add(new AssemblyPart(typeof(JweController).GetTypeInfo().Assembly));
+            parts.Add(new AssemblyPart(typeof(ClientsController).GetTypeInfo().Assembly));
             return services.BuildServiceProvider();
         }
 
@@ -59,7 +59,7 @@ namespace SimpleAuth.Server.Tests
                 EndPoint = "http://localhost:5555/"
             });
             serviceCollection.AddSingleton<IOpenIdEventSource, OpenIdEventSource>();
-            serviceCollection.AddSimpleAuthServer(resourceOwners: DefaultStorage.GetUsers());
+            serviceCollection.AddSimpleAuth(resourceOwners: DefaultStorage.GetUsers());
             serviceCollection.AddAuthentication(opts =>
             {
                 opts.DefaultAuthenticateScheme = DefaultSchema;
@@ -72,9 +72,6 @@ namespace SimpleAuth.Server.Tests
                     policy.RequireAssertion(p => true);
                 });
             });
-            //serviceCollection.AddDefaultAccessTokenStore();
-            serviceCollection.AddSimpleAuthJwt();
-            //serviceCollection.AddTechnicalLogging();
         }
     }
 }

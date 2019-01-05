@@ -1,16 +1,12 @@
 ﻿namespace SimpleAuth.Tests.Api.Authorization
 {
-    using Encrypt;
-    using Encrypt.Encryption;
     using Logging;
     using Moq;
     using Parameters;
     using Shared.Repositories;
     using SimpleAuth.Api.Authorization.Common;
-    using SimpleAuth.Converter;
     using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
-    using SimpleAuth.Signature;
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -186,7 +182,7 @@
         {            InitializeMockingObjects();
             const string state = "state";
             const string clientId = "MyBlog";
-            const string subject = "habarthierry@hotmail.fr";
+            const string subject = "john.doe@email.com";
             const string redirectUrl = "http://localhost";
             FakeFactories.FakeDataSource.Consents.Add(new Consent
             {
@@ -231,7 +227,7 @@
         {            InitializeMockingObjects();
             const string state = "state";
             const string clientId = "MyBlog";
-            const string subject = "habarthierry@hotmail.fr";
+            const string subject = "john.doe@email.com";
             const string redirectUrl = "http://localhost";
             FakeFactories.FakeDataSource.Consents.Add(new Consent
             {
@@ -265,7 +261,7 @@
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var jwtPayload = new JwsPayload
+            var jwtPayload = new JwtSecurityToken
             {
                 {
                     subjectClaim.Type, subjectClaim.Value
@@ -284,7 +280,7 @@
         {            InitializeMockingObjects();
             const string state = "state";
             const string clientId = "MyBlog";
-            const string subject = "habarthierry@hotmail.fr";
+            const string subject = "john.doe@email.com";
             const string issuerName = "audience";
             const string redirectUrl = "http://localhost";
             FakeFactories.FakeDataSource.Consents.Add(new Consent
@@ -319,7 +315,7 @@
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var jwtPayload = new JwsPayload
+            var jwtPayload = new JwtSecurityToken
             {
                 {
                     subjectClaim.Type, "wrong subjet"
@@ -470,7 +466,7 @@
         {            InitializeMockingObjects();
             const string state = "state";
             const string clientId = "MyBlog";
-            const string subject = "habarthierry@hotmail.fr";
+            const string subject = "john.doe@email.com";
             const string redirectUrl = "http://localhost";
             FakeFactories.FakeDataSource.Consents.Add(new Consent
             {
@@ -559,27 +555,27 @@
             _oauthEventSource = new Mock<IOAuthEventSource>();
             var clientStore = new Mock<IClientStore>();
             var consentRepository = new Mock<IConsentRepository>();
-            var jsonWebKeyRepository = new Mock<IJsonWebKeyRepository>();
+            //var jsonWebKeyRepository = new Mock<IJsonWebKeyRepository>();
             var parameterParserHelper = new ParameterParserHelper();
             var consentHelper = new ConsentHelper(consentRepository.Object, parameterParserHelper);
-            var aesEncryptionHelper = new AesEncryptionHelper();
-            var jweHelper = new JweHelper(aesEncryptionHelper);
-            var jweParser = new JweParser(jweHelper);
-            var createJwsSignature = new CreateJwsSignature();
-            var jwsParser = new JwsParser(createJwsSignature);
-            var jsonWebKeyConverter = new JsonWebKeyConverter();
-            var httpClientFactory = new HttpClient(); //HttpClientFactory();
-            var jwtParser = new JwtParser(
-                jweParser,
-                jwsParser,
-                httpClientFactory,
-                clientStore.Object,
-                jsonWebKeyConverter,
-                jsonWebKeyRepository.Object);
+            //var aesEncryptionHelper = new AesEncryptionHelper();
+            //var jweHelper = new JweHelper(aesEncryptionHelper);
+            //var jweParser = new JweParser(jweHelper);
+            //var createJwsSignature = new CreateJwsSignature();
+            //var jwsParser = new JwsParser(createJwsSignature);
+            //var jsonWebKeyConverter = new JsonWebKeyConverter();
+            //var httpClientFactory = new HttpClient(); //HttpClientFactory();
+            //var jwtParser = new JwtParser(
+            //    jweParser,
+            //    jwsParser,
+            //    httpClientFactory,
+            //    clientStore.Object,
+            //    jsonWebKeyConverter,
+            //    jsonWebKeyRepository.Object);
 
             _processAuthorizationRequest = new ProcessAuthorizationRequest(
+                clientStore.Object,
                 consentHelper,
-                jwtParser,
                 _oauthEventSource.Object);
         }
     }

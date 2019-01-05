@@ -28,18 +28,15 @@ namespace SimpleAuth.WebSite.User.Actions
     public class AddUserOperation : IAddUserOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IClaimRepository _claimRepository;
         private readonly IEnumerable<IAccountFilter> _accountFilters;
         private readonly IOpenIdEventSource _openidEventSource;
 
         public AddUserOperation(
             IResourceOwnerRepository resourceOwnerRepository,
-            IClaimRepository claimRepository,
             IEnumerable<IAccountFilter> accountFilters,
             IOpenIdEventSource openIdEventSource)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _claimRepository = claimRepository;
             _accountFilters = accountFilters;
             _openidEventSource = openIdEventSource;
         }
@@ -77,12 +74,12 @@ namespace SimpleAuth.WebSite.User.Actions
             };
 
             // 2. Populate the claims.
-            var existedClaims = await _claimRepository.GetAllAsync().ConfigureAwait(false);
+            //var existedClaims = await _claimRepository.GetAllAsync().ConfigureAwait(false);
             if (resourceOwner.Claims != null)
             {
                 foreach (var claim in resourceOwner.Claims)
                 {
-                    if (newClaims.All(nc => nc.Type != claim.Type) && existedClaims.Any(c => c.Code == claim.Type))
+                    if (newClaims.All(nc => nc.Type != claim.Type))
                     {
                         newClaims.Add(claim);
                     }
@@ -167,7 +164,7 @@ namespace SimpleAuth.WebSite.User.Actions
         }
 
         ///// <summary>
-        ///// Create the scim resource and the scim identifier.
+        ///// CreateJwk the scim resource and the scim identifier.
         ///// </summary>
         ///// <param name="subject"></param>
         ///// <returns></returns>

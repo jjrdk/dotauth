@@ -17,6 +17,7 @@ namespace SimpleAuth.Uma.Extensions
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
     using Models;
     using Parameters;
     using Results;
@@ -214,8 +215,8 @@ namespace SimpleAuth.Uma.Extensions
 
         public static PolicyRuleResponse ToResponse(this PolicyRule policyRule)
         {
-            var claims = policyRule.Claims == null ? new List<PostClaim>()
-                : policyRule.Claims.Select(p => p.ToResponse()).ToList();
+            var claims = policyRule.Claims == null ? new List<Claim>()
+                : policyRule.Claims.ToList();
             return new PolicyRuleResponse
             {
                 Id = policyRule.Id,

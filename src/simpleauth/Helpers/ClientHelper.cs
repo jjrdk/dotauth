@@ -14,13 +14,15 @@
 
 namespace SimpleAuth.Helpers
 {
-    using System;
-    using System.Threading.Tasks;
-    using Extensions;
     using JwtToken;
-    using Shared;
+    using Microsoft.IdentityModel.Tokens;
     using Shared.Models;
     using Shared.Repositories;
+    using System;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
 
     public sealed class ClientHelper : IClientHelper
     {
@@ -33,7 +35,7 @@ namespace SimpleAuth.Helpers
             _jwtGenerator = jwtGenerator;
         }
 
-        public async Task<string> GenerateIdTokenAsync(string clientId, JwsPayload jwsPayload)
+        public async Task<string> GenerateIdTokenAsync(string clientId, JwtPayload jwsPayload)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -54,7 +56,7 @@ namespace SimpleAuth.Helpers
             return await GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
         }
 
-        public async Task<string> GenerateIdTokenAsync(Client client, JwsPayload jwsPayload)
+        public Task<string> GenerateIdTokenAsync(Client client, JwtPayload jwsPayload)
         {
             if (client == null)
             {
@@ -66,26 +68,33 @@ namespace SimpleAuth.Helpers
                 throw new ArgumentNullException(nameof(jwsPayload));
             }
 
-            var signedResponseAlg = client.GetIdTokenSignedResponseAlg();
-            var encryptResponseAlg = client.GetIdTokenEncryptedResponseAlg();
-            var encryptResponseEnc = client.GetIdTokenEncryptedResponseEnc();
-            if (signedResponseAlg == null)
-            {
-                signedResponseAlg = JwsAlg.RS256;
-            }
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.CreateEncodedJwt(jwsPayload.Iss,
+                     null,
+                     new ClaimsIdentity(jwsPayload.Claims),
+                     DateTime.UtcNow,
+                     DateTime.UtcNow.Add(client.TokenLifetime),
+                     DateTime.UtcNow,
+                     client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First(),
+                     client.IdTokenEncryptedResponseAlg != null
+                         ? new EncryptingCredentials(client.JsonWebKeys.GetEncryptionKeys().First(),
+                             client.IdTokenEncryptedResponseAlg,
+                             client.IdTokenEncryptedResponseEnc)
+                         : null);
+            return Task.FromResult(jwt);
 
-            var idToken = await _jwtGenerator.SignAsync(jwsPayload, signedResponseAlg.Value).ConfigureAwait(false);
-            if (encryptResponseAlg == null)
-            {
-                return idToken;
-            }
+            //var idToken = await _jwtGenerator.SignAsync(jwsPayload, client.IdTokenSignedResponseAlg ?? SecurityAlgorithms.RsaSha256).ConfigureAwait(false);
+            //return idToken;
+            //if (client.IdTokenEncryptedResponseAlg == null)
+            //{
+            //    return idToken;
+            //}
 
-            if (encryptResponseEnc == null)
-            {
-                encryptResponseEnc = JweEnc.A128CBC_HS256;
-            }
-
-            return await _jwtGenerator.EncryptAsync(idToken, encryptResponseAlg.Value, encryptResponseEnc.Value).ConfigureAwait(false);
+            //return await _jwtGenerator.EncryptAsync(
+            //        idToken,
+            //        client.IdTokenEncryptedResponseAlg,
+            //        client.IdTokenEncryptedResponseEnc??SecurityAlgorithms.Aes128CbcHmacSha256)
+            //    .ConfigureAwait(false);
         }
     }
 }

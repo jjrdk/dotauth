@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Uma.Api.PolicyController.Actions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Helpers;
@@ -27,6 +23,11 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
     using Parameters;
     using Repositories;
     using SimpleAuth.Errors;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using ErrorDescriptions = Errors.ErrorDescriptions;
 
     internal class UpdatePolicyAction : IUpdatePolicyAction
@@ -44,7 +45,7 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
             _resourceSetRepository = resourceSetRepository;
             _umaServerEventSource = umaServerEventSource;
         }
-        
+
         public async Task<bool> Execute(UpdatePolicyParameter updatePolicyParameter)
         {
             // Check the parameters
@@ -62,7 +63,7 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.Rules));
             }
-            
+
             _umaServerEventSource.StartUpdateAuthorizationPolicy(JsonConvert.SerializeObject(updatePolicyParameter));
             // Check the authorization policy exists.
             var policy = await _repositoryExceptionHelper.HandleException(
@@ -90,11 +91,7 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
                 var claims = new List<Claim>();
                 if (ruleParameter.Claims != null)
                 {
-                    claims = ruleParameter.Claims.Select(c => new Claim
-                    {
-                        Type = c.Type,
-                        Value = c.Value
-                    }).ToList();
+                    claims = ruleParameter.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
                 }
 
                 policy.Rules.Add(new PolicyRule

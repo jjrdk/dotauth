@@ -28,8 +28,6 @@ namespace SimpleAuth.Tests.WebSite.User
     public class AddUserOperationFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private Mock<IClaimRepository> _claimsRepositoryStub;
-        private Mock<IAccessTokenStore> _tokenStoreStub;
         private Mock<IOpenIdEventSource> _openidEventSourceStub;
         private IAddUserOperation _addResourceOwnerAction;
 
@@ -103,12 +101,12 @@ namespace SimpleAuth.Tests.WebSite.User
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _claimsRepositoryStub = new Mock<IClaimRepository>();
-            _tokenStoreStub = new Mock<IAccessTokenStore>();
+            //_claimsRepositoryStub = new Mock<IClaimRepository>();
+            //_tokenStoreStub = new Mock<IAccessTokenStore>();
             _openidEventSourceStub = new Mock<IOpenIdEventSource>();
             _addResourceOwnerAction = new AddUserOperation(
                 _resourceOwnerRepositoryStub.Object,
-                _claimsRepositoryStub.Object,
+                //_claimsRepositoryStub.Object,
                 null,
                 _openidEventSourceStub.Object);
         }

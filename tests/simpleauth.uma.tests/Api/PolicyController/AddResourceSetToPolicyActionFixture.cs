@@ -54,7 +54,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
 
             var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(new AddResourceSetParameter())).ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddResourceSetParameterNames.PolicyId));
         }
 
@@ -68,7 +68,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
                 PolicyId = "policy_id"
             })).ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddResourceSetParameterNames.ResourceSet));
         }
 

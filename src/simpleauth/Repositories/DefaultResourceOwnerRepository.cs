@@ -7,7 +7,6 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using Extensions;
     using Shared.Models;
     using Shared.Parameters;
     using Shared.Repositories;
@@ -71,7 +70,7 @@
 
         public Task<ICollection<ResourceOwner>> GetAllAsync()
         {
-            ICollection<ResourceOwner> res = _users.Select(u => u.Copy()).ToList();
+            ICollection<ResourceOwner> res = _users.ToList();
             return Task.FromResult(res);
         }
 
@@ -88,7 +87,7 @@
                 return Task.FromResult((ResourceOwner)null);
             }
 
-            return Task.FromResult(user.Copy());
+            return Task.FromResult(user);
         }
 
         public Task<ResourceOwner> Get(string id, string password)
@@ -109,7 +108,7 @@
                 return Task.FromResult((ResourceOwner)null);
             }
 
-            return Task.FromResult(user.Copy());
+            return Task.FromResult(user);
         }
 
         public Task<ICollection<ResourceOwner>> Get(IEnumerable<Claim> claims)
@@ -119,8 +118,8 @@
                 throw new ArgumentNullException(nameof(claims));
             }
 
-            ICollection<ResourceOwner> result = _users.Where(u => claims.All(c => u.Claims.Any(sc => sc.Value == c.Value && sc.Type == c.Type)))
-                .Select(u => u.Copy())
+            ICollection<ResourceOwner> result = _users
+                .Where(u => claims.All(c => u.Claims.Any(sc => sc.Value == c.Value && sc.Type == c.Type)))
                 .ToList();
             return Task.FromResult(result);
         }
@@ -143,7 +142,7 @@
                 return Task.FromResult((ResourceOwner)null);
             }
 
-            return Task.FromResult(user.Copy());
+            return Task.FromResult(user);
         }
 
         public Task<bool> InsertAsync(ResourceOwner resourceOwner)
@@ -154,7 +153,7 @@
             }
 
             resourceOwner.CreateDateTime = DateTime.UtcNow;
-            _users.Add(resourceOwner.Copy());
+            _users.Add(resourceOwner);
             return Task.FromResult(true);
         }
 
@@ -201,7 +200,7 @@
 
             return Task.FromResult(new SearchResourceOwnerResult
             {
-                Content = result.Select(u => u.Copy()),
+                Content = result,
                 StartIndex = parameter.StartIndex,
                 TotalResults = nbResult
             });

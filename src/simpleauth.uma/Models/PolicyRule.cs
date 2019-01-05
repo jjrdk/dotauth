@@ -1,6 +1,7 @@
 ﻿namespace SimpleAuth.Uma.Models
 {
     using System.Collections.Generic;
+    using System.Security.Claims;
 
     public class PolicyRule
     {

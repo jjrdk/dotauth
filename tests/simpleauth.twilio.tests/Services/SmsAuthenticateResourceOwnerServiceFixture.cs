@@ -78,7 +78,7 @@
 
                         await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(login, "password").ConfigureAwait(false);
 
-                        _resourceOwnerRepositoryStub.Verify(r => r.GetResourceOwnerByClaim(JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber, login));
+                        _resourceOwnerRepositoryStub.Verify(r => r.GetResourceOwnerByClaim(SimpleAuth.JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber, login));
             _confirmationCodeStoreStub.Verify(c => c.Remove("password"));
         }
 

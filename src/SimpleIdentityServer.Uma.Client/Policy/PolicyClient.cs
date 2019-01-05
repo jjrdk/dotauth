@@ -60,7 +60,7 @@ namespace SimpleAuth.Uma.Client.Policy
                 throw new ArgumentNullException(nameof(authorizationHeaderValue));
             }
 
-            var serializedPostResourceSet = JsonConvert.SerializeObject(request);
+            var serializedPostResourceSet = Serializer.Default.Serialize(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
             var httpRequest = new HttpRequestMessage
             {
@@ -80,14 +80,14 @@ namespace SimpleAuth.Uma.Client.Policy
                 return new AddPolicyResult
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = Serializer.Default.Deserialize<ErrorResponse>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
 
             return new AddPolicyResult
             {
-                Content = JsonConvert.DeserializeObject<AddPolicyResponse>(content)
+                Content = Serializer.Default.Deserialize<AddPolicyResponse>(content)
             };
         }
 
@@ -137,14 +137,14 @@ namespace SimpleAuth.Uma.Client.Policy
                 return new GetPolicyResult
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = Serializer.Default.Deserialize<ErrorResponse>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
 
             return new GetPolicyResult
             {
-                Content = JsonConvert.DeserializeObject<PolicyResponse>(content)
+                Content = Serializer.Default.Deserialize<PolicyResponse>(content)
             };
         }
 

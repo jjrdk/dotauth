@@ -16,6 +16,7 @@ namespace SimpleAuth.Server.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
@@ -30,6 +31,7 @@ namespace SimpleAuth.Server.Controllers
     using Parameters;
     using Parsers;
     using Results;
+    using Shared.Repositories;
     using Shared.Requests;
     using Shared.Responses;
     using Shared.Serializers;
@@ -39,23 +41,24 @@ namespace SimpleAuth.Server.Controllers
     [Route(CoreConstants.EndPoints.Authorization)]
     public class AuthorizationController : Controller
     {
+        private readonly IClientStore _clientStore;
         private readonly IAuthorizationActions _authorizationActions;
         private readonly IDataProtector _dataProtector;
         private readonly IActionResultParser _actionResultParser;
-        private readonly IJwtParser _jwtParser;
         private readonly IAuthenticationService _authenticationService;
+        private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
 
         public AuthorizationController(
+            IClientStore clientStore,
             IAuthorizationActions authorizationActions,
             IDataProtectionProvider dataProtectionProvider,
             IActionResultParser actionResultParser,
-            IJwtParser jwtParser,
             IAuthenticationService authenticationService)
         {
+            _clientStore = clientStore;
             _authorizationActions = authorizationActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _actionResultParser = actionResultParser;
-            _jwtParser = jwtParser;
             _authenticationService = authenticationService;
         }
 
@@ -134,26 +137,20 @@ namespace SimpleAuth.Server.Controllers
             }
         }
 
-        private string GetSessionId()
-        {
-            if (!Request.Cookies.ContainsKey(CoreConstants.SESSION_ID))
-            {
-                return Guid.NewGuid().ToString();
-            }
-
-            return Request.Cookies[CoreConstants.SESSION_ID];
-        }
+        private string GetSessionId() => !Request.Cookies.ContainsKey(CoreConstants.SESSION_ID) ? Guid.NewGuid().ToString() : Request.Cookies[CoreConstants.SESSION_ID];
 
         private async Task<AuthorizationRequest> GetAuthorizationRequestFromJwt(string token, string clientId)
         {
-            var jwsToken = token;
-            if (_jwtParser.IsJweToken(token))
-            {
-                jwsToken = await _jwtParser.DecryptAsync(token, clientId).ConfigureAwait(false);
-            }
+            var client = await _clientStore.GetById(clientId).ConfigureAwait(false);
+            _handler.ValidateToken(token, client.CreateValidationParameters(), out var securityToken);
+            //var jwsToken = token;
+            //if (_jwtParser.IsJweToken(token))
+            //{
+            //    jwsToken = await _jwtParser.DecryptAsync(token, clientId).ConfigureAwait(false);
+            //}
 
-            var jwsPayload = await _jwtParser.UnSignAsync(jwsToken, clientId).ConfigureAwait(false);
-            return jwsPayload?.ToAuthorizationRequest();
+            //var jwsPayload = await _jwtParser.UnSignAsync(jwsToken, clientId).ConfigureAwait(false);
+            return (securityToken as JwtSecurityToken)?.Payload?.ToAuthorizationRequest();
         }
 
         private static string GetRedirectionUrl(Microsoft.AspNetCore.Http.HttpRequest request,

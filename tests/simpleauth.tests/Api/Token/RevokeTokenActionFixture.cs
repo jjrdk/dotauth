@@ -54,7 +54,7 @@ namespace SimpleAuth.Tests.Api.Token
 
                         var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _revokeTokenAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
         }
 
         [Fact]

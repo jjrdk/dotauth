@@ -9,6 +9,7 @@
   <Import Project="../../shared.proj"/>
 
   <ItemGroup>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.3.0" />
     <PackageReference Include="system.security.permissions" Version="4.5.0" />
   </ItemGroup>
 </Project>

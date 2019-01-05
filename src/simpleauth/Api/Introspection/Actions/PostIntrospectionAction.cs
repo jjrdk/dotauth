@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Api.Introspection.Actions
 {
-    using System;
-    using System.Linq;
-    using System.Net.Http.Headers;
-    using System.Threading.Tasks;
     using Authenticate;
     using Errors;
     using Exceptions;
@@ -26,6 +22,10 @@ namespace SimpleAuth.Api.Introspection.Actions
     using Results;
     using Shared;
     using Shared.Models;
+    using System;
+    using System.Linq;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
     using Validators;
 
     public class PostIntrospectionAction : IPostIntrospectionAction
@@ -50,7 +50,7 @@ namespace SimpleAuth.Api.Introspection.Actions
         public async Task<IntrospectionResult> Execute(
             IntrospectionParameter introspectionParameter,
             AuthenticationHeaderValue authenticationHeaderValue, string issuerName)
-        {            
+        {
             // 1. Validate the parameters
             if (introspectionParameter == null)
             {
@@ -114,18 +114,18 @@ namespace SimpleAuth.Api.Introspection.Actions
             if (grantedToken.IdTokenPayLoad != null)
             {
                 var audiences = string.Empty;
-                var audiencesArr = grantedToken.IdTokenPayLoad.GetArrayClaim(StandardClaimNames.Audiences);
+                var audiencesArr = grantedToken.IdTokenPayLoad.GetArrayValue(StandardClaimNames.Audiences);
                 var issuedAt = grantedToken.IdTokenPayLoad.Iat;
-                var issuer = grantedToken.IdTokenPayLoad.Issuer;
-                var subject = grantedToken.IdTokenPayLoad.GetStringClaim(JwtConstants.StandardResourceOwnerClaimNames.Subject);
-                var userName = grantedToken.IdTokenPayLoad.GetStringClaim(JwtConstants.StandardResourceOwnerClaimNames.Name);
+                var issuer = grantedToken.IdTokenPayLoad.Iss;
+                var subject = grantedToken.IdTokenPayLoad.GetClaimValue(JwtConstants.StandardResourceOwnerClaimNames.Subject);
+                var userName = grantedToken.IdTokenPayLoad.GetClaimValue(JwtConstants.StandardResourceOwnerClaimNames.Name);
                 if (audiencesArr.Any())
                 {
                     audiences = string.Join(" ", audiencesArr);
                 }
 
                 result.Audience = audiences;
-                result.IssuedAt = issuedAt;
+                result.IssuedAt = issuedAt ?? 0;
                 result.Issuer = issuer;
                 result.Subject = subject;
                 result.UserName = userName;

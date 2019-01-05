@@ -4,14 +4,13 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Extensions;
     using Shared.Models;
     using Shared.Parameters;
     using Shared.Repositories;
 
     internal sealed class DefaultProfileRepository : IProfileRepository
     {
-        public List<ResourceOwnerProfile> _profiles;
+        public readonly List<ResourceOwnerProfile> _profiles;
 
         public DefaultProfileRepository(IReadOnlyCollection<ResourceOwnerProfile> profiles = null)
         {
@@ -20,7 +19,7 @@
                 : profiles.ToList();
         }
 
-        public Task<bool> Add(IEnumerable<ResourceOwnerProfile> profiles)
+        public Task<bool> Add(params ResourceOwnerProfile[] profiles)
         {
             if (profiles == null)
             {
@@ -32,7 +31,7 @@
                 profile.CreateDateTime = DateTime.UtcNow;
             }
 
-            _profiles.AddRange(profiles.Select(p => p.Copy()));
+            _profiles.AddRange(profiles);
             return Task.FromResult(true);
         }
 
@@ -44,12 +43,9 @@
             }
 
             var profile = _profiles.FirstOrDefault(p => p.Subject == subject);
-            if (profile == null)
-            {
-                return Task.FromResult((ResourceOwnerProfile)null);
-            }
-
-            return Task.FromResult(profile.Copy());
+            return profile == null 
+                ? Task.FromResult((ResourceOwnerProfile)null) 
+                : Task.FromResult(profile);
         }
 
         public Task<bool> Remove(IEnumerable<string> subjects)
@@ -87,7 +83,7 @@
                 result = result.Where(p => parameter.Issuers.Contains(p.Issuer));
             }
 
-            return Task.FromResult(result.Select(r => r.Copy()));
+            return Task.FromResult(result);
         }
     }
 }

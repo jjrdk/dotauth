@@ -16,6 +16,7 @@ namespace SimpleAuth.Uma.Shared.DTOs
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using System.Security.Claims;
 
     [DataContract]
     public class PolicyResponse
@@ -38,7 +39,7 @@ namespace SimpleAuth.Uma.Shared.DTOs
         [DataMember(Name = PolicyRuleNames.Scopes)]
         public List<string> Scopes { get; set; }
         [DataMember(Name = PolicyRuleNames.Claims)]
-        public List<PostClaim> Claims { get; set; }
+        public List<Claim> Claims { get; set; }
         [DataMember(Name = PolicyRuleNames.IsResourceOwnerConsentNeeded)]
         public bool IsResourceOwnerConsentNeeded { get; set; }
         [DataMember(Name = PolicyRuleNames.Script)]

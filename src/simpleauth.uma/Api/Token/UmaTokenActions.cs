@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
@@ -128,14 +129,13 @@
             }
 
             // 5. Generate a granted token.
-            var grantedToken =
-                await GenerateTokenAsync(client, ticket.Lines, "openid", issuerName).ConfigureAwait(false);
+            var grantedToken = GenerateTokenAsync(client, ticket.Lines, "openid", issuerName);
             await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);
             await _ticketStore.RemoveAsync(ticket.Id).ConfigureAwait(false);
             return grantedToken;
         }
 
-        public async Task<GrantedToken> GenerateTokenAsync(Client client,
+        public GrantedToken GenerateTokenAsync(Client client,
             IEnumerable<TicketLine> ticketLines,
             string scope,
             string issuerName)
@@ -156,8 +156,8 @@
             }
 
             var expiresIn = _configurationService.RptLifeTime;// 1. Retrieve the expiration time of the granted token.
-            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName, null)
-                .ConfigureAwait(false); // 2. Construct the JWT token (client).
+            var jwsPayload = _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName, null);
+            // 2. Construct the JWT token (client).
             var jArr = new JArray();
             foreach (var ticketLine in ticketLines)
             {
@@ -168,9 +168,11 @@
                 };
                 jArr.Add(jObj);
             }
-
-            jwsPayload.Add(UmaConstants.RptClaims.Ticket, jArr);
-            var accessToken = await _clientHelper.GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
+            
+            jwsPayload.Payload.Add(UmaConstants.RptClaims.Ticket, jArr);
+            var handler = new JwtSecurityTokenHandler();
+            var accessToken = handler.WriteToken(jwsPayload);
+            //var accessToken = await _clientHelper.GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
             var refreshTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()); // 3. Construct the refresh token.
             return new GrantedToken
             {

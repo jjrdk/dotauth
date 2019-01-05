@@ -20,23 +20,19 @@ namespace SimpleAuth.WebSite.User.Actions
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Exceptions;
-    using Shared.Models;
     using Shared.Repositories;
 
     internal class UpdateUserClaimsOperation : IUpdateUserClaimsOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IClaimRepository _claimRepository;
 
         public UpdateUserClaimsOperation(
-            IResourceOwnerRepository resourceOwnerRepository,
-            IClaimRepository claimRepository)
+            IResourceOwnerRepository resourceOwnerRepository)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _claimRepository = claimRepository;
         }
         
-        public async Task<bool> Execute(string subject, IEnumerable<ClaimAggregate> claims)
+        public async Task<bool> Execute(string subject, IEnumerable<Claim> claims)
         {
             if (string.IsNullOrWhiteSpace(subject))
             {
@@ -54,11 +50,11 @@ namespace SimpleAuth.WebSite.User.Actions
                 throw new SimpleAuthException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheRoDoesntExist);
             }
 
-            var supportedClaims = await _claimRepository.GetAllAsync().ConfigureAwait(false);
-            claims = claims.Where(c => supportedClaims.Any(sp => sp.Code == c.Code && !JwtConstants.NotEditableResourceOwnerClaimNames.Contains(c.Code)));
+            //var supportedClaims = await _claimRepository.GetAllAsync().ConfigureAwait(false);
+            //claims = claims.Where(c => supportedClaims.Any(sp => sp.Code == c.Code && !JwtConstants.NotEditableResourceOwnerClaimNames.Contains(c.Code)));
             var claimsToBeRemoved = resourceOwner.Claims
-                .Where(cl => claims.Any(c => c.Code == cl.Type))
-                .Select(cl => resourceOwner.Claims.IndexOf(cl))
+                .Where(cl => claims.Any(c => c.Type == cl.Type))
+                .Select((cl, i) => i)
                 .OrderByDescending(p => p)
                 .ToList();
             foreach(var index in claimsToBeRemoved)
@@ -73,7 +69,7 @@ namespace SimpleAuth.WebSite.User.Actions
                     continue;
                 }
 
-                resourceOwner.Claims.Add(new Claim(claim.Code, claim.Value));
+                resourceOwner.Claims.Add(new Claim(claim.Type, claim.Value));
             }
 
             Claim updatedClaim;

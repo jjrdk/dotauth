@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Server.Extensions
 {
-    using Logging;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -27,8 +26,7 @@ namespace SimpleAuth.Server.Extensions
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using UserInfo;
-    using UserInfo.Actions;
+    using Logging;
 
     public static class ServiceCollectionExtensions
     {
@@ -96,7 +94,7 @@ namespace SimpleAuth.Server.Extensions
             });
             options.AddPolicy("authenticated", policy =>
             {
-                policy.AddAuthenticationSchemes("UserInfoIntrospection");
+                //policy.AddAuthenticationSchemes("UserInfoIntrospection");
                 policy.RequireAuthenticatedUser();
             });
             options.AddPolicy("manager", policy =>
@@ -195,18 +193,15 @@ namespace SimpleAuth.Server.Extensions
             this IServiceCollection services,
             SimpleAuthOptions options)
         {
-            var s = services.AddSimpleAuthServer(
+            var s = services.AddSimpleAuth(
                      options.OAuthConfigurationOptions,
                      clients: options.Configuration?.Clients,
                      consents: options.Configuration?.Consents,
                      profiles: options.Configuration?.Profiles,
                      resourceOwners: options.Configuration?.Users,
-                     translations: options.Configuration?.Translations,
-                     jsonWebKeys: options.Configuration?.JsonWebKeys)
-                 .AddSimpleAuthJwt()
+                     translations: options.Configuration?.Translations)
+                    // jsonWebKeys: options.Configuration?.JsonWebKeys)
                  .AddSingleton(options.Scim)
-                 .AddTransient<IUserInfoActions, UserInfoActions>()
-                 .AddTransient<IGetJwsPayload, GetJwsPayload>()
                  .AddTransient<IRedirectInstructionParser, RedirectInstructionParser>()
                  .AddTransient<IActionResultParser, ActionResultParser>()
                  .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()

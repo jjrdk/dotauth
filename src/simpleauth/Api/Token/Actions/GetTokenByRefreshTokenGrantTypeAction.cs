@@ -84,7 +84,7 @@ namespace SimpleAuth.Api.Token.Actions
             }
 
             // 4. Generate a new access token & insert it
-            var generatedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(
+            var generatedToken = await _grantedTokenGeneratorHelper.GenerateToken(
                 grantedToken.ClientId,
                 grantedToken.Scope,
                 issuerName,
@@ -95,7 +95,7 @@ namespace SimpleAuth.Api.Token.Actions
             // 5. Fill-in the idtoken
             if (generatedToken.IdTokenPayLoad != null)
             {
-                await _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad).ConfigureAwait(false);
+                _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, authResult.Client);
                 generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(generatedToken.ClientId, generatedToken.IdTokenPayLoad).ConfigureAwait(false);
             }
 

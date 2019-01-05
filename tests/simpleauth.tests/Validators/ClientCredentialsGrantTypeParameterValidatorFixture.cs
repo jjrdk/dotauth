@@ -40,7 +40,7 @@ namespace SimpleAuth.Tests.Validators
 
                         var exception = Assert.Throws<SimpleAuthException>(() => _clientCredentialsGrantTypeParameterValidator.Validate(parameter));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardTokenRequestParameterNames.ScopeName));
         }
 

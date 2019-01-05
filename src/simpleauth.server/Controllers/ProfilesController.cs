@@ -1,7 +1,5 @@
 ﻿namespace SimpleAuth.Server.Controllers
 {
-    using System;
-    using Api.Profile.Actions;
     using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;

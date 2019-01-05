@@ -15,11 +15,9 @@
 namespace SimpleAuth.Authenticate
 {
     using Errors;
-    using JwtToken;
     using Logging;
     using Shared.Models;
     using Shared.Repositories;
-    using Signature;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
@@ -34,14 +32,12 @@ namespace SimpleAuth.Authenticate
         private readonly IOAuthEventSource _oauthEventSource;
 
         public AuthenticateClient(
-            IJwsParser jwsParser,
-            IJwtParser jwtParser,
             IClientStore clientRepository,
             IOAuthEventSource oAuthEventSource)
         {
             _clientSecretBasicAuthentication = new ClientSecretBasicAuthentication();
             _clientSecretPostAuthentication = new ClientSecretPostAuthentication();
-            _clientAssertionAuthentication = new ClientAssertionAuthentication(jwsParser, clientRepository, jwtParser);
+            _clientAssertionAuthentication = new ClientAssertionAuthentication(clientRepository);
             _clientTlsAuthentication = new ClientTlsAuthentication();
             _clientRepository = clientRepository;
             _oauthEventSource = oAuthEventSource;

@@ -29,10 +29,10 @@ namespace SimpleAuth.Shared.Requests
         public string Kid { get; set; }
 
         [DataMember(Name = SharedConstants.CreateJweRequestNames.Alg)]
-        public JweAlg Alg { get; set; }
+        public string Alg { get; set; }
 
         [DataMember(Name = SharedConstants.CreateJweRequestNames.Enc)]
-        public JweEnc Enc { get; set; }
+        public string Enc { get; set; }
 
         [DataMember(Name = SharedConstants.CreateJweRequestNames.Password)]
         public string Password { get; set; }

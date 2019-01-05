@@ -1,22 +1,26 @@
 ﻿namespace SimpleAuth.JwtToken
 {
+    using Parameters;
+    using Shared.Models;
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Parameters;
-    using Shared;
-    using Shared.Models;
 
     public interface IJwtGenerator
     {
-        Task<JwsPayload> UpdatePayloadDate(JwsPayload jwsPayload);
-        Task<JwsPayload> GenerateAccessToken(Client client, IEnumerable<string> scopes, string issuerName, IDictionary<string, object> additionalClaims);
-        Task<JwsPayload> GenerateIdTokenPayloadForScopesAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, string issuerName);
-        Task<JwsPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters, string issuerName);
-        Task<JwsPayload> GenerateUserInfoPayloadForScopeAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
-        JwsPayload GenerateFilteredUserInfoPayload(List<ClaimParameter> claimParameters, ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
-        void FillInOtherClaimsIdentityTokenPayload(JwsPayload jwsPayload, string authorizationCode, string accessToken, Client client);
-        Task<string> SignAsync(JwsPayload jwsPayload, JwsAlg alg);
-        Task<string> EncryptAsync(string jwe, JweAlg jweAlg, JweEnc jweEnc);
+        JwtPayload UpdatePayloadDate(JwtPayload jwsPayload, Client client);
+        JwtSecurityToken GenerateAccessToken(
+            Client client,
+            IEnumerable<string> scopes,
+            string issuerName,
+            params Claim[] additionalClaims);
+        Task<JwtPayload> GenerateIdTokenPayloadForScopesAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, string issuerName);
+        Task<JwtPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters, string issuerName);
+        Task<JwtPayload> GenerateUserInfoPayloadForScopeAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
+        JwtPayload GenerateFilteredUserInfoPayload(List<ClaimParameter> claimParameters, ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
+        void FillInOtherClaimsIdentityTokenPayload(JwtPayload jwsPayload, string authorizationCode, string accessToken, Client client);
+        //Task<string> SignAsync(JwtPayload jwsPayload, string alg);
+        //Task<string> EncryptAsync(JwtPayload jwe, string jweAlg, string jweEnc);
     }
 }

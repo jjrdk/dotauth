@@ -14,19 +14,19 @@
 
 namespace SimpleAuth.JwtToken
 {
-    using Encrypt;
     using Errors;
     using Exceptions;
     using Extensions;
     using Helpers;
+    using Microsoft.IdentityModel.Tokens;
     using Parameters;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
-    using Signature;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Claims;
     using System.Security.Cryptography;
@@ -38,87 +38,77 @@ namespace SimpleAuth.JwtToken
     {
         private readonly ClientValidator _clientValidator;
         private readonly IParameterParserHelper _parameterParserHelper;
-        private readonly IJwsGenerator _jwsGenerator;
-        private readonly IJweGenerator _jweGenerator;
         private readonly IScopeRepository _scopeRepository;
-        private readonly OAuthConfigurationOptions _configurationOptions;
         private readonly IClientStore _clientRepository;
-        private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
-        private readonly Dictionary<JwsAlg, Func<string, string>> _mappingJwsAlgToHashingFunctions = new Dictionary<JwsAlg, Func<string, string>>
+        private readonly Dictionary<string, Func<string, string>> _mappingJwsAlgToHashingFunctions = new Dictionary<string, Func<string, string>>
         {
             {
-                JwsAlg.ES256, HashWithSha256
+                SecurityAlgorithms.EcdsaSha256, HashWithSha256
             },
             {
-                JwsAlg.ES384, HashWithSha384
+                SecurityAlgorithms.EcdsaSha384, HashWithSha384
             },
             {
-                JwsAlg.ES512, HashWithSha512
+                SecurityAlgorithms.EcdsaSha512, HashWithSha512
             },
             {
-                JwsAlg.HS256, HashWithSha256
+                SecurityAlgorithms.HmacSha256, HashWithSha256
             },
             {
-                JwsAlg.HS384, HashWithSha384
+                SecurityAlgorithms.HmacSha384, HashWithSha384
             },
             {
-                JwsAlg.HS512, HashWithSha512
+                SecurityAlgorithms.HmacSha512, HashWithSha512
             },
             {
-                JwsAlg.PS256, HashWithSha256
+                SecurityAlgorithms.RsaSsaPssSha256, HashWithSha256
             },
             {
-                JwsAlg.PS384, HashWithSha384
+                SecurityAlgorithms.RsaSsaPssSha384, HashWithSha384
             },
             {
-                JwsAlg.PS512, HashWithSha512
+                SecurityAlgorithms.RsaSsaPssSha512, HashWithSha512
             },
             {
-                JwsAlg.RS256, HashWithSha256
+                SecurityAlgorithms.RsaSha256, HashWithSha256
             },
             {
-                JwsAlg.RS384, HashWithSha384
+                SecurityAlgorithms.RsaSha384, HashWithSha384
             },
             {
-                JwsAlg.RS512, HashWithSha512
+                SecurityAlgorithms.RsaSha512, HashWithSha512
             }
         };
 
         public JwtGenerator(
-            OAuthConfigurationOptions configurationOptions,
             IClientStore clientRepository,
-            IJsonWebKeyRepository jsonWebKeyRepository,
             IScopeRepository scopeRepository,
-            IParameterParserHelper parameterParserHelper,
-            IJwsGenerator jwsGenerator,
-            IJweGenerator jweGenerator)
+            IParameterParserHelper parameterParserHelper)
         {
-            _configurationOptions = configurationOptions;
             _clientRepository = clientRepository;
             _clientValidator = new ClientValidator();
-            _jsonWebKeyRepository = jsonWebKeyRepository;
             _scopeRepository = scopeRepository;
             _parameterParserHelper = parameterParserHelper;
-            _jwsGenerator = jwsGenerator;
-            _jweGenerator = jweGenerator;
         }
 
-        public async Task<JwsPayload> UpdatePayloadDate(JwsPayload jwsPayload)
+        public JwtPayload UpdatePayloadDate(JwtPayload jwsPayload, Client client)
         {
             if (jwsPayload == null)
             {
                 throw new ArgumentNullException(nameof(jwsPayload));
             }
 
-            var timeKeyValuePair = await GetExpirationAndIssuedTime().ConfigureAwait(false);
+            var timeKeyValuePair = GetExpirationAndIssuedTime(client);
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
-            jwsPayload.Set(StandardClaimNames.Iat, issuedAtTime);
-            jwsPayload.Set(StandardClaimNames.ExpirationTime, expirationInSeconds);
+            jwsPayload.Remove(StandardClaimNames.Iat);
+            jwsPayload.Remove(StandardClaimNames.ExpirationTime);
+            jwsPayload.AddClaim(new Claim(StandardClaimNames.Iat, issuedAtTime.ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Double));
+            jwsPayload.AddClaim(new Claim(StandardClaimNames.ExpirationTime, expirationInSeconds.ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Double));
             return jwsPayload;
         }
 
-        public async Task<JwsPayload> GenerateAccessToken(Client client, IEnumerable<string> scopes, string issuerName, IDictionary<string, object> additionalClaims)
+        public JwtSecurityToken GenerateAccessToken(Client client, IEnumerable<string> scopes, string issuerName, params Claim[] additionalClaims)
         {
             if (client == null)
             {
@@ -130,23 +120,38 @@ namespace SimpleAuth.JwtToken
                 throw new ArgumentNullException(nameof(scopes));
             }
 
-            var timeKeyValuePair = await GetExpirationAndIssuedTime().ConfigureAwait(false);
+            var timeKeyValuePair = GetExpirationAndIssuedTime(client);
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
+            //var jwks = await _jsonWebKeyRepository.GetByAlgorithmAsync(
+            //    JsonWebKeyUseNames.Sig,
+            //    client.IdTokenEncryptedResponseAlg,
+            //    KeyOperations.Sign)
+            //    .ConfigureAwait(false);
+            var key = client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First();
 
-            var jwsPayload = new JwsPayload
+            var jwtHeader = new JwtHeader(key);
+            var payload = new JwtPayload(new[] {
+                new Claim(StandardClaimNames.Audiences, client.ClientId),
+                new Claim(StandardClaimNames.Issuer, issuerName),
+                new Claim(StandardClaimNames.ExpirationTime, expirationInSeconds.ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Double),
+                new Claim(StandardClaimNames.Iat, issuedAtTime.ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Double),
+                new Claim(StandardClaimNames.Scopes, string.Join(" ", scopes))
+            });
+            var token = new JwtSecurityToken(jwtHeader, payload);
+
+            if (additionalClaims != null)
             {
-                {StandardClaimNames.Audiences, new[] {client.ClientId}},
-                {StandardClaimNames.Issuer, issuerName},
-                {StandardClaimNames.ExpirationTime, expirationInSeconds},
-                {StandardClaimNames.Iat, issuedAtTime},
-                {StandardClaimNames.Scopes, scopes}
-            };
-            jwsPayload.AddRange(additionalClaims);
-            return jwsPayload;
+                payload.AddClaims(additionalClaims);
+            }
+
+            return token;
         }
 
-        public async Task<JwsPayload> GenerateIdTokenPayloadForScopesAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, string issuerName)
+        public async Task<JwtPayload> GenerateIdTokenPayloadForScopesAsync(
+            ClaimsPrincipal claimsPrincipal,
+            AuthorizationParameter authorizationParameter,
+            string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -158,48 +163,66 @@ namespace SimpleAuth.JwtToken
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            var result = new JwsPayload();
-            await FillInIdentityTokenClaims(result, authorizationParameter, new List<ClaimParameter>(), claimsPrincipal, issuerName).ConfigureAwait(false);
+            var result = new JwtPayload();
+            await FillInIdentityTokenClaims(result,
+                    authorizationParameter,
+                    new List<ClaimParameter>(),
+                    claimsPrincipal,
+                    issuerName)
+                .ConfigureAwait(false);
+            await FillInResourceOwnerClaimsFromScopes(result, authorizationParameter, claimsPrincipal)
+                .ConfigureAwait(false);
+            return result;
+        }
+
+        public async Task<JwtPayload> GenerateFilteredIdTokenPayloadAsync(
+            ClaimsPrincipal claimsPrincipal,
+            AuthorizationParameter authorizationParameter,
+            List<ClaimParameter> claimParameters,
+            string issuerName)
+        {
+            if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
+            {
+                throw new ArgumentNullException(nameof(claimsPrincipal));
+            }
+
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException(nameof(authorizationParameter));
+            }
+
+            var result = new JwtPayload();
+            await FillInIdentityTokenClaims(result,
+                    authorizationParameter,
+                    claimParameters,
+                    claimsPrincipal,
+                    issuerName)
+                .ConfigureAwait(false);
+            FillInResourceOwnerClaimsByClaimsParameter(result,
+                claimParameters,
+                claimsPrincipal,
+                authorizationParameter);
+            return result;
+        }
+
+        public async Task<JwtPayload> GenerateUserInfoPayloadForScopeAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
+        {
+            if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
+            {
+                throw new ArgumentNullException(nameof(claimsPrincipal));
+            }
+
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException(nameof(authorizationParameter));
+            }
+
+            var result = new JwtPayload();
             await FillInResourceOwnerClaimsFromScopes(result, authorizationParameter, claimsPrincipal).ConfigureAwait(false);
             return result;
         }
 
-        public async Task<JwsPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters, string issuerName)
-        {
-            if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
-            {
-                throw new ArgumentNullException(nameof(claimsPrincipal));
-            }
-
-            if (authorizationParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationParameter));
-            }
-
-            var result = new JwsPayload();
-            await FillInIdentityTokenClaims(result, authorizationParameter, claimParameters, claimsPrincipal, issuerName).ConfigureAwait(false);
-            FillInResourceOwnerClaimsByClaimsParameter(result, claimParameters, claimsPrincipal, authorizationParameter);
-            return result;
-        }
-
-        public async Task<JwsPayload> GenerateUserInfoPayloadForScopeAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
-        {
-            if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
-            {
-                throw new ArgumentNullException(nameof(claimsPrincipal));
-            }
-
-            if (authorizationParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationParameter));
-            }
-
-            var result = new JwsPayload();
-            await FillInResourceOwnerClaimsFromScopes(result, authorizationParameter, claimsPrincipal).ConfigureAwait(false);
-            return result;
-        }
-
-        public JwsPayload GenerateFilteredUserInfoPayload(List<ClaimParameter> claimParameters, ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
+        public JwtPayload GenerateFilteredUserInfoPayload(List<ClaimParameter> claimParameters, ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
         {
             if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
             {
@@ -211,12 +234,13 @@ namespace SimpleAuth.JwtToken
                 throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
-            var result = new JwsPayload();
+            var result = new JwtPayload();
             FillInResourceOwnerClaimsByClaimsParameter(result, claimParameters, claimsPrincipal, authorizationParameter);
             return result;
         }
 
-        public void FillInOtherClaimsIdentityTokenPayload(JwsPayload jwsPayload,
+        public void FillInOtherClaimsIdentityTokenPayload(
+            JwtPayload jwsPayload,
             string authorizationCode,
             string accessToken,
             Client client)
@@ -231,19 +255,19 @@ namespace SimpleAuth.JwtToken
                 throw new ArgumentNullException(nameof(client));
             }
 
-            var signedAlg = client.GetIdTokenSignedResponseAlg();
+            var signedAlg = client.IdTokenSignedResponseAlg;
             if (signedAlg == null ||
-                signedAlg == JwsAlg.none)
+                signedAlg == SecurityAlgorithms.None)
             {
                 return;
             }
 
-            if (!_mappingJwsAlgToHashingFunctions.ContainsKey(signedAlg.Value))
+            if (!_mappingJwsAlgToHashingFunctions.ContainsKey(signedAlg))
             {
-                throw new InvalidOperationException($"the alg {signedAlg.Value} is not supported");
+                throw new InvalidOperationException($"the alg {signedAlg} is not supported");
             }
 
-            var callback = _mappingJwsAlgToHashingFunctions[signedAlg.Value];
+            var callback = _mappingJwsAlgToHashingFunctions[signedAlg];
             if (!string.IsNullOrWhiteSpace(authorizationCode))
             {
                 var hashingAuthorizationCode = callback(authorizationCode);
@@ -257,41 +281,43 @@ namespace SimpleAuth.JwtToken
             }
         }
 
-        public async Task<string> SignAsync(JwsPayload jwsPayload, JwsAlg alg)
-        {
-            var jsonWebKey = await GetJsonWebKey(
-                alg.ToAllAlg(),
-                KeyOperations.Sign,
-                Use.Sig).ConfigureAwait(false);
-            return _jwsGenerator.Generate(jwsPayload, alg, jsonWebKey);
-        }
+        //public async Task<string> SignAsync(JwtPayload payload, string alg)
+        //{
+        //    var jsonWebKeySet = await _jsonWebKeyRepository.GetByAlgorithmAsync(
+        //        alg,
+        //        KeyOperations.Sign,
+        //        JsonWebKeyUseNames.Sig).ConfigureAwait(false);
+        //    var header = new JwtHeader(new SigningCredentials(jsonWebKeySet.GetSigningKeys()[0], alg));
+        //    var token = new JwtSecurityToken(header, payload);
+        //    return _handler.WriteToken(token);
+        //}
 
-        public async Task<string> EncryptAsync(string jwe, JweAlg jweAlg, JweEnc jweEnc)
-        {
-            var jsonWebKey = await GetJsonWebKey(
-                jweAlg.ToAllAlg(),
-                KeyOperations.Encrypt,
-                Use.Enc).ConfigureAwait(false);
-            if (jsonWebKey == null)
-            {
-                return jwe;
-            }
+        //public async Task<string> EncryptAsync(JwtPayload jwe, string jweAlg, string jweEnc)
+        //{
+        //    var jsonWebKeySet = await _jsonWebKeyRepository.GetByAlgorithmAsync(
+        //        jweAlg,
+        //        KeyOperations.Encrypt,
+        //        JsonWebKeyUseNames.Enc).ConfigureAwait(false);
+        //    if (jsonWebKeySet == null)
+        //    {
+        //        return null;
+        //    }
+        //    var header = new JwtHeader(
+        //        new EncryptingCredentials(jsonWebKeySet.GetSigningKeys()[0], jweAlg, jweEnc));
 
-            return _jweGenerator.GenerateJwe(
-                jwe,
-                jweAlg,
-                jweEnc,
-                jsonWebKey);
-        }
+        //    var token = new JwtSecurityToken(header, jwe);
+
+        //    return _handler.WriteToken(token);
+        //}
 
         private async Task FillInResourceOwnerClaimsFromScopes(
-            JwsPayload jwsPayload,
+            JwtPayload jwsPayload,
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal)
         {
             // 1. Fill-in the subject claim
             var subject = claimsPrincipal.GetSubject();
-            jwsPayload.Add(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject);
+            jwsPayload.Add(SimpleAuth.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject);
 
             if (authorizationParameter == null ||
                 string.IsNullOrWhiteSpace(authorizationParameter.Scope))
@@ -302,19 +328,19 @@ namespace SimpleAuth.JwtToken
             // 2. Fill-in the other claims
             var scopes = _parameterParserHelper.ParseScopes(authorizationParameter.Scope);
             var claims = await GetClaimsFromRequestedScopes(scopes, claimsPrincipal).ConfigureAwait(false);
-            foreach (var claim in claims)
+            foreach (var claim in claims.GroupBy(c => c.Type))
             {
-                if (claim.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject)
+                if (claim.Key == SimpleAuth.JwtConstants.StandardResourceOwnerClaimNames.Subject)
                 {
                     continue;
                 }
 
-                jwsPayload.Add(claim.Type, claim.Value);
+                jwsPayload.Add(claim.Key, string.Join(" ", claim.Select(c => c.Value)));
             }
         }
 
         private void FillInResourceOwnerClaimsByClaimsParameter(
-            JwsPayload jwsPayload,
+            JwtPayload jwsPayload,
             List<ClaimParameter> claimParameters,
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter)
@@ -322,11 +348,11 @@ namespace SimpleAuth.JwtToken
             var state = authorizationParameter == null ? string.Empty : authorizationParameter.State;
 
             // 1. Fill-In the subject - set the subject as an essential claim
-            if (claimParameters.All(c => c.Name != JwtConstants.StandardResourceOwnerClaimNames.Subject))
+            if (claimParameters.All(c => c.Name != SimpleAuth.JwtConstants.StandardResourceOwnerClaimNames.Subject))
             {
                 var essentialSubjectClaimParameter = new ClaimParameter
                 {
-                    Name = JwtConstants.StandardResourceOwnerClaimNames.Subject,
+                    Name = SimpleAuth.JwtConstants.StandardResourceOwnerClaimNames.Subject,
                     Parameters = new Dictionary<string, object>
                     {
                         {
@@ -346,7 +372,7 @@ namespace SimpleAuth.JwtToken
             }
 
             var resourceOwnerClaimParameters = claimParameters
-                .Where(c => JwtConstants.AllStandardResourceOwnerClaimNames.Contains(c.Name))
+                .Where(c => SimpleAuth.JwtConstants.AllStandardResourceOwnerClaimNames.Contains(c.Name))
                 .ToList();
             if (resourceOwnerClaimParameters.Any())
             {
@@ -370,7 +396,7 @@ namespace SimpleAuth.JwtToken
         }
 
         private async Task FillInIdentityTokenClaims(
-            JwsPayload jwsPayload,
+            JwtPayload jwsPayload,
             AuthorizationParameter authorizationParameter,
             List<ClaimParameter> claimParameters,
             ClaimsPrincipal claimsPrincipal,
@@ -381,7 +407,7 @@ namespace SimpleAuth.JwtToken
             var clientId = authorizationParameter.ClientId;
             var maxAge = authorizationParameter.MaxAge;
             var amrValues = authorizationParameter.AmrValues;
-
+            var cl = await _clientRepository.GetById(clientId).ConfigureAwait(false);
             var issuerClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Issuer);
             var audiencesClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Audiences);
             var expirationTimeClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.ExpirationTime);
@@ -392,7 +418,7 @@ namespace SimpleAuth.JwtToken
             var amrParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Amr);
             var azpParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Azp);
 
-            var timeKeyValuePair = await GetExpirationAndIssuedTime().ConfigureAwait(false);
+            var timeKeyValuePair = GetExpirationAndIssuedTime(cl);
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
             var acrValues = CoreConstants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
@@ -623,38 +649,19 @@ namespace SimpleAuth.JwtToken
         {
             return claims.Select(claim =>
                 new Claim(
-                    JwtConstants.MapWifClaimsToOpenIdClaims.ContainsKey(claim.Type)
-                        ? JwtConstants.MapWifClaimsToOpenIdClaims[claim.Type]
+                    SimpleAuth.JwtConstants.MapWifClaimsToOpenIdClaims.ContainsKey(claim.Type)
+                        ? SimpleAuth.JwtConstants.MapWifClaimsToOpenIdClaims[claim.Type]
                         : claim.Type,
                     claim.Value));
         }
 
-        private async Task<JsonWebKey> GetJsonWebKey(
-            AllAlg alg,
-            KeyOperations operation,
-            Use use)
-        {
-            JsonWebKey result = null;
-            var jsonWebKeys = await _jsonWebKeyRepository.GetByAlgorithmAsync(
-                    use,
-                    alg,
-                    new[] { operation })
-                .ConfigureAwait(false);
-            if (jsonWebKeys != null && jsonWebKeys.Any())
-            {
-                result = jsonWebKeys.First();
-            }
-
-            return result;
-        }
-
-        private Task<KeyValuePair<double, double>> GetExpirationAndIssuedTime()
+        private KeyValuePair<double, double> GetExpirationAndIssuedTime(Client client)
         {
             var currentDateTime = DateTimeOffset.UtcNow;
-            var expiredDateTime = currentDateTime.Add(_configurationOptions.TokenValidityPeriod);
+            var expiredDateTime = currentDateTime.Add(client?.TokenLifetime ?? TimeSpan.Zero);
             var expirationInSeconds = expiredDateTime.ConvertToUnixTimestamp();
             var iatInSeconds = currentDateTime.ConvertToUnixTimestamp();
-            return Task.FromResult(new KeyValuePair<double, double>(expirationInSeconds, iatInSeconds));
+            return new KeyValuePair<double, double>(expirationInSeconds, iatInSeconds);
         }
 
         private static string HashWithSha256(string parameter)

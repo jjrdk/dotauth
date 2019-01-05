@@ -14,43 +14,45 @@
 
 namespace SimpleAuth.Tests.Helpers
 {
-    using System;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
+    using Microsoft.IdentityModel.Tokens;
     using Moq;
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth;
     using SimpleAuth.Helpers;
-    using SimpleAuth.JwtToken;
+    using System;
+    using System.Threading.Tasks;
     using Xunit;
+
+    internal static class TestKeys
+    {
+        public const string SecretKey = "verylongsecretkey";
+    }
 
     public class GrantedTokenGeneratorHelperFixture
     {
-        private OAuthConfigurationOptions _oauthConfigurationOptions;
-        private Mock<IJwtGenerator> _jwtGeneratorStub;
-        private Mock<IClientHelper> _clientHelperStub;
         private Mock<IClientStore> _clientRepositoryStub;
-        private IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
-        
+        private GrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
+
         [Fact]
         public async Task When_Passing_NullOrWhiteSpace_Then_Exceptions_Are_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-            
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(string.Empty, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateToken(string.Empty, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Client_DoesNot_Exist_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult((Client)null));
 
-            
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("invalid_client", null, null, null)).ConfigureAwait(false);
-            Assert.True(ex.Code == ErrorCodes.InvalidClient);
-            Assert.True(ex.Message == ErrorDescriptions.TheClientIdDoesntExist);
+            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _grantedTokenGeneratorHelper.GenerateToken("invalid_client", null, null, null)).ConfigureAwait(false);
+            Assert.Equal(ErrorCodes.InvalidClient, ex.Code);
+            Assert.Equal(ErrorDescriptions.TheClientIdDoesntExist, ex.Message);
         }
 
         [Fact]
@@ -58,27 +60,40 @@ namespace SimpleAuth.Tests.Helpers
         {
             var client = new Client
             {
-                ClientId = "client_id"
-            };            InitializeFakeObjects();
+                TokenLifetime = TimeSpan.FromSeconds(3700),
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                ClientId = "client_id",
+                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                IdTokenEncryptedResponseAlg = SecurityAlgorithms.RsaSha256,
+                IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
+            };
+            InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
-                        var result = await _grantedTokenGeneratorHelper.GenerateTokenAsync("client_id", "scope", "issuer", null).ConfigureAwait(false);
+            var result = await _grantedTokenGeneratorHelper.GenerateToken("client_id", "scope", "issuer", null).ConfigureAwait(false);
 
-                        Assert.NotNull(result);
-            Assert.True(result.ExpiresIn == 3700);
+            Assert.Equal(3700, result.ExpiresIn);
         }
 
         private void InitializeFakeObjects()
         {
-            _oauthConfigurationOptions = new OAuthConfigurationOptions(tokenValidity:TimeSpan.FromSeconds(3700));
-            _jwtGeneratorStub = new Mock<IJwtGenerator>();
-            _clientHelperStub = new Mock<IClientHelper>();
             _clientRepositoryStub = new Mock<IClientStore>();
-            _grantedTokenGeneratorHelper = new GrantedTokenGeneratorHelper(
-                _oauthConfigurationOptions,
-                _jwtGeneratorStub.Object,
-                _clientHelperStub.Object,
+
+            _grantedTokenGeneratorHelper = new GrantedTokenGeneratorHelper(//new DefaultJsonWebKeyRepository(new[] {
+                                                                           //    new Shared.JsonWebKey
+                                                                           //    {
+                                                                           //        Alg = SecurityAlgorithms.RsaSha256,
+                                                                           //        KeyOps = new[]
+                                                                           //        {
+                                                                           //            KeyOperations.Sign,
+                                                                           //            KeyOperations.Verify
+                                                                           //        },
+                                                                           //        Kid = "1",
+                                                                           //        Kty = KeyType.RSA,
+                                                                           //        Use = Use.Sig,
+                                                                           //        SerializedKey = serializedRsa,
+                                                                           //    } }),
                 _clientRepositoryStub.Object);
         }
     }

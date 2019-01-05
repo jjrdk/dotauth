@@ -1,6 +1,6 @@
 ﻿@{
     ViewBag.Title = "Consent";
-    Layout = "~/Areas/Shell/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @model SimpleAuth.Server.ViewModels.ConsentViewModel
@@ -12,7 +12,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="col-center">
+        @*<div class="col-center">
             @if (string.IsNullOrWhiteSpace(Model.LogoUri))
             {
                 <img src="@Url.Content("~/img/OAuth2.png")" width="150" height="150" />
@@ -21,7 +21,7 @@
             {
                 <img src="@Url.Content(Model.LogoUri)" width="150" height="150" />
             }
-        </div>
+        </div>*@
         <div>
             <h2>
                 @accessToValue

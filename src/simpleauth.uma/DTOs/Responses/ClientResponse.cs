@@ -1,7 +1,7 @@
 ﻿namespace SimpleAuth.Uma.DTOs.Responses
 {
     using System.Collections.Generic;
-    using SimpleAuth.Shared.Requests;
+    using Microsoft.IdentityModel.Tokens;
 
     public class ClientResponse
     {

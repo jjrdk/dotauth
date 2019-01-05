@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Server.Controllers
 {
+    using Api.Profile.Actions;
     using Errors;
     using Exceptions;
     using Extensions;
@@ -30,7 +31,6 @@ namespace SimpleAuth.Server.Controllers
     using Shared.Models;
     using Shared.Requests;
     using SimpleAuth;
-    using SimpleAuth.Api.Profile;
     using SimpleAuth.Extensions;
     using SimpleAuth.Services;
     using System;
@@ -39,7 +39,6 @@ namespace SimpleAuth.Server.Controllers
     using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Api.Profile.Actions;
     using Translation;
     using ViewModels;
     using WebSite.Authenticate;
@@ -282,7 +281,7 @@ namespace SimpleAuth.Server.Controllers
                 }
 
                 resourceOwner.Claims.Add(new Claim(codeViewModel.ClaimName, codeViewModel.ClaimValue));
-                var claimsLst = resourceOwner.Claims.Select(c => new ClaimAggregate(c.Type, c.Value));
+                var claimsLst = resourceOwner.Claims.Select(c => new Claim(c.Type, c.Value));
                 await _updateUserClaimsOperation.Execute(authenticatedUser.GetSubject(), claimsLst)
                     .ConfigureAwait(false);
                 var code = await _authenticateActions.GenerateAndSendCode(authenticatedUser.GetSubject())
@@ -633,7 +632,7 @@ namespace SimpleAuth.Server.Controllers
         protected async Task SetLocalCookie(IEnumerable<Claim> claims, string sessionId)
         {
             var cls = claims.ToList();
-            var tokenValidity = _configurationService.TokenValidityPeriod;
+            var tokenValidity = TimeSpan.FromHours(1d);//_configurationService.TokenValidityPeriod;
             var now = DateTime.UtcNow;
             var expires = now.Add(tokenValidity);
             HttpContext.Response.Cookies.Append(CoreConstants.SESSION_ID,

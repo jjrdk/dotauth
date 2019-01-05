@@ -2,8 +2,6 @@
 {
     using System.Collections.Generic;
     using Parameters;
-    using Shared.Models;
-    using Shared.Requests;
 
     public interface IParameterParserHelper
     {

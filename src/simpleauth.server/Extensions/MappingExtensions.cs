@@ -19,7 +19,6 @@ namespace SimpleAuth.Server.Extensions
     using Newtonsoft.Json.Linq;
     using Parameters;
     using Results;
-    using Shared;
     using Shared.Models;
     using Shared.Parameters;
     using Shared.Requests;
@@ -28,6 +27,7 @@ namespace SimpleAuth.Server.Extensions
     using SimpleAuth;
     using System;
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using CodeChallengeMethods = Shared.Models.CodeChallengeMethods;
 
@@ -70,36 +70,6 @@ namespace SimpleAuth.Server.Extensions
                 UserId = profile.Subject,
                 CreateDateTime = profile.CreateDateTime,
                 UpdateTime = profile.UpdateTime
-            };
-        }
-
-        public static AddClaimParameter ToParameter(this ClaimResponse request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            return new AddClaimParameter
-            {
-                Code = request.Code,
-                IsIdentifier = request.IsIdentifier
-            };
-        }
-
-        public static SearchClaimsParameter ToParameter(this SearchClaimsRequest request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            return new SearchClaimsParameter
-            {
-                Count = request.NbResults,
-                ClaimKeys = request.Codes,
-                StartIndex = request.StartIndex,
-                Order = request.Order?.ToParameter()
             };
         }
 
@@ -162,49 +132,6 @@ namespace SimpleAuth.Server.Extensions
             };
         }
 
-        public static GetJwsParameter ToParameter(this GetJwsRequest getJwsRequest)
-        {
-            return new GetJwsParameter
-            {
-                Jws = getJwsRequest.Jws,
-                Url = getJwsRequest.Url
-            };
-        }
-
-        public static GetJweParameter ToParameter(this GetJweRequest getJweRequest)
-        {
-            return new GetJweParameter
-            {
-                Jwe = getJweRequest.Jwe,
-                Password = getJweRequest.Password,
-                Url = getJweRequest.Url
-            };
-        }
-
-        public static CreateJweParameter ToParameter(this CreateJweRequest createJweRequest)
-        {
-            return new CreateJweParameter
-            {
-                Alg = createJweRequest.Alg,
-                Enc = createJweRequest.Enc,
-                Jws = createJweRequest.Jws,
-                Kid = createJweRequest.Kid,
-                Password = createJweRequest.Password,
-                Url = createJweRequest.Url
-            };
-        }
-
-        public static CreateJwsParameter ToParameter(this CreateJwsRequest createJwsRequest)
-        {
-            return new CreateJwsParameter
-            {
-                Alg = createJwsRequest.Alg,
-                Kid = createJwsRequest.Kid,
-                Url = createJwsRequest.Url,
-                Payload = createJwsRequest.Payload
-            };
-        }
-
         public static Scope ToParameter(this ScopeResponse scopeResponse)
         {
             if (scopeResponse == null)
@@ -221,22 +148,6 @@ namespace SimpleAuth.Server.Extensions
                 Name = scopeResponse.Name,
                 Type = (ScopeType)(int)scopeResponse.Type,
                 Claims = scopeResponse.Claims
-            };
-        }
-
-        public static ClaimResponse ToDto(this ClaimAggregate claim)
-        {
-            if (claim == null)
-            {
-                throw new ArgumentNullException(nameof(claim));
-            }
-
-            return new ClaimResponse
-            {
-                Code = claim.Code,
-                CreateDateTime = claim.CreateDateTime,
-                IsIdentifier = claim.IsIdentifier,
-                UpdateDateTime = claim.UpdateDateTime
             };
         }
 
@@ -267,40 +178,6 @@ namespace SimpleAuth.Server.Extensions
                 StartIndex = parameter.StartIndex,
                 TotalResults = parameter.TotalResults,
                 Content = parameter.Content == null ? new List<ResourceOwnerResponse>() : parameter.Content.Select(ToDto)
-            };
-        }
-
-        public static SearchClaimsResponse ToDto(this SearchClaimsResult parameter)
-        {
-            if (parameter == null)
-            {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-
-            return new SearchClaimsResponse
-            {
-                StartIndex = parameter.StartIndex,
-                TotalResults = parameter.TotalResults,
-                Content = parameter.Content == null ? new List<ClaimResponse>() : parameter.Content.Select(ToDto)
-            };
-        }
-
-        public static JwsInformationResponse ToDto(this JwsInformationResult jwsInformationResult)
-        {
-            return new JwsInformationResponse
-            {
-                Header = jwsInformationResult.Header,
-                JsonWebKey = jwsInformationResult.JsonWebKey,
-                Payload = jwsInformationResult.Payload
-            };
-        }
-
-        public static JweInformationResponse ToDto(this JweInformationResult jweInformationResult)
-        {
-            return new JweInformationResponse
-            {
-                IsContentJws = jweInformationResult.IsContentJws,
-                Content = jweInformationResult.Content
             };
         }
 
@@ -348,11 +225,6 @@ namespace SimpleAuth.Server.Extensions
         public static List<ResourceOwnerResponse> ToDtos(this ICollection<ResourceOwner> resourceOwners)
         {
             return resourceOwners.Select(r => r.ToDto()).ToList();
-        }
-
-        public static IEnumerable<ClaimResponse> ToDtos(this IEnumerable<ClaimAggregate> claims)
-        {
-            return claims.Select(c => c.ToDto());
         }
 
         public static AuthorizationParameter ToParameter(this AuthorizationRequest request)
@@ -494,12 +366,12 @@ namespace SimpleAuth.Server.Extensions
             };
         }
 
-        public static AuthorizationRequest ToAuthorizationRequest(this JwsPayload jwsPayload)
+        public static AuthorizationRequest ToAuthorizationRequest(this JwtPayload jwsPayload)
         {
             var displayVal =
-                jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.DisplayName);
+                jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.DisplayName);
             var responseMode =
-                jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.ResponseModeName);
+                jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.ResponseModeName);
             if (string.IsNullOrWhiteSpace(displayVal) || !Enum.TryParse(displayVal, out DisplayModes displayEnum))
             {
                 displayEnum = DisplayModes.Page;
@@ -512,23 +384,23 @@ namespace SimpleAuth.Server.Extensions
 
             var result = new AuthorizationRequest
             {
-                AcrValues = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.AcrValuesName),
-                Claims = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.ClaimsName),
-                ClientId = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName),
+                AcrValues = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.AcrValuesName),
+                Claims = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.ClaimsName),
+                ClientId = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName),
                 Display = displayEnum,
-                Prompt = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.PromptName),
-                IdTokenHint = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.IdTokenHintName),
-                MaxAge = jwsPayload.GetDoubleClaim(CoreConstants.StandardAuthorizationRequestParameterNames.MaxAgeName),
-                Nonce = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
-                ResponseType = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
-                State = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.StateName),
-                LoginHint = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.LoginHintName),
-                RedirectUri = new Uri(jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName)),
-                Request = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.RequestName),
-                RequestUri = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.RequestUriName),
-                Scope = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName),
+                Prompt = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.PromptName),
+                IdTokenHint = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.IdTokenHintName),
+                MaxAge = long.Parse(jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.MaxAgeName)),
+                Nonce = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
+                ResponseType = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
+                State = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.StateName),
+                LoginHint = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.LoginHintName),
+                RedirectUri = new Uri(jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName)),
+                Request = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.RequestName),
+                RequestUri = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.RequestUriName),
+                Scope = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName),
                 ResponseMode = responseModeEnum,
-                UiLocales = jwsPayload.GetStringClaim(CoreConstants.StandardAuthorizationRequestParameterNames.UiLocalesName),
+                UiLocales = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.UiLocalesName),
             };
 
             return result;

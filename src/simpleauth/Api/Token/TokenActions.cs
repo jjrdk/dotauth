@@ -28,7 +28,6 @@ namespace SimpleAuth.Api.Token
     using Shared;
     using Shared.Events.OAuth;
     using Shared.Models;
-    using Shared.Requests;
     using Validators;
 
     public class TokenActions : ITokenActions
@@ -361,7 +360,7 @@ namespace SimpleAuth.Api.Token
             if (grantedToken == null)
             {
                 grantedToken = await _grantedTokenGeneratorHelper
-                    .GenerateTokenAsync(client, allowedTokenScopes, issuerName, null)
+                    .GenerateToken(client, allowedTokenScopes, issuerName, null)
                     .ConfigureAwait(false);
                 await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);
                 _oauthEventSource.GrantAccessToClient(client.ClientId, grantedToken.AccessToken, allowedTokenScopes);

@@ -14,6 +14,7 @@
     using SimpleAuth.JwtToken;
     using System;
     using System.Threading.Tasks;
+    using Shared.Repositories;
     using Xunit;
     using Client = Shared.Models.Client;
 
@@ -151,8 +152,8 @@
             _oauthEventSource = new Mock<IOAuthEventSource>();
             _getAuthorizationCodeOperation = new GetAuthorizationCodeOperation(
                 new ProcessAuthorizationRequest(
+                    new Mock<IClientStore>().Object,
                     new Mock<IConsentHelper>().Object,
-                    new Mock<IJwtParser>().Object,
                     _oauthEventSource.Object),
                 _generateAuthorizationResponseFake.Object,
                 _oauthEventSource.Object);
