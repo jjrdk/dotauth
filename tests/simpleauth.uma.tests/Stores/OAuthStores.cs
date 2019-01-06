@@ -30,14 +30,14 @@
             };
         }
 
-        public static List<JsonWebKey> GetJsonWebKeys(SharedContext sharedContext)
-        {
-            return new List<JsonWebKey>
-            {
-                sharedContext.EncryptionKey,
-                sharedContext.SignatureKey
-            };
-        }
+        //public static List<JsonWebKey> GetJsonWebKeys(SharedContext sharedContext)
+        //{
+        //    return new List<JsonWebKey>
+        //    {
+        //        sharedContext.EncryptionKey,
+        //        sharedContext.SignatureKey
+        //    };
+        //}
 
         public static List<Client> GetClients()
         {

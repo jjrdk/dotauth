@@ -14,17 +14,16 @@
 
 namespace SimpleAuth.Shared.Events.Openid
 {
+    using System;
+
     public class ConsentRejected : Event
     {
-        public ConsentRejected(string id, string processId, int order)
+        public ConsentRejected(string id, string processId, DateTime timestamp)
+            : base(id, timestamp)
         {
-            Id = id;
             ProcessId = processId;
-            Order = order;
         }
 
-        public string Id { get; private set; }
-        public string ProcessId { get; private set; }
-        public int Order { get; private set; }
+        public string ProcessId { get; }
     }
 }

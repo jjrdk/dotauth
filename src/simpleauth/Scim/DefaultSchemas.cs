@@ -60,7 +60,7 @@
 //            {
 //                return new SchemaAttribute
 //                {
-//                    Id = Guid.NewGuid().ToString(),
+//                    Id = Id.Create();,
 //                    Name = name,
 //                    Type = type,
 //                    MultiValued = multiValued,
@@ -93,7 +93,7 @@
 //            {
 //                return new SchemaAttribute
 //                {
-//                    Id = Guid.NewGuid().ToString(),
+//                    Id = Id.Create();,
 //                    Name = name,
 //                    MultiValued = multiValued,
 //                    Description = description,
@@ -413,7 +413,7 @@
 //            },
 //            Meta = new MetaData
 //            {
-//                Id = Guid.NewGuid().ToString(),
+//                Id = Id.Create();,
 //                ResourceType = "Schema",
 //                Location = ScimConstants.SchemaUrns.User
 //            }
@@ -441,7 +441,7 @@
 //            },
 //            Meta = new MetaData
 //            {
-//                Id = Guid.NewGuid().ToString(),
+//                Id = Id.Create();,
 //                ResourceType = "Schema",
 //                Location = ScimConstants.SchemaUrns.Group
 //            }

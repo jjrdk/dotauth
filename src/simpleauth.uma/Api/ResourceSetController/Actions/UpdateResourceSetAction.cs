@@ -31,16 +31,13 @@ namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
     {
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly IResourceSetParameterValidator _resourceSetParameterValidator;
-        private readonly IUmaServerEventSource _umaServerEventSource;
 
         public UpdateResourceSetAction(
             IResourceSetRepository resourceSetRepository,
-            IResourceSetParameterValidator resourceSetParameterValidator,
-            IUmaServerEventSource umaServerEventSource)
+            IResourceSetParameterValidator resourceSetParameterValidator)
         {
             _resourceSetRepository = resourceSetRepository;
             _resourceSetParameterValidator = resourceSetParameterValidator;
-            _umaServerEventSource = umaServerEventSource;
         }
 
         public async Task<bool> Execute(UpdateResourceSetParameter udpateResourceSetParameter)
@@ -50,8 +47,6 @@ namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
                 throw new ArgumentNullException(nameof(udpateResourceSetParameter));
             }
 
-            var json = JsonConvert.SerializeObject(udpateResourceSetParameter);
-            _umaServerEventSource.StartToUpdateResourceSet(json);
             var resourceSet = new ResourceSet
             {
                 Id = udpateResourceSetParameter.Id,
@@ -77,7 +72,6 @@ namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
                 throw new BaseUmaException(UmaErrorCodes.InternalError, string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, resourceSet.Id));
             }
 
-            _umaServerEventSource.FinishToUpdateResourceSet(json);
             return true;
         }
     }

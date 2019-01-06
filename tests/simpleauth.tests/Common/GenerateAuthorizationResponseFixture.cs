@@ -44,10 +44,10 @@ namespace SimpleAuth.Tests.Common
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
         private Mock<ITokenStore> _grantedTokenRepositoryFake;
         private Mock<IConsentHelper> _consentHelperFake;
-        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
         private Mock<IClientHelper> _clientHelperFake;
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
+        private Mock<IEventPublisher> _eventPublisher;
         private IGenerateAuthorizationResponse _generateAuthorizationResponse;
 
         public static string ToHexString(IEnumerable<byte> arr)
@@ -182,7 +182,7 @@ namespace SimpleAuth.Tests.Common
             };
             var grantedToken = new GrantedToken
             {
-                AccessToken = Guid.NewGuid().ToString()
+                AccessToken = Id.Create()
             };
             var actionResult = new EndpointResult
             {
@@ -222,7 +222,7 @@ namespace SimpleAuth.Tests.Common
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == CoreConstants.StandardAuthorizationResponseNames.AccessTokenName);
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Value == grantedToken.AccessToken);
             _grantedTokenRepositoryFake.Verify(g => g.AddToken(grantedToken));
-            _oauthEventSource.Verify(e => e.GrantAccessToClient(clientId, grantedToken.AccessToken, scope));
+            _eventPublisher.Verify(e => e.Publish(It.IsAny<AccessToClientGranted>()));
         }
 
         [Fact]
@@ -240,7 +240,7 @@ namespace SimpleAuth.Tests.Common
             };
             var grantedToken = new GrantedToken
             {
-                AccessToken = Guid.NewGuid().ToString()
+                AccessToken = Id.Create()
             };
             var actionResult = new EndpointResult
             {
@@ -314,53 +314,7 @@ namespace SimpleAuth.Tests.Common
 
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == CoreConstants.StandardAuthorizationResponseNames.AuthorizationCodeName);
             _authorizationCodeRepositoryFake.Verify(a => a.AddAuthorizationCode(It.IsAny<AuthorizationCode>()));
-            _oauthEventSource.Verify(s => s.GrantAuthorizationCodeToClient(clientId, It.IsAny<string>(), scope));
-        }
-
-        [Fact]
-        public async Task When_An_Authorization_Response_Is_Generated_Then_Events_Are_Logged()
-        {
-            InitializeFakeObjects();
-            //const string idToken = "idToken";
-            const string clientId = "clientId";
-            const string scope = "scope";
-            const string responseType = "id_token";
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = clientId,
-                Scope = scope,
-                ResponseType = responseType
-            };
-            var client = new Client
-            {
-                IdTokenEncryptedResponseAlg = SecurityAlgorithms.RsaPKCS1,
-                IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
-                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256
-            };
-            var actionResult = new EndpointResult
-            {
-                RedirectInstruction = new RedirectInstruction()
-            };
-            var jwsPayload = new JwtPayload();
-            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new[]
-                {
-                    ResponseTypeNames.IdToken
-                });
-            _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>(), null))
-                .Returns(Task.FromResult(jwsPayload));
-            _jwtGeneratorFake.Setup(
-                j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult(jwsPayload));
-            //_jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<JwtPayload>(), It.IsAny<string>(), It.IsAny<string>()))
-            //    .Returns(Task.FromResult(idToken));
-
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
-
-            _oauthEventSource.Verify(s => s.StartGeneratingAuthorizationResponseToClient(clientId, responseType));
-            _oauthEventSource.Verify(s => s.EndGeneratingAuthorizationResponseToClient(clientId, actionResult.RedirectInstruction.Parameters.SerializeWithJavascript()));
+            _eventPublisher.Verify(s => s.Publish(It.IsAny<AuthorizationCodeGranted>()));
         }
 
         [Fact]
@@ -421,10 +375,12 @@ namespace SimpleAuth.Tests.Common
             _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
             _grantedTokenRepositoryFake = new Mock<ITokenStore>();
             _consentHelperFake = new Mock<IConsentHelper>();
-            _oauthEventSource = new Mock<IOAuthEventSource>();
             _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
             _clientHelperFake = new Mock<IClientHelper>();
             _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
+            _eventPublisher = new Mock<IEventPublisher>();
+            _eventPublisher.Setup(x => x.Publish(It.IsAny<AuthorizationCodeGranted>())).Returns(Task.CompletedTask);
+            _eventPublisher.Setup(x => x.Publish(It.IsAny<AccessToClientGranted>())).Returns(Task.CompletedTask);
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
                 _authorizationCodeRepositoryFake.Object,
                 _grantedTokenRepositoryFake.Object,
@@ -432,7 +388,7 @@ namespace SimpleAuth.Tests.Common
                 _jwtGeneratorFake.Object,
                 _grantedTokenGeneratorHelperFake.Object,
                 _consentHelperFake.Object,
-                _oauthEventSource.Object,
+                _eventPublisher.Object,
                 _authorizationFlowHelperFake.Object,
                 _clientHelperFake.Object,
                 _grantedTokenHelperStub.Object);

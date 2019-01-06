@@ -37,7 +37,6 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
         private Mock<ITicketStore> _ticketStoreStub;
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
-        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
         private UmaConfigurationOptions _configurationServiceStub;
         private IAddPermissionAction _addPermissionAction;
 
@@ -176,14 +175,12 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
             _ticketStoreStub = new Mock<ITicketStore>();
             _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
-            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _configurationServiceStub = new UmaConfigurationOptions(ticketLifetime: TimeSpan.FromSeconds(2));
             _addPermissionAction = new AddPermissionAction(
                 _resourceSetRepositoryStub.Object,
                 _ticketStoreStub.Object,
                 _repositoryExceptionHelperStub.Object,
-                _configurationServiceStub,
-                _umaServerEventSourceStub.Object);
+                _configurationServiceStub);
         }
     }
 }

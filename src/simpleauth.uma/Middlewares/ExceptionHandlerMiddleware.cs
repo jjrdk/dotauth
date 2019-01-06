@@ -14,23 +14,25 @@
 
 namespace SimpleAuth.Uma.Middlewares
 {
+    using Exceptions;
+    using Logging;
+    using Microsoft.AspNetCore.Http;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
     using System;
     using System.Net;
     using System.Threading.Tasks;
-    using Exceptions;
-    using Microsoft.AspNetCore.Http;
-    using SimpleAuth.Shared.Responses;
     using ErrorCodes = SimpleAuth.Errors.ErrorCodes;
 
     internal class ExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ExceptionHandlerMiddlewareOptions _options;
+        private readonly IEventPublisher _eventPublisher;
 
-        public ExceptionHandlerMiddleware(RequestDelegate next, ExceptionHandlerMiddlewareOptions options)
+        public ExceptionHandlerMiddleware(RequestDelegate next, IEventPublisher eventPublisher)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _eventPublisher = eventPublisher;
         }
 
         public async Task Invoke(HttpContext context)
@@ -46,7 +48,11 @@ namespace SimpleAuth.Uma.Middlewares
                     serverException = new BaseUmaException(ErrorCodes.UnhandledExceptionCode, exception.Message);
                 }
 
-                _options.UmaEventSource.Failure(serverException);
+                await _eventPublisher.Publish(new ExceptionMessage(
+                    Id.Create(),
+                    exception,
+                    DateTime.UtcNow)).ConfigureAwait(false);
+                //_options.UmaEventSource.Failure(serverException);
                 var error = new ErrorResponse
                 {
                     Error = serverException.Code,

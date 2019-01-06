@@ -1,7 +1,9 @@
 ﻿namespace SimpleAuth.Shared
 {
+    using System.Threading.Tasks;
+
     public interface IEventPublisher
     {
-        void Publish<T>(T evt) where T : Event;
+        Task Publish<T>(T evt) where T : Event;
     }
 }

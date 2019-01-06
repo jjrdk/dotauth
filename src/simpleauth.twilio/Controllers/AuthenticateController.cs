@@ -1,11 +1,5 @@
 ﻿namespace SimpleAuth.Twilio.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Actions;
     using Api.Profile.Actions;
     using Errors;
@@ -26,6 +20,12 @@
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using Translation;
     using ViewModels;
     using WebSite.Authenticate;
@@ -35,6 +35,7 @@
     [Area(SmsConstants.AMR)]
     public class AuthenticateController : BaseAuthenticateController
     {
+        private readonly IEventPublisher _eventPublisher;
         private readonly IGetUserOperation _getUserOperation;
         private readonly ISmsAuthenticationOperation _smsAuthenticationOperation;
         private readonly IGenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
@@ -44,7 +45,6 @@
             IGetResourceOwnerClaimsAction profileActions,
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
-            IOpenIdEventSource openIdEventSource,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IEventPublisher eventPublisher,
@@ -53,7 +53,6 @@
             IAddUserOperation userActions,
             IGetUserOperation getUserOperation,
             IUpdateUserClaimsOperation updateUserClaimsOperation,
-            OAuthConfigurationOptions configurationService,
             IAuthenticateHelper authenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             ISmsAuthenticationOperation smsAuthenticationOperation,
@@ -64,7 +63,6 @@
                 profileActions,
                 dataProtectionProvider,
                 translationManager,
-                openIdEventSource,
                 urlHelperFactory,
                 actionContextAccessor,
                 eventPublisher,
@@ -73,12 +71,12 @@
                 userActions,
                 getUserOperation,
                 updateUserClaimsOperation,
-                configurationService,
                 authenticateHelper,
                 twoFactorAuthenticationHandler,
                 subjectBuilder,
                 basicAuthenticateOptions)
         {
+            _eventPublisher = eventPublisher;
             _getUserOperation = getUserOperation;
             _smsAuthenticationOperation = smsAuthenticationOperation;
             _generateAndSendSmsCodeOperation = generateAndSendSmsCodeOperation;
@@ -123,7 +121,13 @@
                 }
                 catch (Exception ex)
                 {
-                    _openIdEventSource.Failure(ex.Message);
+                    await _eventPublisher.Publish(
+                            new ExceptionMessage(
+                                Id.Create(),
+                                ex,
+                                DateTime.UtcNow))
+                        .ConfigureAwait(false);
+                    // _openIdEventSource.Failure(ex.Message);
                     ModelState.AddModelError("message_error", ex.Message);
                 }
 
@@ -140,7 +144,12 @@
                     }
                     catch (Exception ex)
                     {
-                        _openIdEventSource.Failure(ex.Message);
+                        await _eventPublisher.Publish(
+                                new ExceptionMessage(
+                                    Id.Create(),
+                                    ex,
+                                    DateTime.UtcNow))
+                            .ConfigureAwait(false);
                         ModelState.AddModelError("message_error", "TWILIO account is not valid");
                     }
                 }
@@ -231,12 +240,12 @@
                 try
                 {
                     await SetTwoFactorCookie(authenticatedUser.Claims).ConfigureAwait(false);
-                    var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value).ConfigureAwait(false);
-                    return RedirectToAction("SendCode", new { code = confirmCodeViewModel.Code });
+                    await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value).ConfigureAwait(false);
+                    return RedirectToAction("SendCode", new {code = confirmCodeViewModel.Code});
                 }
                 catch (ClaimRequiredException)
                 {
-                    return RedirectToAction("SendCode", new { code = confirmCodeViewModel.Code });
+                    return RedirectToAction("SendCode", new {code = confirmCodeViewModel.Code});
                 }
                 catch (Exception)
                 {
@@ -246,7 +255,7 @@
                 }
             }
 
-            _openIdEventSource.AuthenticateResourceOwner(subject);
+            //_openIdEventSource.AuthenticateResourceOwner(subject);
             if (!string.IsNullOrWhiteSpace(confirmCodeViewModel.Code)) // Execute OPENID workflow
             {
                 var request = _dataProtector.Unprotect<AuthorizationRequest>(confirmCodeViewModel.Code);
@@ -261,12 +270,12 @@
                 var result = this.CreateRedirectionFromActionResult(actionResult, request);
                 if (result != null)
                 {
-                    LogAuthenticateUser(actionResult, request.ProcessId);
+                    await LogAuthenticateUser(actionResult, request.ProcessId).ConfigureAwait(false);
                     return result;
                 }
             }
 
-            await SetLocalCookie(authenticatedUser.Claims, Guid.NewGuid().ToString())
+            await SetLocalCookie(authenticatedUser.Claims, Id.Create())
                 .ConfigureAwait(false); // Authenticate the resource owner
             return RedirectToAction("Index", "User");
         }
@@ -299,7 +308,12 @@
                 }
                 catch (Exception ex)
                 {
-                    _openIdEventSource.Failure(ex.Message);
+                    await _eventPublisher.Publish(
+                            new ExceptionMessage(
+                                Id.Create(),
+                                ex,
+                                DateTime.UtcNow))
+                        .ConfigureAwait(false);
                     ModelState.AddModelError("message_error", ex.Message);
                 }
 
@@ -312,11 +326,16 @@
                     await SetPasswordLessCookie(claims).ConfigureAwait(false);
                     try
                     {
-                        return RedirectToAction("ConfirmCode", new { code = viewModel.Code });
+                        return RedirectToAction("ConfirmCode", new {code = viewModel.Code});
                     }
                     catch (Exception ex)
                     {
-                        _openIdEventSource.Failure(ex.Message);
+                        await _eventPublisher.Publish(
+                                new ExceptionMessage(
+                                    Id.Create(),
+                                    ex,
+                                    DateTime.UtcNow))
+                            .ConfigureAwait(false);
                         ModelState.AddModelError("message_error", "TWILIO account is not valid");
                     }
                 }

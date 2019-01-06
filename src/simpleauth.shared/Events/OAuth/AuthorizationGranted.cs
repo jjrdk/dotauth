@@ -14,19 +14,19 @@
 
 namespace SimpleAuth.Shared.Events.OAuth
 {
+    using System;
+
     public class AuthorizationGranted : Event
     {
-        public AuthorizationGranted(string id, string processId, object payload, int order)
+        public AuthorizationGranted(string id, string processId, object payload, DateTime timestamp)
+        : base(id, timestamp)
         {
             Id = id;
             ProcessId = processId;
             Payload = payload;
-            Order = order;
         }
 
-        public string Id { get; }
         public string ProcessId { get; }
         public object Payload { get; }
-        public int Order { get; }
     }
 }

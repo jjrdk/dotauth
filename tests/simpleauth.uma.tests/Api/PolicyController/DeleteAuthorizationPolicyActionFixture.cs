@@ -14,14 +14,13 @@
 
 namespace SimpleAuth.Uma.Tests.Api.PolicyController
 {
-    using System;
-    using System.Threading.Tasks;
     using Errors;
     using Helpers;
-    using Logging;
     using Models;
     using Moq;
     using Repositories;
+    using System;
+    using System.Threading.Tasks;
     using Uma.Api.PolicyController.Actions;
     using Xunit;
 
@@ -29,7 +28,6 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
-        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
         private IDeleteAuthorizationPolicyAction _deleteAuthorizationPolicyAction;
 
         [Fact]
@@ -73,11 +71,9 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         {
             _policyRepositoryStub = new Mock<IPolicyRepository>();
             _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
-            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _deleteAuthorizationPolicyAction = new DeleteAuthorizationPolicyAction(
                 _policyRepositoryStub.Object,
-                _repositoryExceptionHelperStub.Object,
-                _umaServerEventSourceStub.Object);
+                _repositoryExceptionHelperStub.Object);
         }
     }
 }

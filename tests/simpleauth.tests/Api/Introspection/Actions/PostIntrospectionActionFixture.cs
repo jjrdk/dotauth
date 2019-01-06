@@ -14,13 +14,8 @@
 
 namespace SimpleAuth.Tests.Api.Introspection.Actions
 {
-    using System;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Net.Http.Headers;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Logging;
     using Moq;
     using Parameters;
     using Shared;
@@ -29,12 +24,15 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
     using SimpleAuth.Api.Introspection.Actions;
     using SimpleAuth.Authenticate;
     using SimpleAuth.Validators;
+    using System;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
     using Xunit;
     using JwtConstants = SimpleAuth.JwtConstants;
 
     public class PostIntrospectionActionFixture
     {
-        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IAuthenticateClient> _authenticateClientStub;
         private Mock<IIntrospectionParameterValidator> _introspectionParameterValidatorStub;
         private Mock<ITokenStore> _tokenStoreStub;
@@ -42,14 +40,16 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        await Assert.ThrowsAsync<ArgumentNullException>(() => _postIntrospectionAction.Execute(null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _postIntrospectionAction.Execute(null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Client_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var parameter = new IntrospectionParameter
             {
                 Token = "token"
@@ -57,13 +57,14 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                .Returns(Task.FromResult(new AuthenticationResult(null, null)));
 
-                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _postIntrospectionAction.Execute(parameter, null, null)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _postIntrospectionAction.Execute(parameter, null, null)).ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
         }
 
         [Fact]
         public async Task When_AccessToken_Cannot_Be_Extracted_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var parameter = new IntrospectionParameter
             {
                 TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken,
@@ -77,14 +78,15 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
-                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _postIntrospectionAction.Execute(parameter, null, null)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _postIntrospectionAction.Execute(parameter, null, null)).ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidToken, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.TheTokenIsNotValid);
         }
 
         [Fact]
         public async Task When_Passing_Expired_AccessToken_Then_Result_Should_Be_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             const string clientId = "client_id";
             const string subject = "subject";
             const string audience = "audience";
@@ -121,9 +123,9 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(grantedToken));
 
-                        var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue, null).ConfigureAwait(false);
+            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue, null).ConfigureAwait(false);
 
-                        Assert.NotNull(result);
+            Assert.NotNull(result);
             Assert.False(result.Active);
             Assert.True(result.Audience == audience);
             Assert.True(result.Subject == subject);
@@ -131,7 +133,8 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
 
         [Fact]
         public async Task When_Passing_Active_AccessToken_Then_Result_Should_Be_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             const string clientId = "client_id";
             const string subject = "subject";
             const string audience = "audience";
@@ -173,9 +176,9 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(grantedToken));
 
-                        var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue, null).ConfigureAwait(false);
+            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue, null).ConfigureAwait(false);
 
-                        Assert.NotNull(result);
+            Assert.NotNull(result);
             Assert.True(result.Active);
             Assert.True(result.Audience == audience);
             Assert.True(result.Subject == subject);
@@ -183,12 +186,10 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
 
         private void InitializeFakeObjects()
         {
-            _oauthEventSource = new Mock<IOAuthEventSource>();
             _authenticateClientStub = new Mock<IAuthenticateClient>();
             _introspectionParameterValidatorStub = new Mock<IIntrospectionParameterValidator>();
             _tokenStoreStub = new Mock<ITokenStore>();
             _postIntrospectionAction = new PostIntrospectionAction(
-                _oauthEventSource.Object,
                 _authenticateClientStub.Object,
                 _introspectionParameterValidatorStub.Object,
                 _tokenStoreStub.Object);

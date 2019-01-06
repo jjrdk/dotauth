@@ -339,10 +339,10 @@ namespace SimpleAuth.Scim.Client.Tests
         //            properties: new[]
         //            {
         //                new JProperty(ScimConstants.IdentifiedScimResourceNames.ExternalId, "new_external_id"),
-        //                new JProperty(ScimConstants.UserResourceResponseNames.UserName, Guid.NewGuid().ToString())
+        //                new JProperty(ScimConstants.UserResourceResponseNames.UserName, Id.Create();)
         //            }).ConfigureAwait(false);
-        //        //.SetCommonAttributes(Guid.NewGuid().ToString())
-        //        //.AddAttribute(new JProperty(ScimConstants.UserResourceResponseNames.UserName, Guid.NewGuid().ToString()))
+        //        //.SetCommonAttributes(Id.Create();)
+        //        //.AddAttribute(new JProperty(ScimConstants.UserResourceResponseNames.UserName, Id.Create();))
         //        //.Execute();
         //    }
 

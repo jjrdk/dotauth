@@ -1,5 +1,21 @@
 ﻿namespace SimpleAuth.Uma.Api.Token
 {
+    using Authenticate;
+    using Errors;
+    using Exceptions;
+    using Logging;
+    using Models;
+    using Newtonsoft.Json.Linq;
+    using Parameters;
+    using Policies;
+    using Shared;
+    using SimpleAuth;
+    using SimpleAuth.Errors;
+    using SimpleAuth.JwtToken;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Events.Uma;
+    using SimpleAuth.Shared.Models;
+    using Stores;
     using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
@@ -7,55 +23,38 @@
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
     using System.Threading.Tasks;
-    using Authenticate;
-    using Errors;
-    using Exceptions;
-    using Logging;
-    using Models;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-    using Parameters;
-    using Policies;
-    using Shared;
-    using SimpleAuth;
-    using SimpleAuth.Errors;
-    using SimpleAuth.Helpers;
-    using SimpleAuth.JwtToken;
-    using SimpleAuth.Shared.Models;
-    using Stores;
     using ErrorDescriptions = Errors.ErrorDescriptions;
 
     internal sealed class UmaTokenActions : IUmaTokenActions
     {
         private readonly ITicketStore _ticketStore;
         private readonly UmaConfigurationOptions _configurationService;
-        private readonly IUmaServerEventSource _umaServerEventSource;
         private readonly IAuthorizationPolicyValidator _authorizationPolicyValidator;
         private readonly IAuthenticateClient _authenticateClient;
         private readonly IJwtGenerator _jwtGenerator;
-        private readonly IClientHelper _clientHelper;
         private readonly ITokenStore _tokenStore;
+        private readonly IEventPublisher _eventPublisher;
 
-        public UmaTokenActions(ITicketStore ticketStore,
+        public UmaTokenActions(
+            ITicketStore ticketStore,
             UmaConfigurationOptions configurationService,
-            IUmaServerEventSource umaServerEventSource,
             IAuthorizationPolicyValidator authorizationPolicyValidator,
             IAuthenticateClient authenticateClient,
             IJwtGenerator jwtGenerator,
-            IClientHelper clientHelper,
-            ITokenStore tokenStore)
+            ITokenStore tokenStore,
+            IEventPublisher eventPublisher)
         {
             _ticketStore = ticketStore;
             _configurationService = configurationService;
-            _umaServerEventSource = umaServerEventSource;
             _authorizationPolicyValidator = authorizationPolicyValidator;
             _authenticateClient = authenticateClient;
             _jwtGenerator = jwtGenerator;
-            _clientHelper = clientHelper;
             _tokenStore = tokenStore;
+            _eventPublisher = eventPublisher;
         }
 
-        public async Task<GrantedToken> GetTokenByTicketId(GetTokenViaTicketIdParameter parameter,
+        public async Task<GrantedToken> GetTokenByTicketId(
+            GetTokenViaTicketIdParameter parameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
             string issuerName)
@@ -78,7 +77,10 @@
             }
 
             // 2. Try to authenticate the client.
-            var instruction = AuthenticationHeaderValueExtensions.GetAuthenticateInstruction(authenticationHeaderValue, parameter, certificate);
+            var instruction =
+                authenticationHeaderValue.GetAuthenticateInstruction(
+                    parameter,
+                    certificate);
             var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
@@ -89,14 +91,10 @@
             if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.uma_ticket))
             {
                 throw new BaseUmaException(UmaErrorCodes.InvalidGrant,
-                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
-                        client.ClientId,
-                        GrantType.uma_ticket));
+                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId));
             }
 
             // 3. Retrieve the ticket.
-            var json = JsonConvert.SerializeObject(parameter);
-            _umaServerEventSource.StartGettingAuthorization(json);
             var ticket = await _ticketStore.GetAsync(parameter.Ticket).ConfigureAwait(false);
             if (ticket == null)
             {
@@ -110,7 +108,6 @@
                 throw new BaseUmaException(UmaErrorCodes.ExpiredTicket, ErrorDescriptions.TheTicketIsExpired);
             }
 
-            _umaServerEventSource.CheckAuthorizationPolicy(json);
             var claimTokenParameter = new ClaimTokenParameter
             {
                 Token = parameter.ClaimToken,
@@ -123,7 +120,12 @@
                 .ConfigureAwait(false);
             if (authorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
-                _umaServerEventSource.RequestIsNotAuthorized(json);
+                await _eventPublisher.Publish(new UmaRequestNotAuthorized(
+                        Id.Create(),
+                        parameter.Ticket,
+                        parameter.ClientId,
+                        DateTime.UtcNow))
+                    .ConfigureAwait(false);
                 throw new BaseUmaException(UmaErrorCodes.InvalidGrant,
                     ErrorDescriptions.TheAuthorizationPolicyIsNotSatisfied);
             }
@@ -135,7 +137,8 @@
             return grantedToken;
         }
 
-        public GrantedToken GenerateTokenAsync(Client client,
+        public GrantedToken GenerateTokenAsync(
+            Client client,
             IEnumerable<TicketLine> ticketLines,
             string scope,
             string issuerName)
@@ -155,7 +158,7 @@
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            var expiresIn = _configurationService.RptLifeTime;// 1. Retrieve the expiration time of the granted token.
+            var expiresIn = _configurationService.RptLifeTime; // 1. Retrieve the expiration time of the granted token.
             var jwsPayload = _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName, null);
             // 2. Construct the JWT token (client).
             var jArr = new JArray();
@@ -168,17 +171,17 @@
                 };
                 jArr.Add(jObj);
             }
-            
+
             jwsPayload.Payload.Add(UmaConstants.RptClaims.Ticket, jArr);
             var handler = new JwtSecurityTokenHandler();
             var accessToken = handler.WriteToken(jwsPayload);
-            //var accessToken = await _clientHelper.GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
-            var refreshTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()); // 3. Construct the refresh token.
+            var refreshTokenId = Encoding.UTF8.GetBytes(Id.Create()); 
+            // 3. Construct the refresh token.
             return new GrantedToken
             {
                 AccessToken = accessToken,
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
-                ExpiresIn = (int)expiresIn.TotalSeconds,
+                ExpiresIn = (int) expiresIn.TotalSeconds,
                 TokenType = CoreConstants.StandardTokenTypes.Bearer,
                 CreateDateTime = DateTime.UtcNow,
                 Scope = scope,

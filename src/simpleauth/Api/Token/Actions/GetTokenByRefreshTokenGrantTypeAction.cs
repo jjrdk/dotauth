@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Api.Token.Actions
 {
-    using System;
-    using System.Net.Http.Headers;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Threading.Tasks;
     using Authenticate;
     using Errors;
     using Exceptions;
@@ -25,12 +21,17 @@ namespace SimpleAuth.Api.Token.Actions
     using JwtToken;
     using Logging;
     using Parameters;
+    using Shared;
     using Shared.Models;
+    using System;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
 
     public sealed class GetTokenByRefreshTokenGrantTypeAction : IGetTokenByRefreshTokenGrantTypeAction
     {
         private readonly IClientHelper _clientHelper;
-        private readonly IOAuthEventSource _oauthEventSource;
+        private readonly IEventPublisher _eventPublisher;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly ITokenStore _tokenStore;
         private readonly IJwtGenerator _jwtGenerator;
@@ -38,14 +39,14 @@ namespace SimpleAuth.Api.Token.Actions
 
         public GetTokenByRefreshTokenGrantTypeAction(
             IClientHelper clientHelper,
-            IOAuthEventSource oauthEventSource,
+            IEventPublisher eventPublisher,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             ITokenStore tokenStore,
             IJwtGenerator jwtGenerator,
             IAuthenticateClient authenticateClient)
         {
             _clientHelper = clientHelper;
-            _oauthEventSource = oauthEventSource;
+            _eventPublisher = eventPublisher;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _tokenStore = tokenStore;
             _jwtGenerator = jwtGenerator;
@@ -65,7 +66,6 @@ namespace SimpleAuth.Api.Token.Actions
             var client = authResult.Client;
             if (authResult.Client == null)
             {
-                _oauthEventSource.Info(authResult.ErrorMessage);
                 throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
@@ -100,9 +100,13 @@ namespace SimpleAuth.Api.Token.Actions
             }
 
             await _tokenStore.AddToken(generatedToken).ConfigureAwait(false);
-            _oauthEventSource.GrantAccessToClient(generatedToken.ClientId,
-                generatedToken.AccessToken,
-                generatedToken.Scope);
+            await _eventPublisher.Publish(
+                new AccessToClientGranted(
+                    Id.Create(),
+                    generatedToken.ClientId,
+                    generatedToken.AccessToken,
+                    generatedToken.Scope,
+                    DateTime.UtcNow)).ConfigureAwait(false);
             return generatedToken;
         }
 

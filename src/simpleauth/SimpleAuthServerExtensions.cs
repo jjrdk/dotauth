@@ -33,6 +33,8 @@ namespace SimpleAuth
     using Shared.Repositories;
     using System;
     using System.Net.Http;
+    using Logging;
+    using Shared;
     using Translation;
     using Validators;
     using WebSite.Authenticate;
@@ -42,9 +44,9 @@ namespace SimpleAuth
     using WebSite.Consent.Actions;
     using WebSite.User.Actions;
 
-    public static class SimpleAuthServerExtensions
+    internal static class SimpleAuthServerExtensions
     {
-        public static IServiceCollection AddSimpleAuth(
+        public static IServiceCollection RegisterSimpleAuth(
             this IServiceCollection serviceCollection,
             SimpleAuthOptions options = null)
         {
@@ -111,7 +113,9 @@ namespace SimpleAuth
             serviceCollection.AddTransient<IResourceOwnerAuthenticateHelper, ResourceOwnerAuthenticateHelper>();
             serviceCollection.AddTransient<IAmrHelper, AmrHelper>();
             serviceCollection.AddTransient<IRevokeTokenParameterValidator, RevokeTokenParameterValidator>();
+            serviceCollection.AddSingleton<IEventPublisher>(options?.EventPublisher ?? new DefaultEventPublisher());
             serviceCollection.AddSingleton(options?.OAuthConfigurationOptions ?? new OAuthConfigurationOptions());
+            serviceCollection.AddSingleton(options?.BasicAuthenticationOptions ?? new BasicAuthenticateOptions());
             serviceCollection.AddSingleton(options?.Scim ?? new ScimOptions { IsEnabled = false });
 
             serviceCollection.AddSingleton(sp => new DefaultClientRepository(options?.Configuration?.Clients, sp.GetService<HttpClient>(), sp.GetService<IScopeStore>()));

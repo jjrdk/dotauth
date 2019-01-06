@@ -14,29 +14,24 @@
 
 namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
 {
-    using System;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Logging;
     using Repositories;
+    using System;
+    using System.Threading.Tasks;
 
     internal class DeleteResourceSetAction : IDeleteResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
-        private readonly IUmaServerEventSource _umaServerEventSource;
 
         public DeleteResourceSetAction(
-            IResourceSetRepository resourceSetRepository,
-            IUmaServerEventSource umaServerEventSource)
+            IResourceSetRepository resourceSetRepository)
         {
             _resourceSetRepository = resourceSetRepository;
-            _umaServerEventSource = umaServerEventSource;
         }
 
         public async Task<bool> Execute(string resourceSetId)
         {
-            _umaServerEventSource.StartToRemoveResourceSet(resourceSetId);
             if (string.IsNullOrWhiteSpace(resourceSetId))
             {
                 throw new ArgumentNullException(nameof(resourceSetId));
@@ -55,7 +50,6 @@ namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
                     string.Format(ErrorDescriptions.TheResourceSetCannotBeRemoved, resourceSetId));
             }
 
-            _umaServerEventSource.FinishToRemoveResourceSet(resourceSetId);
             return true;
         }
     }

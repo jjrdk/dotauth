@@ -2,19 +2,17 @@
 {
     using Errors;
     using Exceptions;
-    using Logging;
     using Moq;
     using Parameters;
     using Shared;
     using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth.Api.Authorization.Actions;
     using SimpleAuth.Api.Authorization.Common;
     using SimpleAuth.Common;
     using SimpleAuth.Helpers;
-    using SimpleAuth.JwtToken;
     using System;
     using System.Threading.Tasks;
-    using Shared.Repositories;
     using Xunit;
     using Client = Shared.Models.Client;
 
@@ -22,7 +20,6 @@
     {
         private const string HttpsLocalhost = "https://localhost";
         private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
-        private Mock<IOAuthEventSource> _oauthEventSource;
         private GetAuthorizationCodeOperation _getAuthorizationCodeOperation;
 
         [Fact]
@@ -106,19 +103,12 @@
         }
 
         [Fact]
-        public async Task When_Passing_Valid_Request_Then_Events_Are_Logged()
+        public async Task When_Passing_Valid_Request_Then_ReturnsRedirectInstruction()
         {
             InitializeFakeObjects();
             const string clientId = "clientId";
             const string scope = "scope";
-            //var actionResult = new EndpointResult
-            //{
-            //    Type = TypeActionResult.RedirectToAction,
-            //    RedirectInstruction = new RedirectInstruction
-            //    {
-            //        Action = SimpleAuthEndPoints.FormIndex
-            //    }
-            //};
+
             var client = new Client
             {
                 ResponseTypes = new[] { ResponseTypeNames.Code },
@@ -133,30 +123,20 @@
                 Scope = scope,
                 Claims = null
             };
-            //var jsonAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
-            //_processAuthorizationRequestFake.Setup(p => p.ProcessAsync(
-            //    It.IsAny<AuthorizationParameter>(),
-            //    It.IsAny<ClaimsPrincipal>(), It.IsAny<Client>(), null)).Returns(Task.FromResult(actionResult));
-            //_clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
-            //    .Returns(true);
 
             var result = await _getAuthorizationCodeOperation.Execute(authorizationParameter, null, client, null).ConfigureAwait(false);
 
-            _oauthEventSource.Verify(s => s.StartAuthorizationCodeFlow(clientId, scope, string.Empty));
-            _oauthEventSource.Verify(s => s.EndAuthorizationCodeFlow(clientId, "RedirectToAction", "AuthenticateIndex"));
+            Assert.NotNull(result.RedirectInstruction);
         }
 
         private void InitializeFakeObjects()
         {
             _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
-            _oauthEventSource = new Mock<IOAuthEventSource>();
             _getAuthorizationCodeOperation = new GetAuthorizationCodeOperation(
                 new ProcessAuthorizationRequest(
                     new Mock<IClientStore>().Object,
-                    new Mock<IConsentHelper>().Object,
-                    _oauthEventSource.Object),
-                _generateAuthorizationResponseFake.Object,
-                _oauthEventSource.Object);
+                    new Mock<IConsentHelper>().Object),
+                _generateAuthorizationResponseFake.Object);
         }
     }
 }

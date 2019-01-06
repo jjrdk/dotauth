@@ -1,14 +1,14 @@
 ﻿namespace SimpleAuth.Server.Tests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Errors;
     using Helpers;
     using Manager.Client.Configuration;
     using Manager.Client.ResourceOwners;
     using Shared.Requests;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class ResourceOwnerFixture : IClassFixture<TestManagerServerFixture>
@@ -36,7 +36,8 @@
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
             Assert.Equal(ErrorCodes.InvalidRequestCode, result.Error.Error);
-            Assert.Equal(string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, resourceOwnerId), result.Error.ErrorDescription);
+            Assert.Equal(string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, resourceOwnerId),
+                result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -73,7 +74,8 @@
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Error);
-            Assert.Equal("The parameter password is missing\r\nParameter name: Password", result.Error.ErrorDescription);
+            Assert.Equal("The parameter password is missing\r\nParameter name: Password",
+                result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -164,7 +166,8 @@
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Error);
-            Assert.Equal(string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, "login"), result.Error.ErrorDescription);
+            Assert.Equal(string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, "login"),
+                result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -183,7 +186,8 @@
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Error);
-            Assert.Equal(string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, "invalid_login"), result.Error.ErrorDescription);
+            Assert.Equal(string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, "invalid_login"),
+                result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -205,7 +209,6 @@
         public async Task When_Update_Claims_Then_ResourceOwner_Is_Updated()
         {
             InitializeFakeObjects();
-
 
             var result = await _resourceOwnerClient.ResolveUpdateClaims(
                     new Uri("http://localhost:5000/.well-known/openid-configuration"),
@@ -236,7 +239,7 @@
         public async Task When_Update_Password_Then_ResourceOwner_Is_Updated()
         {
             InitializeFakeObjects();
-            
+
             var result = await _resourceOwnerClient.ResolveUpdatePassword(
                     new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     new UpdateResourceOwnerPasswordRequest
@@ -280,7 +283,7 @@
         public async Task When_Get_All_ResourceOwners_Then_All_Resource_Owners_Are_Returned()
         {
             InitializeFakeObjects();
-            
+
             var resourceOwners =
                 await _resourceOwnerClient.ResolveGetAll(
                         new Uri("http://localhost:5000/.well-known/openid-configuration"),
@@ -314,8 +317,7 @@
         public async Task When_Delete_ResourceOwner_Then_ResourceOwner_Does_Not_Exist()
         {
             InitializeFakeObjects();
-
-
+            
             var result = await _resourceOwnerClient.ResolveAdd(
                     new Uri("http://localhost:5000/.well-known/openid-configuration"),
                     new AddResourceOwnerRequest

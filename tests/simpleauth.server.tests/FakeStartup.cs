@@ -135,7 +135,6 @@ namespace SimpleAuth.Server.Tests
                 Users = DefaultStores.Users()
             };
             services.AddSingleton(new SmsAuthenticationOptions());
-            services.AddTransient<IEventPublisher, DefaultEventPublisher>();
             services.AddSingleton(_context.TwilioClient.Object);
             services.AddSingleton<ISubjectBuilder>(new DefaultSubjectBuilder());
             services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
@@ -143,18 +142,7 @@ namespace SimpleAuth.Server.Tests
             services.AddTransient<IAuthenticateResourceOwnerService, CustomAuthenticateResourceOwnerService>();
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
             services.UseSimpleAuth(_options)
-                //.AddSimpleAuth(null,
-                //    null,
-                //    DefaultStores.Clients(_context),
-                //    DefaultStores.Consents(),
-                //    DefaultStores.JsonWebKeys(_context),
-                //    DefaultStores.Profiles(),
-                //    DefaultStores.Users())
                 .AddDefaultTokenStore()
-                //.AddSimpleAuthJwt()
-                .AddTechnicalLogging()
-                .AddOpenidLogging()
-                .AddOAuthLogging()
                 .AddLogging()
                 .AddAccountFilter();
             services.AddSingleton(_context.ConfirmationCodeStore.Object);

@@ -14,19 +14,18 @@
 
 namespace SimpleAuth.Shared.Events.OAuth
 {
+    using System;
+
     public class TokenGranted : Event
     {
-        public TokenGranted(string id, string processId, string payload, int order)
+        public TokenGranted(string id, string processId, string accessToken, DateTime timestamp)
+        :base(id, timestamp)
         {
-            Id = id;
             ProcessId = processId;
-            Payload = payload;
-            Order = order;
+            AccessToken = accessToken;
         }
 
-        public string Id { get; private set; }
-        public string ProcessId { get; private set; }
-        public string Payload { get; private set; }
-        public int Order { get; private set; }
+        public string ProcessId { get; }
+        public string AccessToken { get; }
     }
 }

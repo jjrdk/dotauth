@@ -103,10 +103,7 @@ namespace SimpleAuth.Uma.Tests.Fakes
             // 3. Enable CORS
             app.UseCors("AllowAll");
             // 4. Display exception
-            app.UseUmaExceptionHandler(new ExceptionHandlerMiddlewareOptions
-            {
-                UmaEventSource = app.ApplicationServices.GetService<IUmaServerEventSource>()
-            });
+            app.UseUmaExceptionHandler();
             // 5. Launch ASP.NET MVC
             app.UseMvc(routes =>
             {
@@ -119,25 +116,23 @@ namespace SimpleAuth.Uma.Tests.Fakes
         private void RegisterServices(IServiceCollection services)
         {
             // 1. Add CORE.
-            services.AddSimpleIdServerUmaCore(new UmaConfigurationOptions(), UmaStores.GetResources())
-                .AddSimpleAuth()
-                    //jsonWebKeys: OAuthStores.GetJsonWebKeys(_context))
-                //.AddIdServerClient()
-                //.AddDefaultSimpleBus()
+            services.AddUmaCore(new UmaConfigurationOptions(), UmaStores.GetResources())
+                .RegisterSimpleAuth(new SimpleAuthOptions
+                {
+                    Configuration = new OpenIdServerConfiguration
+                    {
+                        Clients = OAuthStores.GetClients(),
+                        Scopes = OAuthStores.GetScopes()
+                    }
+                })
                 .AddDefaultTokenStore();
-            //.AddConcurrency(opt => opt.UseInMemory());
 
             // 3. Enable logging.
             services.AddLogging();
-            services.AddTechnicalLogging();
-            services.AddOAuthLogging();
-            services.AddUmaLogging();
             // 5. Register other classes.
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();
             services.AddTransient<IGetDiscoveryOperation, GetDiscoveryOperation>();
             services.AddSingleton(new HttpClient());
-            services.AddSingleton<IEventPublisher>(new DefaultEventPublisher());
         }
     }
 }

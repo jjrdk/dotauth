@@ -35,9 +35,7 @@ namespace SimpleAuth.Scim.Client.Tests
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSimpleAuth()
-                .AddOpenidLogging();
-                //.AddScimHost();
+            services.UseSimpleAuth();
             services.AddAuthentication(opts =>
             {
                 opts.DefaultAuthenticateScheme = DefaultSchema;
@@ -55,9 +53,6 @@ namespace SimpleAuth.Scim.Client.Tests
                 });
             });
             services.AddTransient<IAddUserOperation, AddUserOperation>();
-            //services.AddSingleton(sp => new Mock<IResourceOwnerRepository>().Object);
-            //services.AddSingleton(sp => new Mock<IClaimRepository>().Object);
-            services.AddTransient<IEventPublisher, DefaultEventPublisher>();
             services.AddSingleton<ISubjectBuilder>(new DefaultSubjectBuilder());
             var mvc = services.AddMvc();
             var parts = mvc.PartManager.ApplicationParts;

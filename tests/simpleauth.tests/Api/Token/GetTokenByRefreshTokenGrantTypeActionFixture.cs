@@ -14,27 +14,26 @@
 
 namespace SimpleAuth.Tests.Api.Token
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Logging;
     using Moq;
     using Parameters;
+    using Shared;
     using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Api.Token.Actions;
     using SimpleAuth.Authenticate;
     using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
+    using System;
+    using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Threading.Tasks;
     using Xunit;
 
     public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
     {
         private Mock<IClientHelper> _clientHelperFake;
-        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperStub;
         private Mock<ITokenStore> _tokenStoreStub;
         private Mock<IJwtGenerator> _jwtGeneratorStub;
@@ -43,49 +42,52 @@ namespace SimpleAuth.Tests.Api.Token
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        await Assert
-                .ThrowsAsync<ArgumentNullException>(() =>
-                    _getTokenByRefreshTokenGrantTypeAction.Execute(null, null, null, null))
-                .ConfigureAwait(false);
+            await Assert
+    .ThrowsAsync<ArgumentNullException>(() =>
+        _getTokenByRefreshTokenGrantTypeAction.Execute(null, null, null, null))
+    .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Client_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var parameter = new RefreshTokenGrantTypeParameter();
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(Task.FromResult(new AuthenticationResult(null, "error")));
 
-                        var ex = await Assert
-                .ThrowsAsync<SimpleAuthException>(() =>
-                    _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
-                .ConfigureAwait(false);
+            var ex = await Assert
+    .ThrowsAsync<SimpleAuthException>(() =>
+        _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
+    .ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClient);
             Assert.True(ex.Message == "error");
         }
 
         [Fact]
         public async Task When_Client_Does_Not_Support_GrantType_RefreshToken_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
             var parameter = new RefreshTokenGrantTypeParameter();
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(Task.FromResult(new AuthenticationResult(new Client
-                    {
-                        ClientId = "id",
-                        GrantTypes = new List<GrantType>
+                {
+                    ClientId = "id",
+                    GrantTypes = new List<GrantType>
                         {
                             GrantType.authorization_code
                         }
-                    },
+                },
                     null)));
 
-                        var ex = await Assert
-                .ThrowsAsync<SimpleAuthException>(() =>
-                    _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
-                .ConfigureAwait(false);
+            var ex = await Assert
+    .ThrowsAsync<SimpleAuthException>(() =>
+        _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
+    .ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidClient);
             Assert.True(ex.Message ==
                         string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
@@ -95,44 +97,46 @@ namespace SimpleAuth.Tests.Api.Token
 
         [Fact]
         public async Task When_Passing_Invalid_Refresh_Token_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
             var parameter = new RefreshTokenGrantTypeParameter();
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(Task.FromResult(new AuthenticationResult(new Client
-                    {
-                        ClientId = "id",
-                        GrantTypes = new List<GrantType>
+                {
+                    ClientId = "id",
+                    GrantTypes = new List<GrantType>
                         {
                             GrantType.refresh_token
                         }
-                    },
+                },
                     null)));
             _tokenStoreStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((GrantedToken) null));
+                .Returns(() => Task.FromResult((GrantedToken)null));
 
-                        var ex = await Assert
-                .ThrowsAsync<SimpleAuthException>(() =>
-                    _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
-                .ConfigureAwait(false);
+            var ex = await Assert
+    .ThrowsAsync<SimpleAuthException>(() =>
+        _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
+    .ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidGrant);
             Assert.True(ex.Message == ErrorDescriptions.TheRefreshTokenIsNotValid);
         }
 
         [Fact]
         public async Task When_RefreshToken_Is_Not_Issued_By_The_Same_Client_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
             var parameter = new RefreshTokenGrantTypeParameter();
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(Task.FromResult(new AuthenticationResult(new Client
-                    {
-                        ClientId = "id",
-                        GrantTypes = new List<GrantType>
+                {
+                    ClientId = "id",
+                    GrantTypes = new List<GrantType>
                         {
                             GrantType.refresh_token
                         }
-                    },
+                },
                     null)));
             _tokenStoreStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(new GrantedToken
@@ -140,17 +144,18 @@ namespace SimpleAuth.Tests.Api.Token
                     ClientId = "differentId"
                 }));
 
-                        var ex = await Assert
-                .ThrowsAsync<SimpleAuthException>(() =>
-                    _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
-                .ConfigureAwait(false);
+            var ex = await Assert
+    .ThrowsAsync<SimpleAuthException>(() =>
+        _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null))
+    .ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidGrant);
             Assert.True(ex.Message == ErrorDescriptions.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer);
         }
 
         [Fact]
         public async Task When_Requesting_Token_Then_New_One_Is_Generated()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
             var parameter = new RefreshTokenGrantTypeParameter();
             var grantedToken = new GrantedToken
@@ -160,13 +165,13 @@ namespace SimpleAuth.Tests.Api.Token
             };
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(Task.FromResult(new AuthenticationResult(new Client
-                    {
-                        ClientId = "id",
-                        GrantTypes = new List<GrantType>
+                {
+                    ClientId = "id",
+                    GrantTypes = new List<GrantType>
                         {
                             GrantType.refresh_token
                         }
-                    },
+                },
                     null)));
             _tokenStoreStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
@@ -179,22 +184,21 @@ namespace SimpleAuth.Tests.Api.Token
                     It.IsAny<JwtPayload>()))
                 .Returns(Task.FromResult(grantedToken));
 
-                        await _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null).ConfigureAwait(false);
+            await _getTokenByRefreshTokenGrantTypeAction.Execute(parameter, null, null, null).ConfigureAwait(false);
 
-                        _tokenStoreStub.Verify(g => g.AddToken(It.IsAny<GrantedToken>()));
+            _tokenStoreStub.Verify(g => g.AddToken(It.IsAny<GrantedToken>()));
         }
 
         private void InitializeFakeObjects()
         {
             _clientHelperFake = new Mock<IClientHelper>();
-            _oauthEventSource = new Mock<IOAuthEventSource>();
             _grantedTokenGeneratorHelperStub = new Mock<IGrantedTokenGeneratorHelper>();
             _tokenStoreStub = new Mock<ITokenStore>();
             _jwtGeneratorStub = new Mock<IJwtGenerator>();
             _authenticateClientStub = new Mock<IAuthenticateClient>();
             _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
                 _clientHelperFake.Object,
-                _oauthEventSource.Object,
+                new Mock<IEventPublisher>().Object,
                 _grantedTokenGeneratorHelperStub.Object,
                 _tokenStoreStub.Object,
                 _jwtGeneratorStub.Object,

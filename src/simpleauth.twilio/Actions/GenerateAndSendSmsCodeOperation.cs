@@ -1,29 +1,26 @@
 ﻿namespace SimpleAuth.Twilio.Actions
 {
-    using System;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Logging;
     using SimpleAuth;
+    using System;
+    using System.Threading.Tasks;
 
     internal sealed class GenerateAndSendSmsCodeOperation : IGenerateAndSendSmsCodeOperation
     {
+        private readonly Random _random = new Random(DateTime.UtcNow.Second);
         private readonly IConfirmationCodeStore _confirmationCodeStore;
         private readonly SmsAuthenticationOptions _smsAuthenticationOptions;
         private readonly ITwilioClient _twilioClient;
-        private readonly IOpenIdEventSource _eventSource;
 
         public GenerateAndSendSmsCodeOperation(
             IConfirmationCodeStore confirmationCodeStore,
             SmsAuthenticationOptions smsAuthenticationOptions,
-            ITwilioClient twilioClient,
-            IOpenIdEventSource eventSource)
+            ITwilioClient twilioClient)
         {
             _confirmationCodeStore = confirmationCodeStore;
             _smsAuthenticationOptions = smsAuthenticationOptions;
             _twilioClient = twilioClient;
-            _eventSource = eventSource;
         }
 
         public async Task<string> Execute(string phoneNumber)
@@ -49,9 +46,10 @@
             }
             catch (Exception ex)
             {
-                _eventSource.Failure(ex);
-                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
-                    "the twilio account is not properly configured");
+                throw new SimpleAuthException(
+                    ErrorCodes.UnhandledExceptionCode,
+                    "the twilio account is not properly configured",
+                    ex);
             }
 
             if (!await _confirmationCodeStore.Add(confirmationCode).ConfigureAwait(false))
@@ -60,14 +58,12 @@
                     ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
             }
 
-            _eventSource.GetConfirmationCode(confirmationCode.Value);
             return confirmationCode.Value;
         }
 
         private async Task<string> GetCode()
         {
-            var random = new Random();
-            var number = random.Next(100000, 999999);
+            var number = _random.Next(100000, 999999);
             if (await _confirmationCodeStore.Get(number.ToString()).ConfigureAwait(false) != null)
             {
                 return await GetCode().ConfigureAwait(false);

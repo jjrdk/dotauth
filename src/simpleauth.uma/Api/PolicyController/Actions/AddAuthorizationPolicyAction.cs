@@ -35,24 +35,19 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
         private readonly IPolicyRepository _policyRepository;
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
-        private readonly IUmaServerEventSource _umaServerEventSource;
 
         public AddAuthorizationPolicyAction(
             IPolicyRepository policyRepository,
             IResourceSetRepository resourceSetRepository,
-            IRepositoryExceptionHelper repositoryExceptionHelper,
-            IUmaServerEventSource umaServerEventSource)
+            IRepositoryExceptionHelper repositoryExceptionHelper)
         {
             _policyRepository = policyRepository;
             _resourceSetRepository = resourceSetRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
-            _umaServerEventSource = umaServerEventSource;
         }
 
         public async Task<string> Execute(AddPolicyParameter addPolicyParameter)
         {
-            var json = addPolicyParameter == null ? string.Empty : JsonConvert.SerializeObject(addPolicyParameter);
-            _umaServerEventSource.StartAddingAuthorizationPolicy(json);
             if (addPolicyParameter == null)
             {
                 throw new ArgumentNullException(nameof(addPolicyParameter));
@@ -61,27 +56,31 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
             if (addPolicyParameter.ResourceSetIds == null || !addPolicyParameter.ResourceSetIds.Any())
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.ResourceSetIds));
+                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified,
+                        UmaConstants.AddPolicyParameterNames.ResourceSetIds));
             }
 
             if (addPolicyParameter.Rules == null || !addPolicyParameter.Rules.Any())
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.Rules));
+                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified,
+                        UmaConstants.AddPolicyParameterNames.Rules));
             }
 
             foreach (var resourceSetId in addPolicyParameter.ResourceSetIds)
             {
                 var resourceSet = await _repositoryExceptionHelper.HandleException(
-                    string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId),
-                    () => _resourceSetRepository.Get(resourceSetId)).ConfigureAwait(false);
+                        string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId),
+                        () => _resourceSetRepository.Get(resourceSetId))
+                    .ConfigureAwait(false);
                 if (resourceSet == null)
                 {
                     throw new BaseUmaException(UmaErrorCodes.InvalidResourceSetId,
                         string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
                 }
 
-                if (addPolicyParameter.Rules.Any(r => r.Scopes != null && !r.Scopes.All(s => resourceSet.Scopes.Contains(s))))
+                if (addPolicyParameter.Rules.Any(r =>
+                    r.Scopes != null && !r.Scopes.All(s => resourceSet.Scopes.Contains(s))))
                 {
                     throw new BaseUmaException(UmaErrorCodes.InvalidScope,
                         ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
@@ -99,7 +98,7 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
 
                 rules.Add(new PolicyRule
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = Id.Create(),
                     IsResourceOwnerConsentNeeded = ruleParameter.IsResourceOwnerConsentNeeded,
                     ClientIdsAllowed = ruleParameter.ClientIdsAllowed,
                     Scopes = ruleParameter.Scopes,
@@ -112,15 +111,15 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
             // Insert policy
             var policy = new Policy
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Id.Create(),
                 Rules = rules,
                 ResourceSetIds = addPolicyParameter.ResourceSetIds
             };
 
             await _repositoryExceptionHelper.HandleException(
-                ErrorDescriptions.ThePolicyCannotBeInserted,
-                () => _policyRepository.Add(policy)).ConfigureAwait(false);
-            _umaServerEventSource.FinishToAddAuthorizationPolicy(JsonConvert.SerializeObject(policy));
+                    ErrorDescriptions.ThePolicyCannotBeInserted,
+                    () => _policyRepository.Add(policy))
+                .ConfigureAwait(false);
             return policy.Id;
         }
     }

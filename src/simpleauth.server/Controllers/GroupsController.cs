@@ -178,7 +178,7 @@
 
 //            public async Task<GroupResource> AddGroup(GroupResource group, string locationBase, CancellationToken cancellationToken = default(CancellationToken))
 //            {
-//                var processId = Guid.NewGuid().ToString();
+//                var processId = Id.Create();
 //                try
 //                {
 //                    if (string.IsNullOrWhiteSpace(group.Id))
@@ -190,42 +190,42 @@
 //                        Location = $"{locationBase}/{group.Id}",
 //                        Created = DateTime.UtcNow
 //                    };
-//                    _eventPublisher.Publish(new AddGroupReceived(Guid.NewGuid().ToString(), processId, null, 0));
+//                    _eventPublisher.Publish(new AddGroupReceived(Id.Create();, processId, null, 0));
 //                    var result = await _groupRepository.Persist(group, cancellationToken).ConfigureAwait(false);
-//                    _eventPublisher.Publish(new AddGroupFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
+//                    _eventPublisher.Publish(new AddGroupFinished(Id.Create();, processId, JsonConvert.SerializeObject(result).ToString(), 1));
 //                    return group;
 //                }
 //                catch (Exception ex)
 //                {
-//                    _eventPublisher.Publish(new ScimErrorReceived(Guid.NewGuid().ToString(), processId, ex.Message, 1));
+//                    _eventPublisher.Publish(new ScimErrorReceived(Id.Create();, processId, ex.Message, 1));
 //                    throw;
 //                }
 //            }
 
 //            public async Task<bool> RemoveGroup(string id, CancellationToken cancellationToken)
 //            {
-//                var processId = Guid.NewGuid().ToString();
+//                var processId = Id.Create();
 //                try
 //                {
 //                    var jObj = new JObject { { "id", id } };
-//                    _eventPublisher.Publish(new RemoveGroupReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
+//                    _eventPublisher.Publish(new RemoveGroupReceived(Id.Create();, processId, jObj.ToString(), 0));
 //                    var result = await _groupRepository.Delete(id, cancellationToken).ConfigureAwait(false);
-//                    _eventPublisher.Publish(new RemoveGroupFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
+//                    _eventPublisher.Publish(new RemoveGroupFinished(Id.Create();, processId, JsonConvert.SerializeObject(result).ToString(), 1));
 //                    return result;
 //                }
 //                catch (Exception ex)
 //                {
-//                    _eventPublisher.Publish(new ScimErrorReceived(Guid.NewGuid().ToString(), processId, ex.Message, 1));
+//                    _eventPublisher.Publish(new ScimErrorReceived(Id.Create();, processId, ex.Message, 1));
 //                    throw;
 //                }
 //            }
 
 //            public async Task<GroupResource> UpdateGroup(string id, GroupResource @group, CancellationToken cancellationToken = default(CancellationToken))
 //            {
-//                var processId = Guid.NewGuid().ToString();
+//                var processId = Id.Create();
 //                try
 //                {
-//                    _eventPublisher.Publish(new RemoveGroupReceived(Guid.NewGuid().ToString(), processId, null, 0));
+//                    _eventPublisher.Publish(new RemoveGroupReceived(Id.Create();, processId, null, 0));
 //                    var deleted = await _groupRepository.Delete(id, cancellationToken).ConfigureAwait(false);
 //                    if (!deleted)
 //                    {
@@ -233,22 +233,22 @@
 //                    }
 //                    await _groupRepository.Persist(@group, cancellationToken).ConfigureAwait(false);
 //                    //var result = await _updateRepresentationAction.Execute(id, group, ScimConstants.SchemaUrns.Group, locationPattern, ScimConstants.ResourceTypes.Group).ConfigureAwait(false);
-//                    //_eventPublisher.Publish(new RemoveGroupFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
+//                    //_eventPublisher.Publish(new RemoveGroupFinished(Id.Create();, processId, JsonConvert.SerializeObject(result).ToString(), 1));
 //                    return group; //result;
 //                }
 //                catch (Exception ex)
 //                {
-//                    _eventPublisher.Publish(new ScimErrorReceived(Guid.NewGuid().ToString(), processId, ex.Message, 1));
+//                    _eventPublisher.Publish(new ScimErrorReceived(Id.Create();, processId, ex.Message, 1));
 //                    throw;
 //                }
 //            }
 
 //            public async Task<GroupResource> PatchGroup(string id, IList<PatchOperation> patchOperations, CancellationToken cancellationToken)
 //            {
-//                var processId = Guid.NewGuid().ToString();
+//                var processId = Id.Create();
 //                try
 //                {
-//                    _eventPublisher.Publish(new PatchGroupReceived(Guid.NewGuid().ToString(), processId, patchOperations.ToString(), 0));
+//                    _eventPublisher.Publish(new PatchGroupReceived(Id.Create();, processId, patchOperations.ToString(), 0));
 //                    var group = await _groupRepository.Get(id, cancellationToken).ConfigureAwait(false);
 //                    foreach (var patchOperation in patchOperations)
 //                    {
@@ -294,12 +294,12 @@
 //                    }
 //                    await _groupRepository.Persist(@group, cancellationToken).ConfigureAwait(false);
 //                    //var result = await _patchRepresentationAction.Execute(id, group, ScimConstants.SchemaUrns.Group, locationPattern).ConfigureAwait(false);
-//                    //_eventPublisher.Publish(new PatchGroupFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
+//                    //_eventPublisher.Publish(new PatchGroupFinished(Id.Create();, processId, JsonConvert.SerializeObject(result).ToString(), 1));
 //                    return group; //result;
 //                }
 //                catch (Exception ex)
 //                {
-//                    _eventPublisher.Publish(new ScimErrorReceived(Guid.NewGuid().ToString(), processId, ex.Message, 1));
+//                    _eventPublisher.Publish(new ScimErrorReceived(Id.Create();, processId, ex.Message, 1));
 //                    throw;
 //                }
 //            }

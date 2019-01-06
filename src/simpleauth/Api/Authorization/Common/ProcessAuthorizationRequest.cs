@@ -18,7 +18,6 @@ namespace SimpleAuth.Api.Authorization.Common
     using Exceptions;
     using Extensions;
     using Helpers;
-    using Logging;
     using Parameters;
     using Results;
     using Shared.Models;
@@ -38,20 +37,15 @@ namespace SimpleAuth.Api.Authorization.Common
         private readonly ClientValidator _clientValidator;
         private readonly ScopeValidator _scopeValidator;
         private readonly IConsentHelper _consentHelper;
-        private readonly IOAuthEventSource _oauthEventSource;
-        private IClientStore _clientStore;
+        private readonly IClientStore _clientStore;
 
-        public ProcessAuthorizationRequest(
-            IClientStore clientStore,
-            IConsentHelper consentHelper,
-            IOAuthEventSource oauthEventSource)
+        public ProcessAuthorizationRequest(IClientStore clientStore, IConsentHelper consentHelper)
         {
             _clientStore = clientStore;
             _parameterParserHelper = new ParameterParserHelper();
             _clientValidator = new ClientValidator();
             _scopeValidator = new ScopeValidator();
             _consentHelper = consentHelper;
-            _oauthEventSource = oauthEventSource;
         }
 
         public async Task<EndpointResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName)
@@ -63,8 +57,8 @@ namespace SimpleAuth.Api.Authorization.Common
                 confirmedConsent = await GetResourceOwnerConsent(claimsPrincipal, authorizationParameter).ConfigureAwait(false);
             }
 
-            var serializedAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
-            _oauthEventSource.StartProcessingAuthorizationRequest(serializedAuthorizationParameter);
+            //var serializedAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
+            //_oauthEventSource.StartProcessingAuthorizationRequest(serializedAuthorizationParameter);
             EndpointResult result = null;
             var prompts = _parameterParserHelper.ParsePrompts(authorizationParameter.Prompt);
             if (prompts == null || !prompts.Any())
@@ -158,14 +152,14 @@ namespace SimpleAuth.Api.Authorization.Common
                     issuerName).ConfigureAwait(false);
             }
 
-            var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
-            var actionName = result.RedirectInstruction == null
-                ? string.Empty
-                : Enum.GetName(typeof(SimpleAuthEndPoints), result.RedirectInstruction.Action);
-            _oauthEventSource.EndProcessingAuthorizationRequest(
-                serializedAuthorizationParameter,
-                actionTypeName,
-                actionName);
+            //var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
+            //var actionName = result.RedirectInstruction == null
+            //    ? string.Empty
+            //    : Enum.GetName(typeof(SimpleAuthEndPoints), result.RedirectInstruction.Action);
+            //_oauthEventSource.EndProcessingAuthorizationRequest(
+            //    serializedAuthorizationParameter,
+            //    actionTypeName,
+            //    actionName);
 
             return result;
         }

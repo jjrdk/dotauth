@@ -24,19 +24,14 @@ namespace SimpleAuth.Api.Scopes.Actions
     internal class DeleteScopeOperation : IDeleteScopeOperation
     {
         private readonly IScopeRepository _scopeRepository;
-        private readonly IManagerEventSource _managerEventSource;
 
-        public DeleteScopeOperation(
-            IScopeRepository scopeRepository,
-            IManagerEventSource managerEventSource)
+        public DeleteScopeOperation(IScopeRepository scopeRepository)
         {
             _scopeRepository = scopeRepository;
-            _managerEventSource = managerEventSource;
         }
 
         public async Task<bool> Execute(string scopeName)
         {
-            _managerEventSource.StartToRemoveScope(scopeName);
             if (string.IsNullOrWhiteSpace(scopeName))
             {
                 throw new ArgumentNullException(nameof(scopeName));
@@ -50,11 +45,7 @@ namespace SimpleAuth.Api.Scopes.Actions
             }
 
             var res = await _scopeRepository.Delete(scope).ConfigureAwait(false);
-            if (res)
-            {
-                _managerEventSource.FinishToRemoveScope(scopeName);
-            }
-
+            
             return res;
         }
     }

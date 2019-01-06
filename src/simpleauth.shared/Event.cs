@@ -14,9 +14,21 @@
 
 namespace SimpleAuth.Shared
 {
-    public class Event
+    using System;
+
+    public abstract class Event
     {
-        public string Version { get; set; }
-        public string ServerName { get; set; }
+        protected Event(string id, DateTime timestamp)
+        {
+            Id = id;
+            Timestamp = timestamp.ToUniversalTime();
+        }
+
+        /// <summary>
+        /// Identity the event
+        /// </summary>
+        public string Id { get; set; }
+
+        public DateTime Timestamp { get; }
     }
 }

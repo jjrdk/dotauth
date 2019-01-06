@@ -14,33 +14,29 @@
 
 namespace SimpleAuth.Uma.Api.PolicyController.Actions
 {
-    using System;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Helpers;
-    using Logging;
     using Repositories;
+    using System;
+    using System.Threading.Tasks;
 
     internal class DeleteResourcePolicyAction : IDeleteResourcePolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
         private readonly IResourceSetRepository _resourceSetRepository;
-        private readonly IUmaServerEventSource _umaServerEventSource;
 
         public DeleteResourcePolicyAction(
             IPolicyRepository policyRepository,
             IRepositoryExceptionHelper repositoryExceptionHelper,
-            IResourceSetRepository resourceSetRepository,
-            IUmaServerEventSource umaServerEventSource)
+            IResourceSetRepository resourceSetRepository)
         {
             _policyRepository = policyRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
             _resourceSetRepository = resourceSetRepository;
-            _umaServerEventSource = umaServerEventSource;
         }
-        
+
         public async Task<bool> Execute(string id, string resourceId)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -53,7 +49,6 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
                 throw new ArgumentNullException(nameof(resourceId));
             }
 
-            _umaServerEventSource.StartRemoveResourceFromAuthorizationPolicy(id, resourceId);
             var policy = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, id),
                 () => _policyRepository.Get(id)).ConfigureAwait(false);
@@ -80,7 +75,6 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
 
             policy.ResourceSetIds.Remove(resourceId);
             var result = await _policyRepository.Update(policy).ConfigureAwait(false);
-            _umaServerEventSource.FinishRemoveResourceFromAuthorizationPolicy(id, resourceId);
             return result;
         }
     }

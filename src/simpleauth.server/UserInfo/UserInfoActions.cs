@@ -35,17 +35,17 @@
 
 //        public async Task<IActionResult> GetUserInformation(string accessToken)
 //        {
-//            var processId = Guid.NewGuid().ToString();
+//            var processId = Id.Create();
 //            try
 //            {
-//                _eventPublisher.Publish(new GetUserInformationReceived(Guid.NewGuid().ToString(), processId, accessToken, 0));
+//                _eventPublisher.Publish(new GetUserInformationReceived(Id.Create();, processId, accessToken, 0));
 //                var result = await _getJwsPayload.Execute(accessToken).ConfigureAwait(false);
-//                _eventPublisher.Publish(new UserInformationReturned(Guid.NewGuid().ToString(), processId, result, 1));
+//                _eventPublisher.Publish(new UserInformationReturned(Id.Create();, processId, result, 1));
 //                return result;
 //            }
 //            catch(SimpleAuthException ex)
 //            {
-//                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+//                _eventPublisher.Publish(new OpenIdErrorReceived(Id.Create();, processId, ex.Code, ex.Message, 1));
 //                throw;
 //            }
 //        }

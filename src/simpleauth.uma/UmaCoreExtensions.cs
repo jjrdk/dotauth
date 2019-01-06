@@ -34,9 +34,9 @@ namespace SimpleAuth.Uma
     using SimpleAuth.Shared.Repositories;
     using Validators;
 
-    public static class SimpleIdServerUmaCoreExtensions
+    public static class UmaCoreExtensions
     {
-        public static IServiceCollection AddSimpleIdServerUmaCore(this IServiceCollection serviceCollection, UmaConfigurationOptions umaConfigurationOptions = null, IReadOnlyCollection<ResourceSet> resources = null, IReadOnlyCollection<Policy> policies = null)
+        public static IServiceCollection AddUmaCore(this IServiceCollection serviceCollection, UmaConfigurationOptions umaConfigurationOptions = null, IReadOnlyCollection<ResourceSet> resources = null, IReadOnlyCollection<Policy> policies = null)
         {
             serviceCollection.AddTransient<IResourceSetActions, ResourceSetActions>();
             serviceCollection.AddTransient<IAddResourceSetAction, AddResourceSetAction>();

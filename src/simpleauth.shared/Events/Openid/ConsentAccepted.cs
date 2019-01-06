@@ -14,19 +14,18 @@
 
 namespace SimpleAuth.Shared.Events.Openid
 {
+    using System;
+
     public class ConsentAccepted : Event
     {
-        public ConsentAccepted(string id, string processId, object payload, int order)
+        public ConsentAccepted(string id, string processId, object payload, DateTime timestamp)
+            : base(id, timestamp)
         {
-            Id = id;
             ProcessId = processId;
             Payload = payload;
-            Order = order;
         }
 
-        public string Id { get; }
         public string ProcessId { get; }
         public object Payload { get; }
-        public int Order { get; }
     }
 }

@@ -14,21 +14,21 @@
 
 namespace SimpleAuth.Tests.WebSite.User
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Logging;
     using Moq;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth.WebSite.User.Actions;
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class AddUserOperationFixture
     {
+        private Mock<IEventPublisher> _eventPublisher;
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private Mock<IOpenIdEventSource> _openidEventSourceStub;
         private IAddUserOperation _addResourceOwnerAction;
 
         [Fact]
@@ -43,7 +43,7 @@ namespace SimpleAuth.Tests.WebSite.User
                 .ConfigureAwait(false);
             await Assert
                 .ThrowsAsync<ArgumentNullException>(() =>
-                    _addResourceOwnerAction.Execute(new ResourceOwner {Id = "test"}))
+                    _addResourceOwnerAction.Execute(new ResourceOwner { Id = "test" }))
                 .ConfigureAwait(false);
         }
 
@@ -51,7 +51,7 @@ namespace SimpleAuth.Tests.WebSite.User
         public async Task When_ResourceOwner_With_Same_Credentials_Exists_Then_Returns_False()
         {
             InitializeFakeObjects();
-            var parameter = new ResourceOwner {Id = "name", Password = "password"};
+            var parameter = new ResourceOwner { Id = "name", Password = "password" };
 
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new ResourceOwner()));
@@ -88,27 +88,28 @@ namespace SimpleAuth.Tests.WebSite.User
             };
 
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult((ResourceOwner) null));
+                .Returns(Task.FromResult((ResourceOwner)null));
             _resourceOwnerRepositoryStub.Setup(r => r.InsertAsync(It.IsAny<ResourceOwner>()))
                 .Returns(Task.FromResult(true));
 
             await _addResourceOwnerAction.Execute(parameter).ConfigureAwait(false);
 
             _resourceOwnerRepositoryStub.Verify(r => r.InsertAsync(It.IsAny<ResourceOwner>()));
-            _openidEventSourceStub.Verify(o => o.AddResourceOwner("name"));
+            _eventPublisher.Verify(o => o.Publish(It.IsAny<ResourceOwnerAdded>()));
         }
 
         private void InitializeFakeObjects()
         {
+            _eventPublisher = new Mock<IEventPublisher>();
+            _eventPublisher.Setup(s => s.Publish(It.IsAny<ResourceOwnerAdded>())).Returns(Task.CompletedTask);
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             //_claimsRepositoryStub = new Mock<IClaimRepository>();
             //_tokenStoreStub = new Mock<IAccessTokenStore>();
-            _openidEventSourceStub = new Mock<IOpenIdEventSource>();
             _addResourceOwnerAction = new AddUserOperation(
                 _resourceOwnerRepositoryStub.Object,
                 //_claimsRepositoryStub.Object,
                 null,
-                _openidEventSourceStub.Object);
+              _eventPublisher.Object);
         }
     }
 }

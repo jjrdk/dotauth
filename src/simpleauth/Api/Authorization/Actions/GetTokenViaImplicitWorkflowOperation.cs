@@ -17,7 +17,6 @@ namespace SimpleAuth.Api.Authorization.Actions
     using Common;
     using Errors;
     using Exceptions;
-    using Logging;
     using Parameters;
     using Results;
     using Shared.Models;
@@ -33,16 +32,13 @@ namespace SimpleAuth.Api.Authorization.Actions
         private readonly ProcessAuthorizationRequest _processAuthorizationRequest;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
         private readonly ClientValidator _clientValidator;
-        private readonly IOAuthEventSource _oAuthEventSource;
 
         public GetTokenViaImplicitWorkflowOperation(
             ProcessAuthorizationRequest processAuthorizationRequest,
-            IGenerateAuthorizationResponse generateAuthorizationResponse,
-            IOAuthEventSource oAuthEventSource)
+            IGenerateAuthorizationResponse generateAuthorizationResponse)
         {
             _processAuthorizationRequest = processAuthorizationRequest;
             _generateAuthorizationResponse = generateAuthorizationResponse;
-            _oAuthEventSource = oAuthEventSource;
             _clientValidator = new ClientValidator();
         }
 
@@ -66,11 +62,6 @@ namespace SimpleAuth.Api.Authorization.Actions
                     authorizationParameter.State);
             }
 
-            _oAuthEventSource.StartImplicitFlow(
-                authorizationParameter.ClientId,
-                authorizationParameter.Scope,
-                authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
-
             if (!_clientValidator.CheckGrantTypes(client, GrantType.@implicit))
             {
                 throw new SimpleAuthExceptionWithState(
@@ -87,12 +78,6 @@ namespace SimpleAuth.Api.Authorization.Actions
                 var claimsPrincipal = principal as ClaimsPrincipal;
                 await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
             }
-
-            var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
-            _oAuthEventSource.EndImplicitFlow(
-                authorizationParameter.ClientId,
-                actionTypeName,
-                result.RedirectInstruction == null ? string.Empty : Enum.GetName(typeof(SimpleAuthEndPoints), result.RedirectInstruction.Action));
 
             return result;
         }

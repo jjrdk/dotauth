@@ -58,9 +58,13 @@ namespace SimpleAuth.Server.Tests
                 IsEnabled = true,
                 EndPoint = "http://localhost:5555/"
             });
-            serviceCollection.AddSingleton<IOpenIdEventSource, OpenIdEventSource>();
-            serviceCollection.AddSimpleAuth(new SimpleAuthOptions
-                {Configuration = new OpenIdServerConfiguration {Users = DefaultStorage.GetUsers()}});
+            serviceCollection.UseSimpleAuth(new SimpleAuthOptions
+            {
+                Configuration = new OpenIdServerConfiguration
+                {
+                    Users = DefaultStorage.GetUsers()
+                }
+            });
             serviceCollection.AddAuthentication(opts =>
             {
                 opts.DefaultAuthenticateScheme = DefaultSchema;

@@ -37,7 +37,7 @@ namespace SimpleAuth.Common
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly IConsentHelper _consentHelper;
         private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
-        private readonly IOAuthEventSource _oauthEventSource;
+        private readonly IEventPublisher _eventPublisher;
         private readonly IClientHelper _clientHelper;
         private readonly IGrantedTokenHelper _grantedTokenHelper;
 
@@ -48,7 +48,7 @@ namespace SimpleAuth.Common
             IJwtGenerator jwtGenerator,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IConsentHelper consentHelper,
-            IOAuthEventSource oauthEventSource,
+            IEventPublisher eventPublisher,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IClientHelper clientHelper,
             IGrantedTokenHelper grantedTokenHelper)
@@ -59,7 +59,7 @@ namespace SimpleAuth.Common
             _jwtGenerator = jwtGenerator;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _consentHelper = consentHelper;
-            _oauthEventSource = oauthEventSource;
+            _eventPublisher = eventPublisher;
             _authorizationFlowHelper = authorizationFlowHelper;
             _clientHelper = clientHelper;
             _grantedTokenHelper = grantedTokenHelper;
@@ -92,14 +92,12 @@ namespace SimpleAuth.Common
             GrantedToken grantedToken = null;
             var newAuthorizationCodeGranted = false;
             AuthorizationCode authorizationCode = null;
-            _oauthEventSource.StartGeneratingAuthorizationResponseToClient(
-                authorizationParameter.ClientId,
-                authorizationParameter.ResponseType);
             var responses = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
             var idTokenPayload = await GenerateIdTokenPayload(claimsPrincipal, authorizationParameter, issuerName).ConfigureAwait(false);
             var userInformationPayload = await GenerateUserInformationPayload(claimsPrincipal, authorizationParameter).ConfigureAwait(false);
-            if (responses.Contains(ResponseTypeNames.Token)) // 1. Generate an access token.
+            if (responses.Contains(ResponseTypeNames.Token))
             {
+                // 1. Generate an access token.
                 if (!string.IsNullOrWhiteSpace(authorizationParameter.Scope))
                 {
                     allowedTokenScopes = string.Join(" ", _parameterParserHelper.ParseScopes(authorizationParameter.Scope));
@@ -134,7 +132,7 @@ namespace SimpleAuth.Common
                     // It will be used later to retrieve tha id_token or an access token.
                     authorizationCode = new AuthorizationCode
                     {
-                        Code = Guid.NewGuid().ToString(),
+                        Code = Id.Create(),
                         RedirectUri = authorizationParameter.RedirectUrl,
                         CreateDateTime = DateTime.UtcNow,
                         ClientId = authorizationParameter.ClientId,
@@ -158,9 +156,14 @@ namespace SimpleAuth.Common
             if (newAccessTokenGranted) // 3. Insert the stateful access token into the DB OR insert the access token into the caching.
             {
                 await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);
-                _oauthEventSource.GrantAccessToClient(authorizationParameter.ClientId,
-                    grantedToken.AccessToken,
-                    allowedTokenScopes);
+                await _eventPublisher.Publish(
+                        new AccessToClientGranted(
+                            Id.Create(),
+                            authorizationParameter.ClientId,
+                            grantedToken.AccessToken,
+                            allowedTokenScopes,
+                            DateTime.UtcNow))
+                    .ConfigureAwait(false);
             }
 
             if (newAuthorizationCodeGranted) // 4. Insert the authorization code into the caching.
@@ -172,9 +175,11 @@ namespace SimpleAuth.Common
                 }
 
                 await _authorizationCodeStore.AddAuthorizationCode(authorizationCode).ConfigureAwait(false);
-                _oauthEventSource.GrantAuthorizationCodeToClient(authorizationParameter.ClientId,
-                    authorizationCode.Code,
-                    authorizationParameter.Scope);
+                await _eventPublisher.Publish(
+                    new AuthorizationCodeGranted(
+                        authorizationParameter.ClientId,
+                        authorizationCode.Code,
+                        authorizationParameter.Scope)).ConfigureAwait(false);
             }
 
             if (responses.Contains(ResponseTypeNames.IdToken))
@@ -216,9 +221,6 @@ namespace SimpleAuth.Common
 
                 endpointResult.RedirectInstruction.ResponseMode = responseMode;
             }
-
-            _oauthEventSource.EndGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
-                endpointResult.RedirectInstruction.Parameters.SerializeWithJavascript());
         }
 
         private string GetSessionState(string clientId, string originUrl, string sessionId)
@@ -238,7 +240,7 @@ namespace SimpleAuth.Common
                 return null;
             }
 
-            var salt = Guid.NewGuid().ToString();
+            var salt = Id.Create();
             var s = $"{clientId}{originUrl}{sessionId}{salt}";
             var hex = s.ToSha256Hash();
             //var bytes = Encoding.UTF8.GetBytes(s);

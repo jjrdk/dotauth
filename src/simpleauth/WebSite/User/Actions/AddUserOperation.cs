@@ -14,31 +14,31 @@
 
 namespace SimpleAuth.WebSite.User.Actions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Helpers;
     using Logging;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
 
     public class AddUserOperation : IAddUserOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IEnumerable<IAccountFilter> _accountFilters;
-        private readonly IOpenIdEventSource _openidEventSource;
+        private readonly IEventPublisher _eventPublisher;
 
         public AddUserOperation(
             IResourceOwnerRepository resourceOwnerRepository,
             IEnumerable<IAccountFilter> accountFilters,
-            IOpenIdEventSource openIdEventSource)
+            IEventPublisher eventPublisher)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _accountFilters = accountFilters;
-            _openidEventSource = openIdEventSource;
+            _eventPublisher = eventPublisher;
         }
 
         public async Task<bool> Execute(ResourceOwner resourceOwner, Uri scimBaseUrl = null)
@@ -97,10 +97,17 @@ namespace SimpleAuth.WebSite.User.Actions
                         isFilterValid = false;
                         foreach (var ruleResult in userFilterResult.AccountFilterRules.Where(x => !x.IsValid))
                         {
-                            _openidEventSource.Failure($"the filter rule '{ruleResult.RuleName}' failed");
+                            await _eventPublisher.Publish(new FailureMessage(Guid.NewGuid().ToString("N"),
+                                    $"the filter rule '{ruleResult.RuleName}' failed",
+                                    DateTime.UtcNow))
+                                .ConfigureAwait(false);
                             foreach (var errorMessage in ruleResult.ErrorMessages)
                             {
-                                _openidEventSource.Failure(errorMessage);
+                                await _eventPublisher
+                                    .Publish(new FailureMessage(Guid.NewGuid().ToString("N"),
+                                        errorMessage,
+                                        DateTime.UtcNow))
+                                    .ConfigureAwait(false);
                             }
                         }
                     }
@@ -159,7 +166,7 @@ namespace SimpleAuth.WebSite.User.Actions
             //        .ConfigureAwait(false);
             //}
 
-            _openidEventSource.AddResourceOwner(newResourceOwner.Id);
+            await _eventPublisher.Publish(new ResourceOwnerAdded(Guid.NewGuid().ToString("N"),newResourceOwner.Id, DateTime.UtcNow)).ConfigureAwait(false);
             return true;
         }
 

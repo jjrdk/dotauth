@@ -35,31 +35,31 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly ScopeValidator _scopeValidator;
         private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
-        private readonly IOAuthEventSource _oauthEventSource;
         private readonly IAuthenticateClient _authenticateClient;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly IClientHelper _clientHelper;
         private readonly ITokenStore _tokenStore;
+        private readonly IEventPublisher _eventPublisher;
         private readonly IGrantedTokenHelper _grantedTokenHelper;
 
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
-            IOAuthEventSource oauthEventSource,
             IAuthenticateClient authenticateClient,
             IJwtGenerator jwtGenerator,
             IClientHelper clientHelper,
             ITokenStore tokenStore,
+            IEventPublisher eventPublisher,
             IGrantedTokenHelper grantedTokenHelper)
         {
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _scopeValidator = new ScopeValidator();
             _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
-            _oauthEventSource = oauthEventSource;
             _authenticateClient = authenticateClient;
             _jwtGenerator = jwtGenerator;
             _clientHelper = clientHelper;
             _tokenStore = tokenStore;
+            _eventPublisher = eventPublisher;
             _grantedTokenHelper = grantedTokenHelper;
         }
 
@@ -76,7 +76,6 @@ namespace SimpleAuth.Api.Token.Actions
             var client = authResult.Client;
             if (authResult.Client == null)
             {
-                _oauthEventSource.Info(authResult.ErrorMessage);
                 throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
@@ -93,7 +92,8 @@ namespace SimpleAuth.Api.Token.Actions
             }
 
             // 3. Try to authenticate a resource owner
-            var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(resourceOwnerGrantTypeParameter.UserName,
+            var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(
+                resourceOwnerGrantTypeParameter.UserName,
                 resourceOwnerGrantTypeParameter.Password,
                 resourceOwnerGrantTypeParameter.AmrValues).ConfigureAwait(false);
             if (resourceOwner == null)
@@ -116,7 +116,7 @@ namespace SimpleAuth.Api.Token.Actions
 
             // 5. Generate the user information payload and store it.
             var claims = resourceOwner.Claims;
-            var claimsIdentity = new ClaimsIdentity(claims, "simpleAuth");
+            var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuth");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var authorizationParameter = new AuthorizationParameter
             {
@@ -134,7 +134,13 @@ namespace SimpleAuth.Api.Token.Actions
                 }
 
                 await _tokenStore.AddToken(generatedToken).ConfigureAwait(false);
-                _oauthEventSource.GrantAccessToClient(client.ClientId, generatedToken.AccessToken, allowedTokenScopes);
+                await _eventPublisher.Publish(
+                    new AccessToClientGranted(
+                    Id.Create(),
+                    client.ClientId,
+                    generatedToken.AccessToken,
+                    allowedTokenScopes,
+                    DateTime.UtcNow)).ConfigureAwait(false);
             }
 
             return generatedToken;

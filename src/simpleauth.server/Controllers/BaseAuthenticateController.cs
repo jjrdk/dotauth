@@ -54,13 +54,11 @@ namespace SimpleAuth.Server.Controllers
         private readonly IGetResourceOwnerClaimsAction _profileActions;
         protected readonly IDataProtector _dataProtector;
         private readonly ITranslationManager _translationManager;
-        protected readonly IOpenIdEventSource _openIdEventSource;
         private readonly IUrlHelper _urlHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
 
         //protected readonly IUserActions _userActions;
-        private readonly OAuthConfigurationOptions _configurationService;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
         private readonly BasicAuthenticateOptions _basicAuthenticateOptions;
         private readonly ISubjectBuilder _subjectBuilder;
@@ -73,7 +71,6 @@ namespace SimpleAuth.Server.Controllers
             IGetResourceOwnerClaimsAction profileActions,
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
-            IOpenIdEventSource openIdEventSource,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IEventPublisher eventPublisher,
@@ -82,7 +79,6 @@ namespace SimpleAuth.Server.Controllers
             IAddUserOperation userActions,
             IGetUserOperation getUserOperation,
             IUpdateUserClaimsOperation updateUserClaimsOperation,
-            OAuthConfigurationOptions configurationService,
             IAuthenticateHelper authenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             ISubjectBuilder subjectBuilder,
@@ -92,14 +88,12 @@ namespace SimpleAuth.Server.Controllers
             _profileActions = profileActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _translationManager = translationManager;
-            _openIdEventSource = openIdEventSource;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _eventPublisher = eventPublisher;
             _authenticationSchemeProvider = authenticationSchemeProvider;
             _userActions = userActions;
             _getUserOperation = getUserOperation;
             _updateUserClaimsOperation = updateUserClaimsOperation;
-            _configurationService = configurationService;
             _authenticateHelper = authenticateHelper;
             _basicAuthenticateOptions = basicAuthenticateOptions;
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
@@ -188,8 +182,8 @@ namespace SimpleAuth.Server.Controllers
                 await SetTwoFactorCookie(claims).ConfigureAwait(false);
                 try
                 {
-                    var code = await _authenticateActions.GenerateAndSendCode(resourceOwner.Id).ConfigureAwait(false);
-                    _openIdEventSource.GetConfirmationCode(code);
+                    await _authenticateActions.GenerateAndSendCode(resourceOwner.Id).ConfigureAwait(false);
+                    //_openIdEventSource.GetConfirmationCode(code);
                     return RedirectToAction("SendCode");
                 }
                 catch (ClaimRequiredException)
@@ -199,7 +193,7 @@ namespace SimpleAuth.Server.Controllers
             }
 
             // 4. Set cookie
-            await SetLocalCookie(claims.ToOpenidClaims(), Guid.NewGuid().ToString()).ConfigureAwait(false);
+            await SetLocalCookie(claims.ToOpenidClaims(), Id.Create()).ConfigureAwait(false);
             await _authenticationService
                 .SignOutAsync(HttpContext,
                     HostConstants.CookieNames.ExternalCookieName,
@@ -284,9 +278,8 @@ namespace SimpleAuth.Server.Controllers
                 var claimsLst = resourceOwner.Claims.Select(c => new Claim(c.Type, c.Value));
                 await _updateUserClaimsOperation.Execute(authenticatedUser.GetSubject(), claimsLst)
                     .ConfigureAwait(false);
-                var code = await _authenticateActions.GenerateAndSendCode(authenticatedUser.GetSubject())
+                await _authenticateActions.GenerateAndSendCode(authenticatedUser.GetSubject())
                     .ConfigureAwait(false);
-                _openIdEventSource.GetConfirmationCode(code);
                 return View(codeViewModel);
             }
 
@@ -295,7 +288,6 @@ namespace SimpleAuth.Server.Controllers
             {
                 await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 ModelState.AddModelError("Code", "confirmation code is not valid");
-                _openIdEventSource.ConfirmationCodeNotValid(codeViewModel.Code);
                 return View(codeViewModel);
             }
 
@@ -331,7 +323,7 @@ namespace SimpleAuth.Server.Controllers
                 return result;
             }
 
-            await SetLocalCookie(authenticatedUser.Claims, Guid.NewGuid().ToString()).ConfigureAwait(false);
+            await SetLocalCookie(authenticatedUser.Claims, Id.Create()).ConfigureAwait(false);
 
             // 7. Redirect the user agent to the User view.
             return RedirectToAction("Index", "User");
@@ -381,7 +373,7 @@ namespace SimpleAuth.Server.Controllers
             }
 
             // 1. Persist the request code into a cookie & fix the space problems
-            var cookieValue = Guid.NewGuid().ToString();
+            var cookieValue = Id.Create(); ;
             var cookieName = string.Format(ExternalAuthenticateCookieName, cookieValue);
             Response.Cookies.Append(cookieName,
                 code,
@@ -480,9 +472,7 @@ namespace SimpleAuth.Server.Controllers
             if (resourceOwner != null && !string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
             {
                 await SetTwoFactorCookie(claims).ConfigureAwait(false);
-                var confirmationCode =
-                    await _authenticateActions.GenerateAndSendCode(resourceOwner.Id).ConfigureAwait(false);
-                _openIdEventSource.GetConfirmationCode(confirmationCode);
+                await _authenticateActions.GenerateAndSendCode(resourceOwner.Id).ConfigureAwait(false);
                 return RedirectToAction("SendCode", new { code = request });
             }
 
@@ -601,7 +591,7 @@ namespace SimpleAuth.Server.Controllers
             return (subject, null, null);
         }
 
-        protected void Check()
+        private void Check()
         {
             if (_basicAuthenticateOptions.ScimBaseUrl != null
                 && (string.IsNullOrWhiteSpace(_basicAuthenticateOptions.AuthorizationWellKnownConfiguration)
@@ -609,24 +599,26 @@ namespace SimpleAuth.Server.Controllers
                     || string.IsNullOrWhiteSpace(_basicAuthenticateOptions.ClientSecret)
                     || _basicAuthenticateOptions.ScimBaseUrl == null))
             {
-                throw new SimpleAuthException(ErrorCodes.InternalError,
+                throw new SimpleAuthException(
+                    ErrorCodes.InternalError,
                     ErrorDescriptions.TheScimConfigurationMustBeSpecified);
             }
         }
 
-        protected void LogAuthenticateUser(EndpointResult act, string processId)
+        protected async Task LogAuthenticateUser(EndpointResult act, string processId)
         {
             if (string.IsNullOrWhiteSpace(processId))
             {
                 return;
             }
 
-            _eventPublisher.Publish(
-                new ResourceOwnerAuthenticated(
-                Guid.NewGuid().ToString(),
-                processId,
-                act,
-                2));
+            await _eventPublisher.Publish(
+                    new ResourceOwnerAuthenticated(
+                        Id.Create(),
+                        processId,
+                        act,
+                        DateTime.UtcNow))
+                .ConfigureAwait(false);
         }
 
         protected async Task SetLocalCookie(IEnumerable<Claim> claims, string sessionId)

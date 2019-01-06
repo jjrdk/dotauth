@@ -15,6 +15,7 @@
 namespace SimpleAuth.Server.Controllers
 {
     using Extensions;
+    using Logging;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.DataProtection;
@@ -147,10 +148,10 @@ namespace SimpleAuth.Server.Controllers
 
             _eventPublisher.Publish(
                 new ConsentAccepted(
-                    Guid.NewGuid().ToString(),
+                    Id.Create(),
                     processId,
                     act,
-                    10));
+                    DateTime.UtcNow));
         }
 
         private void LogConsentRejected(string processId)
@@ -160,7 +161,7 @@ namespace SimpleAuth.Server.Controllers
                 return;
             }
 
-            _eventPublisher.Publish(new ConsentRejected(Guid.NewGuid().ToString(), processId, 10));
+            _eventPublisher.Publish(new ConsentRejected(Id.Create(), processId, DateTime.UtcNow));
         }
     }
 }
