@@ -1,53 +1,18 @@
 @{
     ViewBag.Title = "Home";
-    Layout = "~/Areas/Shell/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="row">
-    <h1>Dashboard</h1>
-    <a href="@Url.Content("~/.well-known/openid-configuration")">
-        <section class="col-md-3 tile">
-            <div class="header"></div>
-            <div class="row clicked">
-                <div class="col-md-4 picture">
-                    <img src="@Url.Content("~/img/openid.png")" />
-                </div>
-                <div class="col-md-8 title">
-                    <h4>OpenId contract</h4>
-                </div>
-            </div>
-        </section>
-    </a>
-    @if (!ViewBag.IsAuthenticated)
-    {
-        <a href="@Url.Content("~/Authenticate")">
-            <section class="col-md-3 tile">
-                <div class="header"></div>
-                <div class="row clicked">
-                    <div class="col-md-4 picture">
-                        <img src="@Url.Content("~/img/Unknown.png")" />
-                    </div>
-                    <div class="col-md-8 title">
-                        <h4>Authenticate</h4>
-                    </div>
-                </div>
-            </section>
-        </a>
-    }
-    else
-    {
-        <a href="@Url.Content("~/User")">
-            <section class="col-md-3 tile">
-                <div class="header"></div>
-                <div class="row clicked">
-                    <div class="col-md-4 picture">
-                        <img src="@Url.Content("~/img/Unknown.png")" />
-                    </div>
-                    <div class="col-md-8 title">
-                        <h4>Profile</h4>
-                    </div>
-                </div>
-            </section>
-        </a>
-    }
+
+@section Scripts
+{
+<script>
+    location.href ='/Authenticate';
+</script>
+}
+
+<div class="row valign-wrapper center-align" style="height:66vh">
+    <div class="col s12">
+        <h5 class="center-align grey-text">Loading...</h5>
+    </div>
 </div>

@@ -1,0 +1,136 @@
+body {
+    margin: 0;
+    font-family: "Roboto","Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    background-color: #f6f8fa;
+}
+
+strong {
+    font-weight: 600;
+}
+
+:not(.input-field) i.prefix {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 12px;
+}
+
+/* colors */
+
+input:not([type]):focus:not([readonly]) + label,
+input[type=text]:not(.browser-default):focus:not([readonly]) + label,
+input[type=password]:not(.browser-default):focus:not([readonly]) + label,
+input[type=email]:not(.browser-default):focus:not([readonly]) + label,
+input[type=url]:not(.browser-default):focus:not([readonly]) + label,
+input[type=time]:not(.browser-default):focus:not([readonly]) + label,
+input[type=date]:not(.browser-default):focus:not([readonly]) + label,
+input[type=datetime]:not(.browser-default):focus:not([readonly]) + label,
+input[type=datetime-local]:not(.browser-default):focus:not([readonly]) + label,
+input[type=tel]:not(.browser-default):focus:not([readonly]) + label,
+input[type=number]:not(.browser-default):focus:not([readonly]) + label,
+input[type=search]:not(.browser-default):focus:not([readonly]) + label,
+textarea.materialize-textarea:focus:not([readonly]) + label,
+.input-field .prefix.active,
+nav ul a,
+.tabs .tab a.active,
+.dropdown-content li > a,
+.dropdown-content li > span {
+    color: #1565c0;
+}
+
+input[type="checkbox"].filled-in:checked + span:not(.lever):after,
+.tabs .indicator {
+    background-color: #1565c0;
+}
+
+input:not([type]):focus:not([readonly]),
+input[type=text]:not(.browser-default):focus:not([readonly]),
+input[type=password]:not(.browser-default):focus:not([readonly]),
+input[type=email]:not(.browser-default):focus:not([readonly]),
+input[type=url]:not(.browser-default):focus:not([readonly]),
+input[type=time]:not(.browser-default):focus:not([readonly]),
+input[type=date]:not(.browser-default):focus:not([readonly]),
+input[type=datetime]:not(.browser-default):focus:not([readonly]),
+input[type=datetime-local]:not(.browser-default):focus:not([readonly]),
+input[type=tel]:not(.browser-default):focus:not([readonly]),
+input[type=number]:not(.browser-default):focus:not([readonly]),
+input[type=search]:not(.browser-default):focus:not([readonly]),
+textarea.materialize-textarea:focus:not([readonly]),
+input[type="checkbox"].filled-in:checked + span:not(.lever):after {
+    border-color: #1565c0;
+}
+
+
+/* Font sizes */
+
+nav ul a,
+.dropdown-content li > a,
+.dropdown-content li > span {
+    font-size: 13px;
+}
+
+
+/* Forms */
+
+.input-field > label {
+    pointer-events: none;
+}
+
+.field-validation-error {
+    display: block;
+    padding: 24px;
+    margin: .5rem 0 1rem 0;
+    box-sizing: border-box;
+    background: #FF8A80 !important;
+    color: #B71C1C !important;
+    transition: box-shadow .25s;
+    border-radius: 2px;
+}
+
+
+/* Navigation */
+
+nav {
+    padding-left: 12px;
+    padding-right: 12px;
+    height: 56px;
+    position: relative;
+    z-index: 999;
+}
+
+    nav .brand-logo {
+        color: #333;
+        font-weight: 500;
+        font-size: 18px;
+        line-height: 56px;
+    }
+
+        nav .brand-logo > img {
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 12px;
+            height: 40px;
+        }
+
+    nav,
+    nav .nav-wrapper i,
+    nav a.sidenav-trigger,
+    nav a.sidenav-trigger {
+        height: 56px;
+        line-height: 56px;
+    }
+
+
+/* Tabs */
+
+.tabs {
+    background: transparent;
+    border-bottom: solid 1px rgba(0, 0, 0, .15);
+}
+
+    .tabs .tab a.active,
+    .tabs .tab a:focus,
+    .tabs .tab a:focus.active {
+        background-color: rgba(21, 101, 192,.05)
+    }

@@ -19,6 +19,8 @@ namespace SimpleAuth
     using Api.Introspection;
     using Api.Introspection.Actions;
     using Api.Profile.Actions;
+    using Api.Scopes;
+    using Api.Scopes.Actions;
     using Api.Token;
     using Api.Token.Actions;
     using Authenticate;
@@ -28,14 +30,9 @@ namespace SimpleAuth
     using Microsoft.Extensions.DependencyInjection;
     using Repositories;
     using Services;
-    using Shared.Models;
     using Shared.Repositories;
     using System;
-    using System.Collections.Generic;
     using System.Net.Http;
-    using Api.Scopes;
-    using Api.Scopes.Actions;
-    using Microsoft.IdentityModel.Tokens;
     using Translation;
     using Validators;
     using WebSite.Authenticate;
@@ -49,13 +46,7 @@ namespace SimpleAuth
     {
         public static IServiceCollection AddSimpleAuth(
             this IServiceCollection serviceCollection,
-            OAuthConfigurationOptions configurationOptions = null,
-            IReadOnlyCollection<Client> clients = null,
-            IReadOnlyCollection<Consent> consents = null,
-            IReadOnlyCollection<ResourceOwnerProfile> profiles = null,
-            IReadOnlyCollection<ResourceOwner> resourceOwners = null,
-            IReadOnlyCollection<Scope> scopes = null,
-            IReadOnlyCollection<SimpleAuth.Shared.Models.Translation> translations = null)
+            SimpleAuthOptions options = null)
         {
             if (serviceCollection == null)
             {
@@ -120,20 +111,22 @@ namespace SimpleAuth
             serviceCollection.AddTransient<IResourceOwnerAuthenticateHelper, ResourceOwnerAuthenticateHelper>();
             serviceCollection.AddTransient<IAmrHelper, AmrHelper>();
             serviceCollection.AddTransient<IRevokeTokenParameterValidator, RevokeTokenParameterValidator>();
-            serviceCollection.AddSingleton(configurationOptions ?? new OAuthConfigurationOptions());
+            serviceCollection.AddSingleton(options?.OAuthConfigurationOptions ?? new OAuthConfigurationOptions());
+            serviceCollection.AddSingleton(options?.Scim ?? new ScimOptions { IsEnabled = false });
 
-            serviceCollection.AddSingleton(sp => new DefaultClientRepository(clients, sp.GetService<HttpClient>(), sp.GetService<IScopeStore>()));
+            serviceCollection.AddSingleton(sp => new DefaultClientRepository(options?.Configuration?.Clients, sp.GetService<HttpClient>(), sp.GetService<IScopeStore>()));
             serviceCollection.AddSingleton(typeof(IClientStore), sp => sp.GetService<DefaultClientRepository>());
             serviceCollection.AddSingleton(typeof(IClientRepository), sp => sp.GetService<DefaultClientRepository>());
-            serviceCollection.AddSingleton<IConsentRepository>(new DefaultConsentRepository(consents));
-            serviceCollection.AddSingleton<IProfileRepository>(new DefaultProfileRepository(profiles));
+            serviceCollection.AddSingleton<IConsentRepository>(new DefaultConsentRepository(options?.Configuration?.Consents));
+            serviceCollection.AddSingleton<IProfileRepository>(new DefaultProfileRepository(options?.Configuration?.Profiles));
             serviceCollection.AddSingleton<IResourceOwnerRepository>(
-                new DefaultResourceOwnerRepository(resourceOwners));
+                new DefaultResourceOwnerRepository(options?.Configuration?.Users));
 
-            serviceCollection.AddSingleton(new DefaultScopeRepository(scopes));
+            serviceCollection.AddSingleton(new DefaultScopeRepository(options?.Configuration?.Scopes));
             serviceCollection.AddSingleton<IScopeRepository>(sp => sp.GetService<DefaultScopeRepository>());
             serviceCollection.AddSingleton<IScopeStore>(sp => sp.GetService<DefaultScopeRepository>());
-            serviceCollection.AddSingleton<ITranslationRepository>(new DefaultTranslationRepository(translations));
+            serviceCollection.AddSingleton<ITranslationRepository>(new DefaultTranslationRepository(options?.Configuration?.Translations));
+
             return serviceCollection;
         }
     }

@@ -24,22 +24,7 @@ namespace SimpleAuth.Server.Extensions
 
     public static class ApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseManagerApi(this IApplicationBuilder app)
-        {
-            if (app == null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
-            app.UseSimpleAuthExceptionHandler(new ExceptionHandlerMiddlewareOptions
-            {
-                OpenIdEventSource = app.ApplicationServices.GetService<IOpenIdEventSource>()
-                // ManagerEventSource = (IManagerEventSource)app.ApplicationServices.GetService(typeof(IManagerEventSource))
-            });
-            return app;
-        }
-
-        public static void UseOpenIdApi(this IApplicationBuilder app, Action<SimpleAuthOptions> optionsCallback, ILoggerFactory loggerFactory)
+        public static void UseSimpleAuth(this IApplicationBuilder app, Action<SimpleAuthOptions> optionsCallback, ILoggerFactory loggerFactory)
         {
             if (optionsCallback == null)
             {
@@ -48,16 +33,16 @@ namespace SimpleAuth.Server.Extensions
 
             var hostingOptions = new SimpleAuthOptions();
             optionsCallback(hostingOptions);
-            app.UseOpenIdApi(hostingOptions,
+            app.UseSimpleAuth(hostingOptions,
                 loggerFactory);
         }
 
-        public static void UseOpenIdApi(this IApplicationBuilder app, SimpleAuthOptions options, ILoggerFactory loggerFactory)
+        public static void UseSimpleAuth(this IApplicationBuilder app, SimpleAuthOptions options, ILoggerFactory loggerFactory)
         {
-            UseOpenIdApi(app, options);
+            UseSimpleAuth(app, options);
         }
 
-        public static void UseOpenIdApi(this IApplicationBuilder app, SimpleAuthOptions options)
+        public static void UseSimpleAuth(this IApplicationBuilder app, SimpleAuthOptions options)
         {
             if (options == null)
             {

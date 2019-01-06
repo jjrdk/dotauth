@@ -7,7 +7,7 @@
     <PackageId>simpleauth.server</PackageId>
     <RootNamespace>SimpleAuth.Server</RootNamespace>
   </PropertyGroup>
-  <Import Project="../../shared.proj"/>
+  <Import Project="../../shared.proj" />
 
   <ItemGroup>
     <None Update="**.user;**.vspscc;node_modules\**\*;bower_components">
@@ -17,6 +17,18 @@
   
   <ItemGroup>
     <EmbeddedResource Include="Views\**\*.html" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Views\**\*.cshtml" />
+    <None Remove="wwwroot\**\*.css" />
+    <None Remove="wwwroot\**\*.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Views\**\*.cshtml" />
+    <EmbeddedResource Include="wwwroot\**\*.css" />
+    <EmbeddedResource Include="wwwroot\**\*.js" />
   </ItemGroup>
 
   <ItemGroup>

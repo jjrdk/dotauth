@@ -120,8 +120,7 @@ namespace SimpleAuth.Uma.Tests.Fakes
         {
             // 1. Add CORE.
             services.AddSimpleIdServerUmaCore(new UmaConfigurationOptions(), UmaStores.GetResources())
-                .AddSimpleAuth(clients: OAuthStores.GetClients(),
-                    scopes: OAuthStores.GetScopes())
+                .AddSimpleAuth()
                     //jsonWebKeys: OAuthStores.GetJsonWebKeys(_context))
                 //.AddIdServerClient()
                 //.AddDefaultSimpleBus()
