@@ -37,7 +37,7 @@ namespace SimpleAuth.Uma.Tests
                 {
                     services.AddSingleton<IStartup>(startup);
                 })
-                .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeUmaStartup).GetType().Assembly.FullName));
+                .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeUmaStartup).Assembly.FullName));
             Client = Server.CreateClient();
         }
 

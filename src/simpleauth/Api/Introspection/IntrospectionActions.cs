@@ -14,15 +14,13 @@
 
 namespace SimpleAuth.Api.Introspection
 {
-    using System;
-    using System.Net.Http.Headers;
-    using System.Threading.Tasks;
     using Actions;
-    using Exceptions;
     using Parameters;
     using Results;
     using Shared;
-    using Shared.Events.OAuth;
+    using System;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
     using Validators;
 
     public class IntrospectionActions : IIntrospectionActions
@@ -49,26 +47,11 @@ namespace SimpleAuth.Api.Introspection
                 throw new ArgumentNullException(nameof(introspectionParameter));
             }
 
-            var processId = Guid.NewGuid().ToString();
-            try
-            {
-                //_eventPublisher.Publish(new IntrospectionRequestReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(introspectionParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
-                _introspectionParameterValidator.Validate(introspectionParameter);
-                var result = await _postIntrospectionAction
-                    .Execute(introspectionParameter, authenticationHeaderValue, issuerName)
-                    .ConfigureAwait(false);
-                //_eventPublisher.Publish(new IntrospectionResultReturned(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
-                return result;
-            }
-            catch (SimpleAuthException ex)
-            {
-                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(),
-                    processId,
-                    ex.Code,
-                    ex.Message,
-                    1));
-                throw;
-            }
+            _introspectionParameterValidator.Validate(introspectionParameter);
+            var result = await _postIntrospectionAction
+                .Execute(introspectionParameter, authenticationHeaderValue, issuerName)
+                .ConfigureAwait(false);
+            return result;
         }
     }
 }

@@ -1,20 +1,18 @@
 ﻿namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
 {
-    using System;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Logging;
     using Models;
     using Moq;
     using Repositories;
+    using System;
+    using System.Threading.Tasks;
     using Uma.Api.ResourceSetController.Actions;
     using Xunit;
 
     public class RemoveResourceSetActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
         private IDeleteResourceSetAction _deleteResourceSetAction;
 
         [Fact]
@@ -72,10 +70,7 @@
         private void InitializeFakeObjects()
         {
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
-            _deleteResourceSetAction = new DeleteResourceSetAction(
-                _resourceSetRepositoryStub.Object,
-                _umaServerEventSourceStub.Object);
+            _deleteResourceSetAction = new DeleteResourceSetAction(_resourceSetRepositoryStub.Object);
         }
     }
 }

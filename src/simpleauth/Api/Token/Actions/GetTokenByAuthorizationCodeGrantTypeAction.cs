@@ -44,7 +44,7 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly IAuthenticateClient _authenticateClient;
         private readonly IClientHelper _clientHelper;
-        private readonly IOAuthEventSource _oauthEventSource;
+        private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;
         private readonly IGrantedTokenHelper _grantedTokenHelper;
         private readonly IJwtGenerator _jwtGenerator;
@@ -55,7 +55,7 @@ namespace SimpleAuth.Api.Token.Actions
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IAuthenticateClient authenticateClient,
             IClientHelper clientHelper,
-            IOAuthEventSource oauthEventSource,
+            IEventPublisher eventPublisher,
             ITokenStore tokenStore,
             IGrantedTokenHelper grantedTokenHelper,
             IJwtGenerator jwtGenerator)
@@ -66,7 +66,7 @@ namespace SimpleAuth.Api.Token.Actions
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _authenticateClient = authenticateClient;
             _clientHelper = clientHelper;
-            _oauthEventSource = oauthEventSource;
+            _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
             _grantedTokenHelper = grantedTokenHelper;
             _jwtGenerator = jwtGenerator;
@@ -96,10 +96,12 @@ namespace SimpleAuth.Api.Token.Actions
                         result.AuthCode.UserInfoPayLoad,
                         result.AuthCode.IdTokenPayload)
                     .ConfigureAwait(false);
-                _oauthEventSource.GrantAccessToClient(
+                await _eventPublisher.Publish(new AccessToClientGranted(
+                    Id.Create(),
                     result.AuthCode.ClientId,
                     grantedToken.AccessToken,
-                    grantedToken.IdToken);
+                    grantedToken.IdToken,
+                    DateTime.UtcNow)).ConfigureAwait(false);
                 // Fill-in the id-token
                 if (grantedToken.IdTokenPayLoad != null)
                 {
@@ -133,7 +135,6 @@ namespace SimpleAuth.Api.Token.Actions
             var client = authResult.Client;
             if (client == null)
             {
-                _oauthEventSource.Info(authResult.ErrorMessage);
                 throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 

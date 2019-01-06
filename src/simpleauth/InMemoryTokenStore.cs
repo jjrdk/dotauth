@@ -5,6 +5,7 @@
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Threading.Tasks;
+    using Logging;
     using Shared.Models;
 
     internal sealed class InMemoryTokenStore : ITokenStore
@@ -112,7 +113,7 @@
                 return Task.FromResult(false);
             }
 
-            var id = Guid.NewGuid().ToString();
+            var id = Id.Create();
             _tokens.Add(id, grantedToken);
             _mappingStrToRefreshTokens.Add(grantedToken.RefreshToken, id);
             _mappingStrToAccessTokens.Add(grantedToken.AccessToken, id);

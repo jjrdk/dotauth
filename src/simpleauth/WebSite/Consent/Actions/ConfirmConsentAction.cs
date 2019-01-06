@@ -23,6 +23,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
     using Logging;
     using Parameters;
     using Results;
+    using Shared;
     using Shared.Models;
     using Shared.Repositories;
     using System;
@@ -40,7 +41,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
         private readonly IParameterParserHelper _parameterParserHelper;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
         private readonly IConsentHelper _consentHelper;
-        private readonly IOpenIdEventSource _openidEventSource;
+        private readonly IEventPublisher _eventPublisher;
 
         public ConfirmConsentAction(
             IConsentRepository consentRepository,
@@ -50,7 +51,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             IParameterParserHelper parameterParserHelper,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
             IConsentHelper consentHelper,
-            IOpenIdEventSource openidEventSource)
+            IEventPublisher eventPublisher)
         {
             _consentRepository = consentRepository;
             _clientRepository = clientRepository;
@@ -59,7 +60,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             _parameterParserHelper = parameterParserHelper;
             _generateAuthorizationResponse = generateAuthorizationResponse;
             _consentHelper = consentHelper;
-            _openidEventSource = openidEventSource;
+            _eventPublisher = eventPublisher;
         }
 
         /// <summary>
@@ -106,7 +107,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                     // A consent can be given to a set of claims
                     assignedConsent = new Consent
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        Id = Id.Create(),
                         Client = client,
                         ResourceOwner = await _resourceOwnerRepository.Get(subject).ConfigureAwait(false),
                         Claims = claimsParameter.GetClaimNames()
@@ -117,7 +118,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                     // A consent can be given to a set of scopes
                     assignedConsent = new Consent
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        Id = Id.Create(),
                         Client = client,
                         GrantedScopes = (await GetScopes(authorizationParameter.Scope).ConfigureAwait(false)).ToList(),
                         ResourceOwner = await _resourceOwnerRepository.Get(subject).ConfigureAwait(false),
@@ -127,9 +128,10 @@ namespace SimpleAuth.WebSite.Consent.Actions
                 // A consent can be given to a set of claims
                 await _consentRepository.InsertAsync(assignedConsent).ConfigureAwait(false);
 
-                _openidEventSource.GiveConsent(subject,
+                await _eventPublisher.Publish(new ConsentGiven(
+                    subject,
                     authorizationParameter.ClientId,
-                    assignedConsent.Id);
+                    assignedConsent.Id)).ConfigureAwait(false);
             }
 
             var result = EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();

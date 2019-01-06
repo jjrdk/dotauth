@@ -17,9 +17,7 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
     using Errors;
     using Exceptions;
     using Helpers;
-    using Logging;
     using Models;
-    using Newtonsoft.Json;
     using Parameters;
     using Repositories;
     using SimpleAuth.Errors;
@@ -35,15 +33,15 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
         private readonly IPolicyRepository _policyRepository;
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
         private readonly IResourceSetRepository _resourceSetRepository;
-        private readonly IUmaServerEventSource _umaServerEventSource;
 
-        public UpdatePolicyAction(IPolicyRepository policyRepository, IRepositoryExceptionHelper repositoryExceptionHelper,
-            IResourceSetRepository resourceSetRepository, IUmaServerEventSource umaServerEventSource)
+        public UpdatePolicyAction(
+            IPolicyRepository policyRepository,
+            IRepositoryExceptionHelper repositoryExceptionHelper,
+            IResourceSetRepository resourceSetRepository)
         {
             _policyRepository = policyRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
             _resourceSetRepository = resourceSetRepository;
-            _umaServerEventSource = umaServerEventSource;
         }
 
         public async Task<bool> Execute(UpdatePolicyParameter updatePolicyParameter)
@@ -56,19 +54,23 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
 
             if (string.IsNullOrWhiteSpace(updatePolicyParameter.PolicyId))
             {
-                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
             }
 
             if (updatePolicyParameter.Rules == null || !updatePolicyParameter.Rules.Any())
             {
-                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.Rules));
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified,
+                        UmaConstants.AddPolicyParameterNames.Rules));
             }
 
-            _umaServerEventSource.StartUpdateAuthorizationPolicy(JsonConvert.SerializeObject(updatePolicyParameter));
             // Check the authorization policy exists.
             var policy = await _repositoryExceptionHelper.HandleException(
-                string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
-                () => _policyRepository.Get(updatePolicyParameter.PolicyId)).ConfigureAwait(false);
+                    string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved,
+                        updatePolicyParameter.PolicyId),
+                    () => _policyRepository.Get(updatePolicyParameter.PolicyId))
+                .ConfigureAwait(false);
             if (policy == null)
             {
                 return false;
@@ -79,9 +81,11 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
             foreach (var resourceSetId in policy.ResourceSetIds)
             {
                 var resourceSet = await _resourceSetRepository.Get(resourceSetId).ConfigureAwait(false);
-                if (updatePolicyParameter.Rules.Any(r => r.Scopes != null && !r.Scopes.All(s => resourceSet.Scopes.Contains(s))))
+                if (updatePolicyParameter.Rules.Any(r =>
+                    r.Scopes != null && !r.Scopes.All(s => resourceSet.Scopes.Contains(s))))
                 {
-                    throw new BaseUmaException(UmaErrorCodes.InvalidScope, ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
+                    throw new BaseUmaException(UmaErrorCodes.InvalidScope,
+                        ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
                 }
             }
 
@@ -107,9 +111,10 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
             }
 
             var result = await _repositoryExceptionHelper.HandleException(
-                string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated, updatePolicyParameter.PolicyId),
-                () => _policyRepository.Update(policy)).ConfigureAwait(false);
-            _umaServerEventSource.FinishUpdateAuhthorizationPolicy(JsonConvert.SerializeObject(updatePolicyParameter));
+                    string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated,
+                        updatePolicyParameter.PolicyId),
+                    () => _policyRepository.Update(policy))
+                .ConfigureAwait(false);
             return result;
         }
     }

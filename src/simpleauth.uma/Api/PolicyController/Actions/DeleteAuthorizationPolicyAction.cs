@@ -14,32 +14,27 @@
 
 namespace SimpleAuth.Uma.Api.PolicyController.Actions
 {
-    using System;
-    using System.Threading.Tasks;
     using Errors;
     using Helpers;
-    using Logging;
     using Repositories;
+    using System;
+    using System.Threading.Tasks;
 
     internal class DeleteAuthorizationPolicyAction : IDeleteAuthorizationPolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
-        private readonly IUmaServerEventSource _umaServerEventSource;
 
         public DeleteAuthorizationPolicyAction(
             IPolicyRepository policyRepository,
-            IRepositoryExceptionHelper repositoryExceptionHelper,
-            IUmaServerEventSource umaServerEventSource)
+            IRepositoryExceptionHelper repositoryExceptionHelper)
         {
             _policyRepository = policyRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
-            _umaServerEventSource = umaServerEventSource;
         }
 
         public async Task<bool> Execute(string policyId)
         {
-            _umaServerEventSource.StartToRemoveAuthorizationPolicy(policyId);
             if (string.IsNullOrWhiteSpace(policyId))
             {
                 throw new ArgumentNullException(nameof(policyId));
@@ -56,7 +51,6 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
             await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated, policyId),
                 () => _policyRepository.Delete(policyId)).ConfigureAwait(false);
-            _umaServerEventSource.FinishToRemoveAuthorizationPolicy(policyId);
             return true;
         }
     }

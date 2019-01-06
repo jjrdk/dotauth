@@ -24,6 +24,7 @@ namespace SimpleAuth.Uma.Tests.Policies
     using Moq;
     using Parameters;
     using Repositories;
+    using SimpleAuth.Shared;
     using Uma.Policies;
     using Xunit;
 
@@ -31,7 +32,6 @@ namespace SimpleAuth.Uma.Tests.Policies
     {
         private Mock<IBasicAuthorizationPolicy> _basicAuthorizationPolicyStub;
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
         private IAuthorizationPolicyValidator _authorizationPolicyValidator;
 
         [Fact]
@@ -139,11 +139,10 @@ namespace SimpleAuth.Uma.Tests.Policies
         {
             _basicAuthorizationPolicyStub = new Mock<IBasicAuthorizationPolicy>();
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _authorizationPolicyValidator = new AuthorizationPolicyValidator(
                 _basicAuthorizationPolicyStub.Object,
                 _resourceSetRepositoryStub.Object,
-                _umaServerEventSourceStub.Object);
+                new Mock<IEventPublisher>().Object);
         }
     }
 }

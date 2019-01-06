@@ -36,7 +36,6 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         private Mock<IPolicyRepository> _policyRepositoryStub;
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
-        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
         private IAddResourceSetToPolicyAction _addResourceSetAction;
 
         [Fact]
@@ -155,12 +154,10 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
             _policyRepositoryStub = new Mock<IPolicyRepository>();
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
             _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
-            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _addResourceSetAction = new AddResourceSetToPolicyAction(
                 _policyRepositoryStub.Object,
                 _resourceSetRepositoryStub.Object,
-                _repositoryExceptionHelperStub.Object,
-                _umaServerEventSourceStub.Object);
+                _repositoryExceptionHelperStub.Object);
         }
     }
 }

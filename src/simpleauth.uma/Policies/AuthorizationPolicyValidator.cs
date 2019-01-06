@@ -14,30 +14,32 @@
 
 namespace SimpleAuth.Uma.Policies
 {
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Logging;
     using Models;
     using Parameters;
     using Repositories;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Logging;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Events.Uma;
 
     internal class AuthorizationPolicyValidator : IAuthorizationPolicyValidator
     {
         private readonly IBasicAuthorizationPolicy _basicAuthorizationPolicy;
         private readonly IResourceSetRepository _resourceSetRepository;
-        private readonly IUmaServerEventSource _umaServerEventSource;
+        private readonly IEventPublisher _eventPublisher;
 
         public AuthorizationPolicyValidator(
             IBasicAuthorizationPolicy basicAuthorizationPolicy,
             IResourceSetRepository resourceSetRepository,
-            IUmaServerEventSource umaServerEventSource)
+            IEventPublisher eventPublisher)
         {
             _basicAuthorizationPolicy = basicAuthorizationPolicy;
             _resourceSetRepository = resourceSetRepository;
-            _umaServerEventSource = umaServerEventSource;
+            _eventPublisher = eventPublisher;
         }
 
         public async Task<AuthorizationPolicyResult> IsAuthorized(Ticket validTicket, string clientId, ClaimTokenParameter claimTokenParameter)
@@ -51,7 +53,7 @@ namespace SimpleAuth.Uma.Policies
             {
                 throw new ArgumentNullException(nameof(clientId));
             }
-            
+
             if (validTicket.Lines == null || !validTicket.Lines.Any())
             {
                 throw new ArgumentNullException(nameof(validTicket.Lines));
@@ -72,7 +74,12 @@ namespace SimpleAuth.Uma.Policies
                 validationResult = await Validate(ticketLineParameter, resource, claimTokenParameter).ConfigureAwait(false);
                 if (validationResult.Type != AuthorizationPolicyResultEnum.Authorized)
                 {
-                    _umaServerEventSource.AuthorizationPoliciesFailed(validTicket.Id);
+                    await _eventPublisher.Publish(new AuthorizationPolicyNotAuthorized(
+                            Id.Create(),
+                            validTicket.Id,
+                            DateTime.UtcNow))
+                        .ConfigureAwait(false);
+
                     return validationResult;
                 }
             }
@@ -89,7 +96,7 @@ namespace SimpleAuth.Uma.Policies
                     Type = AuthorizationPolicyResultEnum.Authorized
                 };
             }
-            
+
             foreach (var authorizationPolicy in resource.Policies)
             {
                 var result = await _basicAuthorizationPolicy.Execute(ticketLineParameter, authorizationPolicy, claimTokenParameter).ConfigureAwait(false);

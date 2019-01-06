@@ -26,25 +26,9 @@ namespace SimpleAuth.Server.Extensions
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Logging;
 
     public static class ServiceCollectionExtensions
     {
-        //public static IServiceCollection AddScimHost(this IServiceCollection services)
-        //{
-        //    if (services == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(services));
-        //    }
-
-        //    services.AddTransient<IParametersValidator, ParametersValidator>();
-        //    services.AddSingleton(new InMemoryGroupsRepository());
-        //    services.AddSingleton<IProvide<GroupResource>>(sp => sp.GetService<InMemoryGroupsRepository>());
-        //    services.AddSingleton<IPersist<GroupResource>>(sp => sp.GetService<InMemoryGroupsRepository>());
-        //    services.AddSingleton<IStore<GroupResource>>(sp => sp.GetService<InMemoryGroupsRepository>());
-        //    return services;
-        //}
-
         public static AuthorizationOptions AddAuthPolicies(this AuthorizationOptions options, string cookieName)
         {
             if (options == null)
@@ -191,18 +175,14 @@ namespace SimpleAuth.Server.Extensions
 
         public static IServiceCollection UseSimpleAuth(
             this IServiceCollection services,
-            SimpleAuthOptions options)
+            SimpleAuthOptions options = null)
         {
-            var s = services.AddSimpleAuth(options)
-                 .AddSingleton(options.Scim)
+            var s = services.RegisterSimpleAuth(options)
+                 .AddSingleton(options?.Scim ?? new ScimOptions { IsEnabled = false })
                  .AddTransient<IRedirectInstructionParser, RedirectInstructionParser>()
                  .AddTransient<IActionResultParser, ActionResultParser>()
                  .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
-                 .AddDefaultTokenStore()
-                 .AddTechnicalLogging()
-                 .AddOpenidLogging()
-                 .AddOAuthLogging();
+                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddDataProtection();
             return s;
         }

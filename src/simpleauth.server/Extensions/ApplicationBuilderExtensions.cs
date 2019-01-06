@@ -49,10 +49,7 @@ namespace SimpleAuth.Server.Extensions
                 throw new ArgumentNullException(nameof(options));
             }
 
-            app.UseSimpleAuthExceptionHandler(new ExceptionHandlerMiddlewareOptions
-            {
-                OpenIdEventSource = app.ApplicationServices.GetService<IOpenIdEventSource>()
-            });
+            app.UseSimpleAuthExceptionHandler();
             var httpContextAccessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
             UriHelperExtensions.Configure(httpContextAccessor);
         }

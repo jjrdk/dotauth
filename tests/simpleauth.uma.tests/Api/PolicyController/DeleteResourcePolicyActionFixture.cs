@@ -32,11 +32,10 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         private Mock<IPolicyRepository> _policyRepositoryStub;
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-        private Mock<IUmaServerEventSource> _umaServerEventSource;
         private IDeleteResourcePolicyAction _deleteResourcePolicyAction;
 
         [Fact]
-        public async Task When_Passing_NullOrEmpty_Parameters_Then_Exceptions_Are_Throwns()
+        public async Task When_Passing_NullOrEmpty_Parameters_Then_Exceptions_Are_Thrown()
         {
             InitializeFakeObjects();
             
@@ -133,12 +132,10 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
             _policyRepositoryStub = new Mock<IPolicyRepository>();
             _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _umaServerEventSource = new Mock<IUmaServerEventSource>();
             _deleteResourcePolicyAction = new DeleteResourcePolicyAction(
                 _policyRepositoryStub.Object,
                 _repositoryExceptionHelperStub.Object,
-                _resourceSetRepositoryStub.Object,
-                _umaServerEventSource.Object);
+                _resourceSetRepositoryStub.Object);
         }
     }
 }

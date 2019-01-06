@@ -14,19 +14,18 @@
 
 namespace SimpleAuth.Shared.Events.Openid
 {
+    using System;
+
     public class ResourceOwnerAuthenticated : Event
     {
-        public ResourceOwnerAuthenticated(string id, string aggregateId, object payload, int order)
+        public ResourceOwnerAuthenticated(string id, string aggregateId, object payload, DateTime timestamp)
+            : base(id, timestamp)
         {
-            Id = id;
             AggregateId = aggregateId;
             Payload = payload;
-            Order = order;
         }
 
-        public string Id { get; }
         public string AggregateId { get; }
         public object Payload { get; }
-        public int Order { get; set; }
     }
 }

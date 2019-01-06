@@ -15,46 +15,47 @@
 
 namespace SimpleAuth.Tests.Api.Scopes.Actions
 {
-    using System;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Logging;
     using Moq;
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth.Api.Scopes.Actions;
+    using System;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class DeleteScopeOperationFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
-        private Mock<IManagerEventSource> _managerEventSourceStub;
         private IDeleteScopeOperation _deleteScopeOperation;
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteScopeOperation.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteScopeOperation.Execute(null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteScopeOperation.Execute(string.Empty)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Passing_Not_Existing_ScopeName_Then_Exception_Is_Thrown()
-        {            const string scopeName = "invalid_scope";
+        {
+            const string scopeName = "invalid_scope";
             InitializeFakeObjects();
             _scopeRepositoryStub.Setup(c => c.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult((Scope)null));
 
-                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _deleteScopeOperation.Execute(scopeName)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _deleteScopeOperation.Execute(scopeName)).ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheScopeDoesntExist, scopeName));
         }
 
         [Fact]
         public async Task When_Deleting_ExistingScope_Then_Operation_Is_Called()
-        {            const string scopeName = "client_id";
+        {
+            const string scopeName = "client_id";
             var scope = new Scope
             {
                 Name = scopeName
@@ -63,18 +64,15 @@ namespace SimpleAuth.Tests.Api.Scopes.Actions
             _scopeRepositoryStub.Setup(c => c.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult(scope));
 
-                        await _deleteScopeOperation.Execute(scopeName).ConfigureAwait(false);
+            await _deleteScopeOperation.Execute(scopeName).ConfigureAwait(false);
 
-                        _scopeRepositoryStub.Verify(c => c.Delete(scope));
+            _scopeRepositoryStub.Verify(c => c.Delete(scope));
         }
 
         private void InitializeFakeObjects()
         {
             _scopeRepositoryStub = new Mock<IScopeRepository>();
-            _managerEventSourceStub = new Mock<IManagerEventSource>();
-            _deleteScopeOperation = new DeleteScopeOperation(
-                _scopeRepositoryStub.Object,
-                _managerEventSourceStub.Object);
+            _deleteScopeOperation = new DeleteScopeOperation(_scopeRepositoryStub.Object);
         }
     }
 }

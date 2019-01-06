@@ -14,15 +14,14 @@
 
 namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
 {
-    using System;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Logging;
     using Models;
     using Moq;
     using Parameters;
     using Repositories;
+    using System;
+    using System.Threading.Tasks;
     using Uma.Api.ResourceSetController.Actions;
     using Uma.Validators;
     using Xunit;
@@ -31,7 +30,6 @@ namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
         private Mock<IResourceSetParameterValidator> _resourceSetParameterValidator;
-        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
         private IUpdateResourceSetAction _updateResourceSetAction;
 
         [Fact]
@@ -94,11 +92,9 @@ namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
         {
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
             _resourceSetParameterValidator = new Mock<IResourceSetParameterValidator>();
-            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _updateResourceSetAction = new UpdateResourceSetAction(
                 _resourceSetRepositoryStub.Object,
-                _resourceSetParameterValidator.Object,
-                _umaServerEventSourceStub.Object);
+                _resourceSetParameterValidator.Object);
         }
     }
 }

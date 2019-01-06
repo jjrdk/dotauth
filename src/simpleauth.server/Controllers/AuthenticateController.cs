@@ -11,7 +11,6 @@
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.AspNetCore.Mvc.Routing;
     using Parameters;
-    using Server;
     using Shared;
     using Shared.Requests;
     using SimpleAuth;
@@ -30,6 +29,7 @@
 
     public class AuthenticateController : BaseAuthenticateController
     {
+        private readonly IEventPublisher _eventPublisher;
         private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
 
         public AuthenticateController(
@@ -37,7 +37,6 @@
             IGetResourceOwnerClaimsAction profileActions,
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
-            IOpenIdEventSource openIdEventSource,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IEventPublisher eventPublisher,
@@ -46,7 +45,6 @@
             IAddUserOperation userActions,
             IGetUserOperation getUserOperation,
             IUpdateUserClaimsOperation updateUserClaimsOperation,
-            OAuthConfigurationOptions configurationService,
             IAuthenticateHelper authenticateHelper,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
@@ -57,7 +55,6 @@
                 profileActions,
                 dataProtectionProvider,
                 translationManager,
-                openIdEventSource,
                 urlHelperFactory,
                 actionContextAccessor,
                 eventPublisher,
@@ -66,12 +63,12 @@
                 userActions,
                 getUserOperation,
                 updateUserClaimsOperation,
-                configurationService,
                 authenticateHelper,
                 twoFactorAuthenticationHandler,
                 subjectBuilder,
                 basicAuthenticateOptions)
         {
+            _eventPublisher = eventPublisher;
             _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
         }
 
@@ -129,8 +126,7 @@
                     .Value;
                 if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
                 {
-                    await SetLocalCookie(claims, Guid.NewGuid().ToString()).ConfigureAwait(false);
-                    _openIdEventSource.AuthenticateResourceOwner(subject);
+                    await SetLocalCookie(claims, Id.Create()).ConfigureAwait(false);
                     return RedirectToAction("Index", "User");
                 }
 
@@ -139,8 +135,7 @@
                 // 2.2. Send confirmation code
                 try
                 {
-                    var code = await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
-                    _openIdEventSource.GetConfirmationCode(code);
+                    await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
                     return RedirectToAction("SendCode");
                 }
                 catch (ClaimRequiredException)
@@ -154,7 +149,12 @@
             }
             catch (Exception exception)
             {
-                _openIdEventSource.Failure(exception.Message);
+                await _eventPublisher.Publish(
+                        new ExceptionMessage(
+                            Id.Create(),
+                            exception,
+                            DateTime.UtcNow))
+                    .ConfigureAwait(false);
                 await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 ModelState.AddModelError("invalid_credentials", exception.Message);
                 var viewModel = new AuthorizeViewModel();
@@ -217,12 +217,11 @@
                     {
                         await SetTwoFactorCookie(actionResult.Claims).ConfigureAwait(false);
                         var code = await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
-                        _openIdEventSource.GetConfirmationCode(code);
-                        return RedirectToAction("SendCode", new { code = viewModel.Code });
+                        return RedirectToAction("SendCode", new {code = viewModel.Code});
                     }
                     catch (ClaimRequiredException)
                     {
-                        return RedirectToAction("SendCode", new { code = viewModel.Code });
+                        return RedirectToAction("SendCode", new {code = viewModel.Code});
                     }
                     catch (Exception)
                     {
@@ -234,21 +233,25 @@
                 {
                     // 6. Authenticate the user by adding a cookie
                     await SetLocalCookie(actionResult.Claims, request.SessionId).ConfigureAwait(false);
-                    _openIdEventSource.AuthenticateResourceOwner(subject);
 
                     // 7. Redirect the user agent
                     var result = this.CreateRedirectionFromActionResult(actionResult.EndpointResult,
                         request);
                     if (result != null)
                     {
-                        LogAuthenticateUser(actionResult.EndpointResult, request.ProcessId);
+                        await LogAuthenticateUser(actionResult.EndpointResult, request.ProcessId).ConfigureAwait(false);
                         return result;
                     }
                 }
             }
             catch (Exception ex)
             {
-                _openIdEventSource.Failure(ex.Message);
+                await _eventPublisher.Publish(
+                        new ExceptionMessage(
+                            Id.Create(),
+                            ex,
+                            DateTime.UtcNow))
+                    .ConfigureAwait(false);
                 ModelState.AddModelError("invalid_credentials", ex.Message);
             }
 

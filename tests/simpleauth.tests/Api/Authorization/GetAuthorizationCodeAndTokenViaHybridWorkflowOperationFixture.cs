@@ -19,11 +19,11 @@
     using System.Threading.Tasks;
     using Shared.Repositories;
     using Xunit;
+
     //using Client = Shared.Models.Client;
 
     public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperationFixture
     {
-        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
 
         private GetAuthorizationCodeAndTokenViaHybridWorkflowOperation
@@ -89,8 +89,8 @@
 
             var client = new Client
             {
-                RedirectionUrls = new[] { redirectUrl },
-                AllowedScopes = new[] { new Scope { Name = "openid" } },
+                RedirectionUrls = new[] {redirectUrl},
+                AllowedScopes = new[] {new Scope {Name = "openid"}},
 
             };
             var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
@@ -142,20 +142,21 @@
             var client = new Client
             {
                 ClientId = "test",
-                GrantTypes = new[] { GrantType.@implicit, GrantType.authorization_code },
-                ResponseTypes = new[] { ResponseTypeNames.IdToken },
-                AllowedScopes = new[] { new Scope { Name = "openid", IsDisplayedInConsent = true } },
-                RedirectionUrls = new[] { redirectUrl }
+                GrantTypes = new[] {GrantType.@implicit, GrantType.authorization_code},
+                ResponseTypes = new[] {ResponseTypeNames.IdToken},
+                AllowedScopes = new[] {new Scope {Name = "openid", IsDisplayedInConsent = true}},
+                RedirectionUrls = new[] {redirectUrl}
             };
             var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
                         authorizationParameter,
-                      null, // new ClaimsPrincipal(new ClaimsIdentity(new Claim[0], "")),
+                        null, // new ClaimsPrincipal(new ClaimsIdentity(new Claim[0], "")),
                         client,
                         null))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequestCode, ex.Code);
-            Assert.Equal(ErrorDescriptions.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated, ex.Message);
+            Assert.Equal(ErrorDescriptions.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated,
+                ex.Message);
             Assert.Equal(authorizationParameter.State, ex.State);
         }
 
@@ -185,16 +186,16 @@
             };
 
             var identity = new ClaimsIdentity(
-                new[] { new Claim(ClaimTypes.AuthenticationInstant, "1"), },
+                new[] {new Claim(ClaimTypes.AuthenticationInstant, "1"),},
                 "Cookies");
             var claimsPrincipal = new ClaimsPrincipal(identity);
 
             var client = new Client
             {
-                GrantTypes = new[] { GrantType.@implicit, GrantType.authorization_code },
+                GrantTypes = new[] {GrantType.@implicit, GrantType.authorization_code},
                 ResponseTypes = ResponseTypeNames.All,
-                RedirectionUrls = new[] { new Uri("https://localhost"), },
-                AllowedScopes = new[] { new Scope { Name = "scope" } }
+                RedirectionUrls = new[] {new Uri("https://localhost"),},
+                AllowedScopes = new[] {new Scope {Name = "scope"}}
             };
             //_processAuthorizationRequestFake.Setup(p => p.ProcessAsync(It.IsAny<AuthorizationParameter>(),
             //        It.IsAny<ClaimsPrincipal>(),
@@ -211,32 +212,23 @@
             await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation
                 .Execute(authorizationParameter, claimsPrincipal, client, null)
                 .ConfigureAwait(false);
-            _oauthEventSource.Verify(s => s.StartHybridFlow(authorizationParameter.ClientId,
-                authorizationParameter.Scope,
-                string.Empty));
             _generateAuthorizationResponseFake.Verify(g => g.ExecuteAsync(
                 It.IsAny<EndpointResult>(),
                 authorizationParameter,
                 claimsPrincipal,
                 It.IsAny<Client>(),
                 It.IsAny<string>()));
-            _oauthEventSource.Verify(s => s.EndHybridFlow(authorizationParameter.ClientId,
-                Enum.GetName(typeof(TypeActionResult), actionResult.Type),
-                Enum.GetName(typeof(SimpleAuthEndPoints), actionResult.RedirectInstruction.Action)));
         }
 
         private void InitializeFakeObjects()
         {
-            _oauthEventSource = new Mock<IOAuthEventSource>();
             _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
             _consentHelper = new Mock<IConsentHelper>();
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperation =
                 new GetAuthorizationCodeAndTokenViaHybridWorkflowOperation(
-                    _oauthEventSource.Object,
                     new ProcessAuthorizationRequest(
                         new Mock<IClientStore>().Object,
-                        _consentHelper.Object,
-                        _oauthEventSource.Object),
+                        _consentHelper.Object),
                     _generateAuthorizationResponseFake.Object);
         }
     }

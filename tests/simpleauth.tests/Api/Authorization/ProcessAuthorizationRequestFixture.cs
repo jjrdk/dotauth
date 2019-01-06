@@ -15,7 +15,6 @@
     public sealed class ProcessAuthorizationRequestFixture
     {
         private ProcessAuthorizationRequest _processAuthorizationRequest;
-        private Mock<IOAuthEventSource> _oauthEventSource;
 
         [Fact(Skip = "Invalid code path")]
         public async Task When_Passing_NullAuthorization_To_Function_Then_ArgumentNullException_Is_Thrown()
@@ -552,31 +551,15 @@
         */
         private void InitializeMockingObjects()
         {
-            _oauthEventSource = new Mock<IOAuthEventSource>();
             var clientStore = new Mock<IClientStore>();
             var consentRepository = new Mock<IConsentRepository>();
-            //var jsonWebKeyRepository = new Mock<IJsonWebKeyRepository>();
+
             var parameterParserHelper = new ParameterParserHelper();
             var consentHelper = new ConsentHelper(consentRepository.Object, parameterParserHelper);
-            //var aesEncryptionHelper = new AesEncryptionHelper();
-            //var jweHelper = new JweHelper(aesEncryptionHelper);
-            //var jweParser = new JweParser(jweHelper);
-            //var createJwsSignature = new CreateJwsSignature();
-            //var jwsParser = new JwsParser(createJwsSignature);
-            //var jsonWebKeyConverter = new JsonWebKeyConverter();
-            //var httpClientFactory = new HttpClient(); //HttpClientFactory();
-            //var jwtParser = new JwtParser(
-            //    jweParser,
-            //    jwsParser,
-            //    httpClientFactory,
-            //    clientStore.Object,
-            //    jsonWebKeyConverter,
-            //    jsonWebKeyRepository.Object);
-
+            
             _processAuthorizationRequest = new ProcessAuthorizationRequest(
                 clientStore.Object,
-                consentHelper,
-                _oauthEventSource.Object);
+                consentHelper);
         }
     }
 }

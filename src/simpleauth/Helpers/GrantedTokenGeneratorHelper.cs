@@ -16,7 +16,7 @@ namespace SimpleAuth.Helpers
 {
     using Errors;
     using Exceptions;
-    using Microsoft.IdentityModel.Tokens;
+    using Logging;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
@@ -107,8 +107,8 @@ namespace SimpleAuth.Helpers
                 signingCredentials);
             //var accessToken = await _clientHelper.GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
 
-            var refreshTokenId =
-                Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()); // 3. Construct the refresh token.
+            var refreshTokenId = Encoding.UTF8.GetBytes(Id.Create());
+            // 3. Construct the refresh token.
             return Task.FromResult(new GrantedToken
             {
                 AccessToken = accessToken,

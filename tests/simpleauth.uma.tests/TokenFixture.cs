@@ -42,7 +42,6 @@
                 .ResolveAsync(BaseUrl + "/.well-known/uma2-configuration")
                 .ConfigureAwait(false);
 
-            Assert.NotNull(token);
             Assert.True(token.ContainsError);
             Assert.Equal("invalid_ticket", token.Error.Error);
             Assert.Equal("the ticket ticket_id doesn't exist", token.Error.ErrorDescription);

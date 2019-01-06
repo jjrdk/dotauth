@@ -30,18 +30,15 @@ namespace SimpleAuth.Api.Introspection.Actions
 
     public class PostIntrospectionAction : IPostIntrospectionAction
     {
-        private readonly IOAuthEventSource _oauthEventSource;
         private readonly IAuthenticateClient _authenticateClient;
         private readonly IIntrospectionParameterValidator _introspectionParameterValidator;
         private readonly ITokenStore _tokenStore;
 
         public PostIntrospectionAction(
-            IOAuthEventSource oauthEventSource,
             IAuthenticateClient authenticateClient,
             IIntrospectionParameterValidator introspectionParameterValidator,
             ITokenStore tokenStore)
         {
-            _oauthEventSource = oauthEventSource;
             _authenticateClient = authenticateClient;
             _introspectionParameterValidator = introspectionParameterValidator;
             _tokenStore = tokenStore;
@@ -49,7 +46,8 @@ namespace SimpleAuth.Api.Introspection.Actions
 
         public async Task<IntrospectionResult> Execute(
             IntrospectionParameter introspectionParameter,
-            AuthenticationHeaderValue authenticationHeaderValue, string issuerName)
+            AuthenticationHeaderValue authenticationHeaderValue,
+            string issuerName)
         {
             // 1. Validate the parameters
             if (introspectionParameter == null)
@@ -117,8 +115,10 @@ namespace SimpleAuth.Api.Introspection.Actions
                 var audiencesArr = grantedToken.IdTokenPayLoad.GetArrayValue(StandardClaimNames.Audiences);
                 var issuedAt = grantedToken.IdTokenPayLoad.Iat;
                 var issuer = grantedToken.IdTokenPayLoad.Iss;
-                var subject = grantedToken.IdTokenPayLoad.GetClaimValue(JwtConstants.StandardResourceOwnerClaimNames.Subject);
-                var userName = grantedToken.IdTokenPayLoad.GetClaimValue(JwtConstants.StandardResourceOwnerClaimNames.Name);
+                var subject =
+                    grantedToken.IdTokenPayLoad.GetClaimValue(JwtConstants.StandardResourceOwnerClaimNames.Subject);
+                var userName =
+                    grantedToken.IdTokenPayLoad.GetClaimValue(JwtConstants.StandardResourceOwnerClaimNames.Name);
                 if (audiencesArr.Any())
                 {
                     audiences = string.Join(" ", audiencesArr);
@@ -158,8 +158,7 @@ namespace SimpleAuth.Api.Introspection.Actions
                 ClientSecretFromHttpRequestBody = introspectionParameter.ClientSecret
             };
 
-            if (authenticationHeaderValue != null
-                && !string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter))
+            if (authenticationHeaderValue != null && !string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter))
             {
                 var parameters = GetParameters(authenticationHeaderValue.Parameter);
                 if (parameters != null && parameters.Count() == 2)

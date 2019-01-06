@@ -14,6 +14,9 @@
 
 namespace SimpleAuth
 {
+    using System.Collections.Generic;
+    using Shared;
+
     public class SimpleAuthOptions
     {
         public SimpleAuthOptions()
@@ -35,5 +38,7 @@ namespace SimpleAuth
         public OAuthConfigurationOptions OAuthConfigurationOptions { get; set; }
 
         public BasicAuthenticateOptions BasicAuthenticationOptions { get; set; }
+
+        public IEventPublisher EventPublisher { get;set; }
     }
 }

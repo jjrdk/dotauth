@@ -35,13 +35,13 @@ namespace SimpleAuth.Tests.Api.Token
 
     public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
     {
+        private Mock<IEventPublisher> _eventPublisher;
         private Mock<IAuthorizationCodeStore> _authorizationCodeStoreFake;
         private OAuthConfigurationOptions _oauthConfigurationOptions;
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
         private Mock<ITokenStore> _tokenStoreFake;
         private Mock<IAuthenticateClient> _authenticateClientFake;
         private Mock<IClientHelper> _clientHelper;
-        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
         private Mock<IJwtGenerator> _jwtGeneratorStub;
         private GetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
@@ -586,15 +586,13 @@ namespace SimpleAuth.Tests.Api.Token
                 .ConfigureAwait(false);
 
             _tokenStoreFake.Verify(g => g.AddToken(grantedToken));
-            _oauthEventSource.Verify(s => s.GrantAccessToClient(
-                clientId,
-                accessToken,
-                identityToken));
+            _eventPublisher.Verify(s => s.Publish(It.IsAny<AccessToClientGranted>()));
             Assert.True(result.AccessToken == accessToken);
         }
 
         private void InitializeFakeObjects(TimeSpan authorizationCodeValidity = default(TimeSpan))
         {
+            _eventPublisher = new Mock<IEventPublisher>();
             _authorizationCodeStoreFake = new Mock<IAuthorizationCodeStore>();
             _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
             _tokenStoreFake = new Mock<ITokenStore>();
@@ -604,7 +602,6 @@ namespace SimpleAuth.Tests.Api.Token
                 authorizationCodeValidity: authorizationCodeValidity == default(TimeSpan)
                     ? TimeSpan.FromSeconds(3600)
                     : authorizationCodeValidity);
-            _oauthEventSource = new Mock<IOAuthEventSource>();
             _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
             _jwtGeneratorStub = new Mock<IJwtGenerator>();
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
@@ -613,7 +610,7 @@ namespace SimpleAuth.Tests.Api.Token
                 _grantedTokenGeneratorHelperFake.Object,
                 _authenticateClientFake.Object,
                 _clientHelper.Object,
-                _oauthEventSource.Object,
+                _eventPublisher.Object,
                 _tokenStoreFake.Object,
                 _grantedTokenHelperStub.Object,
                 _jwtGeneratorStub.Object);

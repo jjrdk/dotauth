@@ -17,7 +17,6 @@ namespace SimpleAuth.Api.Authorization.Actions
     using Common;
     using Errors;
     using Exceptions;
-    using Logging;
     using Parameters;
     using Results;
     using Shared.Models;
@@ -33,17 +32,14 @@ namespace SimpleAuth.Api.Authorization.Actions
         private readonly ProcessAuthorizationRequest _processAuthorizationRequest;
         private readonly ClientValidator _clientValidator;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
-        private readonly IOAuthEventSource _oAuthEventSource;
 
         public GetAuthorizationCodeOperation(
             ProcessAuthorizationRequest processAuthorizationRequest,
-            IGenerateAuthorizationResponse generateAuthorizationResponse,
-            IOAuthEventSource oAuthEventSource)
+            IGenerateAuthorizationResponse generateAuthorizationResponse)
         {
             _processAuthorizationRequest = processAuthorizationRequest;
             _clientValidator = new ClientValidator();
             _generateAuthorizationResponse = generateAuthorizationResponse;
-            _oAuthEventSource = oAuthEventSource;
         }
 
         public async Task<EndpointResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client, string issuerName)
@@ -59,10 +55,7 @@ namespace SimpleAuth.Api.Authorization.Actions
             }
 
             var claimsPrincipal = principal as ClaimsPrincipal;
-            _oAuthEventSource.StartAuthorizationCodeFlow(
-                authorizationParameter.ClientId,
-                authorizationParameter.Scope,
-                authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
+
             var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
             if (!_clientValidator.CheckGrantTypes(client, GrantType.authorization_code)) // 1. Check the client is authorized to use the authorization_code flow.
             {
@@ -86,12 +79,6 @@ namespace SimpleAuth.Api.Authorization.Actions
 
                 await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
             }
-
-            var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
-            _oAuthEventSource.EndAuthorizationCodeFlow(
-                authorizationParameter.ClientId,
-                actionTypeName,
-                result.RedirectInstruction == null ? string.Empty : Enum.GetName(typeof(SimpleAuthEndPoints), result.RedirectInstruction.Action));
 
             return result;
         }

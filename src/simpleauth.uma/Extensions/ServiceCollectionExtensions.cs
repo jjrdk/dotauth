@@ -85,11 +85,12 @@ namespace SimpleAuth.Uma.Extensions
 
         private static void RegisterServices(IServiceCollection services, AuthorizationServerOptions authorizationServerOptions)
         {
-            services.AddSimpleIdServerUmaCore(
+            services.AddUmaCore(
                 authorizationServerOptions.UmaConfigurationOptions,
                     authorizationServerOptions.Configuration?.Resources,
                     authorizationServerOptions.Configuration?.Policies)
-                .AddSimpleAuth(new SimpleAuthOptions{
+                .RegisterSimpleAuth(
+                    new SimpleAuthOptions{
                     OAuthConfigurationOptions = 
                 authorizationServerOptions.OAuthConfigurationOptions})
                     //clients: authorizationServerOptions.Configuration?.Clients,
@@ -98,13 +99,7 @@ namespace SimpleAuth.Uma.Extensions
                     //    : authorizationServerOptions.Configuration.Scopes)
                 //.AddIdServerClient()
                 .AddDefaultTokenStore();
-            //.AddDefaultSimpleBus()
-            //.AddConcurrency(opt => opt.UseInMemory());
-            services.AddTechnicalLogging();
-            services.AddOAuthLogging();
-            services.AddUmaLogging();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();
         }
     }
 }

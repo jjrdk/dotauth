@@ -14,16 +14,15 @@
 
 namespace SimpleAuth.Uma.Api.PolicyController.Actions
 {
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Helpers;
-    using Logging;
     using Parameters;
     using Repositories;
     using SimpleAuth.Errors;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
     using ErrorDescriptions = Errors.ErrorDescriptions;
 
     internal class AddResourceSetToPolicyAction : IAddResourceSetToPolicyAction
@@ -31,18 +30,15 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
         private readonly IPolicyRepository _policyRepository;
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
-        private readonly IUmaServerEventSource _umaServerEventSource;
 
         public AddResourceSetToPolicyAction(
             IPolicyRepository policyRepository,
             IResourceSetRepository resourceSetRepository,
-            IRepositoryExceptionHelper repositoryExceptionHelper,
-            IUmaServerEventSource umaServerEventSource)
+            IRepositoryExceptionHelper repositoryExceptionHelper)
         {
             _policyRepository = policyRepository;
             _resourceSetRepository = resourceSetRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
-            _umaServerEventSource = umaServerEventSource;
         }
 
         public async Task<bool> Execute(AddResourceSetParameter addResourceSetParameter)
@@ -57,13 +53,12 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
                 throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddResourceSetParameterNames.PolicyId));
             }
 
-            if (addResourceSetParameter.ResourceSets == null  ||
+            if (addResourceSetParameter.ResourceSets == null ||
                 !addResourceSetParameter.ResourceSets.Any())
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddResourceSetParameterNames.ResourceSet));
             }
 
-            _umaServerEventSource.StartAddResourceToAuthorizationPolicy(addResourceSetParameter.PolicyId, string.Join(",", addResourceSetParameter.ResourceSets));
             var policy = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, addResourceSetParameter.PolicyId),
                 () => _policyRepository.Get(addResourceSetParameter.PolicyId)).ConfigureAwait(false);
@@ -71,7 +66,7 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
             {
                 return false;
             }
-                        
+
             foreach (var resourceSetId in addResourceSetParameter.ResourceSets)
             {
                 var resourceSet = await _repositoryExceptionHelper.HandleException(
@@ -87,7 +82,6 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
             var result = await _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.ThePolicyCannotBeUpdated,
                 () => _policyRepository.Update(policy)).ConfigureAwait(false);
-            _umaServerEventSource.FinishAddResourceToAuthorizationPolicy(addResourceSetParameter.PolicyId, string.Join(",", addResourceSetParameter.ResourceSets));
             return result;
         }
     }

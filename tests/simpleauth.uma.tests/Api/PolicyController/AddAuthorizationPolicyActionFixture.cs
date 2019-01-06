@@ -17,7 +17,6 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
     using Errors;
     using Exceptions;
     using Helpers;
-    using Logging;
     using Models;
     using Moq;
     using Parameters;
@@ -36,7 +35,6 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         private Mock<IPolicyRepository> _policyRepositoryStub;
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelper;
-        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
         private IAddAuthorizationPolicyAction _addAuthorizationPolicyAction;
 
         [Fact]
@@ -212,12 +210,10 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
             _policyRepositoryStub = new Mock<IPolicyRepository>();
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
             _repositoryExceptionHelper = new Mock<IRepositoryExceptionHelper>();
-            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _addAuthorizationPolicyAction = new AddAuthorizationPolicyAction(
                 _policyRepositoryStub.Object,
                 _resourceSetRepositoryStub.Object,
-                _repositoryExceptionHelper.Object,
-                _umaServerEventSourceStub.Object);
+                _repositoryExceptionHelper.Object);
         }
     }
 }

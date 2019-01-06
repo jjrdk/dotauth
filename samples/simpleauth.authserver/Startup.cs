@@ -74,7 +74,7 @@ namespace SimpleAuth.AuthServer
                     options => { })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddApplicationPart(_assembly);
-            services.AddSimpleAuth(_options);
+            services.UseSimpleAuth(_options);
             services.AddDefaultTokenStore();
             services.Configure<RazorViewEngineOptions>(x =>
             {

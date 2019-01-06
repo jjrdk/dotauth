@@ -25,6 +25,7 @@ namespace SimpleAuth.Server.Controllers
     using Exceptions;
     using Extensions;
     using JwtToken;
+    using Logging;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Mvc;
@@ -137,7 +138,7 @@ namespace SimpleAuth.Server.Controllers
             }
         }
 
-        private string GetSessionId() => !Request.Cookies.ContainsKey(CoreConstants.SESSION_ID) ? Guid.NewGuid().ToString() : Request.Cookies[CoreConstants.SESSION_ID];
+        private string GetSessionId() => !Request.Cookies.ContainsKey(CoreConstants.SESSION_ID) ? Id.Create() : Request.Cookies[CoreConstants.SESSION_ID];
 
         private async Task<AuthorizationRequest> GetAuthorizationRequestFromJwt(string token, string clientId)
         {

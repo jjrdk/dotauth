@@ -15,7 +15,6 @@
 namespace SimpleAuth.Authenticate
 {
     using Errors;
-    using Logging;
     using Shared.Models;
     using Shared.Repositories;
     using System;
@@ -29,18 +28,14 @@ namespace SimpleAuth.Authenticate
         private readonly ClientAssertionAuthentication _clientAssertionAuthentication;
         private readonly ClientTlsAuthentication _clientTlsAuthentication;
         private readonly IClientStore _clientRepository;
-        private readonly IOAuthEventSource _oauthEventSource;
 
-        public AuthenticateClient(
-            IClientStore clientRepository,
-            IOAuthEventSource oAuthEventSource)
+        public AuthenticateClient(IClientStore clientRepository)
         {
             _clientSecretBasicAuthentication = new ClientSecretBasicAuthentication();
             _clientSecretPostAuthentication = new ClientSecretPostAuthentication();
             _clientAssertionAuthentication = new ClientAssertionAuthentication(clientRepository);
             _clientTlsAuthentication = new ClientTlsAuthentication();
             _clientRepository = clientRepository;
-            _oauthEventSource = oAuthEventSource;
         }
 
         public async Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction, string issuerName)
@@ -65,10 +60,8 @@ namespace SimpleAuth.Authenticate
             }
 
             var tokenEndPointAuthMethod = client.TokenEndPointAuthMethod;
-            var authenticationType = Enum.GetName(typeof(TokenEndPointAuthenticationMethods),
-                tokenEndPointAuthMethod);
-            _oauthEventSource.StartToAuthenticateTheClient(client.ClientId,
-                authenticationType);
+            //var authenticationType = Enum.GetName(typeof(TokenEndPointAuthenticationMethods),tokenEndPointAuthMethod);
+            //_oauthEventSource.StartToAuthenticateTheClient(client.ClientId,authenticationType);
             var errorMessage = string.Empty;
             switch (tokenEndPointAuthMethod)
             {
@@ -104,11 +97,11 @@ namespace SimpleAuth.Authenticate
                     break;
             }
 
-            if (client != null)
-            {
-                _oauthEventSource.FinishToAuthenticateTheClient(client.ClientId,
-                    authenticationType);
-            }
+            //if (client != null)
+            //{
+            //    _oauthEventSource.FinishToAuthenticateTheClient(client.ClientId,
+            //        authenticationType);
+            //}
 
             return new AuthenticationResult(client, errorMessage);
         }

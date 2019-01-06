@@ -2,10 +2,9 @@
 {
     using Errors;
     using Exceptions;
-    using Logging;
     using Moq;
     using Parameters;
-    using Services;
+    using Shared;
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth;
@@ -17,7 +16,6 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using Shared;
     using Xunit;
 
     public sealed class ConfirmConsentFixture
@@ -29,8 +27,6 @@
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
         private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
         private Mock<IConsentHelper> _consentHelperFake;
-        private Mock<IOpenIdEventSource> _openIdEventSource;
-        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
 
         private IConfirmConsentAction _confirmConsentAction;
 
@@ -79,7 +75,7 @@
             ICollection<Scope> scopes = new List<Scope>();
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                     It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult((Consent) null));
+                .Returns(Task.FromResult((Consent)null));
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
@@ -138,13 +134,13 @@
             ICollection<Scope> scopes = new List<Scope>();
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                     It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult((Consent) null));
+                .Returns(Task.FromResult((Consent)null));
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(new List<string>());
             _parameterParserHelperFake.Setup(x => x.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new[] {ResponseTypeNames.Code});
+                .Returns(new[] { ResponseTypeNames.Code });
             _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
             _resourceOwnerRepositoryFake.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -189,7 +185,7 @@
             ICollection<Scope> scopes = new List<Scope>();
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                     It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult((Consent) null));
+                .Returns(Task.FromResult((Consent)null));
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
@@ -199,7 +195,7 @@
             _resourceOwnerRepositoryFake.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(resourceOwner));
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new[] {ResponseTypeNames.Code});
+                .Returns(new[] { ResponseTypeNames.Code });
 
             var result = await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null)
                 .ConfigureAwait(false);
@@ -217,8 +213,6 @@
             _parameterParserHelperFake = new Mock<IParameterParserHelper>();
             _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
             _consentHelperFake = new Mock<IConsentHelper>();
-            _openIdEventSource = new Mock<IOpenIdEventSource>();
-            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _confirmConsentAction = new ConfirmConsentAction(
                 _consentRepositoryFake.Object,
                 _clientRepositoryFake.Object,
@@ -227,7 +221,7 @@
                 _parameterParserHelperFake.Object,
                 _generateAuthorizationResponseFake.Object,
                 _consentHelperFake.Object,
-                _openIdEventSource.Object);
+                new Mock<IEventPublisher>().Object);
         }
     }
 }

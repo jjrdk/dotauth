@@ -14,7 +14,6 @@
     public sealed class AuthenticateClientFixture
     {
         private Mock<IClientStore> _clientRepositoryStub;
-        private Mock<IOAuthEventSource> _oauthEventSource;
         private IAuthenticateClient _authenticateClient;
 
         [Fact]
@@ -30,8 +29,6 @@
         {
             InitializeFakeObjects();
             var authenticationInstruction = new AuthenticateInstruction();
-            //_clientAssertionAuthenticationFake.Setup(c => c.GetClientId(It.IsAny<AuthenticateInstruction>()))
-            //    .Returns(string.Empty);
 
             var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction, null).ConfigureAwait(false);
 
@@ -44,8 +41,6 @@
         {
             InitializeFakeObjects();
             var authenticationInstruction = new AuthenticateInstruction();
-            //_clientAssertionAuthenticationFake.Setup(c => c.GetClientId(It.IsAny<AuthenticateInstruction>()))
-            //    .Returns("clientId");
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Client)null));
 
@@ -80,19 +75,12 @@
                 ClientId = clientId
             };
 
-            //_clientAssertionAuthenticationFake.Setup(c => c.GetClientId(It.IsAny<AuthenticateInstruction>()))
-            //    .Returns(clientId);
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            //_clientSecretBasicAuthenticationFake.Setup(
-            //    c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Client>()))
-            //    .Returns(client);
 
             var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction, null).ConfigureAwait(false);
 
             Assert.NotNull(result.Client);
-            _oauthEventSource.Verify(s => s.StartToAuthenticateTheClient(clientId, "client_secret_basic"));
-            _oauthEventSource.Verify(s => s.FinishToAuthenticateTheClient(clientId, "client_secret_basic"));
         }
 
         [Fact]
@@ -110,28 +98,18 @@
                 ClientId = clientId
             };
 
-            //_clientAssertionAuthenticationFake.Setup(c => c.GetClientId(It.IsAny<AuthenticateInstruction>()))
-            //    .Returns(clientId);
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            //_clientSecretBasicAuthenticationFake.Setup(
-            //    c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Client>()))
-            //    .Returns(() => null);
 
             var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction, null).ConfigureAwait(false);
 
             Assert.Null(result.Client);
-            _oauthEventSource.Verify(s => s.StartToAuthenticateTheClient(clientId, "client_secret_basic"));
-            _oauthEventSource.Verify(s => s.FinishToAuthenticateTheClient(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
 
         private void InitializeFakeObjects()
         {
             _clientRepositoryStub = new Mock<IClientStore>();
-            _oauthEventSource = new Mock<IOAuthEventSource>();
-            _authenticateClient = new AuthenticateClient(
-                _clientRepositoryStub.Object,
-                _oauthEventSource.Object);
+            _authenticateClient = new AuthenticateClient(_clientRepositoryStub.Object);
         }
     }
 }

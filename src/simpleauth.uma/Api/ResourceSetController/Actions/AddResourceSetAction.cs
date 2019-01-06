@@ -29,30 +29,25 @@ namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
     {
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly IResourceSetParameterValidator _resourceSetParameterValidator;
-        private readonly IUmaServerEventSource _umaServerEventSource;
 
         public AddResourceSetAction(
             IResourceSetRepository resourceSetRepository,
-            IResourceSetParameterValidator resourceSetParameterValidator,
-            IUmaServerEventSource umaServerEventSource)
+            IResourceSetParameterValidator resourceSetParameterValidator)
         {
             _resourceSetRepository = resourceSetRepository;
             _resourceSetParameterValidator = resourceSetParameterValidator;
-            _umaServerEventSource = umaServerEventSource;
         }
-    
+
         public async Task<string> Execute(AddResouceSetParameter addResourceSetParameter)
         {
-            var json = addResourceSetParameter == null ? string.Empty : JsonConvert.SerializeObject(addResourceSetParameter);
-            _umaServerEventSource.StartToAddResourceSet(json);
             if (addResourceSetParameter == null)
             {
                 throw new ArgumentNullException(nameof(addResourceSetParameter));
             }
-            
+
             var resourceSet = new ResourceSet
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Id.Create(),
                 Name = addResourceSetParameter.Name,
                 Uri = addResourceSetParameter.Uri,
                 Type = addResourceSetParameter.Type,
@@ -63,10 +58,10 @@ namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
             _resourceSetParameterValidator.CheckResourceSetParameter(resourceSet);
             if (!await _resourceSetRepository.Insert(resourceSet).ConfigureAwait(false))
             {
-                throw new BaseUmaException(UmaErrorCodes.InternalError, ErrorDescriptions.TheResourceSetCannotBeInserted);
+                throw new BaseUmaException(UmaErrorCodes.InternalError,
+                    ErrorDescriptions.TheResourceSetCannotBeInserted);
             }
 
-            _umaServerEventSource.FinishToAddResourceSet(JsonConvert.SerializeObject(resourceSet));
             return resourceSet.Id;
         }
     }

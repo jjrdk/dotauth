@@ -15,12 +15,15 @@
 namespace SimpleAuth.Server.MiddleWare
 {
     using Microsoft.AspNetCore.Builder;
+    using Shared;
 
     public static class UseExceptionHandlerExtensions
     {
-        public static IApplicationBuilder UseSimpleAuthExceptionHandler(this IApplicationBuilder applicationBuilder, ExceptionHandlerMiddlewareOptions options)
+        public static IApplicationBuilder UseSimpleAuthExceptionHandler(this IApplicationBuilder applicationBuilder)
         {
-            return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>(options);
+            var publisher = applicationBuilder.ApplicationServices.GetService(typeof(IEventPublisher)) ??
+                            new NoOpPublisher();
+            return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>(publisher);
         }
     }
 }

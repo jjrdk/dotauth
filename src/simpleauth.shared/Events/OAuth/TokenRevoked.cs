@@ -14,17 +14,15 @@
 
 namespace SimpleAuth.Shared.Events.OAuth
 {
+    using System;
+
     public class TokenRevoked : Event
     {
-        public TokenRevoked(string id, string processId, int order)
+        public TokenRevoked(string id, string processId, DateTime timestamp) : base(id, timestamp)
         {
-            Id = id;
             ProcessId = processId;
-            Order = order;
         }
 
-        public string Id { get; private set; }
-        public string ProcessId { get; private set; }
-        public int Order { get; private set; }
+        public string ProcessId { get; }
     }
 }

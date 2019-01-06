@@ -35,9 +35,9 @@ namespace SimpleAuth.Tests.Api.Token
 
     public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
     {
+        private Mock<IEventPublisher> _eventPublisher;
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
         private Mock<IResourceOwnerAuthenticateHelper> _resourceOwnerAuthenticateHelperFake;
-        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IAuthenticateClient> _authenticateClientFake;
         private Mock<IJwtGenerator> _jwtGeneratorFake;
         private Mock<IClientHelper> _clientHelperStub;
@@ -82,9 +82,8 @@ namespace SimpleAuth.Tests.Api.Token
                         null,
                         null))
                 .ConfigureAwait(false);
-            _oauthEventSource.Verify(s => s.Info("error"));
             Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
-            Assert.True(exception.Message == "error");
+            Assert.Equal("error", exception.Message);
         }
 
         [Fact]
@@ -334,15 +333,16 @@ namespace SimpleAuth.Tests.Api.Token
                 .ConfigureAwait(false);
 
             _tokenStoreStub.Verify(g => g.AddToken(grantedToken));
-            _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, invalidScope));
+            _eventPublisher.Verify(s => s.Publish(It.IsAny<AccessToClientGranted>()));
             _clientHelperStub.Verify(c => c.GenerateIdTokenAsync(It.IsAny<Client>(), It.IsAny<JwtPayload>()));
         }
 
         private void InitializeFakeObjects()
         {
+            _eventPublisher = new Mock<IEventPublisher>();
+            _eventPublisher.Setup(x => x.Publish(It.IsAny<AccessToClientGranted>())).Returns(Task.CompletedTask);
             _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
             _resourceOwnerAuthenticateHelperFake = new Mock<IResourceOwnerAuthenticateHelper>();
-            _oauthEventSource = new Mock<IOAuthEventSource>();
             _authenticateClientFake = new Mock<IAuthenticateClient>();
             _jwtGeneratorFake = new Mock<IJwtGenerator>();
             _clientHelperStub = new Mock<IClientHelper>();
@@ -352,11 +352,11 @@ namespace SimpleAuth.Tests.Api.Token
             _getTokenByResourceOwnerCredentialsGrantTypeAction = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
                 _grantedTokenGeneratorHelperFake.Object,
                 _resourceOwnerAuthenticateHelperFake.Object,
-                _oauthEventSource.Object,
                 _authenticateClientFake.Object,
                 _jwtGeneratorFake.Object,
                 _clientHelperStub.Object,
                 _tokenStoreStub.Object,
+                _eventPublisher.Object,
                 _grantedTokenHelperStub.Object);
         }
     }

@@ -14,26 +14,28 @@
 
 namespace SimpleAuth.Server.MiddleWare
 {
+    using Errors;
+    using Exceptions;
+    using Logging;
+    using Microsoft.AspNetCore.Http;
+    using Shared;
+    using Shared.Responses;
+    using SimpleAuth;
     using System;
     using System.Net;
     using System.Threading.Tasks;
-    using Errors;
-    using Exceptions;
-    using Microsoft.AspNetCore.Http;
-    using Shared.Responses;
-    using SimpleAuth;
 
     public class ExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ExceptionHandlerMiddlewareOptions _options;
+        private readonly IEventPublisher _publisher;
 
         public ExceptionHandlerMiddleware(
             RequestDelegate next,
-            ExceptionHandlerMiddlewareOptions options)
+            IEventPublisher publisher)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _publisher = publisher;
         }
 
         public async Task Invoke(HttpContext context)
@@ -44,53 +46,62 @@ namespace SimpleAuth.Server.MiddleWare
             }
             catch (Exception exception)
             {
-                var openIdEventSource = _options.OpenIdEventSource;
-                var exceptionWithState = exception as SimpleAuthExceptionWithState;
-                if (!(exception is SimpleAuthException serverException))
+                context.Response.Clear();
+
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                context.Response.ContentType = "application/json";
+                if (exception is SimpleAuthException serverException)
                 {
-                    serverException = new SimpleAuthException(ErrorCodes.UnhandledExceptionCode, exception.Message);
-                    openIdEventSource.Failure(exception);
-                }
-                else
-                {
-                    var code = serverException.Code;
-                    var message = serverException.Message;
+                    var exceptionWithState = exception as SimpleAuthExceptionWithState;
                     var state = exceptionWithState == null
                         ? string.Empty
                         : exceptionWithState.State;
-                    openIdEventSource.OpenIdFailure(code, message, state);
-                }
+                    await _publisher.Publish(new SimpleAuthError(Guid.NewGuid().ToString("N"),
+                        serverException.Code,
+                        serverException.Message,
+                        state,
+                        DateTime.UtcNow)).ConfigureAwait(false);
 
-                context.Response.Clear();
-                if (exceptionWithState != null)
-                {
-                    ErrorResponse errorResponseWithState = new ErrorResponseWithState
+                    if (exceptionWithState != null)
                     {
-                        State = exceptionWithState.State
-                    };
+                        ErrorResponse errorResponseWithState = new ErrorResponseWithState
+                        {
+                            ErrorDescription = serverException.Message,
+                            Error = serverException.Code,
+                            State = exceptionWithState.State
+                        };
 
-                    PopulateError(errorResponseWithState, exceptionWithState);
-                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    context.Response.ContentType = "application/json";
-                    var serializedError = errorResponseWithState.SerializeWithDataContract();
-                    await context.Response.WriteAsync(serializedError).ConfigureAwait(false);
+                        var serializedError = errorResponseWithState.SerializeWithDataContract();
+                        await context.Response.WriteAsync(serializedError).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        var error = new ErrorResponse
+                        {
+                            ErrorDescription = serverException.Message,
+                            Error = serverException.Code
+                        };
+
+                        var serializedError = error.SerializeWithDataContract();
+                        await context.Response.WriteAsync(serializedError).ConfigureAwait(false);
+                    }
                 }
                 else
                 {
-                    var error = new ErrorResponse();
-                    PopulateError(error, serverException);
-                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    context.Response.ContentType = "application/json";
+                    //serverException = new SimpleAuthException(ErrorCodes.UnhandledExceptionCode, exception.Message);
+                    await _publisher.Publish(new ExceptionMessage(Guid.NewGuid().ToString("N"),
+                        exception,
+                        DateTime.UtcNow)).ConfigureAwait(false);
+                    var error = new ErrorResponse
+                    {
+                        Error = ErrorCodes.UnhandledExceptionCode,
+                        ErrorDescription = exception.Message
+                    };
+
                     var serializedError = error.SerializeWithDataContract();
                     await context.Response.WriteAsync(serializedError).ConfigureAwait(false);
                 }
             }
-        }
-
-        private static void PopulateError(ErrorResponse errorResponse, SimpleAuthException exception)
-        {
-            errorResponse.Error = exception.Code;
-            errorResponse.ErrorDescription = exception.Message;
         }
     }
 }

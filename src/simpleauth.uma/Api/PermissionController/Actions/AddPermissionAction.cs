@@ -36,25 +36,22 @@ namespace SimpleAuth.Uma.Api.PermissionController.Actions
         private readonly ITicketStore _ticketStore;
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
         private readonly UmaConfigurationOptions _configurationService;
-        private readonly IUmaServerEventSource _umaServerEventSource;
 
         public AddPermissionAction(
             IResourceSetRepository resourceSetRepository,
             ITicketStore ticketStore,
             IRepositoryExceptionHelper repositoryExceptionHelper,
-            UmaConfigurationOptions configurationService,
-            IUmaServerEventSource umaServerEventSource)
+            UmaConfigurationOptions configurationService)
         {
             _resourceSetRepository = resourceSetRepository;
             _ticketStore = ticketStore;
             _repositoryExceptionHelper = repositoryExceptionHelper;
             _configurationService = configurationService;
-            _umaServerEventSource = umaServerEventSource;
         }
 
         public async Task<string> Execute(string clientId, AddPermissionParameter addPermissionParameter)
         {
-            var result = await Execute(clientId, new[] { addPermissionParameter }).ConfigureAwait(false);
+            var result = await Execute(clientId, new[] {addPermissionParameter}).ConfigureAwait(false);
             return result;
         }
 
@@ -70,25 +67,23 @@ namespace SimpleAuth.Uma.Api.PermissionController.Actions
                 throw new ArgumentNullException(nameof(addPermissionParameters));
             }
 
-            var json = JsonConvert.SerializeObject(addPermissionParameters);
-            _umaServerEventSource.StartAddPermission(json);
             await CheckAddPermissionParameter(addPermissionParameters).ConfigureAwait(false);
             var ticketLifetimeInSeconds = _configurationService.TicketLifeTime;
             var ticket = new Ticket
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Id.Create(),
                 ClientId = clientId,
                 CreateDateTime = DateTime.UtcNow,
-                ExpiresIn = (int)ticketLifetimeInSeconds.TotalSeconds,
+                ExpiresIn = (int) ticketLifetimeInSeconds.TotalSeconds,
                 ExpirationDateTime = DateTime.UtcNow.Add(ticketLifetimeInSeconds)
             };
             // TH : ONE TICKET FOR MULTIPLE PERMISSIONS.
             var ticketLines = addPermissionParameters.Select(addPermissionParameter => new TicketLine
-            {
-                Id = Guid.NewGuid().ToString(),
-                Scopes = addPermissionParameter.Scopes,
-                ResourceSetId = addPermissionParameter.ResourceSetId
-            })
+                {
+                    Id = Id.Create(),
+                    Scopes = addPermissionParameter.Scopes,
+                    ResourceSetId = addPermissionParameter.ResourceSetId
+                })
                 .ToList();
 
             ticket.Lines = ticketLines;
@@ -97,34 +92,41 @@ namespace SimpleAuth.Uma.Api.PermissionController.Actions
                 throw new BaseUmaException(UmaErrorCodes.InternalError, ErrorDescriptions.TheTicketCannotBeInserted);
             }
 
-            _umaServerEventSource.FinishAddPermission(json);
             return ticket.Id;
         }
 
         private async Task CheckAddPermissionParameter(IEnumerable<AddPermissionParameter> addPermissionParameters)
         {
             // 1. Get resource sets.
-            var resourceSets = await _repositoryExceptionHelper.HandleException(ErrorDescriptions.TheResourceSetsCannotBeRetrieved,
-                () => _resourceSetRepository.Get(addPermissionParameters.Select(p => p.ResourceSetId))).ConfigureAwait(false);
+            var resourceSets = await _repositoryExceptionHelper.HandleException(
+                    ErrorDescriptions.TheResourceSetsCannotBeRetrieved,
+                    () => _resourceSetRepository.Get(addPermissionParameters.Select(p => p.ResourceSetId)))
+                .ConfigureAwait(false);
 
             // 2. Check parameters & scope exist.
             foreach (var addPermissionParameter in addPermissionParameters)
             {
                 if (string.IsNullOrWhiteSpace(addPermissionParameter.ResourceSetId))
                 {
-                    throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.ResourceSetId));
+                    throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified,
+                            UmaConstants.AddPermissionNames.ResourceSetId));
                 }
 
                 if (addPermissionParameter.Scopes == null ||
                     !addPermissionParameter.Scopes.Any())
                 {
-                    throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.Scopes));
+                    throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified,
+                            UmaConstants.AddPermissionNames.Scopes));
                 }
 
                 var resourceSet = resourceSets.FirstOrDefault(r => addPermissionParameter.ResourceSetId == r.Id);
                 if (resourceSet == null)
                 {
-                    throw new BaseUmaException(UmaErrorCodes.InvalidResourceSetId, string.Format(ErrorDescriptions.TheResourceSetDoesntExist, addPermissionParameter.ResourceSetId));
+                    throw new BaseUmaException(UmaErrorCodes.InvalidResourceSetId,
+                        string.Format(ErrorDescriptions.TheResourceSetDoesntExist,
+                            addPermissionParameter.ResourceSetId));
                 }
 
                 if (resourceSet.Scopes == null ||

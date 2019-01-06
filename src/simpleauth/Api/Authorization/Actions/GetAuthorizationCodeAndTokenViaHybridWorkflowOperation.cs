@@ -30,17 +30,14 @@ namespace SimpleAuth.Api.Authorization.Actions
 
     internal sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperation
     {
-        private readonly IOAuthEventSource _oauthEventSource;
         private readonly ProcessAuthorizationRequest _processAuthorizationRequest;
         private readonly ClientValidator _clientValidator;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
 
         public GetAuthorizationCodeAndTokenViaHybridWorkflowOperation(
-            IOAuthEventSource oauthEventSource,
             ProcessAuthorizationRequest processAuthorizationRequest,
             IGenerateAuthorizationResponse generateAuthorizationResponse)
         {
-            _oauthEventSource = oauthEventSource;
             _processAuthorizationRequest = processAuthorizationRequest;
             _clientValidator = new ClientValidator();
             _generateAuthorizationResponse = generateAuthorizationResponse;
@@ -68,10 +65,6 @@ namespace SimpleAuth.Api.Authorization.Actions
 
             var claimsPrincipal = principal as ClaimsPrincipal;
 
-            _oauthEventSource.StartHybridFlow(
-                authorizationParameter.ClientId,
-                authorizationParameter.Scope,
-                authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
             var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
             if (!_clientValidator.CheckGrantTypes(client, GrantType.@implicit, GrantType.authorization_code))
             {
@@ -95,12 +88,6 @@ namespace SimpleAuth.Api.Authorization.Actions
 
                 await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
             }
-
-            var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
-            _oauthEventSource.EndHybridFlow(
-                authorizationParameter.ClientId,
-                actionTypeName,
-                result.RedirectInstruction == null ? string.Empty : Enum.GetName(typeof(SimpleAuthEndPoints), result.RedirectInstruction.Action));
 
             return result;
         }

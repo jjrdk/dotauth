@@ -20,15 +20,9 @@ namespace SimpleAuth.Uma.Middlewares
     public static class UmaHostOptions
     {
         public static IApplicationBuilder UseUmaExceptionHandler(
-            this IApplicationBuilder applicationBuilder,
-            ExceptionHandlerMiddlewareOptions options)
+            this IApplicationBuilder applicationBuilder)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>(options);
+            return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>();
         }
     }
 }
