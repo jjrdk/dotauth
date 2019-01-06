@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Server.Extensions
+﻿namespace SimpleAuth
 {
     public class ScimOptions
     {

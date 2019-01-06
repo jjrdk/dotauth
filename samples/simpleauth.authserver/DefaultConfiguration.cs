@@ -1,41 +1,15 @@
-﻿using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Helpers;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-
-namespace SimpleIdServer.Openid.Server
+﻿namespace SimpleAuth.AuthServer
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using Helpers;
+    using Shared;
+    using Shared.Models;
+    using SimpleAuth;
+
     public static class DefaultConfiguration
     {
-        public static List<JsonWebKey> GetJsonWebKeys()
-        {
-            var path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "testCert.pfx");
-            var certificate = new X509Certificate2(path, string.Empty, X509KeyStorageFlags.Exportable);
-            var serializedRsa = ((RSACryptoServiceProvider)certificate.PrivateKey).ToXmlStringNetCore(true);
-            return new List<JsonWebKey>
-            {
-                new JsonWebKey
-                {
-                    Alg = AllAlg.RS256,
-                    KeyOps = new[]
-                        {
-                            KeyOperations.Sign,
-                            KeyOperations.Verify
-                        },
-                    Kid = "1",
-                    Kty = KeyType.RSA,
-                    Use = Use.Sig,
-                    SerializedKey = serializedRsa
-                }
-            };
-        }
-
         public static List<Client> GetClients()
         {
             return new List<Client>
@@ -53,9 +27,8 @@ namespace SimpleIdServer.Openid.Server
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                    PolicyUri = "http://openid.net",
-                    TosUri = "http://openid.net",
+                    PolicyUri = new Uri("http://openid.net"),
+                    TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new List<Scope>
                     {
                         new Scope
@@ -67,13 +40,11 @@ namespace SimpleIdServer.Openid.Server
                     {
                         GrantType.client_credentials
                     },
-                    ResponseTypes = new List<ResponseType>
+                    ResponseTypes = new List<string>
                     {
-                         ResponseType.token
+                         ResponseTypeNames.Token
                     },
                     ApplicationType = ApplicationTypes.native,
-                    UpdateDateTime = DateTime.UtcNow,
-                    CreateDateTime = DateTime.UtcNow
 
                 }
             };
@@ -88,10 +59,10 @@ namespace SimpleIdServer.Openid.Server
                     Id = "administrator",
                     Claims = new List<Claim>
                     {
-                        new Claim(SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "administrator"),
-                        new Claim(SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role, "administrator")
+                        new Claim(StandardClaimNames.Subject, "administrator"),
+                        new Claim("role", "administrator")
                     },
-                    Password = PasswordHelper.ComputeHash("password"),
+                    Password = "password".ToSha256Hash(),
                     IsLocalAccount = true
                 }
             };
@@ -104,145 +75,145 @@ namespace SimpleIdServer.Openid.Server
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
+                    Code = CoreConstants.StandardTranslationCodes.ApplicationWouldLikeToCode,
                     Value = "the client {0} would like to access"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
+                    Code = CoreConstants.StandardTranslationCodes.IndividualClaimsCode,
                     Value = "individual claims"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.NameCode,
+                    Code = CoreConstants.StandardTranslationCodes.NameCode,
                     Value = "Name"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode,
+                    Code = CoreConstants.StandardTranslationCodes.LoginCode,
                     Value = "Login"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode,
+                    Code = CoreConstants.StandardTranslationCodes.PasswordCode,
                     Value = "Password"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserNameCode,
+                    Code = CoreConstants.StandardTranslationCodes.UserNameCode,
                     Value = "Username"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ConfirmCode,
+                    Code = CoreConstants.StandardTranslationCodes.ConfirmCode,
                     Value = "Confirm"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.CancelCode,
+                    Code = CoreConstants.StandardTranslationCodes.CancelCode,
                     Value = "Cancel"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginLocalAccount,
+                    Code = CoreConstants.StandardTranslationCodes.LoginLocalAccount,
                     Value = "Login with your local account"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginExternalAccount,
+                    Code = CoreConstants.StandardTranslationCodes.LoginExternalAccount,
                     Value = "Login with your external account"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LinkToThePolicy,
+                    Code = CoreConstants.StandardTranslationCodes.LinkToThePolicy,
                     Value = "policy"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Tos,
+                    Code = CoreConstants.StandardTranslationCodes.Tos,
                     Value = "Terms of Service"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.SendCode,
+                    Code = CoreConstants.StandardTranslationCodes.SendCode,
                     Value = "Send code"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Code,
+                    Code = CoreConstants.StandardTranslationCodes.Code,
                     Value = "Code"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.EditResourceOwner,
+                    Code = CoreConstants.StandardTranslationCodes.EditResourceOwner,
                     Value = "Edit resource owner"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.YourName,
+                    Code = CoreConstants.StandardTranslationCodes.YourName,
                     Value = "Your name"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.YourPassword,
+                    Code = CoreConstants.StandardTranslationCodes.YourPassword,
                     Value = "Your password"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Email,
+                    Code = CoreConstants.StandardTranslationCodes.Email,
                     Value = "Email"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.YourEmail,
+                    Code = CoreConstants.StandardTranslationCodes.YourEmail,
                     Value = "Your email"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.TwoAuthenticationFactor,
+                    Code = CoreConstants.StandardTranslationCodes.TwoAuthenticationFactor,
                     Value = "Two authentication factor"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserIsUpdated,
+                    Code = CoreConstants.StandardTranslationCodes.UserIsUpdated,
                     Value = "User has been updated"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.SendConfirmationCode,
+                    Code = CoreConstants.StandardTranslationCodes.SendConfirmationCode,
                     Value = "Send a confirmation code"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Phone,
+                    Code = CoreConstants.StandardTranslationCodes.Phone,
                     Value = "Phone"
                 },
                 new Translation
                 {
                     LanguageTag = "en",
-                    Code = SimpleIdentityServer.Core.Constants.StandardTranslationCodes.HashedPassword,
+                    Code = CoreConstants.StandardTranslationCodes.HashedPassword,
                     Value = "Hashed password"
                 }
             };

@@ -42,7 +42,7 @@ namespace SimpleAuth.Server.Tests
         public void Configure(IApplicationBuilder app)
         {
             app.UseAuthentication();
-            app.UseManagerApi();
+            app.UseSimpleAuth(new SimpleAuthOptions());
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -59,7 +59,8 @@ namespace SimpleAuth.Server.Tests
                 EndPoint = "http://localhost:5555/"
             });
             serviceCollection.AddSingleton<IOpenIdEventSource, OpenIdEventSource>();
-            serviceCollection.AddSimpleAuth(resourceOwners: DefaultStorage.GetUsers());
+            serviceCollection.AddSimpleAuth(new SimpleAuthOptions
+                {Configuration = new OpenIdServerConfiguration {Users = DefaultStorage.GetUsers()}});
             serviceCollection.AddAuthentication(opts =>
             {
                 opts.DefaultAuthenticateScheme = DefaultSchema;

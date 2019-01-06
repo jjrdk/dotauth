@@ -1,0 +1,36 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Profile";
+}
+
+
+<ul class="tabs tabs-fixed-width">
+    <li class="tab">
+        <a class="grey-text text-darken-3 @(ViewBag.IsIndexDisplayed ? "active": string.Empty)" href="@Url.Action("Index")" target="_self">
+            Information
+        </a>
+    </li>
+    <li class="tab">
+        <a class="grey-text text-darken-3 @(ViewBag.IsConsentDisplayed ? "active": string.Empty)" href="@Url.Action("Consent")" target="_self">
+            Consents
+        </a>
+    </li>
+    <li class="tab">
+        <a class="grey-text text-darken-3 @(ViewBag.IsEditDisplayed ? "active": string.Empty)" href="@Url.Action("Edit")" target="_self">
+            Edit
+        </a>
+    </li>
+    <li class="tab">
+        <a class="grey-text text-darken-3 @(ViewBag.IsProfileDisplayed ? "active": string.Empty)" href="@Url.Action("Profile")" target="_self">
+            Profile
+        </a>
+    </li>
+</ul>
+
+@RenderBody()
+
+<script>
+    $(document).ready(function(){
+        $('.tabs').tabs();
+    });
+</script>

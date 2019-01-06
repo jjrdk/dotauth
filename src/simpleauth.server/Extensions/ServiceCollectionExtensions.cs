@@ -193,14 +193,7 @@ namespace SimpleAuth.Server.Extensions
             this IServiceCollection services,
             SimpleAuthOptions options)
         {
-            var s = services.AddSimpleAuth(
-                     options.OAuthConfigurationOptions,
-                     clients: options.Configuration?.Clients,
-                     consents: options.Configuration?.Consents,
-                     profiles: options.Configuration?.Profiles,
-                     resourceOwners: options.Configuration?.Users,
-                     translations: options.Configuration?.Translations)
-                    // jsonWebKeys: options.Configuration?.JsonWebKeys)
+            var s = services.AddSimpleAuth(options)
                  .AddSingleton(options.Scim)
                  .AddTransient<IRedirectInstructionParser, RedirectInstructionParser>()
                  .AddTransient<IActionResultParser, ActionResultParser>()

@@ -1,3 +1,5 @@
+@using SimpleIdentityServer.UserManagement.ViewModels
+
 @model List<ConsentViewModel>
 
 @{
@@ -8,81 +10,86 @@
     ViewBag.IsProfileDisplayed = false;
 }
 
-<!-- Display the consents -->
-<div class="tab-pane active" id="consent">
-    <h1>Consents</h1>
+<h4 class="header col s12">Consents</h4>
+
+<div class="col s12">
     @if (!string.IsNullOrWhiteSpace(ViewBag.ErrorMessage))
     {
-        <div class="alert alert-danger">
-            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-            @ViewBag.ErrorMessage
+        <div class="card red accent-1">
+            <div class="card-content red-text text-darken-4">
+                <i class="material-icons prefix">error</i>@ViewBag.ErrorMessage
+            </div>
         </div>
     }
     @if (!Model.Any())
     {
-        <p>No consent</p>
+        <div class="card">
+            <div class="card-content grey-text text-lighten-1">
+                <i class="material-icons prefix">info</i>
+                No consent
+            </div>
+        </div>
     }
     else
     {
         var clients = Model.GroupBy(m => m.ClientDisplayName);
-        foreach (var client in clients)
+        @foreach (var client in clients)
         {
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Client : @client.Key
-                </div>
-                <div class="panel-body">
-                    <div>
-                        @if (string.IsNullOrWhiteSpace(client.First().LogoUri))
-                        {
-                            <img src="@Url.Content("~/img/OAuth2.png")" width="150" height="150" />
-                        }
-                        else
-                        {
-                            <img src="@Url.Content(client.First().LogoUri)" width="150" height="150" />
-                        }
-                    </div>
-                    <ul class="list-group">
+            <div class="card">
+                <div class="card-content">
+                    <div class="row">
+                        <h4 class="col s12">Client: @client.Key</h4>
+                        <div class="col s12 m3">
+                            @if (string.IsNullOrWhiteSpace(client.First().LogoUri))
+                            {
+                                <img class="center-align left" src="@Url.Content("~/img/OAuth2.png")" style="width:100%"  />
+                            }
+                            else
+                            {
+                                <img class="center-align left" src="@Url.Content(client.First().LogoUri)" style="width:100%"  />
+                            }
+                        </div>
+                        <div class="col s12 m9">
                         @foreach (var consent in client)
                         {
-                            <form method="post" action="@Url.Action("Consent", new { id = consent.Id })">
-                                <li class="list-group-item" style="margin-top: 10px;">
-                                    <!-- Display scopes -->
-                                    <h4>Scopes</h4>
+                            <form method="post" action="@Url.Action("Consent", new { @id = consent.Id })">
+                                <ul class="collection with-header">
+                                    <li class="collection-header"><h5>Scopes</h5></li>
                                     @if (!consent.AllowedScopeDescriptions.Any())
                                     {
-                                        <p>No scopes</p>
+                                    <li class="collection-item grey-text text-lighten-1">
+                                        <i class="material-icons prefix">info_outline</i>No escopes
+                                    </li>
                                     }
                                     else
                                     {
-                                        <ul class="list-group">
-                                            @foreach (var scope in consent.AllowedScopeDescriptions)
-                                            {
-                                                <li class="list-group-item">@scope</li>
-                                            }
-                                        </ul>
+                                        @foreach (var scope in consent.AllowedScopeDescriptions)
+                                        {
+                                            <li class="collection-item">@scope</li>
+                                        }
                                     }
-                                    <!-- Display claims -->
-                                    <h4>Claims</h4>
+                                </ul>
+                                <ul class="collection with-header">
+                                    <li class="collection-header"><h5>Claims</h5></li>
                                     @if (!consent.AllowedIndividualClaims.Any())
                                     {
-                                        <p>No claims</p>
+                                        <li class="collection-item grey-text text-lighten-1">
+                                            <i class="material-icons prefix">info_outline</i>No claims
+                                        </li>
                                     }
                                     else
                                     {
-                                        <ul class="list-group">
-                                            @foreach (var claim in consent.AllowedIndividualClaims)
-                                            {
-                                                <li class="list-group-item">@claim</li>
-                                            }
-                                        </ul>
+                                        @foreach (var claim in consent.AllowedIndividualClaims)
+                                        {
+                                            <li class="collection-item">@claim</li>
+                                        }
                                     }
-
-                                    <button type="submit" class="btn btn-primary">Remove</button>
-                                </li>
+                                </ul>
+                                <button type="submit" class="btn blue darken-3 waves-effect waves-light">Remove</button>
                             </form>
                         }
-                    </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         }
