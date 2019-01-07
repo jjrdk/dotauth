@@ -55,6 +55,8 @@ namespace SimpleAuth
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
 
+            serviceCollection.AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>();
+
             serviceCollection.AddTransient<IScopeActions, ScopeActions>();
             serviceCollection.AddTransient<IDeleteScopeOperation, DeleteScopeOperation>();
             serviceCollection.AddTransient<IGetScopeOperation, GetScopeOperation>();
@@ -72,7 +74,6 @@ namespace SimpleAuth
             serviceCollection.AddTransient<IClientCredentialsGrantTypeParameterValidator, ClientCredentialsGrantTypeParameterValidator>();
             serviceCollection.AddTransient<IGrantedTokenValidator, GrantedTokenValidator>();
             serviceCollection.AddTransient<IAuthorizationCodeGrantTypeParameterAuthEdpValidator, AuthorizationCodeGrantTypeParameterAuthEdpValidator>();
-            //serviceCollection.AddTransient<ICompressor, Compressor>();
             serviceCollection.AddTransient<IParameterParserHelper, ParameterParserHelper>();
             serviceCollection.AddTransient<IAuthorizationActions, AuthorizationActions>();
             serviceCollection.AddTransient<ITokenActions, TokenActions>();
@@ -114,6 +115,7 @@ namespace SimpleAuth
             serviceCollection.AddTransient<IAmrHelper, AmrHelper>();
             serviceCollection.AddTransient<IRevokeTokenParameterValidator, RevokeTokenParameterValidator>();
             serviceCollection.AddSingleton<IEventPublisher>(options?.EventPublisher ?? new DefaultEventPublisher());
+            serviceCollection.AddSingleton<ISubjectBuilder>(options?.SubjectBuilder ?? new DefaultSubjectBuilder());
             serviceCollection.AddSingleton(options?.OAuthConfigurationOptions ?? new OAuthConfigurationOptions());
             serviceCollection.AddSingleton(options?.BasicAuthenticationOptions ?? new BasicAuthenticateOptions());
             serviceCollection.AddSingleton(options?.Scim ?? new ScimOptions { IsEnabled = false });

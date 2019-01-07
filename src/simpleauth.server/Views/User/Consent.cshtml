@@ -1,8 +1,7 @@
-@using SimpleIdentityServer.UserManagement.ViewModels
-
-@model List<ConsentViewModel>
+@model System.Collections.Generic.List<SimpleAuth.Server.ViewModels.ConsentViewModel>
 
 @{
+    Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Consents";
     ViewBag.IsEditDisplayed = false;
     ViewBag.IsConsentDisplayed = true;

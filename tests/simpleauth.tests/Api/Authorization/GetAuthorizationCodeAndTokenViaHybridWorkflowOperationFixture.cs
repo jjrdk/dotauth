@@ -2,7 +2,6 @@
 {
     using Errors;
     using Exceptions;
-    using Logging;
     using Moq;
     using Parameters;
     using Results;
@@ -13,7 +12,6 @@
     using SimpleAuth.Api.Authorization.Common;
     using SimpleAuth.Common;
     using SimpleAuth.Helpers;
-    using SimpleAuth.JwtToken;
     using System;
     using System.Security.Claims;
     using System.Threading.Tasks;

@@ -18,7 +18,6 @@ namespace SimpleAuth.Api.Scopes.Actions
     using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Logging;
     using Shared.Repositories;
 
     internal class DeleteScopeOperation : IDeleteScopeOperation

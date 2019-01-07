@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests.Services
+namespace SimpleAuth.Services
 {
     using System;
     using System.Threading.Tasks;
+    using Helpers;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth.Services;
 
-    public class CustomAuthenticateResourceOwnerService : IAuthenticateResourceOwnerService
+    public class UsernamePasswordAuthenticationService : IAuthenticateResourceOwnerService
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 
-        public CustomAuthenticateResourceOwnerService(IResourceOwnerRepository resourceOwnerRepository)
+        public UsernamePasswordAuthenticationService(IResourceOwnerRepository resourceOwnerRepository)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
         }
@@ -43,12 +43,7 @@ namespace SimpleAuth.Server.Tests.Services
                 throw new ArgumentNullException(nameof(password));
             }
 
-            return await _resourceOwnerRepository.Get(login, GetHashedPassword(password)).ConfigureAwait(false);
-        }
-
-        public string GetHashedPassword(string password)
-        {
-            return password;
+            return await _resourceOwnerRepository.Get(login, password.ToSha256Hash()).ConfigureAwait(false);
         }
     }
 }

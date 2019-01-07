@@ -28,15 +28,13 @@ namespace SimpleAuth.Uma
     using Models;
     using Policies;
     using Repositories;
-    using SimpleAuth;
     using Stores;
     using System.Collections.Generic;
-    using SimpleAuth.Shared.Repositories;
     using Validators;
 
     public static class UmaCoreExtensions
     {
-        public static IServiceCollection AddUmaCore(this IServiceCollection serviceCollection, UmaConfigurationOptions umaConfigurationOptions = null, IReadOnlyCollection<ResourceSet> resources = null, IReadOnlyCollection<Policy> policies = null)
+        public static IServiceCollection AddUma(this IServiceCollection serviceCollection, UmaConfigurationOptions umaConfigurationOptions = null, IReadOnlyCollection<ResourceSet> resources = null, IReadOnlyCollection<Policy> policies = null)
         {
             serviceCollection.AddTransient<IResourceSetActions, ResourceSetActions>();
             serviceCollection.AddTransient<IAddResourceSetAction, AddResourceSetAction>();

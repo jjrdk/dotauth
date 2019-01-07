@@ -17,22 +17,18 @@ namespace SimpleAuth.Server.Tests
     using Client;
     using Controllers;
     using Extensions;
-    using Logging;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
     using MiddleWares;
-    using Newtonsoft.Json;
-    using Services;
     using Shared;
     using SimpleAuth;
     using SimpleAuth.Services;
     using Stores;
     using System;
     using System.Net.Http;
-    using System.Text;
     using Twilio;
     using Twilio.Actions;
     using Twilio.Controllers;
@@ -49,6 +45,12 @@ namespace SimpleAuth.Server.Tests
         {
             _options = new SimpleAuthOptions
             {
+                Configuration = new OpenIdServerConfiguration
+                {
+                    Clients = DefaultStores.Clients(context),
+                    Consents = DefaultStores.Consents(),
+                    Users = DefaultStores.Users()
+                },
                 Scim = new ScimOptions
                 {
                     IsEnabled = true,
@@ -100,7 +102,7 @@ namespace SimpleAuth.Server.Tests
             //1 . Enable CORS.
             app.UseCors("AllowAll");
             // 4. Use simple identity server.
-            app.UseSimpleAuth(_options);
+            app.UseSimpleAuth();
             //// 5. Client JWKS endpoint
             //app.Map("/jwks_client", a =>
             //{
@@ -131,17 +133,16 @@ namespace SimpleAuth.Server.Tests
                 Clients = DefaultStores.Clients(_context),
                 Consents = DefaultStores.Consents(),
                 //JsonWebKeys = DefaultStores.JsonWebKeys(_context),
-                Profiles =    DefaultStores.Profiles(),
+                Profiles = DefaultStores.Profiles(),
                 Users = DefaultStores.Users()
             };
             services.AddSingleton(new SmsAuthenticationOptions());
             services.AddSingleton(_context.TwilioClient.Object);
-            services.AddSingleton<ISubjectBuilder>(new DefaultSubjectBuilder());
+            //services.AddSingleton<ISubjectBuilder>(new DefaultSubjectBuilder());
             services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
             services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();
-            services.AddTransient<IAuthenticateResourceOwnerService, CustomAuthenticateResourceOwnerService>();
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
-            services.UseSimpleAuth(_options)
+            services.AddSimpleAuth(_options)
                 .AddDefaultTokenStore()
                 .AddLogging()
                 .AddAccountFilter();

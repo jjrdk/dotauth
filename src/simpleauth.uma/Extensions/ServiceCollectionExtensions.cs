@@ -18,7 +18,6 @@ namespace SimpleAuth.Uma.Extensions
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
-    using Logging;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
@@ -85,7 +84,7 @@ namespace SimpleAuth.Uma.Extensions
 
         private static void RegisterServices(IServiceCollection services, AuthorizationServerOptions authorizationServerOptions)
         {
-            services.AddUmaCore(
+            services.AddUma(
                 authorizationServerOptions.UmaConfigurationOptions,
                     authorizationServerOptions.Configuration?.Resources,
                     authorizationServerOptions.Configuration?.Policies)

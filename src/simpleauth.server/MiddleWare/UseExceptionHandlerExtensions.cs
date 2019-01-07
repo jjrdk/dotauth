@@ -21,8 +21,7 @@ namespace SimpleAuth.Server.MiddleWare
     {
         public static IApplicationBuilder UseSimpleAuthExceptionHandler(this IApplicationBuilder applicationBuilder)
         {
-            var publisher = applicationBuilder.ApplicationServices.GetService(typeof(IEventPublisher)) ??
-                            new NoOpPublisher();
+            var publisher = applicationBuilder.ApplicationServices.GetService(typeof(IEventPublisher)) ?? new NoOpPublisher();
             return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>(publisher);
         }
     }

@@ -17,7 +17,6 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Moq;
     using Repositories;
     using Shared.Models;
     using Shared.Repositories;

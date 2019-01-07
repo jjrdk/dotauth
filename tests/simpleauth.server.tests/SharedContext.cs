@@ -19,7 +19,6 @@ namespace SimpleAuth.Server.Tests
     using Shared;
     using SimpleAuth;
     using System.Net.Http;
-    using System.Security.Cryptography;
     using Twilio;
 
     public class SharedContext

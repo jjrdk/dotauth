@@ -33,7 +33,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net.Http;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
-    using System.Text;
     using System.Threading.Tasks;
     using Twilio.Client;
     using Twilio.Shared.Requests;

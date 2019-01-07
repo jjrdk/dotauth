@@ -23,12 +23,16 @@
     <None Remove="Views\**\*.cshtml" />
     <None Remove="wwwroot\**\*.css" />
     <None Remove="wwwroot\**\*.js" />
+    <None Remove="wwwroot\**\*.png" />
+    <None Remove="wwwroot\**\*.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Views\**\*.cshtml" />
     <EmbeddedResource Include="wwwroot\**\*.css" />
     <EmbeddedResource Include="wwwroot\**\*.js" />
+    <EmbeddedResource Include="wwwroot\**\*.png" />
+    <EmbeddedResource Include="wwwroot\**\*.ico" />
   </ItemGroup>
 
   <ItemGroup>

@@ -24,7 +24,6 @@ namespace SimpleAuth.Server.Controllers
     using Errors;
     using Exceptions;
     using Extensions;
-    using JwtToken;
     using Logging;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;

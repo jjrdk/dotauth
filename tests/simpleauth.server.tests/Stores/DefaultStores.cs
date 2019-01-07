@@ -22,6 +22,7 @@ namespace SimpleAuth.Server.Tests.Stores
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
+    using Helpers;
 
     public static class DefaultStores
     {
@@ -152,13 +153,13 @@ namespace SimpleAuth.Server.Tests.Stores
                         new Claim(JwtConstants.StandardResourceOwnerClaimNames.Role, "administrator"),
                         new Claim(JwtConstants.StandardResourceOwnerClaimNames.Address, "{ country : 'france' }")
                     },
-                    Password = "password",
+                    Password = "password".ToSha256Hash(),
                     IsLocalAccount = true
                 },
                 new ResourceOwner
                 {
                     Id = "user",
-                    Password = "password",
+                    Password = "password".ToSha256Hash(),
                     Claims = new List<Claim>
                     {
                         new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "user")
@@ -168,7 +169,7 @@ namespace SimpleAuth.Server.Tests.Stores
                 new ResourceOwner
                 {
                     Id = "superuser",
-                    Password = "password",
+                    Password = "password".ToSha256Hash(),
                     Claims = new List<Claim>
                     {
                         new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "superuser"),

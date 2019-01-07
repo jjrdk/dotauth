@@ -15,9 +15,11 @@
 namespace SimpleAuth.AuthServer
 {
     using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Razor;
-    using Microsoft.AspNetCore.Routing;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Logging;
@@ -26,21 +28,27 @@ namespace SimpleAuth.AuthServer
     using Server.Extensions;
     using SimpleAuth;
     using System;
+    using System.IO.Compression;
     using System.Reflection;
-    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.ResponseCompression;
 
     public class Startup
     {
+        private readonly IConfigurationRoot _configuration;
         private readonly SimpleAuthOptions _options;
         private readonly Assembly _assembly = typeof(HomeController).Assembly;
 
         public Startup()
         {
+            _configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
             _options = new SimpleAuthOptions
             {
                 Configuration = new OpenIdServerConfiguration
                 {
                     Users = DefaultConfiguration.GetUsers(),
+                    Translations = DefaultConfiguration.GetTranslations(),
                     // JsonWebKeys = DefaultConfiguration.GetJsonWebKeys(),
                     Clients = DefaultConfiguration.GetClients()
                 },
@@ -53,6 +61,22 @@ namespace SimpleAuth.AuthServer
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddResponseCompression(x =>
+            {
+                x.EnableForHttps = true;
+                x.Providers.Add(
+                    new GzipCompressionProvider(
+                        new GzipCompressionProviderOptions
+                            {Level = CompressionLevel.Optimal}));
+                x.Providers.Add(
+                    new BrotliCompressionProvider(
+                        new BrotliCompressionProviderOptions
+                    {Level = CompressionLevel.Optimal}));
+            });
+            services.AddHttpsRedirection(x =>
+            {
+                x.HttpsPort = 443;
+            });
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
@@ -62,6 +86,16 @@ namespace SimpleAuth.AuthServer
                 .AddCookie(HostConstants.CookieNames.CookieName, opts =>
                 {
                     opts.LoginPath = "/Authenticate";
+                })
+                .AddGoogle(opts =>
+                {
+                    opts.AccessType = "offline";
+                    opts.ClientId = _configuration["Google:ClientId"];
+                    opts.ClientSecret = _configuration["Google:ClientSecret"];
+                    opts.SignInScheme = HostConstants.CookieNames.ExternalCookieName;
+                    opts.Scope.Add("openid");
+                    opts.Scope.Add("profile");
+                    opts.Scope.Add("email");
                 });
             services.AddAuthorization(opts =>
             {
@@ -71,14 +105,18 @@ namespace SimpleAuth.AuthServer
             var emb = _assembly.GetManifestResourceNames();
             Console.WriteLine(emb.Length);
             var mvcBuilder = services.AddMvc(
-                    options => { })
+                    options =>
+                    {
+                        // options.InputFormatters.Add(new );
+                    })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddApplicationPart(_assembly);
-            services.UseSimpleAuth(_options);
+            services.AddSimpleAuth(_options);
             services.AddDefaultTokenStore();
             services.Configure<RazorViewEngineOptions>(x =>
             {
                 x.FileProviders.Add(new EmbeddedFileProvider(_assembly, "SimpleAuth.Server"));
+                x.AdditionalCompilationReferences.Add(MetadataReference.CreateFromFile(typeof(BasicAuthenticateOptions).Assembly.Location));
             });
 
             // API
@@ -92,7 +130,10 @@ namespace SimpleAuth.AuthServer
             ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole();
-            app.UseAuthentication();
+
+            app.UseHttpsRedirection()
+                //.UseHsts()
+                .UseAuthentication();
             //1 . Enable CORS.
             app.UseCors("AllowAll");
             // 2. Use static files.
@@ -100,18 +141,20 @@ namespace SimpleAuth.AuthServer
             {
                 FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.Server.wwwroot")
             });
-            app.UseSimpleAuth(_options);
+            app.UseSimpleAuth();
             // 3. Redirect error to custom pages.
             app.UseStatusCodePagesWithRedirects("~/Error/{0}");
             // 4. Enable SimpleAuth
-            //app.UseSimpleAuth(_options, loggerFactory);
+            //app.AddSimpleAuth(_options, loggerFactory);
             // 5. Configure ASP.NET MVC
+
+            app.UseResponseCompression();
             app.UseMvc(routes =>
             {
                 //routes.UseLoginPasswordAuthentication();
-                routes.MapRoute("AuthArea",
-                    "{area:exists}/Authenticate/{action}/{id?}",
-                    new { controller = "Authenticate", action = "Index" });
+                //routes.MapRoute("AuthArea",
+                //    "{area:exists}/Authenticate/{action}/{id?}",
+                //    new { controller = "Authenticate", action = "Index" });
                 routes.MapRoute("default", "{controller=Home}/{action=Index}");
                 //routes.UseUserManagement();
                 //routes.UseShell();

@@ -1,8 +1,6 @@
 ﻿namespace SimpleAuth.Uma.Tests
 {
-    using System.Security.Cryptography;
     using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth.Shared;
 
     public class SharedContext
     {

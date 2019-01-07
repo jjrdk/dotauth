@@ -19,7 +19,6 @@ namespace SimpleAuth.Tests.Fake
     using SimpleAuth;
     using System;
     using System.Collections.Generic;
-    using System.Security.Cryptography;
     using Helpers;
     using Microsoft.IdentityModel.Tokens;
 

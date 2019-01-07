@@ -17,7 +17,6 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
     using Errors;
     using Exceptions;
     using Helpers;
-    using Logging;
     using Models;
     using Moq;
     using Parameters;

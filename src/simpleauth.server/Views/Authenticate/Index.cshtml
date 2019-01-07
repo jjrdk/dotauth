@@ -1,10 +1,11 @@
 ﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Authenticate";
     var loginState = ViewData.ModelState["Login"];
     var passwordState = ViewData.ModelState["Password"];
 }
 
-@model SimpleIdentityServer.Authenticate.Basic.ViewModels.AuthorizeViewModel
+@model SimpleAuth.Server.ViewModels.AuthorizeViewModel
 
 @section Scripts
 {
@@ -58,21 +59,21 @@
                 
                     <div class="col s12">@Html.ValidationMessage("invalid_credentials")</div>
 
-                    <form class="col s12" name="form" method="POST" action="@Url.Action("LocalLogin")">
+                    <form class="col s12" name="form" enctype="application/x-www-form-urlencoded" method="POST" action="@Url.Action("LocalLogin")">
                         <div class="row">
                             <div class="input-field col s12">
                             @if (loginState != null && loginState.Errors.Any())
                             {
                                 <i class="material-icons prefix">account_circle</i>
-                                <input name="Login" type="text" class="invalid" />
-                                <label for="Login">@ViewBag.Translations["username"]</label>
+                                <input id="login" name="Login" type="text" class="invalid" />
+                                <label for="login">@ViewBag.Translations["username"]</label>
                                 <span class="helper-text">@string.Join(",", loginState.Errors.Select(e => e.ErrorMessage))</span>
                             }
                             else
                             {
                                 <i class="material-icons prefix">account_circle</i>
-                                <input name="Login" type="text" />
-                                <label for="Login">@ViewBag.Translations["username"]</label>
+                                <input id="login" name="Login" type="text" />
+                                <label for="login">@ViewBag.Translations["username"]</label>
                             }
                             </div>
 
@@ -80,15 +81,15 @@
                             @if (passwordState != null && passwordState.Errors.Any())
                             {
                                 <i class="material-icons prefix">lock</i>
-                                <input class="invalid" name="Password" type="password" />
-                                <label for="Password">@ViewBag.Translations["password"]</label>
+                                <input id="password" class="invalid" name="Password" type="password" />
+                                <label for="password">@ViewBag.Translations["password"]</label>
                                 <span class="helper-text">@string.Join(",", passwordState.Errors.Select(e => e.ErrorMessage))</span>
                             }
                             else
                             {
                                 <i class="material-icons prefix">lock</i>
-                                <input name="Password" type="password" />
-                                <label for="Password">@ViewBag.Translations["password"]</label>
+                                <input id="password" name="Password" type="password" />
+                                <label for="password">@ViewBag.Translations["password"]</label>
                             }
                             </div>
                         </div>

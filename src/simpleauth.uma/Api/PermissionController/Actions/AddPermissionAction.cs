@@ -23,7 +23,6 @@ namespace SimpleAuth.Uma.Api.PermissionController.Actions
     using Helpers;
     using Logging;
     using Models;
-    using Newtonsoft.Json;
     using Parameters;
     using Repositories;
     using SimpleAuth.Errors;

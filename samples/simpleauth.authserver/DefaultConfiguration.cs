@@ -5,6 +5,7 @@
     using System.Security.Claims;
     using Helpers;
     using Shared;
+    using Shared.DTOs;
     using Shared.Models;
     using SimpleAuth;
 
@@ -63,7 +64,12 @@
                         new Claim("role", "administrator")
                     },
                     Password = "password".ToSha256Hash(),
-                    IsLocalAccount = true
+                    IsLocalAccount = true,
+                    CreateDateTime = DateTime.UtcNow,
+                    UserProfile = new ScimUser
+                    {
+
+                    }
                 }
             };
         }
@@ -215,7 +221,20 @@
                     LanguageTag = "en",
                     Code = CoreConstants.StandardTranslationCodes.HashedPassword,
                     Value = "Hashed password"
-                }
+                },
+                //TODO: Add translations
+                new Translation
+                {
+                    LanguageTag = "en",
+                    Code = "[remember_my_login]",
+                    Value = "Remember me"
+                },
+                new Translation
+                {
+                    LanguageTag = "en",
+                    Code = "remember_my_login",
+                    Value = "Remember me"
+                },
             };
         }
     }

@@ -17,7 +17,6 @@ namespace SimpleAuth.Api.Introspection.Actions
     using Authenticate;
     using Errors;
     using Exceptions;
-    using Logging;
     using Parameters;
     using Results;
     using Shared;

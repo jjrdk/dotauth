@@ -20,7 +20,6 @@ namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
     using Exceptions;
     using Logging;
     using Models;
-    using Newtonsoft.Json;
     using Parameters;
     using Repositories;
     using Validators;

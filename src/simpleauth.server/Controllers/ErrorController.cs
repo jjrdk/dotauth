@@ -3,7 +3,6 @@ namespace SimpleAuth.Server.Controllers
     using Microsoft.AspNetCore.Mvc;
     using ViewModels;
 
-    [Area("Shell")]
     public class ErrorController : Controller
     {
         public ActionResult Index(string code, string message)
@@ -16,16 +15,22 @@ namespace SimpleAuth.Server.Controllers
             return View(viewModel);
         }
 
+        [HttpGet]
+        [Route("401")]
         public ActionResult Get401()
         {
             return View();
         }
-        
+
+        [HttpGet]
+        [Route("404")]
         public ActionResult Get404() 
         {
             return View();    
         }
 
+        [HttpGet]
+        [Route("500")]
         public ActionResult Get500()
         {
             return View();
