@@ -20,7 +20,6 @@ namespace SimpleAuth.Uma.Tests.Fakes
     using System.Reflection;
     using System.Security.Claims;
     using Controllers;
-    using Logging;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -28,10 +27,8 @@ namespace SimpleAuth.Uma.Tests.Fakes
     using Microsoft.Extensions.DependencyInjection;
     using Middlewares;
     using MiddleWares;
-    using Services;
     using SimpleAuth;
     using SimpleAuth.Client.Operations;
-    using SimpleAuth.Shared;
     using Stores;
     using Uma;
 
@@ -116,7 +113,7 @@ namespace SimpleAuth.Uma.Tests.Fakes
         private void RegisterServices(IServiceCollection services)
         {
             // 1. Add CORE.
-            services.AddUmaCore(new UmaConfigurationOptions(), UmaStores.GetResources())
+            services.AddUma(new UmaConfigurationOptions(), UmaStores.GetResources())
                 .RegisterSimpleAuth(new SimpleAuthOptions
                 {
                     Configuration = new OpenIdServerConfiguration

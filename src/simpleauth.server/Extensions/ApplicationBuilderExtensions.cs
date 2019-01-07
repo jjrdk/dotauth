@@ -15,16 +15,12 @@
 namespace SimpleAuth.Server.Extensions
 {
     using System;
-    using Logging;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
     using MiddleWare;
 
     public static class ApplicationBuilderExtensions
     {
-        public static void UseSimpleAuth(this IApplicationBuilder app, Action<SimpleAuthOptions> optionsCallback, ILoggerFactory loggerFactory)
+        public static void UseSimpleAuth(this IApplicationBuilder app, Action<SimpleAuthOptions> optionsCallback)
         {
             if (optionsCallback == null)
             {
@@ -33,25 +29,14 @@ namespace SimpleAuth.Server.Extensions
 
             var hostingOptions = new SimpleAuthOptions();
             optionsCallback(hostingOptions);
-            app.UseSimpleAuth(hostingOptions,
-                loggerFactory);
+            app.UseSimpleAuth();
         }
 
-        public static void UseSimpleAuth(this IApplicationBuilder app, SimpleAuthOptions options, ILoggerFactory loggerFactory)
+        public static void UseSimpleAuth(this IApplicationBuilder app)
         {
-            UseSimpleAuth(app, options);
-        }
-
-        public static void UseSimpleAuth(this IApplicationBuilder app, SimpleAuthOptions options)
-        {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
             app.UseSimpleAuthExceptionHandler();
-            var httpContextAccessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
-            UriHelperExtensions.Configure(httpContextAccessor);
+            //var httpContextAccessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
+            //UriHelperExtensions.Configure(httpContextAccessor);
         }
     }
 }

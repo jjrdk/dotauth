@@ -87,7 +87,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> LocalLogin(LocalAuthenticationViewModel authorizeViewModel)
+        public async Task<IActionResult> LocalLogin([FromForm]LocalAuthenticationViewModel authorizeViewModel)
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated)
@@ -217,11 +217,11 @@
                     {
                         await SetTwoFactorCookie(actionResult.Claims).ConfigureAwait(false);
                         var code = await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
-                        return RedirectToAction("SendCode", new {code = viewModel.Code});
+                        return RedirectToAction("SendCode", new { code = viewModel.Code });
                     }
                     catch (ClaimRequiredException)
                     {
-                        return RedirectToAction("SendCode", new {code = viewModel.Code});
+                        return RedirectToAction("SendCode", new { code = viewModel.Code });
                     }
                     catch (Exception)
                     {

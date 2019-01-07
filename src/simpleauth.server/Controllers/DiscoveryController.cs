@@ -15,7 +15,6 @@
 namespace SimpleAuth.Server.Controllers
 {
     using System.Threading.Tasks;
-    using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Shared.Responses;
     using SimpleAuth;

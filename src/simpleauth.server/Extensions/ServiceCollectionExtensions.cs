@@ -173,7 +173,7 @@ namespace SimpleAuth.Server.Extensions
             return services;
         }
 
-        public static IServiceCollection UseSimpleAuth(
+        public static IServiceCollection AddSimpleAuth(
             this IServiceCollection services,
             SimpleAuthOptions options = null)
         {

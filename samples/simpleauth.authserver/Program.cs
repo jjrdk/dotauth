@@ -15,16 +15,18 @@
 namespace SimpleAuth.AuthServer
 {
     using Microsoft.AspNetCore.Hosting;
-    using System.IO;
 
     public class Program
     {
         public static void Main(string[] args)
         {
             var host = new WebHostBuilder()
-                .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseUrls("http://*:60000")
+                .UseKestrel(o =>
+                {
+                    o.AddServerHeader = false;
+                })
+                //.UseContentRoot(Directory.GetCurrentDirectory())
+                .UseUrls("http://*:60000", "https://*:443")
                 .UseStartup<Startup>()
                 .Build();
             host.Run();

@@ -1,12 +1,10 @@
 ﻿namespace SimpleAuth.Tests.Authenticate
 {
     using Errors;
-    using Logging;
     using Moq;
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth.Authenticate;
-    using SimpleAuth.JwtToken;
     using System;
     using System.Threading.Tasks;
     using Xunit;

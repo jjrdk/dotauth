@@ -1,7 +1,5 @@
 ﻿namespace SimpleAuth.Shared.Models
 {
-    using System;
-
     public enum TokenEndPointAuthenticationMethods
     {
         // Defaut value

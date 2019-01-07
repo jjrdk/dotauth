@@ -25,15 +25,15 @@ namespace SimpleAuth.Server.Parsers
         {
             {
                 SimpleAuthEndPoints.ConsentIndex,
-                new ActionInformation("Consent", "Index", "Shell")
+                new ActionInformation("Consent", "Index", null)
             }, 
             {
                 SimpleAuthEndPoints.AuthenticateIndex,
-                new ActionInformation("Authenticate", "Index", "Authentication")
+                new ActionInformation("Authenticate", "Index", null)
             },
             {
                 SimpleAuthEndPoints.FormIndex,
-                new ActionInformation("Form", "Index", "Shell")
+                new ActionInformation("Form", "Index", null)
             }
         };
 

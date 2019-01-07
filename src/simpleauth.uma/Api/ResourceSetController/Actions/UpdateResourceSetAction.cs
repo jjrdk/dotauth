@@ -18,9 +18,7 @@ namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
     using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Logging;
     using Models;
-    using Newtonsoft.Json;
     using Parameters;
     using Repositories;
     using SimpleAuth.Errors;

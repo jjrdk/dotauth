@@ -1,14 +1,11 @@
 ﻿namespace SimpleAuth.Tests.Api.Authorization
 {
-    using Logging;
     using Moq;
     using Parameters;
     using Shared.Repositories;
     using SimpleAuth.Api.Authorization.Common;
     using SimpleAuth.Helpers;
-    using SimpleAuth.JwtToken;
     using System;
-    using System.Net.Http;
     using System.Threading.Tasks;
     using Xunit;
 

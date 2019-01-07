@@ -89,7 +89,8 @@ namespace SimpleAuth.Server.MiddleWare
                 else
                 {
                     //serverException = new SimpleAuthException(ErrorCodes.UnhandledExceptionCode, exception.Message);
-                    await _publisher.Publish(new ExceptionMessage(Guid.NewGuid().ToString("N"),
+                    await _publisher.Publish(new ExceptionMessage(
+                        Id.Create(),
                         exception,
                         DateTime.UtcNow)).ConfigureAwait(false);
                     var error = new ErrorResponse

@@ -18,7 +18,6 @@ namespace SimpleAuth.Server.Tests
     using System.Reflection;
     using Controllers;
     using Extensions;
-    using Logging;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -42,7 +41,7 @@ namespace SimpleAuth.Server.Tests
         public void Configure(IApplicationBuilder app)
         {
             app.UseAuthentication();
-            app.UseSimpleAuth(new SimpleAuthOptions());
+            app.UseSimpleAuth();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -58,7 +57,7 @@ namespace SimpleAuth.Server.Tests
                 IsEnabled = true,
                 EndPoint = "http://localhost:5555/"
             });
-            serviceCollection.UseSimpleAuth(new SimpleAuthOptions
+            serviceCollection.AddSimpleAuth(new SimpleAuthOptions
             {
                 Configuration = new OpenIdServerConfiguration
                 {

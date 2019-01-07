@@ -24,7 +24,6 @@
     using ViewModels;
     using WebSite.User.Actions;
 
-    [Area("UserManagement")]
     [Authorize("Connected")]
     public class UserController : BaseController
     {
@@ -199,7 +198,7 @@
                 throw new ArgumentNullException(nameof(provider));
             }
 
-            var redirectUrl = _urlHelper.AbsoluteAction("LinkCallback", "User");
+            var redirectUrl = _urlHelper.Action("LinkCallback", "User", null, Request.Scheme);
             await _authenticationService.ChallengeAsync(HttpContext,
                     provider,
                     new AuthenticationProperties()

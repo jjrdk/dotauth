@@ -58,7 +58,7 @@
                 //};
             });
             services.AddSingleton(smsAuthenticationOptions);
-            services.AddSingleton<ISubjectBuilder, DefaultSubjectBuilder>();
+            //services.AddSingleton<ISubjectBuilder, DefaultSubjectBuilder>();
             services.AddSingleton<ITwilioClient, TwilioClient>();
             services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
             services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();

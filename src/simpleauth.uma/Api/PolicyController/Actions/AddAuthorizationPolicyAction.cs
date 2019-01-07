@@ -19,7 +19,6 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
     using Helpers;
     using Logging;
     using Models;
-    using Newtonsoft.Json;
     using Parameters;
     using Repositories;
     using SimpleAuth.Errors;

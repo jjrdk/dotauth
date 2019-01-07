@@ -16,7 +16,6 @@ namespace SimpleAuth.Tests.Api.Authorization
 {
     using Errors;
     using Exceptions;
-    using Logging;
     using Moq;
     using Parameters;
     using Shared;
@@ -25,9 +24,7 @@ namespace SimpleAuth.Tests.Api.Authorization
     using SimpleAuth.Api.Authorization;
     using SimpleAuth.Common;
     using SimpleAuth.Helpers;
-    using SimpleAuth.JwtToken;
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Xunit;
 

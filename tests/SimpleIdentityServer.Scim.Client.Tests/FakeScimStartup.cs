@@ -15,7 +15,6 @@
 namespace SimpleAuth.Scim.Client.Tests
 {
     using System.Reflection;
-    using Logging;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -26,7 +25,6 @@ namespace SimpleAuth.Scim.Client.Tests
     using Server.Extensions;
     using Services;
     using Shared;
-    using SimpleAuth;
     using WebSite.User.Actions;
 
     public class FakeScimStartup
@@ -35,7 +33,7 @@ namespace SimpleAuth.Scim.Client.Tests
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.UseSimpleAuth();
+            services.AddSimpleAuth();
             services.AddAuthentication(opts =>
             {
                 opts.DefaultAuthenticateScheme = DefaultSchema;

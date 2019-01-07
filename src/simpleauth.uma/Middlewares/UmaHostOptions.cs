@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Uma.Middlewares
 {
-    using System;
     using Microsoft.AspNetCore.Builder;
 
     public static class UmaHostOptions

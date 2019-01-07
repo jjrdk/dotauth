@@ -14,18 +14,18 @@
 
 namespace SimpleAuth.Server.Tests.Apis
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
     using Client;
     using Client.Operations;
     using Errors;
     using Newtonsoft.Json;
     using Shared;
     using Shared.Responses;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class IntrospectClientFixture : IClassFixture<TestOauthServerFixture>
@@ -52,7 +52,6 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
-            Assert.NotNull(error);
             Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
             Assert.Equal("no parameter in body request", error.ErrorDescription);
         }
@@ -76,7 +75,6 @@ namespace SimpleAuth.Server.Tests.Apis
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
-            Assert.NotNull(error);
             Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
             Assert.Equal("the parameter token is missing", error.ErrorDescription);
         }
@@ -92,7 +90,6 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
                 .ConfigureAwait(false);
 
-            Assert.NotNull(introspection);
             Assert.True(introspection.ContainsError);
             Assert.Equal("invalid_client", introspection.Error.Error);
             Assert.Equal("the client doesn't exist", introspection.Error.ErrorDescription);
@@ -109,7 +106,6 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
                 .ConfigureAwait(false);
 
-            Assert.NotNull(introspection);
             Assert.True(introspection.ContainsError);
             Assert.Equal("invalid_token", introspection.Error.Error);
             Assert.Equal("the token is not valid", introspection.Error.ErrorDescription);
@@ -120,7 +116,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}),
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
@@ -133,10 +129,9 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
                 .ConfigureAwait(false);
 
-            Assert.NotNull(introspection);
             Assert.NotNull(introspection.Content.Scope);
-            Assert.True(introspection.Content.Scope.Count() == 1);
-            Assert.True(introspection.Content.Scope.First() == "scim");
+            Assert.Single(introspection.Content.Scope);
+            Assert.Equal("scim", introspection.Content.Scope.First());
         }
 
         [Fact]
@@ -144,7 +139,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var result = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}),
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
                 .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
@@ -157,9 +152,9 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
                 .ConfigureAwait(false);
 
-            Assert.NotNull(introspection);
             Assert.NotNull(introspection.Content.Scope);
-            Assert.True(introspection.Content.Scope.Count() == 1 && introspection.Content.Scope.First() == "scim");
+            Assert.Single(introspection.Content.Scope);
+            Assert.Equal("scim", introspection.Content.Scope.First());
         }
     }
 }

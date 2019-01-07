@@ -21,7 +21,6 @@ namespace SimpleAuth.Api.Authorization.Actions
     using Common;
     using Errors;
     using Exceptions;
-    using Logging;
     using Parameters;
     using Results;
     using Shared.Models;

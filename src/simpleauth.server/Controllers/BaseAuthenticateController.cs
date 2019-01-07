@@ -118,7 +118,7 @@ namespace SimpleAuth.Server.Controllers
                 throw new ArgumentNullException(nameof(provider));
             }
 
-            var redirectUrl = _urlHelper.AbsoluteAction("LoginCallback", "Authenticate");
+            var redirectUrl = _urlHelper.Action("LoginCallback", "Authenticate", null, Request.Scheme);
             await _authenticationService.ChallengeAsync(HttpContext,
                     provider,
                     new AuthenticationProperties()
@@ -384,7 +384,7 @@ namespace SimpleAuth.Server.Controllers
 
             // 2. Redirect the User agent
             var redirectUrl =
-                _urlHelper.AbsoluteAction("LoginCallbackOpenId", "Authenticate", new { code = cookieValue });
+                _urlHelper.Action("LoginCallbackOpenId", "Authenticate", new { code = cookieValue }, Request.Scheme);
             await _authenticationService.ChallengeAsync(HttpContext,
                     provider,
                     new AuthenticationProperties
@@ -491,7 +491,7 @@ namespace SimpleAuth.Server.Controllers
                         HostConstants.CookieNames.ExternalCookieName,
                         new AuthenticationProperties())
                     .ConfigureAwait(false);
-                LogAuthenticateUser(actionResult, authorizationRequest.ProcessId);
+                await LogAuthenticateUser(actionResult, authorizationRequest.ProcessId).ConfigureAwait(false);
                 return this.CreateRedirectionFromActionResult(actionResult, authorizationRequest);
             }
 

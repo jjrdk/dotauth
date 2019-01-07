@@ -14,14 +14,11 @@
 
 namespace SimpleAuth.Tests.Helpers
 {
-    using Microsoft.IdentityModel.Tokens;
     using Moq;
-    using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
     using System;
-    using System.IdentityModel.Tokens.Jwt;
     using System.Threading.Tasks;
     using Xunit;
 

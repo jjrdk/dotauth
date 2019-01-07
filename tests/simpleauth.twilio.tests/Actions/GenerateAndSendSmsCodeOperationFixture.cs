@@ -4,7 +4,6 @@
     using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Logging;
     using Moq;
     using SimpleAuth;
     using Twilio;

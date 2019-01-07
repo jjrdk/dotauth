@@ -17,7 +17,6 @@ namespace SimpleAuth.Uma.Tests.Policies
     using Models;
     using Moq;
     using Parameters;
-    using SimpleAuth;
     using System;
     using System.Collections.Generic;
     using System.Linq;

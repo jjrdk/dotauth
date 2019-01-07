@@ -15,7 +15,6 @@
 namespace SimpleAuth.Tests.Common
 {
     using Logging;
-    using Microsoft.IdentityModel.Tokens;
     using Moq;
     using Parameters;
     using Results;

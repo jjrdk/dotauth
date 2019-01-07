@@ -19,7 +19,6 @@ namespace SimpleAuth.Uma.Tests.Policies
     using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Logging;
     using Models;
     using Moq;
     using Parameters;
