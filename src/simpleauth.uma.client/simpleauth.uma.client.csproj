@@ -1,13 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.Uma.Client</Description>
-    <Authors>thabart</Authors>
+  <Description>SimpleAuth UMA Client</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>simpleauth.uma.client</AssemblyName>
-    <PackageId>SimpleIdentityServer.Uma.Client</PackageId>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <PackageId>simpleauth.uma.client</PackageId>
     <RootNamespace>SimpleAuth.Uma.Client</RootNamespace>
   </PropertyGroup>
 

@@ -13,8 +13,9 @@
 
     public class UserInfoIntrospectionHandler : AuthenticationHandler<UserInfoIntrospectionOptions>
     {
+        private const string Bearer = "Bearer ";
         private readonly IUserInfoClient _userInfoClient;
-        private static readonly int StartIndex = "Bearer ".Length;
+        private static readonly int StartIndex = Bearer.Length;
 
         public UserInfoIntrospectionHandler(IOptionsMonitor<UserInfoIntrospectionOptions> options,
             ILoggerFactory logger,
@@ -34,7 +35,7 @@
             }
 
             string token = null;
-            if (authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            if (authorization.StartsWith(Bearer, StringComparison.OrdinalIgnoreCase))
             {
                 token = authorization.Substring(StartIndex).Trim();
             }
