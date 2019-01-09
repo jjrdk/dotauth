@@ -62,9 +62,6 @@ namespace SimpleAuth.WebSite.User.Actions
             if (await _resourceOwnerRepository.Get(resourceOwner.Id).ConfigureAwait(false) != null)
             {
                 return false;
-                //throw new SimpleAuthException(
-                //    Errors.ErrorCodes.UnhandledExceptionCode,
-                //    Errors.ErrorDescriptions.TheRoWithCredentialsAlreadyExists);
             }
 
             var newClaims = new List<Claim>
@@ -124,19 +121,6 @@ namespace SimpleAuth.WebSite.User.Actions
             // 3. Add the scim resource.
             if (scimBaseUrl != null)
             {
-                //var scimResource = await AddScimResource(authenticationParameter, scimBaseUrl, resourceOwner.Login).ConfigureAwait(false);
-                //var scimUrl = newClaims.FirstOrDefault(c => c.Type == Jwt.JwtConstants.StandardResourceOwnerClaimNames.ScimId);
-                //var scimLocation = newClaims.FirstOrDefault(c => c.Type == Jwt.JwtConstants.StandardResourceOwnerClaimNames.ScimLocation);
-                //if (scimUrl != null)
-                //{
-                //    newClaims.Remove(scimUrl);
-                //}
-
-                //if (scimLocation != null)
-                //{
-                //    newClaims.Remove(scimLocation);
-                //}
-
                 newClaims.Add(new Claim(JwtConstants.StandardResourceOwnerClaimNames.ScimId, resourceOwner.Id));
                 newClaims.Add(new Claim(JwtConstants.StandardResourceOwnerClaimNames.ScimLocation,
                     $"{scimBaseUrl}/Users/{resourceOwner.Id}"));
@@ -155,8 +139,6 @@ namespace SimpleAuth.WebSite.User.Actions
             if (!await _resourceOwnerRepository.InsertAsync(newResourceOwner).ConfigureAwait(false))
             {
                 return false;
-                //throw new SimpleAuthException(Errors.ErrorCodes.UnhandledExceptionCode,
-                //    Errors.ErrorDescriptions.TheResourceOwnerCannotBeAdded);
             }
 
             //// 5. Link to a profile.
@@ -166,29 +148,13 @@ namespace SimpleAuth.WebSite.User.Actions
             //        .ConfigureAwait(false);
             //}
 
-            await _eventPublisher.Publish(new ResourceOwnerAdded(Guid.NewGuid().ToString("N"),newResourceOwner.Id, DateTime.UtcNow)).ConfigureAwait(false);
+            await _eventPublisher.Publish(
+                    new ResourceOwnerAdded(
+                        Id.Create(),
+                        newResourceOwner.Id,
+                        DateTime.UtcNow))
+                .ConfigureAwait(false);
             return true;
         }
-
-        ///// <summary>
-        ///// CreateJwk the scim resource and the scim identifier.
-        ///// </summary>
-        ///// <param name="subject"></param>
-        ///// <returns></returns>
-        //private async Task<ScimUser> AddScimResource(AuthenticationParameter scimOpts, string scimBaseUrl, string subject)
-        //{
-        //    //var grantedToken = await _tokenStore.GetToken(scimOpts.WellKnownAuthorizationUrl, scimOpts.ClientId, scimOpts.ClientSecret, new[]
-        //    //{
-        //    //    ScimConstants.ScimPolicies.ScimManage
-        //    //}).ConfigureAwait(false);
-
-        //    var scimResponse = await _usersClient.AddUser(new AddUserParameter(), 
-        //            new Uri(scimBaseUrl), new ScimUser { ExternalId = subject })
-        //        //.SetCommonAttributes(subject)
-        //        //.Execute()
-        //        .ConfigureAwait(false);
-        //    var scimId = scimResponse.Content["id"].ToString();
-        //    return new ScimUser(scimId, $"{scimBaseUrl}/Users/{scimId}");
-        //}
     }
 }

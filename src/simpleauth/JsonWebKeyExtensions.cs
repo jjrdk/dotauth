@@ -29,24 +29,22 @@
                 var keyAlg = certificate.SignatureAlgorithm.FriendlyName;
                 if (keyAlg.Contains("RSA"))
                 {
-                    var rsa = certificate.PrivateKey as RSA;
-                    var xml = RsaExtensions.ToXmlString(rsa, false);
-                    var parameters = xml.ToRSAParameters();
+                    var rsa = (RSA)certificate.PrivateKey;
+                    var parameters = rsa.ExportParameters(true);
                     jwk = new JsonWebKey
                     {
+                        Kid = certificate.Thumbprint,
+                        Kty = JsonWebAlgorithmsKeyTypes.RSA,
                         Alg = keyAlg,
                         E = parameters.Exponent == null ? null : Convert.ToBase64String(parameters.Exponent),
-                        N = parameters.Modulus == null ? null : Convert.ToBase64String(parameters.Modulus)
+                        N = parameters.Modulus == null ? null : Convert.ToBase64String(parameters.Modulus),
+                        D = parameters.D == null ? null : Convert.ToBase64String(parameters.D),
+                        DP = parameters.DP == null ? null : Convert.ToBase64String(parameters.DP),
+                        DQ = parameters.DQ == null ? null : Convert.ToBase64String(parameters.DQ),
+                        QI = parameters.Modulus == null ? null : Convert.ToBase64String(parameters.InverseQ),
+                        P = parameters.Modulus == null ? null : Convert.ToBase64String(parameters.P),
+                        Q = parameters.Modulus == null ? null : Convert.ToBase64String(parameters.Q)
                     };
-                    if (false)
-                    {
-                        jwk.D = parameters.D == null ? null : Convert.ToBase64String(parameters.D);
-                        jwk.DP = parameters.DP == null ? null : Convert.ToBase64String(parameters.DP);
-                        jwk.DQ = parameters.DQ == null ? null : Convert.ToBase64String(parameters.DQ);
-                        jwk.QI = parameters.Modulus == null ? null : Convert.ToBase64String(parameters.InverseQ);
-                        jwk.P = parameters.Modulus == null ? null : Convert.ToBase64String(parameters.P);
-                        jwk.Q = parameters.Modulus == null ? null : Convert.ToBase64String(parameters.Q);
-                    }
                 }
                 else if (keyAlg.Contains("ecdsa"))
                 {
@@ -54,8 +52,12 @@
                     var parameters = ecdsa.ExportParameters(true);
                     jwk = new JsonWebKey
                     {
+                        Kty = JsonWebAlgorithmsKeyTypes.EllipticCurve,
                         Alg = keyAlg,
                         D = parameters.D == null ? null : Convert.ToBase64String(parameters.D),
+                        Crv = parameters.Curve.Hash.ToString(),
+                        X = parameters.Q.X.ToBase64Simplified(),
+                        Y = parameters.Q.Y.ToBase64Simplified()
                         //Q = parameters.Q == null ? null:Convert.ToBase64String(parameters.Q),
                     };
                 }
@@ -86,6 +88,7 @@
             }
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var jwk = JsonWebKeyConverter.ConvertFromSymmetricSecurityKey(securityKey);
+            jwk.Kty = JsonWebAlgorithmsKeyTypes.Octet;
             jwk.Use = use;
             jwk.Kid = securityKey.KeyId ?? Guid.NewGuid().ToString("N");
             if (keyOperations != null)

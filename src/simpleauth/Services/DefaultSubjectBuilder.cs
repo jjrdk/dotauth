@@ -8,7 +8,7 @@
 
     public class DefaultSubjectBuilder : ISubjectBuilder
     {
-        public Task<string> BuildSubject(IList<Claim> claims, ScimUser scimUser = null)
+        public Task<string> BuildSubject(IEnumerable<Claim> claims, ScimUser scimUser = null)
         {
             return Task.FromResult(Guid.NewGuid().ToString("N"));
         }
