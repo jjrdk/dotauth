@@ -4,12 +4,13 @@
     <TargetFrameworks>netcoreapp2.2</TargetFrameworks>
     <AssemblyName>simpleauth.protectedapi</AssemblyName>
     <OutputType>Exe</OutputType>
-    <PackageId>SimpleAuth.ProtectedApi</PackageId>
+    <PackageId>simpleauth.protectedapi</PackageId>
     <RootNamespace>SimpleAuth.ProtectedApi</RootNamespace>
   </PropertyGroup>
+  <Import Project="../../shared.proj"/>
 
   <ItemGroup>
-    <None Include="..\testCert.pfx" Link="testCert.pfx">
+    <None Include="..\..\tests\testCert.pfx" Link="testCert.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

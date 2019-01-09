@@ -1,16 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.Host.Tests Integration test project</Description>
-    <Authors>thierry habart</Authors>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AssemblyName>simpleauth.server.tests</AssemblyName>
-    <PackageId>SimpleIdentityServer.Host.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>testCert.pfx</AssemblyOriginatorKeyFile>
     <RootNamespace>SimpleAuth.Server.Tests</RootNamespace>
   </PropertyGroup>
+  <Import Project="../../shared.proj"/>
 
   <ItemGroup>
     <None Include="..\testCert.pfx" Link="testCert.pfx">

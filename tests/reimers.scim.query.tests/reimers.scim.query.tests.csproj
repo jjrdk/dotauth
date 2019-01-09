@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
+  <Import Project="../../shared.proj"/>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />

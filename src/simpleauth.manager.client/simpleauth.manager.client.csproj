@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.Manager.Client</Description>
+    <Description>SimpleAuth Data Management Client</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>simpleauth.manager.client</AssemblyName>
-    <PackageId>SimpleIdentityServer.Manager.Client</PackageId>
+    <PackageId>simpleauth.manager.client</PackageId>
     <RootNamespace>SimpleAuth.Manager.Client</RootNamespace>
   </PropertyGroup>
+  <Import Project="../../shared.proj"/>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />

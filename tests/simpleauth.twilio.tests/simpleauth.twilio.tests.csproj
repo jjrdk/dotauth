@@ -1,13 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Authors>thierry habart</Authors>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AssemblyName>simpleauth.twilio.tests</AssemblyName>
-    <PackageId>SimpleIdentityServer.Authenticate.SMS.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <RootNamespace>SimpleAuth.Twilio.Tests</RootNamespace>
   </PropertyGroup>
+  <Import Project="../../shared.proj"/>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
