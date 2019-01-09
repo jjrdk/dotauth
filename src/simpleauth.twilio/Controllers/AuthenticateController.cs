@@ -42,7 +42,7 @@
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
-            IGetResourceOwnerClaimsAction profileActions,
+            IGetResourceOwnerClaimsAction getResourceOwnerClaims,
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
             IUrlHelperFactory urlHelperFactory,
@@ -50,7 +50,7 @@
             IEventPublisher eventPublisher,
             IAuthenticationService authenticationService,
             IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IAddUserOperation userActions,
+            IAddUserOperation addUser,
             IGetUserOperation getUserOperation,
             IUpdateUserClaimsOperation updateUserClaimsOperation,
             IAuthenticateHelper authenticateHelper,
@@ -60,7 +60,7 @@
             ISubjectBuilder subjectBuilder,
             SmsAuthenticationOptions basicAuthenticateOptions)
             : base(authenticateActions,
-                profileActions,
+                getResourceOwnerClaims,
                 dataProtectionProvider,
                 translationManager,
                 urlHelperFactory,
@@ -68,7 +68,7 @@
                 eventPublisher,
                 authenticationService,
                 authenticationSchemeProvider,
-                userActions,
+                addUser,
                 getUserOperation,
                 updateUserClaimsOperation,
                 authenticateHelper,

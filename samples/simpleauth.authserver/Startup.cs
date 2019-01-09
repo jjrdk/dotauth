@@ -18,6 +18,7 @@ namespace SimpleAuth.AuthServer
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Razor;
+    using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.CodeAnalysis;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +31,6 @@ namespace SimpleAuth.AuthServer
     using System;
     using System.IO.Compression;
     using System.Reflection;
-    using Microsoft.AspNetCore.ResponseCompression;
 
     public class Startup
     {
@@ -67,26 +67,29 @@ namespace SimpleAuth.AuthServer
                 x.Providers.Add(
                     new GzipCompressionProvider(
                         new GzipCompressionProviderOptions
-                            {Level = CompressionLevel.Optimal}));
+                        { Level = CompressionLevel.Optimal }));
                 x.Providers.Add(
                     new BrotliCompressionProvider(
                         new BrotliCompressionProviderOptions
-                    {Level = CompressionLevel.Optimal}));
+                        { Level = CompressionLevel.Optimal }));
             });
             services.AddHttpsRedirection(x =>
             {
                 x.HttpsPort = 443;
             });
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader()));
+            services.AddCors(options => options.AddPolicy(
+                "AllowAll",
+                p => p.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()));
             services.AddLogging();
             services.AddAuthentication(HostConstants.CookieNames.CookieName)
-                .AddCookie(HostConstants.CookieNames.CookieName, opts =>
-                {
-                    opts.LoginPath = "/Authenticate";
-                })
+                .AddCookie(HostConstants.CookieNames.CookieName,
+                    opts => { opts.LoginPath = "/Authenticate"; });
+
+            services.AddAuthentication(HostConstants.CookieNames.ExternalCookieName)
+                .AddCookie(HostConstants.CookieNames.ExternalCookieName)
                 .AddGoogle(opts =>
                 {
                     opts.AccessType = "offline";

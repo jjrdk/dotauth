@@ -27,6 +27,7 @@ namespace SimpleAuth.Server.Controllers
     using Microsoft.AspNetCore.Mvc.Routing;
     using Results;
     using Shared;
+    using Shared.DTOs;
     using Shared.Events.Openid;
     using Shared.Models;
     using Shared.Requests;
@@ -39,6 +40,7 @@ namespace SimpleAuth.Server.Controllers
     using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Helpers;
     using Translation;
     using ViewModels;
     using WebSite.Authenticate;
@@ -51,24 +53,24 @@ namespace SimpleAuth.Server.Controllers
         protected const string DefaultLanguage = "en";
         protected readonly IAuthenticateHelper _authenticateHelper;
         protected readonly IAuthenticateActions _authenticateActions;
-        private readonly IGetResourceOwnerClaimsAction _profileActions;
+        private readonly IGetResourceOwnerClaimsAction _getResourceOwnerClaims;
         protected readonly IDataProtector _dataProtector;
         private readonly ITranslationManager _translationManager;
         private readonly IUrlHelper _urlHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
 
-        //protected readonly IUserActions _userActions;
+        //protected readonly IUserActions _addUser;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
         private readonly BasicAuthenticateOptions _basicAuthenticateOptions;
         private readonly ISubjectBuilder _subjectBuilder;
-        private readonly IAddUserOperation _userActions;
+        private readonly IAddUserOperation _addUser;
         private readonly IGetUserOperation _getUserOperation;
         private readonly IUpdateUserClaimsOperation _updateUserClaimsOperation;
 
         public BaseAuthenticateController(
             IAuthenticateActions authenticateActions,
-            IGetResourceOwnerClaimsAction profileActions,
+            IGetResourceOwnerClaimsAction getResourceOwnerClaims,
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
             IUrlHelperFactory urlHelperFactory,
@@ -76,7 +78,7 @@ namespace SimpleAuth.Server.Controllers
             IEventPublisher eventPublisher,
             IAuthenticationService authenticationService,
             IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IAddUserOperation userActions,
+            IAddUserOperation addUser,
             IGetUserOperation getUserOperation,
             IUpdateUserClaimsOperation updateUserClaimsOperation,
             IAuthenticateHelper authenticateHelper,
@@ -85,20 +87,19 @@ namespace SimpleAuth.Server.Controllers
             BasicAuthenticateOptions basicAuthenticateOptions) : base(authenticationService)
         {
             _authenticateActions = authenticateActions;
-            _profileActions = profileActions;
+            _getResourceOwnerClaims = getResourceOwnerClaims;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _translationManager = translationManager;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _eventPublisher = eventPublisher;
             _authenticationSchemeProvider = authenticationSchemeProvider;
-            _userActions = userActions;
+            _addUser = addUser;
             _getUserOperation = getUserOperation;
             _updateUserClaimsOperation = updateUserClaimsOperation;
             _authenticateHelper = authenticateHelper;
             _basicAuthenticateOptions = basicAuthenticateOptions;
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
             _subjectBuilder = subjectBuilder;
-            Check();
         }
 
         public async Task<IActionResult> Logout()
@@ -119,7 +120,8 @@ namespace SimpleAuth.Server.Controllers
             }
 
             var redirectUrl = _urlHelper.Action("LoginCallback", "Authenticate", null, Request.Scheme);
-            await _authenticationService.ChallengeAsync(HttpContext,
+            await _authenticationService.ChallengeAsync(
+                    HttpContext,
                     provider,
                     new AuthenticationProperties()
                     {
@@ -142,11 +144,15 @@ namespace SimpleAuth.Server.Controllers
                 .GetAuthenticatedUser(this, HostConstants.CookieNames.ExternalCookieName)
                 .ConfigureAwait(false);
             var resourceOwner =
-                await _profileActions.Execute(authenticatedUser.GetSubject()).ConfigureAwait(false);
-            string sub = null;
-
+                await _getResourceOwnerClaims.Execute(authenticatedUser.GetSubject()).ConfigureAwait(false);
             // 2. Automatically create the resource owner.
-            if (resourceOwner == null)
+
+            var claims = authenticatedUser.Claims.ToList();
+            if (resourceOwner != null)
+            {
+                claims = resourceOwner.Claims.ToList();
+            }
+            else
             {
                 var result = await AddExternalUser(authenticatedUser).ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(result.Item1))
@@ -156,18 +162,11 @@ namespace SimpleAuth.Server.Controllers
                         "Error",
                         new { code = result.Item2.Value, message = result.Item3 });
                 }
-            }
 
-            var claims = authenticatedUser.Claims.ToList();
-            if (resourceOwner != null)
-            {
-                claims = resourceOwner.Claims.ToList();
-            }
-            else
-            {
                 var nameIdentifier = claims.First(c => c.Type == ClaimTypes.NameIdentifier);
                 claims.Remove(nameIdentifier);
-                claims.Add(new Claim(ClaimTypes.NameIdentifier, sub));
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, result.Item1));
+                resourceOwner = await _getResourceOwnerClaims.Execute(result.Item1).ConfigureAwait(false);
             }
 
             await _authenticationService
@@ -442,7 +441,7 @@ namespace SimpleAuth.Server.Controllers
             //var claimsIdentity = authenticatedUser.Identity as ClaimsIdentity;
             var claims = authenticatedUser.Claims.ToList();
             var resourceOwner =
-                await _profileActions.Execute(authenticatedUser.GetSubject()).ConfigureAwait(false);
+                await _getResourceOwnerClaims.Execute(authenticatedUser.GetSubject()).ConfigureAwait(false);
             var sub = string.Empty;
             if (resourceOwner == null)
             {
@@ -478,7 +477,7 @@ namespace SimpleAuth.Server.Controllers
 
             // 6. Try to authenticate the resource owner & returns the claims.
             var authorizationRequest = _dataProtector.Unprotect<AuthorizationRequest>(request);
-            var issuerName = HttpRequestsExtensions.GetAbsoluteUriWithVirtualPath(Request);
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _authenticateHelper
                 .ProcessRedirection(authorizationRequest.ToParameter(), request, subject, claims, issuerName)
                 .ConfigureAwait(false);
@@ -568,19 +567,35 @@ namespace SimpleAuth.Server.Controllers
         private async Task<(string, int?, string)> AddExternalUser(ClaimsPrincipal authenticatedUser)
         {
             var openidClaims = authenticatedUser.Claims.ToOpenidClaims()
+                .Where(oc => _basicAuthenticateOptions.ClaimsIncludedInUserCreation.Contains(oc.Type))
+                .ToArray();
 
-                .Where(oc => _basicAuthenticateOptions.ClaimsIncludedInUserCreation.Contains(oc.Type));
-
-            var subject = await _subjectBuilder.BuildSubject(authenticatedUser.Claims.ToArray()).ConfigureAwait(false);
+            var subject = await _subjectBuilder.BuildSubject(openidClaims).ConfigureAwait(false);
             var record = new ResourceOwner //AddUserParameter(subject, Guid.NewGuid().ToString("N"), openidClaims)
             {
                 Id = subject,
-                Password = Guid.NewGuid().ToString("N"),
+                ExternalLogins = new[] { authenticatedUser.GetSubject() },
+                Password = Id.Create().ToSha256Hash(),
                 IsLocalAccount = false,
-                Claims = openidClaims.ToArray()
+                Claims = openidClaims,
+                TwoFactorAuthentication = null,
+                CreateDateTime = DateTime.UtcNow,
+                UserProfile = new ScimUser
+                {
+                    Id = subject,
+                    Active = true,
+                    DisplayName = authenticatedUser.GetPreferredUserName(),
+                    Name = new Name
+                    {
+                        FamilyName = authenticatedUser.GetFamilyName(),
+                        GivenName = authenticatedUser.GetGivenName(),
+                        MiddleName = authenticatedUser.GetMiddleName()
+                    },
+                    Emails = new[] { new TypedString { Value = authenticatedUser.GetEmail() } },
+                }
             };
 
-            if (!await _userActions.Execute(
+            if (!await _addUser.Execute(
                     record,
                     _basicAuthenticateOptions.ScimBaseUrl)
                 .ConfigureAwait(false))
@@ -588,21 +603,14 @@ namespace SimpleAuth.Server.Controllers
                 return (null, (int)HttpStatusCode.Conflict, "Failed to add user");
             }
 
+            record.Password = string.Empty;
+            await _eventPublisher.Publish(
+                    new ExternalUserCreated(
+                        Id.Create(),
+                        record,
+                        DateTime.UtcNow))
+                .ConfigureAwait(false);
             return (subject, null, null);
-        }
-
-        private void Check()
-        {
-            if (_basicAuthenticateOptions.ScimBaseUrl != null
-                && (string.IsNullOrWhiteSpace(_basicAuthenticateOptions.AuthorizationWellKnownConfiguration)
-                    || string.IsNullOrWhiteSpace(_basicAuthenticateOptions.ClientId)
-                    || string.IsNullOrWhiteSpace(_basicAuthenticateOptions.ClientSecret)
-                    || _basicAuthenticateOptions.ScimBaseUrl == null))
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InternalError,
-                    ErrorDescriptions.TheScimConfigurationMustBeSpecified);
-            }
         }
 
         protected async Task LogAuthenticateUser(EndpointResult act, string processId)
@@ -654,7 +662,8 @@ namespace SimpleAuth.Server.Controllers
         {
             var identity = new ClaimsIdentity(claims, HostConstants.CookieNames.TwoFactorCookieName);
             var principal = new ClaimsPrincipal(identity);
-            await _authenticationService.SignInAsync(HttpContext,
+            await _authenticationService.SignInAsync(
+                    HttpContext,
                     HostConstants.CookieNames.TwoFactorCookieName,
                     principal,
                     new AuthenticationProperties

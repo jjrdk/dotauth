@@ -41,15 +41,7 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="principal">The user principal</param>
         /// <returns>User's subject</returns>
-        public static string GetSubject(this ClaimsPrincipal principal)
-        {
-            if (principal?.Identity == null)
-            {
-                return null;
-            }
-
-            return principal.Claims.GetSubject();            
-        }
+        public static string GetSubject(this ClaimsPrincipal principal) => principal?.Identity == null ? null : principal.Claims.GetSubject();
 
         public static string GetSubject(this IEnumerable<Claim> claims)
         {
@@ -175,12 +167,8 @@ namespace SimpleAuth.Extensions
             }
 
             var claim = principal.FindFirst(claimName);
-            if (claim == null)
-            {
-                return null;
-            }
 
-            return claim.Value;
+            return claim?.Value;
         }
 
         private static bool GetBooleanClaimValue(ClaimsPrincipal principal, string claimName)

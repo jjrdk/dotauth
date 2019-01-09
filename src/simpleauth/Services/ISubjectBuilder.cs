@@ -7,6 +7,6 @@
 
     public interface ISubjectBuilder
     {
-        Task<string> BuildSubject(IList<Claim> claims, ScimUser scimUser = null);
+        Task<string> BuildSubject(IEnumerable<Claim> claims, ScimUser scimUser = null);
     }
 }
