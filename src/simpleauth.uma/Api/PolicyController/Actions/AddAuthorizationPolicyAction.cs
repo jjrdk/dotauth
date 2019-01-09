@@ -27,6 +27,7 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
     using ErrorDescriptions = Errors.ErrorDescriptions;
 
     internal class AddAuthorizationPolicyAction : IAddAuthorizationPolicyAction

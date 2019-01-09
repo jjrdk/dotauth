@@ -183,7 +183,7 @@
 //                {
 //                    if (string.IsNullOrWhiteSpace(group.Id))
 //                    {
-//                        group.Id = Guid.NewGuid().ToString("N");
+//                        group.Id = Id.Create();
 //                    }
 //                    group.Metadata = new ResourceMetadata
 //                    {

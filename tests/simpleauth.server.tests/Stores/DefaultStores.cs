@@ -130,7 +130,7 @@ namespace SimpleAuth.Server.Tests.Stores
         //    var serializedRsa = string.Empty;
         //    using (var provider = new RSACryptoServiceProvider())
         //    {
-        //        serializedRsa = RsaExtensions.ToXmlString(provider, true);
+        //        serializedRsa = RsaExtensions.ToXml(provider, true);
         //    }
 
         //    return new List<JsonWebKey>

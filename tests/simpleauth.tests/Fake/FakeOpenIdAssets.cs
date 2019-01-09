@@ -268,7 +268,7 @@ namespace SimpleAuth.Tests.Fake
         //    var serializedRsa = string.Empty;
         //    using (var provider = new RSACryptoServiceProvider())
         //    {
-        //        serializedRsa = provider.ToXmlString(true);
+        //        serializedRsa = provider.ToXml(true);
         //    }
 
         //    return new List<JsonWebKey>

@@ -20,7 +20,7 @@ namespace SimpleAuth.Shared
 
     public static class RsaExtensions
     {
-        public static string ToXmlString(this RSA rsa, bool includePrivateParameters = false)
+        public static string ToXml(this RSA rsa, bool includePrivateParameters = false)
         {
             // From the XMLDSIG spec, RFC 3075, Section 6.4.2,
             var rsaParams = rsa.ExportParameters(includePrivateParameters);
@@ -40,7 +40,7 @@ namespace SimpleAuth.Shared
             return doc.ToString();
         }
 
-        public static void FromXmlString(this RSA rsa, string xmlString)
+        public static void FromXml(this RSA rsa, string xmlString)
         {
             var parameters = xmlString.ToRSAParameters();
             rsa.ImportParameters(parameters);

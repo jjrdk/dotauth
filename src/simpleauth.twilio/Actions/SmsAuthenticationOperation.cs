@@ -5,8 +5,10 @@
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Helpers;
+    using Logging;
     using SimpleAuth;
     using SimpleAuth.Services;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using WebSite.User.Actions;
@@ -61,7 +63,7 @@
             var record = new ResourceOwner
             {
                 Id = id,
-                Password = Guid.NewGuid().ToString("N").ToSha256Hash(),
+                Password = Id.Create().ToSha256Hash(),
                 Claims = claims
             };
             // 3.1 Add scim resource.

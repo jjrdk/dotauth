@@ -22,6 +22,7 @@ namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
     using Models;
     using Parameters;
     using Repositories;
+    using SimpleAuth.Shared;
     using Validators;
 
     internal class AddResourceSetAction : IAddResourceSetAction

@@ -31,6 +31,7 @@ namespace SimpleAuth.Server.Controllers
     using Parameters;
     using Parsers;
     using Results;
+    using Shared;
     using Shared.Repositories;
     using Shared.Requests;
     using Shared.Responses;

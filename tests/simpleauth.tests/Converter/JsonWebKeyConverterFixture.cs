@@ -276,7 +276,7 @@
 //                jsonWebKey.Add(JwtConstants.JsonWebKeyParameterNames.RsaKey.ExponentName,
 //                    parameters.Exponent.ToBase64Simplified());
 
-//                var expectedXml = RsaExtensions.ToXmlString(rsa, false);
+//                var expectedXml = RsaExtensions.ToXml(rsa, false);
 
                 
 //                var result = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);

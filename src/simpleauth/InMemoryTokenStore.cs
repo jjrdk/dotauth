@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Logging;
+    using Shared;
     using Shared.Models;
 
     internal sealed class InMemoryTokenStore : ITokenStore

@@ -94,14 +94,15 @@ namespace SimpleAuth.WebSite.User.Actions
                         isFilterValid = false;
                         foreach (var ruleResult in userFilterResult.AccountFilterRules.Where(x => !x.IsValid))
                         {
-                            await _eventPublisher.Publish(new FailureMessage(Guid.NewGuid().ToString("N"),
+                            await _eventPublisher.Publish(new FailureMessage(Id.Create(),
                                     $"the filter rule '{ruleResult.RuleName}' failed",
                                     DateTime.UtcNow))
                                 .ConfigureAwait(false);
                             foreach (var errorMessage in ruleResult.ErrorMessages)
                             {
                                 await _eventPublisher
-                                    .Publish(new FailureMessage(Guid.NewGuid().ToString("N"),
+                                    .Publish(new FailureMessage(
+                                        Id.Create(),
                                         errorMessage,
                                         DateTime.UtcNow))
                                     .ConfigureAwait(false);
@@ -113,8 +114,6 @@ namespace SimpleAuth.WebSite.User.Actions
                 if (!isFilterValid)
                 {
                     return false;
-                    //throw new SimpleAuthException(Errors.ErrorCodes.InternalError,
-                    //    Errors.ErrorDescriptions.TheUserIsNotAuthorized);
                 }
             }
 

@@ -378,7 +378,7 @@ namespace SimpleAuth.Server.Tests.Apis
             //    }
             //};
 
-            //RsaExtensions.FromXmlString(rsa, _server.SharedCtx.SignatureKey.SerializedKey);
+            //RsaExtensions.FromXml(rsa, _server.SharedCtx.SignatureKey.SerializedKey);
             var jws = _jwsGenerator.CreateEncodedJwt(
                 new SecurityTokenDescriptor
                 {

@@ -990,7 +990,7 @@ namespace SimpleAuth.Tests.JwtToken
 
         //    using (var provider = new RSACryptoServiceProvider())
         //    {
-        //        //   serializedRsa = RsaExtensions.ToXmlString(provider, true);
+        //        //   serializedRsa = RsaExtensions.ToXml(provider, true);
 
         //        var jsonWebKey = provider.CreateJwk(
         //            JsonWebKeyUseNames.Sig,
