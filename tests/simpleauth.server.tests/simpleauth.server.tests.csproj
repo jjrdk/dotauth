@@ -33,8 +33,8 @@
     <ProjectReference Include="..\..\src\simpleauth.twilio.client\simpleauth.twilio.client.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.client\simpleauth.client.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.uma\simpleauth.uma.csproj" />
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Manager.Client\simpleauth.manager.client.csproj" />
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.UserInfoIntrospection\simpleauth.userinfointrospection.csproj" />
+    <ProjectReference Include="..\..\src\simpleauth.manager.client\simpleauth.manager.client.csproj" />
+    <ProjectReference Include="..\..\src\simpleauth.userinfointrospection\simpleauth.userinfointrospection.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -21,7 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\simpleauth.client\simpleauth.client.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.uma\simpleauth.uma.csproj" />
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Uma.Client\simpleauth.uma.client.csproj" />
+    <ProjectReference Include="..\..\src\simpleauth.uma.client\simpleauth.uma.client.csproj" />
   </ItemGroup>  
 
   <ItemGroup>
