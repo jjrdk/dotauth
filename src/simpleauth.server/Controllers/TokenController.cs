@@ -14,14 +14,6 @@
 
 namespace SimpleAuth.Server.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http.Headers;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Threading.Tasks;
     using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
@@ -33,6 +25,14 @@ namespace SimpleAuth.Server.Controllers
     using Shared.Serializers;
     using SimpleAuth;
     using SimpleAuth.Api.Token;
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
     using GrantTypes = Shared.Requests.GrantTypes;
 
     [Route(CoreConstants.EndPoints.Token)]
@@ -105,7 +105,8 @@ namespace SimpleAuth.Server.Controllers
                 case GrantTypes.authorization_code:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
                     result = await _tokenActions
-                        .GetTokenByAuthorizationCodeGrantType(authCodeParameter,
+                        .GetTokenByAuthorizationCodeGrantType(
+                            authCodeParameter,
                             authenticationHeaderValue,
                             certificate,
                             issuerName)
@@ -224,7 +225,7 @@ namespace SimpleAuth.Server.Controllers
             };
             return new JsonResult(error)
             {
-                StatusCode = (int) statusCode
+                StatusCode = (int)statusCode
             };
         }
     }

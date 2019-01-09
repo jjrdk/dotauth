@@ -1,10 +1,7 @@
 {
   "profiles": {
-    "SimpleIdentityServer.Host.Integration.Tests": {
-      "commandName": "Project",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+    "simpleauth.protectedapi": {
+      "commandName": "Project"
     }
   }
 }

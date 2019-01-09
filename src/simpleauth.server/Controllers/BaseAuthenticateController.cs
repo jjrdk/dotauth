@@ -635,7 +635,8 @@ namespace SimpleAuth.Server.Controllers
             var tokenValidity = TimeSpan.FromHours(1d);//_configurationService.TokenValidityPeriod;
             var now = DateTime.UtcNow;
             var expires = now.Add(tokenValidity);
-            HttpContext.Response.Cookies.Append(CoreConstants.SESSION_ID,
+            Response.Cookies.Append(
+                CoreConstants.SESSION_ID,
                 sessionId,
                 new CookieOptions
                 {
@@ -645,7 +646,8 @@ namespace SimpleAuth.Server.Controllers
                 });
             var identity = new ClaimsIdentity(cls, HostConstants.CookieNames.CookieName);
             var principal = new ClaimsPrincipal(identity);
-            await _authenticationService.SignInAsync(HttpContext,
+            await _authenticationService.SignInAsync(
+                    HttpContext,
                     HostConstants.CookieNames.CookieName,
                     principal,
                     new AuthenticationProperties
