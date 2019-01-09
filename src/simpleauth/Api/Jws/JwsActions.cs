@@ -227,9 +227,9 @@
 //                RSAParameters rsaParameters;
 //                using (var provider = new RSACryptoServiceProvider())
 //                {
-//                    RsaExtensions.FromXmlString(provider, jsonWebKey.SerializedKey);
-//                    //provider.FromXmlString(jsonWebKey.SerializedKey);
-//                    //RsaExtensions.FromXmlString(provider, jsonWebKey.SerializedKey);
+//                    RsaExtensions.FromXml(provider, jsonWebKey.SerializedKey);
+//                    //provider.FromXml(jsonWebKey.SerializedKey);
+//                    //RsaExtensions.FromXml(provider, jsonWebKey.SerializedKey);
 //                    rsaParameters = provider.ExportParameters(false);
 //                }
 

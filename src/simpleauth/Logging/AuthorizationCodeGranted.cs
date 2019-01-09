@@ -12,7 +12,7 @@
             string clientId,
             string authorizationCode,
             string scopes)
-            : this(Guid.NewGuid().ToString("N"),
+            : this(Shared.Id.Create(),
                 $"Grant authorization code to the client {clientId}, authorization code : {authorizationCode} and scopes : {scopes}",
                 DateTime.UtcNow)
         {

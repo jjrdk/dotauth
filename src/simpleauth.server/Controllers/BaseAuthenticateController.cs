@@ -310,14 +310,14 @@ namespace SimpleAuth.Server.Controllers
             {
                 var request = _dataProtector.Unprotect<AuthorizationRequest>(codeViewModel.AuthRequestCode);
                 await SetLocalCookie(authenticatedUser.Claims, request.SessionId).ConfigureAwait(false);
-                var issuerName = HttpRequestsExtensions.GetAbsoluteUriWithVirtualPath(Request);
+                var issuerName = Request.GetAbsoluteUriWithVirtualPath();
                 var actionResult = await _authenticateHelper.ProcessRedirection(request.ToParameter(),
                         codeViewModel.AuthRequestCode,
                         authenticatedUser.GetSubject(),
                         authenticatedUser.Claims.ToList(),
                         issuerName)
                     .ConfigureAwait(false);
-                LogAuthenticateUser(actionResult, request.ProcessId);
+                await LogAuthenticateUser(actionResult, request.ProcessId).ConfigureAwait(false);
                 var result = this.CreateRedirectionFromActionResult(actionResult, request);
                 return result;
             }
@@ -338,7 +338,7 @@ namespace SimpleAuth.Server.Controllers
 
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            var issuerName = HttpRequestsExtensions.GetAbsoluteUriWithVirtualPath(Request);
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _authenticateActions.AuthenticateResourceOwnerOpenId(
                     request.ToParameter(),
                     authenticatedUser,
@@ -349,7 +349,7 @@ namespace SimpleAuth.Server.Controllers
                 request);
             if (result != null)
             {
-                LogAuthenticateUser(actionResult, request.ProcessId);
+                await LogAuthenticateUser(actionResult, request.ProcessId).ConfigureAwait(false);
                 return result;
             }
 
@@ -571,7 +571,7 @@ namespace SimpleAuth.Server.Controllers
                 .ToArray();
 
             var subject = await _subjectBuilder.BuildSubject(openidClaims).ConfigureAwait(false);
-            var record = new ResourceOwner //AddUserParameter(subject, Guid.NewGuid().ToString("N"), openidClaims)
+            var record = new ResourceOwner //AddUserParameter(subject, Id.Create(), openidClaims)
             {
                 Id = subject,
                 ExternalLogins = new[] { authenticatedUser.GetSubject() },

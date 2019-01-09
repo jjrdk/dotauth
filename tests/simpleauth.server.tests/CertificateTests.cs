@@ -14,7 +14,7 @@
             var certificate = new X509Certificate2("mycert.pfx", "simpleauth", X509KeyStorageFlags.Exportable);
             using (var rsa = (RSA) certificate.PrivateKey)
             {
-                var xml = RsaExtensions.ToXmlString(rsa, true);
+                var xml = rsa.ToXml(true);
 
                 Assert.NotEmpty(xml);
             }

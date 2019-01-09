@@ -56,7 +56,7 @@ namespace SimpleAuth.Server.MiddleWare
                     var state = exceptionWithState == null
                         ? string.Empty
                         : exceptionWithState.State;
-                    await _publisher.Publish(new SimpleAuthError(Guid.NewGuid().ToString("N"),
+                    await _publisher.Publish(new SimpleAuthError(Id.Create(),
                         serverException.Code,
                         serverException.Message,
                         state,

@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Logging
+﻿namespace SimpleAuth.Shared
 {
     using System;
 

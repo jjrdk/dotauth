@@ -7,6 +7,7 @@
     using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
+    using Logging;
 
     public static class JsonWebKeyExtensions
     {
@@ -90,7 +91,7 @@
             var jwk = JsonWebKeyConverter.ConvertFromSymmetricSecurityKey(securityKey);
             jwk.Kty = JsonWebAlgorithmsKeyTypes.Octet;
             jwk.Use = use;
-            jwk.Kid = securityKey.KeyId ?? Guid.NewGuid().ToString("N");
+            jwk.Kid = securityKey.KeyId ?? Id.Create();
             if (keyOperations != null)
             {
                 foreach (var keyOperation in keyOperations)

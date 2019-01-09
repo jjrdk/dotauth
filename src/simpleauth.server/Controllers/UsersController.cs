@@ -21,6 +21,7 @@ namespace SimpleAuth.Server.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Logging;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Shared;
@@ -67,10 +68,10 @@ namespace SimpleAuth.Server.Controllers
 
             if (string.IsNullOrWhiteSpace(scimUser.Id))
             {
-                scimUser.Id = Guid.NewGuid().ToString("N");
+                scimUser.Id = Id.Create();
             }
             var id = await _subjectBuilder.BuildSubject(User.Claims.ToArray(), scimUser).ConfigureAwait(false);
-            var pwd = Guid.NewGuid().ToString("N");
+            var pwd = Id.Create();
             var ro = new ResourceOwner { Id = id, Password = pwd, ScimOnly = true, UserProfile = scimUser };
 
             //var ro = new ResourceOwner
@@ -183,7 +184,7 @@ namespace SimpleAuth.Server.Controllers
             }
 
             var id = await _subjectBuilder.BuildSubject(User.Claims.ToArray(), scimUser).ConfigureAwait(false);
-            var pwd = Guid.NewGuid().ToString("N");
+            var pwd = Id.Create();
             var ro = new ResourceOwner { Id = id, Password = pwd, ScimOnly = true, UserProfile = scimUser };
             var result = await _addUserOperation.Execute(ro).ConfigureAwait(false);
             var location = string.Format(

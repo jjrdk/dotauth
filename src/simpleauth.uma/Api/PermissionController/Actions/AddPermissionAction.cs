@@ -26,6 +26,7 @@ namespace SimpleAuth.Uma.Api.PermissionController.Actions
     using Parameters;
     using Repositories;
     using SimpleAuth.Errors;
+    using SimpleAuth.Shared;
     using Stores;
     using ErrorDescriptions = Errors.ErrorDescriptions;
 

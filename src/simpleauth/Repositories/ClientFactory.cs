@@ -11,6 +11,7 @@
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Logging;
 
     public class ClientFactory
     {
@@ -102,7 +103,7 @@
             var client = new Client
             {
                 ClientId = string.IsNullOrWhiteSpace(newClient.ClientId)
-                    ? Guid.NewGuid().ToString("N")
+                    ? Id.Create()
                     : newClient.ClientId
             };
 

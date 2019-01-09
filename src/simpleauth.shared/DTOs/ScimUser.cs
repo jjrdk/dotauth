@@ -8,7 +8,7 @@
     {
         public ScimUser()
         {
-            Id = Guid.NewGuid().ToString("N");
+            //Id = Id.Create();
             Schemas = new[] { ScimConstants.SchemaUrns.User };
         }
 

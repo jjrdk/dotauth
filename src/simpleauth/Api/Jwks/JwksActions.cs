@@ -69,14 +69,14 @@
 //                {
 //                    using (var provider = new RSACryptoServiceProvider())
 //                    {
-//                        serializedRsa = RsaExtensions.ToXmlString(provider, true);
+//                        serializedRsa = RsaExtensions.ToXml(provider, true);
 //                    }
 //                }
 //                else
 //                {
 //                    using (var rsa = new RSAOpenSsl())
 //                    {
-//                        serializedRsa = RsaExtensions.ToXmlString(rsa, true);
+//                        serializedRsa = RsaExtensions.ToXml(rsa, true);
 //                    }
 //                }
 
@@ -175,7 +175,7 @@
 //                {
 //                    using (var provider = new RSACryptoServiceProvider())
 //                    {
-//                        RsaExtensions.FromXmlString(provider, jsonWebKey.SerializedKey);
+//                        RsaExtensions.FromXml(provider, jsonWebKey.SerializedKey);
 //                        var rsaParameters = provider.ExportParameters(false);
 //                        // Export the modulus
 //                        var modulus = rsaParameters.Modulus.ToBase64Simplified();
@@ -190,7 +190,7 @@
 //                {
 //                    using (var provider = new RSAOpenSsl())
 //                    {
-//                        RsaExtensions.FromXmlString(provider, jsonWebKey.SerializedKey);
+//                        RsaExtensions.FromXml(provider, jsonWebKey.SerializedKey);
 //                        var rsaParameters = provider.ExportParameters(false);
 //                        // Export the modulus
 //                        var modulus = rsaParameters.Modulus.ToBase64Simplified();
