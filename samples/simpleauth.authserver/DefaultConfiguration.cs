@@ -1,18 +1,24 @@
 ﻿namespace SimpleAuth.AuthServer
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Security.Claims;
     using Helpers;
+    using Microsoft.IdentityModel.Tokens;
     using Shared;
     using Shared.DTOs;
     using Shared.Models;
     using SimpleAuth;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Security.Claims;
+    using System.Security.Cryptography.X509Certificates;
 
     public static class DefaultConfiguration
     {
         public static List<Client> GetClients()
         {
+            var path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location),
+                "mycert.pfx");
+            var certificate = new X509Certificate2(path, "simpleauth", X509KeyStorageFlags.Exportable);
             return new List<Client>
             {
                 new Client
@@ -27,6 +33,14 @@
                             Value = "api"
                         }
                     },
+                    JsonWebKeys = new[]{certificate
+                        .CreateJwk(JsonWebKeyUseNames.Sig,
+                            KeyOperations.Sign,
+                            KeyOperations.Verify),
+                        certificate.CreateJwk(JsonWebKeyUseNames.Enc,
+                            KeyOperations.Encrypt,
+                            KeyOperations.Decrypt)
+                    }.ToJwks(),
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
@@ -43,10 +57,9 @@
                     },
                     ResponseTypes = new List<string>
                     {
-                         ResponseTypeNames.Token
+                        ResponseTypeNames.Token
                     },
-                    ApplicationType = ApplicationTypes.native,
-
+                    ApplicationType = ApplicationTypes.native
                 }
             };
         }
