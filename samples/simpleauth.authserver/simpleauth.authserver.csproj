@@ -28,7 +28,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\simpleauth.server\simpleauth.server.csproj" />
-  </ItemGroup> 
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\tests\mycert.pfx" Link="mycert.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <Content Update="appsettings.json">

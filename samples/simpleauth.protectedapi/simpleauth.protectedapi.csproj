@@ -7,10 +7,10 @@
     <PackageId>simpleauth.protectedapi</PackageId>
     <RootNamespace>SimpleAuth.ProtectedApi</RootNamespace>
   </PropertyGroup>
-  <Import Project="../../shared.proj"/>
+  <Import Project="../../shared.proj" />
 
   <ItemGroup>
-    <None Include="..\..\tests\testCert.pfx" Link="testCert.pfx">
+    <None Include="..\..\tests\mycert.pfx" Link="mycert.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -30,6 +30,10 @@
     <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.1.0" />
     <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\simpleauth.shared\simpleauth.shared.csproj" />
   </ItemGroup>
 
 </Project>
