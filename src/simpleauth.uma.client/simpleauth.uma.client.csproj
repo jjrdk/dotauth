@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
-    <ProjectReference Include="..\simpleauth.uma.shared\simpleauth.uma.shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

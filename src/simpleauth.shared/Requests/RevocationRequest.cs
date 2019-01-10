@@ -19,17 +19,11 @@ namespace SimpleAuth.Shared.Requests
     [DataContract]
     public class RevocationRequest
     {
-        [DataMember(Name = RevocationRequestNames.Token)]
-        public string Token { get; set; }
-        [DataMember(Name = RevocationRequestNames.TokenTypeHint)]
-        public string TokenTypeHint { get; set; }
-        [DataMember(Name = ClientAuthNames.ClientId)]
-        public string ClientId { get; set; }
-        [DataMember(Name = ClientAuthNames.ClientSecret)]
-        public string ClientSecret { get; set; }
-        [DataMember(Name = ClientAuthNames.ClientAssertionType)]
-        public string ClientAssertionType { get; set; }
-        [DataMember(Name = ClientAuthNames.ClientAssertion)]
-        public string ClientAssertion { get; set; }
+        public string token { get; set; }
+        public string token_type_hint { get; set; }
+        public string client_id { get; set; }
+        public string client_secret { get; set; }
+        public string client_assertion_type { get; set; }
+        public string client_assertion { get; set; }
     }
 }

@@ -22,6 +22,7 @@ namespace SimpleAuth.Api.Token.Actions
     using Errors;
     using Exceptions;
     using Parameters;
+    using Shared.Requests;
 
     internal class RevokeTokenAction : IRevokeTokenAction
     {

@@ -14,21 +14,63 @@
 
 namespace SimpleAuth.Server.Extensions
 {
+    using Api.Discovery;
+    using Api.PermissionController;
+    using Api.PermissionController.Actions;
+    using Api.PolicyController;
+    using Api.PolicyController.Actions;
+    using Api.ResourceSetController;
+    using Api.ResourceSetController.Actions;
+    using Api.Token;
+    using Api.Token.Actions;
+    using Authenticate;
+    using Common;
+    using Helpers;
+    using JwtToken;
+    using Logging;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
     using Parsers;
+    using Repositories;
+    using Services;
     using Shared;
     using Shared.AccountFiltering;
+    using Shared.Models;
+    using Shared.Policies;
     using Shared.Repositories;
     using SimpleAuth;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net.Http;
+    using System.Security.Claims;
+    using Translation;
+    using Uma;
+    using Validators;
+    using WebSite.Authenticate;
+    using WebSite.Authenticate.Actions;
+    using WebSite.Authenticate.Common;
+    using WebSite.Consent;
+    using WebSite.Consent.Actions;
 
     public static class ServiceCollectionExtensions
     {
+        private static readonly List<Scope> DEFAULT_SCOPES = new List<Scope>
+        {
+            new Scope
+            {
+                Name = "uma_protection",
+                Description = "Access to UMA permission, resource set",
+                IsOpenIdScope = false,
+                IsDisplayedInConsent = false,
+                Type = ScopeType.ProtectedApi,
+                UpdateDateTime = DateTime.MinValue,
+                CreateDateTime = DateTime.MinValue
+            }
+        };
+
         public static AuthorizationOptions AddAuthPolicies(this AuthorizationOptions options, string cookieName)
         {
             if (options == null)
@@ -36,6 +78,27 @@ namespace SimpleAuth.Server.Extensions
                 throw new ArgumentNullException(nameof(options));
             }
 
+
+            options.AddPolicy("UmaProtection", policy =>
+            {
+                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                policy.RequireAssertion(p =>
+                {
+                    if (p.User?.Identity == null || !p.User.Identity.IsAuthenticated)
+                    {
+                        return false;
+                    }
+
+                    var claimRole = p.User.Claims.Where(c => c.Type == ClaimTypes.Role);
+                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
+                    if (claimRole == null && !claimScopes.Any())
+                    {
+                        return false;
+                    }
+
+                    return claimRole != null && claimRole.Any(role => role.Value == "administrator") || claimScopes.Any(s => s.Value == "uma_protection");
+                });
+            });
             options.AddPolicy(ScimConstants.ScimPolicies.ScimManage, policy =>
             {
                 policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
@@ -177,12 +240,88 @@ namespace SimpleAuth.Server.Extensions
             this IServiceCollection services,
             SimpleAuthOptions options = null)
         {
-            var s = services.RegisterSimpleAuth(options)
-                 .AddSingleton(options?.Scim ?? new ScimOptions { IsEnabled = false })
-                 .AddTransient<IRedirectInstructionParser, RedirectInstructionParser>()
-                 .AddTransient<IActionResultParser, ActionResultParser>()
-                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            var s = services
+            .AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>()
+            .AddTransient<IUpdateResourceOwnerClaimsParameterValidator, UpdateResourceOwnerClaimsParameterValidator>()
+            .AddTransient<IUpdateResourceOwnerPasswordParameterValidator, UpdateResourceOwnerPasswordParameterValidator>()
+            .AddTransient<IGrantedTokenGeneratorHelper, GrantedTokenGeneratorHelper>()
+            .AddTransient<IConsentHelper, ConsentHelper>()
+            .AddTransient<IClientHelper, ClientHelper>()
+            .AddTransient<IAuthorizationFlowHelper, AuthorizationFlowHelper>()
+            .AddTransient<IClientCredentialsGrantTypeParameterValidator, ClientCredentialsGrantTypeParameterValidator>()
+            .AddTransient<IGrantedTokenValidator, GrantedTokenValidator>()
+            .AddTransient<IParameterParserHelper, ParameterParserHelper>()
+            .AddTransient<ITokenActions, TokenActions>()
+            .AddTransient<IGetTokenByResourceOwnerCredentialsGrantTypeAction, GetTokenByResourceOwnerCredentialsGrantTypeAction>()
+            .AddTransient<IGetTokenByAuthorizationCodeGrantTypeAction, GetTokenByAuthorizationCodeGrantTypeAction>()
+            .AddTransient<IConsentActions, ConsentActions>()
+            .AddTransient<IConfirmConsentAction, ConfirmConsentAction>()
+            .AddTransient<IDisplayConsentAction, DisplayConsentAction>()
+            .AddTransient<IAuthenticateActions, AuthenticateActions>()
+            .AddTransient<IAuthenticateResourceOwnerOpenIdAction, AuthenticateResourceOwnerOpenIdAction>()
+            .AddTransient<ILocalOpenIdUserAuthenticationAction, LocalOpenIdUserAuthenticationAction>()
+            .AddTransient<IAuthenticateHelper, AuthenticateHelper>()
+            .AddTransient<IDiscoveryActions, DiscoveryActions>()
+            .AddTransient<IJwtGenerator, JwtGenerator>()
+            .AddTransient<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>()
+            .AddTransient<IAuthenticateClient, AuthenticateClient>()
+            .AddTransient<IGetTokenByRefreshTokenGrantTypeAction, GetTokenByRefreshTokenGrantTypeAction>()
+            .AddTransient<ITranslationManager, TranslationManager>()
+            .AddTransient<IGrantedTokenHelper, GrantedTokenHelper>()
+            .AddTransient<IRevokeTokenAction, RevokeTokenAction>()
+            .AddTransient<IGenerateAndSendCodeAction, GenerateAndSendCodeAction>()
+            .AddTransient<IValidateConfirmationCodeAction, ValidateConfirmationCodeAction>()
+            .AddTransient<IRemoveConfirmationCodeAction, RemoveConfirmationCodeAction>()
+            .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
+            .AddTransient<IResourceOwnerAuthenticateHelper, ResourceOwnerAuthenticateHelper>()
+            .AddTransient<IAmrHelper, AmrHelper>()
+            .AddSingleton<IEventPublisher>(options?.EventPublisher ?? new DefaultEventPublisher())
+            .AddSingleton<ISubjectBuilder>(options?.SubjectBuilder ?? new DefaultSubjectBuilder())
+            .AddSingleton(options?.OAuthConfigurationOptions ?? new OAuthConfigurationOptions())
+            .AddSingleton(options?.BasicAuthenticationOptions ?? new BasicAuthenticateOptions())
+            .AddSingleton(options?.Scim ?? new ScimOptions { IsEnabled = false })
+            .AddSingleton(sp => new DefaultClientRepository(options?.Configuration?.Clients, sp.GetService<HttpClient>(), sp.GetService<IScopeStore>()))
+            .AddSingleton(typeof(IClientStore), sp => sp.GetService<DefaultClientRepository>())
+            .AddSingleton(typeof(IClientRepository), sp => sp.GetService<DefaultClientRepository>())
+            .AddSingleton<IConsentRepository>(new DefaultConsentRepository(options?.Configuration?.Consents))
+            .AddSingleton<IProfileRepository>(new DefaultProfileRepository(options?.Configuration?.Profiles))
+            .AddSingleton<IResourceOwnerRepository>(new DefaultResourceOwnerRepository(options?.Configuration?.Users))
+            .AddSingleton(new DefaultScopeRepository(options?.Configuration?.Scopes))
+            .AddSingleton<IScopeRepository>(sp => sp.GetService<DefaultScopeRepository>())
+            .AddSingleton<IScopeStore>(sp => sp.GetService<DefaultScopeRepository>())
+            .AddSingleton<ITranslationRepository>(new DefaultTranslationRepository(options?.Configuration?.Translations))
+            .AddSingleton(options?.Scim ?? new ScimOptions { IsEnabled = false })
+            .AddTransient<IRedirectInstructionParser, RedirectInstructionParser>()
+            .AddTransient<IActionResultParser, ActionResultParser>()
+            .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+            .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
+            .AddTransient<IResourceSetActions, ResourceSetActions>()
+            .AddTransient<IAddResourceSetAction, AddResourceSetAction>()
+            .AddTransient<IGetResourceSetAction, GetResourceSetAction>()
+            .AddTransient<IUpdateResourceSetAction, UpdateResourceSetAction>()
+            .AddTransient<IDeleteResourceSetAction, DeleteResourceSetAction>()
+            .AddTransient<IGetAllResourceSetAction, GetAllResourceSetAction>()
+            .AddTransient<IPermissionControllerActions, PermissionControllerActions>()
+            .AddTransient<IAddPermissionAction, AddPermissionAction>()
+            .AddTransient<IAuthorizationPolicyValidator, AuthorizationPolicyValidator>()
+            .AddTransient<IBasicAuthorizationPolicy, BasicAuthorizationPolicy>()
+            .AddTransient<ICustomAuthorizationPolicy, CustomAuthorizationPolicy>()
+            .AddTransient<IAddAuthorizationPolicyAction, AddAuthorizationPolicyAction>()
+            .AddTransient<IPolicyActions, PolicyActions>()
+            .AddTransient<IGetAuthorizationPolicyAction, GetAuthorizationPolicyAction>()
+            .AddTransient<IDeleteAuthorizationPolicyAction, DeleteAuthorizationPolicyAction>()
+            .AddTransient<IGetAuthorizationPoliciesAction, GetAuthorizationPoliciesAction>()
+            .AddTransient<IUpdatePolicyAction, UpdatePolicyAction>()
+            .AddTransient<IAddResourceSetToPolicyAction, AddResourceSetToPolicyAction>()
+            .AddTransient<IDeleteResourcePolicyAction, DeleteResourcePolicyAction>()
+            .AddTransient<IGetPoliciesAction, GetPoliciesAction>()
+            .AddTransient<ISearchAuthPoliciesAction, SearchAuthPoliciesAction>()
+            .AddTransient<ISearchResourceSetOperation, SearchResourceSetOperation>()
+            .AddTransient<IUmaTokenActions, UmaTokenActions>()
+            .AddSingleton(options?.UmaConfigurationOptions ?? new UmaConfigurationOptions())
+            .AddSingleton<IPolicyRepository>(new DefaultPolicyRepository(options?.UmaConfigurationOptions?.Policies))
+            .AddSingleton<IResourceSetRepository>(new DefaultResourceSetRepository(options?.UmaConfigurationOptions?.ResourceSets))
+            .AddSingleton<ITicketStore>(new DefaultTicketStore());
             services.AddDataProtection();
             return s;
         }

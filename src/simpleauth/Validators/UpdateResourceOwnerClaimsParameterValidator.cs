@@ -16,7 +16,7 @@
 
             if (string.IsNullOrWhiteSpace(parameter.Login))
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterIsMissing, "login"));
+                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.MissingParameter, "login"));
             }
         }
     }

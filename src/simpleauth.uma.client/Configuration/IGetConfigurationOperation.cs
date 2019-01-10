@@ -6,6 +6,6 @@
 
     public interface IGetConfigurationOperation
     {
-        Task<ConfigurationResponse> ExecuteAsync(Uri configurationUri);
+        Task<UmaConfigurationResponse> ExecuteAsync(Uri configurationUri);
     }
 }
