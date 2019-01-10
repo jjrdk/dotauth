@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Server.Controllers
 {
-    using Api.Profile.Actions;
     using Exceptions;
     using Extensions;
     using Helpers;
@@ -12,11 +11,13 @@
     using Microsoft.AspNetCore.Mvc.Routing;
     using Parameters;
     using Shared;
+    using Shared.Repositories;
     using Shared.Requests;
     using SimpleAuth;
     using SimpleAuth.Extensions;
     using SimpleAuth.Services;
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Security.Claims;
@@ -25,7 +26,6 @@
     using ViewModels;
     using WebSite.Authenticate;
     using WebSite.Authenticate.Common;
-    using WebSite.User.Actions;
 
     public class AuthenticateController : BaseAuthenticateController
     {
@@ -34,7 +34,6 @@
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
-            IGetResourceOwnerClaimsAction getResourceOwnerClaims,
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
             IUrlHelperFactory urlHelperFactory,
@@ -42,17 +41,16 @@
             IEventPublisher eventPublisher,
             IAuthenticationService authenticationService,
             IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IAddUserOperation addUser,
-            IGetUserOperation getUserOperation,
-            IUpdateUserClaimsOperation updateUserClaimsOperation,
             IAuthenticateHelper authenticateHelper,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             ISubjectBuilder subjectBuilder,
+            IProfileRepository profileRepository,
+            IResourceOwnerRepository resourceOwnerRepository,
+            IEnumerable<IAccountFilter> accountFilters,
             BasicAuthenticateOptions basicAuthenticateOptions)
             : base(
                 authenticateActions,
-                getResourceOwnerClaims,
                 dataProtectionProvider,
                 translationManager,
                 urlHelperFactory,
@@ -60,12 +58,12 @@
                 eventPublisher,
                 authenticationService,
                 authenticationSchemeProvider,
-                addUser,
-                getUserOperation,
-                updateUserClaimsOperation,
                 authenticateHelper,
                 twoFactorAuthenticationHandler,
                 subjectBuilder,
+                profileRepository,
+                resourceOwnerRepository,
+                accountFilters,
                 basicAuthenticateOptions)
         {
             _eventPublisher = eventPublisher;

@@ -13,7 +13,7 @@
     {
         private Mock<IProfileRepository> _profileRepositoryStub;
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private IGetResourceOwnerClaimsAction _getResourceOwnerClaimsAction;
+        private GetResourceOwnerClaimsAction _getResourceOwnerClaimsAction;
 
         [Fact]
         public async Task WhenPassNullParameterThenExceptionIsThrown()

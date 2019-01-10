@@ -16,7 +16,6 @@ namespace SimpleAuth.Helpers
 {
     using Errors;
     using Exceptions;
-    using Logging;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;

@@ -23,7 +23,6 @@
         private Mock<IGetTokenByAuthorizationCodeGrantTypeAction> _getTokenByAuthorizationCodeGrantTypeActionFake;
         private Mock<IGetTokenByRefreshTokenGrantTypeAction> _getTokenByRefreshTokenGrantTypeActionFake;
         private Mock<IClientCredentialsGrantTypeParameterValidator> _clientCredentialsGrantTypeParameterValidatorStub;
-        private Mock<IRevokeTokenParameterValidator> _revokeTokenParameterValidator;
         private Mock<IRevokeTokenAction> _revokeTokenActionStub;
         private ITokenActions _tokenActions;
 
@@ -89,7 +88,6 @@
             _getTokenByAuthorizationCodeGrantTypeActionFake = new Mock<IGetTokenByAuthorizationCodeGrantTypeAction>();
             _getTokenByRefreshTokenGrantTypeActionFake = new Mock<IGetTokenByRefreshTokenGrantTypeAction>();
             _clientCredentialsGrantTypeParameterValidatorStub = new Mock<IClientCredentialsGrantTypeParameterValidator>();
-            _revokeTokenParameterValidator = new Mock<IRevokeTokenParameterValidator>();
             var eventPublisher = new Mock<IEventPublisher>();
             _revokeTokenActionStub = new Mock<IRevokeTokenAction>();
             const string scope = "valid_scope";
@@ -126,7 +124,6 @@
                 _clientCredentialsGrantTypeParameterValidatorStub.Object,
                 mock.Object,
                 new Mock<IGrantedTokenGeneratorHelper>().Object,
-                _revokeTokenParameterValidator.Object,
                 _revokeTokenActionStub.Object,
                 eventPublisher.Object,
                 new Mock<ITokenStore>().Object,

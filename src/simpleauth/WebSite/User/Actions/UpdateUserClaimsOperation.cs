@@ -22,7 +22,7 @@ namespace SimpleAuth.WebSite.User.Actions
     using Exceptions;
     using Shared.Repositories;
 
-    internal class UpdateUserClaimsOperation : IUpdateUserClaimsOperation
+    internal class UpdateUserClaimsOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 

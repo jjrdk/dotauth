@@ -19,8 +19,10 @@ namespace SimpleAuth.Uma.Extensions
     using System.Linq;
     using System.Security.Claims;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
+    using Middlewares;
     using SimpleAuth;
     using SimpleAuth.Shared.Models;
 
@@ -39,6 +41,12 @@ namespace SimpleAuth.Uma.Extensions
                 CreateDateTime = DateTime.MinValue
             }
         };
+
+        public static IApplicationBuilder UseUmaExceptionHandler(
+            this IApplicationBuilder applicationBuilder)
+        {
+            return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>();
+        }
 
         public static IServiceCollection AddUmaHost(this IServiceCollection services, AuthorizationServerOptions authorizationServerOptions)
         {

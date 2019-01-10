@@ -19,7 +19,7 @@ namespace SimpleAuth.WebSite.User.Actions
     using Shared.Models;
     using Shared.Repositories;
 
-    internal class RemoveConsentOperation : IRemoveConsentOperation
+    internal class RemoveConsentOperation
     {
         private readonly IConsentRepository _consentRepository;
         

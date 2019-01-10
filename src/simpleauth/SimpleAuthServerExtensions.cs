@@ -14,13 +14,7 @@
 
 namespace SimpleAuth
 {
-    using Api.Authorization;
     using Api.Discovery;
-    using Api.Introspection;
-    using Api.Introspection.Actions;
-    using Api.Profile.Actions;
-    using Api.Scopes;
-    using Api.Scopes.Actions;
     using Api.Token;
     using Api.Token.Actions;
     using Authenticate;
@@ -42,7 +36,6 @@ namespace SimpleAuth
     using WebSite.Authenticate.Common;
     using WebSite.Consent;
     using WebSite.Consent.Actions;
-    using WebSite.User.Actions;
 
     internal static class SimpleAuthServerExtensions
     {
@@ -57,25 +50,15 @@ namespace SimpleAuth
 
             serviceCollection.AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>();
 
-            serviceCollection.AddTransient<IScopeActions, ScopeActions>();
-            serviceCollection.AddTransient<IDeleteScopeOperation, DeleteScopeOperation>();
-            serviceCollection.AddTransient<IGetScopeOperation, GetScopeOperation>();
-            serviceCollection.AddTransient<IGetScopesOperation, GetScopesOperation>();
             serviceCollection.AddTransient<IUpdateResourceOwnerClaimsParameterValidator, UpdateResourceOwnerClaimsParameterValidator>();
             serviceCollection.AddTransient<IUpdateResourceOwnerPasswordParameterValidator, UpdateResourceOwnerPasswordParameterValidator>();
-            serviceCollection.AddTransient<IAddUserOperation, AddUserOperation>();
-            serviceCollection.AddTransient<IAddScopeOperation, AddScopeOperation>();
-            serviceCollection.AddTransient<IUpdateScopeOperation, UpdateScopeOperation>();
-            serviceCollection.AddTransient<ISearchScopesOperation, SearchScopesOperation>();
             serviceCollection.AddTransient<IGrantedTokenGeneratorHelper, GrantedTokenGeneratorHelper>();
             serviceCollection.AddTransient<IConsentHelper, ConsentHelper>();
             serviceCollection.AddTransient<IClientHelper, ClientHelper>();
             serviceCollection.AddTransient<IAuthorizationFlowHelper, AuthorizationFlowHelper>();
             serviceCollection.AddTransient<IClientCredentialsGrantTypeParameterValidator, ClientCredentialsGrantTypeParameterValidator>();
             serviceCollection.AddTransient<IGrantedTokenValidator, GrantedTokenValidator>();
-            serviceCollection.AddTransient<IAuthorizationCodeGrantTypeParameterAuthEdpValidator, AuthorizationCodeGrantTypeParameterAuthEdpValidator>();
             serviceCollection.AddTransient<IParameterParserHelper, ParameterParserHelper>();
-            serviceCollection.AddTransient<IAuthorizationActions, AuthorizationActions>();
             serviceCollection.AddTransient<ITokenActions, TokenActions>();
             serviceCollection.AddTransient<IGetTokenByResourceOwnerCredentialsGrantTypeAction, GetTokenByResourceOwnerCredentialsGrantTypeAction>();
             serviceCollection.AddTransient<IGetTokenByAuthorizationCodeGrantTypeAction, GetTokenByAuthorizationCodeGrantTypeAction>();
@@ -95,25 +78,13 @@ namespace SimpleAuth
                 .AddTransient<IGetTokenByRefreshTokenGrantTypeAction, GetTokenByRefreshTokenGrantTypeAction>();
             serviceCollection.AddTransient<ITranslationManager, TranslationManager>();
             serviceCollection.AddTransient<IGrantedTokenHelper, GrantedTokenHelper>();
-            serviceCollection.AddTransient<IIntrospectionActions, IntrospectionActions>();
-            serviceCollection.AddTransient<IPostIntrospectionAction, PostIntrospectionAction>();
-            serviceCollection.AddTransient<IIntrospectionParameterValidator, IntrospectionParameterValidator>();
-            serviceCollection.AddTransient<IGetConsentsOperation, GetConsentsOperation>();
-            serviceCollection.AddTransient<IRemoveConsentOperation, RemoveConsentOperation>();
             serviceCollection.AddTransient<IRevokeTokenAction, RevokeTokenAction>();
-            serviceCollection.AddTransient<IGetUserOperation, GetUserOperation>();
-            serviceCollection.AddTransient<IUpdateUserCredentialsOperation, UpdateUserCredentialsOperation>();
-            serviceCollection.AddTransient<IUpdateUserClaimsOperation, UpdateUserClaimsOperation>();
-            serviceCollection.AddTransient<IAddUserOperation, AddUserOperation>();
             serviceCollection.AddTransient<IGenerateAndSendCodeAction, GenerateAndSendCodeAction>();
             serviceCollection.AddTransient<IValidateConfirmationCodeAction, ValidateConfirmationCodeAction>();
             serviceCollection.AddTransient<IRemoveConfirmationCodeAction, RemoveConfirmationCodeAction>();
             serviceCollection.AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>();
-            serviceCollection.AddTransient<IGetResourceOwnerClaimsAction, GetResourceOwnerClaimsAction>();
-            serviceCollection.AddTransient<IUpdateUserTwoFactorAuthenticatorOperation, UpdateUserTwoFactorAuthenticatorOperation>();
             serviceCollection.AddTransient<IResourceOwnerAuthenticateHelper, ResourceOwnerAuthenticateHelper>();
             serviceCollection.AddTransient<IAmrHelper, AmrHelper>();
-            serviceCollection.AddTransient<IRevokeTokenParameterValidator, RevokeTokenParameterValidator>();
             serviceCollection.AddSingleton<IEventPublisher>(options?.EventPublisher ?? new DefaultEventPublisher());
             serviceCollection.AddSingleton<ISubjectBuilder>(options?.SubjectBuilder ?? new DefaultSubjectBuilder());
             serviceCollection.AddSingleton(options?.OAuthConfigurationOptions ?? new OAuthConfigurationOptions());

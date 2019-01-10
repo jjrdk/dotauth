@@ -3,7 +3,6 @@
     using Authenticate;
     using Errors;
     using Exceptions;
-    using Logging;
     using Models;
     using Newtonsoft.Json.Linq;
     using Parameters;

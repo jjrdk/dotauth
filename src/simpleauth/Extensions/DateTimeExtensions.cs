@@ -19,6 +19,7 @@ namespace SimpleAuth.Extensions
     public static class DateTimeExtensions
     {
         private static DateTime UnixStart;
+        private static readonly TimeSpan EpochTicks = new TimeSpan(UnixStart.Ticks);
 
         static DateTimeExtensions()
         {
@@ -27,8 +28,7 @@ namespace SimpleAuth.Extensions
 
         public static double ToUnix(this DateTime dateTime)
         {
-            var epochTicks = new TimeSpan(UnixStart.Ticks);
-            var unixTicks = new TimeSpan(dateTime.Ticks) - epochTicks;
+            var unixTicks = new TimeSpan(dateTime.Ticks) - EpochTicks;
             return unixTicks.TotalSeconds;
         }
 

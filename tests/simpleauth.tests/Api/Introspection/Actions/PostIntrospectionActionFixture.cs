@@ -21,22 +21,20 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
     using Shared;
     using Shared.Models;
     using SimpleAuth;
-    using SimpleAuth.Api.Introspection.Actions;
     using SimpleAuth.Authenticate;
-    using SimpleAuth.Validators;
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
+    using SimpleAuth.Api.Introspection;
     using Xunit;
     using JwtConstants = SimpleAuth.JwtConstants;
 
     public class PostIntrospectionActionFixture
     {
         private Mock<IAuthenticateClient> _authenticateClientStub;
-        private Mock<IIntrospectionParameterValidator> _introspectionParameterValidatorStub;
         private Mock<ITokenStore> _tokenStoreStub;
-        private IPostIntrospectionAction _postIntrospectionAction;
+        private PostIntrospectionAction _postIntrospectionAction;
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
@@ -187,11 +185,9 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
         private void InitializeFakeObjects()
         {
             _authenticateClientStub = new Mock<IAuthenticateClient>();
-            _introspectionParameterValidatorStub = new Mock<IIntrospectionParameterValidator>();
             _tokenStoreStub = new Mock<ITokenStore>();
             _postIntrospectionAction = new PostIntrospectionAction(
                 _authenticateClientStub.Object,
-                _introspectionParameterValidatorStub.Object,
                 _tokenStoreStub.Object);
         }
     }

@@ -23,14 +23,13 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
     internal class DeleteAuthorizationPolicyAction : IDeleteAuthorizationPolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
-        private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
+        private readonly RepositoryExceptionHelper _repositoryExceptionHelper;
 
         public DeleteAuthorizationPolicyAction(
-            IPolicyRepository policyRepository,
-            IRepositoryExceptionHelper repositoryExceptionHelper)
+            IPolicyRepository policyRepository)
         {
             _policyRepository = policyRepository;
-            _repositoryExceptionHelper = repositoryExceptionHelper;
+            _repositoryExceptionHelper = new RepositoryExceptionHelper();
         }
 
         public async Task<bool> Execute(string policyId)

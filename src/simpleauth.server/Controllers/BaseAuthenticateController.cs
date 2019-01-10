@@ -18,7 +18,7 @@ namespace SimpleAuth.Server.Controllers
     using Errors;
     using Exceptions;
     using Extensions;
-    using Logging;
+    using Helpers;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Http;
@@ -30,6 +30,7 @@ namespace SimpleAuth.Server.Controllers
     using Shared.DTOs;
     using Shared.Events.Openid;
     using Shared.Models;
+    using Shared.Repositories;
     using Shared.Requests;
     using SimpleAuth;
     using SimpleAuth.Extensions;
@@ -40,7 +41,6 @@ namespace SimpleAuth.Server.Controllers
     using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Helpers;
     using Translation;
     using ViewModels;
     using WebSite.Authenticate;
@@ -53,7 +53,7 @@ namespace SimpleAuth.Server.Controllers
         protected const string DefaultLanguage = "en";
         protected readonly IAuthenticateHelper _authenticateHelper;
         protected readonly IAuthenticateActions _authenticateActions;
-        private readonly IGetResourceOwnerClaimsAction _getResourceOwnerClaims;
+        private readonly GetResourceOwnerClaimsAction _getResourceOwnerClaims;
         protected readonly IDataProtector _dataProtector;
         private readonly ITranslationManager _translationManager;
         private readonly IUrlHelper _urlHelper;
@@ -64,13 +64,12 @@ namespace SimpleAuth.Server.Controllers
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
         private readonly BasicAuthenticateOptions _basicAuthenticateOptions;
         private readonly ISubjectBuilder _subjectBuilder;
-        private readonly IAddUserOperation _addUser;
-        private readonly IGetUserOperation _getUserOperation;
-        private readonly IUpdateUserClaimsOperation _updateUserClaimsOperation;
+        private readonly AddUserOperation _addUser;
+        private readonly GetUserOperation _getUserOperation;
+        private readonly UpdateUserClaimsOperation _updateUserClaimsOperation;
 
         public BaseAuthenticateController(
             IAuthenticateActions authenticateActions,
-            IGetResourceOwnerClaimsAction getResourceOwnerClaims,
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
             IUrlHelperFactory urlHelperFactory,
@@ -78,24 +77,24 @@ namespace SimpleAuth.Server.Controllers
             IEventPublisher eventPublisher,
             IAuthenticationService authenticationService,
             IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IAddUserOperation addUser,
-            IGetUserOperation getUserOperation,
-            IUpdateUserClaimsOperation updateUserClaimsOperation,
             IAuthenticateHelper authenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             ISubjectBuilder subjectBuilder,
+            IProfileRepository profileRepository,
+            IResourceOwnerRepository resourceOwnerRepository,
+            IEnumerable<IAccountFilter> accountFilters,
             BasicAuthenticateOptions basicAuthenticateOptions) : base(authenticationService)
         {
             _authenticateActions = authenticateActions;
-            _getResourceOwnerClaims = getResourceOwnerClaims;
+            _getResourceOwnerClaims = new GetResourceOwnerClaimsAction(profileRepository, resourceOwnerRepository);
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _translationManager = translationManager;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _eventPublisher = eventPublisher;
             _authenticationSchemeProvider = authenticationSchemeProvider;
-            _addUser = addUser;
-            _getUserOperation = getUserOperation;
-            _updateUserClaimsOperation = updateUserClaimsOperation;
+            _addUser = new AddUserOperation(resourceOwnerRepository, accountFilters, eventPublisher);
+            _getUserOperation = new GetUserOperation(resourceOwnerRepository);
+            _updateUserClaimsOperation = new UpdateUserClaimsOperation(resourceOwnerRepository);
             _authenticateHelper = authenticateHelper;
             _basicAuthenticateOptions = basicAuthenticateOptions;
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
@@ -372,7 +371,8 @@ namespace SimpleAuth.Server.Controllers
             }
 
             // 1. Persist the request code into a cookie & fix the space problems
-            var cookieValue = Id.Create(); ;
+            var cookieValue = Id.Create();
+            ;
             var cookieName = string.Format(ExternalAuthenticateCookieName, cookieValue);
             Response.Cookies.Append(cookieName,
                 code,
@@ -632,7 +632,7 @@ namespace SimpleAuth.Server.Controllers
         protected async Task SetLocalCookie(IEnumerable<Claim> claims, string sessionId)
         {
             var cls = claims.ToList();
-            var tokenValidity = TimeSpan.FromHours(1d);//_configurationService.TokenValidityPeriod;
+            var tokenValidity = TimeSpan.FromHours(1d); //_configurationService.TokenValidityPeriod;
             var now = DateTime.UtcNow;
             var expires = now.Add(tokenValidity);
             Response.Cookies.Append(

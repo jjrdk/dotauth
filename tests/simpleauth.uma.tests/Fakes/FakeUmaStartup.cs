@@ -20,12 +20,12 @@ namespace SimpleAuth.Uma.Tests.Fakes
     using System.Reflection;
     using System.Security.Claims;
     using Controllers;
+    using Extensions;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
-    using Middlewares;
     using MiddleWares;
     using SimpleAuth;
     using SimpleAuth.Client.Operations;

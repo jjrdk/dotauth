@@ -23,7 +23,6 @@ namespace SimpleAuth.Uma
     using Api.ResourceSetController;
     using Api.ResourceSetController.Actions;
     using Api.Token;
-    using Helpers;
     using Microsoft.Extensions.DependencyInjection;
     using Models;
     using Policies;
@@ -45,7 +44,6 @@ namespace SimpleAuth.Uma
             serviceCollection.AddTransient<IResourceSetParameterValidator, ResourceSetParameterValidator>();
             serviceCollection.AddTransient<IPermissionControllerActions, PermissionControllerActions>();
             serviceCollection.AddTransient<IAddPermissionAction, AddPermissionAction>();
-            serviceCollection.AddTransient<IRepositoryExceptionHelper, RepositoryExceptionHelper>();
             serviceCollection.AddTransient<IAuthorizationPolicyValidator, AuthorizationPolicyValidator>();
             serviceCollection.AddTransient<IBasicAuthorizationPolicy, BasicAuthorizationPolicy>();
             serviceCollection.AddTransient<ICustomAuthorizationPolicy, CustomAuthorizationPolicy>();

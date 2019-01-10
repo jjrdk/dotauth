@@ -19,7 +19,7 @@ namespace SimpleAuth.Uma.Helpers
     using Errors;
     using Exceptions;
 
-    internal class RepositoryExceptionHelper : IRepositoryExceptionHelper
+    internal class RepositoryExceptionHelper
     {
         public Task<T> HandleException<T>(string message, Func<Task<T>> callback)
         {

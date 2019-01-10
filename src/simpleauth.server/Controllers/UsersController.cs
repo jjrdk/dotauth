@@ -14,14 +14,6 @@
 
 namespace SimpleAuth.Server.Controllers
 {
-    using System;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using System.Net;
-    using System.Security.Claims;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Logging;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Shared;
@@ -29,21 +21,30 @@ namespace SimpleAuth.Server.Controllers
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth.Services;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Net;
+    using System.Security.Claims;
+    using System.Threading;
+    using System.Threading.Tasks;
     using WebSite.User.Actions;
 
     [Route(SimpleAuth.Scim.ScimConstants.RoutePaths.UsersController)]
     public class UsersController : Controller
     {
-        private readonly IAddUserOperation _addUserOperation;
+        private readonly AddUserOperation _addUserOperation;
         private readonly IResourceOwnerRepository _userStore;
         private readonly ISubjectBuilder _subjectBuilder;
 
         public UsersController(
-            IAddUserOperation addUserOperation,
             IResourceOwnerRepository userStore,
+            IEnumerable<IAccountFilter> accountFilters,
+            IEventPublisher eventPublisher,
             ISubjectBuilder subjectBuilder)
         {
-            _addUserOperation = addUserOperation;
+            _addUserOperation = new AddUserOperation(userStore, accountFilters, eventPublisher);
             _userStore = userStore;
             _subjectBuilder = subjectBuilder;
         }
@@ -72,16 +73,16 @@ namespace SimpleAuth.Server.Controllers
             }
             var id = await _subjectBuilder.BuildSubject(User.Claims.ToArray(), scimUser).ConfigureAwait(false);
             var pwd = Id.Create();
-            var ro = new ResourceOwner { Id = id, Password = pwd, ScimOnly = true, UserProfile = scimUser };
+            var ro = new ResourceOwner
+            {
+                Id = id,
+                Password = pwd,
+                ScimOnly = true,
+                CreateDateTime = DateTime.UtcNow,
+                UserProfile = scimUser
+            };
 
-            //var ro = new ResourceOwner
-            //{
-            //    ScimOnly = true,
-            //    CreateDateTime = DateTime.UtcNow,
-            //    UserProfile = scimUser
-            //};
             var result = await _addUserOperation.Execute(ro).ConfigureAwait(false);
-            //Response.Headers[HttpResponseHeader.Location.ToString()] = ;
             var location = string.Format(
                 Request.GetAbsoluteUriWithVirtualPath() + SimpleAuth.Scim.ScimConstants.RoutePaths.UsersController + "/{0}",
                 scimUser.UserName);
@@ -96,23 +97,6 @@ namespace SimpleAuth.Server.Controllers
         {
             return string.IsNullOrWhiteSpace(id) ? Task.FromResult<IActionResult>(new BadRequestResult()) : GetUser(id);
         }
-
-        //[Authorize(ScimConstants.ScimPolicies.ScimManage)]
-        //[HttpPatch("{id}")]
-        //public Task<IActionResult> Patch(string id, [FromBody] JObject jObj)
-        //{
-        //    if (string.IsNullOrWhiteSpace(id))
-        //    {
-        //        throw new ArgumentNullException(nameof(id));
-        //    }
-
-        //    if (jObj == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(jObj));
-        //    }
-
-        //    return PatchUser(id, jObj);
-        //}
 
         [Authorize(ScimConstants.ScimPolicies.ScimManage)]
         [HttpPut("{id}")]
@@ -185,7 +169,14 @@ namespace SimpleAuth.Server.Controllers
 
             var id = await _subjectBuilder.BuildSubject(User.Claims.ToArray(), scimUser).ConfigureAwait(false);
             var pwd = Id.Create();
-            var ro = new ResourceOwner { Id = id, Password = pwd, ScimOnly = true, UserProfile = scimUser };
+            scimUser.Id = id;
+            var ro = new ResourceOwner
+            {
+                Id = id,
+                Password = pwd,
+                ScimOnly = true,
+                UserProfile = scimUser
+            };
             var result = await _addUserOperation.Execute(ro).ConfigureAwait(false);
             var location = string.Format(
                 Request.GetAbsoluteUriWithVirtualPath() + SimpleAuth.Scim.ScimConstants.RoutePaths.UsersController + "/{0}",

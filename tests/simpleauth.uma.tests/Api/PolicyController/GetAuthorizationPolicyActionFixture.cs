@@ -16,8 +16,6 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
 {
     using System;
     using System.Threading.Tasks;
-    using Errors;
-    using Helpers;
     using Models;
     using Moq;
     using Repositories;
@@ -27,13 +25,12 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
     public class GetAuthorizationPolicyActionFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
-        private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
         private IGetAuthorizationPolicyAction _getAuthorizationPolicyAction;
 
         [Fact]
         public async Task When_Passing_Empty_Parameter_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
+            InitializeFakeObjects(null);
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationPolicyAction.Execute(null)).ConfigureAwait(false);
         }
@@ -46,25 +43,19 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
             {
                 Id = policyId
             };
-            InitializeFakeObjects();
-            _repositoryExceptionHelperStub.Setup(r => r.HandleException(
-                string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId),
-                It.IsAny<Func<Task<Policy>>>()))
-                .Returns(Task.FromResult(policy));
-
+            InitializeFakeObjects(policy);
+            
             var result = await _getAuthorizationPolicyAction.Execute(policyId).ConfigureAwait(false);
 
             Assert.NotNull(result);
             Assert.True(result.Id == policyId);
         }
 
-        private void InitializeFakeObjects()
+        private void InitializeFakeObjects(Policy policy)
         {
             _policyRepositoryStub = new Mock<IPolicyRepository>();
-            _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
-            _getAuthorizationPolicyAction = new GetAuthorizationPolicyAction(
-                _policyRepositoryStub.Object,
-                _repositoryExceptionHelperStub.Object);
+            _policyRepositoryStub.Setup(x => x.Get(It.IsAny<string>())).ReturnsAsync(policy);
+            _getAuthorizationPolicyAction = new GetAuthorizationPolicyAction(_policyRepositoryStub.Object);
         }
     }
 }

@@ -1,36 +1,36 @@
 ﻿namespace SimpleAuth.Twilio.Actions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Helpers;
-    using Logging;
     using SimpleAuth;
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using WebSite.User.Actions;
 
     internal sealed class SmsAuthenticationOperation : ISmsAuthenticationOperation
     {
         private readonly IGenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IAddUserOperation _userActions;
+        private readonly AddUserOperation _userActions;
         private readonly SmsAuthenticationOptions _smsAuthenticationOptions;
         private readonly ISubjectBuilder _subjectBuilder;
 
         public SmsAuthenticationOperation(
             IGenerateAndSendSmsCodeOperation generateAndSendSmsCodeOperation,
             IResourceOwnerRepository resourceOwnerRepository,
-            IAddUserOperation userActions,
             ISubjectBuilder subjectBuilder,
+            IEnumerable<IAccountFilter> accountFilters,
+            IEventPublisher eventPublisher,
             SmsAuthenticationOptions smsAuthenticationOptions)
         {
             _generateAndSendSmsCodeOperation = generateAndSendSmsCodeOperation;
             _resourceOwnerRepository = resourceOwnerRepository;
-            _userActions = userActions;
+            _userActions = new AddUserOperation(resourceOwnerRepository, accountFilters, eventPublisher);
             _subjectBuilder = subjectBuilder;
             _smsAuthenticationOptions = smsAuthenticationOptions;
         }

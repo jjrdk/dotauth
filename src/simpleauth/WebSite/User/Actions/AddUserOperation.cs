@@ -21,11 +21,13 @@ namespace SimpleAuth.WebSite.User.Actions
     using Shared.Repositories;
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Extensions;
 
-    public class AddUserOperation : IAddUserOperation
+    public class AddUserOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IEnumerable<IAccountFilter> _accountFilters;
@@ -66,7 +68,8 @@ namespace SimpleAuth.WebSite.User.Actions
 
             var newClaims = new List<Claim>
             {
-                new Claim(JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()),
+                new Claim(JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt,
+                    DateTime.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture)),
                 new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, resourceOwner.Id)
             };
 

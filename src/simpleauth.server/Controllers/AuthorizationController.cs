@@ -21,10 +21,11 @@ namespace SimpleAuth.Server.Controllers
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Common;
     using Errors;
     using Exceptions;
     using Extensions;
-    using Logging;
+    using Helpers;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Mvc;
@@ -43,21 +44,35 @@ namespace SimpleAuth.Server.Controllers
     public class AuthorizationController : Controller
     {
         private readonly IClientStore _clientStore;
-        private readonly IAuthorizationActions _authorizationActions;
+        private readonly AuthorizationActions _authorizationActions;
         private readonly IDataProtector _dataProtector;
         private readonly IActionResultParser _actionResultParser;
         private readonly IAuthenticationService _authenticationService;
         private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
 
         public AuthorizationController(
+            IConsentHelper consentHelper,
+            IGenerateAuthorizationResponse generateAuthorizationResponse,
+            IParameterParserHelper parameterParserHelper,
+            IAuthorizationFlowHelper authorizationFlowHelper,
+            IEventPublisher eventPublisher,
+            IAmrHelper amrHelper,
+            IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             IClientStore clientStore,
-            IAuthorizationActions authorizationActions,
             IDataProtectionProvider dataProtectionProvider,
             IActionResultParser actionResultParser,
             IAuthenticationService authenticationService)
         {
             _clientStore = clientStore;
-            _authorizationActions = authorizationActions;
+            _authorizationActions = new AuthorizationActions(
+                consentHelper,
+                generateAuthorizationResponse,
+                parameterParserHelper,
+                clientStore,
+                authorizationFlowHelper,
+                eventPublisher,
+                amrHelper,
+                resourceOwnerAuthenticateHelper);
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _actionResultParser = actionResultParser;
             _authenticationService = authenticationService;

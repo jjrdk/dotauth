@@ -17,7 +17,6 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
     using Errors;
     using Exceptions;
     using Helpers;
-    using Logging;
     using Models;
     using Parameters;
     using Repositories;
@@ -34,16 +33,15 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
     {
         private readonly IPolicyRepository _policyRepository;
         private readonly IResourceSetRepository _resourceSetRepository;
-        private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
+        private readonly RepositoryExceptionHelper _repositoryExceptionHelper;
 
         public AddAuthorizationPolicyAction(
             IPolicyRepository policyRepository,
-            IResourceSetRepository resourceSetRepository,
-            IRepositoryExceptionHelper repositoryExceptionHelper)
+            IResourceSetRepository resourceSetRepository)
         {
             _policyRepository = policyRepository;
             _resourceSetRepository = resourceSetRepository;
-            _repositoryExceptionHelper = repositoryExceptionHelper;
+            _repositoryExceptionHelper = new RepositoryExceptionHelper();
         }
 
         public async Task<string> Execute(AddPolicyParameter addPolicyParameter)

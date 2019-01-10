@@ -14,27 +14,28 @@
 
 namespace SimpleAuth.Server.Controllers
 {
-    using System;
-    using System.Threading.Tasks;
+    using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Shared.Repositories;
     using Shared.Requests;
     using Shared.Responses;
     using SimpleAuth;
-    using SimpleAuth.Api.Scopes;
+    using System;
+    using System.Threading.Tasks;
 
     [Route(CoreConstants.EndPoints.Scopes)]
     public class ScopesController : Controller
     {
-        private readonly IScopeActions _scopeActions;
+        private readonly IScopeRepository _scopeRepository;
 
-        public ScopesController(IScopeActions scopeActions)
+        public ScopesController(IScopeRepository scopeRepository)
         {
-            _scopeActions = scopeActions;
+            _scopeRepository = scopeRepository;
         }
-        
+
         [HttpPost(".search")]
         [Authorize("manager")]
         public async Task<IActionResult> Search([FromBody] SearchScopesRequest request)
@@ -45,7 +46,7 @@ namespace SimpleAuth.Server.Controllers
             }
 
             var parameter = request.ToSearchScopesParameter();
-            var result = await _scopeActions.Search(parameter).ConfigureAwait(false);
+            var result = await _scopeRepository.Search(parameter).ConfigureAwait(false);
             return new OkObjectResult(result.ToDto());
         }
 
@@ -53,16 +54,7 @@ namespace SimpleAuth.Server.Controllers
         [Authorize("manager")]
         public async Task<IActionResult> GetAll()
         {
-            //if (!await _representationManager.CheckRepresentationExistsAsync(this, ScopesStoreName))
-            //{
-            //    return new ContentResult
-            //    {
-            //        StatusCode = 412
-            //    };
-            //}
-
-            var result = (await _scopeActions.GetScopes().ConfigureAwait(false)).ToDtos();
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName);
+            var result = (await _scopeRepository.GetAll().ConfigureAwait(false)).ToDtos();
             return new OkObjectResult(result);
         }
 
@@ -70,16 +62,7 @@ namespace SimpleAuth.Server.Controllers
         [Authorize("manager")]
         public async Task<IActionResult> Get(string id)
         {
-            //if (!await _representationManager.CheckRepresentationExistsAsync(this, ScopeStoreName + id))
-            //{
-            //    return new ContentResult
-            //    {
-            //        StatusCode = 412
-            //    };
-            //}
-
-            var result = (await _scopeActions.GetScope(id).ConfigureAwait(false)).ToDto();
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + id);
+            var result = (await _scopeRepository.Get(id).ConfigureAwait(false)).ToDto();
             return new OkObjectResult(result);
         }
 
@@ -92,10 +75,24 @@ namespace SimpleAuth.Server.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            await _scopeActions.DeleteScope(id).ConfigureAwait(false);
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + id, false);
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName, false);
-            return new NoContentResult();
+            var scope = await _scopeRepository.Get(id).ConfigureAwait(false);
+            if (scope == null)
+            {
+                return BadRequest(new ErrorResponse
+                {
+                    Error = ErrorCodes.InvalidRequestCode,
+                    ErrorDescription = string.Format(ErrorDescriptions.TheScopeDoesntExist, id)
+                });
+            }
+            var deleted = await _scopeRepository.Delete(scope).ConfigureAwait(false);
+
+            return deleted
+                ? NoContent()
+                : (IActionResult)BadRequest(new ErrorResponse
+                {
+                    Error = ErrorCodes.InvalidRequestCode,
+                    ErrorDescription = string.Format(ErrorDescriptions.TheScopeDoesntExist, id)
+                });
         }
 
         [HttpPost]
@@ -107,15 +104,14 @@ namespace SimpleAuth.Server.Controllers
                 throw new ArgumentNullException(nameof(request));
             }
 
-            if (!await _scopeActions.AddScope(request.ToParameter()).ConfigureAwait(false))
+            if (!await _scopeRepository.Insert(request.ToParameter()).ConfigureAwait(false))
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName, false);
             return new NoContentResult();
         }
-        
+
         [HttpPut]
         [Authorize("manager")]
         public async Task<IActionResult> Update([FromBody] ScopeResponse request)
@@ -125,12 +121,11 @@ namespace SimpleAuth.Server.Controllers
                 throw new ArgumentNullException(nameof(request));
             }
 
-            if (!await _scopeActions.UpdateScope(request.ToParameter()).ConfigureAwait(false))
+            if (!await _scopeRepository.Update(request.ToParameter()).ConfigureAwait(false))
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + request.Name, false);
             return new NoContentResult();
         }
     }

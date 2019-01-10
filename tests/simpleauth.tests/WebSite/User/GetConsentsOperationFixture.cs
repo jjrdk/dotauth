@@ -14,32 +14,35 @@
 
 namespace SimpleAuth.Tests.WebSite.User
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Moq;
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth;
     using SimpleAuth.WebSite.User.Actions;
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class GetConsentsOperationFixture
     {
         private Mock<IConsentRepository> _consentRepositoryStub;
-        private IGetConsentsOperation _getConsentsOperation;
+        private GetConsentsOperation _getConsentsOperation;
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-                        await Assert.ThrowsAsync<ArgumentNullException>(() => _getConsentsOperation.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getConsentsOperation.Execute(null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Getting_Consents_A_List_Is_Returned()
-        {            const string subject = "subject";
+        {
+            const string subject = "subject";
             InitializeFakeObjects();
             var claims = new List<Claim>
             {
@@ -57,12 +60,12 @@ namespace SimpleAuth.Tests.WebSite.User
             _consentRepositoryStub.Setup(c => c.GetConsentsForGivenUserAsync(subject))
                 .Returns(Task.FromResult(consents));
 
-                        var result = await _getConsentsOperation.Execute(claimsPrincipal).ConfigureAwait(false);
+            var result = await _getConsentsOperation.Execute(claimsPrincipal).ConfigureAwait(false);
 
-                        Assert.NotNull(result);
+            Assert.NotNull(result);
             Assert.True(result == consents);
         }
-        
+
         private void InitializeFakeObjects()
         {
             _consentRepositoryStub = new Mock<IConsentRepository>();

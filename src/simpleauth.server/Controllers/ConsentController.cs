@@ -15,7 +15,6 @@
 namespace SimpleAuth.Server.Controllers
 {
     using Extensions;
-    using Logging;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.DataProtection;
