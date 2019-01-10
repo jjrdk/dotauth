@@ -28,7 +28,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
     using System.Threading.Tasks;
     using SimpleAuth.Api.Introspection;
     using Xunit;
-    using JwtConstants = SimpleAuth.JwtConstants;
+    using JwtConstants = Shared.JwtConstants;
 
     public class PostIntrospectionActionFixture
     {

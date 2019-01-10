@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Shared.Policies
+﻿namespace SimpleAuth.Policies
 {
     using System.Collections.Generic;
 

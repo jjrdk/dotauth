@@ -16,20 +16,19 @@ namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
 {
     using Errors;
     using Exceptions;
-    using Models;
     using Moq;
     using Parameters;
     using Repositories;
+    using SimpleAuth.Api.ResourceSetController.Actions;
+    using SimpleAuth.Shared.Models;
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Uma.Api.ResourceSetController.Actions;
-    using Uma.Validators;
     using Xunit;
 
     public class UpdateResourceSetActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-        private Mock<IResourceSetParameterValidator> _resourceSetParameterValidator;
         private IUpdateResourceSetAction _updateResourceSetAction;
 
         [Fact]
@@ -47,7 +46,9 @@ namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
             const string id = "id";
             var udpateResourceSetParameter = new UpdateResourceSetParameter
             {
-                Id = id
+                Id = id,
+                Name = "blah",
+                Scopes = new List<string> { "scope" }
             };
             var resourceSet = new ResourceSet
             {
@@ -58,9 +59,8 @@ namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
             _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<ResourceSet>()))
                 .Returns(() => Task.FromResult(false));
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updateResourceSetAction.Execute(udpateResourceSetParameter)).ConfigureAwait(false);
-            Assert.NotNull(exception);
-            Assert.True(exception.Code == UmaErrorCodes.InternalError);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _updateResourceSetAction.Execute(udpateResourceSetParameter)).ConfigureAwait(false);
+            Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, udpateResourceSetParameter.Id));
         }
 
@@ -71,7 +71,9 @@ namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
             InitializeFakeObjects();
             var udpateResourceSetParameter = new UpdateResourceSetParameter
             {
-                Id = id
+                Id = id,
+                Name = "blah",
+                Scopes = new List<string> { "scope" }
             };
             var resourceSet = new ResourceSet
             {
@@ -91,10 +93,8 @@ namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
         private void InitializeFakeObjects()
         {
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _resourceSetParameterValidator = new Mock<IResourceSetParameterValidator>();
-            _updateResourceSetAction = new UpdateResourceSetAction(
-                _resourceSetRepositoryStub.Object,
-                _resourceSetParameterValidator.Object);
+            _resourceSetRepositoryStub.Setup(x => x.Update(It.IsAny<ResourceSet>())).ReturnsAsync(true);
+            _updateResourceSetAction = new UpdateResourceSetAction(_resourceSetRepositoryStub.Object);
         }
     }
 }

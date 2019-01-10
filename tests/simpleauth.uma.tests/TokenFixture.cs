@@ -5,7 +5,6 @@
     using Client.ResourceSet;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
-    using Shared.DTOs;
     using SimpleAuth.Client;
     using SimpleAuth.Client.Operations;
     using System;
@@ -13,6 +12,7 @@
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Threading.Tasks;
+    using Shared.DTOs;
     using Xunit;
 
     public class TokenFixture : IDisposable

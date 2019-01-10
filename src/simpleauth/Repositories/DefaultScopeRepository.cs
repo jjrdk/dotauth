@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Shared;
     using Shared.Models;
     using Shared.Parameters;
     using Shared.Repositories;

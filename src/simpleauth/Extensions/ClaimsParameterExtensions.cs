@@ -18,6 +18,7 @@ namespace SimpleAuth.Extensions
     using System.Collections.Generic;
     using System.Linq;
     using Parameters;
+    using Shared;
 
     public static class ClaimsParameterExtensions
     {

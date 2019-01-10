@@ -26,6 +26,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Shared;
     using Xunit;
 
     public sealed class AuthenticateResourceOwnerOpenIdActionFixture

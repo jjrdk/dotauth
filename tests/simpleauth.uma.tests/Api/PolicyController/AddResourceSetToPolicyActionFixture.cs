@@ -16,18 +16,17 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
 {
     using Errors;
     using Exceptions;
-    using Models;
     using Moq;
-    using Parameters;
-    using Repositories;
-    using SimpleAuth.Errors;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Parameters;
+    using Repositories;
+    using SimpleAuth.Api.PolicyController.Actions;
+    using SimpleAuth.Shared.Models;
     using Uma;
-    using Uma.Api.PolicyController.Actions;
     using Xunit;
-    using ErrorDescriptions = Errors.ErrorDescriptions;
+    
 
     public class AddResourceSetToPolicyActionFixture
     {
@@ -50,7 +49,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
             InitializeFakeObjects();
 
             var exception = await Assert
-                .ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(new AddResourceSetParameter()))
+                .ThrowsAsync<SimpleAuthException>(() => _addResourceSetAction.Execute(new AddResourceSetParameter()))
                 .ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
@@ -64,7 +63,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         {
             InitializeFakeObjects();
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _addResourceSetAction.Execute(
                     new AddResourceSetParameter
                     {
                         PolicyId = "policy_id"
@@ -84,7 +83,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
             const string resourceSetId = "resource_set_id";
             InitializeFakeObjects(new Policy {Id = policyId});
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _addResourceSetAction.Execute(
                     new AddResourceSetParameter
                     {
                         PolicyId = policyId,
@@ -95,7 +94,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
                     }))
                 .ConfigureAwait(false);
 
-            Assert.Equal(UmaErrorCodes.InvalidResourceSetId, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidResourceSetId, exception.Code);
             Assert.Equal(string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId), exception.Message);
         }
 

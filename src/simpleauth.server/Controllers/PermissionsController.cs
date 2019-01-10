@@ -24,7 +24,7 @@ namespace SimpleAuth.Server.Controllers
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
-    using Uma.Shared.DTOs;
+    using Shared.DTOs;
 
     [Route(UmaConstants.RouteValues.Permission)]
     public class PermissionsController : Controller

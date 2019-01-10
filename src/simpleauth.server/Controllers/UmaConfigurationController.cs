@@ -19,8 +19,8 @@ namespace SimpleAuth.Server.Controllers
     using Microsoft.AspNetCore.Mvc;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Shared.DTOs;
     using Shared.Responses;
-    using Uma.Shared.DTOs;
 
     [Route(UmaConstants.RouteValues.Configuration)]
     public class UmaConfigurationController : Controller

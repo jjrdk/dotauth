@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Policies
+namespace SimpleAuth.Policies
 {
     using System;
     using System.Collections.Generic;
@@ -20,9 +20,10 @@ namespace SimpleAuth.Shared.Policies
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Models;
-    using Repositories;
-    using SimpleAuth.Parameters;
+    using Parameters;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Shared.Responses;
 
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy
     {

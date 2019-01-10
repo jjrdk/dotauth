@@ -23,6 +23,7 @@ namespace SimpleAuth.Tests.WebSite.User
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Shared;
     using Xunit;
 
     public class GetConsentsOperationFixture

@@ -22,8 +22,8 @@ namespace SimpleAuth.Server.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Parameters;
+    using Shared.DTOs;
     using Shared.Responses;
-    using Uma.Shared.DTOs;
 
     [Route(UmaConstants.RouteValues.Policies)]
     public class PoliciesController : Controller

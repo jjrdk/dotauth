@@ -21,8 +21,8 @@ namespace SimpleAuth.Server.Controllers
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Shared.DTOs;
     using Shared.Responses;
-    using Uma.Shared.DTOs;
 
     [Route(UmaConstants.RouteValues.ResourceSet)]
     public class ResourceSetController : Controller

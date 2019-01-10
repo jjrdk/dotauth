@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Uma.Shared
+namespace SimpleAuth.Shared
 {
     public static class SearchAuthPolicyNames
     {

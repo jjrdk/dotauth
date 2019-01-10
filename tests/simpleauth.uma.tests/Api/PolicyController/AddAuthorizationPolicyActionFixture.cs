@@ -16,18 +16,16 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
 {
     using Errors;
     using Exceptions;
-    using Models;
     using Moq;
-    using Parameters;
-    using Repositories;
-    using SimpleAuth.Errors;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Parameters;
+    using Repositories;
+    using SimpleAuth.Api.PolicyController.Actions;
+    using SimpleAuth.Shared.Models;
     using Uma;
-    using Uma.Api.PolicyController.Actions;
     using Xunit;
-    using ErrorDescriptions = Errors.ErrorDescriptions;
 
     public class AddAuthorizationPolicyActionFixture
     {
@@ -49,7 +47,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
             InitializeFakeObjects();
             var addPolicyParameter = new AddPolicyParameter();
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.ResourceSetIds));
@@ -68,7 +66,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
                 }
             };
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter)).ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.Rules));
         }
@@ -100,10 +98,10 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
             };
 
             InitializeFakeObjects();
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter)).ConfigureAwait(false);
 
-            Assert.True(exception.Code == UmaErrorCodes.InvalidResourceSetId);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
+            Assert.Equal(ErrorCodes.InvalidResourceSetId, exception.Code);
+            Assert.Equal( string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId), exception.Message);
         }
 
         [Fact]
@@ -140,9 +138,9 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
             };
 
             InitializeFakeObjects(resourceSet);
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter)).ConfigureAwait(false);
 
-            Assert.True(exception.Code == UmaErrorCodes.InvalidScope);
+            Assert.True(exception.Code == ErrorCodes.InvalidScope);
             Assert.True(exception.Message == ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
         }
 
@@ -198,6 +196,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         private void InitializeFakeObjects(ResourceSet resourceSet = null)
         {
             _policyRepositoryStub = new Mock<IPolicyRepository>();
+            _policyRepositoryStub.Setup(x => x.Add(It.IsAny<Policy>())).ReturnsAsync(true);
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
             _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string>())).ReturnsAsync(resourceSet);
             _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<IEnumerable<string>>())).ReturnsAsync(new[] { resourceSet });

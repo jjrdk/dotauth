@@ -33,6 +33,7 @@ namespace SimpleAuth.JwtToken
     using System.Text;
     using System.Threading.Tasks;
     using Validators;
+    using JwtConstants = Shared.JwtConstants;
 
     public class JwtGenerator : IJwtGenerator
     {
@@ -317,7 +318,7 @@ namespace SimpleAuth.JwtToken
         {
             // 1. Fill-in the subject claim
             var subject = claimsPrincipal.GetSubject();
-            jwsPayload.Add(SimpleAuth.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject);
+            jwsPayload.Add(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject);
 
             if (authorizationParameter == null ||
                 string.IsNullOrWhiteSpace(authorizationParameter.Scope))
@@ -330,7 +331,7 @@ namespace SimpleAuth.JwtToken
             var claims = await GetClaimsFromRequestedScopes(scopes, claimsPrincipal).ConfigureAwait(false);
             foreach (var claim in claims.GroupBy(c => c.Type))
             {
-                if (claim.Key == SimpleAuth.JwtConstants.StandardResourceOwnerClaimNames.Subject)
+                if (claim.Key == JwtConstants.StandardResourceOwnerClaimNames.Subject)
                 {
                     continue;
                 }
@@ -348,11 +349,11 @@ namespace SimpleAuth.JwtToken
             var state = authorizationParameter == null ? string.Empty : authorizationParameter.State;
 
             // 1. Fill-In the subject - set the subject as an essential claim
-            if (claimParameters.All(c => c.Name != SimpleAuth.JwtConstants.StandardResourceOwnerClaimNames.Subject))
+            if (claimParameters.All(c => c.Name != JwtConstants.StandardResourceOwnerClaimNames.Subject))
             {
                 var essentialSubjectClaimParameter = new ClaimParameter
                 {
-                    Name = SimpleAuth.JwtConstants.StandardResourceOwnerClaimNames.Subject,
+                    Name = JwtConstants.StandardResourceOwnerClaimNames.Subject,
                     Parameters = new Dictionary<string, object>
                     {
                         {
@@ -372,7 +373,7 @@ namespace SimpleAuth.JwtToken
             }
 
             var resourceOwnerClaimParameters = claimParameters
-                .Where(c => SimpleAuth.JwtConstants.AllStandardResourceOwnerClaimNames.Contains(c.Name))
+                .Where(c => JwtConstants.AllStandardResourceOwnerClaimNames.Contains(c.Name))
                 .ToList();
             if (resourceOwnerClaimParameters.Any())
             {
@@ -649,8 +650,8 @@ namespace SimpleAuth.JwtToken
         {
             return claims.Select(claim =>
                 new Claim(
-                    SimpleAuth.JwtConstants.MapWifClaimsToOpenIdClaims.ContainsKey(claim.Type)
-                        ? SimpleAuth.JwtConstants.MapWifClaimsToOpenIdClaims[claim.Type]
+                    JwtConstants.MapWifClaimsToOpenIdClaims.ContainsKey(claim.Type)
+                        ? JwtConstants.MapWifClaimsToOpenIdClaims[claim.Type]
                         : claim.Type,
                     claim.Value));
         }

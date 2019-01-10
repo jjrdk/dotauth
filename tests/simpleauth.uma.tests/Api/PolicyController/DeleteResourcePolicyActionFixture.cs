@@ -16,13 +16,13 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
 {
     using Errors;
     using Exceptions;
-    using Models;
     using Moq;
-    using Repositories;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Uma.Api.PolicyController.Actions;
+    using Repositories;
+    using SimpleAuth.Api.PolicyController.Actions;
+    using SimpleAuth.Shared.Models;
     using Xunit;
 
     public class DeleteResourcePolicyActionFixture
@@ -58,10 +58,10 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
             InitializeFakeObjects(new Policy());
 
             var exception = await Assert
-                .ThrowsAsync<BaseUmaException>(() => _deleteResourcePolicyAction.Execute(policyId, resourceId))
+                .ThrowsAsync<SimpleAuthException>(() => _deleteResourcePolicyAction.Execute(policyId, resourceId))
                 .ConfigureAwait(false);
 
-            Assert.True(exception.Code == UmaErrorCodes.InvalidResourceSetId);
+            Assert.True(exception.Code == ErrorCodes.InvalidResourceSetId);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceId));
         }
 
@@ -80,10 +80,10 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
             InitializeFakeObjects(policy, new ResourceSet());
 
             var exception = await Assert
-                .ThrowsAsync<BaseUmaException>(() => _deleteResourcePolicyAction.Execute(policyId, resourceId))
+                .ThrowsAsync<SimpleAuthException>(() => _deleteResourcePolicyAction.Execute(policyId, resourceId))
                 .ConfigureAwait(false);
 
-            Assert.True(exception.Code == UmaErrorCodes.InvalidResourceSetId);
+            Assert.True(exception.Code == ErrorCodes.InvalidResourceSetId);
             Assert.True(exception.Message == ErrorDescriptions.ThePolicyDoesntContainResource);
         }
 

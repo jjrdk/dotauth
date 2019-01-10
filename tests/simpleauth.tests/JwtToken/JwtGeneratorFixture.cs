@@ -36,7 +36,7 @@ namespace SimpleAuth.Tests.JwtToken
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Xunit;
-    using JwtConstants = SimpleAuth.JwtConstants;
+    using JwtConstants = Shared.JwtConstants;
 
     public class JwtGeneratorFixture
     {

@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Uma
+﻿namespace SimpleAuth.Server
 {
     using SimpleAuth;
 

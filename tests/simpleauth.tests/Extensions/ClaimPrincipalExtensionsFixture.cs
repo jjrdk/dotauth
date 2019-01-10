@@ -4,6 +4,7 @@
     using SimpleAuth.Extensions;
     using System.Collections.Generic;
     using System.Security.Claims;
+    using Shared;
     using Xunit;
 
     public sealed class ClaimPrincipalExtensionsFixture

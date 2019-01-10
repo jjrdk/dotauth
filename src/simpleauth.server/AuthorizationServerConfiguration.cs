@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Uma
+﻿namespace SimpleAuth.Server
 {
     using System;
     using System.Collections.Generic;
-    using SimpleAuth.Shared.Models;
+    using Shared.Models;
 
     public class AuthorizationServerConfiguration
     {

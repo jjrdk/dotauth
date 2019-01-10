@@ -18,10 +18,10 @@ namespace SimpleAuth.Uma.Tests
     using Client.Permission;
     using Client.ResourceSet;
     using MiddleWares;
-    using Shared.DTOs;
     using SimpleAuth.Errors;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Shared.DTOs;
     using Xunit;
 
     public class PermissionFixture : IClassFixture<TestUmaServerFixture>

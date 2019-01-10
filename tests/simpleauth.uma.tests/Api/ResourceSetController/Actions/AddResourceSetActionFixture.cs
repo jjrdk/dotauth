@@ -16,21 +16,19 @@ namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
 {
     using Errors;
     using Exceptions;
-    using Models;
     using Moq;
-    using Parameters;
-    using Repositories;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Uma.Api.ResourceSetController.Actions;
-    using Uma.Validators;
+    using Parameters;
+    using Repositories;
+    using SimpleAuth.Api.ResourceSetController.Actions;
+    using SimpleAuth.Shared.Models;
     using Xunit;
 
     public class AddResourceSetActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-        private Mock<IResourceSetParameterValidator> _resourceSetParameterValidatorStub;
         private IAddResourceSetAction _addResourceSetAction;
 
         [Fact]
@@ -55,9 +53,9 @@ namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
             _resourceSetRepositoryStub.Setup(r => r.Insert(It.IsAny<ResourceSet>()))
                 .Returns(() => Task.FromResult(false));
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(addResourceParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _addResourceSetAction.Execute(addResourceParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == UmaErrorCodes.InternalError);
+            Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheResourceSetCannotBeInserted);
         }
 
@@ -83,10 +81,7 @@ namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
         private void InitializeFakeObjects()
         {
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _resourceSetParameterValidatorStub = new Mock<IResourceSetParameterValidator>();
-            _addResourceSetAction = new AddResourceSetAction(
-                _resourceSetRepositoryStub.Object,
-                _resourceSetParameterValidatorStub.Object);
+            _addResourceSetAction = new AddResourceSetAction(_resourceSetRepositoryStub.Object);
         }
     }
 }

@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Security.Claims;
+    using Shared;
     using Shared.Models;
     using SimpleAuth;
 

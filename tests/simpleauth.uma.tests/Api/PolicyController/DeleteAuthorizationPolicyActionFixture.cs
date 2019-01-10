@@ -14,12 +14,12 @@
 
 namespace SimpleAuth.Uma.Tests.Api.PolicyController
 {
-    using Models;
     using Moq;
-    using Repositories;
     using System;
     using System.Threading.Tasks;
-    using Uma.Api.PolicyController.Actions;
+    using Repositories;
+    using SimpleAuth.Api.PolicyController.Actions;
+    using SimpleAuth.Shared.Models;
     using Xunit;
 
     public class DeleteAuthorizationPolicyActionFixture
@@ -60,6 +60,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         private void IntializeFakeObjects(Policy policy = null)
         {
             _policyRepositoryStub = new Mock<IPolicyRepository>();
+            _policyRepositoryStub.Setup(x => x.Delete(It.IsAny<string>())).ReturnsAsync(true);
             _policyRepositoryStub.Setup(x => x.Get(It.IsAny<string>())).ReturnsAsync(policy);
             _deleteAuthorizationPolicyAction = new DeleteAuthorizationPolicyAction(_policyRepositoryStub.Object);
         }

@@ -4,6 +4,7 @@
     using System.Threading.Tasks;
     using SimpleAuth;
     using SimpleAuth.Services;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 

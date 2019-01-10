@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Uma.Shared.DTOs
+namespace SimpleAuth.Shared.DTOs
 {
     using System.Runtime.Serialization;
 

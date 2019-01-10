@@ -37,11 +37,13 @@ namespace SimpleAuth.Server.Tests.Apis
     using Twilio.Client;
     using Twilio.Shared.Requests;
     using Xunit;
-    using JwtConstants = SimpleAuth.JwtConstants;
+    using JwtConstants = Shared.JwtConstants;
 
     public class TokenClientFixture : IClassFixture<TestOauthServerFixture>
     {
         private const string BaseUrl = "http://localhost:5000";
+        private const string WellKnownOpenidConfiguration = "/.well-known/openid-configuration";
+        private const string WellKnownOpenidConfigurationUrl = BaseUrl + WellKnownOpenidConfiguration;
         private readonly TestOauthServerFixture _server;
         private ISidSmsAuthenticateClient _sidSmsAuthenticateClient;
 
@@ -476,14 +478,14 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromScopes("openid"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ResolveAsync(WellKnownOpenidConfigurationUrl)
                 .ConfigureAwait(false);
             var refreshToken = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     TokenRequest.FromRefreshToken(result.Content.RefreshToken),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ResolveAsync(WellKnownOpenidConfigurationUrl)
                 .ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.BadRequest, refreshToken.Status);
@@ -671,7 +673,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromScopes("openid"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ResolveAsync(WellKnownOpenidConfigurationUrl)
                 .ConfigureAwait(false);
             // var claims = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.AccessToken);
 
@@ -690,7 +692,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ResolveAsync(WellKnownOpenidConfigurationUrl)
                 .ConfigureAwait(false);
             // var claims = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.AccessToken);
 
@@ -709,7 +711,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromPassword("superuser", "password", new[] { "role" }),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ResolveAsync(WellKnownOpenidConfigurationUrl)
                 .ConfigureAwait(false);
             // var claims = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.AccessToken);
 
@@ -744,27 +746,26 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromPassword("phone", confirmationCode.Value, new[] { "scim" }, "sms"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ResolveAsync(WellKnownOpenidConfigurationUrl)
                 .ConfigureAwait(false);
 
-            Assert.NotNull(result);
             Assert.False(result.ContainsError);
             Assert.NotEmpty(result.Content.AccessToken);
         }
 
-        [Fact(Skip = "Solve cert handling")]
+        [Fact(Skip = "solve certificate problem")]
         public async Task When_Using_Client_Certificate_Then_AccessToken_Is_Returned()
         {
             InitializeFakeObjects();
 
-            var certificate = new X509Certificate2("mycert.pfx", "simpleauth");
+            var certificate = new X509Certificate2("mycert.pfx", "simpleauth", X509KeyStorageFlags.Exportable);
 
             var result = await new TokenClient(
                     TokenCredentials.FromCertificate("certificate_client", certificate),
                     TokenRequest.FromPassword("administrator", "password", new[] { "openid" }),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ResolveAsync(WellKnownOpenidConfigurationUrl)
                 .ConfigureAwait(false);
 
             Assert.False(result.ContainsError);
@@ -781,7 +782,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ResolveAsync(WellKnownOpenidConfigurationUrl)
                 .ConfigureAwait(false);
             //var refreshToken = await new TokenClient(
             //        TokenCredentials.FromClientCredentials("client", "client"),
@@ -806,7 +807,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ResolveAsync(WellKnownOpenidConfigurationUrl)
                 .ConfigureAwait(false);
             // TODO: Look into this
             //var jwks = await _jwksClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
@@ -826,7 +827,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromScopes("api1"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ResolveAsync(WellKnownOpenidConfigurationUrl)
                 .ConfigureAwait(false);
 
             Assert.False(token.ContainsError);
@@ -842,7 +843,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenCredentials.FromBasicAuthentication("basic_client", "basic_client"),
                     TokenRequest.FromScopes("api1"),
                     _server.Client)
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ResolveAsync(WellKnownOpenidConfigurationUrl)
                 .ConfigureAwait(false);
 
             //Assert.NotNull(firstToken);
@@ -894,7 +895,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromScopes("api1"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ResolveAsync(WellKnownOpenidConfigurationUrl)
                 .ConfigureAwait(false);
 
             Assert.NotNull(token);
@@ -928,7 +929,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromScopes("api1"),
                     _server.Client,
                     new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                .ResolveAsync(WellKnownOpenidConfigurationUrl)
                 .ConfigureAwait(false);
 
             Assert.False(token.ContainsError);

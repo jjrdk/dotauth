@@ -813,7 +813,11 @@ namespace SimpleAuth.Server.Tests.Stores
                     JsonWebKeys = new JsonWebKeySet().AddKey(
                         new X509Certificate2("mycert.pfx", "simpleauth", X509KeyStorageFlags.Exportable).CreateJwk(JsonWebKeyUseNames.Sig,
                             KeyOperations.Sign,
-                            KeyOperations.Verify)),
+                            KeyOperations.Verify))
+                        .AddKey(
+                            new X509Certificate2("mycert.pfx", "simpleauth", X509KeyStorageFlags.Exportable).CreateJwk(JsonWebKeyUseNames.Enc,
+                            KeyOperations.Encrypt,
+                            KeyOperations.Decrypt)),
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.tls_client_auth,
                     //LogoUri = null,
                     AllowedScopes = new List<Scope>
@@ -832,7 +836,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         ResponseTypeNames.Token,
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, //SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaV15KeyWrap, //SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.native
                 },
                 // Client credentials + stateless access token.
