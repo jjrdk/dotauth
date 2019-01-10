@@ -1,19 +1,14 @@
-﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-namespace SimpleAuth.Server.Controllers
+﻿namespace SimpleAuth.Server.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http.Headers;
+    using System.Runtime.Serialization;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
+    using Api.Token;
     using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
@@ -23,52 +18,46 @@ namespace SimpleAuth.Server.Controllers
     using Shared.Requests;
     using Shared.Responses;
     using Shared.Serializers;
-    using SimpleAuth;
-    using SimpleAuth.Api.Token;
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http.Headers;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Threading.Tasks;
     using GrantTypes = Shared.Requests.GrantTypes;
 
-    [Route(CoreConstants.EndPoints.Token)]
+    [Route(UmaConstants.RouteValues.Token)]
     public class TokenController : Controller
     {
         private readonly ITokenActions _tokenActions;
+        private readonly IUmaTokenActions _umaTokenActions;
 
-        public TokenController(
-            ITokenActions tokenActions)
+        public TokenController(ITokenActions tokenActions, IUmaTokenActions umaTokenActions)
         {
             _tokenActions = tokenActions;
+            _umaTokenActions = umaTokenActions;
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostToken()
+        public async Task<IActionResult> PostToken([FromForm]TokenRequest tokenRequest)
         {
             var certificate = GetCertificate();
-
-            if (Request.Form == null)
+            if (tokenRequest.grant_type == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode,
-                    "no parameter in body request",
-                    HttpStatusCode.BadRequest);
+                return BadRequest(new ErrorResponse
+                {
+                    Error = ErrorCodes.InvalidRequestCode,
+                    ErrorDescription = string.Format(ErrorDescriptions.MissingParameter, RequestTokenNames.GrantType)
+                });
             }
 
-            var serializer = new ParamSerializer();
-            var tokenRequest =
-                serializer.Deserialize<TokenRequest>(Request.Form.Select(x =>
-                    new KeyValuePair<string, string[]>(x.Key, x.Value)));
-            if (tokenRequest.GrantType == null)
-            {
-                return BuildError(ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, RequestTokenNames.GrantType),
-                    HttpStatusCode.BadRequest);
-            }
+            //if (Request.Form == null)
+            //{
+            //    return StatusCode(
+            //        (int)HttpStatusCode.BadRequest,
+            //        new ErrorResponse
+            //        {
+            //            Error = ErrorCodes.InvalidRequestCode,
+            //            ErrorDescription = "no parameter in body request"
+            //        });
+            //}
 
+            //var serializer = new ParamSerializer();
+            //var tokenRequest = serializer.Deserialize<TokenRequest>(Request.Form.Select(x => new KeyValuePair<string, string[]>(x.Key, x.Value)));
             GrantedToken result = null;
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
@@ -84,45 +73,29 @@ namespace SimpleAuth.Server.Controllers
             }
 
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-            switch (tokenRequest.GrantType)
+            switch (tokenRequest.grant_type)
             {
                 case GrantTypes.password:
                     var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter,
-                            authenticationHeaderValue,
-                            certificate,
-                            issuerName)
-                        .ConfigureAwait(false);
+                    result = await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
                     break;
                 case GrantTypes.authorization_code:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
-                    result = await _tokenActions
-                        .GetTokenByAuthorizationCodeGrantType(
-                            authCodeParameter,
-                            authenticationHeaderValue,
-                            certificate,
-                            issuerName)
-                        .ConfigureAwait(false);
+                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(authCodeParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
                     break;
                 case GrantTypes.refresh_token:
                     var refreshTokenParameter = tokenRequest.ToRefreshTokenGrantTypeParameter();
-                    result = await _tokenActions
-                        .GetTokenByRefreshTokenGrantType(refreshTokenParameter,
-                            authenticationHeaderValue,
-                            certificate,
-                            issuerName)
-                        .ConfigureAwait(false);
+                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
                     break;
                 case GrantTypes.client_credentials:
                     var clientCredentialsParameter = tokenRequest.ToClientCredentialsGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter,
-                            authenticationHeaderValue,
-                            certificate,
-                            issuerName)
-                        .ConfigureAwait(false);
+                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
+                    break;
+                case GrantTypes.uma_ticket:
+                    var tokenIdParameter = tokenRequest.ToTokenIdGrantTypeParameter();
+                    result = await _umaTokenActions.GetTokenByTicketId(tokenIdParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
                     break;
                 case GrantTypes.validate_bearer:
-                case GrantTypes.uma_ticket:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -132,32 +105,15 @@ namespace SimpleAuth.Server.Controllers
         }
 
         [HttpPost("revoke")]
-        public async Task<IActionResult> PostRevoke()
+        public async Task<IActionResult> PostRevoke([FromForm]RevocationRequest revocationRequest)
         {
-            try
-            {
-                if (Request.Form == null)
-                {
-                    return BuildError(ErrorCodes.InvalidRequestCode,
-                        "no parameter in body request",
-                        HttpStatusCode.BadRequest);
-                }
-            }
-            catch (Exception)
-            {
-                return BuildError(ErrorCodes.InvalidRequestCode,
-                    "no parameter in body request",
-                    HttpStatusCode.BadRequest);
-            }
+            //if (Request.Form == null)
+            //{
+            //    throw new ArgumentNullException(nameof(Request.Form));
+            //}
 
-            var nameValueCollection = new NameValueCollection();
-            foreach (var kvp in Request.Form)
-            {
-                nameValueCollection.Add(kvp.Key, kvp.Value);
-            }
-
-            var serializer = new ParamSerializer();
-            var revocationRequest = serializer.Deserialize<RevocationRequest>(nameValueCollection);
+            //var serializer = new ParamSerializer();
+            //var revocationRequest = serializer.Deserialize<RevocationRequest>(Request.Form.Select(x => new KeyValuePair<string, string[]>(x.Key, x.Value)));
             // 1. Fetch the authorization header
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
@@ -174,9 +130,7 @@ namespace SimpleAuth.Server.Controllers
 
             // 2. Revoke the token
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-            await _tokenActions
-                .RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue, GetCertificate(), issuerName)
-                .ConfigureAwait(false);
+            await _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue, GetCertificate(), issuerName).ConfigureAwait(false);
             return new OkResult();
         }
 
@@ -198,26 +152,6 @@ namespace SimpleAuth.Server.Controllers
             {
                 return null;
             }
-        }
-
-        /// <summary>
-        /// Build the JSON error message.
-        /// </summary>
-        /// <param name="code"></param>
-        /// <param name="message"></param>
-        /// <param name="statusCode"></param>
-        /// <returns></returns>
-        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
-        {
-            var error = new ErrorResponse
-            {
-                Error = code,
-                ErrorDescription = message
-            };
-            return new JsonResult(error)
-            {
-                StatusCode = (int)statusCode
-            };
         }
     }
 }

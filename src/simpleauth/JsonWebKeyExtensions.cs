@@ -35,7 +35,7 @@
                     {
                         Kid = certificate.Thumbprint,
                         Kty = JsonWebAlgorithmsKeyTypes.RSA,
-                        Alg = keyAlg,
+                        //Alg = keyAlg,
                         E = parameters.Exponent == null ? null : Convert.ToBase64String(parameters.Exponent),
                         N = parameters.Modulus == null ? null : Convert.ToBase64String(parameters.Modulus),
                         D = parameters.D == null ? null : Convert.ToBase64String(parameters.D),

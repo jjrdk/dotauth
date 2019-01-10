@@ -29,7 +29,7 @@ namespace SimpleAuth.Uma.Client.Configuration
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<ConfigurationResponse> ExecuteAsync(Uri configurationUri)
+        public async Task<UmaConfigurationResponse> ExecuteAsync(Uri configurationUri)
         {
             if (configurationUri == null)
             {
@@ -37,7 +37,7 @@ namespace SimpleAuth.Uma.Client.Configuration
             }
 
             var result = await _httpClientFactory.GetStringAsync(configurationUri).ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<ConfigurationResponse>(result);
+            return JsonConvert.DeserializeObject<UmaConfigurationResponse>(result);
         }
     }
 }

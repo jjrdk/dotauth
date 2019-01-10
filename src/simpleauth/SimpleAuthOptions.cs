@@ -40,6 +40,8 @@ namespace SimpleAuth
 
         public BasicAuthenticateOptions BasicAuthenticationOptions { get; set; }
 
+        public UmaConfigurationOptions UmaConfigurationOptions { get; set; }
+
         public IEventPublisher EventPublisher { get;set; } = new DefaultEventPublisher();
 
         public ISubjectBuilder SubjectBuilder { get; set; } = new DefaultSubjectBuilder();

@@ -29,10 +29,371 @@ namespace SimpleAuth.Server.Extensions
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Security.Claims;
+    using Uma.Shared.DTOs;
     using CodeChallengeMethods = Shared.Models.CodeChallengeMethods;
+    using ScopeResponse = Shared.Responses.ScopeResponse;
 
     public static class MappingExtensions
     {
+        public static SearchResourceSetParameter ToParameter(this SearchResourceSet searchResourceSet)
+        {
+            if (searchResourceSet == null)
+            {
+                throw new ArgumentNullException(nameof(searchResourceSet));
+            }
+
+            return new SearchResourceSetParameter
+            {
+                Count = searchResourceSet.TotalResults,
+                Ids = searchResourceSet.Ids,
+                Names = searchResourceSet.Names,
+                StartIndex = searchResourceSet.StartIndex,
+                Types = searchResourceSet.Types
+            };
+        }
+
+        public static SearchAuthPoliciesParameter ToParameter(this SearchAuthPolicies searchAuthPolicies)
+        {
+            if (searchAuthPolicies == null)
+            {
+                throw new ArgumentNullException(nameof(searchAuthPolicies));
+            }
+
+            return new SearchAuthPoliciesParameter
+            {
+                Count = searchAuthPolicies.TotalResults,
+                Ids = searchAuthPolicies.Ids,
+                StartIndex = searchAuthPolicies.StartIndex,
+                ResourceIds = searchAuthPolicies.ResourceIds
+            };
+        }
+
+        public static AddResouceSetParameter ToParameter(this PostResourceSet postResourceSet)
+        {
+            return new AddResouceSetParameter
+            {
+                IconUri = postResourceSet.IconUri,
+                Name = postResourceSet.Name,
+                Scopes = postResourceSet.Scopes,
+                Type = postResourceSet.Type,
+                Uri = postResourceSet.Uri
+            };
+        }
+
+        public static UpdateResourceSetParameter ToParameter(this PutResourceSet putResourceSet)
+        {
+            return new UpdateResourceSetParameter
+            {
+                Id = putResourceSet.Id,
+                Name = putResourceSet.Name,
+                IconUri = putResourceSet.IconUri,
+                Scopes = putResourceSet.Scopes,
+                Type = putResourceSet.Type,
+                Uri = putResourceSet.Uri
+            };
+        }
+
+        public static AddPermissionParameter ToParameter(this PostPermission postPermission)
+        {
+            return new AddPermissionParameter
+            {
+                ResourceSetId = postPermission.ResourceSetId,
+                Scopes = postPermission.Scopes
+            };
+        }
+
+        public static AddPolicyParameter ToParameter(this PostPolicy postPolicy)
+        {
+            var rules = postPolicy.Rules == null ? new List<AddPolicyRuleParameter>()
+                : postPolicy.Rules.Select(r => r.ToParameter()).ToList();
+            return new AddPolicyParameter
+            {
+                Rules = rules,
+                ResourceSetIds = postPolicy.ResourceSetIds
+            };
+        }
+
+        public static AddPolicyRuleParameter ToParameter(this PostPolicyRule policyRule)
+        {
+            var claims = policyRule.Claims == null ? new List<AddClaimParameter>()
+                : policyRule.Claims.Select(p => p.ToParameter()).ToList();
+            return new AddPolicyRuleParameter
+            {
+                Claims = claims,
+                ClientIdsAllowed = policyRule.ClientIdsAllowed,
+                IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
+                Scopes = policyRule.Scopes,
+                Script = policyRule.Script,
+                OpenIdProvider = policyRule.OpenIdProvider
+            };
+        }
+
+        public static AddClaimParameter ToParameter(this PostClaim postClaim)
+        {
+            return new AddClaimParameter
+            {
+                Type = postClaim.Type,
+                Value = postClaim.Value
+            };
+        }
+
+        public static UpdatePolicyParameter ToParameter(this PutPolicy putPolicy)
+        {
+            var rules = putPolicy.Rules == null ? new List<UpdatePolicyRuleParameter>()
+                : putPolicy.Rules.Select(r => r.ToParameter()).ToList();
+            return new UpdatePolicyParameter
+            {
+                PolicyId = putPolicy.PolicyId,
+                Rules = rules
+            };
+        }
+
+        public static UpdatePolicyRuleParameter ToParameter(this PutPolicyRule policyRule)
+        {
+            var claims = policyRule.Claims == null ? new List<AddClaimParameter>()
+                : policyRule.Claims.Select(p => p.ToParameter()).ToList();
+            return new UpdatePolicyRuleParameter
+            {
+                Claims = claims,
+                ClientIdsAllowed = policyRule.ClientIdsAllowed,
+                Id = policyRule.Id,
+                IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
+                Scopes = policyRule.Scopes,
+                Script = policyRule.Script,
+                OpenIdProvider = policyRule.OpenIdProvider
+            };
+        }
+
+        public static SearchResourceSetResponse ToResponse(this SearchResourceSetResult searchResourceSetResult)
+        {
+            if (searchResourceSetResult == null)
+            {
+                throw new ArgumentNullException(nameof(searchResourceSetResult));
+            }
+
+            return new SearchResourceSetResponse
+            {
+                StartIndex = searchResourceSetResult.StartIndex,
+                TotalResults = searchResourceSetResult.TotalResults,
+                Content = searchResourceSetResult.Content == null ? new List<ResourceSetResponse>() : searchResourceSetResult.Content.Select(s => s.ToResponse())
+            };
+        }
+
+        public static SearchAuthPoliciesResponse ToResponse(this SearchAuthPoliciesResult searchAuthPoliciesResult)
+        {
+            if (searchAuthPoliciesResult == null)
+            {
+                throw new ArgumentNullException(nameof(searchAuthPoliciesResult));
+            }
+
+            return new SearchAuthPoliciesResponse
+            {
+                StartIndex = searchAuthPoliciesResult.StartIndex,
+                TotalResults = searchAuthPoliciesResult.TotalResults,
+                Content = searchAuthPoliciesResult.Content == null ? new List<PolicyResponse>() : searchAuthPoliciesResult.Content.Select(s => s.ToResponse())
+            };
+        }
+
+        public static ResourceSetResponse ToResponse(this ResourceSet resourceSet)
+        {
+            return new ResourceSetResponse
+            {
+                Id = resourceSet.Id,
+                IconUri = resourceSet.IconUri,
+                Name = resourceSet.Name,
+                Scopes = resourceSet.Scopes,
+                Type = resourceSet.Type,
+                Uri = resourceSet.Uri
+            };
+        }
+
+        public static PolicyResponse ToResponse(this Policy policy)
+        {
+            var rules = policy.Rules == null ? new List<PolicyRuleResponse>()
+                : policy.Rules.Select(p => p.ToResponse()).ToList();
+            return new PolicyResponse
+            {
+                Id = policy.Id,
+                ResourceSetIds = policy.ResourceSetIds,
+                Rules = rules
+            };
+        }
+
+        public static PolicyRuleResponse ToResponse(this PolicyRule policyRule)
+        {
+            var claims = policyRule.Claims == null ? new List<Claim>()
+                : policyRule.Claims.ToList();
+            return new PolicyRuleResponse
+            {
+                Id = policyRule.Id,
+                Claims = claims,
+                ClientIdsAllowed = policyRule.ClientIdsAllowed,
+                IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
+                Scopes = policyRule.Scopes,
+                Script = policyRule.Script,
+                OpenIdProvider = policyRule.OpenIdProvider
+            };
+        }
+
+        public static UmaConfigurationResponse ToResponse(this UmaConfigurationResponse configuration)
+        {
+            return new UmaConfigurationResponse
+            {
+                ClaimTokenProfilesSupported = configuration.ClaimTokenProfilesSupported,
+                IntrospectionEndpoint = configuration.IntrospectionEndpoint,
+                Issuer = configuration.Issuer,
+                PermissionEndpoint = configuration.PermissionEndpoint,
+                AuthorizationEndpoint = configuration.AuthorizationEndpoint,
+                ClaimsInteractionEndpoint = configuration.ClaimsInteractionEndpoint,
+                GrantTypesSupported = configuration.GrantTypesSupported,
+                JwksUri = configuration.JwksUri,
+                RegistrationEndpoint = configuration.RegistrationEndpoint,
+                ResourceRegistrationEndpoint = configuration.ResourceRegistrationEndpoint,
+                ResponseTypesSupported = configuration.ResponseTypesSupported,
+                RevocationEndpoint = configuration.RevocationEndpoint,
+                PoliciesEndpoint = configuration.PoliciesEndpoint,
+                ScopesSupported = configuration.ScopesSupported,
+                TokenEndpoint = configuration.TokenEndpoint,
+                TokenEndpointAuthMethodsSupported = configuration.TokenEndpointAuthMethodsSupported,
+                TokenEndpointAuthSigningAlgValuesSupported = configuration.TokenEndpointAuthSigningAlgValuesSupported,
+                UiLocalesSupported = configuration.UiLocalesSupported,
+                UmaProfilesSupported = configuration.UmaProfilesSupported
+            };
+        }
+
+        public static GrantedTokenResponse ToDto(this GrantedToken grantedToken)
+        {
+            if (grantedToken == null)
+            {
+                throw new ArgumentNullException(nameof(grantedToken));
+            }
+
+            return new GrantedTokenResponse
+            {
+                AccessToken = grantedToken.AccessToken,
+                IdToken = grantedToken.IdToken,
+                ExpiresIn = grantedToken.ExpiresIn,
+                RefreshToken = grantedToken.RefreshToken,
+                TokenType = grantedToken.TokenType,
+                Scope = grantedToken.Scope.Split(' ').ToList()
+            };
+        }
+
+        public static IntrospectionResponse ToDto(this IntrospectionResult introspectionResult)
+        {
+            return new IntrospectionResponse
+            {
+                Active = introspectionResult.Active,
+                Audience = introspectionResult.Audience,
+                ClientId = introspectionResult.ClientId,
+                Expiration = introspectionResult.Expiration,
+                IssuedAt = introspectionResult.IssuedAt,
+                Issuer = introspectionResult.Issuer,
+                Jti = introspectionResult.Jti,
+                Nbf = introspectionResult.Nbf,
+                Scope = introspectionResult.Scope.Split(' ').ToList(),
+                Subject = introspectionResult.Subject,
+                TokenType = introspectionResult.TokenType,
+                UserName = introspectionResult.UserName
+            };
+        }
+
+        public static ResourceOwnerGrantTypeParameter ToResourceOwnerGrantTypeParameter(this TokenRequest request)
+        {
+            return new ResourceOwnerGrantTypeParameter
+            {
+                UserName = request.username,
+                Password = request.password,
+                Scope = request.scope,
+                ClientId = request.client_id,
+                ClientAssertion = request.client_assertion,
+                ClientAssertionType = request.client_assertion_type,
+                ClientSecret = request.client_secret,
+                AmrValues = string.IsNullOrWhiteSpace(request.amr_values) ? new string[0] : request.amr_values.Split(' ')
+            };
+        }
+
+        public static AuthorizationCodeGrantTypeParameter ToAuthorizationCodeGrantTypeParameter(this TokenRequest request)
+        {
+            return new AuthorizationCodeGrantTypeParameter
+            {
+                ClientId = request.client_id,
+                ClientSecret = request.client_secret,
+                Code = request.code,
+                RedirectUri = request.redirect_uri,
+                ClientAssertion = request.client_assertion,
+                ClientAssertionType = request.client_assertion_type,
+                CodeVerifier = request.code_verifier
+            };
+        }
+
+        public static RefreshTokenGrantTypeParameter ToRefreshTokenGrantTypeParameter(this TokenRequest request)
+        {
+            return new RefreshTokenGrantTypeParameter
+            {
+                RefreshToken = request.refresh_token,
+                ClientAssertion = request.client_assertion,
+                ClientAssertionType = request.client_assertion_type,
+                ClientId = request.client_id,
+                ClientSecret = request.client_secret
+            };
+        }
+
+        public static ClientCredentialsGrantTypeParameter ToClientCredentialsGrantTypeParameter(this TokenRequest request)
+        {
+            return new ClientCredentialsGrantTypeParameter
+            {
+                ClientAssertion = request.client_assertion,
+                ClientAssertionType = request.client_assertion_type,
+                ClientId = request.client_id,
+                ClientSecret = request.client_secret,
+                Scope = request.scope
+            };
+        }
+
+        public static GetTokenViaTicketIdParameter ToTokenIdGrantTypeParameter(this TokenRequest request)
+        {
+            return new GetTokenViaTicketIdParameter
+            {
+                ClaimToken = request.claim_token,
+                ClaimTokenFormat = request.claim_token_format,
+                ClientId = request.client_id,
+                ClientAssertion = request.client_assertion,
+                ClientAssertionType = request.client_assertion_type,
+                ClientSecret = request.client_secret,
+                Pct = request.pct,
+                Rpt = request.rpt,
+                Ticket = request.ticket
+            };
+        }
+
+        public static IntrospectionParameter ToParameter(this IntrospectionRequest viewModel)
+        {
+            return new IntrospectionParameter
+            {
+                ClientAssertion = viewModel.ClientAssertion,
+                ClientAssertionType = viewModel.ClientAssertionType,
+                ClientId = viewModel.ClientId,
+                ClientSecret = viewModel.ClientSecret,
+                Token = viewModel.Token,
+                TokenTypeHint = viewModel.TokenTypeHint
+            };
+        }
+
+        public static RevokeTokenParameter ToParameter(this RevocationRequest revocationRequest)
+        {
+            return new RevokeTokenParameter
+            {
+                ClientAssertion = revocationRequest.client_assertion,
+                ClientAssertionType = revocationRequest.client_assertion_type,
+                ClientId = revocationRequest.client_id,
+                ClientSecret = revocationRequest.client_secret,
+                Token = revocationRequest.token,
+                TokenTypeHint = revocationRequest.token_type_hint
+            };
+        }
+
         public static AuthproviderResponse ToDto(this AuthenticationScheme authenticationScheme)
         {
             if (authenticationScheme == null)
@@ -287,85 +648,6 @@ namespace SimpleAuth.Server.Extensions
             return result;
         }
 
-        public static RevokeTokenParameter ToParameter(this RevocationRequest revocationRequest)
-        {
-            return new RevokeTokenParameter
-            {
-                ClientAssertion = revocationRequest.ClientAssertion,
-                ClientAssertionType = revocationRequest.ClientAssertionType,
-                ClientId = revocationRequest.ClientId,
-                ClientSecret = revocationRequest.ClientSecret,
-                Token = revocationRequest.Token,
-                TokenTypeHint = revocationRequest.TokenTypeHint
-            };
-        }
-
-        public static IntrospectionParameter ToParameter(this IntrospectionRequest viewModel)
-        {
-            return new IntrospectionParameter
-            {
-                ClientAssertion = viewModel.ClientAssertion,
-                ClientAssertionType = viewModel.ClientAssertionType,
-                ClientId = viewModel.ClientId,
-                ClientSecret = viewModel.ClientSecret,
-                Token = viewModel.Token,
-                TokenTypeHint = viewModel.TokenTypeHint
-            };
-        }
-
-        public static ResourceOwnerGrantTypeParameter ToResourceOwnerGrantTypeParameter(this TokenRequest request)
-        {
-            return new ResourceOwnerGrantTypeParameter
-            {
-                UserName = request.Username,
-                Password = request.Password,
-                Scope = request.Scope,
-                ClientId = request.ClientId,
-                ClientAssertion = request.ClientAssertion,
-                ClientAssertionType = request.ClientAssertionType,
-                ClientSecret = request.ClientSecret,
-                AmrValues = string.IsNullOrWhiteSpace(request.AmrValues) ? new string[0] : request.AmrValues.Split(' ')
-            };
-        }
-
-        public static AuthorizationCodeGrantTypeParameter ToAuthorizationCodeGrantTypeParameter(this TokenRequest request)
-        {
-            return new AuthorizationCodeGrantTypeParameter
-            {
-                ClientId = request.ClientId,
-                ClientSecret = request.ClientSecret,
-                Code = request.Code,
-                RedirectUri = request.RedirectUri,
-                ClientAssertion = request.ClientAssertion,
-                ClientAssertionType = request.ClientAssertionType,
-                CodeVerifier = request.CodeVerifier
-            };
-        }
-
-        public static RefreshTokenGrantTypeParameter ToRefreshTokenGrantTypeParameter(this TokenRequest request)
-        {
-            return new RefreshTokenGrantTypeParameter
-            {
-                RefreshToken = request.RefreshToken,
-                ClientAssertion = request.ClientAssertion,
-                ClientAssertionType = request.ClientAssertionType,
-                ClientId = request.ClientId,
-                ClientSecret = request.ClientSecret
-            };
-        }
-
-        public static ClientCredentialsGrantTypeParameter ToClientCredentialsGrantTypeParameter(this TokenRequest request)
-        {
-            return new ClientCredentialsGrantTypeParameter
-            {
-                ClientAssertion = request.ClientAssertion,
-                ClientAssertionType = request.ClientAssertionType,
-                ClientId = request.ClientId,
-                ClientSecret = request.ClientSecret,
-                Scope = request.Scope
-            };
-        }
-
         public static AuthorizationRequest ToAuthorizationRequest(this JwtPayload jwsPayload)
         {
             var displayVal =
@@ -404,43 +686,6 @@ namespace SimpleAuth.Server.Extensions
             };
 
             return result;
-        }
-
-        public static IntrospectionResponse ToDto(this IntrospectionResult introspectionResult)
-        {
-            return new IntrospectionResponse
-            {
-                Active = introspectionResult.Active,
-                Audience = introspectionResult.Audience,
-                ClientId = introspectionResult.ClientId,
-                Expiration = introspectionResult.Expiration,
-                IssuedAt = introspectionResult.IssuedAt,
-                Issuer = introspectionResult.Issuer,
-                Jti = introspectionResult.Jti,
-                Nbf = introspectionResult.Nbf,
-                Scope = introspectionResult.Scope.Split(' ').ToList(),
-                Subject = introspectionResult.Subject,
-                TokenType = introspectionResult.TokenType,
-                UserName = introspectionResult.UserName
-            };
-        }
-
-        public static GrantedTokenResponse ToDto(this GrantedToken grantedToken)
-        {
-            if (grantedToken == null)
-            {
-                throw new ArgumentNullException(nameof(grantedToken));
-            }
-
-            return new GrantedTokenResponse
-            {
-                AccessToken = grantedToken.AccessToken,
-                IdToken = grantedToken.IdToken,
-                ExpiresIn = grantedToken.ExpiresIn,
-                RefreshToken = grantedToken.RefreshToken,
-                TokenType = grantedToken.TokenType,
-                Scope = grantedToken.Scope.Split(' ').ToList()
-            };
         }
 
         private static void FillInClaimsParameter(

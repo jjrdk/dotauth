@@ -6,10 +6,10 @@
     public class OAuthConfigurationOptions
     {
         public OAuthConfigurationOptions(
-            TimeSpan authorizationCodeValidity = default(TimeSpan),
+            TimeSpan authorizationCodeValidity = default,
             CultureInfo defaultLanguage = null)
         {
-            AuthorizationCodeValidityPeriod = authorizationCodeValidity == default(TimeSpan)
+            AuthorizationCodeValidityPeriod = authorizationCodeValidity == default
                 ? TimeSpan.FromSeconds(3600)
                 : authorizationCodeValidity;
             DefaultLanguage = defaultLanguage ?? CultureInfo.GetCultureInfo("en");

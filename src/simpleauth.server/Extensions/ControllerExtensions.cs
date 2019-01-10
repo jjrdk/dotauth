@@ -16,20 +16,65 @@ using ResponseMode = SimpleAuth.Parameters.ResponseMode;
 
 namespace SimpleAuth.Server.Extensions
 {
-    using System;
-    using System.IO;
-    using System.Reflection;
-    using System.Text;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
+    using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
     using Parsers;
     using Results;
     using Shared.Requests;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Net.Http.Headers;
+    using System.Reflection;
+    using System.Security.Claims;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
 
     public static class ControllerExtensions
     {
+        public static AuthenticationHeaderValue GetAuthenticationHeader(this Controller controller)
+        {
+            const string authorizationName = "Authorization";
+            if (!controller.Request.Headers.TryGetValue(authorizationName, out StringValues values))
+            {
+                return null;
+            }
+
+            var authorizationHeader = values.First();
+            return AuthenticationHeaderValue.Parse(authorizationHeader);
+        }
+
+        public static string GetClientId(this Controller controller)
+        {
+            if (controller.User?.Identity == null || !controller.User.Identity.IsAuthenticated)
+            {
+                return string.Empty;
+            }
+
+            var claim = controller.User.Claims.FirstOrDefault(c => c.Type == "client_id");
+            if (claim == null)
+            {
+                return string.Empty;
+            }
+
+            return claim.Value;
+        }
+
+        public static IEnumerable<Claim> GetClaims(this Controller controller)
+        {
+            if (controller.User?.Identity == null || !controller.User.Identity.IsAuthenticated)
+            {
+                return new List<Claim>();
+            }
+
+            return controller.User.Claims;
+        }
+
         public static ActionResult GetActionResult(this Controller controller, ApiActionResult result)
         {
             if (controller == null)
@@ -50,8 +95,10 @@ namespace SimpleAuth.Server.Extensions
 
             if (result.Content != null)
             {
-                var res = new ObjectResult(result.Content);
-                res.StatusCode = result.StatusCode;
+                var res = new ObjectResult(result.Content)
+                {
+                    StatusCode = result.StatusCode
+                };
                 return res;
             }
 
@@ -64,7 +111,7 @@ namespace SimpleAuth.Server.Extensions
             {
                 throw new ArgumentNullException(nameof(controller));
             }
-            
+
             if (!controller.Request.Headers.ContainsKey("Referer"))
             {
                 return null;
@@ -86,7 +133,7 @@ namespace SimpleAuth.Server.Extensions
             {
                 throw new ArgumentNullException(nameof(resourceName));
             }
-            
+
             var html = GetHtml(resourceName);
             if (manipulateHtmlCallback != null)
             {
@@ -127,7 +174,7 @@ namespace SimpleAuth.Server.Extensions
 
             return null;
         }
-        
+
         public static RedirectResult CreateRedirectHttpTokenResponse(
             this Controller controller,
             Uri uri,
@@ -138,7 +185,7 @@ namespace SimpleAuth.Server.Extensions
             {
                 case ResponseMode.fragment:
                     uri = uri.AddParametersInFragment(parameters);
-                break;
+                    break;
                 case ResponseMode.query:
                     uri = uri.AddParametersInQuery(parameters);
                     break;
@@ -179,7 +226,7 @@ namespace SimpleAuth.Server.Extensions
 
             return uri.ToString();
         }
-        
+
         private static string GetHtml(string resourceName)
         {
             var assembly = Assembly.GetExecutingAssembly();

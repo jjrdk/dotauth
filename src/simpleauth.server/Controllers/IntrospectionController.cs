@@ -19,7 +19,6 @@ namespace SimpleAuth.Server.Controllers
     using System.Linq;
     using System.Net;
     using System.Net.Http.Headers;
-    using System.Threading;
     using System.Threading.Tasks;
     using Authenticate;
     using Errors;
@@ -67,7 +66,6 @@ namespace SimpleAuth.Server.Controllers
                 nameValueCollection.Add(kvp.Key, kvp.Value);
             }
 
-            var s = Thread.CurrentThread.ManagedThreadId;
             var serializer = new ParamSerializer();
             var introspectionRequest = serializer.Deserialize<IntrospectionRequest>(nameValueCollection);
             AuthenticationHeaderValue authenticationHeaderValue = null;
