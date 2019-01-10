@@ -11,7 +11,7 @@
 
     internal sealed class DefaultScopeRepository : IScopeRepository
     {
-        public ICollection<Scope> _scopes;
+        public readonly ICollection<Scope> _scopes;
 
         private readonly List<Scope> DEFAULT_SCOPES = new List<Scope>
         {
@@ -186,11 +186,7 @@
             }
 
             var scope = _scopes.FirstOrDefault(s => s.Name == name);
-            if (scope == null)
-            {
-                return Task.FromResult((Scope)null);
-            }
-
+            
             return Task.FromResult(scope);
         }
 
@@ -201,6 +197,10 @@
                 throw new ArgumentNullException(nameof(scope));
             }
 
+            if (_scopes.Any(x => x.Name == scope.Name))
+            {
+                return Task.FromResult(false);
+            }
             scope.CreateDateTime = DateTime.UtcNow;
             _scopes.Add(scope);
             return Task.FromResult(true);

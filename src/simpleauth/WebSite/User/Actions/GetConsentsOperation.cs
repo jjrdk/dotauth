@@ -22,7 +22,7 @@ namespace SimpleAuth.WebSite.User.Actions
     using Shared.Models;
     using Shared.Repositories;
 
-    internal class GetConsentsOperation : IGetConsentsOperation
+    internal class GetConsentsOperation
     {
         private readonly IConsentRepository _consentRepository;
 

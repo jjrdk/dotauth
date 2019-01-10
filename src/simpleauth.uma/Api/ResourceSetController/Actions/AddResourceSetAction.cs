@@ -18,7 +18,6 @@ namespace SimpleAuth.Uma.Api.ResourceSetController.Actions
     using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Logging;
     using Models;
     using Parameters;
     using Repositories;

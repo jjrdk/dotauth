@@ -42,7 +42,11 @@ namespace SimpleAuth.Api.Authorization.Actions
             _clientValidator = new ClientValidator();
         }
 
-        public async Task<EndpointResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client, string issuerName)
+        public async Task<EndpointResult> Execute(
+            AuthorizationParameter authorizationParameter,
+            IPrincipal principal,
+            Client client,
+            string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -58,7 +62,8 @@ namespace SimpleAuth.Api.Authorization.Actions
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
+                    string.Format(ErrorDescriptions.MissingParameter,
+                        CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
                     authorizationParameter.State);
             }
 
@@ -72,11 +77,15 @@ namespace SimpleAuth.Api.Authorization.Actions
                     authorizationParameter.State);
             }
 
-            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, principal as ClaimsPrincipal, client, issuerName).ConfigureAwait(false);
+            var result = await _processAuthorizationRequest
+                .ProcessAsync(authorizationParameter, principal as ClaimsPrincipal, client, issuerName)
+                .ConfigureAwait(false);
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var claimsPrincipal = principal as ClaimsPrincipal;
-                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
+                await _generateAuthorizationResponse
+                    .ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName)
+                    .ConfigureAwait(false);
             }
 
             return result;

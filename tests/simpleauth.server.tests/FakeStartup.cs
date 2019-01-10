@@ -138,7 +138,6 @@ namespace SimpleAuth.Server.Tests
             };
             services.AddSingleton(new SmsAuthenticationOptions());
             services.AddSingleton(_context.TwilioClient.Object);
-            //services.AddSingleton<ISubjectBuilder>(new DefaultSubjectBuilder());
             services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
             services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();

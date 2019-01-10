@@ -5,7 +5,6 @@
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Threading.Tasks;
-    using Logging;
     using Shared;
     using Shared.Models;
 

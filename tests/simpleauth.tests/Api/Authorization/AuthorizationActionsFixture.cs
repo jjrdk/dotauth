@@ -37,7 +37,7 @@ namespace SimpleAuth.Tests.Api.Authorization
         private Mock<IEventPublisher> _eventPublisherStub;
         private Mock<IAmrHelper> _amrHelperStub;
         private Mock<IResourceOwnerAuthenticateHelper> _resourceOwnerAuthenticateHelperStub;
-        private IAuthorizationActions _authorizationActions;
+        private AuthorizationActions _authorizationActions;
         private Mock<IClientStore> _clientStore;
         private Mock<IConsentHelper> _consentHelper;
 

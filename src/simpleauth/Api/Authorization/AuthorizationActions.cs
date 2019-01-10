@@ -19,7 +19,6 @@ namespace SimpleAuth.Api.Authorization
     using Errors;
     using Exceptions;
     using Helpers;
-    using Logging;
     using Parameters;
     using Results;
     using Shared;
@@ -31,7 +30,7 @@ namespace SimpleAuth.Api.Authorization
     using System.Threading.Tasks;
     using Validators;
 
-    public class AuthorizationActions : IAuthorizationActions
+    public class AuthorizationActions
     {
         private readonly GetAuthorizationCodeOperation _getAuthorizationCodeOperation;
         private readonly GetTokenViaImplicitWorkflowOperation _getTokenViaImplicitWorkflowOperation;

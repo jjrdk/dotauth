@@ -1,11 +1,11 @@
 ﻿namespace SimpleAuth.WebSite.User.Actions
 {
-    using System;
-    using System.Threading.Tasks;
     using Exceptions;
     using Shared.Repositories;
+    using System;
+    using System.Threading.Tasks;
 
-    internal sealed class UpdateUserTwoFactorAuthenticatorOperation : IUpdateUserTwoFactorAuthenticatorOperation
+    internal sealed class UpdateUserTwoFactorAuthenticatorOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 

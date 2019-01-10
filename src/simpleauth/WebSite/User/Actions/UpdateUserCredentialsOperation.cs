@@ -6,7 +6,7 @@
     using Helpers;
     using Shared.Repositories;
 
-    internal sealed class UpdateUserCredentialsOperation : IUpdateUserCredentialsOperation
+    internal sealed class UpdateUserCredentialsOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 

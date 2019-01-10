@@ -22,7 +22,6 @@ namespace SimpleAuth.Uma.Policies
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using Logging;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Events.Uma;
 

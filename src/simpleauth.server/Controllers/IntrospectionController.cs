@@ -21,6 +21,7 @@ namespace SimpleAuth.Server.Controllers
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
+    using Authenticate;
     using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
@@ -33,11 +34,15 @@ namespace SimpleAuth.Server.Controllers
     [Route(CoreConstants.EndPoints.Introspection)]
     public class IntrospectionController : Controller
     {
-        private readonly IIntrospectionActions _introspectionActions;
+        private readonly PostIntrospectionAction _introspectionActions;
 
-        public IntrospectionController(IIntrospectionActions introspectionActions)
+        public IntrospectionController(
+            IAuthenticateClient authenticateClient,
+            ITokenStore tokenStore)
         {
-            _introspectionActions = introspectionActions;
+            _introspectionActions = new PostIntrospectionAction(
+                authenticateClient,
+                tokenStore);
         }
 
         [HttpPost]
@@ -79,7 +84,7 @@ namespace SimpleAuth.Server.Controllers
             }
 
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-            var result = await _introspectionActions.PostIntrospection(introspectionRequest.ToParameter(), authenticationHeaderValue, issuerName).ConfigureAwait(false);
+            var result = await _introspectionActions.Execute(introspectionRequest.ToParameter(), authenticationHeaderValue, issuerName).ConfigureAwait(false);
             return new OkObjectResult(result.ToDto());
         }
 

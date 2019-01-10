@@ -24,14 +24,12 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
     internal class GetAuthorizationPoliciesAction : IGetAuthorizationPoliciesAction
     {
         private readonly IPolicyRepository _policyRepository;
-        private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
+        private readonly RepositoryExceptionHelper _repositoryExceptionHelper;
 
-        public GetAuthorizationPoliciesAction(
-            IPolicyRepository policyRepository,
-            IRepositoryExceptionHelper repositoryExceptionHelper)
+        public GetAuthorizationPoliciesAction(IPolicyRepository policyRepository)
         {
             _policyRepository = policyRepository;
-            _repositoryExceptionHelper = repositoryExceptionHelper;
+            _repositoryExceptionHelper = new RepositoryExceptionHelper();
         }
         
         public async Task<ICollection<string>> Execute()

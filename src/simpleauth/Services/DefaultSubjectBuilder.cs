@@ -1,10 +1,8 @@
 ﻿namespace SimpleAuth.Services
 {
-    using System;
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Logging;
     using Shared;
     using Shared.DTOs;
 

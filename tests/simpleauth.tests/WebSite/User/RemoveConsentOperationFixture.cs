@@ -14,38 +14,40 @@
 
 namespace SimpleAuth.Tests.WebSite.User
 {
-    using System;
-    using System.Threading.Tasks;
     using Moq;
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth.WebSite.User.Actions;
+    using System;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class RemoveConsentOperationFixture
     {
         private Mock<IConsentRepository> _consentRepositoryStub;
-        private IRemoveConsentOperation _removeConsentOperation;
+        private RemoveConsentOperation _removeConsentOperation;
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-            
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _removeConsentOperation.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _removeConsentOperation.Execute(null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task When_Deleting_Consent_Then_Boolean_Is_Returned()
-        {            const bool isRemoved = true;
+        public async Task When_Deleting_Consent_Then_Returns_True()
+        {
+            const bool isRemoved = true;
             const string consentId = "consent_id";
             InitializeFakeObjects();
             _consentRepositoryStub.Setup(c => c.DeleteAsync(It.IsAny<Consent>()))
                 .Returns(Task.FromResult(isRemoved));
 
-                        var result = await _removeConsentOperation.Execute(consentId).ConfigureAwait(false);
+            var result = await _removeConsentOperation.Execute(consentId).ConfigureAwait(false);
 
-                        Assert.True(result == isRemoved);
+            Assert.True(result);
         }
 
         private void InitializeFakeObjects()

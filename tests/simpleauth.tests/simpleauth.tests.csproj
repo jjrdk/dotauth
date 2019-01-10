@@ -6,7 +6,7 @@
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <RootNamespace>SimpleAuth.Tests</RootNamespace>
   </PropertyGroup>
-  <Import Project="../../shared.proj"/>
+  <Import Project="../../shared.proj" />
 
   <ItemGroup>
     <None Update="testCert.pfx">

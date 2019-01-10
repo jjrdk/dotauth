@@ -29,16 +29,15 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
     {
         private readonly IPolicyRepository _policyRepository;
         private readonly IResourceSetRepository _resourceSetRepository;
-        private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
+        private readonly RepositoryExceptionHelper _repositoryExceptionHelper;
 
         public AddResourceSetToPolicyAction(
             IPolicyRepository policyRepository,
-            IResourceSetRepository resourceSetRepository,
-            IRepositoryExceptionHelper repositoryExceptionHelper)
+            IResourceSetRepository resourceSetRepository)
         {
             _policyRepository = policyRepository;
             _resourceSetRepository = resourceSetRepository;
-            _repositoryExceptionHelper = repositoryExceptionHelper;
+            _repositoryExceptionHelper = new RepositoryExceptionHelper();
         }
 
         public async Task<bool> Execute(AddResourceSetParameter addResourceSetParameter)

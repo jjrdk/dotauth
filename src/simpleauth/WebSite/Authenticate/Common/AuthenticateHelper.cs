@@ -70,7 +70,7 @@
             if (assignedConsent != null)
             {
                 result = EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-                var claimsIdentity = new ClaimsIdentity(claims, "simpleAuth");
+                var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuth");
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 await _generateAuthorizationResponse
                     .ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName)

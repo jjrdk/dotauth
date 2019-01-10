@@ -21,7 +21,6 @@ namespace SimpleAuth.Uma.Api.PermissionController.Actions
     using Errors;
     using Exceptions;
     using Helpers;
-    using Logging;
     using Models;
     using Parameters;
     using Repositories;
@@ -34,18 +33,17 @@ namespace SimpleAuth.Uma.Api.PermissionController.Actions
     {
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly ITicketStore _ticketStore;
-        private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
+        private readonly RepositoryExceptionHelper _repositoryExceptionHelper;
         private readonly UmaConfigurationOptions _configurationService;
 
         public AddPermissionAction(
             IResourceSetRepository resourceSetRepository,
             ITicketStore ticketStore,
-            IRepositoryExceptionHelper repositoryExceptionHelper,
             UmaConfigurationOptions configurationService)
         {
             _resourceSetRepository = resourceSetRepository;
             _ticketStore = ticketStore;
-            _repositoryExceptionHelper = repositoryExceptionHelper;
+            _repositoryExceptionHelper = new RepositoryExceptionHelper();
             _configurationService = configurationService;
         }
 

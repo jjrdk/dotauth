@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Habart Thierry
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,13 @@
 
 namespace SimpleAuth.ProtectedApi
 {
-    using System.IO;
     using Microsoft.AspNetCore.Hosting;
+    using System.IO;
+    using System.Threading.Tasks;
 
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main()
         {
             var host = new WebHostBuilder()
                 .UseKestrel()
@@ -27,7 +28,7 @@ namespace SimpleAuth.ProtectedApi
                 .UseUrls("http://*:61000", "https://localhost:444")
                 .UseStartup<Startup>()
                 .Build();
-            host.Run();
+            await host.RunAsync().ConfigureAwait(false);
         }
     }
 }

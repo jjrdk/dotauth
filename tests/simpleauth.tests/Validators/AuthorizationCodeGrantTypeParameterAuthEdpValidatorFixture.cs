@@ -18,7 +18,7 @@
     {
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
         private Mock<IClientStore> _clientRepository;
-        private IAuthorizationCodeGrantTypeParameterAuthEdpValidator
+        private AuthorizationCodeGrantTypeParameterAuthEdpValidator
             _authorizationCodeGrantTypeParameterAuthEdpValidator;
 
         [Fact]

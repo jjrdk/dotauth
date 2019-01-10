@@ -14,18 +14,14 @@
 
 namespace SimpleAuth.Scim.Client.Tests
 {
-    using System.Reflection;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
     using MiddleWares;
-    using Server.Controllers;
     using Server.Extensions;
     using Services;
     using Shared;
-    using WebSite.User.Actions;
 
     public class FakeScimStartup
     {
@@ -50,12 +46,11 @@ namespace SimpleAuth.Scim.Client.Tests
                     policy.RequireAuthenticatedUser();
                 });
             });
-            services.AddTransient<IAddUserOperation, AddUserOperation>();
             services.AddSingleton<ISubjectBuilder>(new DefaultSubjectBuilder());
-            var mvc = services.AddMvc();
-            var parts = mvc.PartManager.ApplicationParts;
-            parts.Clear();
-            parts.Add(new AssemblyPart(typeof(ResourceTypesController).GetTypeInfo().Assembly));
+            services.AddMvc();
+            //var parts = mvc.PartManager.ApplicationParts;
+            //parts.Clear();
+            //parts.Add(new AssemblyPart(typeof(ResourceTypesController).GetTypeInfo().Assembly));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

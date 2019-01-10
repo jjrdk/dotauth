@@ -30,11 +30,11 @@
         private const string DefaultLanguage = "en";
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IProfileRepository _profileRepository;
-        private readonly IGetUserOperation _getUserOperation;
-        private readonly IGetConsentsOperation _getConsentsOperation;
-        private readonly IUpdateUserTwoFactorAuthenticatorOperation _updateUserTwoFactorAuthenticatorOperation;
-        private readonly IUpdateUserCredentialsOperation _updateUserCredentialsOperation;
-        private readonly IRemoveConsentOperation _removeConsentOperation;
+        private readonly GetUserOperation _getUserOperation;
+        private readonly GetConsentsOperation _getConsentsOperation;
+        private readonly UpdateUserTwoFactorAuthenticatorOperation _updateUserTwoFactorAuthenticatorOperation;
+        private readonly UpdateUserCredentialsOperation _updateUserCredentialsOperation;
+        private readonly RemoveConsentOperation _removeConsentOperation;
         // private readonly IProfileActions _profileActions;
         private readonly ITranslationManager _translationManager;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
@@ -44,25 +44,21 @@
         public UserController(
             IResourceOwnerRepository resourceOwnerRepository,
             IProfileRepository profileRepository,
-            IGetUserOperation getUserOperation,
-            IGetConsentsOperation getConsentsOperation,
-            IUpdateUserTwoFactorAuthenticatorOperation updateUserTwoFactorAuthenticatorOperation,
-            IUpdateUserCredentialsOperation updateUserCredentialsOperation,
-            IRemoveConsentOperation removeConsentOperation,
             ITranslationManager translationManager,
             IAuthenticationService authenticationService,
             IAuthenticationSchemeProvider authenticationSchemeProvider,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
+            IConsentRepository consentRepository,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler) : base(authenticationService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _profileRepository = profileRepository;
-            _getUserOperation = getUserOperation;
-            _getConsentsOperation = getConsentsOperation;
-            _updateUserTwoFactorAuthenticatorOperation = updateUserTwoFactorAuthenticatorOperation;
-            _updateUserCredentialsOperation = updateUserCredentialsOperation;
-            _removeConsentOperation = removeConsentOperation;
+            _getUserOperation = new GetUserOperation(resourceOwnerRepository);
+            _getConsentsOperation = new GetConsentsOperation(consentRepository);
+            _updateUserTwoFactorAuthenticatorOperation = new UpdateUserTwoFactorAuthenticatorOperation(resourceOwnerRepository);
+            _updateUserCredentialsOperation = new UpdateUserCredentialsOperation(resourceOwnerRepository);
+            _removeConsentOperation = new RemoveConsentOperation(consentRepository);
             // _profileActions = profileActions;
             _translationManager = translationManager;
             _authenticationSchemeProvider = authenticationSchemeProvider;

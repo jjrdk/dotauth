@@ -14,37 +14,39 @@
 
 namespace SimpleAuth.Server.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Extensions;
     using Helpers;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Shared;
     using Shared.Models;
     using Shared.Repositories;
     using Shared.Requests;
     using Shared.Responses;
     using SimpleAuth;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using WebSite.User.Actions;
 
     [Route(CoreConstants.EndPoints.ResourceOwners)]
     public class ResourceOwnersController : Controller
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IAddUserOperation _addUserOperation;
+        private readonly AddUserOperation _addUserOperation;
 
         public ResourceOwnersController(
             IResourceOwnerRepository resourceOwnerRepository,
-            IAddUserOperation addUserOperation)
+            IEnumerable<IAccountFilter> accountFilters,
+            IEventPublisher eventPublisher)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _addUserOperation = addUserOperation;
+            _addUserOperation = new AddUserOperation(resourceOwnerRepository, accountFilters, eventPublisher);
         }
 
         [HttpGet]
@@ -118,16 +120,16 @@ namespace SimpleAuth.Server.Controllers
             //var existingClaims = (await _claimRepository.GetAllAsync().ConfigureAwait(false)).ToArray();
             //if (existingClaims.Any() && request.Claims != null && request.Claims.Any())
             //{
-                foreach (var claim in request.Claims)
-                {
-                    //var cl = existingClaims.FirstOrDefault(c => c.Code == claim.Key);
-                    //if (cl == null)
-                    //{
-                    //    continue;
-                    //}
+            foreach (var claim in request.Claims)
+            {
+                //var cl = existingClaims.FirstOrDefault(c => c.Code == claim.Key);
+                //if (cl == null)
+                //{
+                //    continue;
+                //}
 
-                    claims.Add(new Claim(claim.Key, claim.Value));
-                }
+                claims.Add(new Claim(claim.Key, claim.Value));
+            }
             //}
 
             resourceOwner.Claims = claims;
@@ -197,8 +199,6 @@ namespace SimpleAuth.Server.Controllers
             {
                 return NoContent();
             }
-            //await _resourceOwnerActions.Add(addResourceOwnerRequest.ToParameter()).ConfigureAwait(false);
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners, false);
             return BadRequest(new ErrorResponse
             {
                 Error = ErrorCodes.UnhandledExceptionCode,

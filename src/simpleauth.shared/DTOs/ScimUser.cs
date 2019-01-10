@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Shared.DTOs
 {
-    using System;
     using System.Runtime.Serialization;
 
     [DataContract]

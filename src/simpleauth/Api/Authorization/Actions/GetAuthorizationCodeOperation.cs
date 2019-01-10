@@ -42,7 +42,11 @@ namespace SimpleAuth.Api.Authorization.Actions
             _generateAuthorizationResponse = generateAuthorizationResponse;
         }
 
-        public async Task<EndpointResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client, string issuerName)
+        public async Task<EndpointResult> Execute(
+            AuthorizationParameter authorizationParameter,
+            IPrincipal principal,
+            Client client,
+            string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -56,8 +60,11 @@ namespace SimpleAuth.Api.Authorization.Actions
 
             var claimsPrincipal = principal as ClaimsPrincipal;
 
-            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
-            if (!_clientValidator.CheckGrantTypes(client, GrantType.authorization_code)) // 1. Check the client is authorized to use the authorization_code flow.
+            var result = await _processAuthorizationRequest
+                .ProcessAsync(authorizationParameter, claimsPrincipal, client, issuerName)
+                .ConfigureAwait(false);
+            if (!_clientValidator.CheckGrantTypes(client, GrantType.authorization_code)
+            ) // 1. Check the client is authorized to use the authorization_code flow.
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
@@ -77,7 +84,9 @@ namespace SimpleAuth.Api.Authorization.Actions
                         authorizationParameter.State);
                 }
 
-                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
+                await _generateAuthorizationResponse
+                    .ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName)
+                    .ConfigureAwait(false);
             }
 
             return result;

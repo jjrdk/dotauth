@@ -14,8 +14,6 @@
 
 namespace SimpleAuth.Uma.Tests.Api.PolicyController
 {
-    using Errors;
-    using Helpers;
     using Models;
     using Moq;
     using Repositories;
@@ -27,7 +25,6 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
     public class DeleteAuthorizationPolicyActionFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
-        private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
         private IDeleteAuthorizationPolicyAction _deleteAuthorizationPolicyAction;
 
         [Fact]
@@ -43,9 +40,6 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         {
             const string policyId = "policy_id";
             IntializeFakeObjects();
-            _repositoryExceptionHelperStub.Setup(r => r.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId),
-                It.IsAny<Func<Task<Policy>>>()))
-                .Returns(() => Task.FromResult((Policy)null));
 
             var isUpdated = await _deleteAuthorizationPolicyAction.Execute(policyId).ConfigureAwait(false);
 
@@ -56,24 +50,18 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         public async Task When_AuthorizationPolicy_Exists_Then_True_Is_Returned()
         {
             const string policyId = "policy_id";
-            var policy = new Policy();
-            IntializeFakeObjects();
-            _repositoryExceptionHelperStub.Setup(r => r.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId),
-                It.IsAny<Func<Task<Policy>>>()))
-                .Returns(Task.FromResult(policy));
+            IntializeFakeObjects(new Policy { Id = policyId });
 
             var isUpdated = await _deleteAuthorizationPolicyAction.Execute(policyId).ConfigureAwait(false);
 
             Assert.True(isUpdated);
         }
 
-        private void IntializeFakeObjects()
+        private void IntializeFakeObjects(Policy policy = null)
         {
             _policyRepositoryStub = new Mock<IPolicyRepository>();
-            _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
-            _deleteAuthorizationPolicyAction = new DeleteAuthorizationPolicyAction(
-                _policyRepositoryStub.Object,
-                _repositoryExceptionHelperStub.Object);
+            _policyRepositoryStub.Setup(x => x.Get(It.IsAny<string>())).ReturnsAsync(policy);
+            _deleteAuthorizationPolicyAction = new DeleteAuthorizationPolicyAction(_policyRepositoryStub.Object);
         }
     }
 }

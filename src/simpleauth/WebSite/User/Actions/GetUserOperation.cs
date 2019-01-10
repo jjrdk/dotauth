@@ -22,7 +22,7 @@ namespace SimpleAuth.WebSite.User.Actions
     using Shared.Models;
     using Shared.Repositories;
 
-    internal class GetUserOperation : IGetUserOperation
+    internal class GetUserOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 

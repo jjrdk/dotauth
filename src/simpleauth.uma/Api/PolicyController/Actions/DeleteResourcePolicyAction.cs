@@ -24,16 +24,15 @@ namespace SimpleAuth.Uma.Api.PolicyController.Actions
     internal class DeleteResourcePolicyAction : IDeleteResourcePolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
-        private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
+        private readonly RepositoryExceptionHelper _repositoryExceptionHelper;
         private readonly IResourceSetRepository _resourceSetRepository;
 
         public DeleteResourcePolicyAction(
             IPolicyRepository policyRepository,
-            IRepositoryExceptionHelper repositoryExceptionHelper,
             IResourceSetRepository resourceSetRepository)
         {
             _policyRepository = policyRepository;
-            _repositoryExceptionHelper = repositoryExceptionHelper;
+            _repositoryExceptionHelper = new RepositoryExceptionHelper();
             _resourceSetRepository = resourceSetRepository;
         }
 

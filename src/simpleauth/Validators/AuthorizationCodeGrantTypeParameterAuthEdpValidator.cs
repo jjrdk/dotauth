@@ -18,14 +18,14 @@ namespace SimpleAuth.Validators
     using Exceptions;
     using Helpers;
     using Parameters;
+    using Shared;
     using Shared.Models;
     using Shared.Repositories;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using Shared;
 
-    public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator : IAuthorizationCodeGrantTypeParameterAuthEdpValidator
+    public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator
     {
         private readonly IParameterParserHelper _parameterParserHelper;
         private readonly IClientStore _clientRepository;
@@ -47,7 +47,8 @@ namespace SimpleAuth.Validators
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName),
+                    string.Format(ErrorDescriptions.MissingParameter,
+                        CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName),
                     parameter.State);
             }
 
@@ -55,7 +56,8 @@ namespace SimpleAuth.Validators
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName),
+                    string.Format(ErrorDescriptions.MissingParameter,
+                        CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName),
                     parameter.State);
             }
 
@@ -63,7 +65,8 @@ namespace SimpleAuth.Validators
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName),
+                    string.Format(ErrorDescriptions.MissingParameter,
+                        CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName),
                     parameter.State);
             }
 
@@ -71,7 +74,8 @@ namespace SimpleAuth.Validators
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
+                    string.Format(ErrorDescriptions.MissingParameter,
+                        CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
                     parameter.State);
             }
 
@@ -164,8 +168,8 @@ namespace SimpleAuth.Validators
             var prompts = _parameterParserHelper.ParsePrompts(prompt);
             if (prompts.Contains(PromptParameter.none) &&
                 (prompts.Contains(PromptParameter.login) ||
-                prompts.Contains(PromptParameter.consent) ||
-                prompts.Contains(PromptParameter.select_account)))
+                 prompts.Contains(PromptParameter.consent) ||
+                 prompts.Contains(PromptParameter.select_account)))
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,

@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Twilio.Controllers
 {
     using Actions;
-    using Api.Profile.Actions;
     using Errors;
     using Exceptions;
     using Extensions;
@@ -19,6 +18,7 @@
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
     using System;
     using System.Collections.Generic;
@@ -36,13 +36,12 @@
     public class AuthenticateController : BaseAuthenticateController
     {
         private readonly IEventPublisher _eventPublisher;
-        private readonly IGetUserOperation _getUserOperation;
+        private readonly GetUserOperation _getUserOperation;
         private readonly ISmsAuthenticationOperation _smsAuthenticationOperation;
         private readonly IGenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
-            IGetResourceOwnerClaimsAction getResourceOwnerClaims,
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
             IUrlHelperFactory urlHelperFactory,
@@ -50,17 +49,17 @@
             IEventPublisher eventPublisher,
             IAuthenticationService authenticationService,
             IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IAddUserOperation addUser,
-            IGetUserOperation getUserOperation,
-            IUpdateUserClaimsOperation updateUserClaimsOperation,
             IAuthenticateHelper authenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             ISmsAuthenticationOperation smsAuthenticationOperation,
             IGenerateAndSendSmsCodeOperation generateAndSendSmsCodeOperation,
             ISubjectBuilder subjectBuilder,
+            IProfileRepository profileRepository,
+            IResourceOwnerRepository resourceOwnerRepository,
+            IEnumerable<IAccountFilter> accountFilters,
             SmsAuthenticationOptions basicAuthenticateOptions)
-            : base(authenticateActions,
-                getResourceOwnerClaims,
+            : base(
+                authenticateActions,
                 dataProtectionProvider,
                 translationManager,
                 urlHelperFactory,
@@ -68,16 +67,16 @@
                 eventPublisher,
                 authenticationService,
                 authenticationSchemeProvider,
-                addUser,
-                getUserOperation,
-                updateUserClaimsOperation,
                 authenticateHelper,
                 twoFactorAuthenticationHandler,
                 subjectBuilder,
+                profileRepository,
+                resourceOwnerRepository,
+                accountFilters,
                 basicAuthenticateOptions)
         {
             _eventPublisher = eventPublisher;
-            _getUserOperation = getUserOperation;
+            _getUserOperation = new GetUserOperation(resourceOwnerRepository);
             _smsAuthenticationOperation = smsAuthenticationOperation;
             _generateAndSendSmsCodeOperation = generateAndSendSmsCodeOperation;
         }
@@ -241,11 +240,11 @@
                 {
                     await SetTwoFactorCookie(authenticatedUser.Claims).ConfigureAwait(false);
                     await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value).ConfigureAwait(false);
-                    return RedirectToAction("SendCode", new {code = confirmCodeViewModel.Code});
+                    return RedirectToAction("SendCode", new { code = confirmCodeViewModel.Code });
                 }
                 catch (ClaimRequiredException)
                 {
-                    return RedirectToAction("SendCode", new {code = confirmCodeViewModel.Code});
+                    return RedirectToAction("SendCode", new { code = confirmCodeViewModel.Code });
                 }
                 catch (Exception)
                 {
@@ -326,7 +325,7 @@
                     await SetPasswordLessCookie(claims).ConfigureAwait(false);
                     try
                     {
-                        return RedirectToAction("ConfirmCode", new {code = viewModel.Code});
+                        return RedirectToAction("ConfirmCode", new { code = viewModel.Code });
                     }
                     catch (Exception ex)
                     {

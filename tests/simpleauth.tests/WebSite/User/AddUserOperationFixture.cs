@@ -29,7 +29,7 @@ namespace SimpleAuth.Tests.WebSite.User
     {
         private Mock<IEventPublisher> _eventPublisher;
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private IAddUserOperation _addResourceOwnerAction;
+        private AddUserOperation _addResourceOwnerAction;
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()

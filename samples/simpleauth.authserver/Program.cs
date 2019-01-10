@@ -15,10 +15,11 @@
 namespace SimpleAuth.AuthServer
 {
     using Microsoft.AspNetCore.Hosting;
+    using System.Threading.Tasks;
 
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main()
         {
             var host = new WebHostBuilder()
                 .UseKestrel(o =>
@@ -29,7 +30,7 @@ namespace SimpleAuth.AuthServer
                 .UseUrls("http://*:60000", "https://*:443")
                 .UseStartup<Startup>()
                 .Build();
-            host.Run();
+            await host.RunAsync().ConfigureAwait(false);
         }
     }
 }

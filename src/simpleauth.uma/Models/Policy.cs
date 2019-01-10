@@ -19,7 +19,7 @@ namespace SimpleAuth.Uma.Models
     public class Policy
     {
         public string Id { get; set; }
-        public List<PolicyRule> Rules { get; set; }        
-        public List<string> ResourceSetIds { get; set; }
+        public List<PolicyRule> Rules { get; set; } = new List<PolicyRule>();
+        public List<string> ResourceSetIds { get; set; } = new List<string>();
     }
 }

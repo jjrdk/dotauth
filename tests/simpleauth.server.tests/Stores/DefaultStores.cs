@@ -811,7 +811,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         }
                     },
                     JsonWebKeys = new JsonWebKeySet().AddKey(
-                        new X509Certificate2("mycert.pfx", "simpleauth").CreateJwk(JsonWebKeyUseNames.Sig,
+                        new X509Certificate2("mycert.pfx", "simpleauth", X509KeyStorageFlags.Exportable).CreateJwk(JsonWebKeyUseNames.Sig,
                             KeyOperations.Sign,
                             KeyOperations.Verify)),
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.tls_client_auth,

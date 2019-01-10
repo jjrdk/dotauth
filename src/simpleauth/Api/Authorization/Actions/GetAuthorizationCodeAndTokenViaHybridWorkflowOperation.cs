@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Api.Authorization.Actions
 {
-    using System;
-    using System.Security.Claims;
-    using System.Security.Principal;
-    using System.Threading.Tasks;
     using Common;
     using Errors;
     using Exceptions;
@@ -25,6 +21,10 @@ namespace SimpleAuth.Api.Authorization.Actions
     using Results;
     using Shared.Models;
     using SimpleAuth.Common;
+    using System;
+    using System.Security.Claims;
+    using System.Security.Principal;
+    using System.Threading.Tasks;
     using Validators;
 
     internal sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperation
@@ -42,7 +42,11 @@ namespace SimpleAuth.Api.Authorization.Actions
             _generateAuthorizationResponse = generateAuthorizationResponse;
         }
 
-        public async Task<EndpointResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client, string issuerName)
+        public async Task<EndpointResult> Execute(
+            AuthorizationParameter authorizationParameter,
+            IPrincipal principal,
+            Client client,
+            string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -58,13 +62,16 @@ namespace SimpleAuth.Api.Authorization.Actions
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
+                    string.Format(ErrorDescriptions.MissingParameter,
+                        CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
                     authorizationParameter.State);
             }
 
             var claimsPrincipal = principal as ClaimsPrincipal;
 
-            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
+            var result = await _processAuthorizationRequest
+                .ProcessAsync(authorizationParameter, claimsPrincipal, client, issuerName)
+                .ConfigureAwait(false);
             if (!_clientValidator.CheckGrantTypes(client, GrantType.@implicit, GrantType.authorization_code))
             {
                 throw new SimpleAuthExceptionWithState(
@@ -85,7 +92,9 @@ namespace SimpleAuth.Api.Authorization.Actions
                         authorizationParameter.State);
                 }
 
-                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
+                await _generateAuthorizationResponse
+                    .ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName)
+                    .ConfigureAwait(false);
             }
 
             return result;

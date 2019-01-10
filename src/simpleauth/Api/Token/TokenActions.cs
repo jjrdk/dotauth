@@ -38,7 +38,6 @@ namespace SimpleAuth.Api.Token
         private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
         private readonly IAuthenticateClient _authenticateClient;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
-        private readonly IRevokeTokenParameterValidator _revokeTokenParameterValidator;
         private readonly ScopeValidator _scopeValidator;
         private readonly IRevokeTokenAction _revokeTokenAction;
         private readonly IGrantedTokenHelper _grantedTokenHelper;
@@ -52,7 +51,6 @@ namespace SimpleAuth.Api.Token
             IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator,
             IAuthenticateClient authenticateClient,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
-            IRevokeTokenParameterValidator revokeTokenParameterValidator,
             IRevokeTokenAction revokeTokenAction,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
@@ -65,7 +63,6 @@ namespace SimpleAuth.Api.Token
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _scopeValidator = new ScopeValidator();
             _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
-            _revokeTokenParameterValidator = revokeTokenParameterValidator;
             _revokeTokenAction = revokeTokenAction;
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
@@ -228,7 +225,13 @@ namespace SimpleAuth.Api.Token
 
             var processId = Id.Create();
 
-            _revokeTokenParameterValidator.Validate(revokeTokenParameter);
+            // Read this RFC for more information
+            if (string.IsNullOrWhiteSpace(revokeTokenParameter.Token))
+            {
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.IntrospectionRequestNames.Token));
+            }
             var result = await _revokeTokenAction.Execute(
                 revokeTokenParameter,
                 authenticationHeaderValue,

@@ -15,21 +15,17 @@
 namespace SimpleAuth.Tests.Api.Introspection
 {
     using System;
-    using System.Net.Http.Headers;
+    using System.Net.Http;
     using System.Threading.Tasks;
-    using Moq;
-    using Parameters;
-    using Shared;
+    using Repositories;
+    using Shared.Models;
     using SimpleAuth.Api.Introspection;
-    using SimpleAuth.Api.Introspection.Actions;
-    using SimpleAuth.Validators;
+    using SimpleAuth.Authenticate;
     using Xunit;
 
     public class IntrospectionActionsFixture
     {
-        private Mock<IPostIntrospectionAction> _postIntrospectionActionStub;
-        private Mock<IIntrospectionParameterValidator> _validatorStub;
-        private IIntrospectionActions _introspectionActions;
+        private PostIntrospectionAction _introspectionActions;
 
         [Fact]
         public async Task When_Passing_Null_Parameter_To_PostIntrospection_Then_Exception_Is_Thrown()
@@ -37,32 +33,17 @@ namespace SimpleAuth.Tests.Api.Introspection
             InitializeFakeObjects();
 
             await Assert
-                .ThrowsAsync<ArgumentNullException>(() => _introspectionActions.PostIntrospection(null, null, null))
+                .ThrowsAsync<ArgumentNullException>(() => _introspectionActions.Execute(null, null, null))
                 .ConfigureAwait(false);
-        }
-
-        [Fact]
-        public void When_Passing_Valid_Parameter_To_PostIntrospection_Then_Operation_Is_Called()
-        {
-            InitializeFakeObjects();
-            var parameter = new IntrospectionParameter();
-
-            _introspectionActions.PostIntrospection(parameter, null, null);
-
-            _postIntrospectionActionStub.Verify(p => p.Execute(It.IsAny<IntrospectionParameter>(),
-                It.IsAny<AuthenticationHeaderValue>(),
-                null));
         }
 
         private void InitializeFakeObjects()
         {
-            _postIntrospectionActionStub = new Mock<IPostIntrospectionAction>();
-            var eventPublisherStub = new Mock<IEventPublisher>();
-            _validatorStub = new Mock<IIntrospectionParameterValidator>();
-            _introspectionActions = new IntrospectionActions(
-                _postIntrospectionActionStub.Object,
-                eventPublisherStub.Object,
-                _validatorStub.Object);
+            _introspectionActions = new PostIntrospectionAction(
+                new AuthenticateClient(new DefaultClientRepository(new Client[0],
+                    new HttpClient(),
+                    new DefaultScopeRepository(new Scope[0]))),
+                new InMemoryTokenStore());
         }
     }
 }

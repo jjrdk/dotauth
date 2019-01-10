@@ -99,27 +99,6 @@ namespace SimpleAuth.Scim.Client.Tests
             Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
         }
 
-        //[Fact]
-        //public async Task When_Partially_Update_Current_User_Then_Ok_Is_Returned()
-        //{
-        //        //    var patchOperation = new PatchOperation
-        //    {
-        //        Path = ScimConstants.UserResourceResponseNames.UserName,
-        //        Type = PatchOperations.replace,
-        //        Value = "new_username"
-        //    };
-
-        //    InitializeFakeObjects();
-
-        //            //    var scimResponse = await _usersClient.AddAuthenticatedUser(baseUrl, "token").ConfigureAwait(false);
-        //    var scimId = scimResponse.Content["id"].ToString();
-        //    ScimUserStore.Instance().ScimId = scimId;
-        //    var thirdResult = await _usersClient.PartialUpdateAuthenticatedUser(baseUrl, scimId, patchOperation).ConfigureAwait(false);
-        //    ScimUserStore.Instance().ScimId = null;
-
-        //            //    Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
-        //}
-
         [Fact]
         public async Task When_Remove_Current_User_Then_NoContent_Is_Returned()
         {

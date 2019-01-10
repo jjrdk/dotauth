@@ -16,7 +16,6 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
 {
     using Errors;
     using Exceptions;
-    using Helpers;
     using Models;
     using Moq;
     using Parameters;
@@ -34,7 +33,6 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-        private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
         private IAddResourceSetToPolicyAction _addResourceSetAction;
 
         [Fact]
@@ -42,7 +40,8 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         {
             InitializeFakeObjects();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceSetAction.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceSetAction.Execute(null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
@@ -50,10 +49,14 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         {
             InitializeFakeObjects();
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(new AddResourceSetParameter())).ConfigureAwait(false);
+            var exception = await Assert
+                .ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(new AddResourceSetParameter()))
+                .ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddResourceSetParameterNames.PolicyId));
+            Assert.True(exception.Message ==
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified,
+                            UmaConstants.AddResourceSetParameterNames.PolicyId));
         }
 
         [Fact]
@@ -61,13 +64,17 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         {
             InitializeFakeObjects();
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(new AddResourceSetParameter
-            {
-                PolicyId = "policy_id"
-            })).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(
+                    new AddResourceSetParameter
+                    {
+                        PolicyId = "policy_id"
+                    }))
+                .ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddResourceSetParameterNames.ResourceSet));
+            Assert.True(exception.Message ==
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified,
+                            UmaConstants.AddResourceSetParameterNames.ResourceSet));
         }
 
         [Fact]
@@ -75,25 +82,21 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         {
             const string policyId = "policy_id";
             const string resourceSetId = "resource_set_id";
-            InitializeFakeObjects();
-            _repositoryExceptionHelperStub.Setup(r =>
-                r.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId), It.IsAny<Func<Task<Policy>>>()))
-                .Returns(Task.FromResult(new Policy()));
-            _repositoryExceptionHelperStub.Setup(r =>
-                r.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId), It.IsAny<Func<Task<ResourceSet>>>()))
-                .Returns(Task.FromResult((ResourceSet)null));
+            InitializeFakeObjects(new Policy {Id = policyId});
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(new AddResourceSetParameter
-            {
-                PolicyId = policyId,
-                ResourceSets = new List<string>
-                {
-                    resourceSetId
-                }
-            })).ConfigureAwait(false);
-            Assert.NotNull(exception);
-            Assert.True(exception.Code == UmaErrorCodes.InvalidResourceSetId);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(
+                    new AddResourceSetParameter
+                    {
+                        PolicyId = policyId,
+                        ResourceSets = new List<string>
+                        {
+                            resourceSetId
+                        }
+                    }))
+                .ConfigureAwait(false);
+
+            Assert.Equal(UmaErrorCodes.InvalidResourceSetId, exception.Code);
+            Assert.Equal(string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId), exception.Message);
         }
 
         [Fact]
@@ -101,18 +104,16 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         {
             const string policyId = "policy_id";
             InitializeFakeObjects();
-            _repositoryExceptionHelperStub.Setup(r =>
-                r.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId), It.IsAny<Func<Task<Policy>>>()))
-                .Returns(Task.FromResult((Policy)null));
 
             var result = await _addResourceSetAction.Execute(new AddResourceSetParameter
-            {
-                PolicyId = policyId,
-                ResourceSets = new List<string>
                 {
-                    "resource_set_id"
-                }
-            }).ConfigureAwait(false);
+                    PolicyId = policyId,
+                    ResourceSets = new List<string>
+                    {
+                        "resource_set_id"
+                    }
+                })
+                .ConfigureAwait(false);
 
             Assert.False(result);
         }
@@ -122,41 +123,32 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
         {
             const string policyId = "policy_id";
             const string resourceSetId = "resource_set_id";
-            InitializeFakeObjects();
-            _repositoryExceptionHelperStub.Setup(r =>
-                r.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId), It.IsAny<Func<Task<Policy>>>()))
-                .Returns(() => Task.FromResult(new Policy
-                {
-                    ResourceSetIds = new List<string>()
-                }));
-            _repositoryExceptionHelperStub.Setup(r =>
-                r.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId), It.IsAny<Func<Task<ResourceSet>>>()))
-                .Returns(() => Task.FromResult(new ResourceSet()));
-            _repositoryExceptionHelperStub.Setup(r =>
-                r.HandleException(ErrorDescriptions.ThePolicyCannotBeUpdated, It.IsAny<Func<Task<bool>>>()))
-                .Returns(Task.FromResult(true));
+            InitializeFakeObjects(new Policy {Id = policyId}, new ResourceSet {Id = resourceSetId});
 
-            var result = await _addResourceSetAction.Execute(new AddResourceSetParameter
-            {
-                PolicyId = policyId,
-                ResourceSets = new List<string>
-                {
-                    resourceSetId
-                }
-            }).ConfigureAwait(false);
+            var result = await _addResourceSetAction.Execute(
+                    new AddResourceSetParameter
+                    {
+                        PolicyId = policyId,
+                        ResourceSets = new List<string>
+                        {
+                            resourceSetId
+                        }
+                    })
+                .ConfigureAwait(false);
 
             Assert.True(result);
         }
 
-        private void InitializeFakeObjects()
+        private void InitializeFakeObjects(Policy policy = null, ResourceSet resourceSet = null)
         {
             _policyRepositoryStub = new Mock<IPolicyRepository>();
+            _policyRepositoryStub.Setup(x => x.Get(It.IsAny<string>())).ReturnsAsync(policy);
+            _policyRepositoryStub.Setup(x => x.Update(It.IsAny<Policy>())).ReturnsAsync(true);
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
+            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string>())).ReturnsAsync(resourceSet);
             _addResourceSetAction = new AddResourceSetToPolicyAction(
                 _policyRepositoryStub.Object,
-                _resourceSetRepositoryStub.Object,
-                _repositoryExceptionHelperStub.Object);
+                _resourceSetRepositoryStub.Object);
         }
     }
 }
