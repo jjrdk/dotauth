@@ -50,16 +50,8 @@ namespace SimpleAuth.Server.Controllers
         public async Task<IActionResult> PostToken()
         {
             var certificate = GetCertificate();
-            try
-            {
-                if (Request.Form == null)
-                {
-                    return BuildError(ErrorCodes.InvalidRequestCode,
-                        "no parameter in body request",
-                        HttpStatusCode.BadRequest);
-                }
-            }
-            catch (Exception)
+
+            if (Request.Form == null)
             {
                 return BuildError(ErrorCodes.InvalidRequestCode,
                     "no parameter in body request",
@@ -81,7 +73,7 @@ namespace SimpleAuth.Server.Controllers
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
             {
-                var authorizationHeaderValue = authorizationHeader.First();
+                var authorizationHeaderValue = authorizationHeader[0];
                 var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
                 if (splittedAuthorizationHeaderValue.Length == 2)
                 {
@@ -130,7 +122,6 @@ namespace SimpleAuth.Server.Controllers
                         .ConfigureAwait(false);
                     break;
                 case GrantTypes.validate_bearer:
-                    break;
                 case GrantTypes.uma_ticket:
                     break;
                 default:
@@ -173,7 +164,7 @@ namespace SimpleAuth.Server.Controllers
             {
                 var authorizationHeaderValue = authorizationHeader.First();
                 var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
-                if (splittedAuthorizationHeaderValue.Count() == 2)
+                if (splittedAuthorizationHeaderValue.Length == 2)
                 {
                     authenticationHeaderValue = new AuthenticationHeaderValue(
                         splittedAuthorizationHeaderValue[0],
