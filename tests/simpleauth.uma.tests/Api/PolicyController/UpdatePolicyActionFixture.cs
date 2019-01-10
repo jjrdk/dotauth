@@ -15,18 +15,18 @@
 namespace SimpleAuth.Uma.Tests.Api.PolicyController
 {
     using Exceptions;
-    using Models;
     using Moq;
-    using Parameters;
-    using Repositories;
     using SimpleAuth.Errors;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Parameters;
+    using Repositories;
+    using SimpleAuth.Api.PolicyController.Actions;
+    using SimpleAuth.Shared.Models;
     using Uma;
-    using Uma.Api.PolicyController.Actions;
     using Xunit;
-    using ErrorDescriptions = Errors.ErrorDescriptions;
+    
 
     public class UpdatePolicyActionFixture
     {
@@ -50,7 +50,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
             };
             InitializeFakeObjects();
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
         }
@@ -64,7 +64,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
             };
             InitializeFakeObjects();
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPolicyParameterNames.Rules));
         }
@@ -121,7 +121,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
                 }
             }));
 
-            var result = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
+            var result = await Assert.ThrowsAsync<SimpleAuthException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
 
             Assert.NotNull(result);
             Assert.Equal("invalid_scope", result.Code);

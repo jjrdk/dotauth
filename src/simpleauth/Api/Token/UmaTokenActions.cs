@@ -13,12 +13,12 @@
     using JwtToken;
     using Newtonsoft.Json.Linq;
     using Parameters;
+    using Policies;
     using Repositories;
     using Shared;
     using Shared.Events.Uma;
     using Shared.Models;
-    using Shared.Policies;
-    using Uma.Shared;
+    using Shared.Responses;
 
     internal sealed class UmaTokenActions : IUmaTokenActions
     {

@@ -20,6 +20,7 @@ namespace SimpleAuth.WebSite.User.Actions
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Exceptions;
+    using Shared;
     using Shared.Repositories;
 
     internal class UpdateUserClaimsOperation

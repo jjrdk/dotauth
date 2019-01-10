@@ -12,18 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Policies
+namespace SimpleAuth.Policies
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
     using Errors;
-    using Events.Uma;
     using Exceptions;
-    using Models;
+    using Parameters;
+    using Repositories;
     using Shared;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Repositories;
+    using Shared.Events.Uma;
+    using Shared.Models;
+    using Shared.Responses;
 
     internal class AuthorizationPolicyValidator : IAuthorizationPolicyValidator
     {

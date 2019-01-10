@@ -10,7 +10,6 @@
   <Import Project="../../shared.proj" />
 
   <ItemGroup>
-    <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
     <ProjectReference Include="..\simpleauth.client\simpleauth.client.csproj" />
   </ItemGroup>
 

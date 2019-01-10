@@ -16,10 +16,10 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
 {
     using System;
     using System.Threading.Tasks;
-    using Models;
     using Moq;
     using Repositories;
-    using Uma.Api.PolicyController.Actions;
+    using SimpleAuth.Api.PolicyController.Actions;
+    using SimpleAuth.Shared.Models;
     using Xunit;
 
     public class GetAuthorizationPolicyActionFixture

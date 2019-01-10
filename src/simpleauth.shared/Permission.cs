@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Uma.Shared
+﻿namespace SimpleAuth.Shared
 {
     using System.Collections.Generic;
 

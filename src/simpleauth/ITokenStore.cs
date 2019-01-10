@@ -15,7 +15,7 @@
         /// <param name="userInfoJwsPayload"></param>
         /// <returns></returns>
         Task<GrantedToken> GetToken(string scopes, string clientId, JwtPayload idTokenJwsPayload, JwtPayload userInfoJwsPayload);
-        Task<GrantedToken> GetRefreshToken(string GetRefreshToken);
+        Task<GrantedToken> GetRefreshToken(string getRefreshToken);
         Task<GrantedToken> GetAccessToken(string accessToken);
         Task<bool> AddToken(GrantedToken grantedToken);
         Task<bool> RemoveRefreshToken(string refreshToken);

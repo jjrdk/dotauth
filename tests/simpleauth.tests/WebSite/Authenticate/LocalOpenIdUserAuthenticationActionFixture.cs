@@ -7,6 +7,7 @@
     using Exceptions;
     using Moq;
     using Parameters;
+    using Shared;
     using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Helpers;

@@ -38,7 +38,6 @@ namespace SimpleAuth.Server.Extensions
     using Shared;
     using Shared.AccountFiltering;
     using Shared.Models;
-    using Shared.Policies;
     using Shared.Repositories;
     using SimpleAuth;
     using System;
@@ -46,8 +45,8 @@ namespace SimpleAuth.Server.Extensions
     using System.Linq;
     using System.Net.Http;
     using System.Security.Claims;
+    using Policies;
     using Translation;
-    using Uma;
     using Validators;
     using WebSite.Authenticate;
     using WebSite.Authenticate.Actions;

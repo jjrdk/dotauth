@@ -17,11 +17,11 @@ namespace SimpleAuth.Uma.Tests
     using Client.Configuration;
     using Client.Policy;
     using Client.ResourceSet;
-    using Shared.DTOs;
     using SimpleAuth.Errors;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Shared.DTOs;
     using Xunit;
 
     public class PolicyFixture : IClassFixture<TestUmaServerFixture>
@@ -403,7 +403,8 @@ namespace SimpleAuth.Uma.Tests
                     "header")
                 .ConfigureAwait(false);
 
-            var response = await _policyClient.AddResourceByResolution(addPolicy.Content.PolicyId,
+            var response = await _policyClient.AddResourceByResolution(
+                    addPolicy.Content.PolicyId,
                     new PostAddResourceSet
                     {
                         ResourceSets = new List<string>

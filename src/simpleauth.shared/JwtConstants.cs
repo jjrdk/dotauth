@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth
+namespace SimpleAuth.Shared
 {
-    using Shared;
     using System.Collections.Generic;
     using System.Security.Claims;
 
     public class JwtConstants
     {
-        internal static class StandardResourceOwnerClaimNames
+        public static class StandardResourceOwnerClaimNames
         {
             public const string Subject = "sub";
             public const string Name = "name";

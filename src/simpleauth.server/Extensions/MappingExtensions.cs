@@ -30,7 +30,7 @@ namespace SimpleAuth.Server.Extensions
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Claims;
-    using Uma.Shared.DTOs;
+    using Shared.DTOs;
     using CodeChallengeMethods = Shared.Models.CodeChallengeMethods;
     using ScopeResponse = Shared.Responses.ScopeResponse;
 

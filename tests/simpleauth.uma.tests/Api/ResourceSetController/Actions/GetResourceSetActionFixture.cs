@@ -16,10 +16,10 @@ namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
 {
     using System;
     using System.Threading.Tasks;
-    using Models;
     using Moq;
     using Repositories;
-    using Uma.Api.ResourceSetController.Actions;
+    using SimpleAuth.Api.ResourceSetController.Actions;
+    using SimpleAuth.Shared.Models;
     using Xunit;
 
     public class GetResourceSetActionFixture

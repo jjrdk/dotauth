@@ -29,7 +29,7 @@ namespace SimpleAuth.Api.Authorization.Common
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Validators;
-    using JwtConstants = SimpleAuth.JwtConstants;
+    using JwtConstants = Shared.JwtConstants;
 
     internal sealed class ProcessAuthorizationRequest
     {

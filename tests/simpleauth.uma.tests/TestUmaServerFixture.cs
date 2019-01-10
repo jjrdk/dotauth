@@ -30,7 +30,7 @@ namespace SimpleAuth.Uma.Tests
         public TestUmaServerFixture()
         {
             SharedCtx = new SharedContext();
-            var startup = new FakeUmaStartup(SharedCtx);
+            var startup = new FakeUmaStartup();
             Server = new TestServer(new WebHostBuilder()
                 .UseUrls("http://localhost:5000")
                 .ConfigureServices(services =>

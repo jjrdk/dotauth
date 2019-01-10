@@ -16,20 +16,18 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
 {
     using Errors;
     using Exceptions;
-    using Models;
     using Moq;
-    using Parameters;
-    using Repositories;
-    using SimpleAuth.Errors;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Parameters;
+    using Repositories;
+    using SimpleAuth.Api.PermissionController.Actions;
+    using SimpleAuth.Shared.Models;
     using Uma;
-    using Uma.Api.PermissionController.Actions;
-    using Uma.Stores;
     using Xunit;
-    using ErrorDescriptions = Errors.ErrorDescriptions;
+    
 
     public class AddPermissionActionFixture
     {
@@ -55,7 +53,7 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
             InitializeFakeObjects(Array.Empty<ResourceSet>());
             var addPermissionParameter = new AddPermissionParameter();
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.ResourceSetId));
         }
@@ -70,7 +68,7 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
                 ResourceSetId = "resource_set_id"
             };
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.Scopes));
         }
@@ -90,8 +88,8 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
                 }
             };
             
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
-            Assert.True(exception.Code == UmaErrorCodes.InvalidResourceSetId);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
+            Assert.True(exception.Code == ErrorCodes.InvalidResourceSetId);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
         }
 
@@ -121,8 +119,8 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
             };
             InitializeFakeObjects(resources);
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
-            Assert.True(exception.Code == UmaErrorCodes.InvalidScope);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
+            Assert.True(exception.Code == ErrorCodes.InvalidScope);
             Assert.True(exception.Message == ErrorDescriptions.TheScopeAreNotValid);
         }
 

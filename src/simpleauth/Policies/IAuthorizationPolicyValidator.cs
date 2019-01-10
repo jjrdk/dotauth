@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Shared.Policies
+﻿namespace SimpleAuth.Policies
 {
     using System.Threading.Tasks;
-    using Models;
-    using SimpleAuth.Parameters;
+    using Parameters;
+    using Shared.Models;
 
     public interface IAuthorizationPolicyValidator
     {

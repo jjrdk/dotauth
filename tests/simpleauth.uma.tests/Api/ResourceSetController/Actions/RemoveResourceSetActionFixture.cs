@@ -2,12 +2,12 @@
 {
     using Errors;
     using Exceptions;
-    using Models;
     using Moq;
-    using Repositories;
     using System;
     using System.Threading.Tasks;
-    using Uma.Api.ResourceSetController.Actions;
+    using Repositories;
+    using SimpleAuth.Api.ResourceSetController.Actions;
+    using SimpleAuth.Shared.Models;
     using Xunit;
 
     public class RemoveResourceSetActionFixture
@@ -46,9 +46,9 @@
             _resourceSetRepositoryStub.Setup(r => r.Delete(It.IsAny<string>()))
                 .Returns(Task.FromResult(false));
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _deleteResourceSetAction.Execute(resourceSetId)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _deleteResourceSetAction.Execute(resourceSetId)).ConfigureAwait(false);
             Assert.NotNull(exception);
-            Assert.True(exception.Code == UmaErrorCodes.InternalError);
+            Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetCannotBeRemoved, resourceSetId));
         }
 

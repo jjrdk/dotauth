@@ -15,7 +15,7 @@
 namespace SimpleAuth.Uma.Tests.Stores
 {
     using System.Collections.Generic;
-    using Models;
+    using SimpleAuth.Shared.Models;
 
     public static class UmaStores
     {

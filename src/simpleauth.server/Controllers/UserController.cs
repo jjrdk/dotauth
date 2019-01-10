@@ -20,6 +20,7 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Shared;
     using Translation;
     using ViewModels;
     using WebSite.User.Actions;

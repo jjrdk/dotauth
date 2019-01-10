@@ -55,7 +55,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
             Assert.NotNull(error);
             Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
-            Assert.Equal("no parameter in body request", error.ErrorDescription);
+            Assert.Equal("the parameter token is missing", error.ErrorDescription);
         }
 
         [Fact]

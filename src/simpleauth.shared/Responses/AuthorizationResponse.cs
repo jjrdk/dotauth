@@ -14,8 +14,6 @@
 
 namespace SimpleAuth.Shared.Responses
 {
-    using Policies;
-
     public class AuthorizationResponse
     {
         public AuthorizationPolicyResultEnum AuthorizationPolicyResult { get; set; }

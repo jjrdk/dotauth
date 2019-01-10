@@ -19,12 +19,13 @@ namespace SimpleAuth.Uma.Tests.Policies
     using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Models;
     using Moq;
     using Parameters;
     using Repositories;
+    using Shared.Responses;
+    using SimpleAuth.Policies;
     using SimpleAuth.Shared;
-    using Uma.Policies;
+    using SimpleAuth.Shared.Models;
     using Xunit;
 
     public class AuthorizationPolicyValidatorFixture
@@ -61,8 +62,8 @@ namespace SimpleAuth.Uma.Tests.Policies
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((ResourceSet)null));
 
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null)).ConfigureAwait(false);
-            Assert.True(exception.Code == UmaErrorCodes.InternalError);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null)).ConfigureAwait(false);
+            Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.SomeResourcesDontExist);
         }
 

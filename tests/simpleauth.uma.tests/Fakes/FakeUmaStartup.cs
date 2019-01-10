@@ -14,33 +14,27 @@
 
 namespace SimpleAuth.Uma.Tests.Fakes
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Net.Http;
-    using System.Reflection;
-    using System.Security.Claims;
-    using Controllers;
-    using Extensions;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
     using MiddleWares;
+    using Server.Controllers;
+    using Server.Extensions;
+    using Server.MiddleWare;
     using SimpleAuth;
     using SimpleAuth.Client.Operations;
     using Stores;
-    using Uma;
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using System.Reflection;
+    using System.Security.Claims;
 
     public class FakeUmaStartup : IStartup
     {
         public const string DefaultSchema = "OAuth2Introspection";
-        private readonly SharedContext _context;
-
-        public FakeUmaStartup(SharedContext context)
-        {
-            _context = context;
-        }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
@@ -60,11 +54,13 @@ namespace SimpleAuth.Uma.Tests.Fakes
             .AddFakeCustomAuth(o => { });
             services.AddAuthorization(opts =>
             {
-                opts.AddPolicy("UmaProtection", policy =>
-                {
-                    policy.AddAuthenticationSchemes(DefaultSchema);
-                    policy.RequireAssertion(p => true);
-                });
+                opts.AddAuthPolicies(DefaultSchema)
+                    .AddPolicy("UmaProtection",
+                        policy =>
+                        {
+                            policy.AddAuthenticationSchemes(DefaultSchema);
+                            policy.RequireAssertion(p => true);
+                        });
             });
             // 3. Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
@@ -76,7 +72,7 @@ namespace SimpleAuth.Uma.Tests.Fakes
             var mvc = services.AddMvc();
             var parts = mvc.PartManager.ApplicationParts;
             parts.Clear();
-            parts.Add(new AssemblyPart(typeof(ConfigurationController).GetTypeInfo().Assembly));
+            parts.Add(new AssemblyPart(typeof(TokenController).GetTypeInfo().Assembly));
             return services.BuildServiceProvider();
         }
 
@@ -100,7 +96,7 @@ namespace SimpleAuth.Uma.Tests.Fakes
             // 3. Enable CORS
             app.UseCors("AllowAll");
             // 4. Display exception
-            app.UseUmaExceptionHandler();
+            app.UseSimpleAuthExceptionHandler();
             // 5. Launch ASP.NET MVC
             app.UseMvc(routes =>
             {
@@ -113,13 +109,17 @@ namespace SimpleAuth.Uma.Tests.Fakes
         private void RegisterServices(IServiceCollection services)
         {
             // 1. Add CORE.
-            services.AddUma(new UmaConfigurationOptions(), UmaStores.GetResources())
-                .RegisterSimpleAuth(new SimpleAuthOptions
+            services
+                .AddSimpleAuth(new SimpleAuthOptions
                 {
                     Configuration = new OpenIdServerConfiguration
                     {
                         Clients = OAuthStores.GetClients(),
                         Scopes = OAuthStores.GetScopes()
+                    },
+                    UmaConfigurationOptions = new UmaConfigurationOptions
+                    {
+                        ResourceSets = UmaStores.GetResources()
                     }
                 })
                 .AddDefaultTokenStore();

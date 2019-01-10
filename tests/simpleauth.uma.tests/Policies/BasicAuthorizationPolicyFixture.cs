@@ -14,17 +14,18 @@
 
 namespace SimpleAuth.Uma.Tests.Policies
 {
-    using Models;
     using Moq;
-    using Parameters;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Parameters;
+    using Shared.Responses;
+    using SimpleAuth.Policies;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using Uma;
-    using Uma.Policies;
     using Xunit;
 
     public class BasicAuthorizationPolicyFixture

@@ -18,7 +18,6 @@ namespace SimpleAuth.Uma.Client.ResourceSet
     using Helpers;
     using Newtonsoft.Json;
     using Results;
-    using Shared.DTOs;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
     using System;
@@ -26,6 +25,7 @@ namespace SimpleAuth.Uma.Client.ResourceSet
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
+    using Shared.DTOs;
 
     internal class ResourceSetClient
     {

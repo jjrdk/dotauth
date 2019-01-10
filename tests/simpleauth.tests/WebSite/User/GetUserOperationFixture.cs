@@ -25,6 +25,7 @@ namespace SimpleAuth.Tests.WebSite.User
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Shared;
     using Xunit;
 
     public class GetUserOperationFixture

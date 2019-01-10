@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Policies
+namespace SimpleAuth.Policies
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Models;
+    using Shared.Models;
 
     internal class CustomAuthorizationPolicy : ICustomAuthorizationPolicy
     {
