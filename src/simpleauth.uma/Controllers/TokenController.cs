@@ -1,12 +1,5 @@
 ﻿namespace SimpleAuth.Uma.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http.Headers;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Threading.Tasks;
     using Api.Token;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
@@ -17,6 +10,13 @@
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
     using SimpleAuth.Shared.Serializers;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
 
     [Route(UmaConstants.RouteValues.Token)]
     public class TokenController : Controller
@@ -34,28 +34,16 @@
         public async Task<IActionResult> PostToken()
         {
             var certificate = GetCertificate();
-            try
-            {
-                if (Request.Form == null)
-                {
-                    return StatusCode(
-                        (int)HttpStatusCode.BadRequest,
-                        new ErrorResponse
-                        {
-                            Error = ErrorCodes.InvalidRequestCode,
-                            ErrorDescription = "no parameter in body request"
-                        });
-                }
-            }
-            catch (Exception)
+
+            if (Request.Form == null)
             {
                 return StatusCode(
-                           (int)HttpStatusCode.BadRequest,
-                           new ErrorResponse
-                           {
-                               Error = ErrorCodes.InvalidRequestCode,
-                               ErrorDescription = "no parameter in body request"
-                           });
+                    (int)HttpStatusCode.BadRequest,
+                    new ErrorResponse
+                    {
+                        Error = ErrorCodes.InvalidRequestCode,
+                        ErrorDescription = "no parameter in body request"
+                    });
             }
 
             var serializer = new ParamSerializer();
@@ -64,9 +52,9 @@
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
             {
-                var authorizationHeaderValue = authorizationHeader.First();
+                var authorizationHeaderValue = authorizationHeader[0];
                 var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
-                if (splittedAuthorizationHeaderValue.Count() == 2)
+                if (splittedAuthorizationHeaderValue.Length == 2)
                 {
                     authenticationHeaderValue = new AuthenticationHeaderValue(
                         splittedAuthorizationHeaderValue[0],
@@ -98,7 +86,6 @@
                     result = await _umaTokenActions.GetTokenByTicketId(tokenIdParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
                     break;
                 case GrantTypes.validate_bearer:
-                    break;
                 case null:
                     break;
                 default:
@@ -124,7 +111,7 @@
             {
                 var authorizationHeaderValue = authorizationHeader.First();
                 var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
-                if (splittedAuthorizationHeaderValue.Count() == 2)
+                if (splittedAuthorizationHeaderValue.Length == 2)
                 {
                     authenticationHeaderValue = new AuthenticationHeaderValue(
                         splittedAuthorizationHeaderValue[0],
