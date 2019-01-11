@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <Description>SimpleAuth Core Library</Description>
@@ -6,6 +6,7 @@
     <AssemblyName>simpleauth</AssemblyName>
     <PackageId>simpleauth</PackageId>
     <RootNamespace>SimpleAuth</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <Import Project="../../shared.proj" />
 
@@ -19,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Views\**\*.cshtml" />
     <EmbeddedResource Include="Views\**\*.html" />
     <EmbeddedResource Include="wwwroot\**\*.css" />
     <EmbeddedResource Include="wwwroot\**\*.js" />
@@ -28,6 +28,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <RazorGenerate Include="Views\**\*.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.Extensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />

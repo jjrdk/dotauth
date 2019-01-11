@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Extensions;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
@@ -28,6 +24,10 @@ namespace SimpleAuth.Controllers
     using Shared.Events.Openid;
     using Shared.Models;
     using Shared.Requests;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Translation;
     using ViewModels;
     using WebSite.Consent;
@@ -83,7 +83,7 @@ namespace SimpleAuth.Controllers
                 TosUri = client?.TosUri?.AbsoluteUri,
                 Code = code
             };
-            return View(viewModel);
+            return View("Index", viewModel);
         }
 
         public async Task<IActionResult> Confirm(string code)
