@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Controllers
+namespace SimpleAuth.Controllers
 {
     using System;
     using System.Collections.Specialized;
@@ -20,6 +20,7 @@ namespace SimpleAuth.Server.Controllers
     using System.Net;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
+    using Api.Introspection;
     using Authenticate;
     using Errors;
     using Extensions;
@@ -27,8 +28,6 @@ namespace SimpleAuth.Server.Controllers
     using Shared.Requests;
     using Shared.Responses;
     using Shared.Serializers;
-    using SimpleAuth;
-    using SimpleAuth.Api.Introspection;
 
     [Route(CoreConstants.EndPoints.Introspection)]
     public class IntrospectionController : Controller

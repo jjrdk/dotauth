@@ -10,10 +10,6 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.AspNetCore.Mvc.Routing;
-    using Server;
-    using Server.Controllers;
-    using Server.Extensions;
-    using Server.ViewModels;
     using SimpleAuth;
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
@@ -26,6 +22,8 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using SimpleAuth.Controllers;
+    using SimpleAuth.ViewModels;
     using Translation;
     using ViewModels;
     using WebSite.Authenticate;

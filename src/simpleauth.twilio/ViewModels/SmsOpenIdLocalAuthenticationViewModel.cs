@@ -1,7 +1,7 @@
 ﻿namespace SimpleAuth.Twilio.ViewModels
 {
     using System.ComponentModel.DataAnnotations;
-    using Server.ViewModels;
+    using SimpleAuth.ViewModels;
 
     public class SmsOpenIdLocalAuthenticationViewModel : AuthorizeOpenIdViewModel
     {

@@ -23,7 +23,7 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
     using System.Threading.Tasks;
     using Parameters;
     using Repositories;
-    using SimpleAuth.Api.PermissionController.Actions;
+    using SimpleAuth.Api.PermissionController;
     using SimpleAuth.Shared.Models;
     using Uma;
     using Xunit;

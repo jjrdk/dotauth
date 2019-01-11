@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Controllers
+namespace SimpleAuth.Controllers
 {
     using System.Collections.Generic;
     using System.Net;
@@ -27,7 +27,6 @@ namespace SimpleAuth.Server.Controllers
     using Shared.Repositories;
     using Shared.Requests;
     using Shared.Responses;
-    using SimpleAuth;
 
     [Route(CoreConstants.EndPoints.Clients)]
     public class ClientsController : Controller

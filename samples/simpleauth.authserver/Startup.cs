@@ -24,13 +24,12 @@ namespace SimpleAuth.AuthServer
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Logging;
-    using Server;
-    using Server.Controllers;
-    using Server.Extensions;
     using SimpleAuth;
     using System;
     using System.IO.Compression;
     using System.Reflection;
+    using Controllers;
+    using Extensions;
 
     public class Startup
     {

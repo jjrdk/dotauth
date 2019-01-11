@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Controllers
+namespace SimpleAuth.Controllers
 {
+    using System;
+    using System.Threading.Tasks;
     using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
@@ -22,9 +24,6 @@ namespace SimpleAuth.Server.Controllers
     using Shared.Repositories;
     using Shared.Requests;
     using Shared.Responses;
-    using SimpleAuth;
-    using System;
-    using System.Threading.Tasks;
 
     [Route(CoreConstants.EndPoints.Scopes)]
     public class ScopesController : Controller

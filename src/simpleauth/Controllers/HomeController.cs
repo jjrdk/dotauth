@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Server.Controllers
+﻿namespace SimpleAuth.Controllers
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication;

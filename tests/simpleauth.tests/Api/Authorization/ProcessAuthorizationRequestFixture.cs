@@ -3,10 +3,10 @@
     using Moq;
     using Parameters;
     using Shared.Repositories;
-    using SimpleAuth.Api.Authorization.Common;
     using SimpleAuth.Helpers;
     using System;
     using System.Threading.Tasks;
+    using SimpleAuth.Api.Authorization;
     using Xunit;
 
     public sealed class ProcessAuthorizationRequestFixture

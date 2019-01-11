@@ -6,7 +6,7 @@
     using System;
     using System.Threading.Tasks;
     using Repositories;
-    using SimpleAuth.Api.ResourceSetController.Actions;
+    using SimpleAuth.Api.ResourceSetController;
     using SimpleAuth.Shared.Models;
     using Xunit;
 

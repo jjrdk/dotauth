@@ -12,8 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Controllers
+namespace SimpleAuth.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Extensions;
@@ -25,13 +31,6 @@ namespace SimpleAuth.Server.Controllers
     using Shared.Repositories;
     using Shared.Requests;
     using Shared.Responses;
-    using SimpleAuth;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using WebSite.User.Actions;
 
     [Route(CoreConstants.EndPoints.ResourceOwners)]

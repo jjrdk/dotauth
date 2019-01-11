@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Server.ViewModels
+﻿namespace SimpleAuth.ViewModels
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;

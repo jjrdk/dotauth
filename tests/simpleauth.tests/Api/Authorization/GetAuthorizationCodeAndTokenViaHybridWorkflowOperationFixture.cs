@@ -8,14 +8,13 @@
     using Shared;
     using Shared.Models;
     using SimpleAuth;
-    using SimpleAuth.Api.Authorization.Actions;
-    using SimpleAuth.Api.Authorization.Common;
     using SimpleAuth.Common;
     using SimpleAuth.Helpers;
     using System;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Shared.Repositories;
+    using SimpleAuth.Api.Authorization;
     using Xunit;
 
     //using Client = Shared.Models.Client;

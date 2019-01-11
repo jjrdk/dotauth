@@ -1,5 +1,10 @@
-﻿namespace SimpleAuth.Server.Controllers
+﻿namespace SimpleAuth.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Extensions;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Mvc;
@@ -8,12 +13,6 @@
     using Shared.Repositories;
     using Shared.Requests;
     using Shared.Serializers;
-    using SimpleAuth;
-    using System;
-    using System.Collections.Generic;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     public class SessionController : Controller
     {

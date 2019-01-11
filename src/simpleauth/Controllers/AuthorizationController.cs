@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Controllers
+namespace SimpleAuth.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -21,6 +21,7 @@ namespace SimpleAuth.Server.Controllers
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Api.Authorization;
     using Common;
     using Errors;
     using Exceptions;
@@ -37,8 +38,6 @@ namespace SimpleAuth.Server.Controllers
     using Shared.Requests;
     using Shared.Responses;
     using Shared.Serializers;
-    using SimpleAuth;
-    using SimpleAuth.Api.Authorization;
 
     [Route(CoreConstants.EndPoints.Authorization)]
     public class AuthorizationController : Controller

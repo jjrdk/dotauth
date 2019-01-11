@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Server.Controllers
+﻿namespace SimpleAuth.Controllers
 {
     using System.Linq;
     using System.Threading.Tasks;

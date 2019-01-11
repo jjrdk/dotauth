@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.ResourceSetController.Actions
+namespace SimpleAuth.Api.ResourceSetController
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Parameters;
     using Repositories;
     using Shared.Models;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     internal class UpdateResourceSetAction
     {

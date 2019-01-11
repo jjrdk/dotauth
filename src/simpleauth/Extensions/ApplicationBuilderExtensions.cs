@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Extensions
+namespace SimpleAuth.Extensions
 {
     using System;
     using Microsoft.AspNetCore.Builder;

@@ -19,11 +19,11 @@ namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
     using Moq;
     using Parameters;
     using Repositories;
-    using SimpleAuth.Api.ResourceSetController.Actions;
     using SimpleAuth.Shared.Models;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using SimpleAuth.Api.ResourceSetController;
     using Xunit;
 
     public class UpdateResourceSetActionFixture

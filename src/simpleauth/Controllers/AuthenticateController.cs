@@ -1,5 +1,11 @@
-﻿namespace SimpleAuth.Server.Controllers
+﻿namespace SimpleAuth.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using Exceptions;
     using Extensions;
     using Helpers;
@@ -10,18 +16,10 @@
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.AspNetCore.Mvc.Routing;
     using Parameters;
+    using Services;
     using Shared;
     using Shared.Repositories;
     using Shared.Requests;
-    using SimpleAuth;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Services;
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Translation;
     using ViewModels;
     using WebSite.Authenticate;

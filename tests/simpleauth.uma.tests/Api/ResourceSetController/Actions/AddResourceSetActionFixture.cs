@@ -22,7 +22,7 @@ namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
     using System.Threading.Tasks;
     using Parameters;
     using Repositories;
-    using SimpleAuth.Api.ResourceSetController.Actions;
+    using SimpleAuth.Api.ResourceSetController;
     using SimpleAuth.Shared.Models;
     using Xunit;
 

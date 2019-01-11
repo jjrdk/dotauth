@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Server.Controllers
+﻿namespace SimpleAuth.Controllers
 {
     public class BulkOperationResponse
     {

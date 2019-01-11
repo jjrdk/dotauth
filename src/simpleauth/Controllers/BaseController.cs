@@ -1,11 +1,10 @@
-﻿namespace SimpleAuth.Server.Controllers
+﻿namespace SimpleAuth.Controllers
 {
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Extensions;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Mvc;
-    using SimpleAuth.Extensions;
 
     public class BaseController : Controller
     {

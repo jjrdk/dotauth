@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Server.MiddleWare
+﻿namespace SimpleAuth.MiddleWare
 {
     using System.Threading.Tasks;
     using Shared;

@@ -1,5 +1,8 @@
-﻿namespace SimpleAuth.Server.Controllers
+﻿namespace SimpleAuth.Controllers
 {
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
     using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
@@ -7,10 +10,6 @@
     using Shared.Repositories;
     using Shared.Requests;
     using Shared.Responses;
-    using SimpleAuth.Extensions;
-    using System.Linq;
-    using System.Net;
-    using System.Threading.Tasks;
 
     [Route("profiles")]
     public class ProfilesController : Controller

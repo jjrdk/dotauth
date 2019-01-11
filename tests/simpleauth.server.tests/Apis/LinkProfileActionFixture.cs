@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Server.Tests.Apis
 {
-    using Controllers;
     using Errors;
     using Exceptions;
     using Moq;
@@ -10,6 +9,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Controllers;
     using Xunit;
 
     public class LinkProfileActionFixture

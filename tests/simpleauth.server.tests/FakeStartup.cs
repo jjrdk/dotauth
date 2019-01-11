@@ -15,8 +15,6 @@
 namespace SimpleAuth.Server.Tests
 {
     using Client;
-    using Controllers;
-    using Extensions;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -29,6 +27,8 @@ namespace SimpleAuth.Server.Tests
     using Stores;
     using System;
     using System.Net.Http;
+    using Controllers;
+    using Extensions;
     using Twilio;
     using Twilio.Actions;
     using Twilio.Controllers;

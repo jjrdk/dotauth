@@ -1,4 +1,4 @@
-namespace SimpleAuth.Server.Controllers
+namespace SimpleAuth.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
     using ViewModels;

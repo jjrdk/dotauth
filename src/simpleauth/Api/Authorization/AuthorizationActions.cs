@@ -14,8 +14,6 @@
 
 namespace SimpleAuth.Api.Authorization
 {
-    using Actions;
-    using Common;
     using Errors;
     using Exceptions;
     using Helpers;

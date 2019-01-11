@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth
+﻿namespace SimpleAuth.Uma.Client
 {
     using System;
     using System.IO;
