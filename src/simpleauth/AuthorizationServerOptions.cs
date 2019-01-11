@@ -1,7 +1,5 @@
-﻿namespace SimpleAuth.Server
+﻿namespace SimpleAuth
 {
-    using SimpleAuth;
-
     public class AuthorizationServerOptions
     {
         public UmaConfigurationOptions UmaConfigurationOptions { get; set; }

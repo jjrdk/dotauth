@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Server.Parsers
+﻿namespace SimpleAuth.Parsers
 {
     using Microsoft.AspNetCore.Routing;
     using Results;

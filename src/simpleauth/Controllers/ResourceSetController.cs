@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Controllers
+namespace SimpleAuth.Controllers
 {
-    using Api.ResourceSetController.Actions;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
+    using Api.ResourceSetController;
     using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
@@ -22,9 +25,6 @@ namespace SimpleAuth.Server.Controllers
     using Repositories;
     using Shared.DTOs;
     using Shared.Responses;
-    using System.Linq;
-    using System.Net;
-    using System.Threading.Tasks;
 
     [Route(UmaConstants.RouteValues.ResourceSet)]
     public class ResourceSetController : Controller

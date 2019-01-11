@@ -14,12 +14,12 @@
 
 namespace SimpleAuth.Scim.Client.Tests
 {
+    using Extensions;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
     using MiddleWares;
-    using Server.Extensions;
     using Services;
     using Shared;
 

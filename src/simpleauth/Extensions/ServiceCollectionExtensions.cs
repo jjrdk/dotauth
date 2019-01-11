@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Extensions
+namespace SimpleAuth.Extensions
 {
-    using Api.Discovery;
-    using Api.PermissionController;
-    using Api.PermissionController.Actions;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Security.Claims;
     using Api.PolicyController;
     using Api.PolicyController.Actions;
-    using Api.ResourceSetController;
-    using Api.ResourceSetController.Actions;
     using Api.Token;
     using Api.Token.Actions;
     using Authenticate;
@@ -33,19 +33,13 @@ namespace SimpleAuth.Server.Extensions
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
     using Parsers;
+    using Policies;
     using Repositories;
     using Services;
     using Shared;
     using Shared.AccountFiltering;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Security.Claims;
-    using Policies;
     using Translation;
     using Validators;
     using WebSite.Authenticate;

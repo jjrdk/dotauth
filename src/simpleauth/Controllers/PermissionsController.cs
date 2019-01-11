@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Controllers
+namespace SimpleAuth.Controllers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
     using Api.PermissionController;
     using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Shared.Responses;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Threading.Tasks;
     using Repositories;
     using Shared.DTOs;
+    using Shared.Responses;
 
     [Route(UmaConstants.RouteValues.Permission)]
     public class PermissionsController : Controller

@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Server
+﻿namespace SimpleAuth
 {
     using System;
     using System.Collections.Generic;

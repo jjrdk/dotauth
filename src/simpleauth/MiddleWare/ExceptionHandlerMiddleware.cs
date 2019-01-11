@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.MiddleWare
+namespace SimpleAuth.MiddleWare
 {
+    using System;
+    using System.Net;
+    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Logging;
     using Microsoft.AspNetCore.Http;
     using Shared;
     using Shared.Responses;
-    using SimpleAuth;
-    using System;
-    using System.Net;
-    using System.Threading.Tasks;
 
     public class ExceptionHandlerMiddleware
     {

@@ -12,15 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Controllers
+namespace SimpleAuth.Controllers
 {
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using Shared;
-    using Shared.DTOs;
-    using Shared.Models;
-    using Shared.Repositories;
-    using SimpleAuth.Services;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -29,6 +22,13 @@ namespace SimpleAuth.Server.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Services;
+    using Shared;
+    using Shared.DTOs;
+    using Shared.Models;
+    using Shared.Repositories;
     using WebSite.User.Actions;
 
     [Route(SimpleAuth.Scim.ScimConstants.RoutePaths.UsersController)]

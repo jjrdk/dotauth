@@ -15,7 +15,9 @@
 namespace SimpleAuth.Scim
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
+    [ExcludeFromCodeCoverage]
     public static class ScimConstants
     {
         public static class RoutePaths

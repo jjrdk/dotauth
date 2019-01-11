@@ -14,15 +14,8 @@
 
 using ResponseMode = SimpleAuth.Parameters.ResponseMode;
 
-namespace SimpleAuth.Server.Extensions
+namespace SimpleAuth.Extensions
 {
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Routing;
-    using Microsoft.Extensions.Primitives;
-    using Microsoft.Net.Http.Headers;
-    using Parsers;
-    using Results;
-    using Shared.Requests;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -32,8 +25,13 @@ namespace SimpleAuth.Server.Extensions
     using System.Security.Claims;
     using System.Text;
     using System.Threading.Tasks;
-    using Errors;
-    using Exceptions;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Routing;
+    using Microsoft.Extensions.Primitives;
+    using Microsoft.Net.Http.Headers;
+    using Parsers;
+    using Results;
+    using Shared.Requests;
 
     public static class ControllerExtensions
     {

@@ -12,25 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Extensions
+namespace SimpleAuth.Extensions
 {
-    using Microsoft.AspNetCore.Authentication;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-    using Parameters;
-    using Results;
-    using Shared.Models;
-    using Shared.Parameters;
-    using Shared.Requests;
-    using Shared.Responses;
-    using Shared.Results;
-    using SimpleAuth;
     using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Claims;
+    using Microsoft.AspNetCore.Authentication;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using Parameters;
+    using Results;
     using Shared.DTOs;
+    using Shared.Models;
+    using Shared.Parameters;
+    using Shared.Requests;
+    using Shared.Responses;
+    using Shared.Results;
     using CodeChallengeMethods = Shared.Models.CodeChallengeMethods;
     using ScopeResponse = Shared.Responses.ScopeResponse;
 

@@ -1,9 +1,9 @@
-﻿namespace SimpleAuth.Api.Profile.Actions
+﻿namespace SimpleAuth.Api.Profile
 {
-    using Shared.Models;
-    using Shared.Repositories;
     using System;
     using System.Threading.Tasks;
+    using Shared.Models;
+    using Shared.Repositories;
 
     internal sealed class GetResourceOwnerClaimsAction
     {

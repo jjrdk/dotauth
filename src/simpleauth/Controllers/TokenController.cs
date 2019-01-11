@@ -1,11 +1,9 @@
-﻿namespace SimpleAuth.Server.Controllers
+﻿namespace SimpleAuth.Controllers
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Net.Http.Headers;
-    using System.Runtime.Serialization;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using Api.Token;
@@ -17,7 +15,6 @@
     using Shared.Models;
     using Shared.Requests;
     using Shared.Responses;
-    using Shared.Serializers;
     using GrantTypes = Shared.Requests.GrantTypes;
 
     [Route(UmaConstants.RouteValues.Token)]

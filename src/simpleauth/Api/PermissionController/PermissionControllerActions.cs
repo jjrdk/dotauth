@@ -16,7 +16,6 @@ namespace SimpleAuth.Api.PermissionController
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Actions;
     using Parameters;
     using Repositories;
 

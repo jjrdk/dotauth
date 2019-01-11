@@ -6,7 +6,7 @@
     using Moq;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth.Api.Profile.Actions;
+    using SimpleAuth.Api.Profile;
     using Xunit;
 
     public class GetResourceOwnerClaimsActionFixture

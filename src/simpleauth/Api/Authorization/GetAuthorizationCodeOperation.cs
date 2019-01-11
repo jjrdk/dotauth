@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.Authorization.Actions
+namespace SimpleAuth.Api.Authorization
 {
-    using Common;
+    using System;
+    using System.Security.Claims;
+    using System.Security.Principal;
+    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Parameters;
     using Results;
     using Shared.Models;
     using SimpleAuth.Common;
-    using System;
-    using System.Security.Claims;
-    using System.Security.Principal;
-    using System.Threading.Tasks;
     using Validators;
 
     internal sealed class GetAuthorizationCodeOperation

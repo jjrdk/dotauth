@@ -20,9 +20,6 @@ namespace SimpleAuth.Uma.Tests.Fakes
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
     using MiddleWares;
-    using Server.Controllers;
-    using Server.Extensions;
-    using Server.MiddleWare;
     using SimpleAuth;
     using SimpleAuth.Client.Operations;
     using Stores;
@@ -31,6 +28,9 @@ namespace SimpleAuth.Uma.Tests.Fakes
     using System.Net.Http;
     using System.Reflection;
     using System.Security.Claims;
+    using Controllers;
+    using Extensions;
+    using MiddleWare;
 
     public class FakeUmaStartup : IStartup
     {

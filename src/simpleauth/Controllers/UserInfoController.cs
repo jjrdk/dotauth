@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Controllers
+namespace SimpleAuth.Controllers
 {
-    using Errors;
-    using Exceptions;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Primitives;
-    using SimpleAuth;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
+    using Errors;
+    using Exceptions;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Primitives;
     using Shared.Responses;
 
     [Route(CoreConstants.EndPoints.UserInfo)]

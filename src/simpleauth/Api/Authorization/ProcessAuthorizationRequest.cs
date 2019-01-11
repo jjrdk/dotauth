@@ -12,8 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.Authorization.Common
+namespace SimpleAuth.Api.Authorization
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Extensions;
@@ -22,12 +28,6 @@ namespace SimpleAuth.Api.Authorization.Common
     using Results;
     using Shared.Models;
     using Shared.Repositories;
-    using System;
-    using System.Collections.Generic;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Validators;
     using JwtConstants = Shared.JwtConstants;
 
