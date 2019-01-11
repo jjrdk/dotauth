@@ -12,28 +12,28 @@ namespace SimpleAuth.Controllers
                 Code = code,
                 Message = message
             };
-            return View(viewModel);
+            return View("Index", viewModel);
         }
 
         [HttpGet]
         [Route("401")]
         public ActionResult Get401()
         {
-            return View();
+            return View("Get401");
         }
 
         [HttpGet]
         [Route("404")]
-        public ActionResult Get404() 
+        public ActionResult Get404()
         {
-            return View();    
+            return View("Get404");
         }
 
         [HttpGet]
         [Route("500")]
         public ActionResult Get500()
         {
-            return View();
+            return View("Get500");
         }
     }
 }

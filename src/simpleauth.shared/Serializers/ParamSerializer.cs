@@ -55,7 +55,7 @@ namespace SimpleAuth.Shared.Serializers
                             type = type.GetGenericArguments()[0];
                         }
 
-                        object value = stringValue;
+                        var value = stringValue;
                         if (typeof(Uri) == type)
                         {
                             try

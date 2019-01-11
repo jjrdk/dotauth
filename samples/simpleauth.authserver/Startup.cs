@@ -14,22 +14,19 @@
 
 namespace SimpleAuth.AuthServer
 {
+    using Controllers;
+    using Extensions;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Razor;
     using Microsoft.AspNetCore.ResponseCompression;
-    using Microsoft.CodeAnalysis;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Logging;
     using SimpleAuth;
-    using System;
     using System.IO.Compression;
     using System.Reflection;
-    using Controllers;
-    using Extensions;
 
     public class Startup
     {
@@ -104,27 +101,19 @@ namespace SimpleAuth.AuthServer
                 opts.AddAuthPolicies(HostConstants.CookieNames.CookieName);
             });
             // 5. Configure MVC
-            var emb = _assembly.GetManifestResourceNames();
-            Console.WriteLine(emb.Length);
             var mvcBuilder = services.AddMvc(
                     options =>
                     {
-                        // options.InputFormatters.Add(new );
                     })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddApplicationPart(_assembly);
             services.AddSimpleAuth(_options);
             services.AddDefaultTokenStore();
-            services.Configure<RazorViewEngineOptions>(x =>
-            {
-                x.FileProviders.Add(new EmbeddedFileProvider(_assembly, "SimpleAuth"));
-                x.AdditionalCompilationReferences.Add(MetadataReference.CreateFromFile(typeof(BasicAuthenticateOptions).Assembly.Location));
-            });
-
-            // API
-            //services.AddBasicShell(mvcBuilder);  // SHELL
-            //services.AddLoginPasswordAuthentication(mvcBuilder, new BasicAuthenticateOptions());  // LOGIN & PASSWORD
-            //services.AddUserManagement(mvcBuilder);  // USER MANAGEMENT
+            //services.Configure<RazorViewEngineOptions>(x =>
+            //{
+            //    x.FileProviders.Add(new EmbeddedFileProvider(_assembly, "SimpleAuth"));
+            //    x.AdditionalCompilationReferences.Add(MetadataReference.CreateFromFile(typeof(BasicAuthenticateOptions).Assembly.Location));
+            //});
         }
 
         public void Configure(
