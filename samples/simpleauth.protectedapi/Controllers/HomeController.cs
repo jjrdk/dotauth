@@ -4,8 +4,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api")]
-    public class ApiController : Controller
+    public class HomeController : Controller
     {
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult Index()

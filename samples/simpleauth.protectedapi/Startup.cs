@@ -29,13 +29,14 @@ namespace SimpleAuth.ProtectedApi
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options => options.AddPolicy("AllowAll",
+            services.AddCors(options => options.AddPolicy(
+                "AllowAll",
                 p => p.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()));
             services.AddLogging();
             var path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location),
-                "testCert.pfx");
+                "mycert.pfx");
             var certificate = new X509Certificate2(
                 path,
                 "simpleauth",
@@ -47,21 +48,27 @@ namespace SimpleAuth.ProtectedApi
 
             services.AddAuthentication(cfg =>
                 {
+                    cfg.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
                     cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
-                .AddJwtBearer(cfg =>
-                {
-                    cfg.TokenValidationParameters = new TokenValidationParameters
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                    cfg =>
                     {
-                        ValidateIssuer = true,
-                        ValidIssuer = "https://localhost",
-                        ValidateAudience = true,
-                        ValidAudience = "api",
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = key
-                    };
-                });
+                        cfg.Authority = "https://localhost";
+                        cfg.Audience = "api";
+                        cfg.MetadataAddress = "https://localhost/.well-known/openid-configuration";
+                        cfg.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidIssuer = "https://localhost",
+                            ValidateAudience = true,
+                            ValidAudience = "api",
+                            ValidateIssuerSigningKey = false,
+                            IssuerSigningKey = key
+                        };
+                    });
+
             var mvcBuilder = services.AddMvc();
         }
 

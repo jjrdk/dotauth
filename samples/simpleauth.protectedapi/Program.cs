@@ -23,9 +23,9 @@ namespace SimpleAuth.ProtectedApi
         public static async Task Main()
         {
             var host = new WebHostBuilder()
-                .UseKestrel()
+                .UseKestrel(x => { x.AddServerHeader = false; })
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseUrls("http://*:61000", "https://localhost:444")
+                .UseUrls("http://*:61000")
                 .UseStartup<Startup>()
                 .Build();
             await host.RunAsync().ConfigureAwait(false);
