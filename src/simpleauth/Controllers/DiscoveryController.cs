@@ -14,21 +14,22 @@
 
 namespace SimpleAuth.Server.Controllers
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
+    using Shared.Repositories;
     using Shared.Responses;
     using SimpleAuth;
     using SimpleAuth.Api.Discovery;
+    using System.Threading.Tasks;
 
     [Route(CoreConstants.EndPoints.DiscoveryAction)]
     public class DiscoveryController : Controller
     {
-        private readonly IDiscoveryActions _discoveryActions;
+        private readonly DiscoveryActions _discoveryActions;
         private readonly ScimOptions _scim;
 
-        public DiscoveryController(IDiscoveryActions discoveryActions, ScimOptions scim)
+        public DiscoveryController(ScimOptions scim, IScopeRepository scopeRepository)
         {
-            _discoveryActions = discoveryActions;
+            _discoveryActions = new DiscoveryActions(scopeRepository);
             _scim = scim;
         }
 

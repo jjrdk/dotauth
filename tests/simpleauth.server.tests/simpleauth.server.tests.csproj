@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\simpleauth.twilio\simpleauth.twilio.csproj" />
-    <ProjectReference Include="..\..\src\simpleauth.server\simpleauth.server.csproj" />
+    <ProjectReference Include="..\..\src\simpleauth\simpleauth.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.twilio.client\simpleauth.twilio.client.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.client\simpleauth.client.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.manager.client\simpleauth.manager.client.csproj" />

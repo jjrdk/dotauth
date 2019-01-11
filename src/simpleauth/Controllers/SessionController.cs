@@ -31,7 +31,7 @@
         [HttpGet(CoreConstants.EndPoints.CheckSession)]
         public async Task CheckSession()
         {
-            await this.DisplayInternalHtml("SimpleAuth.Server.Views.CheckSession.html",
+            await this.DisplayInternalHtml("SimpleAuth.Views.CheckSession.html",
                     (html) => html.Replace("{cookieName}", CoreConstants.SESSION_ID))
                 .ConfigureAwait(false);
         }
@@ -42,7 +42,7 @@
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName).ConfigureAwait(false);
             if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                await this.DisplayInternalHtml("SimpleAuth.Server.Views.UserNotConnected.html").ConfigureAwait(false);
+                await this.DisplayInternalHtml("SimpleAuth.Views.UserNotConnected.html").ConfigureAwait(false);
                 return;
             }
 
@@ -52,7 +52,7 @@
                 url = $"{url}{Request.QueryString.Value}";
             }
 
-            await this.DisplayInternalHtml("SimpleAuth.Server.Views.RevokeSession.html", (html) =>
+            await this.DisplayInternalHtml("SimpleAuth.Views.RevokeSession.html", (html) =>
             {
                 return html.Replace("{endSessionCallbackUrl}", url);
             }).ConfigureAwait(false);
@@ -64,7 +64,7 @@
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName).ConfigureAwait(false);
             if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                await this.DisplayInternalHtml("SimpleAuth.Server.Views.UserNotConnected.html").ConfigureAwait(false);
+                await this.DisplayInternalHtml("SimpleAuth.Views.UserNotConnected.html").ConfigureAwait(false);
                 return;
             }
 
@@ -106,7 +106,7 @@
                 }
             }
 
-            await this.DisplayInternalHtml("SimpleAuth.Server.Views.RevokeSessionCallback.html").ConfigureAwait(false);
+            await this.DisplayInternalHtml("SimpleAuth.Views.RevokeSessionCallback.html").ConfigureAwait(false);
         }
     }
 }

@@ -11,7 +11,7 @@
     public class CreateDiscoveryDocumentationActionFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
-        private IDiscoveryActions _createDiscoveryDocumentationAction;
+        private DiscoveryActions _createDiscoveryDocumentationAction;
 
         [Fact]
         public async Task When_Expose_Two_Scopes_Then_DiscoveryDocument_Is_Correct()

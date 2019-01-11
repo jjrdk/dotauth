@@ -7,11 +7,11 @@
     <PackageId>simpleauth.twilio</PackageId>
     <RootNamespace>SimpleAuth.Twilio</RootNamespace>
   </PropertyGroup>
-  <Import Project="../../shared.proj"/>
+  <Import Project="../../shared.proj" />
 
   <ItemGroup>  
-    <ProjectReference Include="..\simpleauth.server\simpleauth.server.csproj" />  
     <ProjectReference Include="..\simpleauth.twilio.shared\simpleauth.twilio.shared.csproj" />  
+    <ProjectReference Include="..\simpleauth\simpleauth.csproj" />  
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="microsoft.extensions.fileproviders.embedded" Version="2.2.0" />

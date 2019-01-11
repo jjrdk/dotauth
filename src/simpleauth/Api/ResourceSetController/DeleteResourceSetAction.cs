@@ -14,34 +14,43 @@
 
 namespace SimpleAuth.Api.ResourceSetController.Actions
 {
-    using System.Collections.Generic;
-    using System.Linq;
+    using System;
     using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Repositories;
 
-    internal class GetAllResourceSetAction : IGetAllResourceSetAction
+    internal class DeleteResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
 
-        public GetAllResourceSetAction(
+        public DeleteResourceSetAction(
             IResourceSetRepository resourceSetRepository)
         {
             _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<IEnumerable<string>> Execute()
+        public async Task<bool> Execute(string resourceSetId)
         {
-            var resourceSets = await _resourceSetRepository.GetAll().ConfigureAwait(false);
-            if (resourceSets == null)
+            if (string.IsNullOrWhiteSpace(resourceSetId))
+            {
+                throw new ArgumentNullException(nameof(resourceSetId));
+            }
+
+            var result = await _resourceSetRepository.Get(resourceSetId).ConfigureAwait(false);
+            if (result == null)
+            {
+                return false;
+            }
+
+            if (!await _resourceSetRepository.Delete(resourceSetId).ConfigureAwait(false))
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InternalError,
-                    ErrorDescriptions.TheResourceSetsCannotBeRetrieved);
+                    string.Format(ErrorDescriptions.TheResourceSetCannotBeRemoved, resourceSetId));
             }
 
-            return resourceSets.Select(r => r.Id);
+            return true;
         }
     }
 }

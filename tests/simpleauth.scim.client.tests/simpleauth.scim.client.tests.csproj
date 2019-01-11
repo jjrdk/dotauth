@@ -22,7 +22,7 @@
   </ItemGroup>  
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\simpleauth.server\simpleauth.server.csproj" />
+    <ProjectReference Include="..\..\src\simpleauth\simpleauth.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.client\simpleauth.client.csproj" />
   </ItemGroup>
 

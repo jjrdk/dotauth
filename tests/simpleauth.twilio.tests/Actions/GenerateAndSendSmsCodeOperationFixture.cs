@@ -12,7 +12,7 @@
 
     public class GenerateAndSendSmsCodeOperationFixture
     {
-        private const string _message = "Message {0}";
+        private const string Message = "Message {0}";
         private Mock<IConfirmationCodeStore> _confirmationCodeStoreStub;
         private SmsAuthenticationOptions _smsAuthenticationOptions;
         private Mock<ITwilioClient> _twilioClientStub;
@@ -80,7 +80,7 @@
             _confirmationCodeStoreStub = new Mock<IConfirmationCodeStore>();
             _smsAuthenticationOptions = new SmsAuthenticationOptions
             {
-                Message = _message
+                Message = Message
             };
             _twilioClientStub = new Mock<ITwilioClient>();
             _generateAndSendSmsCodeOperation = new GenerateAndSendSmsCodeOperation(

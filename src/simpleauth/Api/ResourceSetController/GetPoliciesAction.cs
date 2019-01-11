@@ -15,27 +15,29 @@
 namespace SimpleAuth.Api.ResourceSetController.Actions
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Repositories;
-    using Shared.Models;
 
-    internal class GetResourceSetAction : IGetResourceSetAction
+    internal class GetPoliciesAction
     {
-        private readonly IResourceSetRepository _resourceSetRepository;
+        private readonly IPolicyRepository _repository;
 
-        public GetResourceSetAction(IResourceSetRepository resourceSetRepository)
+        public GetPoliciesAction(IPolicyRepository repository)
         {
-            _resourceSetRepository = resourceSetRepository;
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        public async Task<ResourceSet> Execute(string id)
+        public async Task<IEnumerable<string>> Execute(string resourceId)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(resourceId))
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(resourceId));
             }
 
-            return await _resourceSetRepository.Get(id).ConfigureAwait(false);
+            var result = await _repository.SearchByResourceId(resourceId).ConfigureAwait(false);
+            return result.Select(p => p.Id);
         }
     }
 }

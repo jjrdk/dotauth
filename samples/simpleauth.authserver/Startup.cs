@@ -118,7 +118,7 @@ namespace SimpleAuth.AuthServer
             services.AddDefaultTokenStore();
             services.Configure<RazorViewEngineOptions>(x =>
             {
-                x.FileProviders.Add(new EmbeddedFileProvider(_assembly, "SimpleAuth.Server"));
+                x.FileProviders.Add(new EmbeddedFileProvider(_assembly, "SimpleAuth"));
                 x.AdditionalCompilationReferences.Add(MetadataReference.CreateFromFile(typeof(BasicAuthenticateOptions).Assembly.Location));
             });
 
@@ -142,7 +142,7 @@ namespace SimpleAuth.AuthServer
             // 2. Use static files.
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.Server.wwwroot")
+                FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot")
             });
             app.UseSimpleAuth();
             // 3. Redirect error to custom pages.
@@ -154,13 +154,7 @@ namespace SimpleAuth.AuthServer
             app.UseResponseCompression();
             app.UseMvc(routes =>
             {
-                //routes.UseLoginPasswordAuthentication();
-                //routes.MapRoute("AuthArea",
-                //    "{area:exists}/Authenticate/{action}/{id?}",
-                //    new { controller = "Authenticate", action = "Index" });
                 routes.MapRoute("default", "{controller=Home}/{action=Index}");
-                //routes.UseUserManagement();
-                //routes.UseShell();
             });
         }
     }

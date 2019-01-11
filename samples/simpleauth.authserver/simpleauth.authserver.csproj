@@ -9,7 +9,7 @@
     <StartupObject>SimpleAuth.AuthServer.Program</StartupObject>
     <RootNamespace>SimpleAuth.AuthServer</RootNamespace>
   </PropertyGroup>
-  <Import Project="../../shared.proj"/>
+  <Import Project="../../shared.proj" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="2.2.0" />
@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\simpleauth.server\simpleauth.server.csproj" />
+    <ProjectReference Include="..\..\src\simpleauth\simpleauth.csproj" />
   </ItemGroup>
 
   <ItemGroup>

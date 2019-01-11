@@ -14,25 +14,32 @@
 
 namespace SimpleAuth.Server.Controllers
 {
-    using System.Net;
-    using System.Threading.Tasks;
-    using Api.ResourceSetController;
+    using Api.ResourceSetController.Actions;
     using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Repositories;
     using Shared.DTOs;
     using Shared.Responses;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
 
     [Route(UmaConstants.RouteValues.ResourceSet)]
     public class ResourceSetController : Controller
     {
-        private readonly IResourceSetActions _resourceSetActions;
+        private readonly IResourceSetRepository _resourceSetRepository;
+        private readonly AddResourceSetAction _addResourceSet;
+        private readonly UpdateResourceSetAction _updateResourceSet;
+        private readonly DeleteResourceSetAction _removeResourceSet;
 
-        public ResourceSetController(
-            IResourceSetActions resourceSetActions)
+        public ResourceSetController(IResourceSetRepository resourceSetRepository)
         {
-            _resourceSetActions = resourceSetActions;
+            _resourceSetRepository = resourceSetRepository;
+            _addResourceSet = new AddResourceSetAction(resourceSetRepository);
+            _updateResourceSet = new UpdateResourceSetAction(resourceSetRepository);
+            _removeResourceSet = new DeleteResourceSetAction(resourceSetRepository);
         }
 
         [HttpPost(".search")]
@@ -47,7 +54,7 @@ namespace SimpleAuth.Server.Controllers
             }
 
             var parameter = searchResourceSet.ToParameter();
-            var result = await _resourceSetActions.Search(parameter).ConfigureAwait(false);
+            var result = await _resourceSetRepository.Search(parameter).ConfigureAwait(false);
             return new OkObjectResult(result.ToResponse());
         }
 
@@ -55,7 +62,8 @@ namespace SimpleAuth.Server.Controllers
         [Authorize("UmaProtection")]
         public async Task<IActionResult> GetResourceSets()
         {
-            var resourceSetIds = await _resourceSetActions.GetAllResourceSet().ConfigureAwait(false);
+            var resourceSets = await _resourceSetRepository.GetAll().ConfigureAwait(false);
+            var resourceSetIds = resourceSets.Select(x => x.Id).ToArray();
             return new OkObjectResult(resourceSetIds);
         }
 
@@ -70,7 +78,7 @@ namespace SimpleAuth.Server.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var result = await _resourceSetActions.GetResourceSet(id).ConfigureAwait(false);
+            var result = await _resourceSetRepository.Get(id).ConfigureAwait(false);
             if (result == null)
             {
                 return GetNotFoundResourceSet();
@@ -92,14 +100,14 @@ namespace SimpleAuth.Server.Controllers
             }
 
             var parameter = postResourceSet.ToParameter();
-            var result = await _resourceSetActions.AddResourceSet(parameter).ConfigureAwait(false);
+            var result = await _addResourceSet.Execute(parameter).ConfigureAwait(false);
             var response = new AddResourceSetResponse
             {
                 Id = result
             };
             return new ObjectResult(response)
             {
-                StatusCode = (int) HttpStatusCode.Created
+                StatusCode = (int)HttpStatusCode.Created
             };
         }
 
@@ -115,7 +123,7 @@ namespace SimpleAuth.Server.Controllers
             }
 
             var parameter = putResourceSet.ToParameter();
-            var resourceSetExists = await _resourceSetActions.UpdateResourceSet(parameter).ConfigureAwait(false);
+            var resourceSetExists = await _updateResourceSet.Execute(parameter).ConfigureAwait(false);
             if (!resourceSetExists)
             {
                 return GetNotFoundResourceSet();
@@ -128,7 +136,7 @@ namespace SimpleAuth.Server.Controllers
 
             return new ObjectResult(response)
             {
-                StatusCode = (int) HttpStatusCode.OK
+                StatusCode = (int)HttpStatusCode.OK
             };
         }
 
@@ -143,10 +151,10 @@ namespace SimpleAuth.Server.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var resourceSetExists = await _resourceSetActions.RemoveResourceSet(id).ConfigureAwait(false);
-            return !resourceSetExists 
-                ? GetNotFoundResourceSet() 
-                : new StatusCodeResult((int) HttpStatusCode.NoContent);
+            var resourceSetExists = await _removeResourceSet.Execute(id).ConfigureAwait(false);
+            return !resourceSetExists
+                ? GetNotFoundResourceSet()
+                : new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         private static ActionResult GetNotFoundResourceSet()
@@ -159,7 +167,7 @@ namespace SimpleAuth.Server.Controllers
 
             return new ObjectResult(errorResponse)
             {
-                StatusCode = (int) HttpStatusCode.NotFound
+                StatusCode = (int)HttpStatusCode.NotFound
             };
         }
 
@@ -172,7 +180,7 @@ namespace SimpleAuth.Server.Controllers
             };
             return new JsonResult(error)
             {
-                StatusCode = (int) statusCode
+                StatusCode = (int)statusCode
             };
         }
     }
