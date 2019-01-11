@@ -23,7 +23,7 @@ namespace SimpleAuth.Api.ResourceSetController.Actions
     using System.Linq;
     using System.Threading.Tasks;
 
-    internal class UpdateResourceSetAction : IUpdateResourceSetAction
+    internal class UpdateResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
 

@@ -29,7 +29,7 @@ namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
     public class UpdateResourceSetActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-        private IUpdateResourceSetAction _updateResourceSetAction;
+        private UpdateResourceSetAction _updateResourceSetAction;
 
         [Fact]
         public async Task When_Passing_No_Parameter_Then_Exception_Is_Thrown()

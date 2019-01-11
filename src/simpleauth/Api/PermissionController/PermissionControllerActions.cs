@@ -18,14 +18,21 @@ namespace SimpleAuth.Api.PermissionController
     using System.Threading.Tasks;
     using Actions;
     using Parameters;
+    using Repositories;
 
-    internal class PermissionControllerActions : IPermissionControllerActions
+    internal class PermissionControllerActions
     {
-        private readonly IAddPermissionAction _addPermissionAction;
+        private readonly AddPermissionAction _addPermissionAction;
 
-        public PermissionControllerActions(IAddPermissionAction addPermissionAction)
+        public PermissionControllerActions(
+            IResourceSetRepository resourceSetRepository,
+            ITicketStore ticketStore,
+            UmaConfigurationOptions options)
         {
-            _addPermissionAction = addPermissionAction;
+            _addPermissionAction = new AddPermissionAction(
+                resourceSetRepository,
+                ticketStore,
+                options);
         }
 
         public Task<string> Add(AddPermissionParameter addPermissionParameter, string clientId)

@@ -27,7 +27,7 @@ namespace SimpleAuth.Uma.Tests.Api.ResourceSetController.Actions
     public class GetPoliciesActionFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
-        private IGetPoliciesAction _getPoliciesAction;
+        private GetPoliciesAction _getPoliciesAction;
 
         [Fact]
         public async Task When_Passing_NullOrEmpty_Parameter_Then_Exception_Is_Thrown()

@@ -25,7 +25,7 @@ namespace SimpleAuth.Api.Discovery
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class DiscoveryActions : IDiscoveryActions
+    public class DiscoveryActions
     {
         private readonly IScopeRepository _scopeRepository;
 

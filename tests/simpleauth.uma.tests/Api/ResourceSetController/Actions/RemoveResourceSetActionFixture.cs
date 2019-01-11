@@ -13,7 +13,7 @@
     public class RemoveResourceSetActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-        private IDeleteResourceSetAction _deleteResourceSetAction;
+        private DeleteResourceSetAction _deleteResourceSetAction;
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()

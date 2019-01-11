@@ -28,13 +28,12 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
     using Uma;
     using Xunit;
     
-
     public class AddPermissionActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
         private Mock<ITicketStore> _ticketStoreStub;
         private UmaConfigurationOptions _configurationServiceStub;
-        private IAddPermissionAction _addPermissionAction;
+        private AddPermissionAction _addPermissionAction;
 
         [Fact]
         public async Task When_Passing_No_Parameters_Then_Exceptions_Are_Thrown()

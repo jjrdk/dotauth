@@ -26,7 +26,7 @@ namespace SimpleAuth.Api.PermissionController.Actions
     using Shared;
     using Shared.Models;
 
-    internal class AddPermissionAction : IAddPermissionAction
+    internal class AddPermissionAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly ITicketStore _ticketStore;

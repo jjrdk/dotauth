@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\simpleauth.client\simpleauth.client.csproj" />
-    <ProjectReference Include="..\..\src\simpleauth.server\simpleauth.server.csproj" />
+    <ProjectReference Include="..\..\src\simpleauth\simpleauth.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.uma.client\simpleauth.uma.client.csproj" />
   </ItemGroup>  
 

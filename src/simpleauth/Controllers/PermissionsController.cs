@@ -24,16 +24,20 @@ namespace SimpleAuth.Server.Controllers
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
+    using Repositories;
     using Shared.DTOs;
 
     [Route(UmaConstants.RouteValues.Permission)]
     public class PermissionsController : Controller
     {
-        private readonly IPermissionControllerActions _permissionControllerActions;
+        private readonly PermissionControllerActions _permissionControllerActions;
 
-        public PermissionsController(IPermissionControllerActions permissionControllerActions)
+        public PermissionsController(
+            IResourceSetRepository resourceSetRepository,
+            ITicketStore ticketStore,
+            UmaConfigurationOptions options)
         {
-            _permissionControllerActions = permissionControllerActions;
+            _permissionControllerActions = new PermissionControllerActions(resourceSetRepository, ticketStore, options);
         }
 
         [HttpPost]
@@ -42,14 +46,18 @@ namespace SimpleAuth.Server.Controllers
         {
             if (postPermission == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequestCode,
+                    "no parameter in body request",
+                    HttpStatusCode.BadRequest);
             }
 
             var parameter = postPermission.ToParameter();
             var clientId = this.GetClientId();
             if (string.IsNullOrWhiteSpace(clientId))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "the client_id cannot be extracted", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequestCode,
+                    "the client_id cannot be extracted",
+                    HttpStatusCode.BadRequest);
             }
 
             var ticketId = await _permissionControllerActions.Add(parameter, clientId).ConfigureAwait(false);
@@ -59,7 +67,7 @@ namespace SimpleAuth.Server.Controllers
             };
             return new ObjectResult(result)
             {
-                StatusCode = (int)HttpStatusCode.Created
+                StatusCode = (int) HttpStatusCode.Created
             };
         }
 
@@ -69,14 +77,18 @@ namespace SimpleAuth.Server.Controllers
         {
             if (postPermissions == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequestCode,
+                    "no parameter in body request",
+                    HttpStatusCode.BadRequest);
             }
 
             var parameters = postPermissions.Select(p => p.ToParameter());
             var clientId = this.GetClientId();
             if (string.IsNullOrWhiteSpace(clientId))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "the client_id cannot be extracted", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequestCode,
+                    "the client_id cannot be extracted",
+                    HttpStatusCode.BadRequest);
             }
 
             var ticketId = await _permissionControllerActions.Add(parameters, clientId).ConfigureAwait(false);
@@ -86,7 +98,7 @@ namespace SimpleAuth.Server.Controllers
             };
             return new ObjectResult(result)
             {
-                StatusCode = (int)HttpStatusCode.Created
+                StatusCode = (int) HttpStatusCode.Created
             };
         }
 
@@ -99,7 +111,7 @@ namespace SimpleAuth.Server.Controllers
             };
             return new JsonResult(error)
             {
-                StatusCode = (int)statusCode
+                StatusCode = (int) statusCode
             };
         }
     }
