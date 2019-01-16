@@ -14,19 +14,19 @@
 
 namespace SimpleAuth.Parsers
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.AspNetCore.Routing;
     using Results;
+    using System.Collections.Generic;
+    using System.Linq;
 
-    public class RedirectInstructionParser : IRedirectInstructionParser
+    public class RedirectInstructionParser
     {
         private readonly Dictionary<SimpleAuthEndPoints, ActionInformation> _mappingEnumToActionInformations = new Dictionary<SimpleAuthEndPoints, ActionInformation>
         {
             {
                 SimpleAuthEndPoints.ConsentIndex,
                 new ActionInformation("Consent", "Index", null)
-            }, 
+            },
             {
                 SimpleAuthEndPoints.AuthenticateIndex,
                 new ActionInformation("Authenticate", "Index", null)

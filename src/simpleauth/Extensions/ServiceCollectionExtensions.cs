@@ -276,7 +276,6 @@ namespace SimpleAuth.Extensions
             .AddSingleton<IScopeStore>(sp => sp.GetService<DefaultScopeRepository>())
             .AddSingleton<ITranslationRepository>(new DefaultTranslationRepository(options?.Configuration?.Translations))
             .AddSingleton(options?.Scim ?? new ScimOptions { IsEnabled = false })
-            .AddTransient<IRedirectInstructionParser, RedirectInstructionParser>()
             .AddTransient<IActionResultParser, ActionResultParser>()
             .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
             .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
