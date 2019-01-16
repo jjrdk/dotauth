@@ -148,7 +148,7 @@ namespace SimpleAuth.Extensions
             EndpointResult endpointResult,
             AuthorizationRequest authorizationRequest)
         {
-            var actionResultParser = ActionResultParserFactory.CreateActionResultParser();
+            var actionResultParser = new ActionResultParser();
             if (endpointResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var parameters = actionResultParser.GetRedirectionParameters(endpointResult);
