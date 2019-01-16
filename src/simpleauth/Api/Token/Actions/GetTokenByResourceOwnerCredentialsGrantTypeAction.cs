@@ -30,7 +30,7 @@ namespace SimpleAuth.Api.Token.Actions
     using System.Threading.Tasks;
     using Validators;
 
-    public class GetTokenByResourceOwnerCredentialsGrantTypeAction : IGetTokenByResourceOwnerCredentialsGrantTypeAction
+    public class GetTokenByResourceOwnerCredentialsGrantTypeAction
     {
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly ScopeValidator _scopeValidator;

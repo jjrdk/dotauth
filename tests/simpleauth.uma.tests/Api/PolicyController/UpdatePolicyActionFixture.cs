@@ -16,23 +16,21 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
 {
     using Exceptions;
     using Moq;
-    using SimpleAuth.Errors;
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Parameters;
     using Repositories;
     using SimpleAuth.Api.PolicyController.Actions;
+    using SimpleAuth.Errors;
     using SimpleAuth.Shared.Models;
-    using Uma;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
     
-
     public class UpdatePolicyActionFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-        private IUpdatePolicyAction _updatePolicyAction;
+        private UpdatePolicyAction _updatePolicyAction;
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()

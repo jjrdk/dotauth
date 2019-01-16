@@ -6,9 +6,9 @@
     using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Api.Token;
-    using SimpleAuth.Api.Token.Actions;
     using SimpleAuth.Authenticate;
     using SimpleAuth.Helpers;
+    using SimpleAuth.JwtToken;
     using SimpleAuth.Validators;
     using System;
     using System.Collections.Generic;
@@ -18,12 +18,6 @@
 
     public sealed class TokenActionsFixture
     {
-        private Mock<IGetTokenByResourceOwnerCredentialsGrantTypeAction>
-            _getTokenByResourceOwnerCredentialsGrantTypeActionFake;
-        private Mock<IGetTokenByAuthorizationCodeGrantTypeAction> _getTokenByAuthorizationCodeGrantTypeActionFake;
-        private Mock<IGetTokenByRefreshTokenGrantTypeAction> _getTokenByRefreshTokenGrantTypeActionFake;
-        private Mock<IClientCredentialsGrantTypeParameterValidator> _clientCredentialsGrantTypeParameterValidatorStub;
-        private Mock<IRevokeTokenAction> _revokeTokenActionStub;
         private ITokenActions _tokenActions;
 
         [Fact]
@@ -84,12 +78,7 @@
 
         private void InitializeFakeObjects()
         {
-            _getTokenByResourceOwnerCredentialsGrantTypeActionFake = new Mock<IGetTokenByResourceOwnerCredentialsGrantTypeAction>();
-            _getTokenByAuthorizationCodeGrantTypeActionFake = new Mock<IGetTokenByAuthorizationCodeGrantTypeAction>();
-            _getTokenByRefreshTokenGrantTypeActionFake = new Mock<IGetTokenByRefreshTokenGrantTypeAction>();
-            _clientCredentialsGrantTypeParameterValidatorStub = new Mock<IClientCredentialsGrantTypeParameterValidator>();
             var eventPublisher = new Mock<IEventPublisher>();
-            _revokeTokenActionStub = new Mock<IRevokeTokenAction>();
             const string scope = "valid_scope";
             const string clientId = "valid_client_id";
             var mock = new Mock<IAuthenticateClient>();
@@ -104,9 +93,7 @@
                             GrantTypes = new List<GrantType> { GrantType.client_credentials }
                         },
                         null));
-            //var scopeValidatorMock = new Mock<IScopeValidator>();
-            //scopeValidatorMock.Setup(x => x.Check(It.IsAny<string>(), It.IsAny<Client>()))
-            //    .Returns(new ScopeValidationResult(new[] { scope }));
+
             var grantedTokenHelperMock = new Mock<IGrantedTokenHelper>();
             grantedTokenHelperMock.Setup(x => x.GetValidGrantedTokenAsync(
                     It.IsAny<string>(),
@@ -118,15 +105,16 @@
                     ClientId = clientId
                 });
             _tokenActions = new TokenActions(
-                _getTokenByResourceOwnerCredentialsGrantTypeActionFake.Object,
-                _getTokenByAuthorizationCodeGrantTypeActionFake.Object,
-                _getTokenByRefreshTokenGrantTypeActionFake.Object,
-                _clientCredentialsGrantTypeParameterValidatorStub.Object,
+                new OAuthConfigurationOptions(),
+                new Mock<IClientCredentialsGrantTypeParameterValidator>().Object,
+                new Mock<IAuthorizationCodeStore>().Object,
                 mock.Object,
+                new Mock<IResourceOwnerAuthenticateHelper>().Object,
                 new Mock<IGrantedTokenGeneratorHelper>().Object,
-                _revokeTokenActionStub.Object,
                 eventPublisher.Object,
                 new Mock<ITokenStore>().Object,
+                new Mock<IJwtGenerator>().Object,
+                new Mock<IClientHelper>().Object,
                 grantedTokenHelperMock.Object);
         }
     }

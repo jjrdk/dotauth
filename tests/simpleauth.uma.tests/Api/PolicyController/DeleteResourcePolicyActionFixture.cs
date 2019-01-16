@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,19 +17,19 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
     using Errors;
     using Exceptions;
     using Moq;
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Repositories;
     using SimpleAuth.Api.PolicyController.Actions;
     using SimpleAuth.Shared.Models;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class DeleteResourcePolicyActionFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-        private IDeleteResourcePolicyAction _deleteResourcePolicyAction;
+        private DeleteResourcePolicyAction _deleteResourcePolicyAction;
 
         [Fact]
         public async Task When_Passing_NullOrEmpty_Parameters_Then_Exceptions_Are_Thrown()

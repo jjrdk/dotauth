@@ -14,8 +14,6 @@
 
 namespace SimpleAuth.Tests.Api.Token
 {
-    using System;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Moq;
@@ -24,26 +22,29 @@ namespace SimpleAuth.Tests.Api.Token
     using SimpleAuth;
     using SimpleAuth.Api.Token.Actions;
     using SimpleAuth.Authenticate;
+    using System;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class RevokeTokenActionFixture
     {
         private Mock<IAuthenticateClient> _authenticateClientStub;
         private Mock<ITokenStore> _grantedTokenRepositoryStub;
-        private IRevokeTokenAction _revokeTokenAction;
+        private RevokeTokenAction _revokeTokenAction;
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exceptions_Are_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
 
-            
             await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(null, null, null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(new RevokeTokenParameter(), null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Client_Does_Not_Exist_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var parameter = new RevokeTokenParameter
             {
                 Token = "access_token"
@@ -52,14 +53,15 @@ namespace SimpleAuth.Tests.Api.Token
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
 
-                        var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _revokeTokenAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _revokeTokenAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
         }
 
         [Fact]
         public async Task When_Token_Does_Not_Exist_Then_Exception_Is_Returned()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var parameter = new RevokeTokenParameter
             {
                 Token = "access_token"
@@ -72,15 +74,16 @@ namespace SimpleAuth.Tests.Api.Token
             _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
-                        var result = await Assert.ThrowsAsync<SimpleAuthException>(() => _revokeTokenAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
+            var result = await Assert.ThrowsAsync<SimpleAuthException>(() => _revokeTokenAction.Execute(parameter, null, null, null)).ConfigureAwait(false);
 
-                        Assert.NotNull(result);
+            Assert.NotNull(result);
             Assert.Equal("invalid_token", result.Code);
         }
 
         [Fact]
         public async Task When_Invalidating_Refresh_Token_Then_GrantedTokenChildren_Are_Removed()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var parent = new GrantedToken
             {
                 RefreshToken = "refresh_token"
@@ -104,14 +107,15 @@ namespace SimpleAuth.Tests.Api.Token
             _grantedTokenRepositoryStub.Setup(g => g.RemoveAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(true));
 
-                        await _revokeTokenAction.Execute(parameter, null, null, null).ConfigureAwait(false);
+            await _revokeTokenAction.Execute(parameter, null, null, null).ConfigureAwait(false);
 
-                        _grantedTokenRepositoryStub.Verify(g => g.RemoveRefreshToken(parent.RefreshToken));
+            _grantedTokenRepositoryStub.Verify(g => g.RemoveRefreshToken(parent.RefreshToken));
         }
 
         [Fact]
         public async Task When_Invalidating_Access_Token_Then_GrantedToken_Is_Removed()
-        {            InitializeFakeObjects();
+        {
+            InitializeFakeObjects();
             var grantedToken = new GrantedToken
             {
                 AccessToken = "access_token"
@@ -130,9 +134,9 @@ namespace SimpleAuth.Tests.Api.Token
             _grantedTokenRepositoryStub.Setup(g => g.RemoveAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(true));
 
-                        await _revokeTokenAction.Execute(parameter, null, null, null).ConfigureAwait(false);
+            await _revokeTokenAction.Execute(parameter, null, null, null).ConfigureAwait(false);
 
-                        _grantedTokenRepositoryStub.Verify(g => g.RemoveAccessToken(grantedToken.AccessToken));
+            _grantedTokenRepositoryStub.Verify(g => g.RemoveAccessToken(grantedToken.AccessToken));
         }
 
         private void InitializeFakeObjects()

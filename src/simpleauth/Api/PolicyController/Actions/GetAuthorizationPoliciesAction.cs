@@ -23,7 +23,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
     using System.Linq;
     using System.Threading.Tasks;
 
-    internal class GetAuthorizationPoliciesAction : IGetAuthorizationPoliciesAction
+    internal class GetAuthorizationPoliciesAction
     {
         private readonly IPolicyRepository _policyRepository;
 
@@ -44,8 +44,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
                 ex.HandleException(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved);
             }
 
-            if (policies == null
-                || !policies.Any())
+            if (policies == null || !policies.Any())
             {
                 return new List<string>();
             }

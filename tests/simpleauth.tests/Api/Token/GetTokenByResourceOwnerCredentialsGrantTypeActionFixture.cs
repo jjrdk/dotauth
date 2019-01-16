@@ -43,7 +43,7 @@ namespace SimpleAuth.Tests.Api.Token
         private Mock<IClientHelper> _clientHelperStub;
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
         private Mock<ITokenStore> _tokenStoreStub;
-        private IGetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantTypeAction;
+        private GetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantTypeAction;
 
         [Fact]
         public async Task When_Passing_No_Request_Then_Exception_Is_Thrown()

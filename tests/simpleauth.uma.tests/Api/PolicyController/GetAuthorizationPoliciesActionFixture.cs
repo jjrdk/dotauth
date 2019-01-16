@@ -15,18 +15,18 @@
 namespace SimpleAuth.Uma.Tests.Api.PolicyController
 {
     using Moq;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Repositories;
     using SimpleAuth.Api.PolicyController.Actions;
     using SimpleAuth.Shared.Models;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class GetAuthorizationPoliciesActionFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
-        private IGetAuthorizationPoliciesAction _getAuthorizationPoliciesAction;
+        private GetAuthorizationPoliciesAction _getAuthorizationPoliciesAction;
 
         [Fact]
         public async Task When_Getting_Authorization_Policies_Then_A_ListIds_Is_Returned()

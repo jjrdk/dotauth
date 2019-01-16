@@ -17,21 +17,20 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
     using Errors;
     using Exceptions;
     using Moq;
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Parameters;
     using Repositories;
     using SimpleAuth.Api.PolicyController.Actions;
     using SimpleAuth.Shared.Models;
-    using Uma;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class AddAuthorizationPolicyActionFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-        private IAddAuthorizationPolicyAction _addAuthorizationPolicyAction;
+        private AddAuthorizationPolicyAction _addAuthorizationPolicyAction;
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
@@ -101,7 +100,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter)).ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidResourceSetId, exception.Code);
-            Assert.Equal( string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId), exception.Message);
+            Assert.Equal(string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId), exception.Message);
         }
 
         [Fact]

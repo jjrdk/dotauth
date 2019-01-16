@@ -14,17 +14,16 @@
 
 namespace SimpleAuth.Api.Token.Actions
 {
-    using System;
-    using System.Net.Http.Headers;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Threading.Tasks;
     using Authenticate;
     using Errors;
     using Exceptions;
     using Parameters;
-    using Shared.Requests;
+    using System;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
 
-    internal class RevokeTokenAction : IRevokeTokenAction
+    internal class RevokeTokenAction
     {
         private readonly IAuthenticateClient _authenticateClient;
         private readonly ITokenStore _tokenStore;
@@ -48,7 +47,7 @@ namespace SimpleAuth.Api.Token.Actions
             {
                 throw new ArgumentNullException(nameof(revokeTokenParameter.Token));
             }
-            
+
             // 1. Check the client credentials
             var instruction = authenticationHeaderValue.GetAuthenticateInstruction(revokeTokenParameter, certificate);
             var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);

@@ -1,11 +1,11 @@
 // Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -245,8 +245,6 @@ namespace SimpleAuth.Extensions
             .AddTransient<IGrantedTokenValidator, GrantedTokenValidator>()
             .AddTransient<IParameterParserHelper, ParameterParserHelper>()
             .AddTransient<ITokenActions, TokenActions>()
-            .AddTransient<IGetTokenByResourceOwnerCredentialsGrantTypeAction, GetTokenByResourceOwnerCredentialsGrantTypeAction>()
-            .AddTransient<IGetTokenByAuthorizationCodeGrantTypeAction, GetTokenByAuthorizationCodeGrantTypeAction>()
             .AddTransient<IConsentActions, ConsentActions>()
             .AddTransient<IConfirmConsentAction, ConfirmConsentAction>()
             .AddTransient<IDisplayConsentAction, DisplayConsentAction>()
@@ -257,10 +255,8 @@ namespace SimpleAuth.Extensions
             .AddTransient<IJwtGenerator, JwtGenerator>()
             .AddTransient<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>()
             .AddTransient<IAuthenticateClient, AuthenticateClient>()
-            .AddTransient<IGetTokenByRefreshTokenGrantTypeAction, GetTokenByRefreshTokenGrantTypeAction>()
             .AddTransient<ITranslationManager, TranslationManager>()
             .AddTransient<IGrantedTokenHelper, GrantedTokenHelper>()
-            .AddTransient<IRevokeTokenAction, RevokeTokenAction>()
             .AddTransient<IGenerateAndSendCodeAction, GenerateAndSendCodeAction>()
             .AddTransient<IValidateConfirmationCodeAction, ValidateConfirmationCodeAction>()
             .AddTransient<IRemoveConfirmationCodeAction, RemoveConfirmationCodeAction>()
@@ -290,15 +286,6 @@ namespace SimpleAuth.Extensions
             .AddTransient<IAuthorizationPolicyValidator, AuthorizationPolicyValidator>()
             .AddTransient<IBasicAuthorizationPolicy, BasicAuthorizationPolicy>()
             .AddTransient<ICustomAuthorizationPolicy, CustomAuthorizationPolicy>()
-            .AddTransient<IAddAuthorizationPolicyAction, AddAuthorizationPolicyAction>()
-            .AddTransient<IPolicyActions, PolicyActions>()
-            .AddTransient<IGetAuthorizationPolicyAction, GetAuthorizationPolicyAction>()
-            .AddTransient<IDeleteAuthorizationPolicyAction, DeleteAuthorizationPolicyAction>()
-            .AddTransient<IGetAuthorizationPoliciesAction, GetAuthorizationPoliciesAction>()
-            .AddTransient<IUpdatePolicyAction, UpdatePolicyAction>()
-            .AddTransient<IAddResourceSetToPolicyAction, AddResourceSetToPolicyAction>()
-            .AddTransient<IDeleteResourcePolicyAction, DeleteResourcePolicyAction>()
-            .AddTransient<ISearchAuthPoliciesAction, SearchAuthPoliciesAction>()
             .AddTransient<IUmaTokenActions, UmaTokenActions>()
             .AddSingleton(options?.UmaConfigurationOptions ?? new UmaConfigurationOptions())
             .AddSingleton<IPolicyRepository>(new DefaultPolicyRepository(options?.UmaConfigurationOptions?.Policies))

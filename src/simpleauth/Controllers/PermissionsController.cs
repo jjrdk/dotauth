@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Controllers
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Threading.Tasks;
     using Api.PermissionController;
     using Errors;
     using Extensions;
@@ -26,18 +22,22 @@ namespace SimpleAuth.Controllers
     using Repositories;
     using Shared.DTOs;
     using Shared.Responses;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
 
     [Route(UmaConstants.RouteValues.Permission)]
     public class PermissionsController : Controller
     {
-        private readonly PermissionControllerActions _permissionControllerActions;
+        private readonly AddPermissionAction _permissionControllerActions;
 
         public PermissionsController(
             IResourceSetRepository resourceSetRepository,
             ITicketStore ticketStore,
             UmaConfigurationOptions options)
         {
-            _permissionControllerActions = new PermissionControllerActions(resourceSetRepository, ticketStore, options);
+            _permissionControllerActions = new AddPermissionAction(resourceSetRepository, ticketStore, options);
         }
 
         [HttpPost]
@@ -60,14 +60,14 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var ticketId = await _permissionControllerActions.Add(parameter, clientId).ConfigureAwait(false);
+            var ticketId = await _permissionControllerActions.Execute(clientId, parameter).ConfigureAwait(false);
             var result = new AddPermissionResponse
             {
                 TicketId = ticketId
             };
             return new ObjectResult(result)
             {
-                StatusCode = (int) HttpStatusCode.Created
+                StatusCode = (int)HttpStatusCode.Created
             };
         }
 
@@ -91,14 +91,14 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var ticketId = await _permissionControllerActions.Add(parameters, clientId).ConfigureAwait(false);
+            var ticketId = await _permissionControllerActions.Execute(clientId, parameters).ConfigureAwait(false);
             var result = new AddPermissionResponse
             {
                 TicketId = ticketId
             };
             return new ObjectResult(result)
             {
-                StatusCode = (int) HttpStatusCode.Created
+                StatusCode = (int)HttpStatusCode.Created
             };
         }
 
@@ -111,7 +111,7 @@ namespace SimpleAuth.Controllers
             };
             return new JsonResult(error)
             {
-                StatusCode = (int) statusCode
+                StatusCode = (int)statusCode
             };
         }
     }

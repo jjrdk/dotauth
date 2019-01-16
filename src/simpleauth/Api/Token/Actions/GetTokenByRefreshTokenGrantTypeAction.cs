@@ -28,7 +28,7 @@ namespace SimpleAuth.Api.Token.Actions
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
 
-    public sealed class GetTokenByRefreshTokenGrantTypeAction : IGetTokenByRefreshTokenGrantTypeAction
+    public sealed class GetTokenByRefreshTokenGrantTypeAction
     {
         private readonly IClientHelper _clientHelper;
         private readonly IEventPublisher _eventPublisher;

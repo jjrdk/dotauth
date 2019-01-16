@@ -22,7 +22,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
     using System;
     using System.Threading.Tasks;
 
-    internal class DeleteResourcePolicyAction : IDeleteResourcePolicyAction
+    internal class DeleteResourcePolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
         private readonly IResourceSetRepository _resourceSetRepository;
@@ -65,13 +65,13 @@ namespace SimpleAuth.Api.PolicyController.Actions
             ResourceSet resourceSet = null;
             try
             {
-                resourceSet= await _resourceSetRepository.Get(resourceId).ConfigureAwait(false);
+                resourceSet = await _resourceSetRepository.Get(resourceId).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 ex.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceId));
             }
-            
+
             if (resourceSet == null)
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidResourceSetId,

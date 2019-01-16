@@ -25,7 +25,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
     public class DeleteAuthorizationPolicyActionFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
-        private IDeleteAuthorizationPolicyAction _deleteAuthorizationPolicyAction;
+        private DeleteAuthorizationPolicyAction _deleteAuthorizationPolicyAction;
 
         [Fact]
         public async Task When_Passing_Empty_Parameter_Then_Exception_Is_Thrown()

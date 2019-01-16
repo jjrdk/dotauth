@@ -27,7 +27,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
     using System.Security.Claims;
     using System.Threading.Tasks;
 
-    internal class AddAuthorizationPolicyAction : IAddAuthorizationPolicyAction
+    internal class AddAuthorizationPolicyAction 
     {
         private readonly IPolicyRepository _policyRepository;
         private readonly IResourceSetRepository _resourceSetRepository;

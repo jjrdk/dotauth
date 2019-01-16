@@ -38,7 +38,7 @@ namespace SimpleAuth.Tests.Api.Token
         private Mock<ITokenStore> _tokenStoreStub;
         private Mock<IJwtGenerator> _jwtGeneratorStub;
         private Mock<IAuthenticateClient> _authenticateClientStub;
-        private IGetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
+        private GetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()

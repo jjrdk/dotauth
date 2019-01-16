@@ -1,16 +1,18 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+using SimpleAuth.JwtToken;
 
 namespace SimpleAuth.Api.Token
 {
@@ -32,38 +34,62 @@ namespace SimpleAuth.Api.Token
 
     public class TokenActions : ITokenActions
     {
-        private readonly IGetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantType;
-        private readonly IGetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
-        private readonly IGetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
+        private readonly GetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantType;
+        private readonly GetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
+        private readonly GetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
         private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
         private readonly IAuthenticateClient _authenticateClient;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly ScopeValidator _scopeValidator;
-        private readonly IRevokeTokenAction _revokeTokenAction;
+        private readonly RevokeTokenAction _revokeTokenAction;
         private readonly IGrantedTokenHelper _grantedTokenHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;
 
         public TokenActions(
-            IGetTokenByResourceOwnerCredentialsGrantTypeAction getTokenByResourceOwnerCredentialsGrantType,
-            IGetTokenByAuthorizationCodeGrantTypeAction getTokenByAuthorizationCodeGrantTypeAction,
-            IGetTokenByRefreshTokenGrantTypeAction getTokenByRefreshTokenGrantTypeAction,
+            OAuthConfigurationOptions oAuthConfigurationOptions,
             IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator,
+            IAuthorizationCodeStore authorizationCodeStore,
             IAuthenticateClient authenticateClient,
+            IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
-            IRevokeTokenAction revokeTokenAction,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
+            IJwtGenerator jwtGenerator,
+            IClientHelper clientHelper,
             IGrantedTokenHelper grantedTokenHelper)
         {
-            _getTokenByResourceOwnerCredentialsGrantType = getTokenByResourceOwnerCredentialsGrantType;
-            _getTokenByAuthorizationCodeGrantTypeAction = getTokenByAuthorizationCodeGrantTypeAction;
-            _getTokenByRefreshTokenGrantTypeAction = getTokenByRefreshTokenGrantTypeAction;
+            _getTokenByResourceOwnerCredentialsGrantType = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
+                grantedTokenGeneratorHelper,
+                resourceOwnerAuthenticateHelper,
+                authenticateClient,
+                jwtGenerator,
+                clientHelper,
+                tokenStore,
+                eventPublisher,
+                grantedTokenHelper);
+            _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
+                authorizationCodeStore,
+                oAuthConfigurationOptions,
+                grantedTokenGeneratorHelper,
+                authenticateClient,
+                clientHelper,
+                eventPublisher,
+                tokenStore,
+                grantedTokenHelper,
+                jwtGenerator);
+            _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
+                clientHelper,
+                eventPublisher,
+                grantedTokenGeneratorHelper,
+                tokenStore,
+                jwtGenerator,
+                authenticateClient);
             _authenticateClient = authenticateClient;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _scopeValidator = new ScopeValidator();
             _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
-            _revokeTokenAction = revokeTokenAction;
+            _revokeTokenAction = new RevokeTokenAction(authenticateClient, tokenStore);
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
             _grantedTokenHelper = grantedTokenHelper;
