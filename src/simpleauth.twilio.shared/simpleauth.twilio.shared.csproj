@@ -7,9 +7,5 @@
     <PackageId>simpleauth.twilio.shared</PackageId>
     <RootNamespace>SimpleAuth.Twilio.Shared</RootNamespace>
   </PropertyGroup>
-  <Import Project="../../shared.proj"/>
-
-  <ItemGroup>
-    <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />
-  </ItemGroup>
+  <Import Project="../../shared.proj" />
 </Project>
