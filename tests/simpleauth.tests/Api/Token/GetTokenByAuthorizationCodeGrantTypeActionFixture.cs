@@ -590,7 +590,7 @@ namespace SimpleAuth.Tests.Api.Token
             Assert.True(result.AccessToken == accessToken);
         }
 
-        private void InitializeFakeObjects(TimeSpan authorizationCodeValidity = default(TimeSpan))
+        private void InitializeFakeObjects(TimeSpan authorizationCodeValidity = default)
         {
             _eventPublisher = new Mock<IEventPublisher>();
             _authorizationCodeStoreFake = new Mock<IAuthorizationCodeStore>();
@@ -599,7 +599,7 @@ namespace SimpleAuth.Tests.Api.Token
             _authenticateClientFake = new Mock<IAuthenticateClient>();
             _clientHelper = new Mock<IClientHelper>();
             _oauthConfigurationOptions = new OAuthConfigurationOptions(
-                authorizationCodeValidity: authorizationCodeValidity == default(TimeSpan)
+                authorizationCodeValidity: authorizationCodeValidity == default
                     ? TimeSpan.FromSeconds(3600)
                     : authorizationCodeValidity);
             _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();

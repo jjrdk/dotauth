@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Twilio.Actions
 {
     using Helpers;
-    using SimpleAuth;
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;

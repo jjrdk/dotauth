@@ -25,7 +25,6 @@ namespace SimpleAuth.Uma.Tests.Policies
     using SimpleAuth.Policies;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using Uma;
     using Xunit;
 
     public class BasicAuthorizationPolicyFixture

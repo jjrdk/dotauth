@@ -40,7 +40,7 @@ namespace SimpleAuth.Api.Discovery
             issuer = issuer.TrimEnd('/');
             // Returns only the exposed scopes
             var scopes = await _scopeRepository.GetAll().ConfigureAwait(false);
-            var scopeSupportedNames = new string[0];
+            string[] scopeSupportedNames;
             if (scopes != null && scopes.Any())
             {
                 scopeSupportedNames = scopes.Where(s => s.IsExposed).Select(s => s.Name).ToArray();

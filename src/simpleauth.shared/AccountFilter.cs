@@ -1,13 +1,13 @@
 ﻿namespace SimpleAuth.Shared
 {
+    using AccountFiltering;
+    using Repositories;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-    using AccountFiltering;
-    using Repositories;
 
     public class AccountFilter : IAccountFilter
     {

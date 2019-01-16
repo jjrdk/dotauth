@@ -16,8 +16,8 @@
         {            InitializeFakeObjects();
 
             
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _resourceOwnerAuthenticateHelper.Authenticate(null, null, null)).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _resourceOwnerAuthenticateHelper.Authenticate("login", null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _resourceOwnerAuthenticateHelper.Authenticate(null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _resourceOwnerAuthenticateHelper.Authenticate("login", null)).ConfigureAwait(false);
         }
 
         private void InitializeFakeObjects()

@@ -11,7 +11,6 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Shared;
-    using SimpleAuth;
 
     public class OAuth2IntrospectionHandler : AuthenticationHandler<OAuth2IntrospectionOptions>
     {

@@ -17,7 +17,6 @@ namespace SimpleAuth.Twilio
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using SimpleAuth;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 

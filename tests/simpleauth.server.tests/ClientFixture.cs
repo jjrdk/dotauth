@@ -14,7 +14,7 @@
     {
         private const string OpenidmanagerConfiguration = "http://localhost:5000/.well-known/openid-configuration";
         private readonly TestManagerServerFixture _server;
-        private IOpenIdClients _openidClients;
+        private OpenIdClients _openidClients;
 
         public ClientFixture()
         {
@@ -28,11 +28,7 @@
 
             var result = await _openidClients.ResolveAdd(
                     new Uri(OpenidmanagerConfiguration),
-                    new Client
-                    {
-
-                    },
-                    null)
+                    new Client())
                 .ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
@@ -54,8 +50,7 @@
                         ClientName = "name",
                         RedirectionUrls = new[] { new Uri("http://localhost#fragment") },
                         RequestUris = new[] { new Uri("https://localhost") }
-                    },
-                    null)
+                    })
                 .ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
@@ -71,11 +66,7 @@
 
             var result = await _openidClients.ResolveUpdate(
                     new Uri(OpenidmanagerConfiguration),
-                    new Client
-                    {
-
-                    },
-                    null)
+                    new Client())
                 .ConfigureAwait(false);
 
             Assert.NotNull(result);
@@ -114,15 +105,13 @@
             };
             var addClientResult = await _openidClients.ResolveAdd(
                     new Uri(OpenidmanagerConfiguration),
-                    client,
-                    null)
+                    client)
                 .ConfigureAwait(false);
             client = addClientResult.Content;
             client.AllowedScopes = new[] { new Scope { Name = "not_valid" } };
             var result = await _openidClients.ResolveUpdate(
                     new Uri(OpenidmanagerConfiguration),
-                    client,
-                    null)
+                    client)
                 .ConfigureAwait(false);
 
             Assert.NotNull(result);
@@ -208,8 +197,7 @@
             };
             var result = await _openidClients.ResolveAdd(
                     new Uri(OpenidmanagerConfiguration),
-                    client,
-                    null)
+                    client)
                 .ConfigureAwait(false);
 
             Assert.False(result.ContainsError, result.Error?.ErrorDescription);
@@ -264,8 +252,7 @@
 
             var addClientResult = await _openidClients.ResolveAdd(
                     new Uri(OpenidmanagerConfiguration),
-                    client,
-                    null)
+                    client)
                 .ConfigureAwait(false);
             client = addClientResult.Content;
             client.PostLogoutRedirectUris = new[]
@@ -280,8 +267,7 @@
             };
             var result = await _openidClients.ResolveUpdate(
                     new Uri(OpenidmanagerConfiguration),
-                    client,
-                    null)
+                    client)
                 .ConfigureAwait(false);
             var newClient = await _openidClients
                 .ResolveGet(new Uri(OpenidmanagerConfiguration),
@@ -323,8 +309,7 @@
                         RedirectionUrls = new[] { new Uri("http://localhost") },
                         PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
                         //LogoUri = new Uri("http://logouri.com")
-                    },
-                    null)
+                    })
                 .ConfigureAwait(false);
 
             var deleteResult = await _openidClients
@@ -382,8 +367,7 @@
                         RedirectionUrls = new[] { new Uri("http://localhost") },
                         PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
                         //LogoUri = new Uri("http://logouri.com")
-                    },
-                    null)
+                    })
                 .ConfigureAwait(false);
 
             var searchResult = await _openidClients.ResolveSearch(
@@ -392,8 +376,7 @@
                     {
                         StartIndex = 0,
                         NbResults = 1
-                    },
-                    null)
+                    })
                 .ConfigureAwait(false);
 
             Assert.False(searchResult.ContainsError);
@@ -402,16 +385,7 @@
 
         private void InitializeFakeObjects()
         {
-            var deleteClientOperation = new DeleteClientOperation(_server.Client);
-            var getAllClientsOperation = new GetAllClientsOperation(_server.Client);
-            var getClientOperation = new GetClientOperation(_server.Client);
-            var searchClientOperation = new SearchClientOperation(_server.Client);
-            _openidClients = new OpenIdClients(
-                _server.Client,
-                getAllClientsOperation,
-                deleteClientOperation,
-                getClientOperation,
-                searchClientOperation);
+            _openidClients = new OpenIdClients(_server.Client);
         }
     }
 }

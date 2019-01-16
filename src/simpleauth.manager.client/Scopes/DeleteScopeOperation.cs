@@ -1,13 +1,13 @@
 ﻿namespace SimpleAuth.Manager.Client.Scopes
 {
-    using System;
-    using System.Net.Http;
-    using System.Threading.Tasks;
     using Newtonsoft.Json;
     using Shared;
     using Shared.Responses;
+    using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
 
-    internal sealed class DeleteScopeOperation : IDeleteScopeOperation
+    internal sealed class DeleteScopeOperation
     {
         private readonly HttpClient _httpClientFactory;
 

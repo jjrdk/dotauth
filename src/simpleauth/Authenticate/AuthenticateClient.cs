@@ -85,7 +85,7 @@ namespace SimpleAuth.Authenticate
                         errorMessage = string.Format(ErrorDescriptions.TheClientDoesntContainASharedSecret, client.ClientId);
                         break;
                     }
-                    return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, client.Secrets.First(s => s.Type == ClientSecretTypes.SharedSecret).Value, issuerName).ConfigureAwait(false);
+                    return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction).ConfigureAwait(false);
                 case TokenEndPointAuthenticationMethods.private_key_jwt:
                     return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, issuerName).ConfigureAwait(false);
                 case TokenEndPointAuthenticationMethods.tls_client_auth:

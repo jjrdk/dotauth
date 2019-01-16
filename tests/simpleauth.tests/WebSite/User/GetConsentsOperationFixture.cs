@@ -17,7 +17,6 @@ namespace SimpleAuth.Tests.WebSite.User
     using Moq;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth;
     using SimpleAuth.WebSite.User.Actions;
     using System;
     using System.Collections.Generic;

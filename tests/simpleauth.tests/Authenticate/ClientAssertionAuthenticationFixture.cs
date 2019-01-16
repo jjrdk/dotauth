@@ -236,7 +236,7 @@
         {
             InitializeFakeObjects();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(null, string.Empty, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -284,7 +284,7 @@
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, "audience").ConfigureAwait(false);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction).ConfigureAwait(false);
 
             Assert.NotNull(result);
         }

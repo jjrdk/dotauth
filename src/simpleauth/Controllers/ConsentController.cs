@@ -79,8 +79,8 @@ namespace SimpleAuth.Controllers
                     : actionResult.Scopes.Select(s => s.Description).ToList(),
                 AllowedIndividualClaims = actionResult.AllowedClaims ?? new List<string>(),
                 //LogoUri = client?.LogoUri?.AbsoluteUri,
-                PolicyUri = client?.PolicyUri?.AbsoluteUri,
-                TosUri = client?.TosUri?.AbsoluteUri,
+                PolicyUri = client.PolicyUri?.AbsoluteUri,
+                TosUri = client.TosUri?.AbsoluteUri,
                 Code = code
             };
             return View("Index", viewModel);

@@ -23,7 +23,7 @@
             if (resourceOwner == null)
             {
                 throw new SimpleAuthException(
-                    Errors.ErrorCodes.InternalError, 
+                    Errors.ErrorCodes.InternalError,
                     string.Format(Errors.ErrorDescriptions.TheResourceOwnerDoesntExist, localSubject));
             }
 
@@ -35,7 +35,7 @@
                     throw new ProfileAssignedAnotherAccountException();
                 }
 
-                await _profileRepository.Remove(new[] { externalSubject }).ConfigureAwait(false);
+                await _profileRepository.Remove(new[] {externalSubject}).ConfigureAwait(false);
                 if (profile.ResourceOwnerId == profile.Subject)
                 {
                     await _resourceOwnerRepository.Delete(profile.ResourceOwnerId).ConfigureAwait(false);
@@ -46,20 +46,21 @@
 
             if (profile != null)
             {
-                throw new SimpleAuthException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheProfileAlreadyLinked);
+                throw new SimpleAuthException(
+                    Errors.ErrorCodes.InternalError,
+                    Errors.ErrorDescriptions.TheProfileAlreadyLinked);
             }
 
-            return await _profileRepository.Add(new[]
-            {
-                new ResourceOwnerProfile
-                {
-                    ResourceOwnerId = localSubject,
-                    Subject = externalSubject,
-                    Issuer = issuer,
-                    CreateDateTime = DateTime.UtcNow,
-                    UpdateTime = DateTime.UtcNow
-                }
-            }).ConfigureAwait(false);
+            return await _profileRepository.Add(
+                    new ResourceOwnerProfile
+                    {
+                        ResourceOwnerId = localSubject,
+                        Subject = externalSubject,
+                        Issuer = issuer,
+                        CreateDateTime = DateTime.UtcNow,
+                        UpdateTime = DateTime.UtcNow
+                    })
+                .ConfigureAwait(false);
         }
     }
 }

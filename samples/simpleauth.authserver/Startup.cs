@@ -101,7 +101,7 @@ namespace SimpleAuth.AuthServer
                 opts.AddAuthPolicies(HostConstants.CookieNames.CookieName);
             });
             // 5. Configure MVC
-            var mvcBuilder = services.AddMvc(
+            services.AddMvc(
                     options =>
                     {
                     })

@@ -90,10 +90,6 @@
             {
                 PromptParameter.none
             };
-            var actionResult = new EndpointResult
-            {
-                RedirectInstruction = new RedirectInstruction()
-            };
             var consent = new Consent();
             var authorizationParameter = new AuthorizationParameter
             {
@@ -108,7 +104,7 @@
                     It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult(consent));
 
-            actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
+            var actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
                     code,
                     subject,
                     claims,

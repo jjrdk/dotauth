@@ -33,7 +33,7 @@
             parents = parents.Concat(new[] { representation });
             return GetParents(representation.Parent, parents);
         }
-        
+
         public SchemaAttributeResponse Parent { get; set; }
 
         /// <summary>

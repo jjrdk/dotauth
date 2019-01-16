@@ -11,7 +11,7 @@
     using Shared.Requests;
     using Shared.Responses;
 
-    public sealed class ProfileClient : IProfileClient
+    public sealed class ProfileClient
     {
         private readonly HttpClient _client;
         private readonly JsonSerializerSettings _jsonSerializerSettings;

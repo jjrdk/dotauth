@@ -24,10 +24,10 @@ namespace SimpleAuth.Tests.Authenticate
         [Fact]
         public void When_Passing_No_Parameter_Then_Empty_Result_Is_Returned()
         {
-                        var header = (AuthenticationHeaderValue)null;
+            var header = (AuthenticationHeaderValue) null;
             var result = header.GetAuthenticateInstruction(null);
 
-                        Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
+            Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
             Assert.True(string.IsNullOrWhiteSpace(result.ClientSecretFromAuthorizationHeader));
         }
 
@@ -36,9 +36,9 @@ namespace SimpleAuth.Tests.Authenticate
         {
             var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", string.Empty);
 
-                        var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
+            var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 
-                        Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
+            Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
             Assert.True(string.IsNullOrWhiteSpace(result.ClientSecretFromAuthorizationHeader));
         }
 
@@ -49,9 +49,9 @@ namespace SimpleAuth.Tests.Authenticate
             var encodedParameter = parameter.Base64Encode();
             var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", encodedParameter);
 
-                        var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
+            var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 
-                        Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
+            Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
             Assert.True(string.IsNullOrWhiteSpace(result.ClientSecretFromAuthorizationHeader));
         }
 
@@ -64,9 +64,9 @@ namespace SimpleAuth.Tests.Authenticate
             var encodedParameter = parameter.Base64Encode();
             var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", encodedParameter);
 
-                        var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
+            var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 
-                        Assert.True(result.ClientIdFromAuthorizationHeader == clientId);
+            Assert.True(result.ClientIdFromAuthorizationHeader == clientId);
             Assert.True(result.ClientSecretFromAuthorizationHeader == clientSecret);
         }
     }

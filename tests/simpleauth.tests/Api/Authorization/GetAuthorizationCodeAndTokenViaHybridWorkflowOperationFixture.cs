@@ -7,14 +7,14 @@
     using Results;
     using Shared;
     using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth;
+    using SimpleAuth.Api.Authorization;
     using SimpleAuth.Common;
     using SimpleAuth.Helpers;
     using System;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Shared.Repositories;
-    using SimpleAuth.Api.Authorization;
     using Xunit;
 
     //using Client = Shared.Models.Client;
@@ -86,8 +86,8 @@
 
             var client = new Client
             {
-                RedirectionUrls = new[] {redirectUrl},
-                AllowedScopes = new[] {new Scope {Name = "openid"}},
+                RedirectionUrls = new[] { redirectUrl },
+                AllowedScopes = new[] { new Scope { Name = "openid" } },
 
             };
             var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
@@ -139,10 +139,10 @@
             var client = new Client
             {
                 ClientId = "test",
-                GrantTypes = new[] {GrantType.@implicit, GrantType.authorization_code},
-                ResponseTypes = new[] {ResponseTypeNames.IdToken},
-                AllowedScopes = new[] {new Scope {Name = "openid", IsDisplayedInConsent = true}},
-                RedirectionUrls = new[] {redirectUrl}
+                GrantTypes = new[] { GrantType.@implicit, GrantType.authorization_code },
+                ResponseTypes = new[] { ResponseTypeNames.IdToken },
+                AllowedScopes = new[] { new Scope { Name = "openid", IsDisplayedInConsent = true } },
+                RedirectionUrls = new[] { redirectUrl }
             };
             var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
@@ -183,29 +183,21 @@
             };
 
             var identity = new ClaimsIdentity(
-                new[] {new Claim(ClaimTypes.AuthenticationInstant, "1"),},
+                new[] { new Claim(ClaimTypes.AuthenticationInstant, "1"), },
                 "Cookies");
             var claimsPrincipal = new ClaimsPrincipal(identity);
 
             var client = new Client
             {
-                GrantTypes = new[] {GrantType.@implicit, GrantType.authorization_code},
+                GrantTypes = new[] { GrantType.@implicit, GrantType.authorization_code },
                 ResponseTypes = ResponseTypeNames.All,
-                RedirectionUrls = new[] {new Uri("https://localhost"),},
-                AllowedScopes = new[] {new Scope {Name = "scope"}}
+                RedirectionUrls = new[] { new Uri("https://localhost"), },
+                AllowedScopes = new[] { new Scope { Name = "scope" } }
             };
-            //_processAuthorizationRequestFake.Setup(p => p.ProcessAsync(It.IsAny<AuthorizationParameter>(),
-            //        It.IsAny<ClaimsPrincipal>(),
-            //        It.IsAny<Client>(),
-            //        It.IsAny<string>()))
-            //    .Returns(Task.FromResult(actionResult));
-            //_clientValidatorFake.Setup(c =>
-            //        c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
-            //    .Returns(true);
 
             _consentHelper.Setup(x =>
                     x.GetConfirmedConsentsAsync(It.IsAny<string>(), It.IsAny<AuthorizationParameter>()))
-                .ReturnsAsync(new Consent { });
+                .ReturnsAsync(new Consent());
             await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation
                 .Execute(authorizationParameter, claimsPrincipal, client, null)
                 .ConfigureAwait(false);

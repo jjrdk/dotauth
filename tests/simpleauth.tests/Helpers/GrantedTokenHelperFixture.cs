@@ -36,8 +36,8 @@ namespace SimpleAuth.Tests.Helpers
             InitializeFakeObjects();
 
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync(null, null, null, null)).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync(null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace SimpleAuth.Tests.Helpers
             _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwtPayload>(), It.IsAny<JwtPayload>()))
                 .Returns(Task.FromResult((GrantedToken)null));
 
-            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
+            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id").ConfigureAwait(false);
 
             Assert.Null(result);
         }
@@ -65,7 +65,7 @@ namespace SimpleAuth.Tests.Helpers
                     IsValid = false
                 });
 
-            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
+            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id").ConfigureAwait(false);
 
             Assert.Null(result);
         }
@@ -82,7 +82,7 @@ namespace SimpleAuth.Tests.Helpers
                     IsValid = true
                 });
 
-            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
+            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id").ConfigureAwait(false);
 
             Assert.NotNull(result);
         }

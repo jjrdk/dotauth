@@ -15,7 +15,6 @@
 namespace SimpleAuth.Shared.Requests
 {
     using System;
-    using System.Runtime.Serialization;
 
     public class TokenRequest
     {

@@ -1,11 +1,5 @@
 ﻿namespace SimpleAuth.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Exceptions;
     using Extensions;
     using Helpers;
@@ -20,6 +14,12 @@
     using Shared;
     using Shared.Repositories;
     using Shared.Requests;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using Translation;
     using ViewModels;
     using WebSite.Authenticate;
@@ -45,7 +45,7 @@
             ISubjectBuilder subjectBuilder,
             IProfileRepository profileRepository,
             IResourceOwnerRepository resourceOwnerRepository,
-            IEnumerable<IAccountFilter> accountFilters,
+            IEnumerable<AccountFilter> accountFilters,
             BasicAuthenticateOptions basicAuthenticateOptions)
             : base(
                 authenticateActions,
@@ -212,7 +212,7 @@
                     try
                     {
                         await SetTwoFactorCookie(actionResult.Claims).ConfigureAwait(false);
-                        var code = await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
+                        await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
                         return RedirectToAction("SendCode", new { code = viewModel.Code });
                     }
                     catch (ClaimRequiredException)

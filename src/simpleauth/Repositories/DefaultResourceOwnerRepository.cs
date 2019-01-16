@@ -57,7 +57,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<ICollection<ResourceOwner>> Get(Expression<Func<ResourceOwner, bool>> query, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<ICollection<ResourceOwner>> Get(Expression<Func<ResourceOwner, bool>> query, CancellationToken cancellationToken = default)
         {
             if (query == null)
             {
@@ -74,7 +74,7 @@
             return Task.FromResult(res);
         }
 
-        public Task<ResourceOwner> Get(string id, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<ResourceOwner> Get(string id, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(id))
             {

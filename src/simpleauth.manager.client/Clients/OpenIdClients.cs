@@ -1,9 +1,5 @@
 ﻿namespace SimpleAuth.Manager.Client.Clients
 {
-    using System;
-    using System.Net.Http;
-    using System.Text;
-    using System.Threading.Tasks;
     using Configuration;
     using Newtonsoft.Json;
     using Results;
@@ -11,28 +7,27 @@
     using Shared.Models;
     using Shared.Requests;
     using Shared.Responses;
+    using System;
+    using System.Net.Http;
+    using System.Text;
+    using System.Threading.Tasks;
 
-    internal sealed class OpenIdClients : IOpenIdClients
+    internal sealed class OpenIdClients
     {
         private readonly HttpClient _httpClient;
-        private readonly IGetAllClientsOperation _getAllClientsOperation;
-        private readonly IDeleteClientOperation _deleteClientOperation;
-        private readonly IGetClientOperation _getClientOperation;
-        private readonly ISearchClientOperation _searchClientOperation;
+        private readonly GetAllClientsOperation _getAllClientsOperation;
+        private readonly DeleteClientOperation _deleteClientOperation;
+        private readonly GetClientOperation _getClientOperation;
+        private readonly SearchClientOperation _searchClientOperation;
         private readonly GetConfigurationOperation _configurationClient;
 
-        public OpenIdClients(
-            HttpClient httpClient,
-            IGetAllClientsOperation getAllClientsOperation,
-            IDeleteClientOperation deleteClientOperation,
-            IGetClientOperation getClientOperation,
-            ISearchClientOperation searchClientOperation)
+        public OpenIdClients(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _getAllClientsOperation = getAllClientsOperation;
-            _deleteClientOperation = deleteClientOperation;
-            _getClientOperation = getClientOperation;
-            _searchClientOperation = searchClientOperation;
+            _getAllClientsOperation = new GetAllClientsOperation(httpClient);
+            _deleteClientOperation = new DeleteClientOperation(httpClient);
+            _getClientOperation = new GetClientOperation(httpClient);
+            _searchClientOperation = new SearchClientOperation(httpClient);
             _configurationClient = new GetConfigurationOperation(httpClient);
         }
 

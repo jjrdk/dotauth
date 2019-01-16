@@ -66,7 +66,7 @@ namespace SimpleAuth.Controllers
 
             var grantedToken = await _tokenStore.GetAccessToken(accessToken).ConfigureAwait(false);
             return grantedToken == null
-                ? (IActionResult)BadRequest(new ErrorResponseWithState
+                ? BadRequest(new ErrorResponseWithState
                 {
                     ErrorDescription = ErrorDescriptions.TheTokenIsNotValid,
                     Error = ErrorCodes.InvalidToken

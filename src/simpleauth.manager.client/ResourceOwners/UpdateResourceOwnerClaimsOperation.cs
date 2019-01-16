@@ -1,15 +1,15 @@
 ﻿namespace SimpleAuth.Manager.Client.ResourceOwners
 {
-    using System;
-    using System.Net.Http;
-    using System.Text;
-    using System.Threading.Tasks;
     using Newtonsoft.Json;
     using Shared;
     using Shared.Requests;
     using Shared.Responses;
+    using System;
+    using System.Net.Http;
+    using System.Text;
+    using System.Threading.Tasks;
 
-    internal sealed class UpdateResourceOwnerClaimsOperation : IUpdateResourceOwnerClaimsOperation
+    internal sealed class UpdateResourceOwnerClaimsOperation
     {
         private readonly HttpClient _httpClientFactory;
 

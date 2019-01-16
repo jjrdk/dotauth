@@ -25,7 +25,7 @@
         {
             InitializeFakeObjects();
 
-            await Assert.ThrowsAsync<SimpleAuthException>(() => _linkProfileAction.Execute(null, null, null, false))
+            await Assert.ThrowsAsync<SimpleAuthException>(() => _linkProfileAction.Execute(null, null, null))
                 .ConfigureAwait(false);
         }
 
@@ -35,7 +35,7 @@
             InitializeFakeObjects();
 
             await Assert
-                .ThrowsAsync<SimpleAuthException>(() => _linkProfileAction.Execute(LocalSubject, null, null, false))
+                .ThrowsAsync<SimpleAuthException>(() => _linkProfileAction.Execute(LocalSubject, null, null))
                 .ConfigureAwait(false);
         }
 
@@ -46,7 +46,7 @@
 
             await Assert
                 .ThrowsAsync<SimpleAuthException>(() =>
-                    _linkProfileAction.Execute(LocalSubject, ExternalSubject, null, false))
+                    _linkProfileAction.Execute(LocalSubject, ExternalSubject, null))
                 .ConfigureAwait(false);
         }
 
@@ -59,7 +59,7 @@
 
             var exception = await Assert
                 .ThrowsAsync<SimpleAuthException>(() =>
-                    _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer", false))
+                    _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer"))
                 .ConfigureAwait(false);
 
             Assert.NotNull(exception);
@@ -81,7 +81,7 @@
 
             var exception = await Assert
                 .ThrowsAsync<ProfileAssignedAnotherAccountException>(() =>
-                    _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer", false))
+                    _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer"))
                 .ConfigureAwait(false);
 
             Assert.NotNull(exception);
@@ -101,7 +101,7 @@
 
             var exception = await Assert
                 .ThrowsAsync<SimpleAuthException>(() =>
-                    _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer", false))
+                    _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer"))
                 .ConfigureAwait(false);
 
             Assert.NotNull(exception);
@@ -118,7 +118,7 @@
             _profileRepositoryStub.Setup(p => p.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult((ResourceOwnerProfile)null));
 
-            await _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer", false).ConfigureAwait(false);
+            await _linkProfileAction.Execute(LocalSubject, ExternalSubject, "issuer").ConfigureAwait(false);
 
             _profileRepositoryStub.Verify(p => p.Add(It.Is<ResourceOwnerProfile[]>(r =>
                 r.First().ResourceOwnerId == LocalSubject &&

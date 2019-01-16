@@ -1,15 +1,15 @@
 ﻿namespace SimpleAuth.Manager.Client.Scopes
 {
-    using System;
-    using System.Net.Http;
-    using System.Text;
-    using System.Threading.Tasks;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Shared;
     using Shared.Responses;
+    using System;
+    using System.Net.Http;
+    using System.Text;
+    using System.Threading.Tasks;
 
-    internal sealed class UpdateScopeOperation : IUpdateScopeOperation
+    internal sealed class UpdateScopeOperation
     {
         private readonly HttpClient _httpClientFactory;
 

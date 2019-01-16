@@ -1,26 +1,26 @@
 ﻿namespace SimpleAuth.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
-    using Errors;
-    using Exceptions;
-    using Extensions;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.AspNetCore.Mvc.Routing;
-    using Services;
-    using Shared;
-    using Shared.Models;
-    using Shared.Parameters;
-    using Shared.Repositories;
-    using Translation;
-    using ViewModels;
-    using WebSite.User.Actions;
+    using SimpleAuth.Errors;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Services;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Parameters;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Translation;
+    using SimpleAuth.ViewModels;
+    using SimpleAuth.WebSite.User.Actions;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
 
     [Authorize("Connected")]
     public class UserController : BaseController
@@ -32,7 +32,9 @@
         private readonly GetConsentsOperation _getConsentsOperation;
         private readonly UpdateUserTwoFactorAuthenticatorOperation _updateUserTwoFactorAuthenticatorOperation;
         private readonly UpdateUserCredentialsOperation _updateUserCredentialsOperation;
+
         private readonly RemoveConsentOperation _removeConsentOperation;
+
         // private readonly IProfileActions _profileActions;
         private readonly ITranslationManager _translationManager;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
@@ -48,13 +50,15 @@
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IConsentRepository consentRepository,
-            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler) : base(authenticationService)
+            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler)
+            : base(authenticationService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _profileRepository = profileRepository;
             _getUserOperation = new GetUserOperation(resourceOwnerRepository);
             _getConsentsOperation = new GetConsentsOperation(consentRepository);
-            _updateUserTwoFactorAuthenticatorOperation = new UpdateUserTwoFactorAuthenticatorOperation(resourceOwnerRepository);
+            _updateUserTwoFactorAuthenticatorOperation =
+                new UpdateUserTwoFactorAuthenticatorOperation(resourceOwnerRepository);
             _updateUserCredentialsOperation = new UpdateUserCredentialsOperation(resourceOwnerRepository);
             _removeConsentOperation = new RemoveConsentOperation(consentRepository);
             // _profileActions = profileActions;
@@ -142,8 +146,9 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             ViewBag.IsUpdated = false;
             ViewBag.IsCreated = false;
-            await _updateUserTwoFactorAuthenticatorOperation
-                .Execute(authenticatedUser.GetSubject(), viewModel.SelectedTwoFactorAuthType)
+            await _updateUserTwoFactorAuthenticatorOperation.Execute(
+                    authenticatedUser.GetSubject(),
+                    viewModel.SelectedTwoFactorAuthType)
                 .ConfigureAwait(false);
             ViewBag.IsUpdated = true;
             return await GetEditView(authenticatedUser).ConfigureAwait(false);
@@ -160,8 +165,8 @@
             var actualScheme = authenticatedUser.Identity.AuthenticationType;
             var profiles = await GetUserProfiles(authenticatedUser.GetSubject()).ConfigureAwait(false);
             var authenticationSchemes =
-                (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false)).Where(a =>
-                    !string.IsNullOrWhiteSpace(a.DisplayName));
+                (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false)).Where(
+                    a => !string.IsNullOrWhiteSpace(a.DisplayName));
             var viewModel = new ProfileViewModel();
             if (profiles != null && profiles.Any())
             {
@@ -193,12 +198,10 @@
             }
 
             var redirectUrl = _urlHelper.Action("LinkCallback", "User", null, Request.Scheme);
-            await _authenticationService.ChallengeAsync(HttpContext,
+            await _authenticationService.ChallengeAsync(
+                    HttpContext,
                     provider,
-                    new AuthenticationProperties()
-                    {
-                        RedirectUri = redirectUrl
-                    })
+                    new AuthenticationProperties { RedirectUri = redirectUrl })
                 .ConfigureAwait(false);
         }
 
@@ -212,7 +215,8 @@
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
-                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
+                throw new SimpleAuthException(
+                    ErrorCodes.UnhandledExceptionCode,
                     string.Format(ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
@@ -222,14 +226,13 @@
                 var externalClaims = await _authenticationService
                     .GetAuthenticatedUser(this, HostConstants.CookieNames.ExternalCookieName)
                     .ConfigureAwait(false);
-                var resourceOwner = await InnerLinkProfile(
+                await InnerLinkProfile(
                         authenticatedUser.GetSubject(),
                         externalClaims.GetSubject(),
-                        externalClaims.Identity.AuthenticationType,
-                        false)
+                        externalClaims.Identity.AuthenticationType)
                     .ConfigureAwait(false);
-                await _authenticationService
-                    .SignOutAsync(HttpContext,
+                await _authenticationService.SignOutAsync(
+                        HttpContext,
                         HostConstants.CookieNames.ExternalCookieName,
                         new AuthenticationProperties())
                     .ConfigureAwait(false);
@@ -241,8 +244,8 @@
             }
             catch (Exception)
             {
-                await _authenticationService
-                    .SignOutAsync(HttpContext,
+                await _authenticationService.SignOutAsync(
+                        HttpContext,
                         HostConstants.CookieNames.ExternalCookieName,
                         new AuthenticationProperties())
                     .ConfigureAwait(false);
@@ -260,9 +263,9 @@
             var externalClaims = await _authenticationService
                 .GetAuthenticatedUser(this, HostConstants.CookieNames.ExternalCookieName)
                 .ConfigureAwait(false);
-            if (externalClaims?.Identity == null ||
-                !externalClaims.Identity.IsAuthenticated ||
-                !(externalClaims.Identity is ClaimsIdentity))
+            if (externalClaims?.Identity == null
+                || !externalClaims.Identity.IsAuthenticated
+                || !(externalClaims.Identity is ClaimsIdentity))
             {
                 return RedirectToAction("Profile", "User");
             }
@@ -283,9 +286,9 @@
             var externalClaims = await _authenticationService
                 .GetAuthenticatedUser(this, HostConstants.CookieNames.ExternalCookieName)
                 .ConfigureAwait(false);
-            if (externalClaims?.Identity == null ||
-                !externalClaims.Identity.IsAuthenticated ||
-                !(externalClaims.Identity is ClaimsIdentity))
+            if (externalClaims?.Identity == null
+                || !externalClaims.Identity.IsAuthenticated
+                || !(externalClaims.Identity is ClaimsIdentity))
             {
                 return RedirectToAction("Profile", "User");
             }
@@ -303,8 +306,8 @@
             }
             finally
             {
-                await _authenticationService
-                    .SignOutAsync(HttpContext,
+                await _authenticationService.SignOutAsync(
+                        HttpContext,
                         HostConstants.CookieNames.ExternalCookieName,
                         new AuthenticationProperties())
                     .ConfigureAwait(false);
@@ -327,10 +330,7 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             try
             {
-                await UnlinkProfile(
-                        authenticatedUser.GetSubject(),
-                        id)
-                    .ConfigureAwait(false);
+                await UnlinkProfile(authenticatedUser.GetSubject(), id).ConfigureAwait(false);
             }
             catch (SimpleAuthException ex)
             {
@@ -338,9 +338,7 @@
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Index",
-                    "Error",
-                    new { code = ErrorCodes.InternalError, message = ex.Message });
+                return RedirectToAction("Index", "Error", new { code = ErrorCodes.InternalError, message = ex.Message });
             }
 
             return await Profile().ConfigureAwait(false);
@@ -352,14 +350,16 @@
             UpdateResourceOwnerViewModel viewModel = null;
             if (resourceOwner == null)
             {
-                viewModel = BuildViewModel(resourceOwner.TwoFactorAuthentication,
+                viewModel = BuildViewModel(
+                    resourceOwner.TwoFactorAuthentication,
                     authenticatedUser.GetSubject(),
                     authenticatedUser.Claims,
                     false);
                 return View("Edit", viewModel);
             }
 
-            viewModel = BuildViewModel(resourceOwner.TwoFactorAuthentication,
+            viewModel = BuildViewModel(
+                resourceOwner.TwoFactorAuthentication,
                 authenticatedUser.GetSubject(),
                 resourceOwner.Claims,
                 true);
@@ -374,22 +374,23 @@
             var result = new List<ConsentViewModel>();
             if (consents != null)
             {
-                result.AddRange(from consent in consents
-                                let client = consent.Client
-                                let scopes = consent.GrantedScopes
-                                let claims = consent.Claims
-                                select new ConsentViewModel
-                                {
-                                    Id = consent.Id,
-                                    ClientDisplayName = client == null ? string.Empty : client.ClientName,
-                                    AllowedScopeDescriptions = scopes?.Any() != true
-                                        ? new List<string>()
-                                        : scopes.Select(g => g.Description).ToList(),
-                                    AllowedIndividualClaims = claims ?? new List<string>(),
-                                    //LogoUri = client?.LogoUri?.AbsoluteUri,
-                                    PolicyUri = client?.PolicyUri?.AbsoluteUri,
-                                    TosUri = client?.TosUri?.AbsoluteUri
-                                });
+                result.AddRange(
+                    from consent in consents
+                    let client = consent.Client
+                    let scopes = consent.GrantedScopes
+                    let claims = consent.Claims
+                    select new ConsentViewModel
+                    {
+                        Id = consent.Id,
+                        ClientDisplayName = client == null ? string.Empty : client.ClientName,
+                        AllowedScopeDescriptions = scopes?.Any() != true
+                            ? new List<string>()
+                            : scopes.Select(g => g.Description).ToList(),
+                        AllowedIndividualClaims = claims ?? new List<string>(),
+                        //LogoUri = client?.LogoUri?.AbsoluteUri,
+                        PolicyUri = client?.PolicyUri?.AbsoluteUri,
+                        TosUri = client?.TosUri?.AbsoluteUri
+                    });
             }
 
             return View(result);
@@ -397,7 +398,8 @@
 
         private async Task TranslateUserEditView(string uiLocales)
         {
-            var translations = await _translationManager.GetTranslationsAsync(uiLocales,
+            var translations = await _translationManager.GetTranslationsAsync(
+                    uiLocales,
                     new List<string>
                     {
                         CoreConstants.StandardTranslationCodes.LoginCode,
@@ -472,15 +474,11 @@
             if (resourceOwner == null)
             {
                 throw new SimpleAuthException(
-                    Errors.ErrorCodes.InternalError,
+                    ErrorCodes.InternalError,
                     string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, subject));
             }
 
-            return await _profileRepository.Search(
-                    new SearchProfileParameter
-                    {
-                        ResourceOwnerIds = new[] { subject }
-                    })
+            return await _profileRepository.Search(new SearchProfileParameter { ResourceOwnerIds = new[] { subject } })
                 .ConfigureAwait(false);
         }
 
@@ -500,25 +498,33 @@
             if (resourceOwner == null)
             {
                 throw new SimpleAuthException(
-                    Errors.ErrorCodes.InternalError,
-                    string.Format(Errors.ErrorDescriptions.TheResourceOwnerDoesntExist, localSubject));
+                    ErrorCodes.InternalError,
+                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, localSubject));
             }
 
             var profile = await _profileRepository.Get(externalSubject).ConfigureAwait(false);
             if (profile == null || profile.ResourceOwnerId != localSubject)
             {
-                throw new SimpleAuthException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.NotAuthorizedToRemoveTheProfile);
+                throw new SimpleAuthException(
+                    ErrorCodes.InternalError,
+                    ErrorDescriptions.NotAuthorizedToRemoveTheProfile);
             }
 
             if (profile.Subject == localSubject)
             {
-                throw new SimpleAuthException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheExternalAccountAccountCannotBeUnlinked);
+                throw new SimpleAuthException(
+                    ErrorCodes.InternalError,
+                    ErrorDescriptions.TheExternalAccountAccountCannotBeUnlinked);
             }
 
             return await _profileRepository.Remove(new[] { externalSubject }).ConfigureAwait(false);
         }
 
-        private async Task<bool> InnerLinkProfile(string localSubject, string externalSubject, string issuer, bool force = false)
+        private async Task<bool> InnerLinkProfile(
+            string localSubject,
+            string externalSubject,
+            string issuer,
+            bool force = false)
         {
             if (string.IsNullOrWhiteSpace(localSubject))
             {
@@ -539,8 +545,8 @@
             if (resourceOwner == null)
             {
                 throw new SimpleAuthException(
-                    Errors.ErrorCodes.InternalError,
-                    string.Format(Errors.ErrorDescriptions.TheResourceOwnerDoesntExist, localSubject));
+                    ErrorCodes.InternalError,
+                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, localSubject));
             }
 
             var profile = await _profileRepository.Get(externalSubject).ConfigureAwait(false);
@@ -562,20 +568,22 @@
 
             if (profile != null)
             {
-                throw new SimpleAuthException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheProfileAlreadyLinked);
+                throw new SimpleAuthException(
+                    ErrorCodes.InternalError,
+                    ErrorDescriptions.TheProfileAlreadyLinked);
             }
 
-            return await _profileRepository.Add(new[]
-            {
-                new ResourceOwnerProfile
-                {
-                    ResourceOwnerId = localSubject,
-                    Subject = externalSubject,
-                    Issuer = issuer,
-                    CreateDateTime = DateTime.UtcNow,
-                    UpdateTime = DateTime.UtcNow
-                }
-            }).ConfigureAwait(false);
+            return await _profileRepository
+                .Add(
+                    new ResourceOwnerProfile
+                    {
+                        ResourceOwnerId = localSubject,
+                        Subject = externalSubject,
+                        Issuer = issuer,
+                        CreateDateTime = DateTime.UtcNow,
+                        UpdateTime = DateTime.UtcNow
+                    })
+                .ConfigureAwait(false);
         }
     }
 }

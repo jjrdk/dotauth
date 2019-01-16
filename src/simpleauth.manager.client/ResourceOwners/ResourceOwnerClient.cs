@@ -1,41 +1,36 @@
-﻿namespace SimpleAuth.Manager.Client.ResourceOwners
+﻿using System.Net.Http;
+
+namespace SimpleAuth.Manager.Client.ResourceOwners
 {
-    using System;
-    using System.Threading.Tasks;
     using Configuration;
     using Results;
     using Shared;
     using Shared.Requests;
     using Shared.Responses;
+    using System;
+    using System.Threading.Tasks;
 
-    internal sealed class ResourceOwnerClient : IResourceOwnerClient
+    internal sealed class ResourceOwnerClient
     {
-        private readonly IAddResourceOwnerOperation _addResourceOwnerOperation;
-        private readonly IDeleteResourceOwnerOperation _deleteResourceOwnerOperation;
-        private readonly IGetAllResourceOwnersOperation _getAllResourceOwnersOperation;
-        private readonly IGetResourceOwnerOperation _getResourceOwnerOperation;
-        private readonly IUpdateResourceOwnerPasswordOperation _updateResourceOwnerPasswordOperation;
-        private readonly IUpdateResourceOwnerClaimsOperation _updateResourceOwnerClaimsOperation;
-        private readonly IGetConfigurationOperation _configurationClient;
-        private readonly ISearchResourceOwnersOperation _searchResourceOwnersOperation;
+        private readonly AddResourceOwnerOperation _addResourceOwnerOperation;
+        private readonly DeleteResourceOwnerOperation _deleteResourceOwnerOperation;
+        private readonly GetAllResourceOwnersOperation _getAllResourceOwnersOperation;
+        private readonly GetResourceOwnerOperation _getResourceOwnerOperation;
+        private readonly UpdateResourceOwnerPasswordOperation _updateResourceOwnerPasswordOperation;
+        private readonly UpdateResourceOwnerClaimsOperation _updateResourceOwnerClaimsOperation;
+        private readonly GetConfigurationOperation _configurationClient;
+        private readonly SearchResourceOwnersOperation _searchResourceOwnersOperation;
 
-        public ResourceOwnerClient(IAddResourceOwnerOperation addResourceOwnerOperation,
-            IDeleteResourceOwnerOperation deleteResourceOwnerOperation,
-            IGetAllResourceOwnersOperation getAllResourceOwnersOperation,
-            IGetResourceOwnerOperation getResourceOwnerOperation,
-            IUpdateResourceOwnerClaimsOperation updateResourceOwnerClaimsOperation,
-            IUpdateResourceOwnerPasswordOperation updateResourceOwnerPasswordOperation,
-            IGetConfigurationOperation configurationClient,
-            ISearchResourceOwnersOperation searchResourceOwnersOperation)
+        public ResourceOwnerClient(HttpClient client)
         {
-            _addResourceOwnerOperation = addResourceOwnerOperation;
-            _deleteResourceOwnerOperation = deleteResourceOwnerOperation;
-            _getAllResourceOwnersOperation = getAllResourceOwnersOperation;
-            _getResourceOwnerOperation = getResourceOwnerOperation;
-            _updateResourceOwnerClaimsOperation = updateResourceOwnerClaimsOperation;
-            _updateResourceOwnerPasswordOperation = updateResourceOwnerPasswordOperation;
-            _configurationClient = configurationClient;
-            _searchResourceOwnersOperation = searchResourceOwnersOperation;
+            _addResourceOwnerOperation = new AddResourceOwnerOperation(client);
+            _deleteResourceOwnerOperation = new DeleteResourceOwnerOperation(client);
+            _getAllResourceOwnersOperation = new GetAllResourceOwnersOperation(client);
+            _getResourceOwnerOperation = new GetResourceOwnerOperation(client);
+            _updateResourceOwnerClaimsOperation = new UpdateResourceOwnerClaimsOperation(client);
+            _updateResourceOwnerPasswordOperation = new UpdateResourceOwnerPasswordOperation(client);
+            _configurationClient = new GetConfigurationOperation(client);
+            _searchResourceOwnersOperation = new SearchResourceOwnersOperation(client);
         }
 
         public async Task<BaseResponse> ResolveAdd(Uri wellKnownConfigurationUri,

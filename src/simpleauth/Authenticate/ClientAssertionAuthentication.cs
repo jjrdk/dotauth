@@ -108,7 +108,7 @@ namespace SimpleAuth.Authenticate
             }
         }
 
-        public async Task<AuthenticationResult> AuthenticateClientWithClientSecretJwtAsync(AuthenticateInstruction instruction, string clientSecret, string expectedIssuer)
+        public async Task<AuthenticationResult> AuthenticateClientWithClientSecretJwtAsync(AuthenticateInstruction instruction)
         {
             if (instruction == null)
             {

@@ -87,7 +87,7 @@ namespace SimpleAuth.Tests.Api.Authorization
             _consentHelper = new Mock<IConsentHelper>();
             _consentHelper
                 .Setup(x => x.GetConfirmedConsentsAsync(It.IsAny<string>(), It.IsAny<AuthorizationParameter>()))
-                .ReturnsAsync(new Consent { });
+                .ReturnsAsync(new Consent());
             _authorizationActions = new AuthorizationActions(
                 _consentHelper.Object,
                 new Mock<IGenerateAuthorizationResponse>().Object,

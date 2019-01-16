@@ -145,8 +145,8 @@ namespace SimpleAuth.Controllers
                         uri.AddParametersInQuery(_actionResultParser.GetRedirectionParameters(actionResult));
                     return new RedirectResult(redirectionUrl.AbsoluteUri);
                 }
-                case TypeActionResult.Output:
-                case TypeActionResult.None:
+                //case TypeActionResult.Output:
+                //case TypeActionResult.None:
                 default:
                     return null;
             }
@@ -158,13 +158,7 @@ namespace SimpleAuth.Controllers
         {
             var client = await _clientStore.GetById(clientId).ConfigureAwait(false);
             _handler.ValidateToken(token, client.CreateValidationParameters(), out var securityToken);
-            //var jwsToken = token;
-            //if (_jwtParser.IsJweToken(token))
-            //{
-            //    jwsToken = await _jwtParser.DecryptAsync(token, clientId).ConfigureAwait(false);
-            //}
 
-            //var jwsPayload = await _jwtParser.UnSignAsync(jwsToken, clientId).ConfigureAwait(false);
             return (securityToken as JwtSecurityToken)?.Payload?.ToAuthorizationRequest();
         }
 

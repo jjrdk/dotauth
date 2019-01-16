@@ -40,7 +40,7 @@ namespace SimpleAuth.Controllers
 
         public UsersController(
             IResourceOwnerRepository userStore,
-            IEnumerable<IAccountFilter> accountFilters,
+            IEnumerable<AccountFilter> accountFilters,
             IEventPublisher eventPublisher,
             ISubjectBuilder subjectBuilder)
         {
@@ -190,7 +190,7 @@ namespace SimpleAuth.Controllers
         {
             var scimId = GetScimIdentifier(User);
             return string.IsNullOrWhiteSpace(scimId)
-                ? Task.FromResult<IActionResult>(GetMissingScimIdentifierError())
+                ? Task.FromResult(GetMissingScimIdentifierError())
                 : GetUser(scimId);
         }
 

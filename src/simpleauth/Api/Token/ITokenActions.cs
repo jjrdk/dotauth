@@ -5,7 +5,6 @@
     using System.Threading.Tasks;
     using Parameters;
     using Shared.Models;
-    using Shared.Requests;
 
     public interface ITokenActions
     {
