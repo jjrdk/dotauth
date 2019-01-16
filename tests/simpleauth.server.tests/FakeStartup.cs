@@ -152,7 +152,6 @@ namespace SimpleAuth.Server.Tests
                 var baseUrl = _options.Scim.EndPoint;
                 return new UsersClient(new Uri(baseUrl), sp.GetService<HttpClient>());
             });
-            services.AddSingleton<IAccessTokenStore>(new TestAccessTokenStore());
         }
     }
 }

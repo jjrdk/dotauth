@@ -1,14 +1,14 @@
 ﻿namespace SimpleAuth.Manager.Client.Clients
 {
+    using Newtonsoft.Json;
+    using Results;
+    using Shared.Responses;
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Newtonsoft.Json;
-    using Results;
-    using Shared.Responses;
 
-    internal sealed class GetAllClientsOperation : IGetAllClientsOperation
+    internal sealed class GetAllClientsOperation
     {
         private readonly HttpClient _httpClientFactory;
 
@@ -40,7 +40,7 @@
             {
                 httpResult.EnsureSuccessStatusCode();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return new GetAllClientResult
                 {

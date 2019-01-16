@@ -9,7 +9,6 @@
     using Parameters;
     using Shared;
     using Shared.Models;
-    using SimpleAuth;
     using SimpleAuth.Helpers;
     using SimpleAuth.WebSite.Authenticate.Actions;
     using SimpleAuth.WebSite.Authenticate.Common;

@@ -25,7 +25,6 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
     using Repositories;
     using SimpleAuth.Api.PermissionController;
     using SimpleAuth.Shared.Models;
-    using Uma;
     using Xunit;
     
     public class AddPermissionActionFixture

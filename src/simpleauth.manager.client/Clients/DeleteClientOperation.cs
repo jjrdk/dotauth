@@ -1,13 +1,13 @@
 ﻿namespace SimpleAuth.Manager.Client.Clients
 {
-    using System;
-    using System.Net.Http;
-    using System.Threading.Tasks;
     using Newtonsoft.Json;
     using Shared;
     using Shared.Responses;
+    using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
 
-    internal sealed class DeleteClientOperation : IDeleteClientOperation
+    internal sealed class DeleteClientOperation
     {
         private readonly HttpClient _httpClientFactory;
 
@@ -39,13 +39,13 @@
             {
                 httpResult.EnsureSuccessStatusCode();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return new BaseResponse
                 {
                     ContainsError = true,
                     Error = JsonConvert.DeserializeObject<ErrorResponse>(content)
-                };                
+                };
             }
 
             return new BaseResponse();

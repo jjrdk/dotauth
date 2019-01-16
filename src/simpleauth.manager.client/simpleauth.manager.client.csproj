@@ -7,7 +7,7 @@
     <PackageId>simpleauth.manager.client</PackageId>
     <RootNamespace>SimpleAuth.Manager.Client</RootNamespace>
   </PropertyGroup>
-  <Import Project="../../shared.proj"/>
+  <Import Project="../../shared.proj" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />

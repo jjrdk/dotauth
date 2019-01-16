@@ -19,10 +19,7 @@ namespace SimpleAuth.Extensions
     using System.Linq;
     using System.Net.Http;
     using System.Security.Claims;
-    using Api.PolicyController;
-    using Api.PolicyController.Actions;
     using Api.Token;
-    using Api.Token.Actions;
     using Authenticate;
     using Common;
     using Helpers;
@@ -89,7 +86,7 @@ namespace SimpleAuth.Extensions
                         return false;
                     }
 
-                    return claimRole != null && claimRole.Any(role => role.Value == "administrator") || claimScopes.Any(s => s.Value == "uma_protection");
+                    return claimRole.Any(role => role.Value == "administrator") || claimScopes.Any(s => s.Value == "uma_protection");
                 });
             });
             options.AddPolicy(ScimConstants.ScimPolicies.ScimManage, policy =>

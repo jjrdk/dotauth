@@ -4,7 +4,6 @@
     using System.Security.Claims;
     using Shared;
     using Shared.Models;
-    using SimpleAuth;
 
     public static class DefaultStorage
     {

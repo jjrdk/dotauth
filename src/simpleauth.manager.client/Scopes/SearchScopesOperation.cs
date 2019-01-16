@@ -1,16 +1,16 @@
 ﻿namespace SimpleAuth.Manager.Client.Scopes
 {
-    using System;
-    using System.Net.Http;
-    using System.Text;
-    using System.Threading.Tasks;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Results;
     using Shared.Requests;
     using Shared.Responses;
+    using System;
+    using System.Net.Http;
+    using System.Text;
+    using System.Threading.Tasks;
 
-    internal sealed class SearchScopesOperation : ISearchScopesOperation
+    internal sealed class SearchScopesOperation
     {
         private readonly HttpClient _httpClientFactory;
 
@@ -41,7 +41,6 @@
 
             var httpResult = await _httpClientFactory.SendAsync(request).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var rec = JObject.Parse(content);
             try
             {
                 httpResult.EnsureSuccessStatusCode();

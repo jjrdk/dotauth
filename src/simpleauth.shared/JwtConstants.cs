@@ -56,15 +56,6 @@ namespace SimpleAuth.Shared
             StandardResourceOwnerClaimNames.ScimLocation
         };
 
-        public static class StandardAddressClaimNames
-        {
-            public const string StreetAddress = "street_address";
-            public const string Locality = "locality";
-            public const string Region = "region";
-            public const string PostalCode = "postal_code";
-            public const string Country = "country";
-        }
-
         public static List<string> AllStandardResourceOwnerClaimNames = new List<string>
         {
             StandardResourceOwnerClaimNames.Subject,
@@ -107,63 +98,17 @@ namespace SimpleAuth.Shared
 
         public static readonly Dictionary<string, string> MapWifClaimsToOpenIdClaims = new Dictionary<string, string>
         {
-            {
-                ClaimTypes.Name, StandardResourceOwnerClaimNames.Name
-            },
-            {
-                ClaimTypes.GivenName, StandardResourceOwnerClaimNames.GivenName
-            },
-            {
-                ClaimTypes.Webpage, StandardResourceOwnerClaimNames.WebSite
-            },
-            {
-                ClaimTypes.Email, StandardResourceOwnerClaimNames.Email
-            },
-            {
-                ClaimTypes.Gender, StandardResourceOwnerClaimNames.Gender
-            },
-            {
-                ClaimTypes.DateOfBirth, StandardResourceOwnerClaimNames.BirthDate
-            },
-            {
-                ClaimTypes.Locality, StandardResourceOwnerClaimNames.Locale
-            },
-            {
-                ClaimTypes.HomePhone, StandardResourceOwnerClaimNames.PhoneNumber
-            },
-            {
-                ClaimTypes.MobilePhone, StandardResourceOwnerClaimNames.PhoneNumberVerified
-            },
-            {
-                ClaimTypes.StreetAddress, StandardResourceOwnerClaimNames.Address
-            },
-            {
-                ClaimTypes.Role, StandardResourceOwnerClaimNames.Role
-            }
+            {ClaimTypes.Name, StandardResourceOwnerClaimNames.Name},
+            {ClaimTypes.GivenName, StandardResourceOwnerClaimNames.GivenName},
+            {ClaimTypes.Webpage, StandardResourceOwnerClaimNames.WebSite},
+            {ClaimTypes.Email, StandardResourceOwnerClaimNames.Email},
+            {ClaimTypes.Gender, StandardResourceOwnerClaimNames.Gender},
+            {ClaimTypes.DateOfBirth, StandardResourceOwnerClaimNames.BirthDate},
+            {ClaimTypes.Locality, StandardResourceOwnerClaimNames.Locale},
+            {ClaimTypes.HomePhone, StandardResourceOwnerClaimNames.PhoneNumber},
+            {ClaimTypes.MobilePhone, StandardResourceOwnerClaimNames.PhoneNumberVerified},
+            {ClaimTypes.StreetAddress, StandardResourceOwnerClaimNames.Address},
+            {ClaimTypes.Role, StandardResourceOwnerClaimNames.Role}
         };
-
-        public static class JsonWebKeyParameterNames
-        {
-            public static string KeyTypeName = "kty";
-            public static string UseName = "use";
-            public static string KeyOperationsName = "key_ops";
-            public static string AlgorithmName = "alg";
-            public static string KeyIdentifierName = "kid";
-            public static string X5Url = "x5u";
-            public static string X5CertificateChain = "x5c";
-            public static string X5ThumbPrint = "x5t";
-            public static string X5Sha256ThumbPrint = "x5t#S256";
-            public static class RsaKey
-            {
-                public static string ModulusName = "n";
-                public static string ExponentName = "e";
-            }
-
-            public static class EcKey
-            {
-                public static string XCoordinateName = "x";
-                public static string YCoordinateName = "y";
-            }
-        }
     }
 }

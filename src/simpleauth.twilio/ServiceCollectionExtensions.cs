@@ -51,14 +51,8 @@
             services.Configure<RazorViewEngineOptions>(opts =>
             {
                 opts.FileProviders.Add(embeddedFileProvider);
-                //opts.CompilationCallback = (context) =>
-                //{
-                //    var assm = MetadataReference.CreateFromFile(Assembly.Load("").Location);
-                //    context.Compilation = context.Compilation.AddReferences(assm);
-                //};
             });
             services.AddSingleton(smsAuthenticationOptions);
-            //services.AddSingleton<ISubjectBuilder, DefaultSubjectBuilder>();
             services.AddSingleton<ITwilioClient, TwilioClient>();
             services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
             services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();

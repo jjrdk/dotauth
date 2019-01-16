@@ -91,8 +91,7 @@ namespace SimpleAuth.Scim.Client.Tests
             ScimUserStore.Instance().ScimId = scimId;
             var thirdResult = await _usersClient.UpdateUser(
                     BaseUrl,
-                    new ScimUser {Id = scimId, UserName = "other_username"},
-                    "token")
+                    new ScimUser {Id = scimId, UserName = "other_username"})
                 .ConfigureAwait(false);
             ScimUserStore.Instance().ScimId = null;
 

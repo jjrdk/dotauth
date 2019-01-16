@@ -69,7 +69,7 @@ namespace SimpleAuth.ProtectedApi
                         };
                     });
 
-            var mvcBuilder = services.AddMvc();
+            services.AddMvc();
         }
 
         public void Configure(

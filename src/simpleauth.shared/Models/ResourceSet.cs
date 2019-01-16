@@ -17,11 +17,11 @@ namespace SimpleAuth.Shared.Models
     using System.Collections.Generic;
 
     public class ResourceSet
-    {        
-        public string Id { get; set; }    
-        public string Name { get; set; }        
-        public string Uri { get; set; }        
-        public string Type { get; set; }        
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Uri { get; set; }
+        public string Type { get; set; }
         public string IconUri { get; set; }
         public IEnumerable<string> Scopes { get; set; }
         public IEnumerable<string> AuthorizationPolicyIds { get; set; }

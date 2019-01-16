@@ -27,10 +27,10 @@ namespace SimpleAuth.Shared.Repositories
     public interface IResourceOwnerRepository
     {
         Task<ResourceOwner> GetResourceOwnerByClaim(string key, string value);
-        Task<ResourceOwner> Get(string id, CancellationToken cancellationToken = default(CancellationToken));
+        Task<ResourceOwner> Get(string id, CancellationToken cancellationToken = default);
         Task<ResourceOwner> Get(string id, string password);
         Task<ICollection<ResourceOwner>> Get(IEnumerable<Claim> claims);
-        Task<ICollection<ResourceOwner>> Get(Expression<Func<ResourceOwner, bool>> query, CancellationToken cancellationToken = default(CancellationToken));
+        Task<ICollection<ResourceOwner>> Get(Expression<Func<ResourceOwner, bool>> query, CancellationToken cancellationToken = default);
         Task<ICollection<ResourceOwner>> GetAllAsync();
         Task<bool> InsertAsync(ResourceOwner resourceOwner);
         Task<bool> UpdateAsync(ResourceOwner resourceOwner);

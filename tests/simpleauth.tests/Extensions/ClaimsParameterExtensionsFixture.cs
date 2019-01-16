@@ -4,7 +4,6 @@
     using System.Linq;
     using Parameters;
     using Shared;
-    using SimpleAuth;
     using SimpleAuth.Extensions;
     using Xunit;
 

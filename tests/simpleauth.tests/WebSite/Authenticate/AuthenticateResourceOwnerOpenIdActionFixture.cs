@@ -18,7 +18,6 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
     using Newtonsoft.Json;
     using Parameters;
     using Results;
-    using SimpleAuth;
     using SimpleAuth.Helpers;
     using SimpleAuth.WebSite.Authenticate.Actions;
     using SimpleAuth.WebSite.Authenticate.Common;

@@ -1,8 +1,8 @@
 ﻿namespace SimpleAuth.Twilio
 {
-    using System;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Routing;
+    using System;
 
     public static class RoutingBuilderExtensions
     {
@@ -12,7 +12,7 @@
             {
                 throw new ArgumentNullException(nameof(routeBuilder));
             }
-            
+
             routeBuilder.MapRoute("BasicAuthentication",
                 "Authenticate/{action}/{id?}",
                 new { controller = "Authenticate", action = "Index", area = SmsConstants.AMR },

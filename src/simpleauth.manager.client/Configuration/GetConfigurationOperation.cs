@@ -1,14 +1,14 @@
 ﻿namespace SimpleAuth.Manager.Client.Configuration
 {
+    using Newtonsoft.Json;
+    using Results;
+    using Shared.Responses;
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Newtonsoft.Json;
-    using Results;
-    using Shared.Responses;
 
-    internal sealed class GetConfigurationOperation : IGetConfigurationOperation
+    internal sealed class GetConfigurationOperation
     {
         private readonly Dictionary<string, DiscoveryInformation> _cache = new Dictionary<string, DiscoveryInformation>();
         private readonly HttpClient _httpClientFactory;

@@ -95,17 +95,23 @@
 
                 if (isEnumerable)
                 {
-                    childFilterType = childFilterType.GetGenericArguments()[0]; // set childFilterType to enumerable type argument
+                    childFilterType =
+                        childFilterType.GetGenericArguments()[0]; // set childFilterType to enumerable type argument
                 }
 
                 var childVisitorType = typeof(ScimFilterVisitor<>).MakeGenericType(childFilterType);
-                var childVisitor = (IScimFilterVisitor)Activator.CreateInstance(childVisitorType); // (IScimFilterVisitor)childVisitorType.CreateInstance(ServerConfiguration);
-                var childLambda = childVisitor.VisitExpression(context.valPathFilter()); // Visit the nested filter expression.
+                var childVisitor =
+                    (IScimFilterVisitor) Activator.CreateInstance(
+                        childVisitorType); // (IScimFilterVisitor)childVisitorType.CreateInstance(ServerConfiguration);
+                var childLambda =
+                    childVisitor.VisitExpression(context.valPathFilter()); // Visit the nested filter expression.
                 var childLambdaArgument = Expression.TryCatch(
                     Expression.Block(Expression.Invoke(attrPathExpression, argument)),
-                    Expression.Catch(typeof(Exception),
-                        Expression.Constant(attrPathExpression.ReturnType.GetDefaultValue(), attrPathExpression.ReturnType))
-                    );
+                    Expression.Catch(
+                        typeof(Exception),
+                        Expression.Constant(
+                            attrPathExpression.ReturnType.GetDefaultValue(),
+                            attrPathExpression.ReturnType)));
 
                 if (isEnumerable)
                 {
@@ -115,22 +121,14 @@
                     var anyMethod = MethodCache["any"].MakeGenericMethod(childFilterType);
                     var anyPredicate = Expression.TryCatch(
                         Expression.Block(
-                            Expression.Call(
-                                anyMethod,
-                                new List<Expression>
-                                {
-                                    childLambdaArgument,
-                                    childLambda
-                                })),
+                            Expression.Call(anyMethod, new List<Expression> {childLambdaArgument, childLambda})),
                         Expression.Catch(typeof(ArgumentNullException), Expression.Constant(false)));
 
                     return Expression.Lambda(anyPredicate, argument);
                 }
 
                 return Expression.Lambda(
-                    Expression.Invoke(
-                        childLambda,
-                        Expression.Invoke(attrPathExpression, argument)),
+                    Expression.Invoke(childLambda, Expression.Invoke(attrPathExpression, argument)),
                     argument);
             }
 
@@ -162,25 +160,30 @@
                 Expression.Block(Expression.Invoke(attrPathExpression, argument)),
                 Expression.Catch(
                     typeof(NullReferenceException),
-                    Expression.Constant(attrPathExpression.ReturnType.GetDefaultValue(), attrPathExpression.ReturnType))
-                );
+                    Expression.Constant(
+                        attrPathExpression.ReturnType.GetDefaultValue(),
+                        attrPathExpression.ReturnType)));
 
-            if (isEnumerable &&
-                attrPathExpression.ReturnType.IsGenericType &&
-                typeof(MultiValuedAttribute).IsAssignableFrom(attrPathExpression.ReturnType.GetGenericArguments()[0]))
+            if (isEnumerable
+                && attrPathExpression.ReturnType.IsGenericType
+                && typeof(MultiValuedAttribute).IsAssignableFrom(attrPathExpression.ReturnType.GetGenericArguments()[0])
+            )
             {
                 // we're filtering an enumerable of multivaluedattribute without a sub-attribute
                 // therefore, we default to evaluating the .Value member
 
                 var multiValuedAttributeType = attrPathExpression.ReturnType.GetGenericArguments()[0];
                 var multiValuedAttribute = Expression.Parameter(multiValuedAttributeType);
-                var valueAttribute = multiValuedAttributeType.GetProperty("Value", BindingFlags.Public | BindingFlags.Instance);
+                var valueAttribute = multiValuedAttributeType.GetProperty(
+                    "Value",
+                    BindingFlags.Public | BindingFlags.Instance);
                 var valueExpression = Expression.TryCatch(
                     Expression.Block(Expression.Property(multiValuedAttribute, valueAttribute)),
                     Expression.Catch(
                         typeof(NullReferenceException),
-                        Expression.Constant(valueAttribute.PropertyType.GetDefaultValue(), valueAttribute.PropertyType))
-                    );
+                        Expression.Constant(
+                            valueAttribute.PropertyType.GetDefaultValue(),
+                            valueAttribute.PropertyType)));
 
                 var valueLambda = Expression.Lambda(
                     CreateBinaryExpression(valueExpression, operatorToken, valueToken),
@@ -188,15 +191,8 @@
 
                 var anyMethod = MethodCache["any"].MakeGenericMethod(multiValuedAttributeType);
                 var anyPredicate = Expression.TryCatch(
-                        Expression.Block(
-                            Expression.Call(
-                                anyMethod,
-                                new List<Expression>
-                                {
-                                    left,
-                                    valueLambda
-                                })),
-                        Expression.Catch(typeof(ArgumentNullException), Expression.Constant(false)));
+                    Expression.Block(Expression.Call(anyMethod, new List<Expression> {left, valueLambda})),
+                    Expression.Catch(typeof(ArgumentNullException), Expression.Constant(false)));
 
                 return Expression.Lambda(anyPredicate, argument);
             }
@@ -267,25 +263,30 @@
                 Expression.Block(Expression.Invoke(attrPathExpression, argument)),
                 Expression.Catch(
                     typeof(NullReferenceException),
-                    Expression.Constant(attrPathExpression.ReturnType.GetDefaultValue(), attrPathExpression.ReturnType)
-                ));
+                    Expression.Constant(
+                        attrPathExpression.ReturnType.GetDefaultValue(),
+                        attrPathExpression.ReturnType)));
 
-            if (isEnumerable &&
-                attrPathExpression.ReturnType.IsGenericType &&
-                typeof(MultiValuedAttribute).IsAssignableFrom(attrPathExpression.ReturnType.GetGenericArguments()[0]))
+            if (isEnumerable
+                && attrPathExpression.ReturnType.IsGenericType
+                && typeof(MultiValuedAttribute).IsAssignableFrom(attrPathExpression.ReturnType.GetGenericArguments()[0])
+            )
             {
                 // we're filtering an enumerable of multivaluedattribute without a sub-attribute
                 // therefore, we default to evaluating the .Value member
 
                 var multiValuedAttributeType = attrPathExpression.ReturnType.GetGenericArguments()[0];
                 var multiValuedAttribute = Expression.Parameter(multiValuedAttributeType);
-                var valueAttribute = multiValuedAttributeType.GetProperty("Value", BindingFlags.Public | BindingFlags.Instance);
+                var valueAttribute = multiValuedAttributeType.GetProperty(
+                    "Value",
+                    BindingFlags.Public | BindingFlags.Instance);
                 var valueExpression = Expression.TryCatch(
                     Expression.Block(Expression.Property(multiValuedAttribute, valueAttribute)),
                     Expression.Catch(
                         typeof(NullReferenceException),
-                        Expression.Constant(valueAttribute.PropertyType.GetDefaultValue(), valueAttribute.PropertyType))
-                    );
+                        Expression.Constant(
+                            valueAttribute.PropertyType.GetDefaultValue(),
+                            valueAttribute.PropertyType)));
 
                 var valueLambda = Expression.Lambda(
                     CreateBinaryExpression(valueExpression, operatorToken, valueToken),
@@ -293,15 +294,8 @@
 
                 var anyMethod = MethodCache["any"].MakeGenericMethod(multiValuedAttributeType);
                 var anyPredicate = Expression.TryCatch(
-                        Expression.Block(
-                            Expression.Call(
-                                anyMethod,
-                                new List<Expression>
-                                {
-                                    left,
-                                    valueLambda
-                                })),
-                        Expression.Catch(typeof(ArgumentNullException), Expression.Constant(false)));
+                    Expression.Block(Expression.Call(anyMethod, new List<Expression> {left, valueLambda})),
+                    Expression.Catch(typeof(ArgumentNullException), Expression.Constant(false)));
 
                 return Expression.Lambda(anyPredicate, argument);
             }
@@ -329,7 +323,8 @@
 
             return Expression.Lambda<Func<TResource, bool>>(
                 Expression.Call(
-                    MethodCache["pr"].MakeGenericMethod(attrPathExpression.ReturnType), Expression.Invoke(attrPathExpression, argument)),
+                    MethodCache["pr"].MakeGenericMethod(attrPathExpression.ReturnType),
+                    Expression.Invoke(attrPathExpression, argument)),
                 argument);
         }
 
@@ -337,14 +332,15 @@
         {
             var schemaToken = GetSchema(context);
 
-            if (!string.IsNullOrEmpty(schemaToken))// && ServerConfiguration.ResourceExtensionExists(schemaToken))
+            if (!string.IsNullOrEmpty(schemaToken)) // && ServerConfiguration.ResourceExtensionExists(schemaToken))
             {
                 return VisitResourceExtensionAttrPath(context);
             }
 
             if (!string.IsNullOrEmpty(schemaToken)) // fully qualified property
             {
-                var schemaIdentifierForResourceType = "";// ServerConfiguration.GetSchemaIdentifierForResourceType(typeof(TResource));
+                var schemaIdentifierForResourceType =
+                    ""; // ServerConfiguration.GetSchemaIdentifierForResourceType(typeof(TResource));
                 // swallow correct namespace but validate
 
                 if (!string.Equals(schemaToken, schemaIdentifierForResourceType, StringComparison.OrdinalIgnoreCase))
@@ -373,7 +369,7 @@
             var argument = Expression.Parameter(typeof(TResource));
             var propNameToken = context.ATTRNAME(0).GetText();
             var schemaToken = GetSchema(context);
-            var extensionType = typeof(string);//ServerConfiguration.ResourceExtensionSchemas[schemaToken];
+            var extensionType = typeof(string); //ServerConfiguration.ResourceExtensionSchemas[schemaToken];
 
             var extensionsPropInfo = GetPropertyInfoFromCache(typeof(TResource), "Extensions");
             var extensionPropertyExpression = Expression.Property(argument, extensionsPropInfo);
@@ -382,22 +378,16 @@
             var selectExtensionExpression = Expression.Call(
                 typeof(Enumerable),
                 "Select",
-                new[]
-                {
-                    typeof(KeyValuePair<string, ResourceExtension>),
-                    typeof(ResourceExtension)
-                },
+                new[] {typeof(KeyValuePair<string, ResourceExtension>), typeof(ResourceExtension)},
                 extensionPropertyExpression,
                 Expression.Lambda<Func<KeyValuePair<string, ResourceExtension>, ResourceExtension>>(
-                    Expression.Property(keyValuePairArgument, "Value"), keyValuePairArgument));
+                    Expression.Property(keyValuePairArgument, "Value"),
+                    keyValuePairArgument));
 
             var selectTypedExtensionExpression = Expression.Call(
                 typeof(Enumerable),
                 "OfType",
-                new[]
-                {
-                    extensionType
-                },
+                new[] {extensionType},
                 selectExtensionExpression);
 
             var propertyInfo = GetPropertyInfoFromCache(extensionType, propNameToken);
@@ -406,22 +396,18 @@
             var selectTypedExtensionPropertyExpression = Expression.Call(
                 typeof(Enumerable),
                 "Select",
-                new[]
-                {
-                    extensionType, propertyInfo.PropertyType
-                },
+                new[] {extensionType, propertyInfo.PropertyType},
                 selectTypedExtensionExpression,
-                MakeLambdaExpression(extensionType, propertyInfo.PropertyType,
-                                     Expression.Property(extensionArgument, propertyInfo),
-                                     extensionArgument));
+                MakeLambdaExpression(
+                    extensionType,
+                    propertyInfo.PropertyType,
+                    Expression.Property(extensionArgument, propertyInfo),
+                    extensionArgument));
 
             var firstExpression = Expression.Call(
                 typeof(Enumerable),
                 "FirstOrDefault",
-                new[]
-                {
-                    propertyInfo.PropertyType
-                },
+                new[] {propertyInfo.PropertyType},
                 selectTypedExtensionPropertyExpression);
 
             return MakeLambdaExpression(typeof(TResource), propertyInfo.PropertyType, firstExpression, argument);
@@ -506,13 +492,7 @@
                     throw new InvalidOperationException("co only works on strings");
                 }
 
-                return Expression.Call(
-                    MethodCache["co"],
-                    new List<Expression>
-                    {
-                        left,
-                        Expression.Constant(valueToken)
-                    });
+                return Expression.Call(MethodCache["co"], new List<Expression> {left, Expression.Constant(valueToken)});
             }
 
             // Starts With
@@ -523,13 +503,7 @@
                     throw new InvalidOperationException("sw only works with strings");
                 }
 
-                return Expression.Call(
-                    MethodCache["sw"],
-                    new List<Expression>
-                    {
-                        left,
-                        Expression.Constant(valueToken)
-                    });
+                return Expression.Call(MethodCache["sw"], new List<Expression> {left, Expression.Constant(valueToken)});
             }
 
             // Ends With
@@ -540,13 +514,7 @@
                     throw new InvalidOperationException("ew only works with strings");
                 }
 
-                return Expression.Call(
-                    MethodCache["ew"],
-                        new List<Expression>
-                        {
-                            left,
-                            Expression.Constant(valueToken)
-                        });
+                return Expression.Call(MethodCache["ew"], new List<Expression> {left, Expression.Constant(valueToken)});
             }
 
             // Greater Than
@@ -682,7 +650,7 @@
             var typeProperties = PropertyCache.GetOrAdd(
                 type,
                 t => t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
-                      .ToDictionary(pi => pi.Name, pi => pi, StringComparer.OrdinalIgnoreCase));
+                    .ToDictionary(pi => pi.Name, pi => pi, StringComparer.OrdinalIgnoreCase));
 
             if (!typeProperties.ContainsKey(propertyName))
             {
@@ -692,21 +660,23 @@
             return typeProperties[propertyName];
         }
 
-        protected LambdaExpression MakeLambdaExpression(Type argType, Type returnType, Expression body, ParameterExpression argument)
+        protected LambdaExpression MakeLambdaExpression(
+            Type argType,
+            Type returnType,
+            Expression body,
+            ParameterExpression argument)
         {
             var @delegate = typeof(Func<,>).MakeGenericType(argType, returnType);
 
-            return (LambdaExpression)typeof(Expression)
-                    .GetMethods(BindingFlags.Public | BindingFlags.Static)
-                    .First(m => m.Name == "Lambda" &&
-                                m.IsGenericMethod &&
-                                m.GetParameters().Select(p => p.ParameterType)
-                                    .SequenceEqual(new[]
-                                    {
-                                        typeof(Expression), typeof(ParameterExpression[])
-                                    }))
-                    .MakeGenericMethod(@delegate)
-                    .Invoke(null, new object[] { body, new[] { argument } });
+            return (LambdaExpression) typeof(Expression).GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .First(
+                    m => m.Name == "Lambda"
+                         && m.IsGenericMethod
+                         && m.GetParameters()
+                             .Select(p => p.ParameterType)
+                             .SequenceEqual(new[] {typeof(Expression), typeof(ParameterExpression[])}))
+                .MakeGenericMethod(@delegate)
+                .Invoke(null, new object[] {body, new[] {argument}});
         }
 
         protected static string GetSchema(ScimFilterParser.AttrPathContext context)
@@ -724,7 +694,8 @@
             var methodCache = new Dictionary<string, MethodInfo>
             {
                 {
-                    "eq", typeof(string).GetMethod(
+                    "eq",
+                    typeof(string).GetMethod(
                         "Equals",
                         BindingFlags.Public | BindingFlags.Static,
                         null,
@@ -733,32 +704,40 @@
                 },
                 {"compareto", typeof(string).GetMethod("CompareTo", new[] {typeof(string)})},
                 {
-                    "any", typeof(Enumerable).GetMethods(BindingFlags.Public | BindingFlags.Static)
+                    "any",
+                    typeof(Enumerable).GetMethods(BindingFlags.Public | BindingFlags.Static)
                         .Single(mi => mi.Name.Equals("Any") && mi.GetParameters().Length == 2)
                 },
                 {
-                    "sw", typeof(FilterHelpers).GetMethod("StartsWith",
+                    "sw",
+                    typeof(FilterHelpers).GetMethod(
+                        "StartsWith",
                         BindingFlags.Public | BindingFlags.Static,
                         null,
                         new[] {typeof(string), typeof(string)},
                         new ParameterModifier[0])
                 },
                 {
-                    "ew", typeof(FilterHelpers).GetMethod("EndsWith",
+                    "ew",
+                    typeof(FilterHelpers).GetMethod(
+                        "EndsWith",
                         BindingFlags.Public | BindingFlags.Static,
                         null,
                         new[] {typeof(string), typeof(string)},
                         new ParameterModifier[0])
                 },
                 {
-                    "co", typeof(FilterHelpers).GetMethod("Contains",
+                    "co",
+                    typeof(FilterHelpers).GetMethod(
+                        "Contains",
                         BindingFlags.Public | BindingFlags.Static,
                         null,
                         new[] {typeof(string), typeof(string)},
                         new ParameterModifier[0])
                 },
                 {
-                    "pr", typeof(FilterHelpers).GetMethods(BindingFlags.Public | BindingFlags.Static)
+                    "pr",
+                    typeof(FilterHelpers).GetMethods(BindingFlags.Public | BindingFlags.Static)
                         .Single(mi => mi.Name.Equals("IsPresent"))
                 }
             };

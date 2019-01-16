@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,11 +40,6 @@ namespace SimpleAuth
             public static string OpenIdPreferredCustomAuthLevel = "openid.pape.preferred_auth_levels";
         }
 
-        public static class ConfigurationNames
-        {
-            public const string ExpirationTimeName = "ExpirationTime";
-        }
-
         public static class StandardAuthorizationResponseNames
         {
             public static string IdTokenName = "id_token";
@@ -54,18 +49,18 @@ namespace SimpleAuth
             public static string SessionState = "session_state";
         }
 
-        // Standard authentication policies.
-        // They are coming from the RFC : http://openid.net/specs/openid-provider-authentication-policy-extension-1_0.html
-        public static class StandardAuthenticationPolicies
-        {
-            public static string OpenIdPhishingResistant = "http://schemas.openid.net/pape/policies/2007/06/phishing-resistant";
+        //// Standard authentication policies.
+        //// They are coming from the RFC : http://openid.net/specs/openid-provider-authentication-policy-extension-1_0.html
+        //public static class StandardAuthenticationPolicies
+        //{
+        //    public static string OpenIdPhishingResistant = "http://schemas.openid.net/pape/policies/2007/06/phishing-resistant";
 
-            // provides more than one authentication factor for example password + software token
-            public static string OpenIdMultiFactorAuth = "http://schemas.openid.net/pape/policies/2007/06/multi-factor";
+        //    // provides more than one authentication factor for example password + software token
+        //    public static string OpenIdMultiFactorAuth = "http://schemas.openid.net/pape/policies/2007/06/multi-factor";
 
-            // provides more than one authentication factor with at least one physical factor
-            public static string OpenIdPhysicalMultiFactorAuth = "http://schemas.openid.net/pape/policies/2007/06/multi-factor-physical";
-        }
+        //    // provides more than one authentication factor with at least one physical factor
+        //    public static string OpenIdPhysicalMultiFactorAuth = "http://schemas.openid.net/pape/policies/2007/06/multi-factor-physical";
+        //}
 
         // Standard scopes defined by OPEN-ID
         public static class StandardScopes
@@ -152,15 +147,15 @@ namespace SimpleAuth
             };
         }
 
-        // Defines the Assurance Level
-        // For more information check this documentation : http://csrc.nist.gov/publications/nistpubs/800-63/SP800-63V1_0_2.pdf
-        public enum StandardNistAssuranceLevel
-        {
-            Level1 = 1,
-            Level2 = 2,
-            Level3 = 3,
-            Level4 = 4
-        }
+        //// Defines the Assurance Level
+        //// For more information check this documentation : http://csrc.nist.gov/publications/nistpubs/800-63/SP800-63V1_0_2.pdf
+        //public enum StandardNistAssuranceLevel
+        //{
+        //    Level1 = 1,
+        //    Level2 = 2,
+        //    Level3 = 3,
+        //    Level4 = 4
+        //}
 
         public static class StandardTokenTypes
         {
@@ -384,21 +379,6 @@ namespace SimpleAuth
                 SubjectTypeNames.Public,
                 SubjectTypeNames.PairWise
             };
-
-            //public static string[] SupportedJwsAlgs = new[]
-            //{
-            //    SecurityAlgorithms.RsaSha256 //JwtConstants.JwsAlgNames.RS256
-            //};
-
-            //public static string[] SupportedJweAlgs = new[]
-            //{
-            //    SecurityAlgorithms.RsaPKCS1
-            //};
-
-            //public static string[] SupportedJweEncs = new[]
-            //{
-            //    SecurityAlgorithms.Aes128CbcHmacSha256
-            //};
 
             public static List<TokenEndPointAuthenticationMethods> SupportedTokenEndPointAuthenticationMethods =
                 new List<TokenEndPointAuthenticationMethods>

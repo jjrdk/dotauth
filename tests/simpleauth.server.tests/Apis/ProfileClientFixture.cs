@@ -14,7 +14,7 @@
     {
         private const string BaseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
-        private IProfileClient _profileClient;
+        private ProfileClient _profileClient;
 
         public ProfileClientFixture(TestOauthServerFixture server)
         {
@@ -35,9 +35,7 @@
 
             var result = await _profileClient.LinkProfile(BaseUrl + "/profiles",
                     "user",
-                    new LinkProfileRequest
-                    {
-                    },
+                    new LinkProfileRequest(),
                     grantedToken.Content.AccessToken)
                 .ConfigureAwait(false);
 

@@ -82,7 +82,7 @@ namespace SimpleAuth.Client
             return await ParseHttpResponse<JObject>(response).ConfigureAwait(false);
         }
 
-        public Task<ScimResponse<JObject>> UpdateUser(Uri baseUri, ScimUser scimUser, string accessToken = null)
+        public Task<ScimResponse<JObject>> UpdateUser(Uri baseUri, ScimUser scimUser)
         {
             if (baseUri == null)
             {

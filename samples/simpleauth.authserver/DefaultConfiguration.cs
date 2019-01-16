@@ -79,10 +79,7 @@
                     Password = "password".ToSha256Hash(),
                     IsLocalAccount = true,
                     CreateDateTime = DateTime.UtcNow,
-                    UserProfile = new ScimUser
-                    {
-
-                    }
+                    UserProfile = new ScimUser()
                 }
             };
         }

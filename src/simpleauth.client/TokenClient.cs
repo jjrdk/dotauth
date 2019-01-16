@@ -14,19 +14,19 @@
 
 namespace SimpleAuth.Client
 {
+    using Errors;
+    using Newtonsoft.Json;
+    using Operations;
+    using Results;
+    using Shared.Responses;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
-    using Errors;
-    using Newtonsoft.Json;
-    using Operations;
-    using Results;
-    using Shared.Responses;
 
-    public class TokenClient : ITokenClient
+    public class TokenClient
     {
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
         private readonly string _authorizationValue;

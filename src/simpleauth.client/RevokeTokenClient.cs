@@ -14,19 +14,19 @@
 
 namespace SimpleAuth.Client
 {
+    using Errors;
+    using Newtonsoft.Json;
+    using Operations;
+    using Results;
+    using Shared.Responses;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
-    using Errors;
-    using Newtonsoft.Json;
-    using Operations;
-    using Results;
-    using Shared.Responses;
 
-    internal class RevokeTokenClient : IRevokeTokenClient
+    internal class RevokeTokenClient
     {
         private readonly Dictionary<string, string> _form;
         private readonly HttpClient _client;
