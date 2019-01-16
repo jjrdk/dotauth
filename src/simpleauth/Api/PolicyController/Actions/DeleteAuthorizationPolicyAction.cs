@@ -21,7 +21,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
     using System;
     using System.Threading.Tasks;
 
-    internal class DeleteAuthorizationPolicyAction : IDeleteAuthorizationPolicyAction
+    internal class DeleteAuthorizationPolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
 

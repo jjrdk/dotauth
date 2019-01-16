@@ -30,7 +30,7 @@ namespace SimpleAuth.Api.Token.Actions
     using System.Threading.Tasks;
     using Validators;
 
-    public class GetTokenByAuthorizationCodeGrantTypeAction : IGetTokenByAuthorizationCodeGrantTypeAction
+    public class GetTokenByAuthorizationCodeGrantTypeAction
     {
         private class ValidationResult
         {

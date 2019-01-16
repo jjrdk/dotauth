@@ -1,12 +1,12 @@
 ﻿namespace SimpleAuth.Api.PolicyController.Actions
 {
-    using System;
-    using System.Threading.Tasks;
     using Parameters;
     using Repositories;
     using Shared.Models;
+    using System;
+    using System.Threading.Tasks;
 
-    internal sealed class SearchAuthPoliciesAction : ISearchAuthPoliciesAction
+    internal sealed class SearchAuthPoliciesAction
     {
         private readonly IPolicyRepository _policyRepository;
 

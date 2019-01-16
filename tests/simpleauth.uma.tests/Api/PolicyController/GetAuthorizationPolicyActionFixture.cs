@@ -14,18 +14,18 @@
 
 namespace SimpleAuth.Uma.Tests.Api.PolicyController
 {
-    using System;
-    using System.Threading.Tasks;
     using Moq;
     using Repositories;
     using SimpleAuth.Api.PolicyController.Actions;
     using SimpleAuth.Shared.Models;
+    using System;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class GetAuthorizationPolicyActionFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
-        private IGetAuthorizationPolicyAction _getAuthorizationPolicyAction;
+        private GetAuthorizationPolicyAction _getAuthorizationPolicyAction;
 
         [Fact]
         public async Task When_Passing_Empty_Parameter_Then_Exception_Is_Thrown()
@@ -44,7 +44,7 @@ namespace SimpleAuth.Uma.Tests.Api.PolicyController
                 Id = policyId
             };
             InitializeFakeObjects(policy);
-            
+
             var result = await _getAuthorizationPolicyAction.Execute(policyId).ConfigureAwait(false);
 
             Assert.NotNull(result);

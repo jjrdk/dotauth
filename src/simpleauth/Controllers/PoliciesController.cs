@@ -1,22 +1,22 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using SimpleAuth.Api.PolicyController.Actions;
+using SimpleAuth.Repositories;
+
 namespace SimpleAuth.Controllers
 {
-    using System.Net;
-    using System.Threading.Tasks;
-    using Api.PolicyController;
     using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
@@ -24,16 +24,31 @@ namespace SimpleAuth.Controllers
     using Parameters;
     using Shared.DTOs;
     using Shared.Responses;
+    using System.Net;
+    using System.Threading.Tasks;
 
     [Route(UmaConstants.RouteValues.Policies)]
     public class PoliciesController : Controller
     {
-        private readonly IPolicyActions _policyActions;
+        private readonly AddAuthorizationPolicyAction _addpolicy;
+        private readonly DeleteAuthorizationPolicyAction _deletePolicy;
+        private readonly DeleteResourcePolicyAction _deleteResourceSet;
+        private readonly AddResourceSetToPolicyAction _addResourceSet;
+        private readonly UpdatePolicyAction _updatePolicy;
+        private readonly GetAuthorizationPolicyAction _getPolicy;
+        private readonly GetAuthorizationPoliciesAction _getPolicies;
+        private readonly SearchAuthPoliciesAction _searchPolicy;
 
-        public PoliciesController(
-            IPolicyActions policyActions)
+        public PoliciesController(IPolicyRepository policyRepository, IResourceSetRepository resourceSetRepository)
         {
-            _policyActions = policyActions;
+            _addpolicy = new AddAuthorizationPolicyAction(policyRepository, resourceSetRepository);
+            _deletePolicy = new DeleteAuthorizationPolicyAction(policyRepository);
+            _addResourceSet = new AddResourceSetToPolicyAction(policyRepository, resourceSetRepository);
+            _deleteResourceSet = new DeleteResourcePolicyAction(policyRepository, resourceSetRepository);
+            _updatePolicy = new UpdatePolicyAction(policyRepository, resourceSetRepository);
+            _getPolicy = new GetAuthorizationPolicyAction(policyRepository);
+            _getPolicies = new GetAuthorizationPoliciesAction(policyRepository);
+            _searchPolicy = new SearchAuthPoliciesAction(policyRepository);
         }
 
         [HttpPost(".search")]
@@ -46,7 +61,7 @@ namespace SimpleAuth.Controllers
             }
 
             var parameter = searchAuthPolicies.ToParameter();
-            var result = await _policyActions.Search(parameter).ConfigureAwait(false);
+            var result = await _searchPolicy.Execute(parameter).ConfigureAwait(false);
             return new OkObjectResult(result.ToResponse());
         }
 
@@ -59,15 +74,7 @@ namespace SimpleAuth.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
             }
 
-            //if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetPolicyStoreName + id))
-            //{
-            //    return new ContentResult
-            //    {
-            //        StatusCode = 412
-            //    };
-            //}
-
-            var result = await _policyActions.GetPolicy(id).ConfigureAwait(false);
+            var result = await _getPolicy.Execute(id).ConfigureAwait(false);
             if (result == null)
             {
                 return GetNotFoundPolicy();
@@ -82,16 +89,7 @@ namespace SimpleAuth.Controllers
         [Authorize("UmaProtection")]
         public async Task<IActionResult> GetPolicies()
         {
-            //if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetPoliciesStoreName))
-            //{
-            //    return new ContentResult
-            //    {
-            //        StatusCode = 412
-            //    };
-            //}
-
-            var policies = await _policyActions.GetPolicies().ConfigureAwait(false);
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName);
+            var policies = await _getPolicies.Execute().ConfigureAwait(false);
             return new OkObjectResult(policies);
         }
 
@@ -105,16 +103,15 @@ namespace SimpleAuth.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
-            var isPolicyExists = await _policyActions.UpdatePolicy(putPolicy.ToParameter()).ConfigureAwait(false);
+            var isPolicyExists = await _updatePolicy.Execute(putPolicy.ToParameter()).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
             }
 
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + putPolicy.PolicyId, false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
-        
+
         [HttpPost("{id}/resources")]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> PostAddResourceSet(string id, [FromBody] PostAddResourceSet postAddResourceSet)
@@ -129,11 +126,12 @@ namespace SimpleAuth.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
-            var isPolicyExists = await _policyActions.AddResourceSet(new AddResourceSetParameter
-            {
-                PolicyId = id,
-                ResourceSets = postAddResourceSet.ResourceSets
-            }).ConfigureAwait(false);
+            var isPolicyExists = await _addResourceSet.Execute(
+                new AddResourceSetParameter
+                {
+                    PolicyId = id,
+                    ResourceSets = postAddResourceSet.ResourceSets
+                }).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
@@ -157,7 +155,7 @@ namespace SimpleAuth.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "the resource_id must be specified", HttpStatusCode.BadRequest);
             }
 
-            var isPolicyExists = await _policyActions.DeleteResourceSet(id, resourceId).ConfigureAwait(false);
+            var isPolicyExists = await _deleteResourceSet.Execute(id, resourceId).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
@@ -176,7 +174,7 @@ namespace SimpleAuth.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
-            var policyId = await _policyActions.AddPolicy(postPolicy.ToParameter()).ConfigureAwait(false);
+            var policyId = await _addpolicy.Execute(postPolicy.ToParameter()).ConfigureAwait(false);
             var content = new AddPolicyResponse
             {
                 PolicyId = policyId
@@ -198,7 +196,7 @@ namespace SimpleAuth.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
             }
 
-            var isPolicyExists = await _policyActions.DeletePolicy(id).ConfigureAwait(false);
+            var isPolicyExists = await _deletePolicy.Execute(id).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();

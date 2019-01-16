@@ -24,7 +24,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
     using System.Linq;
     using System.Threading.Tasks;
 
-    internal class AddResourceSetToPolicyAction : IAddResourceSetToPolicyAction
+    internal class AddResourceSetToPolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
         private readonly IResourceSetRepository _resourceSetRepository;
@@ -49,8 +49,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
                 throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddResourceSetParameterNames.PolicyId));
             }
 
-            if (addResourceSetParameter.ResourceSets == null ||
-                !addResourceSetParameter.ResourceSets.Any())
+            if (addResourceSetParameter.ResourceSets == null || !addResourceSetParameter.ResourceSets.Any())
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddResourceSetParameterNames.ResourceSet));
             }
