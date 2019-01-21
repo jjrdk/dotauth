@@ -14,13 +14,7 @@
 
 namespace SimpleAuth.Extensions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Security.Claims;
     using Api.Token;
-    using Authenticate;
     using Common;
     using Helpers;
     using JwtToken;
@@ -35,8 +29,12 @@ namespace SimpleAuth.Extensions
     using Services;
     using Shared;
     using Shared.AccountFiltering;
-    using Shared.Models;
     using Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Security.Claims;
     using Translation;
     using Validators;
     using WebSite.Authenticate;
@@ -60,6 +58,19 @@ namespace SimpleAuth.Extensions
         //        CreateDateTime = DateTime.MinValue
         //    }
         //};
+
+        public static IServiceCollection AddDefaultTokenStore(this IServiceCollection serviceCollection)
+        {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
+
+            serviceCollection.AddSingleton<IAuthorizationCodeStore>(new InMemoryAuthorizationCodeStore());
+            serviceCollection.AddSingleton<ITokenStore>(new InMemoryTokenStore());
+            serviceCollection.AddSingleton<IConfirmationCodeStore>(new InMemoryConfirmationCode());
+            return serviceCollection;
+        }
 
         public static AuthorizationOptions AddAuthPolicies(this AuthorizationOptions options, string cookieName)
         {
@@ -253,7 +264,6 @@ namespace SimpleAuth.Extensions
             .AddTransient<IRemoveConfirmationCodeAction, RemoveConfirmationCodeAction>()
             .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
             .AddTransient<IResourceOwnerAuthenticateHelper, ResourceOwnerAuthenticateHelper>()
-            .AddTransient<IAmrHelper, AmrHelper>()
             .AddSingleton<IEventPublisher>(options?.EventPublisher ?? new DefaultEventPublisher())
             .AddSingleton<ISubjectBuilder>(options?.SubjectBuilder ?? new DefaultSubjectBuilder())
             .AddSingleton(options?.OAuthConfigurationOptions ?? new OAuthConfigurationOptions())

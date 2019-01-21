@@ -34,7 +34,6 @@ namespace SimpleAuth.Tests.Api.Authorization
         private const string HttpsLocalhost = "https://localhost";
         private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
         private Mock<IEventPublisher> _eventPublisherStub;
-        private Mock<IAmrHelper> _amrHelperStub;
         private Mock<IResourceOwnerAuthenticateHelper> _resourceOwnerAuthenticateHelperStub;
         private AuthorizationActions _authorizationActions;
         private Mock<IClientStore> _clientStore;
@@ -72,7 +71,6 @@ namespace SimpleAuth.Tests.Api.Authorization
         {
             _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
             _eventPublisherStub = new Mock<IEventPublisher>();
-            _amrHelperStub = new Mock<IAmrHelper>();
             _resourceOwnerAuthenticateHelperStub = new Mock<IResourceOwnerAuthenticateHelper>();
             _clientStore = new Mock<IClientStore>();
             if (client != null)
@@ -91,7 +89,6 @@ namespace SimpleAuth.Tests.Api.Authorization
                 new Mock<IConsentRepository>().Object,
                 _authorizationFlowHelperFake.Object,
                 _eventPublisherStub.Object,
-                _amrHelperStub.Object,
                 _resourceOwnerAuthenticateHelperStub.Object);
         }
     }
