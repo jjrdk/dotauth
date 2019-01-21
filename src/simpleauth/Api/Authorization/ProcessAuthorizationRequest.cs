@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,12 +14,6 @@
 
 namespace SimpleAuth.Api.Authorization
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Extensions;
@@ -28,24 +22,26 @@ namespace SimpleAuth.Api.Authorization
     using Results;
     using Shared.Models;
     using Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using Validators;
     using JwtConstants = Shared.JwtConstants;
 
     internal sealed class ProcessAuthorizationRequest
     {
-        private readonly ParameterParserHelper _parameterParserHelper;
         private readonly ClientValidator _clientValidator;
-        private readonly ScopeValidator _scopeValidator;
-        private readonly IConsentHelper _consentHelper;
         private readonly IClientStore _clientStore;
+        private readonly IConsentRepository _consentRepository;
 
-        public ProcessAuthorizationRequest(IClientStore clientStore, IConsentHelper consentHelper)
+        public ProcessAuthorizationRequest(IClientStore clientStore, IConsentRepository consentRepository)
         {
             _clientStore = clientStore;
-            _parameterParserHelper = new ParameterParserHelper();
+            _consentRepository = consentRepository;
             _clientValidator = new ClientValidator();
-            _scopeValidator = new ScopeValidator();
-            _consentHelper = consentHelper;
         }
 
         public async Task<EndpointResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName)
@@ -60,7 +56,7 @@ namespace SimpleAuth.Api.Authorization
             //var serializedAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
             //_oauthEventSource.StartProcessingAuthorizationRequest(serializedAuthorizationParameter);
             EndpointResult result = null;
-            var prompts = _parameterParserHelper.ParsePrompts(authorizationParameter.Prompt);
+            var prompts = authorizationParameter.Prompt.ParsePrompts();
             if (prompts == null || !prompts.Any())
             {
                 prompts = new List<PromptParameter>();
@@ -83,7 +79,7 @@ namespace SimpleAuth.Api.Authorization
                     authorizationParameter.State);
             }
 
-            var scopeValidationResult = _scopeValidator.Check(authorizationParameter.Scope, client);
+            var scopeValidationResult = authorizationParameter.Scope.Check(client);
             if (!scopeValidationResult.IsValid)
             {
                 throw new SimpleAuthExceptionWithState(
@@ -101,7 +97,7 @@ namespace SimpleAuth.Api.Authorization
             //        authorizationParameter.State);
             //}
 
-            var responseTypes = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
+            var responseTypes = authorizationParameter.ResponseType.ParseResponseTypes();
             if (!responseTypes.Any())
             {
                 throw new SimpleAuthExceptionWithState(
@@ -152,15 +148,6 @@ namespace SimpleAuth.Api.Authorization
                     issuerName).ConfigureAwait(false);
             }
 
-            //var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
-            //var actionName = result.RedirectInstruction == null
-            //    ? string.Empty
-            //    : Enum.GetName(typeof(SimpleAuthEndPoints), result.RedirectInstruction.Action);
-            //_oauthEventSource.EndProcessingAuthorizationRequest(
-            //    serializedAuthorizationParameter,
-            //    actionTypeName,
-            //    actionName);
-
             return result;
         }
 
@@ -189,32 +176,6 @@ namespace SimpleAuth.Api.Authorization
                 var client = await _clientStore.GetById(authorizationParameter.ClientId).ConfigureAwait(false);
                 handler.ValidateToken(token, client.CreateValidationParameters(issuerName), out var securityToken);
                 var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
-                //string jwsToken;
-                //if (token.IsJweToken())
-                //{
-
-                //    // jwsToken = await _jwtParser.DecryptAsync(token).ConfigureAwait(false);
-                //    if (string.IsNullOrWhiteSpace(jwsToken))
-                //    {
-                //        throw new SimpleAuthExceptionWithState(
-                //            ErrorCodes.InvalidRequestCode,
-                //            ErrorDescriptions.TheIdTokenHintParameterCannotBeDecrypted,
-                //            authorizationParameter.State);
-                //    }
-                //}
-                //else
-                //{
-                //    jwsToken = token;
-                //}
-
-                //var jwsPayload = await _jwtParser.UnSignAsync(jwsToken).ConfigureAwait(false);
-                //if (jwsPayload == null)
-                //{
-                //    throw new SimpleAuthExceptionWithState(
-                //        ErrorCodes.InvalidRequestCode,
-                //        ErrorDescriptions.TheSignatureOfIdTokenHintParameterCannotBeChecked,
-                //        authorizationParameter.State);
-                //}
 
                 if (jwsPayload?.Aud == null || !jwsPayload.Aud.Contains(issuerName))
                 {
@@ -277,7 +238,7 @@ namespace SimpleAuth.Api.Authorization
                 return result;
             }
 
-            // Redirects to the authentication screen 
+            // Redirects to the authentication screen
             // if the "prompt" authorizationParameter is equal to "login" OR
             // The user is not authenticated AND the prompt authorizationParameter is different from "none"
             if (prompts.Contains(PromptParameter.login))
@@ -309,7 +270,7 @@ namespace SimpleAuth.Api.Authorization
         private async Task<Consent> GetResourceOwnerConsent(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
         {
             var subject = claimsPrincipal.GetSubject();
-            return await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
+            return await _consentRepository.GetConfirmedConsents(subject, authorizationParameter).ConfigureAwait(false);
         }
 
         private static bool IsAuthenticated(ClaimsPrincipal principal)

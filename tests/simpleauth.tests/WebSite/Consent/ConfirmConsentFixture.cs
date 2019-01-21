@@ -8,7 +8,6 @@
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth.Common;
-    using SimpleAuth.Helpers;
     using SimpleAuth.WebSite.Consent.Actions;
     using System;
     using System.Collections.Generic;
@@ -23,16 +22,17 @@
         private Mock<IClientStore> _clientRepositoryFake;
         private Mock<IScopeRepository> _scopeRepositoryFake;
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryFake;
-        private Mock<IParameterParserHelper> _parameterParserHelperFake;
         private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
-        private Mock<IConsentHelper> _consentHelperFake;
-
         private IConfirmConsentAction _confirmConsentAction;
+
+        public ConfirmConsentFixture()
+        {
+            InitializeFakeObjects();
+        }
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => _confirmConsentAction.Execute(null, null, null))
@@ -46,7 +46,6 @@
         [Fact]
         public async Task When_No_Consent_Has_Been_Given_And_ResponseMode_Is_No_Correct_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
             const string subject = "subject";
             const string state = "state";
             var authorizationParameter = new AuthorizationParameter
@@ -70,39 +69,30 @@
             {
                 Id = subject
             };
-            ICollection<string> scopeNames = new List<string>();
             ICollection<Scope> scopes = new List<Scope>();
-            _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
-                    It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult((Consent)null));
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
-                .Returns(scopeNames);
             _resourceOwnerRepositoryFake.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(resourceOwner));
             _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
-            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new string[0]);//ResponseTypeNames.IdToken});
-
             var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
                     _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null))
                 .ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
-            Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
-            Assert.True(exception.State == state);
+            Assert.Equal(ErrorDescriptions.TheAuthorizationFlowIsNotSupported, exception.Message);
+            Assert.Equal(state, exception.State);
         }
 
         [Fact]
         public async Task When_No_Consent_Has_Been_Given_For_The_Claims_Then_Create_And_Insert_A_New_One()
         {
-            InitializeFakeObjects();
             const string subject = "subject";
             const string clientId = "clientId";
             var authorizationParameter = new AuthorizationParameter
             {
+                ResponseType = "code",
                 Claims = new ClaimsParameter
                 {
                     UserInfo = new List<ClaimParameter>
@@ -131,21 +121,14 @@
             };
 
             ICollection<Scope> scopes = new List<Scope>();
-            _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
-                    It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult((Consent)null));
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
-                .Returns(new List<string>());
-            _parameterParserHelperFake.Setup(x => x.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new[] { ResponseTypeNames.Code });
             _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
             _resourceOwnerRepositoryFake.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(resourceOwner));
             Consent insertedConsent = null;
-            _consentRepositoryFake.Setup(co => co.InsertAsync(It.IsAny<Consent>()))
+            _consentRepositoryFake.Setup(co => co.Insert(It.IsAny<Consent>()))
                 .Callback<Consent>(consent => insertedConsent = consent)
                 .Returns(Task.FromResult(true));
 
@@ -159,10 +142,10 @@
         [Fact]
         public async Task When_No_Consent_Has_Been_Given_Then_Create_And_Insert_A_New_One()
         {
-            InitializeFakeObjects();
             const string subject = "subject";
             var authorizationParameter = new AuthorizationParameter
             {
+                ResponseType = "code",
                 Claims = null,
                 Scope = "profile",
                 ResponseMode = ResponseMode.None
@@ -182,24 +165,17 @@
                 Id = subject
             };
             ICollection<Scope> scopes = new List<Scope>();
-            _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
-                    It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult((Consent)null));
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
-                .Returns(new List<string>());
             _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
             _resourceOwnerRepositoryFake.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(resourceOwner));
-            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new[] { ResponseTypeNames.Code });
 
             var result = await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null)
                 .ConfigureAwait(false);
 
-            _consentRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Consent>()));
+            _consentRepositoryFake.Verify(c => c.Insert(It.IsAny<Consent>()));
             Assert.Equal(ResponseMode.query, result.RedirectInstruction.ResponseMode);
         }
 
@@ -209,17 +185,13 @@
             _clientRepositoryFake = new Mock<IClientStore>();
             _scopeRepositoryFake = new Mock<IScopeRepository>();
             _resourceOwnerRepositoryFake = new Mock<IResourceOwnerRepository>();
-            _parameterParserHelperFake = new Mock<IParameterParserHelper>();
             _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
-            _consentHelperFake = new Mock<IConsentHelper>();
             _confirmConsentAction = new ConfirmConsentAction(
                 _consentRepositoryFake.Object,
                 _clientRepositoryFake.Object,
                 _scopeRepositoryFake.Object,
                 _resourceOwnerRepositoryFake.Object,
-                _parameterParserHelperFake.Object,
                 _generateAuthorizationResponseFake.Object,
-                _consentHelperFake.Object,
                 new Mock<IEventPublisher>().Object);
         }
     }

@@ -14,8 +14,6 @@
     public sealed class ConsentHelperFixture
     {
         private Mock<IConsentRepository> _consentRepositoryFake;
-        private Mock<IParameterParserHelper> _parameterParserHelperFake;
-        private IConsentHelper _consentHelper;
 
         public ConsentHelperFixture()
         {
@@ -26,7 +24,7 @@
         public async Task When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
         {
             await Assert
-                .ThrowsAsync<ArgumentNullException>(() => _consentHelper.GetConfirmedConsentsAsync("subject", null))
+                .ThrowsAsync<ArgumentNullException>(() => _consentRepositoryFake.Object.GetConfirmedConsents("subject", null))
                 .ConfigureAwait(false);
         }
 
@@ -36,10 +34,10 @@
             const string subject = "subject";
             var authorizationParameter = new AuthorizationParameter();
 
-            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((IEnumerable<Consent>) null));
+            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((IEnumerable<Consent>)null));
 
-            var result = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter)
+            var result = await _consentRepositoryFake.Object.GetConfirmedConsents(subject, authorizationParameter)
                 .ConfigureAwait(false);
 
             Assert.Null(result);
@@ -55,7 +53,7 @@
             {
                 Claims = new ClaimsParameter
                 {
-                    UserInfo = new List<ClaimParameter> {new ClaimParameter {Name = claimName}}
+                    UserInfo = new List<ClaimParameter> { new ClaimParameter { Name = claimName } }
                 },
                 ClientId = clientId
             };
@@ -64,10 +62,10 @@
                 new Consent {Claims = new List<string> {claimName}, Client = new Client {ClientId = clientId}}
             };
 
-            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>()))
+            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>()))
                 .Returns(Task.FromResult(consents));
 
-            var result = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter)
+            var result = await _consentRepositoryFake.Object.GetConfirmedConsents(subject, authorizationParameter)
                 .ConfigureAwait(false);
 
             Assert.Single(result.Claims);
@@ -80,7 +78,7 @@
             const string subject = "subject";
             const string scope = "profile";
             const string clientId = "clientId";
-            var authorizationParameter = new AuthorizationParameter {ClientId = clientId, Scope = scope};
+            var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
             IEnumerable<Consent> consents = new List<Consent>
             {
                 new Consent
@@ -89,12 +87,12 @@
                     GrantedScopes = new List<Scope> {new Scope {Name = scope}}
                 }
             };
-            var scopes = new List<string> {scope};
-            _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>())).Returns(scopes);
-            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>()))
+            var scopes = new List<string> { scope };
+
+            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>()))
                 .Returns(Task.FromResult(consents));
 
-            var result = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter)
+            var result = await _consentRepositoryFake.Object.GetConfirmedConsents(subject, authorizationParameter)
                 .ConfigureAwait(false);
 
             Assert.Single(result.GrantedScopes);
@@ -112,7 +110,8 @@
             const string clientId = "clientId";
             var authorizationParameter = new AuthorizationParameter
             {
-                ClientId = clientId, Scope = openIdScope + " " + profileScope + " " + emailScope
+                ClientId = clientId,
+                Scope = openIdScope + " " + profileScope + " " + emailScope
             };
             IEnumerable<Consent> consents = new List<Consent>
             {
@@ -125,13 +124,13 @@
                     }
                 }
             };
-            var scopes = new List<string> {openIdScope, profileScope, emailScope};
 
-            _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>())).Returns(scopes);
-            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>()))
+            //var scopes = new List<string> {openIdScope, profileScope, emailScope};
+
+            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>()))
                 .Returns(Task.FromResult(consents));
 
-            var result = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter)
+            var result = await _consentRepositoryFake.Object.GetConfirmedConsents(subject, authorizationParameter)
                 .ConfigureAwait(false);
 
             Assert.Null(result);
@@ -140,8 +139,6 @@
         private void InitializeFakeObjects()
         {
             _consentRepositoryFake = new Mock<IConsentRepository>();
-            _parameterParserHelperFake = new Mock<IParameterParserHelper>();
-            _consentHelper = new ConsentHelper(_consentRepositoryFake.Object, _parameterParserHelperFake.Object);
         }
     }
 }

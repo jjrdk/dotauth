@@ -18,7 +18,7 @@
                 : consents.ToList();
         }
 
-        public Task<bool> DeleteAsync(Consent record)
+        public Task<bool> Delete(Consent record)
         {
             if (record == null)
             {
@@ -35,7 +35,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<IEnumerable<Consent>> GetConsentsForGivenUserAsync(string subject)
+        public Task<IEnumerable<Consent>> GetConsentsForGivenUser(string subject)
         {
             if (string.IsNullOrWhiteSpace(subject))
             {
@@ -45,7 +45,7 @@
             return Task.FromResult(_consents.Where(c => c.ResourceOwner.Id == subject));
         }
 
-        public Task<bool> InsertAsync(Consent record)
+        public Task<bool> Insert(Consent record)
         {
             if (record == null)
             {

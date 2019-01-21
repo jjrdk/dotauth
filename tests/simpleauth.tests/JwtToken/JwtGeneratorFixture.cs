@@ -828,105 +828,14 @@ namespace SimpleAuth.Tests.JwtToken
             Assert.Contains(jwsPayload.Claims, c => c.Type == StandardClaimNames.CHash);
         }
 
-        //[Fact]
-        //public async Task When_Encrypt_Jws_Then_Jwe_Is_Returned()
-        //{
-        //    InitializeMockObjects();
-        //    var client = FakeOpenIdAssets.GetClients().First();
-        //    client.IdTokenEncryptedResponseAlg = SecurityAlgorithms.RsaPKCS1;
-        //    using (var provider = new RSACryptoServiceProvider())
-        //    {
-        //        var jsonWebKey = provider.CreateJwk(
-        //            JsonWebKeyUseNames.Enc,
-        //            new[] { KeyOperations.Encrypt, KeyOperations.Decrypt },
-        //            true);
-        //        //    new JsonWebKey
-        //        //{
-        //        //    Alg = SecurityAlgorithms.RsaPKCS1,
-        //        //    KeyOps = new[]
-        //        //    {
-        //        //        KeyOperations.Encrypt,
-        //        //        KeyOperations.Decrypt
-        //        //    },
-        //        //    Kid = "3",
-        //        //    Kty = JwtConstants.KeyTypeValues.RSA,
-        //        //    Use = "enc",
-        //        //    SerializedKey = serializedRsa,
-        //        //};
-        //        var jws = new JwtPayload(); //"jws";
-        //        //var jwks = new JsonWebKeySet();
-        //        //jwks.Keys.Add(jsonWebKey);
-
-        //        //_jsonWebKeyRepositoryStub.Setup(j =>
-        //        //        j.GetByAlgorithmAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-        //        //    .Returns(Task.FromResult(jwks));
-        //        //_clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult(client));
-
-        //        var jwe = await _jwtGenerator.EncryptAsync(
-        //                jws,
-        //                SecurityAlgorithms.RsaPKCS1,
-        //                SecurityAlgorithms.Aes128CbcHmacSha256)
-        //            .ConfigureAwait(false);
-
-        //        Assert.NotEmpty(jwe);
-        //    }
-        //}
-
-        //[Fact]
-        //public async Task When_Sign_Payload_Then_Jws_Is_Returned()
-        //{
-        //    InitializeMockObjects();
-        //    var client = FakeOpenIdAssets.GetClients().First();
-        //    client.IdTokenEncryptedResponseAlg = SecurityAlgorithms.RsaSha256;
-
-        //    using (var provider = new RSACryptoServiceProvider())
-        //    {
-        //        //   serializedRsa = RsaExtensions.ToXml(provider, true);
-
-        //        var jsonWebKey = provider.CreateJwk(
-        //            JsonWebKeyUseNames.Sig,
-        //            new[] { KeyOperations.Sign, KeyOperations.Verify },
-        //            true);
-        //        //    new JsonWebKey
-        //        //{
-        //        //    Alg = SecurityAlgorithms.RsaSha256,
-        //        //    KeyOps = new[]
-        //        //    {
-        //        //        KeyOperations.Sign,
-        //        //        KeyOperations.Verify
-        //        //    },
-        //        //    Kid = "a3rMUgMFv9tPclLa6yF3zAkfquE",
-        //        //    Kty = KeyType.RSA,
-        //        //    Use = Use.Sig,
-        //        //    SerializedKey = serializedRsa
-        //        //};
-        //        var jwks = new JsonWebKeySet();
-        //        jwks.Keys.Add(jsonWebKey);
-        //        //_jsonWebKeyRepositoryStub.Setup(j =>
-        //        //        j.GetByAlgorithmAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-        //        //    .ReturnsAsync(jwks);
-        //        //_clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult(client));
-        //        var jwsPayload = new JwtPayload();
-
-        //        var jws = await _jwtGenerator.SignAsync(
-        //                jwsPayload,
-        //                SecurityAlgorithms.RsaSha256)
-        //            .ConfigureAwait(false);
-
-        //        Assert.NotEmpty(jws);
-        //    }
-        //}
-
         private void InitializeMockObjects()
         {
             _clientRepositoryStub = new Mock<IClientStore>();
             _scopeRepositoryStub = new Mock<IScopeRepository>();
-            var parameterParserHelper = new ParameterParserHelper();
 
             _jwtGenerator = new JwtGenerator(
                 _clientRepositoryStub.Object,
-                _scopeRepositoryStub.Object,
-                parameterParserHelper);
+                _scopeRepositoryStub.Object);
         }
     }
 }

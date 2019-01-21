@@ -3,10 +3,9 @@
     using Moq;
     using Parameters;
     using Shared.Repositories;
-    using SimpleAuth.Helpers;
+    using SimpleAuth.Api.Authorization;
     using System;
     using System.Threading.Tasks;
-    using SimpleAuth.Api.Authorization;
     using Xunit;
 
     public sealed class ProcessAuthorizationRequestFixture
@@ -551,12 +550,9 @@
             var clientStore = new Mock<IClientStore>();
             var consentRepository = new Mock<IConsentRepository>();
 
-            var parameterParserHelper = new ParameterParserHelper();
-            var consentHelper = new ConsentHelper(consentRepository.Object, parameterParserHelper);
-            
             _processAuthorizationRequest = new ProcessAuthorizationRequest(
                 clientStore.Object,
-                consentHelper);
+                consentRepository.Object);
         }
     }
 }

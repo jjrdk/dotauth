@@ -57,7 +57,7 @@ namespace SimpleAuth.Tests.WebSite.User
             };
             var claimsIdentity = new ClaimsIdentity(claims);
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            _consentRepositoryStub.Setup(c => c.GetConsentsForGivenUserAsync(subject))
+            _consentRepositoryStub.Setup(c => c.GetConsentsForGivenUser(subject))
                 .Returns(Task.FromResult(consents));
 
             var result = await _getConsentsOperation.Execute(claimsPrincipal).ConfigureAwait(false);

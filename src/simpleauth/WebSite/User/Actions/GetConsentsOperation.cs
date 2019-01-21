@@ -39,7 +39,7 @@ namespace SimpleAuth.WebSite.User.Actions
             }
 
             var subject = claimsPrincipal.GetSubject();
-            return await _consentRepository.GetConsentsForGivenUserAsync(subject).ConfigureAwait(false);
+            return await _consentRepository.GetConsentsForGivenUser(subject).ConfigureAwait(false);
         }
     }
 }

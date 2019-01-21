@@ -35,25 +35,21 @@ namespace SimpleAuth.Api.Authorization
         private readonly GetAuthorizationCodeAndTokenViaHybridWorkflowOperation
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperation;
         private readonly AuthorizationCodeGrantTypeParameterAuthEdpValidator _authorizationCodeGrantTypeParameterValidator;
-        private readonly IParameterParserHelper _parameterParserHelper;
         private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly IAmrHelper _amrHelper;
         private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
 
         public AuthorizationActions(
-            IConsentHelper consentHelper,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
-            IParameterParserHelper parameterParserHelper,
             IClientStore clientStore,
+            IConsentRepository consentRepository,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IEventPublisher eventPublisher,
             IAmrHelper amrHelper,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper)
         {
-            var processAuthorizationRequest = new ProcessAuthorizationRequest(
-                clientStore,
-                consentHelper);
+            var processAuthorizationRequest = new ProcessAuthorizationRequest(clientStore, consentRepository);
             _getAuthorizationCodeOperation = new GetAuthorizationCodeOperation(
                 processAuthorizationRequest,
                 generateAuthorizationResponse);
@@ -64,10 +60,7 @@ namespace SimpleAuth.Api.Authorization
                 new GetAuthorizationCodeAndTokenViaHybridWorkflowOperation(
                     processAuthorizationRequest,
                     generateAuthorizationResponse);
-            _authorizationCodeGrantTypeParameterValidator = new AuthorizationCodeGrantTypeParameterAuthEdpValidator(
-                parameterParserHelper,
-                clientStore);
-            _parameterParserHelper = parameterParserHelper;
+            _authorizationCodeGrantTypeParameterValidator = new AuthorizationCodeGrantTypeParameterAuthEdpValidator(clientStore);
             _authorizationFlowHelper = authorizationFlowHelper;
             _eventPublisher = eventPublisher;
             _amrHelper = amrHelper;
@@ -86,7 +79,7 @@ namespace SimpleAuth.Api.Authorization
                 throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheClientRequiresPkce, parameter.ClientId), parameter.State);
             }
 
-            var responseTypes = _parameterParserHelper.ParseResponseTypes(parameter.ResponseType);
+            var responseTypes = parameter.ResponseType.ParseResponseTypes();
             var authorizationFlow = _authorizationFlowHelper.GetAuthorizationFlow(responseTypes, parameter.State);
             switch (authorizationFlow)
             {

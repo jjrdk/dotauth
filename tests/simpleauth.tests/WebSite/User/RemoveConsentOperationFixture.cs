@@ -42,7 +42,7 @@ namespace SimpleAuth.Tests.WebSite.User
             const bool isRemoved = true;
             const string consentId = "consent_id";
             InitializeFakeObjects();
-            _consentRepositoryStub.Setup(c => c.DeleteAsync(It.IsAny<Consent>()))
+            _consentRepositoryStub.Setup(c => c.Delete(It.IsAny<Consent>()))
                 .Returns(Task.FromResult(isRemoved));
 
             var result = await _removeConsentOperation.Execute(consentId).ConfigureAwait(false);

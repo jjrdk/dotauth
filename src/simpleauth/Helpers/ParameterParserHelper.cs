@@ -20,14 +20,14 @@ namespace SimpleAuth.Helpers
     using System.Collections.Generic;
     using System.Linq;
 
-    public class ParameterParserHelper : IParameterParserHelper
+    public static class ParameterParserHelper
     {
         /// <summary>
         /// Parse the parameter and returns a list of prompt parameter.
         /// </summary>
         /// <param name="parameter">List of prompts separated by whitespace</param>
         /// <returns>List of prompts.</returns>
-        public ICollection<PromptParameter> ParsePrompts(string parameter)
+        public static ICollection<PromptParameter> ParsePrompts(this string parameter)
         {
             if (string.IsNullOrWhiteSpace(parameter))
             {
@@ -38,7 +38,7 @@ namespace SimpleAuth.Helpers
 
             var prompts = parameter.Split(' ')
                 .Where(c => !string.IsNullOrWhiteSpace(c) && promptNames.Contains(c))
-                .Select(c => (PromptParameter)Enum.Parse(typeof(PromptParameter), c))
+                .Select(c => (PromptParameter) Enum.Parse(typeof(PromptParameter), c))
                 .ToList();
             return prompts;
         }
@@ -48,7 +48,7 @@ namespace SimpleAuth.Helpers
         /// </summary>
         /// <param name="parameter">List of response types separated by whitespace</param>
         /// <returns>List of response types</returns>
-        public ICollection<string> ParseResponseTypes(string parameter)
+        public static ICollection<string> ParseResponseTypes(this string parameter)
         {
             //var responseTypeNames = Enum.GetNames(typeof (string));
             if (string.IsNullOrWhiteSpace(parameter))
@@ -58,7 +58,7 @@ namespace SimpleAuth.Helpers
 
             var responses = parameter.Split(' ')
                 .Where(r => !string.IsNullOrWhiteSpace(r) && ResponseTypeNames.All.Contains(r))
-               .ToArray();
+                .ToArray();
             return responses;
         }
 
@@ -67,31 +67,11 @@ namespace SimpleAuth.Helpers
         /// </summary>
         /// <param name="scope">Parameter to parse.</param>
         /// <returns>list of scopes or null</returns>
-        public ICollection<string> ParseScopes(string parameter)
+        public static ICollection<string> ParseScopes(this string parameter)
         {
-            return string.IsNullOrWhiteSpace(parameter) ? new List<string>() : parameter.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+            return string.IsNullOrWhiteSpace(parameter)
+                ? new List<string>()
+                : parameter.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
         }
-
-        /*
-        public List<string> ParseScopeParametersAndGetAllScopes(string concatenateListOfScopes)
-        {
-            var result = new List<string>();
-            var scopes = ParseScopeParameters(concatenateListOfScopes);
-            if (scopes == null || !scopes.Any())
-            {
-                return result;
-            }
-
-            foreach (var scope in scopes)
-            {
-                var scopeRecord = _scopeRepository.GetScopeByName(scope);
-                if (scopeRecord != null)
-                {
-                    result.Add(scope);
-                }
-            }
-
-            return result;
-        }*/
     }
 }
