@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using SimpleAuth.Shared.Repositories;
+
 namespace SimpleAuth.Api.Token.Actions
 {
     using Authenticate;
@@ -25,14 +27,14 @@ namespace SimpleAuth.Api.Token.Actions
 
     internal class RevokeTokenAction
     {
-        private readonly IAuthenticateClient _authenticateClient;
+        private readonly AuthenticateClient _authenticateClient;
         private readonly ITokenStore _tokenStore;
 
         public RevokeTokenAction(
-            IAuthenticateClient authenticateClient,
+            IClientStore clientStore,
             ITokenStore tokenStore)
         {
-            _authenticateClient = authenticateClient;
+            _authenticateClient = new AuthenticateClient(clientStore);
             _tokenStore = tokenStore;
         }
 
@@ -50,7 +52,7 @@ namespace SimpleAuth.Api.Token.Actions
 
             // 1. Check the client credentials
             var instruction = authenticationHeaderValue.GetAuthenticateInstruction(revokeTokenParameter, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
+            var authResult = await _authenticateClient.Authenticate(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {

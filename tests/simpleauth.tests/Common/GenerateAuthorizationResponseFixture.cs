@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,6 +49,11 @@ namespace SimpleAuth.Tests.Common
         private Mock<IEventPublisher> _eventPublisher;
         private IGenerateAuthorizationResponse _generateAuthorizationResponse;
 
+        public GenerateAuthorizationResponseFixture()
+        {
+            InitializeFakeObjects();
+        }
+
         public static string ToHexString(IEnumerable<byte> arr)
         {
             if (arr == null)
@@ -89,237 +94,259 @@ namespace SimpleAuth.Tests.Common
         [Fact]
         public async Task When_Passing_No_Action_Result_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(null, null, null, null, null)).ConfigureAwait(false);
+            await Assert
+                .ThrowsAsync<ArgumentNullException>(
+                    () => _generateAuthorizationResponse.ExecuteAsync(null, null, null, null, null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Passing_No_Authorization_Request_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
-            var redirectInstruction = new EndpointResult
-            {
-                RedirectInstruction = new RedirectInstruction()
-            };
+            var redirectInstruction = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, null, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                    () => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, null, null, null, null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_There_Is_No_Logged_User_Then_Exception_Is_Throw()
         {
-            InitializeFakeObjects();
-            var redirectInstruction = new EndpointResult
-            {
-                RedirectInstruction = new RedirectInstruction()
-            };
+            var redirectInstruction = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                    () => _generateAuthorizationResponse.ExecuteAsync(
+                        redirectInstruction,
+                        new AuthorizationParameter(),
+                        null,
+                        null,
+                        null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_No_Client_Is_Passed_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
-            var redirectInstruction = new EndpointResult
-            {
-                RedirectInstruction = new RedirectInstruction()
-            };
+            var redirectInstruction = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), claimsPrincipal, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                    () => _generateAuthorizationResponse.ExecuteAsync(
+                        redirectInstruction,
+                        new AuthorizationParameter(),
+                        claimsPrincipal,
+                        null,
+                        null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Generating_AuthorizationResponse_With_IdToken_Then_IdToken_Is_Added_To_The_Parameters()
         {
-            InitializeFakeObjects();
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
             const string idToken = "idToken";
             var authorizationParameter = new AuthorizationParameter();
-            var actionResult = new EndpointResult
-            {
-                RedirectInstruction = new RedirectInstruction()
-            };
+            var actionResult = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
             var jwsPayload = new JwtPayload();
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new[]
-                {
-                    ResponseTypeNames.IdToken
-                });
+                .Returns(new[] {ResponseTypeNames.IdToken});
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>(), null))
+                    j => j.GenerateIdTokenPayloadForScopesAsync(
+                        It.IsAny<ClaimsPrincipal>(),
+                        It.IsAny<AuthorizationParameter>(),
+                        null))
                 .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
-                j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                    j => j.GenerateUserInfoPayloadForScopeAsync(
+                        It.IsAny<ClaimsPrincipal>(),
+                        It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult(jwsPayload));
             //_jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<JwtPayload>(), It.IsAny<string>(), It.IsAny<string>()))
             //    .Returns(Task.FromResult(idToken));
-            _clientHelperFake.Setup(c => c.GenerateIdTokenAsync(It.IsAny<string>(),
-                It.IsAny<JwtPayload>()))
+            _clientHelperFake.Setup(c => c.GenerateIdTokenAsync(It.IsAny<string>(), It.IsAny<JwtPayload>()))
                 .Returns(Task.FromResult(idToken));
 
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
+            await _generateAuthorizationResponse.ExecuteAsync(
+                    actionResult,
+                    authorizationParameter,
+                    claimsPrincipal,
+                    new Client(),
+                    null)
+                .ConfigureAwait(false);
 
-            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == CoreConstants.StandardAuthorizationResponseNames.IdTokenName);
+            Assert.Contains(
+                actionResult.RedirectInstruction.Parameters,
+                p => p.Name == CoreConstants.StandardAuthorizationResponseNames.IdTokenName);
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Value == idToken);
         }
 
         [Fact]
-        public async Task When_Generating_AuthorizationResponse_With_AccessToken_And_ThereIs_No_Granted_Token_Then_Token_Is_Generated_And_Added_To_The_Parameters()
+        public async Task
+            When_Generating_AuthorizationResponse_With_AccessToken_And_ThereIs_No_Granted_Token_Then_Token_Is_Generated_And_Added_To_The_Parameters()
         {
-            InitializeFakeObjects();
             //const string idToken = "idToken";
             const string clientId = "clientId";
             const string scope = "openid";
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = clientId,
-                Scope = scope
-            };
-            var grantedToken = new GrantedToken
-            {
-                AccessToken = Id.Create()
-            };
-            var actionResult = new EndpointResult
-            {
-                RedirectInstruction = new RedirectInstruction()
-            };
+            var authorizationParameter = new AuthorizationParameter {ClientId = clientId, Scope = scope};
+            var grantedToken = new GrantedToken {AccessToken = Id.Create()};
+            var actionResult = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
             var jwsPayload = new JwtPayload();
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new[]
-                {
-                    ResponseTypeNames.Token
-                });
+                .Returns(new[] {ResponseTypeNames.Token});
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>(), null))
+                    j => j.GenerateIdTokenPayloadForScopesAsync(
+                        It.IsAny<ClaimsPrincipal>(),
+                        It.IsAny<AuthorizationParameter>(),
+                        null))
                 .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
-                j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                    j => j.GenerateUserInfoPayloadForScopeAsync(
+                        It.IsAny<ClaimsPrincipal>(),
+                        It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult(jwsPayload));
             //_jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<JwtPayload>(), It.IsAny<string>(), It.IsAny<string>()))
             //    .Returns(Task.FromResult(idToken));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
-                .Returns(() => new List<string> { scope });
-            _grantedTokenHelperStub.Setup(r => r.GetValidGrantedTokenAsync(It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<JwtPayload>(),
-                It.IsAny<JwtPayload>()))
-                .Returns(Task.FromResult((GrantedToken)null));
-            _grantedTokenGeneratorHelperFake.Setup(r => r.GenerateToken(It.IsAny<Client>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<IDictionary<string, object>>(),
-                    It.IsAny<JwtPayload>(),
-                    It.IsAny<JwtPayload>()))
+                .Returns(() => new List<string> {scope});
+            _grantedTokenHelperStub
+                .Setup(
+                    r => r.GetValidGrantedTokenAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<JwtPayload>(),
+                        It.IsAny<JwtPayload>()))
+                .Returns(Task.FromResult((GrantedToken) null));
+            _grantedTokenGeneratorHelperFake
+                .Setup(
+                    r => r.GenerateToken(
+                        It.IsAny<Client>(),
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<IDictionary<string, object>>(),
+                        It.IsAny<JwtPayload>(),
+                        It.IsAny<JwtPayload>()))
                 .Returns(Task.FromResult(grantedToken));
 
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
+            await _generateAuthorizationResponse.ExecuteAsync(
+                    actionResult,
+                    authorizationParameter,
+                    claimsPrincipal,
+                    new Client(),
+                    null)
+                .ConfigureAwait(false);
 
-            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == CoreConstants.StandardAuthorizationResponseNames.AccessTokenName);
+            Assert.Contains(
+                actionResult.RedirectInstruction.Parameters,
+                p => p.Name == CoreConstants.StandardAuthorizationResponseNames.AccessTokenName);
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Value == grantedToken.AccessToken);
             _grantedTokenRepositoryFake.Verify(g => g.AddToken(grantedToken));
             _eventPublisher.Verify(e => e.Publish(It.IsAny<AccessToClientGranted>()));
         }
 
         [Fact]
-        public async Task When_Generating_AuthorizationResponse_With_AccessToken_And_ThereIs_A_GrantedToken_Then_Token_Is_Added_To_The_Parameters()
+        public async Task
+            When_Generating_AuthorizationResponse_With_AccessToken_And_ThereIs_A_GrantedToken_Then_Token_Is_Added_To_The_Parameters()
         {
-            InitializeFakeObjects();
             //const string idToken = "idToken";
             const string clientId = "clientId";
             const string scope = "openid";
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = clientId,
-                Scope = scope
-            };
-            var grantedToken = new GrantedToken
-            {
-                AccessToken = Id.Create()
-            };
-            var actionResult = new EndpointResult
-            {
-                RedirectInstruction = new RedirectInstruction()
-            };
+            var authorizationParameter = new AuthorizationParameter {ClientId = clientId, Scope = scope};
+            var grantedToken = new GrantedToken {AccessToken = Id.Create()};
+            var actionResult = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
             var jwsPayload = new JwtPayload();
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new[]
-                {
-                    ResponseTypeNames.Token
-                });
+                .Returns(new[] {ResponseTypeNames.Token});
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>(), null))
+                    j => j.GenerateIdTokenPayloadForScopesAsync(
+                        It.IsAny<ClaimsPrincipal>(),
+                        It.IsAny<AuthorizationParameter>(),
+                        null))
                 .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
-                j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                    j => j.GenerateUserInfoPayloadForScopeAsync(
+                        It.IsAny<ClaimsPrincipal>(),
+                        It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult(jwsPayload));
             //_jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<JwtPayload>(), It.IsAny<string>(), It.IsAny<string>()))
             //    .Returns(Task.FromResult(idToken));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
-                .Returns(() => new List<string> { scope });
-            _grantedTokenHelperStub.Setup(r => r.GetValidGrantedTokenAsync(It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<JwtPayload>(),
-                It.IsAny<JwtPayload>()))
+                .Returns(() => new List<string> {scope});
+            _grantedTokenHelperStub
+                .Setup(
+                    r => r.GetValidGrantedTokenAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<JwtPayload>(),
+                        It.IsAny<JwtPayload>()))
                 .Returns(() => Task.FromResult(grantedToken));
 
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
+            await _generateAuthorizationResponse.ExecuteAsync(
+                    actionResult,
+                    authorizationParameter,
+                    claimsPrincipal,
+                    new Client(),
+                    null)
+                .ConfigureAwait(false);
 
-            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == CoreConstants.StandardAuthorizationResponseNames.AccessTokenName);
+            Assert.Contains(
+                actionResult.RedirectInstruction.Parameters,
+                p => p.Name == CoreConstants.StandardAuthorizationResponseNames.AccessTokenName);
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Value == grantedToken.AccessToken);
         }
 
         [Fact]
-        public async Task When_Generating_AuthorizationResponse_With_AuthorizationCode_Then_Code_Is_Added_To_The_Parameters()
+        public async Task
+            When_Generating_AuthorizationResponse_With_AuthorizationCode_Then_Code_Is_Added_To_The_Parameters()
         {
-            InitializeFakeObjects();
             //const string idToken = "idToken";
             const string clientId = "clientId";
             const string scope = "openid";
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = clientId,
-                Scope = scope
-            };
+            var authorizationParameter = new AuthorizationParameter {ClientId = clientId, Scope = scope};
             var consent = new Consent();
-            var actionResult = new EndpointResult
-            {
-                RedirectInstruction = new RedirectInstruction()
-            };
+            var actionResult = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
             var jwsPayload = new JwtPayload();
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new[]
-                {
-                    ResponseTypeNames.Code
-                });
+                .Returns(new[] {ResponseTypeNames.Code});
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>(), null))
+                    j => j.GenerateIdTokenPayloadForScopesAsync(
+                        It.IsAny<ClaimsPrincipal>(),
+                        It.IsAny<AuthorizationParameter>(),
+                        null))
                 .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
-                j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                    j => j.GenerateUserInfoPayloadForScopeAsync(
+                        It.IsAny<ClaimsPrincipal>(),
+                        It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult(jwsPayload));
             //_jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<JwtPayload>(), It.IsAny<string>(), It.IsAny<string>()))
             //    .Returns(Task.FromResult(idToken));
-            _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
-                It.IsAny<AuthorizationParameter>()))
+            _consentHelperFake
+                .Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(), It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult(consent));
 
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
+            await _generateAuthorizationResponse.ExecuteAsync(
+                    actionResult,
+                    authorizationParameter,
+                    claimsPrincipal,
+                    new Client(),
+                    null)
+                .ConfigureAwait(false);
 
-            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == CoreConstants.StandardAuthorizationResponseNames.AuthorizationCodeName);
+            Assert.Contains(
+                actionResult.RedirectInstruction.Parameters,
+                p => p.Name == CoreConstants.StandardAuthorizationResponseNames.AuthorizationCodeName);
             _authorizationCodeRepositoryFake.Verify(a => a.AddAuthorizationCode(It.IsAny<AuthorizationCode>()));
             _eventPublisher.Verify(s => s.Publish(It.IsAny<AuthorizationCodeGranted>()));
         }
 
         [Fact]
-        public async Task When_Redirecting_To_Callback_And_There_Is_No_Response_Mode_Specified_Then_The_Response_Mode_Is_Set()
+        public async Task
+            When_Redirecting_To_Callback_And_There_Is_No_Response_Mode_Specified_Then_The_Response_Mode_Is_Set()
         {
-            InitializeFakeObjects();
             //const string idToken = "idToken";
             const string clientId = "clientId";
             const string scope = "scope";
@@ -327,10 +354,7 @@ namespace SimpleAuth.Tests.Common
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
             var authorizationParameter = new AuthorizationParameter
             {
-                ClientId = clientId,
-                Scope = scope,
-                ResponseType = responseType,
-                ResponseMode = ResponseMode.None
+                ClientId = clientId, Scope = scope, ResponseType = responseType, ResponseMode = ResponseMode.None
             };
             //var client = new Client
             //{
@@ -340,30 +364,37 @@ namespace SimpleAuth.Tests.Common
             //};
             var actionResult = new EndpointResult
             {
-                RedirectInstruction = new RedirectInstruction(),
-                Type = TypeActionResult.RedirectToCallBackUrl
+                RedirectInstruction = new RedirectInstruction(), Type = TypeActionResult.RedirectToCallBackUrl
             };
             var jwsPayload = new JwtPayload();
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new[]
-                {
-                    ResponseTypeNames.IdToken
-                });
+                .Returns(new[] {ResponseTypeNames.IdToken});
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>(), null))
+                    j => j.GenerateIdTokenPayloadForScopesAsync(
+                        It.IsAny<ClaimsPrincipal>(),
+                        It.IsAny<AuthorizationParameter>(),
+                        null))
                 .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
-                j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                    j => j.GenerateUserInfoPayloadForScopeAsync(
+                        It.IsAny<ClaimsPrincipal>(),
+                        It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult(jwsPayload));
             //_jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<JwtPayload>(), It.IsAny<string>(), It.IsAny<string>()))
             //    .Returns(Task.FromResult(idToken));
             _authorizationFlowHelperFake.Setup(
-                a => a.GetAuthorizationFlow(It.IsAny<ICollection<string>>(), It.IsAny<string>()))
+                    a => a.GetAuthorizationFlow(It.IsAny<ICollection<string>>(), It.IsAny<string>()))
                 .Returns(AuthorizationFlow.ImplicitFlow);
 
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client(), null).ConfigureAwait(false);
+            await _generateAuthorizationResponse.ExecuteAsync(
+                    actionResult,
+                    authorizationParameter,
+                    claimsPrincipal,
+                    new Client(),
+                    null)
+                .ConfigureAwait(false);
 
-            Assert.True(actionResult.RedirectInstruction.ResponseMode == ResponseMode.fragment);
+            Assert.Equal(ResponseMode.fragment, actionResult.RedirectInstruction.ResponseMode);
         }
 
         private void InitializeFakeObjects()

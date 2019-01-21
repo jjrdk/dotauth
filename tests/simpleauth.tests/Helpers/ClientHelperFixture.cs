@@ -92,8 +92,7 @@ namespace SimpleAuth.Tests.Helpers
             _clientRepositoryStub = new Mock<IClientStore>();
             _jwtGeneratorStub = new Mock<IJwtGenerator>();
             _clientHelper = new ClientHelper(
-                _clientRepositoryStub.Object,
-                _jwtGeneratorStub.Object);
+                _clientRepositoryStub.Object);
         }
     }
 }

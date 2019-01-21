@@ -12,22 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using SimpleAuth.Shared.Repositories;
+
 namespace SimpleAuth.Controllers
 {
-    using System;
-    using System.Collections.Specialized;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http.Headers;
-    using System.Threading.Tasks;
     using Api.Introspection;
-    using Authenticate;
     using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Shared.Requests;
     using Shared.Responses;
     using Shared.Serializers;
+    using System;
+    using System.Collections.Specialized;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
 
     [Route(CoreConstants.EndPoints.Introspection)]
     public class IntrospectionController : Controller
@@ -35,12 +36,10 @@ namespace SimpleAuth.Controllers
         private readonly PostIntrospectionAction _introspectionActions;
 
         public IntrospectionController(
-            IAuthenticateClient authenticateClient,
+            IClientStore clientStore,
             ITokenStore tokenStore)
         {
-            _introspectionActions = new PostIntrospectionAction(
-                authenticateClient,
-                tokenStore);
+            _introspectionActions = new PostIntrospectionAction(clientStore, tokenStore);
         }
 
         [HttpPost]
@@ -54,13 +53,13 @@ namespace SimpleAuth.Controllers
                     return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
-            
+
             var nameValueCollection = new NameValueCollection();
-            foreach(var kvp in Request.Form)
+            foreach (var kvp in Request.Form)
             {
                 nameValueCollection.Add(kvp.Key, kvp.Value);
             }

@@ -39,9 +39,8 @@ namespace SimpleAuth.Shared
 
         public static string Base64Decode(this string base64EncodedData)
         {
-            return Encoding.UTF8.GetString(base64EncodedData.Base64DecodeBytes(),
-                0,
-                base64EncodedData.Base64DecodeBytes().Length);
+            var decodeBytes = base64EncodedData.Base64DecodeBytes();
+            return Encoding.UTF8.GetString(decodeBytes);
         }
 
         public static byte[] Base64DecodeBytes(this string base64EncodedData)

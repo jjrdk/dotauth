@@ -48,22 +48,22 @@
         public async Task When_Nonce_Parameter_Is_Not_Set_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
-            var authorizationParameter = new AuthorizationParameter
-            {
-                State = "state"
-            };
+            var authorizationParameter = new AuthorizationParameter {State = "state"};
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
-                    _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter,
+            var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
+                    () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
+                        authorizationParameter,
                         null,
                         new Client(),
                         null))
                 .ConfigureAwait(false);
-            Assert.True(ex.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(ex.Message ==
-                        string.Format(ErrorDescriptions.MissingParameter,
-                            CoreConstants.StandardAuthorizationRequestParameterNames.NonceName));
-            Assert.True(ex.State == authorizationParameter.State);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, ex.Code);
+            Assert.Equal(
+                string.Format(
+                    ErrorDescriptions.MissingParameter,
+                    CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
+                ex.Message);
+            Assert.Equal(authorizationParameter.State, ex.State);
         }
 
         [Fact]

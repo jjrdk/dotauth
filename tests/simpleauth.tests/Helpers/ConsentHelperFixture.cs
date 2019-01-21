@@ -1,49 +1,53 @@
 ﻿namespace SimpleAuth.Tests.Helpers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Moq;
     using Parameters;
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth.Helpers;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Xunit;
 
     public sealed class ConsentHelperFixture
     {
         private Mock<IConsentRepository> _consentRepositoryFake;
-
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
-
         private IConsentHelper _consentHelper;
+
+        public ConsentHelperFixture()
+        {
+            InitializeFakeObjects();
+        }
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
-        {            InitializeFakeObjects();
-
-                        await Assert.ThrowsAsync<ArgumentNullException>(() => _consentHelper.GetConfirmedConsentsAsync("subject", null)).ConfigureAwait(false);
+        {
+            await Assert
+                .ThrowsAsync<ArgumentNullException>(() => _consentHelper.GetConfirmedConsentsAsync("subject", null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_No_Consent_Has_Been_Given_By_The_Resource_Owner_Then_Null_Is_Returned()
-        {            InitializeFakeObjects();
+        {
             const string subject = "subject";
             var authorizationParameter = new AuthorizationParameter();
 
             _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((IEnumerable<Consent>)null));
+                .Returns(() => Task.FromResult((IEnumerable<Consent>) null));
 
-                        var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
-                authorizationParameter).ConfigureAwait(false);
+            var result = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter)
+                .ConfigureAwait(false);
 
-                        Assert.Null(result);
+            Assert.Null(result);
         }
 
         [Fact]
         public async Task When_A_Consent_Has_Been_Given_For_Claim_Name_Then_Consent_Is_Returned()
-        {            InitializeFakeObjects();
+        {
             const string subject = "subject";
             const string claimName = "name";
             const string clientId = "clientId";
@@ -51,88 +55,56 @@
             {
                 Claims = new ClaimsParameter
                 {
-                    UserInfo = new List<ClaimParameter>
-                    {
-                        new ClaimParameter
-                        {
-                            Name = claimName
-                        }
-                    }
+                    UserInfo = new List<ClaimParameter> {new ClaimParameter {Name = claimName}}
                 },
                 ClientId = clientId
             };
             IEnumerable<Consent> consents = new List<Consent>
             {
-                new Consent
-                {
-                    Claims = new List<string>
-                    {
-                        claimName
-                    },
-                    Client = new Client
-                    {
-                        ClientId = clientId
-                    }
-                }
+                new Consent {Claims = new List<string> {claimName}, Client = new Client {ClientId = clientId}}
             };
 
             _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(consents));
 
-                        var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
-                authorizationParameter).ConfigureAwait(false);
+            var result = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter)
+                .ConfigureAwait(false);
 
-                        Assert.NotNull(result);
-            Assert.True(result.Claims.Count == 1);
-            Assert.True(result.Claims.First() == claimName);
+            Assert.Single(result.Claims);
+            Assert.Equal(claimName, result.Claims.First());
         }
 
         [Fact]
         public async Task When_A_Consent_Has_Been_Given_For_Scope_Profile_Then_Consent_Is_Returned()
-        {            InitializeFakeObjects();
+        {
             const string subject = "subject";
             const string scope = "profile";
             const string clientId = "clientId";
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = clientId,
-                Scope = scope
-            };
+            var authorizationParameter = new AuthorizationParameter {ClientId = clientId, Scope = scope};
             IEnumerable<Consent> consents = new List<Consent>
             {
                 new Consent
                 {
-                    Client = new Client
-                    {
-                        ClientId = clientId
-                    },
-                    GrantedScopes = new List<Scope>
-                    {
-                        new Scope
-                        {
-                            Name = scope
-                        }
-                    }
+                    Client = new Client {ClientId = clientId},
+                    GrantedScopes = new List<Scope> {new Scope {Name = scope}}
                 }
             };
-            var scopes = new List<string>
-            {
-                scope
-            };
+            var scopes = new List<string> {scope};
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>())).Returns(scopes);
-            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>())).Returns(Task.FromResult(consents));
+            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(consents));
 
-                        var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
-                authorizationParameter).ConfigureAwait(false);
+            var result = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter)
+                .ConfigureAwait(false);
 
-                        Assert.NotNull(result);
-            Assert.True(result.GrantedScopes.Count == 1);
-            Assert.True(result.GrantedScopes.First().Name == scope);
+            Assert.Single(result.GrantedScopes);
+            Assert.Equal(scope, result.GrantedScopes.First().Name);
         }
-        
+
         [Fact]
-        public async Task When_Consent_Has_Been_Assigned_To_OpenId_Profile_And_Request_Consent_For_Scope_OpenId_Profile_Email_Then_Null_Is_Returned()
-        {            InitializeFakeObjects();
+        public async Task
+            When_Consent_Has_Been_Assigned_To_OpenId_Profile_And_Request_Consent_For_Scope_OpenId_Profile_Email_Then_Null_Is_Returned()
+        {
             const string subject = "subject";
             const string openIdScope = "openid";
             const string profileScope = "profile";
@@ -140,55 +112,36 @@
             const string clientId = "clientId";
             var authorizationParameter = new AuthorizationParameter
             {
-                ClientId = clientId,
-                Scope = openIdScope + " " + profileScope + " "+ emailScope
+                ClientId = clientId, Scope = openIdScope + " " + profileScope + " " + emailScope
             };
             IEnumerable<Consent> consents = new List<Consent>
             {
                 new Consent
                 {
-                    Client = new Client
-                    {
-                        ClientId = clientId
-                    },
+                    Client = new Client {ClientId = clientId},
                     GrantedScopes = new List<Scope>
                     {
-                        new Scope
-                        {
-                            Name = profileScope
-                        },
-                        new Scope
-                        {
-                            Name = openIdScope
-                        }
+                        new Scope {Name = profileScope}, new Scope {Name = openIdScope}
                     }
                 }
             };
-            var scopes = new List<string>
-            {
-                openIdScope,
-                profileScope,
-                emailScope
-            };
+            var scopes = new List<string> {openIdScope, profileScope, emailScope};
 
-            _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
-                .Returns(scopes);
+            _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>())).Returns(scopes);
             _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(consents));
 
-                        var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
-                authorizationParameter).ConfigureAwait(false);
+            var result = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter)
+                .ConfigureAwait(false);
 
-                        Assert.Null(result);
+            Assert.Null(result);
         }
 
         private void InitializeFakeObjects()
         {
             _consentRepositoryFake = new Mock<IConsentRepository>();
             _parameterParserHelperFake = new Mock<IParameterParserHelper>();
-            _consentHelper = new ConsentHelper(
-                _consentRepositoryFake.Object,
-                _parameterParserHelperFake.Object);
+            _consentHelper = new ConsentHelper(_consentRepositoryFake.Object, _parameterParserHelperFake.Object);
         }
     }
 }

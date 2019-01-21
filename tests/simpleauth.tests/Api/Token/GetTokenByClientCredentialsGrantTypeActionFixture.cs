@@ -65,7 +65,7 @@
 //            var authenticateInstruction = new AuthenticateInstruction();
 //            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
 //                .Returns(authenticateInstruction);
-//            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
+//            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
 //                .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
 
 //            //            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
@@ -91,7 +91,7 @@
 //            var authenticateInstruction = new AuthenticateInstruction();
 //            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
 //                .Returns(authenticateInstruction);
-//            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
+//            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
 //                .Returns(Task.FromResult(client));
 
 //            //            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
@@ -122,7 +122,7 @@
 //            var authenticateInstruction = new AuthenticateInstruction();
 //            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
 //                .Returns(authenticateInstruction);
-//            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
+//            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
 //                .Returns(Task.FromResult(client));
 
 //            //            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
@@ -154,7 +154,7 @@
 //            var authenticateInstruction = new AuthenticateInstruction();
 //            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
 //                .Returns(authenticateInstruction);
-//            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
+//            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
 //                .Returns(Task.FromResult(client));
 //            _clientValidatorStub.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<string[]>())).Returns(new string[0]);
 //            _scopeValidatorStub.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Client>()))
@@ -202,7 +202,7 @@
 //            var authenticateInstruction = new AuthenticateInstruction();
 //            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
 //                .Returns(authenticateInstruction);
-//            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
+//            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
 //                .Returns(Task.FromResult(client));
 //            _scopeValidatorStub.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Client>()))
 //                .Returns(() => new ScopeValidationResult(true)
@@ -258,7 +258,7 @@
 //            var authenticateInstruction = new AuthenticateInstruction();
 //            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
 //                .Returns(authenticateInstruction);
-//            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
+//            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
 //                .Returns(Task.FromResult(client));
 //            _scopeValidatorStub.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Client>()))
 //                .Returns(() => new ScopeValidationResult(true)

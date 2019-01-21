@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using SimpleAuth.Shared.Repositories;
+
 namespace SimpleAuth.Api.Introspection
 {
-    using System;
-    using System.Linq;
-    using System.Net.Http.Headers;
-    using System.Threading.Tasks;
     using Authenticate;
     using Errors;
     using Exceptions;
@@ -25,17 +23,21 @@ namespace SimpleAuth.Api.Introspection
     using Results;
     using Shared;
     using Shared.Models;
+    using System;
+    using System.Linq;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
 
     public class PostIntrospectionAction
     {
-        private readonly IAuthenticateClient _authenticateClient;
+        private readonly AuthenticateClient _authenticateClient;
         private readonly ITokenStore _tokenStore;
 
         public PostIntrospectionAction(
-            IAuthenticateClient authenticateClient,
+            IClientStore clientStore,
             ITokenStore tokenStore)
         {
-            _authenticateClient = authenticateClient;
+            _authenticateClient = new AuthenticateClient(clientStore);
             _tokenStore = tokenStore;
         }
 
@@ -60,7 +62,7 @@ namespace SimpleAuth.Api.Introspection
 
             // 2. Authenticate the client
             var instruction = CreateAuthenticateInstruction(introspectionParameter, authenticationHeaderValue);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
+            var authResult = await _authenticateClient.Authenticate(instruction, issuerName).ConfigureAwait(false);
             if (authResult.Client == null)
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
@@ -150,7 +152,7 @@ namespace SimpleAuth.Api.Introspection
             if (authenticationHeaderValue != null && !string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter))
             {
                 var parameters = GetParameters(authenticationHeaderValue.Parameter);
-                if (parameters != null && parameters.Count() == 2)
+                if (parameters != null && parameters.Length == 2)
                 {
                     result.ClientIdFromAuthorizationHeader = parameters[0];
                     result.ClientSecretFromAuthorizationHeader = parameters[1];

@@ -8,12 +8,12 @@
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth;
+    using SimpleAuth.Api.Authorization;
     using SimpleAuth.Common;
     using SimpleAuth.Helpers;
     using System;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using SimpleAuth.Api.Authorization;
     using Xunit;
     using Client = Shared.Models.Client;
 
@@ -41,19 +41,22 @@
         public async Task When_Passing_No_Nonce_Parameter_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
-            var authorizationParameter = new AuthorizationParameter
-            {
-                State = "state"
-            };
+            var authorizationParameter = new AuthorizationParameter {State = "state"};
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
-                    _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, null, new Client(), null))
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
+                    () => _getTokenViaImplicitWorkflowOperation.Execute(
+                        authorizationParameter,
+                        null,
+                        new Client(),
+                        null))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
-            Assert.True(exception.Message ==
-                        string.Format(ErrorDescriptions.MissingParameter,
-                            CoreConstants.StandardAuthorizationRequestParameterNames.NonceName));
-            Assert.True(exception.State == authorizationParameter.State);
+            Assert.Equal(
+                string.Format(
+                    ErrorDescriptions.MissingParameter,
+                    CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
+                exception.Message);
+            Assert.Equal(authorizationParameter.State, exception.State);
         }
 
         [Fact]
@@ -103,9 +106,9 @@
             var client = new Client
             {
                 ResponseTypes = ResponseTypeNames.All,
-                RedirectionUrls = new[] {new Uri("https://localhost"),},
-                GrantTypes = new[] {GrantType.@implicit},
-                AllowedScopes = new[] {new Scope {Name = "openid"}}
+                RedirectionUrls = new[] { new Uri("https://localhost"), },
+                GrantTypes = new[] { GrantType.@implicit },
+                AllowedScopes = new[] { new Scope { Name = "openid" } }
             };
             var result = await _getTokenViaImplicitWorkflowOperation
                 .Execute(authorizationParameter, claimsPrincipal, client, null)

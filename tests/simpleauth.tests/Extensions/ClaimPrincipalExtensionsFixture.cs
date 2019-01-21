@@ -1,9 +1,9 @@
 ﻿namespace SimpleAuth.Tests.Extensions
 {
+    using Shared;
     using SimpleAuth.Extensions;
     using System.Collections.Generic;
     using System.Security.Claims;
-    using Shared;
     using Xunit;
 
     public sealed class ClaimPrincipalExtensionsFixture
@@ -42,7 +42,7 @@
 
             var result = claimsPrincipal.GetSubject();
 
-            Assert.True(result == subject);
+            Assert.Equal(subject, result);
         }
 
         [Fact]
@@ -57,7 +57,7 @@
 
             var result = claimsPrincipal.GetSubject();
 
-            Assert.True(result == subject);
+            Assert.Equal(subject, result);
         }
 
         [Fact]

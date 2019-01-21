@@ -14,9 +14,9 @@
 
 namespace SimpleAuth.Tests.Authenticate
 {
-    using System.Net.Http.Headers;
     using Shared;
     using SimpleAuth;
+    using System.Net.Http.Headers;
     using Xunit;
 
     public class AuthenticateInstructionGeneratorFixture
@@ -66,8 +66,8 @@ namespace SimpleAuth.Tests.Authenticate
 
             var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 
-            Assert.True(result.ClientIdFromAuthorizationHeader == clientId);
-            Assert.True(result.ClientSecretFromAuthorizationHeader == clientSecret);
+            Assert.Equal(clientId, result.ClientIdFromAuthorizationHeader);
+            Assert.Equal(clientSecret, result.ClientSecretFromAuthorizationHeader);
         }
     }
 }

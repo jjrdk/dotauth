@@ -38,15 +38,15 @@ namespace SimpleAuth.Tests.Api.Registration
         public DefaultClientRepositoryFixture()
         {
             _httpClient = new HttpClient();
+            InitializeFakeObjects();
         }
 
         [Fact]
         public async Task When_Client_Does_Not_Exist_Then_ReturnsEmptyResult()
         {
             const string clientId = "client_id";
-            InitializeFakeObjects();
 
-            var result = await _clientRepositoryFake.Search(new SearchClientParameter { ClientIds = new[] { clientId } })
+            var result = await _clientRepositoryFake.Search(new SearchClientParameter {ClientIds = new[] {clientId}})
                 .ConfigureAwait(false);
             Assert.Empty(result.Content);
         }
@@ -59,25 +59,21 @@ namespace SimpleAuth.Tests.Api.Registration
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 ClientId = clientId,
-                AllowedScopes = new[] { new Scope { Name = "scope" } },
-                RedirectionUrls = new[] { new Uri("https://localhost"), },
-                RequestUris = new[] { new Uri("https://localhost"), }
+                AllowedScopes = new[] {new Scope {Name = "scope"}},
+                RedirectionUrls = new[] {new Uri("https://localhost"),},
+                RequestUris = new[] {new Uri("https://localhost"),}
             };
-            InitializeFakeObjects();
             await _clientRepositoryFake.Insert(client).ConfigureAwait(false);
 
-            var result = await _clientRepositoryFake.Search(
-                    new SearchClientParameter { ClientIds = new[] { clientId } })
+            var result = await _clientRepositoryFake.Search(new SearchClientParameter {ClientIds = new[] {clientId}})
                 .ConfigureAwait(false);
 
-            Assert.True(result.Content.First().ClientId == clientId);
+            Assert.Equal(clientId, result.Content.First().ClientId);
         }
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
-
             await Assert.ThrowsAsync<ArgumentNullException>(() => _clientRepositoryFake.Insert(null))
                 .ConfigureAwait(false);
         }
@@ -85,7 +81,6 @@ namespace SimpleAuth.Tests.Api.Registration
         [Fact]
         public async Task When_Passing_Registration_Parameter_With_Specific_Values_Then_ReturnsTrue()
         {
-            InitializeFakeObjects();
             const string clientName = "client_name";
             var clientUri = new Uri("https://client_uri", UriKind.Absolute);
             var policyUri = new Uri("https://policy_uri", UriKind.Absolute);
@@ -101,32 +96,20 @@ namespace SimpleAuth.Tests.Api.Registration
             {
                 ClientId = "testclient",
                 ClientName = clientName,
-                ResponseTypes = new[]
-                {
-                    ResponseTypeNames.Token
-                },
-                GrantTypes = new List<GrantType>
-                {
-                    GrantType.@implicit
-                },
+                ResponseTypes = new[] {ResponseTypeNames.Token},
+                GrantTypes = new List<GrantType> {GrantType.@implicit},
                 Secrets = new List<ClientSecret>
                 {
                     new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}
                 },
-                AllowedScopes = new[] { new Scope { Name = "scope" } },
+                AllowedScopes = new[] {new Scope {Name = "scope"}},
                 ApplicationType = ApplicationTypes.native,
                 ClientUri = clientUri,
                 PolicyUri = policyUri,
                 TosUri = tosUri,
                 //JwksUri = jwksUri,
-                JsonWebKeys = new List<JsonWebKey>
-                {
-                    new JsonWebKey
-                    {
-                        Kid = kid
-                    }
-                }.ToJwks(),
-                RedirectionUrls = new[] { new Uri("https://localhost"), },
+                JsonWebKeys = new List<JsonWebKey> {new JsonWebKey {Kid = kid}}.ToJwks(),
+                RedirectionUrls = new[] {new Uri("https://localhost"),},
                 //SectorIdentifierUri = sectorIdentifierUri,
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 IdTokenEncryptedResponseAlg = SecurityAlgorithms.RsaPKCS1,
@@ -143,10 +126,7 @@ namespace SimpleAuth.Tests.Api.Registration
                 DefaultAcrValues = defaultAcrValues,
                 RequireAuthTime = requireAuthTime,
                 InitiateLoginUri = initiateLoginUri,
-                RequestUris = new List<Uri>
-                {
-                    requestUri
-                }
+                RequestUris = new List<Uri> {requestUri}
             };
 
             var jsonClient = JsonConvert.SerializeObject(client);
@@ -158,11 +138,10 @@ namespace SimpleAuth.Tests.Api.Registration
 
         private void InitializeFakeObjects()
         {
-            _clientRepositoryFake =
-                new DefaultClientRepository(
-                    new Client[0],
-                    _httpClient,
-                    new DefaultScopeRepository(new[] { new Scope { Name = "scope" } }));
+            _clientRepositoryFake = new DefaultClientRepository(
+                new Client[0],
+                _httpClient,
+                new DefaultScopeRepository(new[] {new Scope {Name = "scope"}}));
         }
 
         public void Dispose()

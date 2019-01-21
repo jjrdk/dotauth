@@ -41,7 +41,7 @@ namespace SimpleAuth.Authenticate
             var sameSecret = string.Equals(
                 clientSecret.Value,
                 instruction.ClientSecretFromAuthorizationHeader,
-                StringComparison.CurrentCultureIgnoreCase);
+                StringComparison.CurrentCulture);
             return sameSecret ? client : null;
         }
 

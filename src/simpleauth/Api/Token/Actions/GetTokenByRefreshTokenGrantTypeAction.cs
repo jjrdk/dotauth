@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using SimpleAuth.Shared.Repositories;
+
 namespace SimpleAuth.Api.Token.Actions
 {
     using Authenticate;
@@ -35,7 +37,7 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly ITokenStore _tokenStore;
         private readonly IJwtGenerator _jwtGenerator;
-        private readonly IAuthenticateClient _authenticateClient;
+        private readonly AuthenticateClient _authenticateClient;
 
         public GetTokenByRefreshTokenGrantTypeAction(
             IClientHelper clientHelper,
@@ -43,14 +45,14 @@ namespace SimpleAuth.Api.Token.Actions
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             ITokenStore tokenStore,
             IJwtGenerator jwtGenerator,
-            IAuthenticateClient authenticateClient)
+            IClientStore clientStore)
         {
             _clientHelper = clientHelper;
             _eventPublisher = eventPublisher;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _tokenStore = tokenStore;
             _jwtGenerator = jwtGenerator;
-            _authenticateClient = authenticateClient;
+            _authenticateClient = new AuthenticateClient(clientStore);
         }
 
         public async Task<GrantedToken> Execute(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
@@ -62,7 +64,7 @@ namespace SimpleAuth.Api.Token.Actions
 
             // 1. Try to authenticate the client
             var instruction = authenticationHeaderValue.GetAuthenticateInstruction(refreshTokenGrantTypeParameter, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
+            var authResult = await _authenticateClient.Authenticate(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (authResult.Client == null)
             {

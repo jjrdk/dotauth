@@ -47,19 +47,19 @@ namespace SimpleAuth.Extensions
 
     public static class ServiceCollectionExtensions
     {
-        private static readonly List<Scope> DEFAULT_SCOPES = new List<Scope>
-        {
-            new Scope
-            {
-                Name = "uma_protection",
-                Description = "Access to UMA permission, resource set",
-                IsOpenIdScope = false,
-                IsDisplayedInConsent = false,
-                Type = ScopeType.ProtectedApi,
-                UpdateDateTime = DateTime.MinValue,
-                CreateDateTime = DateTime.MinValue
-            }
-        };
+        //private static readonly List<Scope> DEFAULT_SCOPES = new List<Scope>
+        //{
+        //    new Scope
+        //    {
+        //        Name = "uma_protection",
+        //        Description = "Access to UMA permission, resource set",
+        //        IsOpenIdScope = false,
+        //        IsDisplayedInConsent = false,
+        //        Type = ScopeType.ProtectedApi,
+        //        UpdateDateTime = DateTime.MinValue,
+        //        CreateDateTime = DateTime.MinValue
+        //    }
+        //};
 
         public static AuthorizationOptions AddAuthPolicies(this AuthorizationOptions options, string cookieName)
         {
@@ -251,7 +251,6 @@ namespace SimpleAuth.Extensions
             .AddTransient<IAuthenticateHelper, AuthenticateHelper>()
             .AddTransient<IJwtGenerator, JwtGenerator>()
             .AddTransient<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>()
-            .AddTransient<IAuthenticateClient, AuthenticateClient>()
             .AddTransient<ITranslationManager, TranslationManager>()
             .AddTransient<IGrantedTokenHelper, GrantedTokenHelper>()
             .AddTransient<IGenerateAndSendCodeAction, GenerateAndSendCodeAction>()
