@@ -82,7 +82,7 @@
 //            return Task.FromResult(res);
 //        }
 
-//        public Task<bool> InsertAsync(string claim)
+//        public Task<bool> Insert(string claim)
 //        {
 //            if (claim == null)
 //            {

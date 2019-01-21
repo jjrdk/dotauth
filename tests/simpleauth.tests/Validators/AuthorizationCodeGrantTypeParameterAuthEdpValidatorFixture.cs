@@ -1,8 +1,5 @@
 ﻿namespace SimpleAuth.Tests.Validators
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Moq;
@@ -12,11 +9,13 @@
     using SimpleAuth;
     using SimpleAuth.Helpers;
     using SimpleAuth.Validators;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
     {
-        private Mock<IParameterParserHelper> _parameterParserHelperFake;
         private Mock<IClientStore> _clientRepository;
         private AuthorizationCodeGrantTypeParameterAuthEdpValidator
             _authorizationCodeGrantTypeParameterAuthEdpValidator;
@@ -167,12 +166,12 @@
                 ResponseType = "code",
                 Prompt = "none login"
             };
-            _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
-                .Returns(new List<PromptParameter>
-                {
-                    PromptParameter.none,
-                    PromptParameter.login
-                });
+            //_parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
+            //    .Returns(new List<PromptParameter>
+            //    {
+            //        PromptParameter.none,
+            //        PromptParameter.login
+            //    });
 
             var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter))
@@ -226,11 +225,11 @@
                 ResponseType = "code",
                 Prompt = "none"
             };
-            _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
-                .Returns(new List<PromptParameter>
-                {
-                    PromptParameter.none
-                });
+            //_parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
+            //    .Returns(new List<PromptParameter>
+            //    {
+            //        PromptParameter.none
+            //    });
             _clientRepository.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Client)null));
 
@@ -238,8 +237,8 @@
                     _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
-            Assert.True(exception.State == state);
+            Assert.Equal(string.Format(ErrorDescriptions.ClientIsNotValid, clientId), exception.Message);
+            Assert.Equal(state, exception.State);
         }
 
         [Fact]
@@ -260,11 +259,11 @@
                 Prompt = "none"
             };
             var client = new Client();
-            _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
-                .Returns(new List<PromptParameter>
-                {
-                    PromptParameter.none
-                });
+            //_parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
+            //    .Returns(new List<PromptParameter>
+            //    {
+            //        PromptParameter.none
+            //    });
             _clientRepository.Setup(c => c.GetById(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             //_clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<Uri[]>()))
@@ -280,12 +279,9 @@
 
         private void InitializeFakeObjects()
         {
-            _parameterParserHelperFake = new Mock<IParameterParserHelper>();
             _clientRepository = new Mock<IClientStore>();
             _authorizationCodeGrantTypeParameterAuthEdpValidator =
-                new AuthorizationCodeGrantTypeParameterAuthEdpValidator(
-                    _parameterParserHelperFake.Object,
-                    _clientRepository.Object);
+                new AuthorizationCodeGrantTypeParameterAuthEdpValidator(_clientRepository.Object);
         }
     }
 }

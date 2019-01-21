@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,18 +19,11 @@ namespace SimpleAuth.Validators
     using Shared.Models;
     using System.Linq;
 
-    internal class ScopeValidator
+    internal static class ScopeValidator
     {
-        private readonly ParameterParserHelper _parameterParserHelper;
-
-        public ScopeValidator()
+        public static ScopeValidationResult Check(this string scope, Client client)
         {
-            _parameterParserHelper = new ParameterParserHelper();
-        }
-
-        public ScopeValidationResult Check(string scope, Client client)
-        {
-            var scopes = _parameterParserHelper.ParseScopes(scope);
+            var scopes = scope.ParseScopes();
             if (!scopes.Any())
             {
                 return new ScopeValidationResult(string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, scope));

@@ -134,7 +134,7 @@
             _getAuthorizationCodeOperation = new GetAuthorizationCodeOperation(
                 new ProcessAuthorizationRequest(
                     new Mock<IClientStore>().Object,
-                    new Mock<IConsentHelper>().Object),
+                    new Mock<IConsentRepository>().Object),
                 _generateAuthorizationResponseFake.Object);
         }
     }

@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,13 +14,6 @@
 
 namespace SimpleAuth.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
     using Api.Authorization;
     using Common;
     using Errors;
@@ -38,6 +31,13 @@ namespace SimpleAuth.Controllers
     using Shared.Requests;
     using Shared.Responses;
     using Shared.Serializers;
+    using System;
+    using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading.Tasks;
 
     [Route(CoreConstants.EndPoints.Authorization)]
     public class AuthorizationController : Controller
@@ -50,24 +50,22 @@ namespace SimpleAuth.Controllers
         private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
 
         public AuthorizationController(
-            IConsentHelper consentHelper,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
-            IParameterParserHelper parameterParserHelper,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IEventPublisher eventPublisher,
             IAmrHelper amrHelper,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             IClientStore clientStore,
+            IConsentRepository consentRepository,
             IDataProtectionProvider dataProtectionProvider,
             IActionResultParser actionResultParser,
             IAuthenticationService authenticationService)
         {
             _clientStore = clientStore;
             _authorizationActions = new AuthorizationActions(
-                consentHelper,
                 generateAuthorizationResponse,
-                parameterParserHelper,
                 clientStore,
+                consentRepository,
                 authorizationFlowHelper,
                 eventPublisher,
                 amrHelper,
@@ -108,43 +106,43 @@ namespace SimpleAuth.Controllers
             switch (actionResult.Type)
             {
                 case TypeActionResult.RedirectToCallBackUrl:
-                {
-                    //var redirectUrl = new Uri();
-                    return this.CreateRedirectHttpTokenResponse(
-                        authorizationRequest.RedirectUri,
-                        _actionResultParser.GetRedirectionParameters(actionResult),
-                        actionResult.RedirectInstruction.ResponseMode);
-                }
-                case TypeActionResult.RedirectToAction:
-                {
-                    if (actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.AuthenticateIndex ||
-                        actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.ConsentIndex)
                     {
-                        // Force the resource owner to be reauthenticated
-                        if (actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.AuthenticateIndex)
-                        {
-                            authorizationRequest.Prompt = Enum.GetName(typeof(PromptParameter), PromptParameter.login);
-                        }
-
-                        // Set the process id into the request.
-                        if (!string.IsNullOrWhiteSpace(actionResult.ProcessId))
-                        {
-                            authorizationRequest.ProcessId = actionResult.ProcessId;
-                        }
-
-                        // Add the encoded request into the query string
-                        var encryptedRequest = _dataProtector.Protect(authorizationRequest);
-                        actionResult.RedirectInstruction.AddParameter(
-                            CoreConstants.StandardAuthorizationResponseNames.AuthorizationCodeName,
-                            encryptedRequest);
+                        //var redirectUrl = new Uri();
+                        return this.CreateRedirectHttpTokenResponse(
+                            authorizationRequest.RedirectUri,
+                            _actionResultParser.GetRedirectionParameters(actionResult),
+                            actionResult.RedirectInstruction.ResponseMode);
                     }
+                case TypeActionResult.RedirectToAction:
+                    {
+                        if (actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.AuthenticateIndex ||
+                            actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.ConsentIndex)
+                        {
+                            // Force the resource owner to be reauthenticated
+                            if (actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.AuthenticateIndex)
+                            {
+                                authorizationRequest.Prompt = Enum.GetName(typeof(PromptParameter), PromptParameter.login);
+                            }
 
-                    var url = GetRedirectionUrl(Request, actionResult.Amr, actionResult.RedirectInstruction.Action);
-                    var uri = new Uri(url);
-                    var redirectionUrl =
-                        uri.AddParametersInQuery(_actionResultParser.GetRedirectionParameters(actionResult));
-                    return new RedirectResult(redirectionUrl.AbsoluteUri);
-                }
+                            // Set the process id into the request.
+                            if (!string.IsNullOrWhiteSpace(actionResult.ProcessId))
+                            {
+                                authorizationRequest.ProcessId = actionResult.ProcessId;
+                            }
+
+                            // Add the encoded request into the query string
+                            var encryptedRequest = _dataProtector.Protect(authorizationRequest);
+                            actionResult.RedirectInstruction.AddParameter(
+                                CoreConstants.StandardAuthorizationResponseNames.AuthorizationCodeName,
+                                encryptedRequest);
+                        }
+
+                        var url = GetRedirectionUrl(Request, actionResult.Amr, actionResult.RedirectInstruction.Action);
+                        var uri = new Uri(url);
+                        var redirectionUrl =
+                            uri.AddParametersInQuery(_actionResultParser.GetRedirectionParameters(actionResult));
+                        return new RedirectResult(redirectionUrl.AbsoluteUri);
+                    }
                 //case TypeActionResult.Output:
                 //case TypeActionResult.None:
                 default:
@@ -152,7 +150,10 @@ namespace SimpleAuth.Controllers
             }
         }
 
-        private string GetSessionId() => !Request.Cookies.ContainsKey(CoreConstants.SESSION_ID) ? Id.Create() : Request.Cookies[CoreConstants.SESSION_ID];
+        private string GetSessionId()
+        {
+            return !Request.Cookies.ContainsKey(CoreConstants.SESSION_ID) ? Id.Create() : Request.Cookies[CoreConstants.SESSION_ID];
+        }
 
         private async Task<AuthorizationRequest> GetAuthorizationRequestFromJwt(string token, string clientId)
         {
@@ -262,7 +263,7 @@ namespace SimpleAuth.Controllers
             };
             return new JsonResult(error)
             {
-                StatusCode = (int) statusCode
+                StatusCode = (int)statusCode
             };
         }
     }

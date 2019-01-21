@@ -34,22 +34,19 @@ namespace SimpleAuth.WebSite.Consent.Actions
     {
         private readonly IScopeRepository _scopeRepository;
         private readonly IClientStore _clientRepository;
-        private readonly IConsentHelper _consentHelper;
+        private readonly IConsentRepository _consentRepository;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
-        private readonly IParameterParserHelper _parameterParserHelper;
 
         public DisplayConsentAction(
             IScopeRepository scopeRepository,
             IClientStore clientRepository,
-            IConsentHelper consentHelper,
-            IGenerateAuthorizationResponse generateAuthorizationResponse,
-            IParameterParserHelper parameterParserHelper)
+            IConsentRepository consentRepository,
+            IGenerateAuthorizationResponse generateAuthorizationResponse)
         {
             _scopeRepository = scopeRepository;
             _clientRepository = clientRepository;
-            _consentHelper = consentHelper;
+            _consentRepository = consentRepository;
             _generateAuthorizationResponse = generateAuthorizationResponse;
-            _parameterParserHelper = parameterParserHelper;
         }
 
         /// <summary>
@@ -58,13 +55,11 @@ namespace SimpleAuth.WebSite.Consent.Actions
         /// </summary>
         /// <param name="authorizationParameter">Authorization code grant type parameter.</param>
         /// <param name="claimsPrincipal"></param>
-        /// <param name="client">Information about the client</param>
-        /// <param name="allowedScopes">Allowed scopes</param>
-        /// <param name="allowedClaims">Allowed claims</param>
         /// <returns>Action result.</returns>
         public async Task<DisplayContentResult> Execute(
             AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal, string issuerName)
+            ClaimsPrincipal claimsPrincipal,
+            string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -79,39 +74,43 @@ namespace SimpleAuth.WebSite.Consent.Actions
             var client = await _clientRepository.GetById(authorizationParameter.ClientId).ConfigureAwait(false);
             if (client == null)
             {
-                throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidRequestCode,
+                throw new SimpleAuthExceptionWithState(
+                    ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.ClientIsNotValid, authorizationParameter.ClientId),
                     authorizationParameter.State);
             }
 
             EndpointResult endpointResult;
             var subject = claimsPrincipal.GetSubject();
-            var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
+            var assignedConsent = await _consentRepository.GetConfirmedConsents(subject, authorizationParameter)
+                .ConfigureAwait(false);
             // If there's already a consent then redirect to the callback
             if (assignedConsent != null)
             {
                 endpointResult = EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-                await _generateAuthorizationResponse.Generate(endpointResult, authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
+                await _generateAuthorizationResponse.Generate(
+                        endpointResult,
+                        authorizationParameter,
+                        claimsPrincipal,
+                        client,
+                        issuerName)
+                    .ConfigureAwait(false);
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {
-                    var responseTypes = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
+                    var responseTypes = authorizationParameter.ResponseType.ParseResponseTypes();
                     var authorizationFlow = GetAuthorizationFlow(responseTypes, authorizationParameter.State);
                     responseMode = GetResponseMode(authorizationFlow);
                 }
 
                 endpointResult.RedirectInstruction.ResponseMode = responseMode;
-                return new DisplayContentResult
-                {
-                    EndpointResult = endpointResult
-                };
+                return new DisplayContentResult {EndpointResult = endpointResult};
             }
 
             ICollection<string> allowedClaims = null;
             ICollection<Scope> allowedScopes = null;
             var claimsParameter = authorizationParameter.Claims;
-            if (claimsParameter.IsAnyIdentityTokenClaimParameter()
-                ||claimsParameter.IsAnyUserInfoClaimParameter())
+            if (claimsParameter.IsAnyIdentityTokenClaimParameter() || claimsParameter.IsAnyUserInfoClaimParameter())
             {
                 allowedClaims = claimsParameter.GetClaimNames();
             }
@@ -139,7 +138,6 @@ namespace SimpleAuth.WebSite.Consent.Actions
         /// <returns>List of scopes</returns>
         private async Task<IEnumerable<Scope>> GetScopes(string concatenateListOfScopes)
         {
-            var result = new List<Scope>();
             var scopeNames = concatenateListOfScopes.Split(' ');
             return await _scopeRepository.SearchByNames(scopeNames).ConfigureAwait(false);
         }
@@ -154,8 +152,8 @@ namespace SimpleAuth.WebSite.Consent.Actions
                     state);
             }
 
-            var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys
-                .SingleOrDefault(k => k.Length == responseTypes.Count && k.All(responseTypes.Contains));
+            var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys.SingleOrDefault(
+                k => k.Length == responseTypes.Count && k.All(responseTypes.Contains));
             if (record == null)
             {
                 throw new SimpleAuthExceptionWithState(

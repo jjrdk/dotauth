@@ -38,9 +38,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
         private readonly IClientStore _clientRepository;
         private readonly IScopeRepository _scopeRepository;
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IParameterParserHelper _parameterParserHelper;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
-        private readonly IConsentHelper _consentHelper;
         private readonly IEventPublisher _eventPublisher;
 
         public ConfirmConsentAction(
@@ -48,18 +46,14 @@ namespace SimpleAuth.WebSite.Consent.Actions
             IClientStore clientRepository,
             IScopeRepository scopeRepository,
             IResourceOwnerRepository resourceOwnerRepository,
-            IParameterParserHelper parameterParserHelper,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
-            IConsentHelper consentHelper,
             IEventPublisher eventPublisher)
         {
             _consentRepository = consentRepository;
             _clientRepository = clientRepository;
             _scopeRepository = scopeRepository;
             _resourceOwnerRepository = resourceOwnerRepository;
-            _parameterParserHelper = parameterParserHelper;
             _generateAuthorizationResponse = generateAuthorizationResponse;
-            _consentHelper = consentHelper;
             _eventPublisher = eventPublisher;
         }
 
@@ -95,7 +89,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             }
 
             var subject = claimsPrincipal.GetSubject();
-            var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter)
+            var assignedConsent = await _consentRepository.GetConfirmedConsents(subject, authorizationParameter)
                 .ConfigureAwait(false);
             // Insert a new consent.
             if (assignedConsent == null)
@@ -126,7 +120,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                 }
 
                 // A consent can be given to a set of claims
-                await _consentRepository.InsertAsync(assignedConsent).ConfigureAwait(false);
+                await _consentRepository.Insert(assignedConsent).ConfigureAwait(false);
 
                 await _eventPublisher.Publish(new ConsentGiven(
                     subject,
@@ -145,7 +139,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {
-                    var responseTypes = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
+                    var responseTypes = authorizationParameter.ResponseType.ParseResponseTypes();
                     var authorizationFlow = GetAuthorizationFlow(responseTypes, authorizationParameter.State);
                     responseMode = GetResponseMode(authorizationFlow);
                 }
@@ -163,7 +157,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
         /// <returns>List of scopes</returns>
         private async Task<ICollection<Scope>> GetScopes(string concatenateListOfScopes)
         {
-            var scopeNames = _parameterParserHelper.ParseScopes(concatenateListOfScopes);
+            var scopeNames = concatenateListOfScopes.ParseScopes();
             return await _scopeRepository.SearchByNames(scopeNames).ConfigureAwait(false);
         }
 

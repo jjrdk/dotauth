@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,14 +32,12 @@ namespace SimpleAuth.Tests.Api.Authorization
     {
         private const string OpenIdScope = "openid";
         private const string HttpsLocalhost = "https://localhost";
-        private Mock<IParameterParserHelper> _parameterParserHelperFake;
         private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
         private Mock<IEventPublisher> _eventPublisherStub;
         private Mock<IAmrHelper> _amrHelperStub;
         private Mock<IResourceOwnerAuthenticateHelper> _resourceOwnerAuthenticateHelperStub;
         private AuthorizationActions _authorizationActions;
         private Mock<IClientStore> _clientStore;
-        private Mock<IConsentHelper> _consentHelper;
 
         [Fact]
         public async Task When_Client_Require_PKCE_And_NoCodeChallenge_Is_Passed_Then_Exception_Is_Thrown()
@@ -72,7 +70,6 @@ namespace SimpleAuth.Tests.Api.Authorization
 
         private void InitializeFakeObjects(Client client = null)
         {
-            _parameterParserHelperFake = new Mock<IParameterParserHelper>();
             _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
             _eventPublisherStub = new Mock<IEventPublisher>();
             _amrHelperStub = new Mock<IAmrHelper>();
@@ -84,15 +81,14 @@ namespace SimpleAuth.Tests.Api.Authorization
                     .ReturnsAsync(client);
             }
 
-            _consentHelper = new Mock<IConsentHelper>();
-            _consentHelper
-                .Setup(x => x.GetConfirmedConsentsAsync(It.IsAny<string>(), It.IsAny<AuthorizationParameter>()))
-                .ReturnsAsync(new Consent());
+            //_consentHelper = new Mock<IConsentHelper>();
+            //_consentHelper
+            //    .Setup(x => x.GetConfirmedConsents(It.IsAny<string>(), It.IsAny<AuthorizationParameter>()))
+            //    .ReturnsAsync(new Consent());
             _authorizationActions = new AuthorizationActions(
-                _consentHelper.Object,
                 new Mock<IGenerateAuthorizationResponse>().Object,
-                _parameterParserHelperFake.Object,
                 _clientStore.Object,
+                new Mock<IConsentRepository>().Object,
                 _authorizationFlowHelperFake.Object,
                 _eventPublisherStub.Object,
                 _amrHelperStub.Object,

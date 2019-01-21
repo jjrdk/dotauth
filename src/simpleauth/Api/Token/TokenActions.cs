@@ -41,7 +41,6 @@ namespace SimpleAuth.Api.Token
         private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
         private readonly AuthenticateClient _authenticateClient;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
-        private readonly ScopeValidator _scopeValidator;
         private readonly RevokeTokenAction _revokeTokenAction;
         private readonly IGrantedTokenHelper _grantedTokenHelper;
         private readonly IEventPublisher _eventPublisher;
@@ -84,7 +83,6 @@ namespace SimpleAuth.Api.Token
                 clientStore);
             _authenticateClient = new AuthenticateClient(clientStore);
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
-            _scopeValidator = new ScopeValidator();
             _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
             _revokeTokenAction = new RevokeTokenAction(clientStore, tokenStore);
             _eventPublisher = eventPublisher;
@@ -109,7 +107,8 @@ namespace SimpleAuth.Api.Token
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter,
+                    string.Format(
+                        ErrorDescriptions.MissingParameter,
                         CoreConstants.StandardTokenRequestParameterNames.UserName));
             }
 
@@ -117,7 +116,8 @@ namespace SimpleAuth.Api.Token
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter,
+                    string.Format(
+                        ErrorDescriptions.MissingParameter,
                         CoreConstants.StandardTokenRequestParameterNames.PasswordName));
             }
 
@@ -125,7 +125,8 @@ namespace SimpleAuth.Api.Token
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter,
+                    string.Format(
+                        ErrorDescriptions.MissingParameter,
                         CoreConstants.StandardTokenRequestParameterNames.ScopeName));
             }
 
@@ -138,8 +139,8 @@ namespace SimpleAuth.Api.Token
             //var accessToken = result != null ? result.AccessToken : string.Empty;
             //var identityToken = result != null ? result.IdToken : string.Empty;
             //_oauthEventSource.EndGetTokenByResourceOwnerCredentials(accessToken, identityToken);
-            await _eventPublisher.Publish(
-                new TokenGranted(Id.Create(), processId, result.AccessToken, DateTime.UtcNow)).ConfigureAwait(false);
+            await _eventPublisher.Publish(new TokenGranted(Id.Create(), processId, result.AccessToken, DateTime.UtcNow))
+                .ConfigureAwait(false);
             return result;
         }
 
@@ -157,15 +158,14 @@ namespace SimpleAuth.Api.Token
             var processId = Id.Create();
 
             Validate(authorizationCodeGrantTypeParameter);
-            var result = await _getTokenByAuthorizationCodeGrantTypeAction
-                .Execute(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate, issuerName)
+            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+                    authorizationCodeGrantTypeParameter,
+                    authenticationHeaderValue,
+                    certificate,
+                    issuerName)
                 .ConfigureAwait(false);
 
-            await _eventPublisher.Publish(
-                    new TokenGranted(Id.Create(),
-                        processId,
-                        result.AccessToken,
-                        DateTime.UtcNow))
+            await _eventPublisher.Publish(new TokenGranted(Id.Create(), processId, result.AccessToken, DateTime.UtcNow))
                 .ConfigureAwait(false);
             return result;
         }
@@ -188,21 +188,19 @@ namespace SimpleAuth.Api.Token
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter,
+                    string.Format(
+                        ErrorDescriptions.MissingParameter,
                         CoreConstants.StandardTokenRequestParameterNames.RefreshToken));
             }
 
-            var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(refreshTokenGrantTypeParameter,
+            var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(
+                    refreshTokenGrantTypeParameter,
                     authenticationHeaderValue,
                     certificate,
                     issuerName)
                 .ConfigureAwait(false);
             //_oauthEventSource.EndGetTokenByRefreshToken(result.AccessToken, result.IdToken);
-            await _eventPublisher.Publish(new TokenGranted(
-                    Id.Create(),
-                    processId,
-                    result.AccessToken,
-                    DateTime.UtcNow))
+            await _eventPublisher.Publish(new TokenGranted(Id.Create(), processId, result.AccessToken, DateTime.UtcNow))
                 .ConfigureAwait(false);
             return result;
         }
@@ -226,11 +224,7 @@ namespace SimpleAuth.Api.Token
                     certificate,
                     issuerName)
                 .ConfigureAwait(false);
-            await _eventPublisher.Publish(
-                    new TokenGranted(Id.Create(),
-                        processId,
-                        result.AccessToken,
-                        DateTime.UtcNow))
+            await _eventPublisher.Publish(new TokenGranted(Id.Create(), processId, result.AccessToken, DateTime.UtcNow))
                 .ConfigureAwait(false);
             return result;
         }
@@ -255,13 +249,16 @@ namespace SimpleAuth.Api.Token
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.MissingParameter, CoreConstants.IntrospectionRequestNames.Token));
             }
-            var result = await _revokeTokenAction.Execute(
-                revokeTokenParameter,
-                authenticationHeaderValue,
-                certificate,
-                issuerName).ConfigureAwait(false);
 
-            await _eventPublisher.Publish(new TokenRevoked(Id.Create(), processId, DateTime.UtcNow)).ConfigureAwait(false);
+            var result = await _revokeTokenAction.Execute(
+                    revokeTokenParameter,
+                    authenticationHeaderValue,
+                    certificate,
+                    issuerName)
+                .ConfigureAwait(false);
+
+            await _eventPublisher.Publish(new TokenRevoked(Id.Create(), processId, DateTime.UtcNow))
+                .ConfigureAwait(false);
             return result;
         }
 
@@ -279,8 +276,9 @@ namespace SimpleAuth.Api.Token
             _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
 
             // 1. Authenticate the client
-            var instruction =
-                authenticationHeaderValue.GetAuthenticateInstruction(clientCredentialsGrantTypeParameter, certificate);
+            var instruction = authenticationHeaderValue.GetAuthenticateInstruction(
+                clientCredentialsGrantTypeParameter,
+                certificate);
             var authResult = await _authenticateClient.Authenticate(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
@@ -291,16 +289,20 @@ namespace SimpleAuth.Api.Token
             // 2. Check client
             if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.client_credentials))
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidClient,
-                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidClient,
+                    string.Format(
+                        ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                         client.ClientId,
                         GrantType.client_credentials));
             }
 
             if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseTypeNames.Token))
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidClient,
-                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType,
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidClient,
+                    string.Format(
+                        ErrorDescriptions.TheClientDoesntSupportTheResponseType,
                         client.ClientId,
                         ResponseTypeNames.Token));
             }
@@ -309,12 +311,10 @@ namespace SimpleAuth.Api.Token
             var allowedTokenScopes = string.Empty;
             if (!string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
             {
-                var scopeValidation = _scopeValidator.Check(clientCredentialsGrantTypeParameter.Scope, client);
+                var scopeValidation = clientCredentialsGrantTypeParameter.Scope.Check(client);
                 if (!scopeValidation.IsValid)
                 {
-                    throw new SimpleAuthException(
-                        ErrorCodes.InvalidScope,
-                        scopeValidation.ErrorMessage);
+                    throw new SimpleAuthException(ErrorCodes.InvalidScope, scopeValidation.ErrorMessage);
                 }
 
                 allowedTokenScopes = string.Join(" ", scopeValidation.Scopes);
@@ -325,8 +325,7 @@ namespace SimpleAuth.Api.Token
                 .ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await _grantedTokenGeneratorHelper
-                    .GenerateToken(client, allowedTokenScopes, issuerName)
+                grantedToken = await _grantedTokenGeneratorHelper.GenerateToken(client, allowedTokenScopes, issuerName)
                     .ConfigureAwait(false);
                 await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);
                 await _eventPublisher.Publish(
@@ -348,7 +347,8 @@ namespace SimpleAuth.Api.Token
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter,
+                    string.Format(
+                        ErrorDescriptions.MissingParameter,
                         CoreConstants.StandardTokenRequestParameterNames.AuthorizationCodeName));
             }
 

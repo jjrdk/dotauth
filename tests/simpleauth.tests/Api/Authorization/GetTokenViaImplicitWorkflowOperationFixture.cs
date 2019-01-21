@@ -10,7 +10,6 @@
     using SimpleAuth;
     using SimpleAuth.Api.Authorization;
     using SimpleAuth.Common;
-    using SimpleAuth.Helpers;
     using System;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -41,7 +40,7 @@
         public async Task When_Passing_No_Nonce_Parameter_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
-            var authorizationParameter = new AuthorizationParameter {State = "state"};
+            var authorizationParameter = new AuthorizationParameter { State = "state" };
 
             var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _getTokenViaImplicitWorkflowOperation.Execute(
@@ -101,7 +100,7 @@
                 RedirectUrl = new Uri("https://localhost")
             };
 
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("sub", "test")}, "fake"));
 
             var client = new Client
             {
@@ -123,7 +122,7 @@
             _getTokenViaImplicitWorkflowOperation = new GetTokenViaImplicitWorkflowOperation(
                 new ProcessAuthorizationRequest(
                     new Mock<IClientStore>().Object,
-                    new Mock<IConsentHelper>().Object),
+                    new Mock<IConsentRepository>().Object),
                 _generateAuthorizationResponseFake.Object);
         }
     }

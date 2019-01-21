@@ -24,7 +24,7 @@
 //        Task<SearchClaimsResult> Search(SearchClaimsParameter parameter);
 //        Task<IEnumerable<string>> GetAllAsync();
 //        Task<bool> GetAsync(string name);
-//        Task<bool> InsertAsync(AddClaimParameter claim);
+//        Task<bool> Insert(AddClaimParameter claim);
 //        Task<bool> Delete(string code);
 //    }
 //}

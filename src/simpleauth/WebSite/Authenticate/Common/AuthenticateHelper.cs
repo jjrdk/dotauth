@@ -1,10 +1,5 @@
 ﻿namespace SimpleAuth.WebSite.Authenticate.Common
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Api.Authorization;
     using Errors;
     using Exceptions;
@@ -13,22 +8,25 @@
     using Results;
     using Shared.Repositories;
     using SimpleAuth.Common;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
 
     public sealed class AuthenticateHelper : IAuthenticateHelper
     {
-        private readonly IParameterParserHelper _parameterParserHelper;
-        private readonly IConsentHelper _consentHelper;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
+        private readonly IConsentRepository _consentRepository;
         private readonly IClientStore _clientRepository;
 
-        public AuthenticateHelper(IParameterParserHelper parameterParserHelper,
-            IConsentHelper consentHelper,
+        public AuthenticateHelper(
             IGenerateAuthorizationResponse generateAuthorizationResponse,
+            IConsentRepository consentRepository,
             IClientStore clientRepository)
         {
-            _parameterParserHelper = parameterParserHelper;
-            _consentHelper = consentHelper;
             _generateAuthorizationResponse = generateAuthorizationResponse;
+            _consentRepository = consentRepository;
             _clientRepository = clientRepository;
         }
 
@@ -53,7 +51,7 @@
 
             // Redirect to the consent page if the prompt parameter contains "consent"
             EndpointResult result;
-            var prompts = _parameterParserHelper.ParsePrompts(authorizationParameter.Prompt);
+            var prompts = authorizationParameter.Prompt.ParsePrompts();
             if (prompts != null &&
                 prompts.Contains(PromptParameter.consent))
             {
@@ -63,7 +61,7 @@
                 return result;
             }
 
-            var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter)
+            var assignedConsent = await _consentRepository.GetConfirmedConsents(subject, authorizationParameter)
                 .ConfigureAwait(false);
 
             // If there's already one consent then redirect to the callback
@@ -78,7 +76,7 @@
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {
-                    var responseTypes = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
+                    var responseTypes = authorizationParameter.ResponseType.ParseResponseTypes();
                     var authorizationFlow = GetAuthorizationFlow(responseTypes, authorizationParameter.State);
                     responseMode = GetResponseMode(authorizationFlow);
                 }
