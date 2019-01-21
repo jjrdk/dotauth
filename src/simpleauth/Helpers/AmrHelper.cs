@@ -4,9 +4,9 @@
     using System.Linq;
     using Exceptions;
 
-    internal sealed class AmrHelper : IAmrHelper
+    internal static class AmrHelper
     {
-        public string GetAmr(IEnumerable<string> currentAmrs, IEnumerable<string> exceptedAmrs = null)
+        public static string GetAmr(this IEnumerable<string> currentAmrs, IEnumerable<string> exceptedAmrs = null)
         {
             if (currentAmrs == null || !currentAmrs.Any())
             {

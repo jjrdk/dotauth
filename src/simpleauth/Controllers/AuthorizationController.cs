@@ -53,7 +53,6 @@ namespace SimpleAuth.Controllers
             IGenerateAuthorizationResponse generateAuthorizationResponse,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IEventPublisher eventPublisher,
-            IAmrHelper amrHelper,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             IClientStore clientStore,
             IConsentRepository consentRepository,
@@ -68,7 +67,6 @@ namespace SimpleAuth.Controllers
                 consentRepository,
                 authorizationFlowHelper,
                 eventPublisher,
-                amrHelper,
                 resourceOwnerAuthenticateHelper);
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _actionResultParser = actionResultParser;

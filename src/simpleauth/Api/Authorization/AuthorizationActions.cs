@@ -37,7 +37,6 @@ namespace SimpleAuth.Api.Authorization
         private readonly AuthorizationCodeGrantTypeParameterAuthEdpValidator _authorizationCodeGrantTypeParameterValidator;
         private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IAmrHelper _amrHelper;
         private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
 
         public AuthorizationActions(
@@ -46,7 +45,6 @@ namespace SimpleAuth.Api.Authorization
             IConsentRepository consentRepository,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IEventPublisher eventPublisher,
-            IAmrHelper amrHelper,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper)
         {
             var processAuthorizationRequest = new ProcessAuthorizationRequest(clientStore, consentRepository);
@@ -63,7 +61,6 @@ namespace SimpleAuth.Api.Authorization
             _authorizationCodeGrantTypeParameterValidator = new AuthorizationCodeGrantTypeParameterAuthEdpValidator(clientStore);
             _authorizationFlowHelper = authorizationFlowHelper;
             _eventPublisher = eventPublisher;
-            _amrHelper = amrHelper;
             _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
         }
 
@@ -101,7 +98,7 @@ namespace SimpleAuth.Api.Authorization
                         DateTime.UtcNow))
                 .ConfigureAwait(false);
             endpointResult.ProcessId = processId;
-            endpointResult.Amr = _amrHelper.GetAmr(_resourceOwnerAuthenticateHelper.GetAmrs(), parameter.AmrValues);
+            endpointResult.Amr = _resourceOwnerAuthenticateHelper.GetAmrs().GetAmr(parameter.AmrValues);
             return endpointResult;
         }
     }
