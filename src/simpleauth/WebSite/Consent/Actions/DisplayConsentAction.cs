@@ -91,7 +91,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             if (assignedConsent != null)
             {
                 endpointResult = EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-                await _generateAuthorizationResponse.ExecuteAsync(endpointResult, authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
+                await _generateAuthorizationResponse.Generate(endpointResult, authorizationParameter, claimsPrincipal, client, issuerName).ConfigureAwait(false);
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {

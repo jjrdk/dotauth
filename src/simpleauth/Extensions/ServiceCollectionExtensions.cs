@@ -236,7 +236,6 @@ namespace SimpleAuth.Extensions
             .AddTransient<IUpdateResourceOwnerPasswordParameterValidator, UpdateResourceOwnerPasswordParameterValidator>()
             .AddTransient<IGrantedTokenGeneratorHelper, GrantedTokenGeneratorHelper>()
             .AddTransient<IConsentHelper, ConsentHelper>()
-            .AddTransient<IClientHelper, ClientHelper>()
             .AddTransient<IAuthorizationFlowHelper, AuthorizationFlowHelper>()
             .AddTransient<IClientCredentialsGrantTypeParameterValidator, ClientCredentialsGrantTypeParameterValidator>()
             .AddTransient<IGrantedTokenValidator, GrantedTokenValidator>()

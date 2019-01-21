@@ -43,7 +43,6 @@ namespace SimpleAuth.Tests.Api.Token
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
         private Mock<ITokenStore> _tokenStoreFake;
         private Mock<IClientStore> _clientStore;
-        private Mock<IClientHelper> _clientHelper;
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
         private Mock<IJwtGenerator> _jwtGeneratorStub;
         private GetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
@@ -601,7 +600,6 @@ namespace SimpleAuth.Tests.Api.Token
             _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
             _tokenStoreFake = new Mock<ITokenStore>();
             _clientStore = new Mock<IClientStore>();
-            _clientHelper = new Mock<IClientHelper>();
             _oauthConfigurationOptions = new OAuthConfigurationOptions(
                 authorizationCodeValidity: authorizationCodeValidity == default
                     ? TimeSpan.FromSeconds(3600)
@@ -612,7 +610,6 @@ namespace SimpleAuth.Tests.Api.Token
                 _authorizationCodeStoreFake.Object,
                 _oauthConfigurationOptions,
                 _grantedTokenGeneratorHelperFake.Object,
-                _clientHelper.Object,
                 _clientStore.Object,
                 _eventPublisher.Object,
                 _tokenStoreFake.Object,

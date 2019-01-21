@@ -44,8 +44,8 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
         private readonly OAuthConfigurationOptions _configurationService;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
+        private readonly IClientStore _clientStore;
         private readonly AuthenticateClient _authenticateClient;
-        private readonly IClientHelper _clientHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;
         private readonly IGrantedTokenHelper _grantedTokenHelper;
@@ -55,7 +55,6 @@ namespace SimpleAuth.Api.Token.Actions
             IAuthorizationCodeStore authorizationCodeStore,
             OAuthConfigurationOptions configurationService,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
-            IClientHelper clientHelper,
             IClientStore clientStore,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
@@ -66,8 +65,8 @@ namespace SimpleAuth.Api.Token.Actions
             _authorizationCodeStore = authorizationCodeStore;
             _configurationService = configurationService;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
+            _clientStore = clientStore;
             _authenticateClient = new AuthenticateClient(clientStore);
-            _clientHelper = clientHelper;
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
             _grantedTokenHelper = grantedTokenHelper;
@@ -108,7 +107,7 @@ namespace SimpleAuth.Api.Token.Actions
                 if (grantedToken.IdTokenPayLoad != null)
                 {
                     _jwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad, result.Client);
-                    grantedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(result.Client, grantedToken.IdTokenPayLoad).ConfigureAwait(false);
+                    grantedToken.IdToken = await result.Client.GenerateIdTokenAsync(grantedToken.IdTokenPayLoad).ConfigureAwait(false);
                 }
 
                 await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);

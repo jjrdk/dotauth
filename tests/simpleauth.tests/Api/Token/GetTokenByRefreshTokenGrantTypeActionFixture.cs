@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
 using SimpleAuth.Shared.Repositories;
 using System.Net.Http.Headers;
 
@@ -35,7 +37,6 @@ namespace SimpleAuth.Tests.Api.Token
 
     public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
     {
-        private Mock<IClientHelper> _clientHelperFake;
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperStub;
         private Mock<ITokenStore> _tokenStoreStub;
         private Mock<IJwtGenerator> _jwtGeneratorStub;
@@ -44,6 +45,7 @@ namespace SimpleAuth.Tests.Api.Token
 
         public GetTokenByRefreshTokenGrantTypeActionFixture()
         {
+            IdentityModelEventSource.ShowPII = true;
             InitializeFakeObjects();
         }
 
@@ -61,7 +63,7 @@ namespace SimpleAuth.Tests.Api.Token
         {
             var parameter = new RefreshTokenGrantTypeParameter();
 
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync((Client) null);
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync((Client)null);
             //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
             //    .Returns(Task.FromResult(new AuthenticationResult(null, "error")));
 
@@ -80,8 +82,8 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = "id",
-                Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
-                GrantTypes = new List<GrantType> {GrantType.authorization_code}
+                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
+                GrantTypes = new List<GrantType> { GrantType.authorization_code }
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
             //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
@@ -105,15 +107,15 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = "id",
-                Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
-                GrantTypes = new List<GrantType> {GrantType.refresh_token}
+                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
+                GrantTypes = new List<GrantType> { GrantType.refresh_token }
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
             //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
             //    .Returns(Task.FromResult(new AuthenticationResult(,
             //        null)));
             _tokenStoreStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((GrantedToken) null));
+                .Returns(() => Task.FromResult((GrantedToken)null));
 
             var authenticationHeader = new AuthenticationHeaderValue("Basic", "id:secret".Base64Encode());
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(
@@ -130,15 +132,15 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = "id",
-                Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
-                GrantTypes = new List<GrantType> {GrantType.refresh_token}
+                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
+                GrantTypes = new List<GrantType> { GrantType.refresh_token }
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
             //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
             //    .Returns(Task.FromResult(new AuthenticationResult(,
             //        null)));
             _tokenStoreStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
-                .Returns(() => Task.FromResult(new GrantedToken {ClientId = "differentId"}));
+                .Returns(() => Task.FromResult(new GrantedToken { ClientId = "differentId" }));
 
             var authenticationValue = new AuthenticationHeaderValue("Basic", "id:secret".Base64Encode());
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(
@@ -152,20 +154,24 @@ namespace SimpleAuth.Tests.Api.Token
         public async Task When_Requesting_Token_Then_New_One_Is_Generated()
         {
             var parameter = new RefreshTokenGrantTypeParameter();
-            var grantedToken = new GrantedToken {IdTokenPayLoad = new JwtPayload(), ClientId = "id"};
+            var grantedToken = new GrantedToken { IdTokenPayLoad = new JwtPayload(), ClientId = "id" };
             var client = new Client
             {
                 ClientId = "id",
-                Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
-                GrantTypes = new List<GrantType> {GrantType.refresh_token}
+                JsonWebKeys =
+                    "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
+                        .ToSet(),
+                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
+                GrantTypes = new List<GrantType> { GrantType.refresh_token }
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
             //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
             //    .Returns(Task.FromResult(new AuthenticationResult(,
             //        null)));
-            _tokenStoreStub.Setup(g => g.GetRefreshToken(It.IsAny<string>())).Returns(Task.FromResult(grantedToken));
-            _grantedTokenGeneratorHelperStub
-                .Setup(
+            _tokenStoreStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
+                .Returns(Task.FromResult(grantedToken));
+            _grantedTokenGeneratorHelperStub.Setup(
                     g => g.GenerateToken(
                         It.IsAny<string>(),
                         It.IsAny<string>(),
@@ -184,13 +190,11 @@ namespace SimpleAuth.Tests.Api.Token
 
         private void InitializeFakeObjects()
         {
-            _clientHelperFake = new Mock<IClientHelper>();
             _grantedTokenGeneratorHelperStub = new Mock<IGrantedTokenGeneratorHelper>();
             _tokenStoreStub = new Mock<ITokenStore>();
             _jwtGeneratorStub = new Mock<IJwtGenerator>();
             _clientStore = new Mock<IClientStore>();
             _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
-                _clientHelperFake.Object,
                 new Mock<IEventPublisher>().Object,
                 _grantedTokenGeneratorHelperStub.Object,
                 _tokenStoreStub.Object,

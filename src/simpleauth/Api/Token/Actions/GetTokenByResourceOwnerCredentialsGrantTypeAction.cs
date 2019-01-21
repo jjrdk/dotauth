@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,9 +37,9 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly ScopeValidator _scopeValidator;
         private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
+        private readonly IClientStore _clientStore;
         private readonly AuthenticateClient _authenticateClient;
         private readonly IJwtGenerator _jwtGenerator;
-        private readonly IClientHelper _clientHelper;
         private readonly ITokenStore _tokenStore;
         private readonly IEventPublisher _eventPublisher;
         private readonly IGrantedTokenHelper _grantedTokenHelper;
@@ -49,7 +49,6 @@ namespace SimpleAuth.Api.Token.Actions
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             IClientStore clientStore,
             IJwtGenerator jwtGenerator,
-            IClientHelper clientHelper,
             ITokenStore tokenStore,
             IEventPublisher eventPublisher,
             IGrantedTokenHelper grantedTokenHelper)
@@ -57,9 +56,9 @@ namespace SimpleAuth.Api.Token.Actions
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _scopeValidator = new ScopeValidator();
             _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
+            _clientStore = clientStore;
             _authenticateClient = new AuthenticateClient(clientStore);
             _jwtGenerator = jwtGenerator;
-            _clientHelper = clientHelper;
             _tokenStore = tokenStore;
             _eventPublisher = eventPublisher;
             _grantedTokenHelper = grantedTokenHelper;
@@ -132,7 +131,7 @@ namespace SimpleAuth.Api.Token.Actions
                 if (generatedToken.IdTokenPayLoad != null)
                 {
                     _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, client);
-                    generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(client, generatedToken.IdTokenPayLoad).ConfigureAwait(false);
+                    generatedToken.IdToken = await client.GenerateIdTokenAsync(generatedToken.IdTokenPayLoad).ConfigureAwait(false);
                 }
 
                 await _tokenStore.AddToken(generatedToken).ConfigureAwait(false);

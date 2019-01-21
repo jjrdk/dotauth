@@ -127,7 +127,7 @@
             rsa.ImportParameters(parameters);
         }
 
-        public static JsonWebKey CreateJwk(this RSA rsa, string use, IEnumerable<string> keyops, bool includePrivateParameters)
+        public static JsonWebKey CreateJwk(this RSA rsa, string use, bool includePrivateParameters = false, params string[] keyops)
         {
             var parameters = rsa.ExportParameters(includePrivateParameters);
             var key = new RsaSecurityKey(parameters);

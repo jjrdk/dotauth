@@ -201,7 +201,7 @@
             await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation
                 .Execute(authorizationParameter, claimsPrincipal, client, null)
                 .ConfigureAwait(false);
-            _generateAuthorizationResponseFake.Verify(g => g.ExecuteAsync(
+            _generateAuthorizationResponseFake.Verify(g => g.Generate(
                 It.IsAny<EndpointResult>(),
                 authorizationParameter,
                 claimsPrincipal,
