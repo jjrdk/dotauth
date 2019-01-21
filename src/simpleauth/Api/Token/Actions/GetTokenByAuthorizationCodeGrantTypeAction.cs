@@ -44,11 +44,9 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
         private readonly OAuthConfigurationOptions _configurationService;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
-        private readonly IClientStore _clientStore;
         private readonly AuthenticateClient _authenticateClient;
         private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;
-        private readonly IGrantedTokenHelper _grantedTokenHelper;
         private readonly IJwtGenerator _jwtGenerator;
 
         public GetTokenByAuthorizationCodeGrantTypeAction(
@@ -58,18 +56,15 @@ namespace SimpleAuth.Api.Token.Actions
             IClientStore clientStore,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
-            IGrantedTokenHelper grantedTokenHelper,
             IJwtGenerator jwtGenerator)
         {
             _clientValidator = new ClientValidator();
             _authorizationCodeStore = authorizationCodeStore;
             _configurationService = configurationService;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
-            _clientStore = clientStore;
             _authenticateClient = new AuthenticateClient(clientStore);
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
-            _grantedTokenHelper = grantedTokenHelper;
             _jwtGenerator = jwtGenerator;
         }
 
@@ -82,7 +77,7 @@ namespace SimpleAuth.Api.Token.Actions
 
             var result = await ValidateParameter(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
             await _authorizationCodeStore.RemoveAuthorizationCode(result.AuthCode.Code).ConfigureAwait(false); // 1. Invalidate the authorization code by removing it !
-            var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(
+            var grantedToken = await _tokenStore.GetValidGrantedTokenAsync(
                 result.AuthCode.Scopes,
                 result.AuthCode.ClientId,
                 result.AuthCode.IdTokenPayload,

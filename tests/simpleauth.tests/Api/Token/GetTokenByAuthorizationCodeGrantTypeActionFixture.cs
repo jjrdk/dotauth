@@ -43,7 +43,6 @@ namespace SimpleAuth.Tests.Api.Token
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
         private Mock<ITokenStore> _tokenStoreFake;
         private Mock<IClientStore> _clientStore;
-        private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
         private Mock<IJwtGenerator> _jwtGeneratorStub;
         private GetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
 
@@ -469,6 +468,7 @@ namespace SimpleAuth.Tests.Api.Token
 
             var client = new Client
             {
+                AllowedScopes = new List<Scope> { new Scope { Name = "scope" } },
                 RedirectionUrls = new[] { new Uri("https://redirectUri") },
                 ClientId = clientId,
                 Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
@@ -482,14 +482,17 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ClientId = clientId,
                 RedirectUri = new Uri("https://redirectUri"),
-                CreateDateTime = DateTime.UtcNow
+                CreateDateTime = DateTime.UtcNow,
+                Scopes = "scope"
             };
             var grantedToken = new GrantedToken
             {
                 ClientId = clientId,
                 AccessToken = accessToken,
                 IdToken = identityToken,
-                IdTokenPayLoad = new JwtPayload()
+                IdTokenPayLoad = new JwtPayload(),
+                CreateDateTime = DateTime.UtcNow,
+                ExpiresIn = 100000
             };
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
@@ -502,14 +505,22 @@ namespace SimpleAuth.Tests.Api.Token
                 .Returns(Task.FromResult(authorizationCode));
             //_clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<Uri>()))
             //    .Returns(new[] { new Uri("https://redirectUri") });
-            _grantedTokenHelperStub
+            //_grantedTokenHelperStub
+            //    .Setup(
+            //        g => g.GetValidGrantedTokenAsync(
+            //            It.IsAny<string>(),
+            //            It.IsAny<string>(),
+            //            It.IsAny<JwtPayload>(),
+            //            It.IsAny<JwtPayload>()))
+            //    .Returns(Task.FromResult(grantedToken));
+            _tokenStoreFake
                 .Setup(
-                    g => g.GetValidGrantedTokenAsync(
+                    x => x.GetToken(
                         It.IsAny<string>(),
                         It.IsAny<string>(),
                         It.IsAny<JwtPayload>(),
                         It.IsAny<JwtPayload>()))
-                .Returns(Task.FromResult(grantedToken));
+                .ReturnsAsync(grantedToken);
             var authenticationHeader = new AuthenticationHeaderValue("Basic", $"{clientId}:{clientSecret}".Base64Encode());
             var r = await _getTokenByAuthorizationCodeGrantTypeAction
                 .Execute(authorizationCodeGrantTypeParameter, authenticationHeader, null, null)
@@ -544,6 +555,7 @@ namespace SimpleAuth.Tests.Api.Token
             };
             var authorizationCode = new AuthorizationCode
             {
+                Scopes = "scope",
                 ClientId = clientId,
                 RedirectUri = new Uri("https://redirectUri"),
                 CreateDateTime = DateTime.UtcNow
@@ -564,6 +576,13 @@ namespace SimpleAuth.Tests.Api.Token
             //.Returns(Task.FromResult((double)3000));
             //_clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<Uri>()))
             //    .Returns(new[] { new Uri("https://redirectUri") });
+            _tokenStoreFake.Setup(
+                    x => x.GetToken(
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<JwtPayload>(),
+                        It.IsAny<JwtPayload>()))
+                .ReturnsAsync((GrantedToken)null);
             _grantedTokenGeneratorHelperFake
                 .Setup(
                     g => g.GenerateToken(
@@ -574,14 +593,14 @@ namespace SimpleAuth.Tests.Api.Token
                         It.IsAny<JwtPayload>(),
                         It.IsAny<JwtPayload>()))
                 .Returns(Task.FromResult(grantedToken));
-            _grantedTokenHelperStub
-                .Setup(
-                    g => g.GetValidGrantedTokenAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<JwtPayload>(),
-                        It.IsAny<JwtPayload>()))
-                .Returns(() => Task.FromResult((GrantedToken)null));
+            //_grantedTokenHelperStub
+            //    .Setup(
+            //        g => g.GetValidGrantedTokenAsync(
+            //            It.IsAny<string>(),
+            //            It.IsAny<string>(),
+            //            It.IsAny<JwtPayload>(),
+            //            It.IsAny<JwtPayload>()))
+            //    .Returns(() => Task.FromResult((GrantedToken)null));
 
             var authenticationHeader = new AuthenticationHeaderValue("Basic", $"{clientId}:{clientSecret}".Base64Encode());
             var result = await _getTokenByAuthorizationCodeGrantTypeAction
@@ -604,7 +623,6 @@ namespace SimpleAuth.Tests.Api.Token
                 authorizationCodeValidity: authorizationCodeValidity == default
                     ? TimeSpan.FromSeconds(3600)
                     : authorizationCodeValidity);
-            _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
             _jwtGeneratorStub = new Mock<IJwtGenerator>();
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
                 _authorizationCodeStoreFake.Object,
@@ -613,7 +631,6 @@ namespace SimpleAuth.Tests.Api.Token
                 _clientStore.Object,
                 _eventPublisher.Object,
                 _tokenStoreFake.Object,
-                _grantedTokenHelperStub.Object,
                 _jwtGeneratorStub.Object);
         }
     }

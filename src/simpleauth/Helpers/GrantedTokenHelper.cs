@@ -20,18 +20,14 @@ namespace SimpleAuth.Helpers
     using System.Threading.Tasks;
     using Validators;
 
-    internal class GrantedTokenHelper : IGrantedTokenHelper
+    internal static class GrantedTokenHelper
     {
-        private readonly ITokenStore _tokenStore;
-        private readonly IGrantedTokenValidator _grantedTokenValidator;
-
-        public GrantedTokenHelper(ITokenStore tokenStore, IGrantedTokenValidator grantedTokenValidator)
-        {
-            _tokenStore = tokenStore;
-            _grantedTokenValidator = grantedTokenValidator;
-        }
-
-        public async Task<GrantedToken> GetValidGrantedTokenAsync(string scopes, string clientId, JwtPayload idTokenJwsPayload = null, JwtPayload userInfoJwsPayload = null)
+        public static async Task<GrantedToken> GetValidGrantedTokenAsync(
+            this ITokenStore tokenStore,
+            string scopes,
+            string clientId,
+            JwtPayload idTokenJwsPayload = null,
+            JwtPayload userInfoJwsPayload = null)
         {
             if (string.IsNullOrWhiteSpace(scopes))
             {
@@ -43,15 +39,16 @@ namespace SimpleAuth.Helpers
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var token = await _tokenStore.GetToken(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload).ConfigureAwait(false);
+            var token = await tokenStore.GetToken(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload)
+                .ConfigureAwait(false);
             if (token == null)
             {
                 return null;
             }
 
-            if (!_grantedTokenValidator.CheckGrantedToken(token).IsValid)
+            if (!token.CheckGrantedToken().IsValid)
             {
-                await _tokenStore.RemoveAccessToken(token.AccessToken).ConfigureAwait(false);
+                await tokenStore.RemoveAccessToken(token.AccessToken).ConfigureAwait(false);
                 return null;
             }
 
