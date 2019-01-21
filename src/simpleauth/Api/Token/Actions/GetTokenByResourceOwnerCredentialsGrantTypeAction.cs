@@ -40,7 +40,6 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly IJwtGenerator _jwtGenerator;
         private readonly ITokenStore _tokenStore;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IGrantedTokenHelper _grantedTokenHelper;
 
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
@@ -48,8 +47,7 @@ namespace SimpleAuth.Api.Token.Actions
             IClientStore clientStore,
             IJwtGenerator jwtGenerator,
             ITokenStore tokenStore,
-            IEventPublisher eventPublisher,
-            IGrantedTokenHelper grantedTokenHelper)
+            IEventPublisher eventPublisher)
         {
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
@@ -57,7 +55,6 @@ namespace SimpleAuth.Api.Token.Actions
             _jwtGenerator = jwtGenerator;
             _tokenStore = tokenStore;
             _eventPublisher = eventPublisher;
-            _grantedTokenHelper = grantedTokenHelper;
         }
 
         public async Task<GrantedToken> Execute(
@@ -139,7 +136,7 @@ namespace SimpleAuth.Api.Token.Actions
             var payload = await _jwtGenerator
                 .GenerateUserInfoPayloadForScopeAsync(claimsPrincipal, authorizationParameter)
                 .ConfigureAwait(false);
-            var generatedToken = await _grantedTokenHelper
+            var generatedToken = await _tokenStore
                 .GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId, payload, payload)
                 .ConfigureAwait(false);
             if (generatedToken == null)

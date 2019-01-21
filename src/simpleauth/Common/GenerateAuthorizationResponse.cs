@@ -40,7 +40,6 @@ namespace SimpleAuth.Common
         private readonly IClientStore _clientStore;
         private readonly IConsentRepository _consentRepository;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IGrantedTokenHelper _grantedTokenHelper;
 
         public GenerateAuthorizationResponse(
             IAuthorizationCodeStore authorizationCodeStore,
@@ -50,8 +49,7 @@ namespace SimpleAuth.Common
             IEventPublisher eventPublisher,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IClientStore clientStore,
-            IConsentRepository consentRepository,
-            IGrantedTokenHelper grantedTokenHelper)
+            IConsentRepository consentRepository)
         {
             _authorizationCodeStore = authorizationCodeStore;
             _tokenStore = tokenStore;
@@ -61,7 +59,6 @@ namespace SimpleAuth.Common
             _authorizationFlowHelper = authorizationFlowHelper;
             _clientStore = clientStore;
             _consentRepository = consentRepository;
-            _grantedTokenHelper = grantedTokenHelper;
         }
 
         public async Task Generate(
@@ -109,7 +106,7 @@ namespace SimpleAuth.Common
                     allowedTokenScopes = string.Join(" ", authorizationParameter.Scope.ParseScopes());
                 }
 
-                grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(
+                grantedToken = await _tokenStore.GetValidGrantedTokenAsync(
                         allowedTokenScopes,
                         client.ClientId,
                         userInformationPayload,

@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,38 +19,31 @@ namespace SimpleAuth.Validators
     using Errors;
     using Shared.Models;
 
-    public class GrantedTokenValidator : IGrantedTokenValidator
+    public static class GrantedTokenValidator
     {
-        private readonly ITokenStore _tokenStore;
-
-        public GrantedTokenValidator(ITokenStore tokenStore)
-        {
-            _tokenStore = tokenStore;
-        }
-
-        public async Task<GrantedTokenValidationResult> CheckAccessTokenAsync(string accessToken)
+        public static async Task<GrantedTokenValidationResult> CheckAccessTokenAsync(this ITokenStore tokenStore, string accessToken)
         {
             if (string.IsNullOrWhiteSpace(accessToken))
             {
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
-            var grantedToken = await _tokenStore.GetAccessToken(accessToken).ConfigureAwait(false);
+            var grantedToken = await tokenStore.GetAccessToken(accessToken).ConfigureAwait(false);
             return CheckGrantedToken(grantedToken);
         }
 
-        public async Task<GrantedTokenValidationResult> CheckRefreshTokenAsync(string refreshToken)
+        public static async Task<GrantedTokenValidationResult> CheckRefreshTokenAsync(this ITokenStore tokenStore, string refreshToken)
         {
             if (string.IsNullOrWhiteSpace(refreshToken))
             {
                 throw new ArgumentNullException(nameof(refreshToken));
             }
 
-            var grantedToken = await _tokenStore.GetRefreshToken(refreshToken).ConfigureAwait(false);
+            var grantedToken = await tokenStore.GetRefreshToken(refreshToken).ConfigureAwait(false);
             return CheckGrantedToken(grantedToken);
         }
 
-        public GrantedTokenValidationResult CheckGrantedToken(GrantedToken grantedToken)
+        public static GrantedTokenValidationResult CheckGrantedToken(this GrantedToken grantedToken)
         {
             if (grantedToken == null)
             {

@@ -42,7 +42,6 @@ namespace SimpleAuth.Api.Token
         private readonly AuthenticateClient _authenticateClient;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly RevokeTokenAction _revokeTokenAction;
-        private readonly IGrantedTokenHelper _grantedTokenHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;
 
@@ -55,8 +54,7 @@ namespace SimpleAuth.Api.Token
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
-            IJwtGenerator jwtGenerator,
-            IGrantedTokenHelper grantedTokenHelper)
+            IJwtGenerator jwtGenerator)
         {
             _getTokenByResourceOwnerCredentialsGrantType = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
                 grantedTokenGeneratorHelper,
@@ -64,8 +62,7 @@ namespace SimpleAuth.Api.Token
                 clientStore,
                 jwtGenerator,
                 tokenStore,
-                eventPublisher,
-                grantedTokenHelper);
+                eventPublisher);
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
                 authorizationCodeStore,
                 oAuthConfigurationOptions,
@@ -73,7 +70,6 @@ namespace SimpleAuth.Api.Token
                 clientStore,
                 eventPublisher,
                 tokenStore,
-                grantedTokenHelper,
                 jwtGenerator);
             _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
                 eventPublisher,
@@ -87,7 +83,6 @@ namespace SimpleAuth.Api.Token
             _revokeTokenAction = new RevokeTokenAction(clientStore, tokenStore);
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
-            _grantedTokenHelper = grantedTokenHelper;
         }
 
         public async Task<GrantedToken> GetTokenByResourceOwnerCredentialsGrantType(
@@ -321,7 +316,7 @@ namespace SimpleAuth.Api.Token
             }
 
             // 4. Generate the JWT access token on the fly.
-            var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId)
+            var grantedToken = await _tokenStore.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId)
                 .ConfigureAwait(false);
             if (grantedToken == null)
             {

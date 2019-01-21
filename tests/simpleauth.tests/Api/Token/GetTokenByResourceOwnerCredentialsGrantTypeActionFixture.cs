@@ -43,7 +43,6 @@ namespace SimpleAuth.Tests.Api.Token
         private Mock<IResourceOwnerAuthenticateHelper> _resourceOwnerAuthenticateHelperFake;
         private Mock<IClientStore> _clientStore;
         private Mock<IJwtGenerator> _jwtGeneratorFake;
-        private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
         private Mock<ITokenStore> _tokenStoreStub;
         private GetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantTypeAction;
 
@@ -315,14 +314,14 @@ namespace SimpleAuth.Tests.Api.Token
                         It.IsAny<ClaimsPrincipal>(),
                         It.IsAny<AuthorizationParameter>()))
                 .Returns(() => Task.FromResult(userInformationJwsPayload));
-            _grantedTokenHelperStub
-                .Setup(
-                    g => g.GetValidGrantedTokenAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<JwtPayload>(),
-                        It.IsAny<JwtPayload>()))
-                .Returns(Task.FromResult((GrantedToken)null));
+            //_grantedTokenHelperStub
+            //    .Setup(
+            //        g => g.GetValidGrantedTokenAsync(
+            //            It.IsAny<string>(),
+            //            It.IsAny<string>(),
+            //            It.IsAny<JwtPayload>(),
+            //            It.IsAny<JwtPayload>()))
+            //    .Returns(Task.FromResult((GrantedToken)null));
             _grantedTokenGeneratorHelperFake
                 .Setup(
                     g => g.GenerateToken(
@@ -353,7 +352,6 @@ namespace SimpleAuth.Tests.Api.Token
             _resourceOwnerAuthenticateHelperFake = new Mock<IResourceOwnerAuthenticateHelper>();
             _clientStore = new Mock<IClientStore>();
             _jwtGeneratorFake = new Mock<IJwtGenerator>();
-            _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
             _tokenStoreStub = new Mock<ITokenStore>();
 
             _getTokenByResourceOwnerCredentialsGrantTypeAction = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
@@ -362,8 +360,7 @@ namespace SimpleAuth.Tests.Api.Token
                 _clientStore.Object,
                 _jwtGeneratorFake.Object,
                 _tokenStoreStub.Object,
-                _eventPublisher.Object,
-                _grantedTokenHelperStub.Object);
+                _eventPublisher.Object);
         }
     }
 }
