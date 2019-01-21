@@ -1,16 +1,18 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+using SimpleAuth.Shared.Repositories;
 
 namespace SimpleAuth.Common
 {
@@ -37,8 +39,8 @@ namespace SimpleAuth.Common
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly IConsentHelper _consentHelper;
         private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
+        private readonly IClientStore _clientStore;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IClientHelper _clientHelper;
         private readonly IGrantedTokenHelper _grantedTokenHelper;
 
         public GenerateAuthorizationResponse(
@@ -50,7 +52,7 @@ namespace SimpleAuth.Common
             IConsentHelper consentHelper,
             IEventPublisher eventPublisher,
             IAuthorizationFlowHelper authorizationFlowHelper,
-            IClientHelper clientHelper,
+            IClientStore clientStore,
             IGrantedTokenHelper grantedTokenHelper)
         {
             _authorizationCodeStore = authorizationCodeStore;
@@ -61,11 +63,11 @@ namespace SimpleAuth.Common
             _consentHelper = consentHelper;
             _eventPublisher = eventPublisher;
             _authorizationFlowHelper = authorizationFlowHelper;
-            _clientHelper = clientHelper;
+            _clientStore = clientStore;
             _grantedTokenHelper = grantedTokenHelper;
         }
 
-        public async Task ExecuteAsync(EndpointResult endpointResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName)
+        public async Task Generate(EndpointResult endpointResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName)
         {
             if (endpointResult?.RedirectInstruction == null)
             {
@@ -128,7 +130,7 @@ namespace SimpleAuth.Common
                 var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
                 if (assignedConsent != null)
                 {
-                    // Insert a temporary authorization code 
+                    // Insert a temporary authorization code
                     // It will be used later to retrieve tha id_token or an access token.
                     authorizationCode = new AuthorizationCode
                     {
@@ -266,8 +268,8 @@ namespace SimpleAuth.Common
             JwtPayload jwsPayload,
             AuthorizationParameter authorizationParameter)
         {
-            return await _clientHelper.GenerateIdTokenAsync(authorizationParameter.ClientId,
-                jwsPayload).ConfigureAwait(false);
+            return await _clientStore.GenerateIdTokenAsync(authorizationParameter.ClientId, jwsPayload)
+                .ConfigureAwait(false);
         }
 
         private async Task<JwtPayload> GenerateIdTokenPayload(

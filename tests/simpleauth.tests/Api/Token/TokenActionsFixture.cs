@@ -118,7 +118,6 @@ namespace SimpleAuth.Tests.Api.Token
                 eventPublisher.Object,
                 new Mock<ITokenStore>().Object,
                 new Mock<IJwtGenerator>().Object,
-                new Mock<IClientHelper>().Object,
                 grantedTokenHelperMock.Object);
         }
     }

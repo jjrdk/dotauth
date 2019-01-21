@@ -73,7 +73,7 @@
                 var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuth");
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 await _generateAuthorizationResponse
-                    .ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName)
+                    .Generate(result, authorizationParameter, claimsPrincipal, client, issuerName)
                     .ConfigureAwait(false);
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)

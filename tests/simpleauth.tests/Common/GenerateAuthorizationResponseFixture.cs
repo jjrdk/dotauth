@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.IdentityModel.Tokens;
+using SimpleAuth.Shared.Repositories;
+
 namespace SimpleAuth.Tests.Common
 {
     using Logging;
@@ -44,10 +47,10 @@ namespace SimpleAuth.Tests.Common
         private Mock<ITokenStore> _grantedTokenRepositoryFake;
         private Mock<IConsentHelper> _consentHelperFake;
         private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
-        private Mock<IClientHelper> _clientHelperFake;
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
         private Mock<IEventPublisher> _eventPublisher;
         private IGenerateAuthorizationResponse _generateAuthorizationResponse;
+        private Mock<IClientStore> _clientStore;
 
         public GenerateAuthorizationResponseFixture()
         {
@@ -96,27 +99,27 @@ namespace SimpleAuth.Tests.Common
         {
             await Assert
                 .ThrowsAsync<ArgumentNullException>(
-                    () => _generateAuthorizationResponse.ExecuteAsync(null, null, null, null, null))
+                    () => _generateAuthorizationResponse.Generate(null, null, null, null, null))
                 .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Passing_No_Authorization_Request_Then_Exception_Is_Thrown()
         {
-            var redirectInstruction = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
+            var redirectInstruction = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
 
             await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, null, null, null, null))
+                    () => _generateAuthorizationResponse.Generate(redirectInstruction, null, null, null, null))
                 .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_There_Is_No_Logged_User_Then_Exception_Is_Throw()
         {
-            var redirectInstruction = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
+            var redirectInstruction = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
 
             await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _generateAuthorizationResponse.ExecuteAsync(
+                    () => _generateAuthorizationResponse.Generate(
                         redirectInstruction,
                         new AuthorizationParameter(),
                         null,
@@ -128,11 +131,11 @@ namespace SimpleAuth.Tests.Common
         [Fact]
         public async Task When_No_Client_Is_Passed_Then_Exception_Is_Thrown()
         {
-            var redirectInstruction = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
+            var redirectInstruction = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
 
             await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _generateAuthorizationResponse.ExecuteAsync(
+                    () => _generateAuthorizationResponse.Generate(
                         redirectInstruction,
                         new AuthorizationParameter(),
                         claimsPrincipal,
@@ -146,11 +149,13 @@ namespace SimpleAuth.Tests.Common
         {
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
             const string idToken = "idToken";
-            var authorizationParameter = new AuthorizationParameter();
-            var actionResult = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
+            var clientId = "client";
+            var authorizationParameter = new AuthorizationParameter { ClientId = clientId };
+            var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
             var jwsPayload = new JwtPayload();
+
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new[] {ResponseTypeNames.IdToken});
+                .Returns(new[] { ResponseTypeNames.IdToken });
             _jwtGeneratorFake.Setup(
                     j => j.GenerateIdTokenPayloadForScopesAsync(
                         It.IsAny<ClaimsPrincipal>(),
@@ -164,21 +169,27 @@ namespace SimpleAuth.Tests.Common
                 .Returns(Task.FromResult(jwsPayload));
             //_jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<JwtPayload>(), It.IsAny<string>(), It.IsAny<string>()))
             //    .Returns(Task.FromResult(idToken));
-            _clientHelperFake.Setup(c => c.GenerateIdTokenAsync(It.IsAny<string>(), It.IsAny<JwtPayload>()))
-                .Returns(Task.FromResult(idToken));
+            //_clientHelperFake.Setup(c => c.GenerateIdTokenAsync(It.IsAny<string>(), It.IsAny<JwtPayload>()))
+            //    .Returns(Task.FromResult(idToken));
 
-            await _generateAuthorizationResponse.ExecuteAsync(
+            var client = new Client
+            {
+                ClientId = clientId,
+                JsonWebKeys = "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify).ToSet(),
+                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256
+            };
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
+            await _generateAuthorizationResponse.Generate(
                     actionResult,
                     authorizationParameter,
                     claimsPrincipal,
-                    new Client(),
+                    client,
                     null)
                 .ConfigureAwait(false);
 
             Assert.Contains(
                 actionResult.RedirectInstruction.Parameters,
                 p => p.Name == CoreConstants.StandardAuthorizationResponseNames.IdTokenName);
-            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Value == idToken);
         }
 
         [Fact]
@@ -189,12 +200,12 @@ namespace SimpleAuth.Tests.Common
             const string clientId = "clientId";
             const string scope = "openid";
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
-            var authorizationParameter = new AuthorizationParameter {ClientId = clientId, Scope = scope};
-            var grantedToken = new GrantedToken {AccessToken = Id.Create()};
-            var actionResult = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
+            var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
+            var grantedToken = new GrantedToken { AccessToken = Id.Create() };
+            var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
             var jwsPayload = new JwtPayload();
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new[] {ResponseTypeNames.Token});
+                .Returns(new[] { ResponseTypeNames.Token });
             _jwtGeneratorFake.Setup(
                     j => j.GenerateIdTokenPayloadForScopesAsync(
                         It.IsAny<ClaimsPrincipal>(),
@@ -209,7 +220,7 @@ namespace SimpleAuth.Tests.Common
             //_jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<JwtPayload>(), It.IsAny<string>(), It.IsAny<string>()))
             //    .Returns(Task.FromResult(idToken));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
-                .Returns(() => new List<string> {scope});
+                .Returns(() => new List<string> { scope });
             _grantedTokenHelperStub
                 .Setup(
                     r => r.GetValidGrantedTokenAsync(
@@ -217,7 +228,7 @@ namespace SimpleAuth.Tests.Common
                         It.IsAny<string>(),
                         It.IsAny<JwtPayload>(),
                         It.IsAny<JwtPayload>()))
-                .Returns(Task.FromResult((GrantedToken) null));
+                .Returns(Task.FromResult((GrantedToken)null));
             _grantedTokenGeneratorHelperFake
                 .Setup(
                     r => r.GenerateToken(
@@ -229,7 +240,7 @@ namespace SimpleAuth.Tests.Common
                         It.IsAny<JwtPayload>()))
                 .Returns(Task.FromResult(grantedToken));
 
-            await _generateAuthorizationResponse.ExecuteAsync(
+            await _generateAuthorizationResponse.Generate(
                     actionResult,
                     authorizationParameter,
                     claimsPrincipal,
@@ -253,12 +264,12 @@ namespace SimpleAuth.Tests.Common
             const string clientId = "clientId";
             const string scope = "openid";
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
-            var authorizationParameter = new AuthorizationParameter {ClientId = clientId, Scope = scope};
-            var grantedToken = new GrantedToken {AccessToken = Id.Create()};
-            var actionResult = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
+            var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
+            var grantedToken = new GrantedToken { AccessToken = Id.Create() };
+            var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
             var jwsPayload = new JwtPayload();
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new[] {ResponseTypeNames.Token});
+                .Returns(new[] { ResponseTypeNames.Token });
             _jwtGeneratorFake.Setup(
                     j => j.GenerateIdTokenPayloadForScopesAsync(
                         It.IsAny<ClaimsPrincipal>(),
@@ -273,7 +284,7 @@ namespace SimpleAuth.Tests.Common
             //_jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<JwtPayload>(), It.IsAny<string>(), It.IsAny<string>()))
             //    .Returns(Task.FromResult(idToken));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
-                .Returns(() => new List<string> {scope});
+                .Returns(() => new List<string> { scope });
             _grantedTokenHelperStub
                 .Setup(
                     r => r.GetValidGrantedTokenAsync(
@@ -283,7 +294,7 @@ namespace SimpleAuth.Tests.Common
                         It.IsAny<JwtPayload>()))
                 .Returns(() => Task.FromResult(grantedToken));
 
-            await _generateAuthorizationResponse.ExecuteAsync(
+            await _generateAuthorizationResponse.Generate(
                     actionResult,
                     authorizationParameter,
                     claimsPrincipal,
@@ -305,12 +316,12 @@ namespace SimpleAuth.Tests.Common
             const string clientId = "clientId";
             const string scope = "openid";
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
-            var authorizationParameter = new AuthorizationParameter {ClientId = clientId, Scope = scope};
+            var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
             var consent = new Consent();
-            var actionResult = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
+            var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
             var jwsPayload = new JwtPayload();
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new[] {ResponseTypeNames.Code});
+                .Returns(new[] { ResponseTypeNames.Code });
             _jwtGeneratorFake.Setup(
                     j => j.GenerateIdTokenPayloadForScopesAsync(
                         It.IsAny<ClaimsPrincipal>(),
@@ -328,7 +339,7 @@ namespace SimpleAuth.Tests.Common
                 .Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(), It.IsAny<AuthorizationParameter>()))
                 .Returns(Task.FromResult(consent));
 
-            await _generateAuthorizationResponse.ExecuteAsync(
+            await _generateAuthorizationResponse.Generate(
                     actionResult,
                     authorizationParameter,
                     claimsPrincipal,
@@ -354,7 +365,10 @@ namespace SimpleAuth.Tests.Common
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
             var authorizationParameter = new AuthorizationParameter
             {
-                ClientId = clientId, Scope = scope, ResponseType = responseType, ResponseMode = ResponseMode.None
+                ClientId = clientId,
+                Scope = scope,
+                ResponseType = responseType,
+                ResponseMode = ResponseMode.None
             };
             //var client = new Client
             //{
@@ -364,11 +378,12 @@ namespace SimpleAuth.Tests.Common
             //};
             var actionResult = new EndpointResult
             {
-                RedirectInstruction = new RedirectInstruction(), Type = TypeActionResult.RedirectToCallBackUrl
+                RedirectInstruction = new RedirectInstruction(),
+                Type = TypeActionResult.RedirectToCallBackUrl
             };
             var jwsPayload = new JwtPayload();
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
-                .Returns(new[] {ResponseTypeNames.IdToken});
+                .Returns(new[] { ResponseTypeNames.IdToken });
             _jwtGeneratorFake.Setup(
                     j => j.GenerateIdTokenPayloadForScopesAsync(
                         It.IsAny<ClaimsPrincipal>(),
@@ -386,7 +401,7 @@ namespace SimpleAuth.Tests.Common
                     a => a.GetAuthorizationFlow(It.IsAny<ICollection<string>>(), It.IsAny<string>()))
                 .Returns(AuthorizationFlow.ImplicitFlow);
 
-            await _generateAuthorizationResponse.ExecuteAsync(
+            await _generateAuthorizationResponse.Generate(
                     actionResult,
                     authorizationParameter,
                     claimsPrincipal,
@@ -406,11 +421,11 @@ namespace SimpleAuth.Tests.Common
             _grantedTokenRepositoryFake = new Mock<ITokenStore>();
             _consentHelperFake = new Mock<IConsentHelper>();
             _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
-            _clientHelperFake = new Mock<IClientHelper>();
             _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
             _eventPublisher = new Mock<IEventPublisher>();
             _eventPublisher.Setup(x => x.Publish(It.IsAny<AuthorizationCodeGranted>())).Returns(Task.CompletedTask);
             _eventPublisher.Setup(x => x.Publish(It.IsAny<AccessToClientGranted>())).Returns(Task.CompletedTask);
+            _clientStore = new Mock<IClientStore>();
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
                 _authorizationCodeRepositoryFake.Object,
                 _grantedTokenRepositoryFake.Object,
@@ -420,7 +435,7 @@ namespace SimpleAuth.Tests.Common
                 _consentHelperFake.Object,
                 _eventPublisher.Object,
                 _authorizationFlowHelperFake.Object,
-                _clientHelperFake.Object,
+                _clientStore.Object,
                 _grantedTokenHelperStub.Object);
         }
     }

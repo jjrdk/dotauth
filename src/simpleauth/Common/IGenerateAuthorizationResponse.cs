@@ -8,6 +8,11 @@
 
     public interface IGenerateAuthorizationResponse
     {
-        Task ExecuteAsync(EndpointResult endpointResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName);
+        Task Generate(
+            EndpointResult endpointResult,
+            AuthorizationParameter authorizationParameter,
+            ClaimsPrincipal claimsPrincipal,
+            Client client,
+            string issuerName);
     }
 }

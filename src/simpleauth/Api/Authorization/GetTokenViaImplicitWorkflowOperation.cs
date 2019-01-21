@@ -83,7 +83,7 @@ namespace SimpleAuth.Api.Authorization
             {
                 var claimsPrincipal = principal as ClaimsPrincipal;
                 await _generateAuthorizationResponse
-                    .ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName)
+                    .Generate(result, authorizationParameter, claimsPrincipal, client, issuerName)
                     .ConfigureAwait(false);
             }
 

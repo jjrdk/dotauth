@@ -32,26 +32,25 @@ namespace SimpleAuth.Api.Token.Actions
 
     public sealed class GetTokenByRefreshTokenGrantTypeAction
     {
-        private readonly IClientHelper _clientHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly ITokenStore _tokenStore;
         private readonly IJwtGenerator _jwtGenerator;
+        private readonly IClientStore _clientStore;
         private readonly AuthenticateClient _authenticateClient;
 
         public GetTokenByRefreshTokenGrantTypeAction(
-            IClientHelper clientHelper,
             IEventPublisher eventPublisher,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             ITokenStore tokenStore,
             IJwtGenerator jwtGenerator,
             IClientStore clientStore)
         {
-            _clientHelper = clientHelper;
             _eventPublisher = eventPublisher;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _tokenStore = tokenStore;
             _jwtGenerator = jwtGenerator;
+            _clientStore = clientStore;
             _authenticateClient = new AuthenticateClient(clientStore);
         }
 
@@ -98,7 +97,7 @@ namespace SimpleAuth.Api.Token.Actions
             if (generatedToken.IdTokenPayLoad != null)
             {
                 _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, authResult.Client);
-                generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(generatedToken.ClientId, generatedToken.IdTokenPayLoad).ConfigureAwait(false);
+                generatedToken.IdToken = await _clientStore.GenerateIdTokenAsync(generatedToken.ClientId, generatedToken.IdTokenPayLoad).ConfigureAwait(false);
             }
 
             await _tokenStore.AddToken(generatedToken).ConfigureAwait(false);

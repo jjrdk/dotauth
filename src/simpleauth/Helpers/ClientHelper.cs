@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Helpers
 {
-    using JwtToken;
     using Microsoft.IdentityModel.Tokens;
     using Shared.Models;
     using Shared.Repositories;
@@ -24,16 +23,9 @@ namespace SimpleAuth.Helpers
     using System.Security.Claims;
     using System.Threading.Tasks;
 
-    public sealed class ClientHelper : IClientHelper
+    public static class ClientHelper
     {
-        private readonly IClientStore _clientRepository;
-
-        public ClientHelper(IClientStore clientRepository)
-        {
-            _clientRepository = clientRepository;
-        }
-
-        public async Task<string> GenerateIdTokenAsync(string clientId, JwtPayload jwsPayload)
+        public static async Task<string> GenerateIdTokenAsync(this IClientStore clientStore, string clientId, JwtPayload jwsPayload)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -45,7 +37,7 @@ namespace SimpleAuth.Helpers
                 throw new ArgumentNullException(nameof(jwsPayload));
             }
 
-            var client = await _clientRepository.GetById(clientId).ConfigureAwait(false);
+            var client = await clientStore.GetById(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 return null;
@@ -54,7 +46,7 @@ namespace SimpleAuth.Helpers
             return await GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
         }
 
-        public Task<string> GenerateIdTokenAsync(Client client, JwtPayload jwsPayload)
+        public static Task<string> GenerateIdTokenAsync(this Client client, JwtPayload jwsPayload)
         {
             if (client == null)
             {
@@ -67,18 +59,20 @@ namespace SimpleAuth.Helpers
             }
 
             var handler = new JwtSecurityTokenHandler();
-            var jwt = handler.CreateEncodedJwt(jwsPayload.Iss,
-                     null,
-                     new ClaimsIdentity(jwsPayload.Claims),
-                     DateTime.UtcNow,
-                     DateTime.UtcNow.Add(client.TokenLifetime),
-                     DateTime.UtcNow,
-                     client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First(),
-                     client.IdTokenEncryptedResponseAlg != null
-                         ? new EncryptingCredentials(client.JsonWebKeys.GetEncryptionKeys().First(),
-                             client.IdTokenEncryptedResponseAlg,
-                             client.IdTokenEncryptedResponseEnc)
-                         : null);
+            var jwt = handler.CreateEncodedJwt(
+                jwsPayload.Iss,
+                null,
+                new ClaimsIdentity(jwsPayload.Claims),
+                DateTime.UtcNow,
+                DateTime.UtcNow.Add(client.TokenLifetime),
+                DateTime.UtcNow,
+                client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First(),
+                client.IdTokenEncryptedResponseAlg != null
+                    ? new EncryptingCredentials(
+                        client.JsonWebKeys.GetEncryptionKeys().First(),
+                        client.IdTokenEncryptedResponseAlg,
+                        client.IdTokenEncryptedResponseEnc)
+                    : null);
             return Task.FromResult(jwt);
         }
     }

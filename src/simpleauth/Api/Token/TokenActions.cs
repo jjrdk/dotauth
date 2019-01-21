@@ -57,7 +57,6 @@ namespace SimpleAuth.Api.Token
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
             IJwtGenerator jwtGenerator,
-            IClientHelper clientHelper,
             IGrantedTokenHelper grantedTokenHelper)
         {
             _getTokenByResourceOwnerCredentialsGrantType = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
@@ -65,7 +64,6 @@ namespace SimpleAuth.Api.Token
                 resourceOwnerAuthenticateHelper,
                 clientStore,
                 jwtGenerator,
-                clientHelper,
                 tokenStore,
                 eventPublisher,
                 grantedTokenHelper);
@@ -73,14 +71,12 @@ namespace SimpleAuth.Api.Token
                 authorizationCodeStore,
                 oAuthConfigurationOptions,
                 grantedTokenGeneratorHelper,
-                clientHelper,
                 clientStore,
                 eventPublisher,
                 tokenStore,
                 grantedTokenHelper,
                 jwtGenerator);
             _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
-                clientHelper,
                 eventPublisher,
                 grantedTokenGeneratorHelper,
                 tokenStore,

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.IdentityModel.Tokens;
 using SimpleAuth.Shared.Repositories;
 using System.Net.Http.Headers;
 
@@ -42,7 +43,6 @@ namespace SimpleAuth.Tests.Api.Token
         private Mock<IResourceOwnerAuthenticateHelper> _resourceOwnerAuthenticateHelperFake;
         private Mock<IClientStore> _clientStore;
         private Mock<IJwtGenerator> _jwtGeneratorFake;
-        private Mock<IClientHelper> _clientHelperStub;
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
         private Mock<ITokenStore> _tokenStoreStub;
         private GetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantTypeAction;
@@ -293,6 +293,8 @@ namespace SimpleAuth.Tests.Api.Token
                 AllowedScopes = new[] { new Scope { Name = invalidScope } },
                 ClientId = clientId,
                 Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                JsonWebKeys = "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify).ToSet(),
+                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                 GrantTypes = new List<GrantType> { GrantType.password },
                 ResponseTypes = new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token }
             };
@@ -341,7 +343,6 @@ namespace SimpleAuth.Tests.Api.Token
 
             _tokenStoreStub.Verify(g => g.AddToken(grantedToken));
             _eventPublisher.Verify(s => s.Publish(It.IsAny<AccessToClientGranted>()));
-            _clientHelperStub.Verify(c => c.GenerateIdTokenAsync(It.IsAny<Client>(), It.IsAny<JwtPayload>()));
         }
 
         private void InitializeFakeObjects()
@@ -352,7 +353,6 @@ namespace SimpleAuth.Tests.Api.Token
             _resourceOwnerAuthenticateHelperFake = new Mock<IResourceOwnerAuthenticateHelper>();
             _clientStore = new Mock<IClientStore>();
             _jwtGeneratorFake = new Mock<IJwtGenerator>();
-            _clientHelperStub = new Mock<IClientHelper>();
             _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
             _tokenStoreStub = new Mock<ITokenStore>();
 
@@ -361,7 +361,6 @@ namespace SimpleAuth.Tests.Api.Token
                 _resourceOwnerAuthenticateHelperFake.Object,
                 _clientStore.Object,
                 _jwtGeneratorFake.Object,
-                _clientHelperStub.Object,
                 _tokenStoreStub.Object,
                 _eventPublisher.Object,
                 _grantedTokenHelperStub.Object);
