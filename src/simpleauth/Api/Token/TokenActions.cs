@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using SimpleAuth.JwtToken;
+using SimpleAuth.Shared.Repositories;
 
 namespace SimpleAuth.Api.Token
 {
@@ -38,7 +39,7 @@ namespace SimpleAuth.Api.Token
         private readonly GetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
         private readonly GetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
         private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
-        private readonly IAuthenticateClient _authenticateClient;
+        private readonly AuthenticateClient _authenticateClient;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly ScopeValidator _scopeValidator;
         private readonly RevokeTokenAction _revokeTokenAction;
@@ -50,7 +51,7 @@ namespace SimpleAuth.Api.Token
             OAuthConfigurationOptions oAuthConfigurationOptions,
             IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator,
             IAuthorizationCodeStore authorizationCodeStore,
-            IAuthenticateClient authenticateClient,
+            IClientStore clientStore,
             IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IEventPublisher eventPublisher,
@@ -62,7 +63,7 @@ namespace SimpleAuth.Api.Token
             _getTokenByResourceOwnerCredentialsGrantType = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
                 grantedTokenGeneratorHelper,
                 resourceOwnerAuthenticateHelper,
-                authenticateClient,
+                clientStore,
                 jwtGenerator,
                 clientHelper,
                 tokenStore,
@@ -72,8 +73,8 @@ namespace SimpleAuth.Api.Token
                 authorizationCodeStore,
                 oAuthConfigurationOptions,
                 grantedTokenGeneratorHelper,
-                authenticateClient,
                 clientHelper,
+                clientStore,
                 eventPublisher,
                 tokenStore,
                 grantedTokenHelper,
@@ -84,12 +85,12 @@ namespace SimpleAuth.Api.Token
                 grantedTokenGeneratorHelper,
                 tokenStore,
                 jwtGenerator,
-                authenticateClient);
-            _authenticateClient = authenticateClient;
+                clientStore);
+            _authenticateClient = new AuthenticateClient(clientStore);
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _scopeValidator = new ScopeValidator();
             _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
-            _revokeTokenAction = new RevokeTokenAction(authenticateClient, tokenStore);
+            _revokeTokenAction = new RevokeTokenAction(clientStore, tokenStore);
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
             _grantedTokenHelper = grantedTokenHelper;
@@ -284,7 +285,7 @@ namespace SimpleAuth.Api.Token
             // 1. Authenticate the client
             var instruction =
                 authenticationHeaderValue.GetAuthenticateInstruction(clientCredentialsGrantTypeParameter, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
+            var authResult = await _authenticateClient.Authenticate(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {

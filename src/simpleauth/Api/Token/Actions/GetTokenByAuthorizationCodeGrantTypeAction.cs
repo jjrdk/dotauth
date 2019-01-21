@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using SimpleAuth.Shared.Repositories;
+
 namespace SimpleAuth.Api.Token.Actions
 {
     using Authenticate;
@@ -42,7 +44,7 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
         private readonly OAuthConfigurationOptions _configurationService;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
-        private readonly IAuthenticateClient _authenticateClient;
+        private readonly AuthenticateClient _authenticateClient;
         private readonly IClientHelper _clientHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;
@@ -53,8 +55,8 @@ namespace SimpleAuth.Api.Token.Actions
             IAuthorizationCodeStore authorizationCodeStore,
             OAuthConfigurationOptions configurationService,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
-            IAuthenticateClient authenticateClient,
             IClientHelper clientHelper,
+            IClientStore clientStore,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
             IGrantedTokenHelper grantedTokenHelper,
@@ -64,7 +66,7 @@ namespace SimpleAuth.Api.Token.Actions
             _authorizationCodeStore = authorizationCodeStore;
             _configurationService = configurationService;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
-            _authenticateClient = authenticateClient;
+            _authenticateClient = new AuthenticateClient(clientStore);
             _clientHelper = clientHelper;
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
@@ -131,7 +133,7 @@ namespace SimpleAuth.Api.Token.Actions
         {
             // 1. Authenticate the client
             var instruction = authenticationHeaderValue.GetAuthenticateInstruction(authorizationCodeGrantTypeParameter, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
+            var authResult = await _authenticateClient.Authenticate(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {

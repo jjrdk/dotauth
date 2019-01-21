@@ -53,7 +53,7 @@
             var discoveryInformation = await _createDiscoveryDocumentationAction.CreateDiscoveryInformation("http://test").ConfigureAwait(false);
 
             Assert.NotNull(discoveryInformation);
-            Assert.True(discoveryInformation.ScopesSupported.Length == 2);
+            Assert.Equal(2, discoveryInformation.ScopesSupported.Length);
             Assert.Contains(firstScopeName, discoveryInformation.ScopesSupported);
             Assert.Contains(secondScopeName, discoveryInformation.ScopesSupported);
             Assert.DoesNotContain(notExposedScopeName, discoveryInformation.ScopesSupported);

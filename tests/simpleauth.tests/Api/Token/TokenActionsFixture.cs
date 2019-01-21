@@ -1,4 +1,7 @@
-﻿namespace SimpleAuth.Tests.Api.Token
+﻿using System.Net.Http.Headers;
+using SimpleAuth.Shared.Repositories;
+
+namespace SimpleAuth.Tests.Api.Token
 {
     using Moq;
     using Parameters;
@@ -6,7 +9,6 @@
     using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Api.Token;
-    using SimpleAuth.Authenticate;
     using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
     using SimpleAuth.Validators;
@@ -18,44 +20,42 @@
 
     public sealed class TokenActionsFixture
     {
+        const string clientId = "valid_client_id";
+        const string clientsecret = "secret";
         private ITokenActions _tokenActions;
+
+        public TokenActionsFixture()
+        {
+            InitializeFakeObjects();
+        }
 
         [Fact]
         public async Task When_Passing_No_Request_To_ResourceOwner_Grant_Type_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
-
             await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Passing_No_Request_To_AuthorizationCode_Grant_Type_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
-
             await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByAuthorizationCodeGrantType(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Passing_No_Request_To_Refresh_Token_Grant_Type_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
-
             await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByRefreshTokenGrantType(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Passing_Null_Parameter_To_ClientCredentials_GrantType_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
-
             await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByClientCredentialsGrantType(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Getting_Token_Via_ClientCredentials_GrantType_Then_GrantedToken_Is_Returned()
         {
-            InitializeFakeObjects();
             const string scope = "valid_scope";
             const string clientId = "valid_client_id";
             var parameter = new ClientCredentialsGrantTypeParameter
@@ -63,16 +63,17 @@
                 Scope = scope
             };
 
-            var result = await _tokenActions.GetTokenByClientCredentialsGrantType(parameter, null, null, null).ConfigureAwait(false);
+            var authenticationHeader = new AuthenticationHeaderValue(
+                "Basic",
+                $"{clientId}:{clientsecret}".Base64Encode());
+            var result = await _tokenActions.GetTokenByClientCredentialsGrantType(parameter, authenticationHeader, null, null).ConfigureAwait(false);
 
-            Assert.True(result.ClientId == clientId);
+            Assert.Equal(clientId, result.ClientId);
         }
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
-
             await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.RevokeToken(null, null, null, null)).ConfigureAwait(false);
         }
 
@@ -80,19 +81,22 @@
         {
             var eventPublisher = new Mock<IEventPublisher>();
             const string scope = "valid_scope";
-            const string clientId = "valid_client_id";
-            var mock = new Mock<IAuthenticateClient>();
-            mock.Setup(x => x.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), It.IsAny<string>()))
-                .ReturnsAsync<AuthenticateInstruction, string, IAuthenticateClient, AuthenticationResult>((a, s) =>
-                    new AuthenticationResult(
-                        new Client
-                        {
-                            ClientId = clientId,
-                            AllowedScopes = new[] { new Scope { Name = scope } },
-                            ResponseTypes = new[] { ResponseTypeNames.Token },
-                            GrantTypes = new List<GrantType> { GrantType.client_credentials }
-                        },
-                        null));
+            var mock = new Mock<IClientStore>();
+            mock.Setup(x => x.GetById(It.IsAny<string>()))
+                .ReturnsAsync(
+                    new Client
+                    {
+                        ClientId = clientId,
+                        Secrets = {new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientsecret} },
+                        AllowedScopes = new[] {new Scope {Name = scope}},
+                        ResponseTypes = new[] {ResponseTypeNames.Token},
+                        GrantTypes = new List<GrantType> {GrantType.client_credentials}
+                    });
+            //mock.Setup(x => x.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), It.IsAny<string>()))
+            //    .ReturnsAsync<AuthenticateInstruction, string, IAuthenticateClient, AuthenticationResult>((a, s) =>
+            //        new AuthenticationResult(
+            //
+            //            null));
 
             var grantedTokenHelperMock = new Mock<IGrantedTokenHelper>();
             grantedTokenHelperMock.Setup(x => x.GetValidGrantedTokenAsync(

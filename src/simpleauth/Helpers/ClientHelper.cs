@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,12 +27,10 @@ namespace SimpleAuth.Helpers
     public sealed class ClientHelper : IClientHelper
     {
         private readonly IClientStore _clientRepository;
-        private readonly IJwtGenerator _jwtGenerator;
 
-        public ClientHelper(IClientStore clientRepository, IJwtGenerator jwtGenerator)
+        public ClientHelper(IClientStore clientRepository)
         {
             _clientRepository = clientRepository;
-            _jwtGenerator = jwtGenerator;
         }
 
         public async Task<string> GenerateIdTokenAsync(string clientId, JwtPayload jwsPayload)
@@ -82,19 +80,6 @@ namespace SimpleAuth.Helpers
                              client.IdTokenEncryptedResponseEnc)
                          : null);
             return Task.FromResult(jwt);
-
-            //var idToken = await _jwtGenerator.SignAsync(jwsPayload, client.IdTokenSignedResponseAlg ?? SecurityAlgorithms.RsaSha256).ConfigureAwait(false);
-            //return idToken;
-            //if (client.IdTokenEncryptedResponseAlg == null)
-            //{
-            //    return idToken;
-            //}
-
-            //return await _jwtGenerator.EncryptAsync(
-            //        idToken,
-            //        client.IdTokenEncryptedResponseAlg,
-            //        client.IdTokenEncryptedResponseEnc??SecurityAlgorithms.Aes128CbcHmacSha256)
-            //    .ConfigureAwait(false);
         }
     }
 }

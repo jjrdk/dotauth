@@ -1,12 +1,7 @@
-﻿namespace SimpleAuth.Api.Token
+﻿using SimpleAuth.Shared.Repositories;
+
+namespace SimpleAuth.Api.Token
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Net.Http.Headers;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Text;
-    using System.Threading.Tasks;
     using Authenticate;
     using Errors;
     using Exceptions;
@@ -19,13 +14,20 @@
     using Shared.Events.Uma;
     using Shared.Models;
     using Shared.Responses;
+    using System;
+    using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Text;
+    using System.Threading.Tasks;
 
     internal sealed class UmaTokenActions : IUmaTokenActions
     {
         private readonly ITicketStore _ticketStore;
         private readonly UmaConfigurationOptions _configurationService;
         private readonly IAuthorizationPolicyValidator _authorizationPolicyValidator;
-        private readonly IAuthenticateClient _authenticateClient;
+        private readonly AuthenticateClient _authenticateClient;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly ITokenStore _tokenStore;
         private readonly IEventPublisher _eventPublisher;
@@ -34,7 +36,7 @@
             ITicketStore ticketStore,
             UmaConfigurationOptions configurationService,
             IAuthorizationPolicyValidator authorizationPolicyValidator,
-            IAuthenticateClient authenticateClient,
+            IClientStore clientStore,
             IJwtGenerator jwtGenerator,
             ITokenStore tokenStore,
             IEventPublisher eventPublisher)
@@ -42,7 +44,7 @@
             _ticketStore = ticketStore;
             _configurationService = configurationService;
             _authorizationPolicyValidator = authorizationPolicyValidator;
-            _authenticateClient = authenticateClient;
+            _authenticateClient = new AuthenticateClient(clientStore);
             _jwtGenerator = jwtGenerator;
             _tokenStore = tokenStore;
             _eventPublisher = eventPublisher;
@@ -64,7 +66,7 @@
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
                     string.Format(
-                        ErrorDescriptions.TheParameterNeedsToBeSpecified, 
+                        ErrorDescriptions.TheParameterNeedsToBeSpecified,
                         PostAuthorizationNames.TicketId));
             }
 
@@ -78,7 +80,7 @@
                 authenticationHeaderValue.GetAuthenticateInstruction(
                     parameter,
                     certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName).ConfigureAwait(false);
+            var authResult = await _authenticateClient.Authenticate(instruction, issuerName).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {
@@ -172,13 +174,13 @@
             jwsPayload.Payload.Add(UmaConstants.RptClaims.Ticket, jArr);
             var handler = new JwtSecurityTokenHandler();
             var accessToken = handler.WriteToken(jwsPayload);
-            var refreshTokenId = Encoding.UTF8.GetBytes(Id.Create()); 
+            var refreshTokenId = Encoding.UTF8.GetBytes(Id.Create());
             // 3. Construct the refresh token.
             return new GrantedToken
             {
                 AccessToken = accessToken,
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
-                ExpiresIn = (int) expiresIn.TotalSeconds,
+                ExpiresIn = (int)expiresIn.TotalSeconds,
                 TokenType = CoreConstants.StandardTokenTypes.Bearer,
                 CreateDateTime = DateTime.UtcNow,
                 Scope = scope,

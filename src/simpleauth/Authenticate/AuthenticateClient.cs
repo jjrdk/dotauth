@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ namespace SimpleAuth.Authenticate
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class AuthenticateClient : IAuthenticateClient
+    public class AuthenticateClient
     {
         private readonly ClientSecretBasicAuthentication _clientSecretBasicAuthentication;
         private readonly ClientSecretPostAuthentication _clientSecretPostAuthentication;
@@ -38,7 +38,7 @@ namespace SimpleAuth.Authenticate
             _clientRepository = clientRepository;
         }
 
-        public async Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction, string issuerName)
+        public async Task<AuthenticationResult> Authenticate(AuthenticateInstruction instruction, string issuerName)
         {
             if (instruction == null)
             {
@@ -59,11 +59,8 @@ namespace SimpleAuth.Authenticate
                 return new AuthenticationResult(null, ErrorDescriptions.TheClientDoesntExist);
             }
 
-            var tokenEndPointAuthMethod = client.TokenEndPointAuthMethod;
-            //var authenticationType = Enum.GetName(typeof(TokenEndPointAuthenticationMethods),tokenEndPointAuthMethod);
-            //_oauthEventSource.StartToAuthenticateTheClient(client.ClientId,authenticationType);
             var errorMessage = string.Empty;
-            switch (tokenEndPointAuthMethod)
+            switch (client.TokenEndPointAuthMethod)
             {
                 case TokenEndPointAuthenticationMethods.client_secret_basic:
                     client = _clientSecretBasicAuthentication.AuthenticateClient(instruction, client);
@@ -96,12 +93,6 @@ namespace SimpleAuth.Authenticate
                     }
                     break;
             }
-
-            //if (client != null)
-            //{
-            //    _oauthEventSource.FinishToAuthenticateTheClient(client.ClientId,
-            //        authenticationType);
-            //}
 
             return new AuthenticationResult(client, errorMessage);
         }
