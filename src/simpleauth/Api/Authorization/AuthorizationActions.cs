@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using SimpleAuth.Services;
+using System.Collections.Generic;
+
 namespace SimpleAuth.Api.Authorization
 {
     using Errors;
@@ -37,7 +40,7 @@ namespace SimpleAuth.Api.Authorization
         private readonly AuthorizationCodeGrantTypeParameterAuthEdpValidator _authorizationCodeGrantTypeParameterValidator;
         private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
+        private readonly IEnumerable<IAuthenticateResourceOwnerService> _resourceOwnerServices;
 
         public AuthorizationActions(
             IGenerateAuthorizationResponse generateAuthorizationResponse,
@@ -45,7 +48,7 @@ namespace SimpleAuth.Api.Authorization
             IConsentRepository consentRepository,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IEventPublisher eventPublisher,
-            IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper)
+            IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices)
         {
             var processAuthorizationRequest = new ProcessAuthorizationRequest(clientStore, consentRepository);
             _getAuthorizationCodeOperation = new GetAuthorizationCodeOperation(
@@ -61,7 +64,7 @@ namespace SimpleAuth.Api.Authorization
             _authorizationCodeGrantTypeParameterValidator = new AuthorizationCodeGrantTypeParameterAuthEdpValidator(clientStore);
             _authorizationFlowHelper = authorizationFlowHelper;
             _eventPublisher = eventPublisher;
-            _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
+            _resourceOwnerServices = resourceOwnerServices;
         }
 
         public async Task<EndpointResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal, string issuerName)
@@ -98,7 +101,7 @@ namespace SimpleAuth.Api.Authorization
                         DateTime.UtcNow))
                 .ConfigureAwait(false);
             endpointResult.ProcessId = processId;
-            endpointResult.Amr = _resourceOwnerAuthenticateHelper.GetAmrs().GetAmr(parameter.AmrValues);
+            endpointResult.Amr = _resourceOwnerServices.GetAmrs().GetAmr(parameter.AmrValues);
             return endpointResult;
         }
     }

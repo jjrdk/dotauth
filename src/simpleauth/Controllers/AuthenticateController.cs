@@ -28,7 +28,7 @@
     public class AuthenticateController : BaseAuthenticateController
     {
         private readonly IEventPublisher _eventPublisher;
-        private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
+        private readonly IEnumerable<IAuthenticateResourceOwnerService> _resourceOwnerServices;
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
@@ -40,7 +40,7 @@
             IAuthenticationService authenticationService,
             IAuthenticationSchemeProvider authenticationSchemeProvider,
             IAuthenticateHelper authenticateHelper,
-            IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
+            IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             ISubjectBuilder subjectBuilder,
             IProfileRepository profileRepository,
@@ -65,7 +65,7 @@
                 basicAuthenticateOptions)
         {
             _eventPublisher = eventPublisher;
-            _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
+            _resourceOwnerServices = resourceOwnerServices;
         }
 
         public async Task<IActionResult> Index()
@@ -83,7 +83,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> LocalLogin([FromForm]LocalAuthenticationViewModel authorizeViewModel)
+        public async Task<IActionResult> LocalLogin([FromForm] LocalAuthenticationViewModel authorizeViewModel)
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated)
@@ -106,7 +106,7 @@
 
             try
             {
-                var resourceOwner = await _resourceOwnerAuthenticateHelper
+                var resourceOwner = await _resourceOwnerServices
                     .Authenticate(authorizeViewModel.Login, authorizeViewModel.Password)
                     .ConfigureAwait(false);
                 if (resourceOwner == null)
@@ -115,11 +115,12 @@
                 }
 
                 var claims = resourceOwner.Claims;
-                claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
-                    DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
-                    ClaimValueTypes.Integer));
-                var subject = claims.First(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject)
-                    .Value;
+                claims.Add(
+                    new Claim(
+                        ClaimTypes.AuthenticationInstant,
+                        DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
+                        ClaimValueTypes.Integer));
+                var subject = claims.First(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject).Value;
                 if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
                 {
                     await SetLocalCookie(claims, Id.Create()).ConfigureAwait(false);
@@ -145,11 +146,7 @@
             }
             catch (Exception exception)
             {
-                await _eventPublisher.Publish(
-                        new ExceptionMessage(
-                            Id.Create(),
-                            exception,
-                            DateTime.UtcNow))
+                await _eventPublisher.Publish(new ExceptionMessage(Id.Create(), exception, DateTime.UtcNow))
                     .ConfigureAwait(false);
                 await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 ModelState.AddModelError("invalid_credentials", exception.Message);
@@ -193,11 +190,7 @@
                 // 4. Local authentication
                 var issuerName = Request.GetAbsoluteUriWithVirtualPath();
                 var actionResult = await _authenticateActions.LocalOpenIdUserAuthentication(
-                        new LocalAuthenticationParameter
-                        {
-                            UserName = viewModel.Login,
-                            Password = viewModel.Password
-                        },
+                        new LocalAuthenticationParameter {UserName = viewModel.Login, Password = viewModel.Password},
                         request.ToParameter(),
                         viewModel.Code,
                         issuerName)
@@ -213,15 +206,16 @@
                     {
                         await SetTwoFactorCookie(actionResult.Claims).ConfigureAwait(false);
                         await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
-                        return RedirectToAction("SendCode", new { code = viewModel.Code });
+                        return RedirectToAction("SendCode", new {code = viewModel.Code});
                     }
                     catch (ClaimRequiredException)
                     {
-                        return RedirectToAction("SendCode", new { code = viewModel.Code });
+                        return RedirectToAction("SendCode", new {code = viewModel.Code});
                     }
                     catch (Exception)
                     {
-                        ModelState.AddModelError("invalid_credentials",
+                        ModelState.AddModelError(
+                            "invalid_credentials",
                             "Two factor authenticator is not properly configured");
                     }
                 }
@@ -231,8 +225,7 @@
                     await SetLocalCookie(actionResult.Claims, request.SessionId).ConfigureAwait(false);
 
                     // 7. Redirect the user agent
-                    var result = this.CreateRedirectionFromActionResult(actionResult.EndpointResult,
-                        request);
+                    var result = this.CreateRedirectionFromActionResult(actionResult.EndpointResult, request);
                     if (result != null)
                     {
                         await LogAuthenticateUser(actionResult.EndpointResult, request.ProcessId).ConfigureAwait(false);
@@ -242,11 +235,7 @@
             }
             catch (Exception ex)
             {
-                await _eventPublisher.Publish(
-                        new ExceptionMessage(
-                            Id.Create(),
-                            ex,
-                            DateTime.UtcNow))
+                await _eventPublisher.Publish(new ExceptionMessage(Id.Create(), ex, DateTime.UtcNow))
                     .ConfigureAwait(false);
                 ModelState.AddModelError("invalid_credentials", ex.Message);
             }

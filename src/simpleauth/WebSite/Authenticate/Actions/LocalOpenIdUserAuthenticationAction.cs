@@ -12,30 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using SimpleAuth.Services;
+
 namespace SimpleAuth.WebSite.Authenticate.Actions
 {
+    using Common;
+    using Exceptions;
+    using Extensions;
+    using Helpers;
+    using Parameters;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Common;
-    using Exceptions;
-    using Extensions;
-    using Helpers;
-    using Parameters;
 
     public class LocalOpenIdUserAuthenticationAction : ILocalOpenIdUserAuthenticationAction
     {
-        private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
+        private readonly IEnumerable<IAuthenticateResourceOwnerService> _resourceOwnerServices;
         private readonly IAuthenticateHelper _authenticateHelper;
 
         public LocalOpenIdUserAuthenticationAction(
-            IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
+            IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
             IAuthenticateHelper authenticateHelper)
         {
-            _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
+            _resourceOwnerServices = resourceOwnerServices;
             _authenticateHelper = authenticateHelper;
         }
 
@@ -64,7 +66,7 @@ namespace SimpleAuth.WebSite.Authenticate.Actions
                 throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
-            var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(localAuthenticationParameter.UserName, localAuthenticationParameter.Password, authorizationParameter.AmrValues).ConfigureAwait(false);
+            var resourceOwner = await _resourceOwnerServices.Authenticate(localAuthenticationParameter.UserName, localAuthenticationParameter.Password, authorizationParameter.AmrValues).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new AuthServerAuthenticationException("the resource owner credentials are not correct");

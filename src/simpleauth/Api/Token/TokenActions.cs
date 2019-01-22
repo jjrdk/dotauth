@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
 using SimpleAuth.JwtToken;
+using SimpleAuth.Services;
 using SimpleAuth.Shared.Repositories;
 
 namespace SimpleAuth.Api.Token
@@ -50,7 +52,7 @@ namespace SimpleAuth.Api.Token
             IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator,
             IAuthorizationCodeStore authorizationCodeStore,
             IClientStore clientStore,
-            IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
+            IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
@@ -58,10 +60,10 @@ namespace SimpleAuth.Api.Token
         {
             _getTokenByResourceOwnerCredentialsGrantType = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
                 grantedTokenGeneratorHelper,
-                resourceOwnerAuthenticateHelper,
                 clientStore,
                 jwtGenerator,
                 tokenStore,
+                resourceOwnerServices,
                 eventPublisher);
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
                 authorizationCodeStore,

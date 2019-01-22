@@ -263,7 +263,6 @@ namespace SimpleAuth.Extensions
             .AddTransient<IValidateConfirmationCodeAction, ValidateConfirmationCodeAction>()
             .AddTransient<IRemoveConfirmationCodeAction, RemoveConfirmationCodeAction>()
             .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
-            .AddTransient<IResourceOwnerAuthenticateHelper, ResourceOwnerAuthenticateHelper>()
             .AddSingleton<IEventPublisher>(options?.EventPublisher ?? new DefaultEventPublisher())
             .AddSingleton<ISubjectBuilder>(options?.SubjectBuilder ?? new DefaultSubjectBuilder())
             .AddSingleton(options?.OAuthConfigurationOptions ?? new OAuthConfigurationOptions())

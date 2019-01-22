@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+using SimpleAuth.Services;
 using SimpleAuth.Shared.Repositories;
 
 namespace SimpleAuth.Api.Token.Actions
@@ -35,25 +37,25 @@ namespace SimpleAuth.Api.Token.Actions
     public class GetTokenByResourceOwnerCredentialsGrantTypeAction
     {
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
-        private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
         private readonly AuthenticateClient _authenticateClient;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly ITokenStore _tokenStore;
+        private readonly IEnumerable<IAuthenticateResourceOwnerService> _resourceOwnerServices;
         private readonly IEventPublisher _eventPublisher;
 
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
-            IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             IClientStore clientStore,
             IJwtGenerator jwtGenerator,
             ITokenStore tokenStore,
+            IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
             IEventPublisher eventPublisher)
         {
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
-            _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
             _authenticateClient = new AuthenticateClient(clientStore);
             _jwtGenerator = jwtGenerator;
             _tokenStore = tokenStore;
+            _resourceOwnerServices = resourceOwnerServices;
             _eventPublisher = eventPublisher;
         }
 
@@ -103,7 +105,7 @@ namespace SimpleAuth.Api.Token.Actions
             }
 
             // 3. Try to authenticate a resource owner
-            var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(
+            var resourceOwner = await _resourceOwnerServices.Authenticate(
                     resourceOwnerGrantTypeParameter.UserName,
                     resourceOwnerGrantTypeParameter.Password,
                     resourceOwnerGrantTypeParameter.AmrValues)

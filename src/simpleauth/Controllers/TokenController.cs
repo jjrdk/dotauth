@@ -42,19 +42,6 @@
                 });
             }
 
-            //if (Request.Form == null)
-            //{
-            //    return StatusCode(
-            //        (int)HttpStatusCode.BadRequest,
-            //        new ErrorResponse
-            //        {
-            //            Error = ErrorCodes.InvalidRequestCode,
-            //            ErrorDescription = "no parameter in body request"
-            //        });
-            //}
-
-            //var serializer = new ParamSerializer();
-            //var tokenRequest = serializer.Deserialize<TokenRequest>(Request.Form.Select(x => new KeyValuePair<string, string[]>(x.Key, x.Value)));
             GrantedToken result = null;
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
@@ -73,8 +60,7 @@
             switch (tokenRequest.grant_type)
             {
                 case GrantTypes.password:
-                    var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
+                    result = await GetClientCredentialsGrantedToken(tokenRequest, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
                     break;
                 case GrantTypes.authorization_code:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
@@ -99,6 +85,20 @@
             }
 
             return new OkObjectResult(result.ToDto());
+        }
+
+        private Task<GrantedToken> GetClientCredentialsGrantedToken(
+            TokenRequest tokenRequest,
+            AuthenticationHeaderValue authenticationHeaderValue,
+            X509Certificate2 certificate,
+            string issuerName)
+        {
+            var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
+            return _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(
+                    resourceOwnerParameter,
+                    authenticationHeaderValue,
+                    certificate,
+                    issuerName);
         }
 
         [HttpPost("revoke")]

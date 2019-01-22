@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using SimpleAuth.Services;
+
 namespace SimpleAuth.Tests.Api.Authorization
 {
     using Errors;
@@ -34,7 +36,6 @@ namespace SimpleAuth.Tests.Api.Authorization
         private const string HttpsLocalhost = "https://localhost";
         private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
         private Mock<IEventPublisher> _eventPublisherStub;
-        private Mock<IResourceOwnerAuthenticateHelper> _resourceOwnerAuthenticateHelperStub;
         private AuthorizationActions _authorizationActions;
         private Mock<IClientStore> _clientStore;
 
@@ -71,7 +72,6 @@ namespace SimpleAuth.Tests.Api.Authorization
         {
             _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
             _eventPublisherStub = new Mock<IEventPublisher>();
-            _resourceOwnerAuthenticateHelperStub = new Mock<IResourceOwnerAuthenticateHelper>();
             _clientStore = new Mock<IClientStore>();
             if (client != null)
             {
@@ -79,17 +79,13 @@ namespace SimpleAuth.Tests.Api.Authorization
                     .ReturnsAsync(client);
             }
 
-            //_consentHelper = new Mock<IConsentHelper>();
-            //_consentHelper
-            //    .Setup(x => x.GetConfirmedConsents(It.IsAny<string>(), It.IsAny<AuthorizationParameter>()))
-            //    .ReturnsAsync(new Consent());
             _authorizationActions = new AuthorizationActions(
                 new Mock<IGenerateAuthorizationResponse>().Object,
                 _clientStore.Object,
                 new Mock<IConsentRepository>().Object,
                 _authorizationFlowHelperFake.Object,
                 _eventPublisherStub.Object,
-                _resourceOwnerAuthenticateHelperStub.Object);
+                new IAuthenticateResourceOwnerService[0]);
         }
     }
 }
