@@ -21,6 +21,6 @@ namespace SimpleAuth.Parameters
         public string Scope { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
-        public IEnumerable<string> AmrValues { get; set; }
+        public string[] AmrValues { get; set; }
     }
 }

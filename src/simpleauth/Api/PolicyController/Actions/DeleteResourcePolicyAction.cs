@@ -46,7 +46,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
                 throw new ArgumentNullException(nameof(resourceId));
             }
 
-            Policy policy = null;
+            Policy policy;
             try
             {
                 policy = await _policyRepository.Get(id).ConfigureAwait(false);
@@ -64,7 +64,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
                 return false;
             }
 
-            ResourceSet resourceSet = null;
+            ResourceSet resourceSet;
             try
             {
                 resourceSet = await _resourceSetRepository.Get(resourceId).ConfigureAwait(false);

@@ -30,7 +30,7 @@
     public class AuthenticateController : BaseAuthenticateController
     {
         private readonly IEventPublisher _eventPublisher;
-        private readonly IEnumerable<IAuthenticateResourceOwnerService> _resourceOwnerServices;
+        private readonly IAuthenticateResourceOwnerService[] _resourceOwnerServices;
         private readonly LocalOpenIdUserAuthenticationAction _localOpenIdAuthentication;
 
         public AuthenticateController(
@@ -68,8 +68,8 @@
                 basicAuthenticateOptions)
         {
             _eventPublisher = eventPublisher;
-            _resourceOwnerServices = resourceOwnerServices;
-            _localOpenIdAuthentication = new LocalOpenIdUserAuthenticationAction(resourceOwnerServices, authenticateHelper);
+            _resourceOwnerServices = resourceOwnerServices.ToArray();
+            _localOpenIdAuthentication = new LocalOpenIdUserAuthenticationAction(resourceOwnerServices.ToArray(), authenticateHelper);
         }
 
         public async Task<IActionResult> Index()

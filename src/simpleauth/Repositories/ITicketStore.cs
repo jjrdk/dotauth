@@ -6,9 +6,9 @@
 
     public interface ITicketStore
     {
-        Task<bool> AddAsync(IEnumerable<Ticket> tickets);
-        Task<bool> AddAsync(Ticket ticket);
-        Task<bool> RemoveAsync(string ticketId);
-        Task<Ticket> GetAsync(string ticketId);
+        Task<bool> Add(IEnumerable<Ticket> tickets);
+        Task<bool> Add(Ticket ticket);
+        Task<bool> Remove(string ticketId);
+        Task<Ticket> Get(string ticketId);
     }
 }

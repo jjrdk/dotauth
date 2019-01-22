@@ -14,10 +14,10 @@
 
 namespace SimpleAuth.Extensions
 {
+    using Shared;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
-    using Shared;
 
     internal static class ClaimPrincipalExtensions
     {
@@ -42,15 +42,18 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="principal">The user principal</param>
         /// <returns>User's subject</returns>
-        public static string GetSubject(this ClaimsPrincipal principal) => principal?.Identity == null ? null : principal.Claims.GetSubject();
+        public static string GetSubject(this ClaimsPrincipal principal)
+        {
+            return principal?.Identity == null ? null : principal.Claims.GetSubject();
+        }
 
         public static string GetSubject(this IEnumerable<Claim> claims)
         {
-            var claim = GetSubjectClaim(claims);
+            var claim = GetSubjectClaim(claims.ToArray());
             return claim?.Value;
         }
 
-        public static Claim GetSubjectClaim(this IEnumerable<Claim> claims)
+        private static Claim GetSubjectClaim(this Claim[] claims)
         {
             if (claims == null)
             {

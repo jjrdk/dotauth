@@ -94,7 +94,7 @@ namespace SimpleAuth.Api.Token
             }
 
             // 3. Retrieve the ticket.
-            var ticket = await _ticketStore.GetAsync(parameter.Ticket).ConfigureAwait(false);
+            var ticket = await _ticketStore.Get(parameter.Ticket).ConfigureAwait(false);
             if (ticket == null)
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidTicket,
@@ -132,7 +132,7 @@ namespace SimpleAuth.Api.Token
             // 5. Generate a granted token.
             var grantedToken = GenerateTokenAsync(client, ticket.Lines, "openid", issuerName);
             await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);
-            await _ticketStore.RemoveAsync(ticket.Id).ConfigureAwait(false);
+            await _ticketStore.Remove(ticket.Id).ConfigureAwait(false);
             return grantedToken;
         }
 

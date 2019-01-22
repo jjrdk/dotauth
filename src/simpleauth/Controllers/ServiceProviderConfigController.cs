@@ -27,7 +27,7 @@ namespace SimpleAuth.Controllers
         {
             var result = new ServiceProviderConfigResponse
             {
-                Schemas = new[] { SimpleAuth.Shared.ScimConstants.SchemaUrns.ServiceProvider },
+                Schemas = new[] { Shared.ScimConstants.SchemaUrns.ServiceProvider },
                 DocumentationUri = "http://www.simplecloud.info/",
                 Patch = new PatchResponse
                 {

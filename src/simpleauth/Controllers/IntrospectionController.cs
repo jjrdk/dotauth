@@ -71,7 +71,7 @@ namespace SimpleAuth.Controllers
             {
                 var authorizationHeaderValue = authorizationHeader.First();
                 var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
-                if (splittedAuthorizationHeaderValue.Count() == 2)
+                if (splittedAuthorizationHeaderValue.Length == 2)
                 {
                     authenticationHeaderValue = new AuthenticationHeaderValue(
                         splittedAuthorizationHeaderValue[0],

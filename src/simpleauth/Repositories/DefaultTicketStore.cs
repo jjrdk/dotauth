@@ -15,7 +15,7 @@
             _tickets = new List<Ticket>();
         }
 
-        public Task<bool> AddAsync(IEnumerable<Ticket> tickets)
+        public Task<bool> Add(IEnumerable<Ticket> tickets)
         {
             if (tickets == null)
             {
@@ -26,7 +26,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> AddAsync(Ticket ticket)
+        public Task<bool> Add(Ticket ticket)
         {
             if (ticket == null)
             {
@@ -37,7 +37,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<Ticket> GetAsync(string ticketId)
+        public Task<Ticket> Get(string ticketId)
         {
             if (string.IsNullOrWhiteSpace(ticketId))
             {
@@ -47,7 +47,7 @@
             return Task.FromResult(_tickets.FirstOrDefault(t => t.Id == ticketId));
         }
 
-        public Task<bool> RemoveAsync(string ticketId)
+        public Task<bool> Remove(string ticketId)
         {
             if (string.IsNullOrWhiteSpace(ticketId))
             {

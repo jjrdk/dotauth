@@ -62,7 +62,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
 
             foreach (var resourceSetId in addPolicyParameter.ResourceSetIds)
             {
-                ResourceSet resourceSet = null;
+                ResourceSet resourceSet;
                 try
                 {
                     resourceSet = await _resourceSetRepository.Get(resourceSetId).ConfigureAwait(false);

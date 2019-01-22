@@ -15,7 +15,6 @@
 namespace SimpleAuth.Api.PolicyController.Actions
 {
     using Errors;
-    using Extensions;
     using Repositories;
     using Shared.Models;
     using System;
@@ -38,7 +37,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
                 throw new ArgumentNullException(nameof(policyId));
             }
 
-            Policy policy = null;
+            Policy policy;
             try
             {
                 policy = await _policyRepository.Get(policyId).ConfigureAwait(false);

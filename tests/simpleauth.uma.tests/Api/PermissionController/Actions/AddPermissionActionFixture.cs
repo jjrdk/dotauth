@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,16 +17,16 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
     using Errors;
     using Exceptions;
     using Moq;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Parameters;
     using Repositories;
     using SimpleAuth.Api.PermissionController;
     using SimpleAuth.Shared.Models;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Xunit;
-    
+
     public class AddPermissionActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
@@ -39,8 +39,8 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
         {
             InitializeFakeObjects(Array.Empty<ResourceSet>());
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addPermissionAction.Execute(null, (IEnumerable<AddPermissionParameter>)null)).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addPermissionAction.Execute("client_id", (IEnumerable<AddPermissionParameter>)null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addPermissionAction.Execute(null, (AddPermissionParameter[])null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addPermissionAction.Execute("client_id", (AddPermissionParameter[])null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _addPermissionAction.Execute(null, (AddPermissionParameter)null)).ConfigureAwait(false);
         }
 
@@ -85,7 +85,7 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
                     "scope"
                 }
             };
-            
+
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _addPermissionAction.Execute(clientId, addPermissionParameter)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidResourceSetId);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
@@ -147,8 +147,8 @@ namespace SimpleAuth.Uma.Tests.Api.PermissionController.Actions
                 }
             };
             InitializeFakeObjects(resources);
-            _ticketStoreStub.Setup(r => r.AddAsync(It.IsAny<Ticket>())).Returns(Task.FromResult(true));
-            
+            _ticketStoreStub.Setup(r => r.Add(It.IsAny<Ticket>())).Returns(Task.FromResult(true));
+
             var result = await _addPermissionAction.Execute(clientId, addPermissionParameter).ConfigureAwait(false);
 
             Assert.NotEmpty(result);

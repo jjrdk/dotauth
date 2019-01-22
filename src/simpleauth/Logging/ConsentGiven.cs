@@ -13,7 +13,7 @@
             string clientId,
             string consentId)
             : this(
-                SimpleAuth.Shared.Id.Create(),
+                Shared.Id.Create(),
                 $"The consent has been given by the resource owner, subject : {subject}, client id : {clientId}, consent id : {consentId}",
                 DateTime.UtcNow)
         {

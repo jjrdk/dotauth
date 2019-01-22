@@ -41,7 +41,7 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly OAuthConfigurationOptions _oauthConfiguration;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly ITokenStore _tokenStore;
-        private readonly IEnumerable<IAuthenticateResourceOwnerService> _resourceOwnerServices;
+        private readonly IAuthenticateResourceOwnerService[] _resourceOwnerServices;
         private readonly IEventPublisher _eventPublisher;
 
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
@@ -56,7 +56,7 @@ namespace SimpleAuth.Api.Token.Actions
             _oauthConfiguration = oauthConfiguration;
             _jwtGenerator = jwtGenerator;
             _tokenStore = tokenStore;
-            _resourceOwnerServices = resourceOwnerServices;
+            _resourceOwnerServices = resourceOwnerServices.ToArray();
             _eventPublisher = eventPublisher;
         }
 

@@ -69,7 +69,7 @@
 //            return Task.FromResult(_claims.Select(c => c));
 //        }
 
-//        public Task<bool> GetAsync(string name)
+//        public Task<bool> Get(string name)
 //        {
 //            if (string.IsNullOrWhiteSpace(name))
 //            {

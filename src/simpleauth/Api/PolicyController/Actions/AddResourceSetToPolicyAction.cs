@@ -53,7 +53,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
                 throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddResourceSetParameterNames.ResourceSet));
             }
 
-            Policy policy = null;
+            Policy policy;
             try
             {
                 policy = await _policyRepository.Get(addResourceSetParameter.PolicyId).ConfigureAwait(false);
@@ -73,7 +73,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
 
             foreach (var resourceSetId in addResourceSetParameter.ResourceSets)
             {
-                ResourceSet resourceSet = null;
+                ResourceSet resourceSet;
                 try
                 {
                     resourceSet = await _resourceSetRepository.Get(resourceSetId).ConfigureAwait(false);

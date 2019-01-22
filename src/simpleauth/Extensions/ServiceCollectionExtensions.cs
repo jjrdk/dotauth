@@ -89,7 +89,7 @@ namespace SimpleAuth.Extensions
                     }
 
                     var claimRole = p.User.Claims.Where(c => c.Type == ClaimTypes.Role);
-                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
+                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope").ToArray();
                     if (claimRole == null && !claimScopes.Any())
                     {
                         return false;
@@ -257,8 +257,8 @@ namespace SimpleAuth.Extensions
             .AddTransient<IValidateConfirmationCodeAction, ValidateConfirmationCodeAction>()
             .AddTransient<IRemoveConfirmationCodeAction, RemoveConfirmationCodeAction>()
             .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
-            .AddSingleton<IEventPublisher>(options?.EventPublisher ?? new DefaultEventPublisher())
-            .AddSingleton<ISubjectBuilder>(options?.SubjectBuilder ?? new DefaultSubjectBuilder())
+            .AddSingleton(options?.EventPublisher ?? new DefaultEventPublisher())
+            .AddSingleton(options?.SubjectBuilder ?? new DefaultSubjectBuilder())
             .AddSingleton(options?.OAuthConfigurationOptions ?? new OAuthConfigurationOptions())
             .AddSingleton(options?.BasicAuthenticationOptions ?? new BasicAuthenticateOptions())
             .AddSingleton(options?.Scim ?? new ScimOptions { IsEnabled = false })
@@ -277,7 +277,6 @@ namespace SimpleAuth.Extensions
             .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
             .AddTransient<IAuthorizationPolicyValidator, AuthorizationPolicyValidator>()
             .AddTransient<IBasicAuthorizationPolicy, BasicAuthorizationPolicy>()
-            .AddTransient<ICustomAuthorizationPolicy, CustomAuthorizationPolicy>()
             .AddTransient<IUmaTokenActions, UmaTokenActions>()
             .AddSingleton(options?.UmaConfigurationOptions ?? new UmaConfigurationOptions())
             .AddSingleton<IPolicyRepository>(new DefaultPolicyRepository(options?.UmaConfigurationOptions?.Policies))

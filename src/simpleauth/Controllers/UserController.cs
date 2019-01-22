@@ -347,7 +347,7 @@
         private async Task<IActionResult> GetEditView(ClaimsPrincipal authenticatedUser)
         {
             var resourceOwner = await _getUserOperation.Execute(authenticatedUser).ConfigureAwait(false);
-            UpdateResourceOwnerViewModel viewModel = null;
+            UpdateResourceOwnerViewModel viewModel;
             if (resourceOwner == null)
             {
                 viewModel = BuildViewModel(
@@ -463,7 +463,7 @@
         /// </summary>
         /// <param name="subject"></param>
         /// <returns></returns>
-        private async Task<IEnumerable<ResourceOwnerProfile>> GetUserProfiles(string subject)
+        private async Task<ResourceOwnerProfile[]> GetUserProfiles(string subject)
         {
             if (string.IsNullOrWhiteSpace(subject))
             {
@@ -478,8 +478,9 @@
                     string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, subject));
             }
 
-            return await _profileRepository.Search(new SearchProfileParameter { ResourceOwnerIds = new[] { subject } })
+            var profiles = await _profileRepository.Search(new SearchProfileParameter { ResourceOwnerIds = new[] { subject } })
                 .ConfigureAwait(false);
+            return profiles.ToArray();
         }
 
         private async Task<bool> UnlinkProfile(string localSubject, string externalSubject)

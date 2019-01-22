@@ -23,18 +23,12 @@ namespace SimpleAuth.Authenticate
 
     public class AuthenticateClient
     {
-        private readonly ClientSecretBasicAuthentication _clientSecretBasicAuthentication;
-        private readonly ClientSecretPostAuthentication _clientSecretPostAuthentication;
         private readonly ClientAssertionAuthentication _clientAssertionAuthentication;
-        private readonly ClientTlsAuthentication _clientTlsAuthentication;
         private readonly IClientStore _clientRepository;
 
         public AuthenticateClient(IClientStore clientRepository)
         {
-            _clientSecretBasicAuthentication = new ClientSecretBasicAuthentication();
-            _clientSecretPostAuthentication = new ClientSecretPostAuthentication();
             _clientAssertionAuthentication = new ClientAssertionAuthentication(clientRepository);
-            _clientTlsAuthentication = new ClientTlsAuthentication();
             _clientRepository = clientRepository;
         }
 
@@ -63,14 +57,14 @@ namespace SimpleAuth.Authenticate
             switch (client.TokenEndPointAuthMethod)
             {
                 case TokenEndPointAuthenticationMethods.client_secret_basic:
-                    client = _clientSecretBasicAuthentication.AuthenticateClient(instruction, client);
+                    client = ClientSecretBasicAuthentication.AuthenticateClient(instruction, client);
                     if (client == null)
                     {
                         errorMessage = ErrorDescriptions.TheClientCannotBeAuthenticatedWithSecretBasic;
                     }
                     break;
                 case TokenEndPointAuthenticationMethods.client_secret_post:
-                    client = _clientSecretPostAuthentication.AuthenticateClient(instruction, client);
+                    client = ClientSecretPostAuthentication.AuthenticateClient(instruction, client);
                     if (client == null)
                     {
                         errorMessage = ErrorDescriptions.TheClientCannotBeAuthenticatedWithSecretPost;
@@ -86,7 +80,7 @@ namespace SimpleAuth.Authenticate
                 case TokenEndPointAuthenticationMethods.private_key_jwt:
                     return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, issuerName).ConfigureAwait(false);
                 case TokenEndPointAuthenticationMethods.tls_client_auth:
-                    client = _clientTlsAuthentication.AuthenticateClient(instruction, client);
+                    client = ClientTlsAuthentication.AuthenticateClient(instruction, client);
                     if (client == null)
                     {
                         errorMessage = ErrorDescriptions.TheClientCannotBeAuthenticatedWithTls;
@@ -110,13 +104,8 @@ namespace SimpleAuth.Authenticate
                 return clientId;
             }
 
-            clientId = _clientSecretBasicAuthentication.GetClientId(instruction);
-            if (!string.IsNullOrWhiteSpace(clientId))
-            {
-                return clientId;
-            }
-
-            return _clientSecretPostAuthentication.GetClientId(instruction);
+            clientId = ClientSecretBasicAuthentication.GetClientId(instruction);
+            return !string.IsNullOrWhiteSpace(clientId) ? clientId : ClientSecretPostAuthentication.GetClientId(instruction);
         }
     }
 }

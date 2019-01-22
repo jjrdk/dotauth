@@ -31,7 +31,7 @@ namespace SimpleAuth.Controllers
     using Shared.Repositories;
     using WebSite.User.Actions;
 
-    [Route(SimpleAuth.Scim.ScimConstants.RoutePaths.UsersController)]
+    [Route(Scim.ScimConstants.RoutePaths.UsersController)]
     public class UsersController : Controller
     {
         private readonly AddUserOperation _addUserOperation;
@@ -84,7 +84,7 @@ namespace SimpleAuth.Controllers
 
             var result = await _addUserOperation.Execute(ro).ConfigureAwait(false);
             var location = string.Format(
-                Request.GetAbsoluteUriWithVirtualPath() + SimpleAuth.Scim.ScimConstants.RoutePaths.UsersController + "/{0}",
+                Request.GetAbsoluteUriWithVirtualPath() + Scim.ScimConstants.RoutePaths.UsersController + "/{0}",
                 scimUser.UserName);
             return result
                 ? (IActionResult)Created(location, scimUser)
@@ -179,7 +179,7 @@ namespace SimpleAuth.Controllers
             };
             var result = await _addUserOperation.Execute(ro).ConfigureAwait(false);
             var location = string.Format(
-                Request.GetAbsoluteUriWithVirtualPath() + SimpleAuth.Scim.ScimConstants.RoutePaths.UsersController + "/{0}",
+                Request.GetAbsoluteUriWithVirtualPath() + Scim.ScimConstants.RoutePaths.UsersController + "/{0}",
                 scimUser.UserName);
             return result ? Created(location, ro.UserProfile) : (IActionResult)StatusCode((int)HttpStatusCode.BadRequest);
         }
