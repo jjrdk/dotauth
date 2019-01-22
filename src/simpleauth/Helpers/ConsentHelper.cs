@@ -39,9 +39,9 @@ namespace SimpleAuth.Helpers
                 throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
-            var consents = await consentRepository.GetConsentsForGivenUser(subject).ConfigureAwait(false);
+            var consents = (await consentRepository.GetConsentsForGivenUser(subject).ConfigureAwait(false))?.ToArray()??Array.Empty<Consent>();
             Consent confirmedConsent = null;
-            if (consents != null && consents.Any())
+            if (consents.Length > 0)
             {
                 var claimsParameter = authorizationParameter.Claims;
                 if (claimsParameter.IsAnyUserInfoClaimParameter() || claimsParameter.IsAnyIdentityTokenClaimParameter())

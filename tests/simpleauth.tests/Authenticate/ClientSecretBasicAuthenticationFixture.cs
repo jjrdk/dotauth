@@ -8,21 +8,14 @@
 
     public sealed class ClientSecretBasicAuthenticationFixture
     {
-        private ClientSecretBasicAuthentication _clientSecretBasicAuthentication;
-
-        public ClientSecretBasicAuthenticationFixture()
-        {
-            InitializeFakeObjects();
-        }
-
         [Fact]
         public void When_Trying_To_Authenticate_The_Client_And_OneParameter_Is_Null_Then_Exception_Is_Thrown()
         {
             var authenticateInstruction = new AuthenticateInstruction();
 
-            Assert.Throws<ArgumentNullException>(() => _clientSecretBasicAuthentication.AuthenticateClient(null, null));
+            Assert.Throws<ArgumentNullException>(() => ClientSecretBasicAuthentication.AuthenticateClient(null, null));
             Assert.Throws<ArgumentNullException>(
-                () => _clientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, null));
+                () => ClientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, null));
         }
 
         [Fact]
@@ -32,14 +25,14 @@
             {
                 ClientSecretFromAuthorizationHeader = "notCorrectClientSecret"
             };
-            var firstClient = new Client { Secrets = null };
+            var firstClient = new Client {Secrets = null};
             var secondClient = new Client
             {
-                Secrets = new List<ClientSecret> { new ClientSecret { Type = ClientSecretTypes.X509Thumbprint } }
+                Secrets = new List<ClientSecret> {new ClientSecret {Type = ClientSecretTypes.X509Thumbprint}}
             };
 
-            Assert.Null(_clientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, firstClient));
-            Assert.Null(_clientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, secondClient));
+            Assert.Null(ClientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, firstClient));
+            Assert.Null(ClientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, secondClient));
         }
 
         [Fact]
@@ -57,7 +50,7 @@
                 }
             };
 
-            var result = _clientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, client);
+            var result = ClientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, client);
 
             Assert.Null(result);
         }
@@ -78,7 +71,7 @@
                 }
             };
 
-            var result = _clientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, client);
+            var result = ClientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, client);
 
             Assert.NotNull(result);
         }
@@ -86,24 +79,18 @@
         [Fact]
         public void When_Requesting_ClientId_And_Instruction_Is_Null_Then_Exception_Is_Thrown()
         {
-            Assert.Throws<ArgumentNullException>(() => _clientSecretBasicAuthentication.GetClientId(null));
+            Assert.Throws<ArgumentNullException>(() => ClientSecretBasicAuthentication.GetClientId(null));
         }
 
         [Fact]
         public void When_Requesting_ClientId_Then_ClientId_Is_Returned()
         {
             const string clientId = "clientId";
-            var instruction = new AuthenticateInstruction { ClientIdFromAuthorizationHeader = clientId };
+            var instruction = new AuthenticateInstruction {ClientIdFromAuthorizationHeader = clientId};
 
-            var result = _clientSecretBasicAuthentication.GetClientId(instruction);
+            var result = ClientSecretBasicAuthentication.GetClientId(instruction);
 
             Assert.Equal(result, clientId);
-
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _clientSecretBasicAuthentication = new ClientSecretBasicAuthentication();
         }
     }
 }

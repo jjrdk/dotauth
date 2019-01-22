@@ -29,13 +29,13 @@ namespace SimpleAuth.WebSite.Authenticate.Actions
     using System.Security.Claims;
     using System.Threading.Tasks;
 
-    public class LocalOpenIdUserAuthenticationAction
+    internal class LocalOpenIdUserAuthenticationAction
     {
-        private readonly IEnumerable<IAuthenticateResourceOwnerService> _resourceOwnerServices;
+        private readonly IAuthenticateResourceOwnerService[] _resourceOwnerServices;
         private readonly IAuthenticateHelper _authenticateHelper;
 
         public LocalOpenIdUserAuthenticationAction(
-            IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
+            IAuthenticateResourceOwnerService[] resourceOwnerServices,
             IAuthenticateHelper authenticateHelper)
         {
             _resourceOwnerServices = resourceOwnerServices;
@@ -45,7 +45,7 @@ namespace SimpleAuth.WebSite.Authenticate.Actions
         /// <summary>
         /// Authenticate local user account.
         /// Exceptions :
-        /// Throw the exception <see cref="AuthServerAuthenticationException "/> if the user cannot be authenticated
+        /// Throw the exception <see cref="SimpleAuthException "/> if the user cannot be authenticated
         /// </summary>
         /// <param name="localAuthenticationParameter">User's credentials</param>
         /// <param name="authorizationParameter">Authorization parameters</param>

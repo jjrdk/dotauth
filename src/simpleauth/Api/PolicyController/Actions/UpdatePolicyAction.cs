@@ -60,7 +60,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
             }
 
             // Check the authorization policy exists.
-            Policy policy = null;
+            Policy policy;
             try
             {
                 policy = await _policyRepository.Get(updatePolicyParameter.PolicyId).ConfigureAwait(false);
@@ -69,7 +69,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InternalError,
-                    string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved),
+                    string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
                     ex);
             }
 

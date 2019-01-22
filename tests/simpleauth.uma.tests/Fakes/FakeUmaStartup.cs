@@ -30,7 +30,6 @@ namespace SimpleAuth.Uma.Tests.Fakes
     using System.Security.Claims;
     using Controllers;
     using Extensions;
-    using MiddleWare;
 
     public class FakeUmaStartup : IStartup
     {

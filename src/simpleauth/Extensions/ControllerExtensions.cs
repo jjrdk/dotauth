@@ -16,16 +16,13 @@ namespace SimpleAuth.Extensions
 {
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
-    using Microsoft.Net.Http.Headers;
     using Parsers;
     using Results;
     using Shared.Requests;
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Reflection;
-    using System.Security.Claims;
     using System.Text;
     using System.Threading.Tasks;
     using SimpleAuth.Parameters;

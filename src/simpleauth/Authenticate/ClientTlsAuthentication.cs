@@ -18,9 +18,9 @@ namespace SimpleAuth.Authenticate
     using System.Linq;
     using Shared.Models;
 
-    internal class ClientTlsAuthentication
+    internal static class ClientTlsAuthentication
     {
-        public Client AuthenticateClient(AuthenticateInstruction instruction, Client client)
+        public static Client AuthenticateClient(AuthenticateInstruction instruction, Client client)
         {
             if (instruction == null)
             {

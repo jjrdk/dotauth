@@ -27,6 +27,7 @@ namespace SimpleAuth.Api.Authorization
     using Shared.Repositories;
     using SimpleAuth.Common;
     using System;
+    using System.Linq;
     using System.Security.Principal;
     using System.Threading.Tasks;
     using Validators;
@@ -98,7 +99,7 @@ namespace SimpleAuth.Api.Authorization
                         DateTime.UtcNow))
                 .ConfigureAwait(false);
             endpointResult.ProcessId = processId;
-            endpointResult.Amr = _resourceOwnerServices.GetAmrs().GetAmr(parameter.AmrValues);
+            endpointResult.Amr = _resourceOwnerServices.GetAmrs().ToArray().GetAmr(parameter.AmrValues.ToArray());
             return endpointResult;
         }
     }

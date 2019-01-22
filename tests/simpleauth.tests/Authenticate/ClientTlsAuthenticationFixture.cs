@@ -23,24 +23,18 @@ namespace SimpleAuth.Tests.Authenticate
 
     public class ClientTlsAuthenticationFixture
     {
-        private ClientTlsAuthentication _clientTlsAuthentication;
-
         [Fact]
         public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
-            InitializeFakeObjects();
-
-            Assert.Throws<ArgumentNullException>(() => _clientTlsAuthentication.AuthenticateClient(null, null));
-            Assert.Throws<ArgumentNullException>(() => _clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction(), null));
+            Assert.Throws<ArgumentNullException>(() => ClientTlsAuthentication.AuthenticateClient(null, null));
+            Assert.Throws<ArgumentNullException>(() => ClientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction(), null));
         }
 
         [Fact]
         public void When_Passing_NoSecret_Or_Certificate_Then_Null_Is_Returned()
         {
-            InitializeFakeObjects();
-            
-            Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction(), new Client()));
-            Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
+            Assert.Null(ClientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction(), new Client()));
+            Assert.Null(ClientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
             {
                 Certificate = new X509Certificate2()
             }, new Client()));
@@ -49,9 +43,7 @@ namespace SimpleAuth.Tests.Authenticate
         [Fact]
         public void When_Client_Does_Not_Contain_ThumbprintAndName_Then_Null_Is_Returned()
         {
-            InitializeFakeObjects();
-
-            Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
+            Assert.Null(ClientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
             {
                 Certificate = new X509Certificate2()
             }, new Client
@@ -131,10 +123,5 @@ namespace SimpleAuth.Tests.Authenticate
                         Assert.NotNull(result);
         }
         */
-
-        private void InitializeFakeObjects()
-        {
-            _clientTlsAuthentication = new ClientTlsAuthentication();
-        }
     }
 }

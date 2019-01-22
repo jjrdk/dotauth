@@ -9,9 +9,9 @@ namespace SimpleAuth.Helpers
 
     internal static class ResourceOwnerAuthenticateHelper
     {
-        public static Task<ResourceOwner> Authenticate(this IEnumerable<IAuthenticateResourceOwnerService> services, string login, string password, IEnumerable<string> exceptedAmrValues = null)
+        public static Task<ResourceOwner> Authenticate(this IAuthenticateResourceOwnerService[] services, string login, string password, params string[] exceptedAmrValues)
         {
-            var currentAmrs = services.Select(s => s.Amr);
+            var currentAmrs = services.Select(s => s.Amr).ToArray();
             var amr = currentAmrs.GetAmr(exceptedAmrValues);
             var service = services.FirstOrDefault(s => s.Amr == amr);
             return service.AuthenticateResourceOwnerAsync(login, password);

@@ -34,7 +34,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
 
         public async Task<ICollection<string>> Execute()
         {
-            ICollection<Policy> policies = null;
+            ICollection<Policy> policies;
             try
             {
                 policies = await _policyRepository.GetAll().ConfigureAwait(false);

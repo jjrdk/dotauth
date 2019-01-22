@@ -1,8 +1,8 @@
 ﻿namespace SimpleAuth
 {
+    using Shared.Models;
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading.Tasks;
-    using Shared.Models;
 
     public interface ITokenStore
     {
@@ -20,6 +20,5 @@
         Task<bool> AddToken(GrantedToken grantedToken);
         Task<bool> RemoveRefreshToken(string refreshToken);
         Task<bool> RemoveAccessToken(string accessToken);
-        Task<bool> Clean();
     }
 }

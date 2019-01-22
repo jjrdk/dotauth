@@ -82,7 +82,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var parameters = postPermissions.Select(p => p.ToParameter());
+            var parameters = postPermissions.Select(p => p.ToParameter()).ToArray();
             var clientId = this.GetClientId();
             if (string.IsNullOrWhiteSpace(clientId))
             {

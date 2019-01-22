@@ -18,9 +18,9 @@ namespace SimpleAuth.Authenticate
     using System;
     using System.Linq;
 
-    internal class ClientSecretBasicAuthentication
+    internal static class ClientSecretBasicAuthentication
     {
-        public Client AuthenticateClient(AuthenticateInstruction instruction, Client client)
+        public static Client AuthenticateClient(AuthenticateInstruction instruction, Client client)
         {
             if (client == null)
             {
@@ -45,7 +45,7 @@ namespace SimpleAuth.Authenticate
             return sameSecret ? client : null;
         }
 
-        public string GetClientId(AuthenticateInstruction instruction)
+        public static string GetClientId(AuthenticateInstruction instruction)
         {
             if (instruction == null)
             {

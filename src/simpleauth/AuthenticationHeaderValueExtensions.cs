@@ -45,7 +45,7 @@ namespace SimpleAuth
             if (!string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter))
             {
                 var parameters = GetParameters(authenticationHeaderValue.Parameter);
-                if (parameters != null && parameters.Count() == 2)
+                if (parameters != null && parameters.Length == 2)
                 {
                     result.ClientIdFromAuthorizationHeader = parameters[0];
                     result.ClientSecretFromAuthorizationHeader = parameters[1];

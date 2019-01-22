@@ -1,11 +1,11 @@
 ﻿// Copyright © 2018 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,16 +19,16 @@ namespace SimpleAuth.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Newtonsoft.Json.Linq;
-    using Results;
-    using Shared.DTOs;
-    using ScimConstants = Scim.ScimConstants;
+    using SimpleAuth.Results;
+    using SimpleAuth.Scim;
+    using SimpleAuth.Shared.DTOs;
 
     [Route(ScimConstants.RoutePaths.BulkController)]
     public class BulkController : Controller
     {
         private readonly BulkAction _bulkAction = new BulkAction();
 
-        [Authorize(SimpleAuth.Shared.ScimConstants.ScimPolicies.ScimManage)]
+        [Authorize(Shared.ScimConstants.ScimPolicies.ScimManage)]
         [HttpPost]
         public Task<IActionResult> Post([FromBody] BulkRequest bulk)
         {
@@ -103,11 +103,11 @@ namespace SimpleAuth.Controllers
 
             private JObject CreateResponse(JArray operationsResult)
             {
-                var schemas = new JArray { SimpleAuth.Shared.ScimConstants.Messages.BulkResponse };
+                var schemas = new JArray { Shared.ScimConstants.Messages.BulkResponse };
                 var result = new JObject
                 {
-                    {SimpleAuth.Shared.ScimConstants.ScimResourceNames.Schemas, schemas},
-                    {SimpleAuth.Shared.ScimConstants.PatchOperationsRequestNames.Operations, operationsResult}
+                    {Shared.ScimConstants.ScimResourceNames.Schemas, schemas},
+                    {Shared.ScimConstants.PatchOperationsRequestNames.Operations, operationsResult}
                 };
                 return result;
             }
