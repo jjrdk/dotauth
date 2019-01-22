@@ -1,7 +1,0 @@
-{
-  "profiles": {
-    "SimpleBus.RabbitMq.Tests": {
-      "commandName": "Project"
-    }
-  }
-}

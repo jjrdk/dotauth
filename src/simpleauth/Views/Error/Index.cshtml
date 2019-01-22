@@ -1,0 +1,21 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Error";
+}
+@model SimpleAuth.ViewModels.ErrorViewModel
+
+<div>
+    <h1>Error</h1>
+    <table>
+        <tbody>
+            <tr>
+                <td>Code</td>
+                <td>@Model.Code</td>
+            </tr>
+            <tr>
+                <td>Message</td>
+                <td>@Model.Message</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

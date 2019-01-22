@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>SimpleAuth Twilio Library</Description>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <AssemblyName>simpleauth.twilio</AssemblyName>
+    <PackageId>simpleauth.twilio</PackageId>
+    <RootNamespace>SimpleAuth.Twilio</RootNamespace>
+  </PropertyGroup>
+  <Import Project="../../shared.proj" />
+
+  <ItemGroup>  
+    <ProjectReference Include="..\simpleauth.twilio.shared\simpleauth.twilio.shared.csproj" />  
+    <ProjectReference Include="..\simpleauth\simpleauth.csproj" />  
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="microsoft.extensions.fileproviders.embedded" Version="2.2.0" />
+    <PackageReference Include="microsoft.aspnetcore.mvc.razor" Version="2.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Areas\**\*.cshtml" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>SimpleAuth UMA Library</Description>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <AssemblyName>simpleauth.uma.shared</AssemblyName>
+    <PackageId>simpleauth.uma.shared</PackageId>
+    <RootNamespace>SimpleAuth.Uma.Shared</RootNamespace>
+  </PropertyGroup>
+  <Import Project="../../shared.proj"/>
+
+</Project>

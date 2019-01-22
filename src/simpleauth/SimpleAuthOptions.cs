@@ -1,0 +1,49 @@
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+namespace SimpleAuth
+{
+    using Logging;
+    using Services;
+    using Shared;
+
+    public class SimpleAuthOptions
+    {
+        public SimpleAuthOptions()
+        {
+            Scim = new ScimOptions();
+        }
+
+        /// <summary>
+        /// Scim options.
+        /// </summary>
+        public ScimOptions Scim { get; set; }
+        /// <summary>
+        /// Gets or sets the configuration.
+        /// </summary>
+        public OpenIdServerConfiguration Configuration { get; set; }
+        /// <summary>
+        /// Gets or sets the OAUTH configuration options.
+        /// </summary>
+        public OAuthConfigurationOptions OAuthConfigurationOptions { get; set; }
+
+        public BasicAuthenticateOptions BasicAuthenticationOptions { get; set; }
+
+        public UmaConfigurationOptions UmaConfigurationOptions { get; set; }
+
+        public IEventPublisher EventPublisher { get;set; } = new DefaultEventPublisher();
+
+        public ISubjectBuilder SubjectBuilder { get; set; } = new DefaultSubjectBuilder();
+    }
+}
