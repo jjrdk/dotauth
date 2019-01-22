@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,13 @@ using ResponseMode = SimpleAuth.Parameters.ResponseMode;
 
 namespace SimpleAuth.Extensions
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Routing;
+    using Microsoft.Extensions.Primitives;
+    using Microsoft.Net.Http.Headers;
+    using Parsers;
+    using Results;
+    using Shared.Requests;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -25,13 +32,6 @@ namespace SimpleAuth.Extensions
     using System.Security.Claims;
     using System.Text;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Routing;
-    using Microsoft.Extensions.Primitives;
-    using Microsoft.Net.Http.Headers;
-    using Parsers;
-    using Results;
-    using Shared.Requests;
 
     public static class ControllerExtensions
     {
@@ -148,10 +148,9 @@ namespace SimpleAuth.Extensions
             EndpointResult endpointResult,
             AuthorizationRequest authorizationRequest)
         {
-            var actionResultParser = new ActionResultParser();
             if (endpointResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
-                var parameters = actionResultParser.GetRedirectionParameters(endpointResult);
+                var parameters = endpointResult.GetRedirectionParameters();
                 //var uri = new Uri();
                 var redirectUrl = controller.CreateRedirectHttp(
                     authorizationRequest.RedirectUri,
@@ -160,7 +159,7 @@ namespace SimpleAuth.Extensions
                 return new RedirectResult(redirectUrl);
             }
 
-            var actionInformation = actionResultParser.GetControllerAndActionFromRedirectionActionResult(endpointResult);
+            var actionInformation = endpointResult.GetControllerAndActionFromRedirectionActionResult();
             if (actionInformation != null)
             {
                 var routeValueDic = actionInformation.RouteValueDictionary;
