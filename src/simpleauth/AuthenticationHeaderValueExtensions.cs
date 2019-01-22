@@ -21,7 +21,7 @@ namespace SimpleAuth
     using Parameters;
     using Shared;
 
-    public static class AuthenticationHeaderValueExtensions
+    internal static class AuthenticationHeaderValueExtensions
     {
         public static AuthenticateInstruction GetAuthenticateInstruction(
             this AuthenticationHeaderValue authenticationHeaderValue,

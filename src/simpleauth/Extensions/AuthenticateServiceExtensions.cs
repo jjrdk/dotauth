@@ -8,7 +8,7 @@
 
     public static class AuthenticateServiceExtensions
     {
-        public static async Task<ClaimsPrincipal> GetAuthenticatedUser(this IAuthenticationService authenticateService, Controller controller, string scheme)
+        public static async Task<ClaimsPrincipal> GetAuthenticatedUser(this IAuthenticationService authenticateService, ControllerBase controller, string scheme)
         {
             if (authenticateService == null)
             {

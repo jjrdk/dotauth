@@ -16,7 +16,6 @@ namespace SimpleAuth.Api.PolicyController.Actions
 {
     using Errors;
     using Exceptions;
-    using Extensions;
     using Repositories;
     using Shared.Models;
     using System;
@@ -54,7 +53,10 @@ namespace SimpleAuth.Api.PolicyController.Actions
             }
             catch (Exception ex)
             {
-                ex.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, id));
+                throw new SimpleAuthException(
+                    ErrorCodes.InternalError,
+                   string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, id),
+                    ex);
             }
 
             if (policy == null)
@@ -69,7 +71,10 @@ namespace SimpleAuth.Api.PolicyController.Actions
             }
             catch (Exception ex)
             {
-                ex.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceId));
+                throw new SimpleAuthException(
+                    ErrorCodes.InternalError,
+                    string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceId),
+                    ex);
             }
 
             if (resourceSet == null)

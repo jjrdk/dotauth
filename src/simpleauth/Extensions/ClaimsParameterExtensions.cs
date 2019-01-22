@@ -14,13 +14,13 @@
 
 namespace SimpleAuth.Extensions
 {
+    using Parameters;
+    using Shared;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Parameters;
-    using Shared;
 
-    public static class ClaimsParameterExtensions
+    internal static class ClaimsParameterExtensions
     {
         /// <summary>
         /// Gets all the standard claim names from the ClaimsParameter

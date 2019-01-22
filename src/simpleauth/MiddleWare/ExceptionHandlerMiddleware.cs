@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,15 +14,15 @@
 
 namespace SimpleAuth.MiddleWare
 {
-    using System;
-    using System.Net;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
     using Logging;
     using Microsoft.AspNetCore.Http;
     using Shared;
     using Shared.Responses;
+    using System;
+    using System.Net;
+    using System.Threading.Tasks;
 
     public class ExceptionHandlerMiddleware
     {
@@ -70,7 +70,7 @@ namespace SimpleAuth.MiddleWare
                             State = exceptionWithState.State
                         };
 
-                        var serializedError = errorResponseWithState.SerializeWithDataContract();
+                        var serializedError = errorResponseWithState.SerializeWithJavascript();
                         await context.Response.WriteAsync(serializedError).ConfigureAwait(false);
                     }
                     else
@@ -81,7 +81,7 @@ namespace SimpleAuth.MiddleWare
                             Error = serverException.Code
                         };
 
-                        var serializedError = error.SerializeWithDataContract();
+                        var serializedError = error.SerializeWithJavascript();
                         await context.Response.WriteAsync(serializedError).ConfigureAwait(false);
                     }
                 }
@@ -98,7 +98,7 @@ namespace SimpleAuth.MiddleWare
                         ErrorDescription = exception.Message
                     };
 
-                    var serializedError = error.SerializeWithDataContract();
+                    var serializedError = error.SerializeWithJavascript();
                     await context.Response.WriteAsync(serializedError).ConfigureAwait(false);
                 }
             }

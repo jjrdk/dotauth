@@ -16,7 +16,6 @@ namespace SimpleAuth.Api.PolicyController.Actions
 {
     using Errors;
     using Exceptions;
-    using Extensions;
     using Parameters;
     using Repositories;
     using Shared.Models;
@@ -61,7 +60,10 @@ namespace SimpleAuth.Api.PolicyController.Actions
             }
             catch (Exception ex)
             {
-                ex.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, addResourceSetParameter.PolicyId));
+                throw new SimpleAuthException(
+                    ErrorCodes.InternalError,
+                    string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, addResourceSetParameter.PolicyId),
+                    ex);
             }
 
             if (policy == null)
@@ -78,7 +80,10 @@ namespace SimpleAuth.Api.PolicyController.Actions
                 }
                 catch (Exception ex)
                 {
-                    ex.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId));
+                    throw new SimpleAuthException(
+                        ErrorCodes.InternalError,
+                        string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId),
+                        ex);
                 }
 
                 if (resourceSet == null)
@@ -88,16 +93,18 @@ namespace SimpleAuth.Api.PolicyController.Actions
             }
 
             policy.ResourceSetIds.AddRange(addResourceSetParameter.ResourceSets);
-            var result = false;
+
             try
             {
-                result = await _policyRepository.Update(policy).ConfigureAwait(false);
+                return await _policyRepository.Update(policy).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                ex.HandleException(ErrorDescriptions.ThePolicyCannotBeUpdated);
+                throw new SimpleAuthException(
+                    ErrorCodes.InternalError,
+                    ErrorDescriptions.ThePolicyCannotBeUpdated,
+                    ex);
             }
-            return result;
         }
     }
 }

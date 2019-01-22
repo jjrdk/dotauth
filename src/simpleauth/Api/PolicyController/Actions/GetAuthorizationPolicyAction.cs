@@ -20,6 +20,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
     using Shared.Models;
     using System;
     using System.Threading.Tasks;
+    using SimpleAuth.Exceptions;
 
     internal class GetAuthorizationPolicyAction
     {
@@ -44,7 +45,10 @@ namespace SimpleAuth.Api.PolicyController.Actions
             }
             catch (Exception ex)
             {
-                ex.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId));
+                throw new SimpleAuthException(
+                    ErrorCodes.InternalError,
+                    string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId),
+                    ex);
             }
 
             return policy;

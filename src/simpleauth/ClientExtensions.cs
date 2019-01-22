@@ -3,7 +3,7 @@
     using Microsoft.IdentityModel.Tokens;
     using Shared.Models;
 
-    public static class ClientExtensions
+    internal static class ClientExtensions
     {
         public static TokenValidationParameters CreateValidationParameters(this Client client, string audience = null, string issuer = null)
         {

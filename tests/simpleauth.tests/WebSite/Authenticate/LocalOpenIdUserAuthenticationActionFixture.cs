@@ -44,7 +44,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             var localAuthenticationParameter = new LocalAuthenticationParameter();
             var authorizationParameter = new AuthorizationParameter();
 
-            await Assert.ThrowsAsync<AuthServerAuthenticationException>(
+            await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _localUserAuthenticationAction.Execute(
                         localAuthenticationParameter,
                         authorizationParameter,

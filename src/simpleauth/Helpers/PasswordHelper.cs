@@ -1,9 +1,9 @@
 ﻿namespace SimpleAuth.Helpers
 {
+    using Shared;
     using System;
     using System.Security.Cryptography;
     using System.Text;
-    using Shared;
 
     public static class PasswordHelper
     {

@@ -19,7 +19,7 @@ namespace SimpleAuth.Extensions
     using System.Security.Claims;
     using Shared;
 
-    public static class ClaimPrincipalExtensions
+    internal static class ClaimPrincipalExtensions
     {
         /// <summary>
         /// Returns if the user is authenticated

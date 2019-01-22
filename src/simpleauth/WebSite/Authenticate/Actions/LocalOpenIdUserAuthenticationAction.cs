@@ -21,6 +21,7 @@ namespace SimpleAuth.WebSite.Authenticate.Actions
     using Extensions;
     using Helpers;
     using Parameters;
+    using SimpleAuth.Errors;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -69,7 +70,7 @@ namespace SimpleAuth.WebSite.Authenticate.Actions
             var resourceOwner = await _resourceOwnerServices.Authenticate(localAuthenticationParameter.UserName, localAuthenticationParameter.Password, authorizationParameter.AmrValues).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new AuthServerAuthenticationException("the resource owner credentials are not correct");
+                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, "The resource owner credentials are not correct");
             }
 
             var claims = resourceOwner.Claims == null ? new List<Claim>() : resourceOwner.Claims.ToList();

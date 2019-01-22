@@ -20,7 +20,7 @@ namespace SimpleAuth.Helpers
     using System.Collections.Generic;
     using System.Linq;
 
-    public static class ParameterParserHelper
+    internal static class ParameterParserHelper
     {
         /// <summary>
         /// Parse the parameter and returns a list of prompt parameter.
@@ -38,7 +38,7 @@ namespace SimpleAuth.Helpers
 
             var prompts = parameter.Split(' ')
                 .Where(c => !string.IsNullOrWhiteSpace(c) && promptNames.Contains(c))
-                .Select(c => (PromptParameter) Enum.Parse(typeof(PromptParameter), c))
+                .Select(c => (PromptParameter)Enum.Parse(typeof(PromptParameter), c))
                 .ToList();
             return prompts;
         }

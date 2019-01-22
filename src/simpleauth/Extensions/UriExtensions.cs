@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,23 +14,14 @@
 
 namespace SimpleAuth.Extensions
 {
+    using Microsoft.AspNetCore.Routing;
+    using Microsoft.Extensions.Primitives;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Microsoft.AspNetCore.Routing;
-    using Microsoft.Extensions.Primitives;
 
-    public static class UriExtensions
+    internal static class UriExtensions
     {
-        public static Uri AddParameter(this Uri uri, string parameterName, string parameterValue)
-        {
-            var uriBuilder = new UriBuilder(uri);
-            var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
-            query[parameterName] = parameterValue;
-            uriBuilder.Query = query.ToString();
-            return new Uri(uriBuilder.ToString());
-        }
-
         /// <summary>
         /// Add the given parameter in the query string.
         /// </summary>
