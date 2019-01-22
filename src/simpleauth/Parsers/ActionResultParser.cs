@@ -17,36 +17,29 @@ namespace SimpleAuth.Parsers
     using Microsoft.AspNetCore.Routing;
     using Results;
 
-    public class ActionResultParser : IActionResultParser
+    internal static class ActionResultParser
     {
-        private readonly RedirectInstructionParser _redirectInstructionParser;
-
-        public ActionResultParser()
+        public static ActionInformation GetControllerAndActionFromRedirectionActionResult(
+            this EndpointResult endpointResult)
         {
-            _redirectInstructionParser = new RedirectInstructionParser();
+            if (endpointResult.Type != TypeActionResult.RedirectToAction || endpointResult.RedirectInstruction == null)
+            {
+                return null;
+            }
+
+            return endpointResult.RedirectInstruction.GetActionInformation();
         }
 
-        public ActionInformation GetControllerAndActionFromRedirectionActionResult(EndpointResult endpointResult)
+        public static RouteValueDictionary GetRedirectionParameters(this EndpointResult endpointResult)
         {
             if (endpointResult.Type != TypeActionResult.RedirectToAction
+                && endpointResult.Type != TypeActionResult.RedirectToCallBackUrl
                 || endpointResult.RedirectInstruction == null)
             {
                 return null;
             }
 
-            return _redirectInstructionParser.GetActionInformation(endpointResult.RedirectInstruction);
-        }
-
-        public RouteValueDictionary GetRedirectionParameters(EndpointResult endpointResult)
-        {
-            if (endpointResult.Type != TypeActionResult.RedirectToAction &&
-                endpointResult.Type != TypeActionResult.RedirectToCallBackUrl ||
-                endpointResult.RedirectInstruction == null)
-            {
-                return null;
-            }
-
-            return _redirectInstructionParser.GetRouteValueDictionary(endpointResult.RedirectInstruction);
+            return endpointResult.RedirectInstruction.GetRouteValueDictionary();
         }
     }
 }

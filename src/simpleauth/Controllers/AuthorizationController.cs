@@ -47,7 +47,6 @@ namespace SimpleAuth.Controllers
         private readonly IClientStore _clientStore;
         private readonly AuthorizationActions _authorizationActions;
         private readonly IDataProtector _dataProtector;
-        private readonly IActionResultParser _actionResultParser;
         private readonly IAuthenticationService _authenticationService;
         private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
 
@@ -59,7 +58,6 @@ namespace SimpleAuth.Controllers
             IClientStore clientStore,
             IConsentRepository consentRepository,
             IDataProtectionProvider dataProtectionProvider,
-            IActionResultParser actionResultParser,
             IAuthenticationService authenticationService)
         {
             _clientStore = clientStore;
@@ -71,7 +69,6 @@ namespace SimpleAuth.Controllers
                 eventPublisher,
                 resourceOwnerServices);
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
-            _actionResultParser = actionResultParser;
             _authenticationService = authenticationService;
         }
 
@@ -110,7 +107,7 @@ namespace SimpleAuth.Controllers
                         //var redirectUrl = new Uri();
                         return this.CreateRedirectHttpTokenResponse(
                             authorizationRequest.RedirectUri,
-                            _actionResultParser.GetRedirectionParameters(actionResult),
+                            actionResult.GetRedirectionParameters(),
                             actionResult.RedirectInstruction.ResponseMode);
                     }
                 case TypeActionResult.RedirectToAction:
@@ -140,7 +137,7 @@ namespace SimpleAuth.Controllers
                         var url = GetRedirectionUrl(Request, actionResult.Amr, actionResult.RedirectInstruction.Action);
                         var uri = new Uri(url);
                         var redirectionUrl =
-                            uri.AddParametersInQuery(_actionResultParser.GetRedirectionParameters(actionResult));
+                            uri.AddParametersInQuery(actionResult.GetRedirectionParameters());
                         return new RedirectResult(redirectionUrl.AbsoluteUri);
                     }
                 //case TypeActionResult.Output:

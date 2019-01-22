@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,9 +19,9 @@ namespace SimpleAuth.Parsers
     using System.Collections.Generic;
     using System.Linq;
 
-    public class RedirectInstructionParser
+    internal static class RedirectInstructionParser
     {
-        private readonly Dictionary<SimpleAuthEndPoints, ActionInformation> _mappingEnumToActionInformations = new Dictionary<SimpleAuthEndPoints, ActionInformation>
+        private static readonly Dictionary<SimpleAuthEndPoints, ActionInformation> _mappingEnumToActionInformations = new Dictionary<SimpleAuthEndPoints, ActionInformation>
         {
             {
                 SimpleAuthEndPoints.ConsentIndex,
@@ -37,7 +37,7 @@ namespace SimpleAuth.Parsers
             }
         };
 
-        public ActionInformation GetActionInformation(RedirectInstruction instruction)
+        public static ActionInformation GetActionInformation(this RedirectInstruction instruction)
         {
             if (!_mappingEnumToActionInformations.ContainsKey(instruction.Action))
             {
@@ -50,7 +50,7 @@ namespace SimpleAuth.Parsers
             return actionInformation;
         }
 
-        public RouteValueDictionary GetRouteValueDictionary(RedirectInstruction instruction)
+        public static RouteValueDictionary GetRouteValueDictionary(this RedirectInstruction instruction)
         {
             var result = new RouteValueDictionary();
             if (instruction.Parameters != null && instruction.Parameters.Any())
