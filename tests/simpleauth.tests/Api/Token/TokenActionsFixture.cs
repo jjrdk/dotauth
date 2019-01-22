@@ -1,5 +1,5 @@
-﻿using SimpleAuth.Shared.Repositories;
-using System.IdentityModel.Tokens.Jwt;
+﻿using SimpleAuth.Services;
+using SimpleAuth.Shared.Repositories;
 using System.Net.Http.Headers;
 
 namespace SimpleAuth.Tests.Api.Token
@@ -70,7 +70,7 @@ namespace SimpleAuth.Tests.Api.Token
         {
             const string scope = "valid_scope";
             const string clientId = "valid_client_id";
-            var parameter = new ClientCredentialsGrantTypeParameter {Scope = scope};
+            var parameter = new ClientCredentialsGrantTypeParameter { Scope = scope };
 
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
@@ -99,10 +99,10 @@ namespace SimpleAuth.Tests.Api.Token
                     new Client
                     {
                         ClientId = clientId,
-                        Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientsecret}},
-                        AllowedScopes = new[] {new Scope {Name = scope}},
-                        ResponseTypes = new[] {ResponseTypeNames.Token},
-                        GrantTypes = new List<GrantType> {GrantType.client_credentials}
+                        Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientsecret } },
+                        AllowedScopes = new[] { new Scope { Name = scope } },
+                        ResponseTypes = new[] { ResponseTypeNames.Token },
+                        GrantTypes = new List<GrantType> { GrantType.client_credentials }
                     });
 
             _tokenStore = new Mock<ITokenStore>();
@@ -110,13 +110,13 @@ namespace SimpleAuth.Tests.Api.Token
             grantedTokenGenerator
                 .Setup(
                     x => x.GenerateToken(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<string>(), null, null, null))
-                .ReturnsAsync(new GrantedToken {ClientId = clientId});
+                .ReturnsAsync(new GrantedToken { ClientId = clientId });
             _tokenActions = new TokenActions(
                 new OAuthConfigurationOptions(),
                 new Mock<IClientCredentialsGrantTypeParameterValidator>().Object,
                 new Mock<IAuthorizationCodeStore>().Object,
                 mock.Object,
-                new Mock<IResourceOwnerAuthenticateHelper>().Object,
+                new IAuthenticateResourceOwnerService[0],
                 grantedTokenGenerator.Object,
                 eventPublisher.Object,
                 _tokenStore.Object,

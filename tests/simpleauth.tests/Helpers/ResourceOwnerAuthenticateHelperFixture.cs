@@ -1,4 +1,7 @@
-﻿namespace SimpleAuth.Tests.Helpers
+﻿using System.Collections.Generic;
+using SimpleAuth.Services;
+
+namespace SimpleAuth.Tests.Helpers
 {
     using SimpleAuth.Helpers;
     using System;
@@ -7,20 +10,12 @@
 
     public class ResourceOwnerAuthenticateHelperFixture
     {
-        private IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
-
         [Fact]
         public async Task When_Pass_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
-            InitializeFakeObjects();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _resourceOwnerAuthenticateHelper.Authenticate(null, null)).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _resourceOwnerAuthenticateHelper.Authenticate("login", null)).ConfigureAwait(false);
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _resourceOwnerAuthenticateHelper = new ResourceOwnerAuthenticateHelper(null);
+            IEnumerable<IAuthenticateResourceOwnerService> services = null;
+            await Assert.ThrowsAsync<ArgumentNullException>(() => services.Authenticate(null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => services.Authenticate("login", null)).ConfigureAwait(false);
         }
     }
 }

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using SimpleAuth.Services;
+
 namespace SimpleAuth.Controllers
 {
     using Api.Authorization;
@@ -53,7 +55,7 @@ namespace SimpleAuth.Controllers
             IGenerateAuthorizationResponse generateAuthorizationResponse,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IEventPublisher eventPublisher,
-            IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
+            IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
             IClientStore clientStore,
             IConsentRepository consentRepository,
             IDataProtectionProvider dataProtectionProvider,
@@ -67,7 +69,7 @@ namespace SimpleAuth.Controllers
                 consentRepository,
                 authorizationFlowHelper,
                 eventPublisher,
-                resourceOwnerAuthenticateHelper);
+                resourceOwnerServices);
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _actionResultParser = actionResultParser;
             _authenticationService = authenticationService;
