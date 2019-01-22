@@ -4,7 +4,7 @@
     using System.Text;
     using Shared;
 
-    public static class PasswordHelper
+    internal static class PasswordHelper
     {
         public static string ToSha256SimplifiedBase64(this string entry, Encoding encoding = null)
         {

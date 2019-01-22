@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,7 +35,7 @@ namespace SimpleAuth.JwtToken
     using Validators;
     using JwtConstants = Shared.JwtConstants;
 
-    public class JwtGenerator : IJwtGenerator
+    internal class JwtGenerator : IJwtGenerator
     {
         private readonly ClientValidator _clientValidator;
         private readonly IScopeRepository _scopeRepository;
@@ -677,9 +677,23 @@ namespace SimpleAuth.JwtToken
         private static string GetFirstPart(string parameter, HashAlgorithm alg)
         {
             var hashingResultBytes = alg.ComputeHash(Encoding.UTF8.GetBytes(parameter));
-            var split = ByteManipulator.SplitByteArrayInHalf(hashingResultBytes);
+            var split = SplitByteArrayInHalf(hashingResultBytes);
             var firstPart = split[0];
             return firstPart.ToBase64Simplified();
+        }
+
+        private static byte[][] SplitByteArrayInHalf(byte[] arr)
+        {
+            var halfIndex = arr.Length / 2;
+            var firstHalf = new byte[halfIndex];
+            var secondHalf = new byte[halfIndex];
+            Buffer.BlockCopy(arr, 0, firstHalf, 0, halfIndex);
+            Buffer.BlockCopy(arr, halfIndex, secondHalf, 0, halfIndex);
+            return new[]
+            {
+                firstHalf,
+                secondHalf
+            };
         }
     }
 }

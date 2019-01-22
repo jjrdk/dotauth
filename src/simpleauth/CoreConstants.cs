@@ -20,7 +20,7 @@ namespace SimpleAuth
     using SimpleAuth.Shared.Models;
     using System.Collections.Generic;
 
-    public static class CoreConstants
+    internal static class CoreConstants
     {
         public const string SESSION_ID = "session_id";
         public const string DEFAULT_AMR = "pwd";
@@ -62,90 +62,90 @@ namespace SimpleAuth
         //    public static string OpenIdPhysicalMultiFactorAuth = "http://schemas.openid.net/pape/policies/2007/06/multi-factor-physical";
         //}
 
-        // Standard scopes defined by OPEN-ID
-        internal static class StandardScopes
-        {
-            public static Scope ProfileScope = new Scope
-            {
-                Name = "profile",
-                IsExposed = true,
-                IsOpenIdScope = true,
-                IsDisplayedInConsent = true,
-                Description = "Access to the profile",
-                Claims = new[]
-                {
-                    JwtConstants.StandardResourceOwnerClaimNames.Name,
-                    JwtConstants.StandardResourceOwnerClaimNames.FamilyName,
-                    JwtConstants.StandardResourceOwnerClaimNames.GivenName,
-                    JwtConstants.StandardResourceOwnerClaimNames.MiddleName,
-                    JwtConstants.StandardResourceOwnerClaimNames.NickName,
-                    JwtConstants.StandardResourceOwnerClaimNames.PreferredUserName,
-                    JwtConstants.StandardResourceOwnerClaimNames.Profile,
-                    JwtConstants.StandardResourceOwnerClaimNames.Picture,
-                    JwtConstants.StandardResourceOwnerClaimNames.WebSite,
-                    JwtConstants.StandardResourceOwnerClaimNames.Gender,
-                    JwtConstants.StandardResourceOwnerClaimNames.BirthDate,
-                    JwtConstants.StandardResourceOwnerClaimNames.ZoneInfo,
-                    JwtConstants.StandardResourceOwnerClaimNames.Locale,
-                    JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt
-                },
-                Type = ScopeType.ResourceOwner
-            };
+        //// Standard scopes defined by OPEN-ID
+        //internal static class StandardScopes
+        //{
+        //    public static Scope ProfileScope = new Scope
+        //    {
+        //        Name = "profile",
+        //        IsExposed = true,
+        //        IsOpenIdScope = true,
+        //        IsDisplayedInConsent = true,
+        //        Description = "Access to the profile",
+        //        Claims = new[]
+        //        {
+        //            JwtConstants.StandardResourceOwnerClaimNames.Name,
+        //            JwtConstants.StandardResourceOwnerClaimNames.FamilyName,
+        //            JwtConstants.StandardResourceOwnerClaimNames.GivenName,
+        //            JwtConstants.StandardResourceOwnerClaimNames.MiddleName,
+        //            JwtConstants.StandardResourceOwnerClaimNames.NickName,
+        //            JwtConstants.StandardResourceOwnerClaimNames.PreferredUserName,
+        //            JwtConstants.StandardResourceOwnerClaimNames.Profile,
+        //            JwtConstants.StandardResourceOwnerClaimNames.Picture,
+        //            JwtConstants.StandardResourceOwnerClaimNames.WebSite,
+        //            JwtConstants.StandardResourceOwnerClaimNames.Gender,
+        //            JwtConstants.StandardResourceOwnerClaimNames.BirthDate,
+        //            JwtConstants.StandardResourceOwnerClaimNames.ZoneInfo,
+        //            JwtConstants.StandardResourceOwnerClaimNames.Locale,
+        //            JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt
+        //        },
+        //        Type = ScopeType.ResourceOwner
+        //    };
 
-            public static Scope Email = new Scope
-            {
-                Name = "email",
-                IsExposed = true,
-                IsOpenIdScope = true,
-                IsDisplayedInConsent = true,
-                Description = "Access to the email",
-                Claims = new[]
-                {
-                    JwtConstants.StandardResourceOwnerClaimNames.Email,
-                    JwtConstants.StandardResourceOwnerClaimNames.EmailVerified
-                },
-                Type = ScopeType.ResourceOwner
-            };
+        //    public static Scope Email = new Scope
+        //    {
+        //        Name = "email",
+        //        IsExposed = true,
+        //        IsOpenIdScope = true,
+        //        IsDisplayedInConsent = true,
+        //        Description = "Access to the email",
+        //        Claims = new[]
+        //        {
+        //            JwtConstants.StandardResourceOwnerClaimNames.Email,
+        //            JwtConstants.StandardResourceOwnerClaimNames.EmailVerified
+        //        },
+        //        Type = ScopeType.ResourceOwner
+        //    };
 
-            public static Scope Address = new Scope
-            {
-                Name = "address",
-                IsExposed = true,
-                IsOpenIdScope = true,
-                IsDisplayedInConsent = true,
-                Description = "Access to the address",
-                Claims = new[]
-                {
-                    JwtConstants.StandardResourceOwnerClaimNames.Address
-                },
-                Type = ScopeType.ResourceOwner
-            };
+        //    public static Scope Address = new Scope
+        //    {
+        //        Name = "address",
+        //        IsExposed = true,
+        //        IsOpenIdScope = true,
+        //        IsDisplayedInConsent = true,
+        //        Description = "Access to the address",
+        //        Claims = new[]
+        //        {
+        //            JwtConstants.StandardResourceOwnerClaimNames.Address
+        //        },
+        //        Type = ScopeType.ResourceOwner
+        //    };
 
-            public static Scope Phone = new Scope
-            {
-                Name = "phone",
-                IsExposed = true,
-                IsOpenIdScope = true,
-                IsDisplayedInConsent = true,
-                Description = "Access to the phone",
-                Claims = new[]
-                {
-                    JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber,
-                    JwtConstants.StandardResourceOwnerClaimNames.PhoneNumberVerified
-                },
-                Type = ScopeType.ResourceOwner
-            };
+        //    public static Scope Phone = new Scope
+        //    {
+        //        Name = "phone",
+        //        IsExposed = true,
+        //        IsOpenIdScope = true,
+        //        IsDisplayedInConsent = true,
+        //        Description = "Access to the phone",
+        //        Claims = new[]
+        //        {
+        //            JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber,
+        //            JwtConstants.StandardResourceOwnerClaimNames.PhoneNumberVerified
+        //        },
+        //        Type = ScopeType.ResourceOwner
+        //    };
 
-            public static Scope OpenId = new Scope
-            {
-                Name = "openid",
-                IsExposed = true,
-                IsOpenIdScope = true,
-                IsDisplayedInConsent = false,
-                Description = "openid",
-                Type = ScopeType.ProtectedApi
-            };
-        }
+        //    public static Scope OpenId = new Scope
+        //    {
+        //        Name = "openid",
+        //        IsExposed = true,
+        //        IsOpenIdScope = true,
+        //        IsDisplayedInConsent = false,
+        //        Description = "openid",
+        //        Type = ScopeType.ProtectedApi
+        //    };
+        //}
 
         //// Defines the Assurance Level
         //// For more information check this documentation : http://csrc.nist.gov/publications/nistpubs/800-63/SP800-63V1_0_2.pdf

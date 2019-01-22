@@ -46,7 +46,7 @@ namespace SimpleAuth.AuthServer
                     // JsonWebKeys = DefaultConfiguration.GetJsonWebKeys(),
                     Clients = DefaultConfiguration.GetClients()
                 },
-                Scim = new ScimOptions {IsEnabled = false}
+                Scim = new ScimOptions { IsEnabled = false }
             };
         }
 
@@ -58,10 +58,10 @@ namespace SimpleAuth.AuthServer
                     x.EnableForHttps = true;
                     x.Providers.Add(
                         new GzipCompressionProvider(
-                            new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                            new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                     x.Providers.Add(
                         new BrotliCompressionProvider(
-                            new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                            new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                 });
             services.AddHttpsRedirection(x => { x.HttpsPort = 443; });
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
@@ -107,8 +107,8 @@ namespace SimpleAuth.AuthServer
             app.UseCors("AllowAll");
             // 2. Use static files.
             app.UseStaticFiles(
-                new StaticFileOptions {FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot")});
-            app.UseSimpleAuth();
+                new StaticFileOptions { FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot") });
+            app.UseSimpleAuth(o => { });
             // 3. Redirect error to custom pages.
             app.UseStatusCodePagesWithRedirects("~/Error/{0}");
             // 4. Enable SimpleAuth

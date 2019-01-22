@@ -6,7 +6,7 @@
     using System.Security.Claims;
     using Shared;
 
-    public static class ClaimsExtensions
+    internal static class ClaimsExtensions
     {
         private static readonly Dictionary<string, string> _mappingToOpenidClaims = new Dictionary<string, string>
         {

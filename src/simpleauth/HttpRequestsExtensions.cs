@@ -4,15 +4,8 @@
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
 
-    public static class HttpRequestsExtensions
+    internal static class HttpRequestsExtensions
     {
-        public static string GetAbsoluteUriWithVirtualPath(this IHttpContextAccessor context)
-        {
-            var request = context.HttpContext.Request;
-            var result = request.GetAbsoluteUriWithVirtualPath();
-            return result;
-        }
-
         public static string GetAbsoluteUriWithVirtualPath(this HttpRequest requestMessage)
         {
             var host = requestMessage.Host.Value;

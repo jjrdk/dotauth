@@ -18,30 +18,8 @@ namespace SimpleAuth.Validators
     using Errors;
     using Shared.Models;
 
-    public static class GrantedTokenValidator
+    internal static class GrantedTokenValidator
     {
-        //public static async Task<GrantedTokenValidationResult> CheckAccessTokenAsync(this ITokenStore tokenStore, string accessToken)
-        //{
-        //    if (string.IsNullOrWhiteSpace(accessToken))
-        //    {
-        //        throw new ArgumentNullException(nameof(accessToken));
-        //    }
-
-        //    var grantedToken = await tokenStore.GetAccessToken(accessToken).ConfigureAwait(false);
-        //    return CheckGrantedToken(grantedToken);
-        //}
-
-        //public static async Task<GrantedTokenValidationResult> CheckRefreshTokenAsync(this ITokenStore tokenStore, string refreshToken)
-        //{
-        //    if (string.IsNullOrWhiteSpace(refreshToken))
-        //    {
-        //        throw new ArgumentNullException(nameof(refreshToken));
-        //    }
-
-        //    var grantedToken = await tokenStore.GetRefreshToken(refreshToken).ConfigureAwait(false);
-        //    return CheckGrantedToken(grantedToken);
-        //}
-
         public static GrantedTokenValidationResult CheckGrantedToken(this GrantedToken grantedToken)
         {
             if (grantedToken == null)

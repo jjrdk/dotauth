@@ -14,17 +14,16 @@
 
 namespace SimpleAuth.Api.PermissionController
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Errors;
     using Exceptions;
-    using Extensions;
     using Parameters;
     using Repositories;
     using Shared;
     using Shared.Models;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     internal class AddPermissionAction
     {
@@ -44,7 +43,7 @@ namespace SimpleAuth.Api.PermissionController
 
         public async Task<string> Execute(string clientId, AddPermissionParameter addPermissionParameter)
         {
-            var result = await Execute(clientId, new[] {addPermissionParameter}).ConfigureAwait(false);
+            var result = await Execute(clientId, new[] { addPermissionParameter }).ConfigureAwait(false);
             return result;
         }
 
@@ -67,16 +66,16 @@ namespace SimpleAuth.Api.PermissionController
                 Id = Id.Create(),
                 ClientId = clientId,
                 CreateDateTime = DateTime.UtcNow,
-                ExpiresIn = (int) ticketLifetimeInSeconds.TotalSeconds,
+                ExpiresIn = (int)ticketLifetimeInSeconds.TotalSeconds,
                 ExpirationDateTime = DateTime.UtcNow.Add(ticketLifetimeInSeconds)
             };
             // TH : ONE TICKET FOR MULTIPLE PERMISSIONS.
             var ticketLines = addPermissionParameters.Select(addPermissionParameter => new TicketLine
-                {
-                    Id = Id.Create(),
-                    Scopes = addPermissionParameter.Scopes,
-                    ResourceSetId = addPermissionParameter.ResourceSetId
-                })
+            {
+                Id = Id.Create(),
+                Scopes = addPermissionParameter.Scopes,
+                ResourceSetId = addPermissionParameter.ResourceSetId
+            })
                 .ToList();
 
             ticket.Lines = ticketLines;
@@ -99,7 +98,10 @@ namespace SimpleAuth.Api.PermissionController
             }
             catch (Exception ex)
             {
-                ex.HandleException(ErrorDescriptions.TheResourceSetsCannotBeRetrieved);
+                throw new SimpleAuthException(
+                    ErrorCodes.InternalError,
+                    ErrorDescriptions.TheResourceSetsCannotBeRetrieved,
+                    ex);
             }
 
             // 2. Check parameters & scope exist.

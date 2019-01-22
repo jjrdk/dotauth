@@ -3,7 +3,7 @@
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
 
-    public static class JwtPayloadExtensions
+    internal static class JwtPayloadExtensions
     {
         public static string GetClaimValue(this JwtPayload payload, string claimType)
         {

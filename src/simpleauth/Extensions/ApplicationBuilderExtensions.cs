@@ -14,13 +14,20 @@
 
 namespace SimpleAuth.Extensions
 {
-    using System;
     using Microsoft.AspNetCore.Builder;
     using MiddleWare;
+    using System;
+    using SimpleAuth.Shared;
 
     public static class ApplicationBuilderExtensions
     {
-        public static void UseSimpleAuth(this IApplicationBuilder app, Action<SimpleAuthOptions> optionsCallback)
+        public static IApplicationBuilder UseSimpleAuthExceptionHandler(this IApplicationBuilder applicationBuilder)
+        {
+            var publisher = applicationBuilder.ApplicationServices.GetService(typeof(IEventPublisher)) ?? new NoOpPublisher();
+            return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>(publisher);
+        }
+
+        public static IApplicationBuilder UseSimpleAuth(this IApplicationBuilder app, Action<SimpleAuthOptions> optionsCallback)
         {
             if (optionsCallback == null)
             {
@@ -29,14 +36,8 @@ namespace SimpleAuth.Extensions
 
             var hostingOptions = new SimpleAuthOptions();
             optionsCallback(hostingOptions);
-            app.UseSimpleAuth();
-        }
 
-        public static void UseSimpleAuth(this IApplicationBuilder app)
-        {
-            app.UseSimpleAuthExceptionHandler();
-            //var httpContextAccessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
-            //UriHelperExtensions.Configure(httpContextAccessor);
+            return app.UseSimpleAuthExceptionHandler();
         }
     }
 }

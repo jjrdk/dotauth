@@ -195,7 +195,7 @@ namespace SimpleAuth.Scim.Client.Tests
                         Filter = $"age le 23"
                     })
                 .ConfigureAwait(false);
-            var newDate = DateTime.UtcNow.AddDays(2).ToUnix().ToString();
+            var newDate = DateTime.UtcNow.AddDays(2).ConvertToUnixTimestamp().ToString();
             var fourthSearch = await _usersClient.SearchUsers(BaseUrl,
                     new SearchParameter
                     {

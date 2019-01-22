@@ -14,8 +14,6 @@
 
 namespace SimpleAuth.Server.Tests
 {
-    using System;
-    using System.Reflection;
     using Controllers;
     using Extensions;
     using Microsoft.AspNetCore.Builder;
@@ -23,11 +21,13 @@ namespace SimpleAuth.Server.Tests
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
     using SimpleAuth;
+    using System;
+    using System.Reflection;
 
     public class FakeManagerStartup : IStartup
     {
         private const string DefaultSchema = "Cookies";
-        
+
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             RegisterServices(services);
@@ -40,14 +40,13 @@ namespace SimpleAuth.Server.Tests
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseAuthentication();
-            app.UseSimpleAuth();
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseAuthentication()
+                .UseSimpleAuth(o => { })
+                .UseMvc(
+                    routes =>
+                    {
+                        routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
+                    });
         }
 
         private void RegisterServices(IServiceCollection serviceCollection)

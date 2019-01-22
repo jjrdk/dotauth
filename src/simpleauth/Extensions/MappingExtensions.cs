@@ -14,11 +14,6 @@
 
 namespace SimpleAuth.Extensions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Linq;
-    using System.Security.Claims;
     using Microsoft.AspNetCore.Authentication;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -30,10 +25,15 @@ namespace SimpleAuth.Extensions
     using Shared.Requests;
     using Shared.Responses;
     using Shared.Results;
+    using System;
+    using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
+    using System.Security.Claims;
     using CodeChallengeMethods = Shared.Models.CodeChallengeMethods;
     using ScopeResponse = Shared.Responses.ScopeResponse;
 
-    public static class MappingExtensions
+    internal static class MappingExtensions
     {
         public static SearchResourceSetParameter ToParameter(this SearchResourceSet searchResourceSet)
         {
@@ -232,32 +232,6 @@ namespace SimpleAuth.Extensions
                 Scopes = policyRule.Scopes,
                 Script = policyRule.Script,
                 OpenIdProvider = policyRule.OpenIdProvider
-            };
-        }
-
-        public static UmaConfigurationResponse ToResponse(this UmaConfigurationResponse configuration)
-        {
-            return new UmaConfigurationResponse
-            {
-                ClaimTokenProfilesSupported = configuration.ClaimTokenProfilesSupported,
-                IntrospectionEndpoint = configuration.IntrospectionEndpoint,
-                Issuer = configuration.Issuer,
-                PermissionEndpoint = configuration.PermissionEndpoint,
-                AuthorizationEndpoint = configuration.AuthorizationEndpoint,
-                ClaimsInteractionEndpoint = configuration.ClaimsInteractionEndpoint,
-                GrantTypesSupported = configuration.GrantTypesSupported,
-                JwksUri = configuration.JwksUri,
-                RegistrationEndpoint = configuration.RegistrationEndpoint,
-                ResourceRegistrationEndpoint = configuration.ResourceRegistrationEndpoint,
-                ResponseTypesSupported = configuration.ResponseTypesSupported,
-                RevocationEndpoint = configuration.RevocationEndpoint,
-                PoliciesEndpoint = configuration.PoliciesEndpoint,
-                ScopesSupported = configuration.ScopesSupported,
-                TokenEndpoint = configuration.TokenEndpoint,
-                TokenEndpointAuthMethodsSupported = configuration.TokenEndpointAuthMethodsSupported,
-                TokenEndpointAuthSigningAlgValuesSupported = configuration.TokenEndpointAuthSigningAlgValuesSupported,
-                UiLocalesSupported = configuration.UiLocalesSupported,
-                UmaProfilesSupported = configuration.UmaProfilesSupported
             };
         }
 

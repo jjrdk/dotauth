@@ -14,12 +14,12 @@
 
 namespace SimpleAuth.Extensions
 {
-    using System;
-    using System.Text;
     using Microsoft.AspNetCore.DataProtection;
     using Shared;
+    using System;
+    using System.Text;
 
-    public static class DataProtectorExtensions
+    internal static class DataProtectorExtensions
     {
         public static T Unprotect<T>(this IDataProtector dataProtector, string encoded)
         {
@@ -27,7 +27,7 @@ namespace SimpleAuth.Extensions
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(unprotected);
         }
 
-        public static string Unprotect(this IDataProtector dataProtector, string encoded)
+        private static string Unprotect(this IDataProtector dataProtector, string encoded)
         {
             var bytes = encoded.Base64DecodeBytes();
             var unprotectedBytes = dataProtector.Unprotect(bytes);
@@ -38,12 +38,8 @@ namespace SimpleAuth.Extensions
         public static string Protect<T>(this IDataProtector dataProtector, T toEncode)
         {
             var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(toEncode);
-            return Protect(dataProtector, serialized);
-        }
 
-        public static string Protect(this IDataProtector dataProtector, string toEncode)
-        {
-            var bytes = Encoding.ASCII.GetBytes(toEncode);
+            var bytes = Encoding.ASCII.GetBytes(serialized);
             var protectedBytes = dataProtector.Protect(bytes);
             return Convert.ToBase64String(protectedBytes);
         }

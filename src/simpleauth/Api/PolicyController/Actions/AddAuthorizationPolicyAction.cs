@@ -16,7 +16,6 @@ namespace SimpleAuth.Api.PolicyController.Actions
 {
     using Errors;
     using Exceptions;
-    using Extensions;
     using Parameters;
     using Repositories;
     using Shared;
@@ -27,7 +26,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
     using System.Security.Claims;
     using System.Threading.Tasks;
 
-    internal class AddAuthorizationPolicyAction 
+    internal class AddAuthorizationPolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
         private readonly IResourceSetRepository _resourceSetRepository;
@@ -70,7 +69,10 @@ namespace SimpleAuth.Api.PolicyController.Actions
                 }
                 catch (Exception ex)
                 {
-                    ex.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId));
+                    throw new SimpleAuthException(
+                        ErrorCodes.InternalError,
+                        string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId),
+                        ex);
                 }
 
                 if (resourceSet == null)
@@ -123,9 +125,11 @@ namespace SimpleAuth.Api.PolicyController.Actions
             }
             catch (Exception ex)
             {
-                ex.HandleException(ErrorDescriptions.ThePolicyCannotBeInserted);
+                throw new SimpleAuthException(
+                    ErrorCodes.InternalError,
+                    ErrorDescriptions.ThePolicyCannotBeInserted,
+                    ex);
             }
-            return null;
         }
     }
 }

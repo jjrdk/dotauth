@@ -23,7 +23,7 @@ namespace SimpleAuth.Helpers
     using System.Security.Claims;
     using System.Threading.Tasks;
 
-    public static class ClientHelper
+    internal static class ClientHelper
     {
         public static async Task<string> GenerateIdTokenAsync(this IClientStore clientStore, string clientId, JwtPayload jwsPayload)
         {

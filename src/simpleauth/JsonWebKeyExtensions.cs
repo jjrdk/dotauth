@@ -7,7 +7,7 @@
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
 
-    public static class JsonWebKeyExtensions
+    internal static class JsonWebKeyExtensions
     {
         public static JsonWebKeySet ToSet(this JsonWebKey jwk)
         {

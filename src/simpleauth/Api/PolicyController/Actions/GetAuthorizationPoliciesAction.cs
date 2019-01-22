@@ -15,9 +15,9 @@
 namespace SimpleAuth.Api.PolicyController.Actions
 {
     using Errors;
-    using Extensions;
     using Repositories;
     using Shared.Models;
+    using SimpleAuth.Exceptions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -41,15 +41,13 @@ namespace SimpleAuth.Api.PolicyController.Actions
             }
             catch (Exception ex)
             {
-                ex.HandleException(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved);
+                throw new SimpleAuthException(
+                    ErrorCodes.InternalError,
+                    ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved,
+                    ex);
             }
 
-            if (policies == null || !policies.Any())
-            {
-                return new List<string>();
-            }
-
-            return policies.Select(p => p.Id).ToList();
+            return policies?.Select(p => p.Id).ToList();
         }
     }
 }

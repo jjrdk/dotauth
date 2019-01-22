@@ -14,6 +14,7 @@
     using Shared;
     using Shared.Repositories;
     using Shared.Requests;
+    using SimpleAuth.Errors;
     using SimpleAuth.WebSite.Authenticate.Actions;
     using System;
     using System.Collections.Generic;
@@ -114,7 +115,7 @@
                     .ConfigureAwait(false);
                 if (resourceOwner == null)
                 {
-                    throw new AuthServerAuthenticationException("the resource owner credentials are not correct");
+                    throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, "The resource owner credentials are not correct");
                 }
 
                 var claims = resourceOwner.Claims;

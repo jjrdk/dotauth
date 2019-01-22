@@ -1,6 +1,6 @@
 ﻿namespace SimpleAuth
 {
-    public static class JwtSecurityTokenExtensions
+    internal static class JwtSecurityTokenExtensions
     {
         public static bool IsJweToken(this string token)
         {

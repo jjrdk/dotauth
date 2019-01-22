@@ -18,7 +18,7 @@ namespace SimpleAuth
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Results;
 
-    public static class HostConstants
+    internal static class HostConstants
     {
         public static class CookieNames
         {

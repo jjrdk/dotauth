@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using ResponseMode = SimpleAuth.Parameters.ResponseMode;
-
 namespace SimpleAuth.Extensions
 {
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
-    using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
     using Parsers;
     using Results;
@@ -27,27 +24,15 @@ namespace SimpleAuth.Extensions
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Net.Http.Headers;
     using System.Reflection;
     using System.Security.Claims;
     using System.Text;
     using System.Threading.Tasks;
+    using SimpleAuth.Parameters;
 
-    public static class ControllerExtensions
+    internal static class ControllerExtensions
     {
-        public static AuthenticationHeaderValue GetAuthenticationHeader(this Controller controller)
-        {
-            const string authorizationName = "Authorization";
-            if (!controller.Request.Headers.TryGetValue(authorizationName, out StringValues values))
-            {
-                return null;
-            }
-
-            var authorizationHeader = values.First();
-            return AuthenticationHeaderValue.Parse(authorizationHeader);
-        }
-
-        public static string GetClientId(this Controller controller)
+        public static string GetClientId(this ControllerBase controller)
         {
             if (controller.User?.Identity == null || !controller.User.Identity.IsAuthenticated)
             {
@@ -61,46 +46,6 @@ namespace SimpleAuth.Extensions
             }
 
             return claim.Value;
-        }
-
-        public static IEnumerable<Claim> GetClaims(this Controller controller)
-        {
-            if (controller.User?.Identity == null || !controller.User.Identity.IsAuthenticated)
-            {
-                return new List<Claim>();
-            }
-
-            return controller.User.Claims;
-        }
-
-        public static ActionResult GetActionResult(this Controller controller, ApiActionResult result)
-        {
-            if (controller == null)
-            {
-                throw new ArgumentNullException(nameof(controller));
-            }
-
-            if (result == null)
-            {
-                throw new ArgumentNullException(nameof(result));
-            }
-
-
-            if (!string.IsNullOrWhiteSpace(result.Location))
-            {
-                controller.HttpContext.Response.Headers[HeaderNames.Location] = result.Location;
-            }
-
-            if (result.Content != null)
-            {
-                var res = new ObjectResult(result.Content)
-                {
-                    StatusCode = result.StatusCode
-                };
-                return res;
-            }
-
-            return new StatusCodeResult(result.StatusCode.Value);
         }
 
         public static string GetOriginUrl(this Controller controller)
@@ -144,7 +89,7 @@ namespace SimpleAuth.Extensions
         }
 
         public static ActionResult CreateRedirectionFromActionResult(
-            this Controller controller,
+            this ControllerBase controller,
             EndpointResult endpointResult,
             AuthorizationRequest authorizationRequest)
         {
@@ -173,7 +118,7 @@ namespace SimpleAuth.Extensions
         }
 
         public static RedirectResult CreateRedirectHttpTokenResponse(
-            this Controller controller,
+            this ControllerBase controller,
             Uri uri,
             RouteValueDictionary parameters,
             ResponseMode responseMode)
@@ -205,8 +150,8 @@ namespace SimpleAuth.Extensions
         /// <param name="parameters"></param>
         /// <param name="responseMode"></param>
         /// <returns></returns>
-        public static string CreateRedirectHttp(
-            this Controller controller,
+        private static string CreateRedirectHttp(
+            this ControllerBase controller,
             Uri uri,
             RouteValueDictionary parameters,
             ResponseMode responseMode)
