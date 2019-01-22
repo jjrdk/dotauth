@@ -9,7 +9,7 @@
     public interface IAuthenticateActions
     {
         Task<EndpointResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code, string issuerName);
-        Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter, AuthorizationParameter authorizationParameter, string code, string issuerName);
+        //Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter, AuthorizationParameter authorizationParameter, string code, string issuerName);
         Task<string> GenerateAndSendCode(string subject);
         Task<bool> ValidateCode(string code);
         Task<bool> RemoveCode(string code);

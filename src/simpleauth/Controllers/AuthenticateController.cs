@@ -14,6 +14,7 @@
     using Shared;
     using Shared.Repositories;
     using Shared.Requests;
+    using SimpleAuth.WebSite.Authenticate.Actions;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -29,6 +30,7 @@
     {
         private readonly IEventPublisher _eventPublisher;
         private readonly IEnumerable<IAuthenticateResourceOwnerService> _resourceOwnerServices;
+        private readonly LocalOpenIdUserAuthenticationAction _localOpenIdAuthentication;
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
@@ -66,6 +68,7 @@
         {
             _eventPublisher = eventPublisher;
             _resourceOwnerServices = resourceOwnerServices;
+            _localOpenIdAuthentication = new LocalOpenIdUserAuthenticationAction(resourceOwnerServices, authenticateHelper);
         }
 
         public async Task<IActionResult> Index()
@@ -189,8 +192,9 @@
 
                 // 4. Local authentication
                 var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-                var actionResult = await _authenticateActions.LocalOpenIdUserAuthentication(
-                        new LocalAuthenticationParameter {UserName = viewModel.Login, Password = viewModel.Password},
+
+                var actionResult = await _localOpenIdAuthentication.Execute(
+                        new LocalAuthenticationParameter { UserName = viewModel.Login, Password = viewModel.Password },
                         request.ToParameter(),
                         viewModel.Code,
                         issuerName)
@@ -206,11 +210,11 @@
                     {
                         await SetTwoFactorCookie(actionResult.Claims).ConfigureAwait(false);
                         await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
-                        return RedirectToAction("SendCode", new {code = viewModel.Code});
+                        return RedirectToAction("SendCode", new { code = viewModel.Code });
                     }
                     catch (ClaimRequiredException)
                     {
-                        return RedirectToAction("SendCode", new {code = viewModel.Code});
+                        return RedirectToAction("SendCode", new { code = viewModel.Code });
                     }
                     catch (Exception)
                     {

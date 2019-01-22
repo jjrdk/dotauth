@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -107,7 +107,7 @@ namespace SimpleAuth.Controllers
         /// Action executed when the user refuse the consent.
         /// It redirects to the callback without passing the authorization code in parameter.
         /// </summary>
-        /// <param name="code">Encrypted & signed authorization request</param>
+        /// <param name="code">Encrypted &amp; signed authorization request</param>
         /// <returns>Redirect to the callback url.</returns>
         public Task<IActionResult> Cancel(string code)
         {

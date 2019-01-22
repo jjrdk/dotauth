@@ -16,8 +16,8 @@ namespace SimpleAuth
 {
     using Api.Authorization;
     using Parameters;
-    using Shared;
-    using Shared.Models;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
     using System.Collections.Generic;
 
     public static class CoreConstants
@@ -63,7 +63,7 @@ namespace SimpleAuth
         //}
 
         // Standard scopes defined by OPEN-ID
-        public static class StandardScopes
+        internal static class StandardScopes
         {
             public static Scope ProfileScope = new Scope
             {
@@ -279,7 +279,7 @@ namespace SimpleAuth
             public const string NoTwoFactorAuthenticatorSelected = "no_two_factor_authenticator_selected";
         }
 
-        public static readonly Dictionary<string[], AuthorizationFlow> MappingResponseTypesToAuthorizationFlows =
+        internal static readonly Dictionary<string[], AuthorizationFlow> MappingResponseTypesToAuthorizationFlows =
             new Dictionary<string[], AuthorizationFlow>
             {
                 {
@@ -331,7 +331,7 @@ namespace SimpleAuth
                 }
             };
 
-        public static Dictionary<AuthorizationFlow, ResponseMode> MappingAuthorizationFlowAndResponseModes = new Dictionary<AuthorizationFlow, ResponseMode>
+        internal static Dictionary<AuthorizationFlow, ResponseMode> MappingAuthorizationFlowAndResponseModes = new Dictionary<AuthorizationFlow, ResponseMode>
         {
             {
                 AuthorizationFlow.AuthorizationCodeFlow, ResponseMode.query
@@ -344,13 +344,13 @@ namespace SimpleAuth
             }
         };
 
-        public static class SubjectTypeNames
+        private static class SubjectTypeNames
         {
             public const string Public = "public";
             public const string PairWise = "pairwise";
         }
 
-        public static class Supported
+        internal static class Supported
         {
             public static List<AuthorizationFlow> SupportedAuthorizationFlows = new List<AuthorizationFlow>
             {
