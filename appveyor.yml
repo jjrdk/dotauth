@@ -1,5 +1,0 @@
-version: 3.0.{build}
-build_script:
-- ps: .\build.ps1
-test_script:
-- cmd: cd SimpleIdentityServer && run-tests.cmd

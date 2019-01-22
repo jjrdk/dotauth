@@ -1,0 +1,96 @@
+@model System.Collections.Generic.List<SimpleAuth.ViewModels.ConsentViewModel>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Consents";
+    ViewBag.IsEditDisplayed = false;
+    ViewBag.IsConsentDisplayed = true;
+    ViewBag.IsIndexDisplayed = false;
+    ViewBag.IsProfileDisplayed = false;
+}
+
+<h4 class="header col s12">Consents</h4>
+
+<div class="col s12">
+    @if (!string.IsNullOrWhiteSpace(ViewBag.ErrorMessage))
+    {
+        <div class="card red accent-1">
+            <div class="card-content red-text text-darken-4">
+                <i class="material-icons prefix">error</i>@ViewBag.ErrorMessage
+            </div>
+        </div>
+    }
+    @if (!Model.Any())
+    {
+        <div class="card">
+            <div class="card-content grey-text text-lighten-1">
+                <i class="material-icons prefix">info</i>
+                No consent
+            </div>
+        </div>
+    }
+    else
+    {
+        var clients = Model.GroupBy(m => m.ClientDisplayName);
+        @foreach (var client in clients)
+        {
+            <div class="card">
+                <div class="card-content">
+                    <div class="row">
+                        <h4 class="col s12">Client: @client.Key</h4>
+                        <div class="col s12 m3">
+                            @if (string.IsNullOrWhiteSpace(client.First().LogoUri))
+                            {
+                                <img class="center-align left" src="@Url.Content("~/img/OAuth2.png")" style="width:100%"  />
+                            }
+                            else
+                            {
+                                <img class="center-align left" src="@Url.Content(client.First().LogoUri)" style="width:100%"  />
+                            }
+                        </div>
+                        <div class="col s12 m9">
+                        @foreach (var consent in client)
+                        {
+                            <form method="post" action="@Url.Action("Consent", new { @id = consent.Id })">
+                                <ul class="collection with-header">
+                                    <li class="collection-header"><h5>Scopes</h5></li>
+                                    @if (!consent.AllowedScopeDescriptions.Any())
+                                    {
+                                    <li class="collection-item grey-text text-lighten-1">
+                                        <i class="material-icons prefix">info_outline</i>No escopes
+                                    </li>
+                                    }
+                                    else
+                                    {
+                                        @foreach (var scope in consent.AllowedScopeDescriptions)
+                                        {
+                                            <li class="collection-item">@scope</li>
+                                        }
+                                    }
+                                </ul>
+                                <ul class="collection with-header">
+                                    <li class="collection-header"><h5>Claims</h5></li>
+                                    @if (!consent.AllowedIndividualClaims.Any())
+                                    {
+                                        <li class="collection-item grey-text text-lighten-1">
+                                            <i class="material-icons prefix">info_outline</i>No claims
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        @foreach (var claim in consent.AllowedIndividualClaims)
+                                        {
+                                            <li class="collection-item">@claim</li>
+                                        }
+                                    }
+                                </ul>
+                                <button type="submit" class="btn blue darken-3 waves-effect waves-light">Remove</button>
+                            </form>
+                        }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

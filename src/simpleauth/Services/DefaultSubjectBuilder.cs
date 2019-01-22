@@ -1,0 +1,16 @@
+﻿namespace SimpleAuth.Services
+{
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Shared;
+    using Shared.DTOs;
+
+    public class DefaultSubjectBuilder : ISubjectBuilder
+    {
+        public Task<string> BuildSubject(IEnumerable<Claim> claims, ScimUser scimUser = null)
+        {
+            return Task.FromResult(Id.Create());
+        }
+    }
+}

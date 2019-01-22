@@ -1,0 +1,151 @@
+﻿@{
+    ViewBag.Title = "Consent";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Linq
+@model SimpleAuth.ViewModels.ConsentViewModel
+
+@{
+    var accessToCode = ViewBag.Translations["application_would_like_to"];
+    var accessToValue = string.Format(accessToCode, Model.ClientDisplayName);
+}
+<div class="row">
+    <div class="col s12 m8 offset-m2">
+        <div class="card horizontal hide-on-small-only">
+            <div class="card-image valign-wrapper center" style="padding:20px">
+                @if (string.IsNullOrWhiteSpace(Model.LogoUri))
+                {
+                    <img src="@Url.Content("~/img/OAuth2.png")" width="250" height="250" />
+                }
+                else
+                {
+                    <img src="@Url.Content(Model.LogoUri)" width="250" height="250" />
+                }
+            </div>
+            <div class="card-stacked">
+                <div class="card-content">
+                    <span class="card-title">
+                        @accessToValue
+                    </span>
+                    <div class="row">
+                        @if (Model.AllowedScopeDescriptions.Any())
+                        {
+                        <div class="col s12">
+                        <ul class="collection  with-header">
+                            <li class="collection-header"><h5>@ViewBag.Translations["scopes"]</h5></li>
+                            @foreach (var scope in Model.AllowedScopeDescriptions)
+                            {
+                                <li class="collection-item">
+                                    @scope
+                                </li>
+                            }
+                        </ul>
+                        </div>
+                        }
+                
+                        @if (Model.AllowedIndividualClaims.Any())
+                        {
+                        <div class="col s12">
+                        <ul class="collection  with-header">
+                            <li class="collection-header"><h5>@ViewBag.Translations["individual_claims"]</h5></li>
+                            @foreach (var claim in Model.AllowedIndividualClaims)
+                            {
+                                <li class="collection-item">
+                                    @claim
+                                </li>
+                            }
+                        </ul>
+                        </div>
+                        }
+                
+                        @if (!string.IsNullOrWhiteSpace(Model.PolicyUri) ||
+                            !string.IsNullOrWhiteSpace(Model.TosUri))
+                        {
+                                                <div class="col s12">
+                            @if (!string.IsNullOrWhiteSpace(Model.PolicyUri))
+                            {
+                                <a href="@Model.PolicyUri" target="_blank">@ViewBag.Translations["policy"] &nbsp;</a>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.TosUri))
+                            {
+                                <a href="@Model.TosUri" target="_blank">@ViewBag.Translations["tos"]</a>
+                            }
+                        </div>
+                        }
+                        <div class="col s12">
+                            <a href="@Url.Action("Cancel", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">@ViewBag.Translations["cancel"]</a>
+                            <a href="@Url.Action("Confirm", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">@ViewBag.Translations["confirm"]</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card hide-on-med-and-up">
+            <div class="card-image valign-wrapper center-align">
+                @if (string.IsNullOrWhiteSpace(Model.LogoUri))
+                {
+                    <img src="@Url.Content("~/img/OAuth2.png")" class="center-align" style="width:50%; margin: 24px auto 0;" />
+                }
+                else
+                {
+                    <img src="@Url.Content(Model.LogoUri)" class="center-align" style="width:30%; margin: 24px auto 0;" />
+                }
+            </div>
+            <div class="card-content">
+                <span class="card-title">
+                    @accessToValue
+                </span>
+                <div class="row">
+                    @if (Model.AllowedScopeDescriptions.Any())
+                    {
+                    <div class="col s12">
+                        <ul class="collection  with-header">
+                            <li class="collection-header"><strong>@ViewBag.Translations["scopes"]</strong></li>
+                            @foreach (var scope in Model.AllowedScopeDescriptions)
+                            {
+                                <li class="collection-item">
+                                    @scope
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    }
+            
+                    @if (Model.AllowedIndividualClaims.Any())
+                    {
+                    <div class="col s12">
+                        <ul class="collection  with-header">
+                            <li class="collection-header"><strong>@ViewBag.Translations["individual_claims"]</strong></li>
+                            @foreach (var claim in Model.AllowedIndividualClaims)
+                            {
+                                <li class="collection-item">
+                                    @claim
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    }
+            
+                    @if (!string.IsNullOrWhiteSpace(Model.PolicyUri) ||
+                        !string.IsNullOrWhiteSpace(Model.TosUri))
+                    {
+                        <div class="col s12">
+                            @if (!string.IsNullOrWhiteSpace(Model.PolicyUri))
+                            {
+                                <a href="@Model.PolicyUri" target="_blank">@ViewBag.Translations["policy"] &nbsp;</a>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.TosUri))
+                            {
+                                <a href="@Model.TosUri" target="_blank">@ViewBag.Translations["tos"]</a>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="card-action">
+                <a href="@Url.Action("Cancel", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">@ViewBag.Translations["cancel"]</a>
+                <a href="@Url.Action("Confirm", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">@ViewBag.Translations["confirm"]</a>
+            </div>
+        </div>
+    </div>
+</div>
