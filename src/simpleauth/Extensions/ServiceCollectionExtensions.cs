@@ -16,14 +16,12 @@ namespace SimpleAuth.Extensions
 {
     using Api.Token;
     using Common;
-    using Helpers;
     using JwtToken;
     using Logging;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
-    using Parsers;
     using Policies;
     using Repositories;
     using Services;
@@ -245,8 +243,6 @@ namespace SimpleAuth.Extensions
             .AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>()
             .AddTransient<IUpdateResourceOwnerClaimsParameterValidator, UpdateResourceOwnerClaimsParameterValidator>()
             .AddTransient<IUpdateResourceOwnerPasswordParameterValidator, UpdateResourceOwnerPasswordParameterValidator>()
-            .AddTransient<IGrantedTokenGeneratorHelper, GrantedTokenGeneratorHelper>()
-            .AddTransient<IClientCredentialsGrantTypeParameterValidator, ClientCredentialsGrantTypeParameterValidator>()
             .AddTransient<ITokenActions, TokenActions>()
             .AddTransient<IConsentActions, ConsentActions>()
             .AddTransient<IConfirmConsentAction, ConfirmConsentAction>()

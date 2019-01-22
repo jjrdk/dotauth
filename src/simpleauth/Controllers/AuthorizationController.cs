@@ -21,7 +21,6 @@ namespace SimpleAuth.Controllers
     using Errors;
     using Exceptions;
     using Extensions;
-    using Helpers;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Mvc;

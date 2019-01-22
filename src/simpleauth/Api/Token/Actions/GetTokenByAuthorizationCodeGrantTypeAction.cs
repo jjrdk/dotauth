@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,7 +43,6 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly ClientValidator _clientValidator;
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
         private readonly OAuthConfigurationOptions _configurationService;
-        private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly AuthenticateClient _authenticateClient;
         private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;
@@ -52,7 +51,6 @@ namespace SimpleAuth.Api.Token.Actions
         public GetTokenByAuthorizationCodeGrantTypeAction(
             IAuthorizationCodeStore authorizationCodeStore,
             OAuthConfigurationOptions configurationService,
-            IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IClientStore clientStore,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
@@ -61,7 +59,6 @@ namespace SimpleAuth.Api.Token.Actions
             _clientValidator = new ClientValidator();
             _authorizationCodeStore = authorizationCodeStore;
             _configurationService = configurationService;
-            _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _authenticateClient = new AuthenticateClient(clientStore);
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
@@ -84,13 +81,14 @@ namespace SimpleAuth.Api.Token.Actions
                 result.AuthCode.UserInfoPayLoad).ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await _grantedTokenGeneratorHelper.GenerateToken(
-                        result.Client,
+                grantedToken = await result.Client.GenerateToken(
                         result.AuthCode.Scopes,
                         issuerName,
-                        null,
                         result.AuthCode.UserInfoPayLoad,
-                        result.AuthCode.IdTokenPayload)
+                        result.AuthCode.IdTokenPayload,
+                        result.AuthCode.IdTokenPayload?.Claims
+                            .Where(c => _configurationService.UserClaimsToIncludeInAuthToken.Contains(c.Type))
+                            .ToArray())
                     .ConfigureAwait(false);
                 await _eventPublisher.Publish(new AccessToClientGranted(
                     Id.Create(),

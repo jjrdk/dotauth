@@ -24,7 +24,6 @@ namespace SimpleAuth.Tests.Api.Token
     using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Api.Token.Actions;
-    using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
     using SimpleAuth.Services;
     using SimpleAuth.Shared.Repositories;
@@ -39,7 +38,6 @@ namespace SimpleAuth.Tests.Api.Token
     public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
     {
         private Mock<IEventPublisher> _eventPublisher;
-        private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
         private Mock<IClientStore> _clientStore;
         private Mock<IJwtGenerator> _jwtGeneratorFake;
         private Mock<ITokenStore> _tokenStoreStub;
@@ -292,16 +290,16 @@ namespace SimpleAuth.Tests.Api.Token
                         It.IsAny<AuthorizationParameter>()))
                 .Returns(() => Task.FromResult(userInformationJwsPayload));
 
-            _grantedTokenGeneratorHelperFake
-                .Setup(
-                    g => g.GenerateToken(
-                        It.IsAny<Client>(),
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<IDictionary<string, object>>(),
-                        It.IsAny<JwtPayload>(),
-                        It.IsAny<JwtPayload>()))
-                .Returns(Task.FromResult(grantedToken));
+            //_grantedTokenGeneratorHelperFake
+            //    .Setup(
+            //        g => g.GenerateToken(
+            //            It.IsAny<Client>(),
+            //            It.IsAny<string>(),
+            //            It.IsAny<string>(),
+            //            It.IsAny<IDictionary<string, object>>(),
+            //            It.IsAny<JwtPayload>(),
+            //            It.IsAny<JwtPayload>()))
+            //    .Returns(Task.FromResult(grantedToken));
 
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
@@ -310,7 +308,7 @@ namespace SimpleAuth.Tests.Api.Token
                 .Execute(resourceOwnerGrantTypeParameter, authenticationHeader, null, null)
                 .ConfigureAwait(false);
 
-            _tokenStoreStub.Verify(g => g.AddToken(grantedToken));
+            _tokenStoreStub.Verify(g => g.AddToken(It.IsAny<GrantedToken>()));
             _eventPublisher.Verify(s => s.Publish(It.IsAny<AccessToClientGranted>()));
         }
 
@@ -318,13 +316,12 @@ namespace SimpleAuth.Tests.Api.Token
         {
             _eventPublisher = new Mock<IEventPublisher>();
             _eventPublisher.Setup(x => x.Publish(It.IsAny<AccessToClientGranted>())).Returns(Task.CompletedTask);
-            _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
             _clientStore = new Mock<IClientStore>();
             _jwtGeneratorFake = new Mock<IJwtGenerator>();
             _tokenStoreStub = new Mock<ITokenStore>();
 
             _getTokenByResourceOwnerCredentialsGrantTypeAction = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
-                _grantedTokenGeneratorHelperFake.Object,
+                new OAuthConfigurationOptions(), 
                 _clientStore.Object,
                 _jwtGeneratorFake.Object,
                 _tokenStoreStub.Object,

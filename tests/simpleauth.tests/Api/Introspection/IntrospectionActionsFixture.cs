@@ -20,7 +20,6 @@ namespace SimpleAuth.Tests.Api.Introspection
     using Repositories;
     using Shared.Models;
     using SimpleAuth.Api.Introspection;
-    using SimpleAuth.Authenticate;
     using Xunit;
 
     public class IntrospectionActionsFixture

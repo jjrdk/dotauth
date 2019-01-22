@@ -27,7 +27,6 @@ namespace SimpleAuth.Tests.Api.Token
     using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Api.Token.Actions;
-    using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
     using System;
     using System.Collections.Generic;
@@ -40,7 +39,6 @@ namespace SimpleAuth.Tests.Api.Token
         private Mock<IEventPublisher> _eventPublisher;
         private Mock<IAuthorizationCodeStore> _authorizationCodeStoreFake;
         private OAuthConfigurationOptions _oauthConfigurationOptions;
-        private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
         private Mock<ITokenStore> _tokenStoreFake;
         private Mock<IClientStore> _clientStore;
         private Mock<IJwtGenerator> _jwtGeneratorStub;
@@ -533,8 +531,8 @@ namespace SimpleAuth.Tests.Api.Token
         public async Task When_Requesting_Token_And_There_Is_No_Valid_Granted_Token_Then_Grant_A_New_One()
         {
             InitializeFakeObjects();
-            const string accessToken = "accessToken";
-            const string identityToken = "identityToken";
+            //const string accessToken = "accessToken";
+            //const string identityToken = "identityToken";
             const string clientId = "clientId";
             var clientSecret = "clientSecret";
             var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
@@ -551,7 +549,9 @@ namespace SimpleAuth.Tests.Api.Token
                 ClientId = clientId,
                 Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
                 GrantTypes = new List<GrantType> { GrantType.authorization_code },
-                ResponseTypes = new[] { ResponseTypeNames.Code }
+                ResponseTypes = new[] { ResponseTypeNames.Code },
+                JsonWebKeys = "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify).ToSet(),
+                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256
             };
             var authorizationCode = new AuthorizationCode
             {
@@ -560,7 +560,7 @@ namespace SimpleAuth.Tests.Api.Token
                 RedirectUri = new Uri("https://redirectUri"),
                 CreateDateTime = DateTime.UtcNow
             };
-            var grantedToken = new GrantedToken { AccessToken = accessToken, IdToken = identityToken };
+            //var grantedToken = new GrantedToken { AccessToken = accessToken, IdToken = identityToken };
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
             //_clientValidatorFake.Setup(c =>
@@ -583,16 +583,16 @@ namespace SimpleAuth.Tests.Api.Token
                         It.IsAny<JwtPayload>(),
                         It.IsAny<JwtPayload>()))
                 .ReturnsAsync((GrantedToken)null);
-            _grantedTokenGeneratorHelperFake
-                .Setup(
-                    g => g.GenerateToken(
-                        It.IsAny<Client>(),
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<IDictionary<string, object>>(),
-                        It.IsAny<JwtPayload>(),
-                        It.IsAny<JwtPayload>()))
-                .Returns(Task.FromResult(grantedToken));
+            //_grantedTokenGeneratorHelperFake
+            //    .Setup(
+            //        g => g.GenerateToken(
+            //            It.IsAny<Client>(),
+            //            It.IsAny<string>(),
+            //            It.IsAny<string>(),
+            //            It.IsAny<IDictionary<string, object>>(),
+            //            It.IsAny<JwtPayload>(),
+            //            It.IsAny<JwtPayload>()))
+            //    .Returns(Task.FromResult(grantedToken));
             //_grantedTokenHelperStub
             //    .Setup(
             //        g => g.GetValidGrantedTokenAsync(
@@ -607,16 +607,14 @@ namespace SimpleAuth.Tests.Api.Token
                 .Execute(authorizationCodeGrantTypeParameter, authenticationHeader, null, null)
                 .ConfigureAwait(false);
 
-            _tokenStoreFake.Verify(g => g.AddToken(grantedToken));
+            _tokenStoreFake.Verify(g => g.AddToken(It.IsAny<GrantedToken>()));
             _eventPublisher.Verify(s => s.Publish(It.IsAny<AccessToClientGranted>()));
-            Assert.Equal(accessToken, result.AccessToken);
         }
 
         private void InitializeFakeObjects(TimeSpan authorizationCodeValidity = default)
         {
             _eventPublisher = new Mock<IEventPublisher>();
             _authorizationCodeStoreFake = new Mock<IAuthorizationCodeStore>();
-            _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
             _tokenStoreFake = new Mock<ITokenStore>();
             _clientStore = new Mock<IClientStore>();
             _oauthConfigurationOptions = new OAuthConfigurationOptions(
@@ -627,7 +625,6 @@ namespace SimpleAuth.Tests.Api.Token
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
                 _authorizationCodeStoreFake.Object,
                 _oauthConfigurationOptions,
-                _grantedTokenGeneratorHelperFake.Object,
                 _clientStore.Object,
                 _eventPublisher.Object,
                 _tokenStoreFake.Object,

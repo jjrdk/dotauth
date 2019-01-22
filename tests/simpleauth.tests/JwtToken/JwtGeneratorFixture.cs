@@ -26,7 +26,6 @@ namespace SimpleAuth.Tests.JwtToken
     using Shared.Repositories;
     using SimpleAuth;
     using SimpleAuth.Extensions;
-    using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
     using System;
     using System.Collections.Generic;

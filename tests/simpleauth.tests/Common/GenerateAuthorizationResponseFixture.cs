@@ -24,9 +24,7 @@ namespace SimpleAuth.Tests.Common
     using Shared;
     using Shared.Models;
     using SimpleAuth;
-    using SimpleAuth.Api.Authorization;
     using SimpleAuth.Common;
-    using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
     using System;
     using System.Collections.Generic;
@@ -41,7 +39,6 @@ namespace SimpleAuth.Tests.Common
     {
         private Mock<IAuthorizationCodeStore> _authorizationCodeRepositoryFake;
         private Mock<IJwtGenerator> _jwtGeneratorFake;
-        private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
         private Mock<ITokenStore> _tokenStore;
         private Mock<IEventPublisher> _eventPublisher;
         private IGenerateAuthorizationResponse _generateAuthorizationResponse;
@@ -204,8 +201,13 @@ namespace SimpleAuth.Tests.Common
                 Scope = scope
             };
 
-            var client = new Client { ClientId = clientId };
-            var grantedToken = new GrantedToken { AccessToken = Id.Create() };
+            var client = new Client
+            {
+                ClientId = clientId,
+                JsonWebKeys = "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify).ToSet(),
+                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256
+            };
+            //var grantedToken = new GrantedToken { AccessToken = Id.Create() };
             var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
             var jwsPayload = new JwtPayload();
             //_parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
@@ -235,16 +237,16 @@ namespace SimpleAuth.Tests.Common
             //            It.IsAny<JwtPayload>()))
             //    .Returns(Task.FromResult((GrantedToken)null));
 
-            _grantedTokenGeneratorHelperFake
-                .Setup(
-                    r => r.GenerateToken(
-                        It.IsAny<Client>(),
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<IDictionary<string, object>>(),
-                        It.IsAny<JwtPayload>(),
-                        It.IsAny<JwtPayload>()))
-                .Returns(Task.FromResult(grantedToken));
+            //_grantedTokenGeneratorHelperFake
+            //    .Setup(
+            //        r => r.GenerateToken(
+            //            It.IsAny<Client>(),
+            //            It.IsAny<string>(),
+            //            It.IsAny<string>(),
+            //            It.IsAny<IDictionary<string, object>>(),
+            //            It.IsAny<JwtPayload>(),
+            //            It.IsAny<JwtPayload>()))
+            //    .Returns(Task.FromResult(grantedToken));
 
             await _generateAuthorizationResponse.Generate(
                     actionResult,
@@ -257,8 +259,8 @@ namespace SimpleAuth.Tests.Common
             Assert.Contains(
                 actionResult.RedirectInstruction.Parameters,
                 p => p.Name == CoreConstants.StandardAuthorizationResponseNames.AccessTokenName);
-            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Value == grantedToken.AccessToken);
-            _tokenStore.Verify(g => g.AddToken(grantedToken));
+            //Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Value == grantedToken.AccessToken);
+            _tokenStore.Verify(g => g.AddToken(It.IsAny<GrantedToken>()));
             _eventPublisher.Verify(e => e.Publish(It.IsAny<AccessToClientGranted>()));
         }
 
@@ -448,7 +450,6 @@ namespace SimpleAuth.Tests.Common
         {
             _authorizationCodeRepositoryFake = new Mock<IAuthorizationCodeStore>();
             _jwtGeneratorFake = new Mock<IJwtGenerator>();
-            _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
             _tokenStore = new Mock<ITokenStore>();
             _eventPublisher = new Mock<IEventPublisher>();
             _eventPublisher.Setup(x => x.Publish(It.IsAny<AuthorizationCodeGranted>())).Returns(Task.CompletedTask);
@@ -459,7 +460,6 @@ namespace SimpleAuth.Tests.Common
                 _authorizationCodeRepositoryFake.Object,
                 _tokenStore.Object,
                 _jwtGeneratorFake.Object,
-                _grantedTokenGeneratorHelperFake.Object,
                 _eventPublisher.Object,
                 _clientStore.Object,
                 _consentRepository.Object);

@@ -10,7 +10,6 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
     using SimpleAuth.WebSite.Authenticate.Actions;
     using SimpleAuth.WebSite.Authenticate.Common;
     using System;
-    using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Xunit;
