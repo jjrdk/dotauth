@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleAuth.Shared.Repositories;
-
 namespace SimpleAuth.Common
 {
     using Api.Authorization;
@@ -25,6 +23,7 @@ namespace SimpleAuth.Common
     using Results;
     using Shared;
     using Shared.Models;
+    using SimpleAuth.Shared.Repositories;
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
@@ -36,7 +35,6 @@ namespace SimpleAuth.Common
         private readonly ITokenStore _tokenStore;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
-        private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
         private readonly IClientStore _clientStore;
         private readonly IConsentRepository _consentRepository;
         private readonly IEventPublisher _eventPublisher;
@@ -47,7 +45,6 @@ namespace SimpleAuth.Common
             IJwtGenerator jwtGenerator,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IEventPublisher eventPublisher,
-            IAuthorizationFlowHelper authorizationFlowHelper,
             IClientStore clientStore,
             IConsentRepository consentRepository)
         {
@@ -56,7 +53,6 @@ namespace SimpleAuth.Common
             _jwtGenerator = jwtGenerator;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _eventPublisher = eventPublisher;
-            _authorizationFlowHelper = authorizationFlowHelper;
             _clientStore = clientStore;
             _consentRepository = consentRepository;
         }
@@ -236,9 +232,8 @@ namespace SimpleAuth.Common
                 if (responseMode == ResponseMode.None)
                 {
                     var responseTypes = authorizationParameter.ResponseType.ParseResponseTypes();
-                    var authorizationFlow = _authorizationFlowHelper.GetAuthorizationFlow(
-                        responseTypes,
-                        authorizationParameter.State);
+                    var authorizationFlow = 
+                        responseTypes.GetAuthorizationFlow(authorizationParameter.State);
                     responseMode = GetResponseMode(authorizationFlow);
                 }
 

@@ -34,7 +34,6 @@ namespace SimpleAuth.Tests.Api.Authorization
     {
         private const string OpenIdScope = "openid";
         private const string HttpsLocalhost = "https://localhost";
-        private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
         private Mock<IEventPublisher> _eventPublisherStub;
         private AuthorizationActions _authorizationActions;
         private Mock<IClientStore> _clientStore;
@@ -70,7 +69,6 @@ namespace SimpleAuth.Tests.Api.Authorization
 
         private void InitializeFakeObjects(Client client = null)
         {
-            _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
             _eventPublisherStub = new Mock<IEventPublisher>();
             _clientStore = new Mock<IClientStore>();
             if (client != null)
@@ -83,7 +81,6 @@ namespace SimpleAuth.Tests.Api.Authorization
                 new Mock<IGenerateAuthorizationResponse>().Object,
                 _clientStore.Object,
                 new Mock<IConsentRepository>().Object,
-                _authorizationFlowHelperFake.Object,
                 _eventPublisherStub.Object,
                 new IAuthenticateResourceOwnerService[0]);
         }

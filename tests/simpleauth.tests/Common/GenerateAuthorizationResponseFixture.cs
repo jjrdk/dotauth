@@ -43,7 +43,6 @@ namespace SimpleAuth.Tests.Common
         private Mock<IJwtGenerator> _jwtGeneratorFake;
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
         private Mock<ITokenStore> _tokenStore;
-        private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
         private Mock<IEventPublisher> _eventPublisher;
         private IGenerateAuthorizationResponse _generateAuthorizationResponse;
         private Mock<IClientStore> _clientStore;
@@ -430,9 +429,9 @@ namespace SimpleAuth.Tests.Common
                 .Returns(Task.FromResult(jwsPayload));
             //_jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<JwtPayload>(), It.IsAny<string>(), It.IsAny<string>()))
             //    .Returns(Task.FromResult(idToken));
-            _authorizationFlowHelperFake.Setup(
-                    a => a.GetAuthorizationFlow(It.IsAny<ICollection<string>>(), It.IsAny<string>()))
-                .Returns(AuthorizationFlow.ImplicitFlow);
+            //_authorizationFlowHelperFake.Setup(
+            //        a => a.GetAuthorizationFlow(It.IsAny<ICollection<string>>(), It.IsAny<string>()))
+            //    .Returns(AuthorizationFlow.ImplicitFlow);
 
             await _generateAuthorizationResponse.Generate(
                     actionResult,
@@ -451,7 +450,6 @@ namespace SimpleAuth.Tests.Common
             _jwtGeneratorFake = new Mock<IJwtGenerator>();
             _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
             _tokenStore = new Mock<ITokenStore>();
-            _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
             _eventPublisher = new Mock<IEventPublisher>();
             _eventPublisher.Setup(x => x.Publish(It.IsAny<AuthorizationCodeGranted>())).Returns(Task.CompletedTask);
             _eventPublisher.Setup(x => x.Publish(It.IsAny<AccessToClientGranted>())).Returns(Task.CompletedTask);
@@ -463,7 +461,6 @@ namespace SimpleAuth.Tests.Common
                 _jwtGeneratorFake.Object,
                 _grantedTokenGeneratorHelperFake.Object,
                 _eventPublisher.Object,
-                _authorizationFlowHelperFake.Object,
                 _clientStore.Object,
                 _consentRepository.Object);
         }

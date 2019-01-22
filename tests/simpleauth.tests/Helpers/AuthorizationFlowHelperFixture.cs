@@ -10,21 +10,14 @@
 
     public sealed class AuthorizationFlowHelperFixture
     {
-        private IAuthorizationFlowHelper _authorizationFlowHelper;
-
-        public AuthorizationFlowHelperFixture()
-        {
-            InitializeFakeObjects();
-        }
-
         [Fact]
         public void When_Passing_No_Response_Type_Then_Exception_Is_Thrown()
         {
             const string state = "state";
-
+            ICollection<string> collection = null;
             var exception =
                 Assert.Throws<SimpleAuthExceptionWithState>(
-                    () => _authorizationFlowHelper.GetAuthorizationFlow(null, state));
+                    () => collection.GetAuthorizationFlow(state));
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.Equal(ErrorDescriptions.TheAuthorizationFlowIsNotSupported, exception.Message);
             Assert.Equal(state, exception.State);
@@ -36,10 +29,10 @@
             const string state = "state";
 
             var exception = Assert.Throws<SimpleAuthExceptionWithState>(
-                () => _authorizationFlowHelper.GetAuthorizationFlow(new List<string>(), state));
+                () => new List<string>().GetAuthorizationFlow(state));
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
-            Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
-            Assert.True(exception.State == state);
+            Assert.Equal(ErrorDescriptions.TheAuthorizationFlowIsNotSupported, exception.Message);
+            Assert.Equal(state, exception.State);
         }
 
         [Fact]
@@ -47,9 +40,9 @@
         {
             const string state = "state";
 
-            var result = _authorizationFlowHelper.GetAuthorizationFlow(new[] { ResponseTypeNames.Code }, state);
+            var result = new[] { ResponseTypeNames.Code }.GetAuthorizationFlow(state);
 
-            Assert.True(result == AuthorizationFlow.AuthorizationCodeFlow);
+            Assert.Equal(AuthorizationFlow.AuthorizationCodeFlow, result);
         }
 
         [Fact]
@@ -57,11 +50,9 @@
         {
             const string state = "state";
 
-            var result = _authorizationFlowHelper.GetAuthorizationFlow(
-                new List<string> { ResponseTypeNames.IdToken },
-                state);
+            var result = new List<string> { ResponseTypeNames.IdToken }.GetAuthorizationFlow(state);
 
-            Assert.True(result == AuthorizationFlow.ImplicitFlow);
+            Assert.Equal(AuthorizationFlow.ImplicitFlow, result);
         }
 
         [Fact]
@@ -69,16 +60,9 @@
         {
             const string state = "state";
 
-            var result = _authorizationFlowHelper.GetAuthorizationFlow(
-                new List<string> { ResponseTypeNames.IdToken, ResponseTypeNames.Code },
-                state);
+            var result = new List<string> { ResponseTypeNames.IdToken, ResponseTypeNames.Code }.GetAuthorizationFlow(state);
 
             Assert.Equal(AuthorizationFlow.HybridFlow, result);
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _authorizationFlowHelper = new AuthorizationFlowHelper();
         }
     }
 }

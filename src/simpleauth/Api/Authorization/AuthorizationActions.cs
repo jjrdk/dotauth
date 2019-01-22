@@ -31,14 +31,13 @@ namespace SimpleAuth.Api.Authorization
     using System.Threading.Tasks;
     using Validators;
 
-    public class AuthorizationActions
+    internal class AuthorizationActions
     {
         private readonly GetAuthorizationCodeOperation _getAuthorizationCodeOperation;
         private readonly GetTokenViaImplicitWorkflowOperation _getTokenViaImplicitWorkflowOperation;
         private readonly GetAuthorizationCodeAndTokenViaHybridWorkflowOperation
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperation;
         private readonly AuthorizationCodeGrantTypeParameterAuthEdpValidator _authorizationCodeGrantTypeParameterValidator;
-        private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly IEnumerable<IAuthenticateResourceOwnerService> _resourceOwnerServices;
 
@@ -46,7 +45,6 @@ namespace SimpleAuth.Api.Authorization
             IGenerateAuthorizationResponse generateAuthorizationResponse,
             IClientStore clientStore,
             IConsentRepository consentRepository,
-            IAuthorizationFlowHelper authorizationFlowHelper,
             IEventPublisher eventPublisher,
             IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices)
         {
@@ -62,7 +60,6 @@ namespace SimpleAuth.Api.Authorization
                     processAuthorizationRequest,
                     generateAuthorizationResponse);
             _authorizationCodeGrantTypeParameterValidator = new AuthorizationCodeGrantTypeParameterAuthEdpValidator(clientStore);
-            _authorizationFlowHelper = authorizationFlowHelper;
             _eventPublisher = eventPublisher;
             _resourceOwnerServices = resourceOwnerServices;
         }
@@ -80,7 +77,7 @@ namespace SimpleAuth.Api.Authorization
             }
 
             var responseTypes = parameter.ResponseType.ParseResponseTypes();
-            var authorizationFlow = _authorizationFlowHelper.GetAuthorizationFlow(responseTypes, parameter.State);
+            var authorizationFlow = responseTypes.GetAuthorizationFlow(parameter.State);
             switch (authorizationFlow)
             {
                 case AuthorizationFlow.AuthorizationCodeFlow:

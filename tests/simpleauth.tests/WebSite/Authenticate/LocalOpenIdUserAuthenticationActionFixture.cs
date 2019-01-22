@@ -18,7 +18,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
     public sealed class LocalOpenIdUserAuthenticationActionFixture
     {
         private Mock<IAuthenticateHelper> _authenticateHelperFake;
-        private ILocalOpenIdUserAuthenticationAction _localUserAuthenticationAction;
+        private LocalOpenIdUserAuthenticationAction _localUserAuthenticationAction;
 
         public LocalOpenIdUserAuthenticationActionFixture()
         {

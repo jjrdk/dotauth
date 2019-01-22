@@ -2,11 +2,15 @@
 
   <PropertyGroup>
     <Description>SimpleAuth Core Library</Description>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>simpleauth</AssemblyName>
     <PackageId>simpleauth</PackageId>
     <RootNamespace>SimpleAuth</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\simpleauth.xml</DocumentationFile>
   </PropertyGroup>
   <Import Project="../../shared.proj" />
 
