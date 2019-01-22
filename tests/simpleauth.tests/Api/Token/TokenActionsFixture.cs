@@ -4,15 +4,14 @@ using System.Net.Http.Headers;
 
 namespace SimpleAuth.Tests.Api.Token
 {
+    using Microsoft.IdentityModel.Tokens;
     using Moq;
     using Parameters;
     using Shared;
     using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Api.Token;
-    using SimpleAuth.Helpers;
     using SimpleAuth.JwtToken;
-    using SimpleAuth.Validators;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -98,6 +97,8 @@ namespace SimpleAuth.Tests.Api.Token
                 .ReturnsAsync(
                     new Client
                     {
+                        JsonWebKeys = "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify).ToSet(),
+                        IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                         ClientId = clientId,
                         Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientsecret } },
                         AllowedScopes = new[] { new Scope { Name = scope } },
@@ -106,18 +107,16 @@ namespace SimpleAuth.Tests.Api.Token
                     });
 
             _tokenStore = new Mock<ITokenStore>();
-            var grantedTokenGenerator = new Mock<IGrantedTokenGeneratorHelper>();
-            grantedTokenGenerator
-                .Setup(
-                    x => x.GenerateToken(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<string>(), null, null, null))
-                .ReturnsAsync(new GrantedToken { ClientId = clientId });
+            //var grantedTokenGenerator = new Mock<IGrantedTokenGeneratorHelper>();
+            //grantedTokenGenerator
+            //    .Setup(
+            //        x => x.GenerateToken(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<string>(), null, null, null))
+            //    .ReturnsAsync(new GrantedToken { ClientId = clientId });
             _tokenActions = new TokenActions(
                 new OAuthConfigurationOptions(),
-                new Mock<IClientCredentialsGrantTypeParameterValidator>().Object,
                 new Mock<IAuthorizationCodeStore>().Object,
                 mock.Object,
                 new IAuthenticateResourceOwnerService[0],
-                grantedTokenGenerator.Object,
                 eventPublisher.Object,
                 _tokenStore.Object,
                 new Mock<IJwtGenerator>().Object);

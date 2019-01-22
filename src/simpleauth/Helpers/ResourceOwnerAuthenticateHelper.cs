@@ -4,7 +4,6 @@ namespace SimpleAuth.Helpers
 {
     using Services;
     using Shared.Models;
-    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 

@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,36 +20,29 @@ namespace SimpleAuth.Helpers
     using Shared.Models;
     using Shared.Repositories;
     using System;
-    using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Claims;
     using System.Text;
     using System.Threading.Tasks;
 
-    public class GrantedTokenGeneratorHelper : IGrantedTokenGeneratorHelper
+    internal static class GrantedTokenGeneratorHelper
     {
-        private readonly IClientStore _clientRepository;
-
-        public GrantedTokenGeneratorHelper(IClientStore clientRepository)
-        {
-            _clientRepository = clientRepository;
-        }
-
-        public async Task<GrantedToken> GenerateToken(
+        public static async Task<GrantedToken> GenerateToken(
+            this IClientStore clientStore,
             string clientId,
             string scope,
             string issuerName,
-            IDictionary<string, object> additionalClaims,
             JwtPayload userInformationPayload = null,
-            JwtPayload idTokenPayload = null)
+            JwtPayload idTokenPayload = null,
+            params Claim[] additionalClaims)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var client = await _clientRepository.GetById(clientId).ConfigureAwait(false);
+            var client = await clientStore.GetById(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidClient, ErrorDescriptions.TheClientIdDoesntExist);
@@ -59,19 +52,19 @@ namespace SimpleAuth.Helpers
                     client,
                     scope,
                     issuerName,
-                    null,
                     userInformationPayload,
-                    idTokenPayload)
+                    idTokenPayload,
+                    additionalClaims)
                 .ConfigureAwait(false);
         }
 
-        public Task<GrantedToken> GenerateToken(
-            Client client,
+        public static Task<GrantedToken> GenerateToken(
+            this Client client,
             string scope,
             string issuerName,
-            IDictionary<string, object> additionalClaims,
             JwtPayload userInformationPayload = null,
-            JwtPayload idTokenPayload = null)
+            JwtPayload idTokenPayload = null,
+            params Claim[] additionalClaims)
         {
             if (client == null)
             {
@@ -92,6 +85,10 @@ namespace SimpleAuth.Helpers
                 new Claim(ClaimTypes.NameIdentifier, client.ClientId),
                 new Claim(StandardClaimNames.Scopes, scope)
             };
+            if (additionalClaims != null)
+            {
+                enumerable = enumerable.Concat(additionalClaims).ToArray();
+            }
             //.Concat(additionalClaims?.Select(x => new Claim(x.Key, x.Value.ToString())));
 
             var signingCredentials = client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First();

@@ -21,7 +21,6 @@ namespace SimpleAuth.Server.Tests
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
     using MiddleWares;
-    using Shared;
     using SimpleAuth;
     using SimpleAuth.Services;
     using Stores;

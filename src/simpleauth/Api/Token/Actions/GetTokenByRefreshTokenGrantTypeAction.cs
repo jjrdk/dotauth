@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,7 +33,6 @@ namespace SimpleAuth.Api.Token.Actions
     public sealed class GetTokenByRefreshTokenGrantTypeAction
     {
         private readonly IEventPublisher _eventPublisher;
-        private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly ITokenStore _tokenStore;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly IClientStore _clientStore;
@@ -41,13 +40,11 @@ namespace SimpleAuth.Api.Token.Actions
 
         public GetTokenByRefreshTokenGrantTypeAction(
             IEventPublisher eventPublisher,
-            IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             ITokenStore tokenStore,
             IJwtGenerator jwtGenerator,
             IClientStore clientStore)
         {
             _eventPublisher = eventPublisher;
-            _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _tokenStore = tokenStore;
             _jwtGenerator = jwtGenerator;
             _clientStore = clientStore;
@@ -85,11 +82,10 @@ namespace SimpleAuth.Api.Token.Actions
             }
 
             // 4. Generate a new access token & insert it
-            var generatedToken = await _grantedTokenGeneratorHelper.GenerateToken(
+            var generatedToken = await _clientStore.GenerateToken(
                 grantedToken.ClientId,
                 grantedToken.Scope,
                 issuerName,
-                null,
                 grantedToken.UserInfoPayLoad,
                 grantedToken.IdTokenPayLoad).ConfigureAwait(false);
             generatedToken.ParentTokenId = grantedToken.Id;

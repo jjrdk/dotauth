@@ -34,7 +34,6 @@ namespace SimpleAuth.Common
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
         private readonly ITokenStore _tokenStore;
         private readonly IJwtGenerator _jwtGenerator;
-        private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly IClientStore _clientStore;
         private readonly IConsentRepository _consentRepository;
         private readonly IEventPublisher _eventPublisher;
@@ -43,7 +42,6 @@ namespace SimpleAuth.Common
             IAuthorizationCodeStore authorizationCodeStore,
             ITokenStore tokenStore,
             IJwtGenerator jwtGenerator,
-            IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IEventPublisher eventPublisher,
             IClientStore clientStore,
             IConsentRepository consentRepository)
@@ -51,7 +49,6 @@ namespace SimpleAuth.Common
             _authorizationCodeStore = authorizationCodeStore;
             _tokenStore = tokenStore;
             _jwtGenerator = jwtGenerator;
-            _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _eventPublisher = eventPublisher;
             _clientStore = clientStore;
             _consentRepository = consentRepository;
@@ -110,11 +107,9 @@ namespace SimpleAuth.Common
                     .ConfigureAwait(false);
                 if (grantedToken == null)
                 {
-                    grantedToken = await _grantedTokenGeneratorHelper.GenerateToken(
-                            client,
+                    grantedToken = await client.GenerateToken(
                             allowedTokenScopes,
                             issuerName,
-                            null,
                             userInformationPayload,
                             idTokenPayload)
                         .ConfigureAwait(false);
@@ -232,7 +227,7 @@ namespace SimpleAuth.Common
                 if (responseMode == ResponseMode.None)
                 {
                     var responseTypes = authorizationParameter.ResponseType.ParseResponseTypes();
-                    var authorizationFlow = 
+                    var authorizationFlow =
                         responseTypes.GetAuthorizationFlow(authorizationParameter.State);
                     responseMode = GetResponseMode(authorizationFlow);
                 }

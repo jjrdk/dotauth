@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Manager.Client.Scopes
 {
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using Results;
     using Shared.Requests;
     using Shared.Responses;

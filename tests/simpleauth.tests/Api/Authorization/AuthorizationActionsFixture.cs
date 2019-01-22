@@ -25,7 +25,6 @@ namespace SimpleAuth.Tests.Api.Authorization
     using Shared.Repositories;
     using SimpleAuth.Api.Authorization;
     using SimpleAuth.Common;
-    using SimpleAuth.Helpers;
     using System;
     using System.Threading.Tasks;
     using Xunit;

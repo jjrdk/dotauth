@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
 using SimpleAuth.JwtToken;
 using SimpleAuth.Services;
 using SimpleAuth.Shared.Repositories;
+using System.Collections.Generic;
 
 namespace SimpleAuth.Api.Token
 {
@@ -40,26 +40,22 @@ namespace SimpleAuth.Api.Token
         private readonly GetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantType;
         private readonly GetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
         private readonly GetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
-        private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
         private readonly AuthenticateClient _authenticateClient;
-        private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly RevokeTokenAction _revokeTokenAction;
         private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;
 
         public TokenActions(
             OAuthConfigurationOptions oAuthConfigurationOptions,
-            IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator,
             IAuthorizationCodeStore authorizationCodeStore,
             IClientStore clientStore,
             IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
-            IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
             IJwtGenerator jwtGenerator)
         {
             _getTokenByResourceOwnerCredentialsGrantType = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
-                grantedTokenGeneratorHelper,
+                oAuthConfigurationOptions,
                 clientStore,
                 jwtGenerator,
                 tokenStore,
@@ -68,20 +64,16 @@ namespace SimpleAuth.Api.Token
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
                 authorizationCodeStore,
                 oAuthConfigurationOptions,
-                grantedTokenGeneratorHelper,
                 clientStore,
                 eventPublisher,
                 tokenStore,
                 jwtGenerator);
             _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
                 eventPublisher,
-                grantedTokenGeneratorHelper,
                 tokenStore,
                 jwtGenerator,
                 clientStore);
             _authenticateClient = new AuthenticateClient(clientStore);
-            _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
-            _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
             _revokeTokenAction = new RevokeTokenAction(clientStore, tokenStore);
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
@@ -270,7 +262,12 @@ namespace SimpleAuth.Api.Token
                 throw new ArgumentNullException(nameof(clientCredentialsGrantTypeParameter));
             }
 
-            _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
+            if (string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
+            {
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardTokenRequestParameterNames.ScopeName));
+            }
 
             // 1. Authenticate the client
             var instruction = authenticationHeaderValue.GetAuthenticateInstruction(
@@ -322,8 +319,7 @@ namespace SimpleAuth.Api.Token
                 .ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await _grantedTokenGeneratorHelper.GenerateToken(client, allowedTokenScopes, issuerName)
-                    .ConfigureAwait(false);
+                grantedToken = await client.GenerateToken(allowedTokenScopes, issuerName).ConfigureAwait(false);
                 await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);
                 await _eventPublisher.Publish(
                         new AccessToClientGranted(

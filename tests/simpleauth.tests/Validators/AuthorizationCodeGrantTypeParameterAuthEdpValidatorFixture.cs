@@ -7,10 +7,8 @@
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth;
-    using SimpleAuth.Helpers;
     using SimpleAuth.Validators;
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Xunit;
 
