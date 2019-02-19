@@ -23,9 +23,7 @@
         <div class="col s12">
             <div class="card">
                 <div class="card-content">
-                    <h6>
-                        @ViewBag.Translations["login_external_account"]
-                    </h6>
+                    <h6>Log in with your external account</h6>
                 </div>
                 <div class="card-action">
                     @if (!Model.IdProviders.Any())
@@ -34,9 +32,9 @@
                     }
                     else
                     {
-                        @using (Html.BeginForm("ExternalLogin", "Authenticate"))
+                        using (Html.BeginForm("ExternalLogin", "Authenticate"))
                         {
-                            @foreach (var loginProvider in Model.IdProviders)
+                            foreach (var loginProvider in Model.IdProviders)
                             {
                                 <button type="submit" class="waves-effect waves-light btn blue darken-3" id="@loginProvider.AuthenticationScheme" name="provider" value="@loginProvider.AuthenticationScheme" title="Log in using your @loginProvider.AuthenticationScheme account">@loginProvider.DisplayName</button>
                             }
@@ -48,9 +46,7 @@
         <div class="col s12">
             <div class="card">
                 <div class="card-content">
-                    <h6>
-                        @ViewBag.Translations["login_local_account"]
-                    </h6>
+                    <h6>Log in with your local account</h6>
                 </div>
                 <div class="card-action">
                     <div class="row">
@@ -63,14 +59,14 @@
                                     {
                                         <i class="material-icons prefix">account_circle</i>
                                         <input id="login" name="Login" type="text" class="invalid" />
-                                        <label for="login">@ViewBag.Translations["username"]</label>
+                                        <label for="login">Username</label>
                                         <span class="helper-text">@string.Join(",", loginState.Errors.Select(e => e.ErrorMessage))</span>
                                     }
                                     else
                                     {
                                         <i class="material-icons prefix">account_circle</i>
                                         <input id="login" name="Login" type="text" />
-                                        <label for="login">@ViewBag.Translations["username"]</label>
+                                        <label for="login">Username</label>
                                     }
                                 </div>
                                 <div class="input-field col s12">
@@ -78,25 +74,25 @@
                                     {
                                         <i class="material-icons prefix">lock</i>
                                         <input id="password" class="invalid" name="Password" type="password" />
-                                        <label for="password">@ViewBag.Translations["password"]</label>
+                                        <label for="password">Password</label>
                                         <span class="helper-text">@string.Join(",", passwordState.Errors.Select(e => e.ErrorMessage))</span>
                                     }
                                     else
                                     {
                                         <i class="material-icons prefix">lock</i>
                                         <input id="password" name="Password" type="password" />
-                                        <label for="password">@ViewBag.Translations["password"]</label>
+                                        <label for="password">Password</label>
                                     }
                                 </div>
                             </div>
                             <div class="col s12 m6">
                                 <label>
                                     <input type="checkbox" name="IsChecked" id="IsChecked" class="filled-in blue-text text-darken-3" />
-                                    <span for="IsChecked">@ViewBag.Translations["remember_my_login"]</span>
+                                    <span for="IsChecked">Remember me</span>
                                 </label>
                             </div>
                             <div class="col s12 m6">
-                                <button type="submit" class="waves-effect waves-light btn blue darken-3 right">@ViewBag.Translations["login"]</button>
+                                <button type="submit" class="waves-effect waves-light btn blue darken-3 right">Log In</button>
                             </div>
                         </form>
                     </div>

@@ -19,30 +19,40 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
     using Parameters;
     using Results;
     using Shared;
-    using SimpleAuth.WebSite.Authenticate.Actions;
-    using SimpleAuth.WebSite.Authenticate.Common;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.WebSite.Authenticate;
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using Xunit;
 
     public sealed class AuthenticateResourceOwnerOpenIdActionFixture
     {
-        private Mock<IAuthenticateHelper> _authenticateHelperFake;
-        private IAuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenIdAction;
+        private readonly AuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenIdAction;
 
         public AuthenticateResourceOwnerOpenIdActionFixture()
         {
-            InitializeFakeObjects();
+            var mock = new Mock<IClientStore>();
+            mock.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Client());
+            _authenticateResourceOwnerOpenIdAction = new AuthenticateResourceOwnerOpenIdAction(
+                new Mock<IAuthorizationCodeStore>().Object,
+                new Mock<ITokenStore>().Object,
+                new Mock<IScopeRepository>().Object,
+                new Mock<IConsentRepository>().Object,
+                mock.Object,
+                new InMemoryJwksRepository(), 
+                new NoOpPublisher());
         }
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             await Assert
-                .ThrowsAsync<ArgumentNullException>(() =>
-                    _authenticateResourceOwnerOpenIdAction.Execute(null, null, null, null))
+                .ThrowsAsync<ArgumentNullException>(
+                    () => _authenticateResourceOwnerOpenIdAction.Execute(null, null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
@@ -51,11 +61,11 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         {
             var authorizationParameter = new AuthorizationParameter();
 
-            var result = await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null, null)
+            var result = await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null, null, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Equal(JsonConvert.SerializeObject(
-                    EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
+            Assert.Equal(
+                JsonConvert.SerializeObject(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
                 JsonConvert.SerializeObject(result));
         }
 
@@ -66,10 +76,8 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-            var result = await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
-                    claimsPrincipal,
-                    null,
-                    null)
+            var result = await _authenticateResourceOwnerOpenIdAction
+                .Execute(authorizationParameter, claimsPrincipal, null, null, CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.Equal(
@@ -88,18 +96,13 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             };
             var claimsIdentity = new ClaimsIdentity("authServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            //var promptParameters = new List<PromptParameter>
-            //{
-            //    PromptParameter.login
-            //};
-            //_parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
-            //    .Returns(promptParameters);
 
             var result = await _authenticateResourceOwnerOpenIdAction.Execute(
                     authorizationParameter,
                     claimsPrincipal,
                     null,
-                    null)
+                    null,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.Equal(
@@ -114,37 +117,19 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             const string code = "code";
             const string subject = "subject";
             var authorizationParameter = new AuthorizationParameter();
-            var claims = new List<Claim>
-            {
-                new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
-            };
+            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
             var claimsIdentity = new ClaimsIdentity(claims, "authServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            //var promptParameters = new List<PromptParameter>
-            //{
-            //    PromptParameter.consent
-            //};
-            //_parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
-            //    .Returns(promptParameters);
 
-            await _authenticateResourceOwnerOpenIdAction.Execute(
+            var result = await _authenticateResourceOwnerOpenIdAction.Execute(
                     authorizationParameter,
                     claimsPrincipal,
                     code,
-                    null)
+                    null,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
 
-            _authenticateHelperFake.Verify(a => a.ProcessRedirection(authorizationParameter,
-                code,
-                subject,
-                It.IsAny<List<Claim>>(),
-                null));
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _authenticateHelperFake = new Mock<IAuthenticateHelper>();
-            _authenticateResourceOwnerOpenIdAction = new AuthenticateResourceOwnerOpenIdAction(_authenticateHelperFake.Object);
+            Assert.NotNull(result.RedirectInstruction);
         }
     }
 }

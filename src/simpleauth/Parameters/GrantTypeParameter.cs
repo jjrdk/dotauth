@@ -1,6 +1,6 @@
 ﻿namespace SimpleAuth.Parameters
 {
-    public abstract class GrantTypeParameter
+    internal abstract class GrantTypeParameter
     {
         /// <summary>
         /// Gets or sets the client id.

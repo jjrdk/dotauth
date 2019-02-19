@@ -1,20 +1,25 @@
 ﻿namespace SimpleAuth.Server.Tests.MiddleWares
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Security.Claims;
-    using System.Text.Encodings.Web;
-    using System.Threading.Tasks;
     using Client;
-    using Client.Operations;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Shared;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
 
     public class FakeOauth2IntrospectionHandler : AuthenticationHandler<FakeOAuth2IntrospectionOptions>
     {
-        public FakeOauth2IntrospectionHandler(IOptionsMonitor<FakeOAuth2IntrospectionOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+        public FakeOauth2IntrospectionHandler(
+            IOptionsMonitor<FakeOAuth2IntrospectionOptions> options,
+            ILoggerFactory logger,
+            UrlEncoder encoder,
+            ISystemClock clock)
+            : base(options, logger, encoder, clock)
         {
         }
 
@@ -39,12 +44,14 @@
 
             try
             {
-                var introspectionResult = await new IntrospectClient(
+                var introspectionClient = await IntrospectClient.Create(
                         TokenCredentials.FromClientCredentials(Options.ClientId, Options.ClientSecret),
-                        IntrospectionRequest.Create(token, TokenTypes.AccessToken),
                         Options.Client,
-                        new GetDiscoveryOperation(Options.Client))
-                    .ResolveAsync(Options.WellKnownConfigurationUrl).ConfigureAwait(false);
+                        new Uri(Options.WellKnownConfigurationUrl))
+                    .ConfigureAwait(false);
+                var introspectionResult = await introspectionClient.Introspect(
+                        IntrospectionRequest.Create(token, TokenTypes.AccessToken))
+                    .ConfigureAwait(false);
                 if (introspectionResult.ContainsError || !introspectionResult.Content.Active)
                 {
                     return AuthenticateResult.NoResult();
@@ -58,7 +65,10 @@
 
                 if (!string.IsNullOrWhiteSpace(introspectionResult.Content.Subject))
                 {
-                    claims.Add(new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, introspectionResult.Content.Subject));
+                    claims.Add(
+                        new Claim(
+                            OpenIdClaimTypes.Subject,
+                            introspectionResult.Content.Subject));
                 }
 
                 if (!string.IsNullOrWhiteSpace(introspectionResult.Content.ClientId))
@@ -73,18 +83,15 @@
 
                 if (introspectionResult.Content.Scope != null)
                 {
-                    foreach (var scope in introspectionResult.Content.Scope)
-                    {
-                        claims.Add(new Claim(StandardClaimNames.Scopes, scope));
-                    }
+                    claims.AddRange(introspectionResult.Content.Scope.Select(scope => new Claim(StandardClaimNames.Scopes, scope)));
                 }
 
                 var claimsIdentity = new ClaimsIdentity(claims, FakeOAuth2IntrospectionOptions.AuthenticationScheme);
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 var authenticationTicket = new AuthenticationTicket(
-                                                 claimsPrincipal,
-                                                 new AuthenticationProperties(),
-                                                 FakeOAuth2IntrospectionOptions.AuthenticationScheme);
+                    claimsPrincipal,
+                    new AuthenticationProperties(),
+                    FakeOAuth2IntrospectionOptions.AuthenticationScheme);
                 return AuthenticateResult.Success(authenticationTicket);
             }
             catch (Exception)

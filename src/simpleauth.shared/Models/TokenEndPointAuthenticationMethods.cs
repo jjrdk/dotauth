@@ -1,13 +1,38 @@
 ﻿namespace SimpleAuth.Shared.Models
 {
-    public enum TokenEndPointAuthenticationMethods
+    /// <summary>
+    /// Defines the token endpoint authentication methods.
+    /// </summary>
+    public static class TokenEndPointAuthenticationMethods
     {
-        // Defaut value
-        client_secret_basic = 0,
-        client_secret_post = 1,
-        client_secret_jwt = 2,
-        private_key_jwt = 3,
-        tls_client_auth = 4,
-        none = 5
+        /// <summary>
+        /// Client secret basic
+        /// </summary>
+        public const string ClientSecretBasic = "client_secret_basic";
+
+        /// <summary>
+        /// Client secret post
+        /// </summary>
+        public const string ClientSecretPost = "client_secret_post";
+
+        /// <summary>
+        /// Client secret JWT
+        /// </summary>
+        public const string ClientSecretJwt = "client_secret_jwt";
+
+        /// <summary>
+        /// Private key JWT
+        /// </summary>
+        public const string PrivateKeyJwt = "private_key_jwt";
+
+        /// <summary>
+        /// TLS client authentication
+        /// </summary>
+        public const string TlsClientAuth = "tls_client_auth";
+
+        /// <summary>
+        /// None
+        /// </summary>
+        public const string None = "none";
     }
 }

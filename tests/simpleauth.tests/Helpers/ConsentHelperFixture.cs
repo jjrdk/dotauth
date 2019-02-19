@@ -4,27 +4,28 @@
     using Parameters;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth.Helpers;
+    using SimpleAuth.Extensions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Xunit;
 
     public sealed class ConsentHelperFixture
     {
-        private Mock<IConsentRepository> _consentRepositoryFake;
+        private readonly Mock<IConsentRepository> _consentRepositoryFake;
 
         public ConsentHelperFixture()
         {
-            InitializeFakeObjects();
+            _consentRepositoryFake = new Mock<IConsentRepository>();
         }
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
         {
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(() => _consentRepositoryFake.Object.GetConfirmedConsents("subject", null))
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                    () => _consentRepositoryFake.Object.GetConfirmedConsents("subject", null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
@@ -34,10 +35,12 @@
             const string subject = "subject";
             var authorizationParameter = new AuthorizationParameter();
 
-            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((IEnumerable<Consent>)null));
+            _consentRepositoryFake
+                .Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult((IReadOnlyCollection<Consent>) null));
 
-            var result = await _consentRepositoryFake.Object.GetConfirmedConsents(subject, authorizationParameter)
+            var result = await _consentRepositoryFake.Object
+                .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.Null(result);
@@ -53,19 +56,21 @@
             {
                 Claims = new ClaimsParameter
                 {
-                    UserInfo = new List<ClaimParameter> { new ClaimParameter { Name = claimName } }
+                    UserInfo = new List<ClaimParameter> {new ClaimParameter {Name = claimName}}
                 },
                 ClientId = clientId
             };
-            IEnumerable<Consent> consents = new List<Consent>
+            IReadOnlyCollection<Consent> consents = new List<Consent>
             {
                 new Consent {Claims = new List<string> {claimName}, Client = new Client {ClientId = clientId}}
             };
 
-            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>()))
-                .Returns(Task.FromResult(consents));
+            _consentRepositoryFake
+                .Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(consents);
 
-            var result = await _consentRepositoryFake.Object.GetConfirmedConsents(subject, authorizationParameter)
+            var result = await _consentRepositoryFake.Object
+                .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.Single(result.Claims);
@@ -78,25 +83,22 @@
             const string subject = "subject";
             const string scope = "profile";
             const string clientId = "clientId";
-            var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
-            IEnumerable<Consent> consents = new List<Consent>
+            var authorizationParameter = new AuthorizationParameter {ClientId = clientId, Scope = scope};
+            IReadOnlyCollection<Consent> consents = new List<Consent>
             {
-                new Consent
-                {
-                    Client = new Client {ClientId = clientId},
-                    GrantedScopes = new List<Scope> {new Scope {Name = scope}}
-                }
+                new Consent {Client = new Client {ClientId = clientId}, GrantedScopes = new[] {scope}}
             };
-            var scopes = new List<string> { scope };
 
-            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>()))
-                .Returns(Task.FromResult(consents));
+            _consentRepositoryFake
+                .Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(consents);
 
-            var result = await _consentRepositoryFake.Object.GetConfirmedConsents(subject, authorizationParameter)
+            var result = await _consentRepositoryFake.Object
+                .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.Single(result.GrantedScopes);
-            Assert.Equal(scope, result.GrantedScopes.First().Name);
+            Assert.Equal(scope, result.GrantedScopes.First());
         }
 
         [Fact]
@@ -110,35 +112,25 @@
             const string clientId = "clientId";
             var authorizationParameter = new AuthorizationParameter
             {
-                ClientId = clientId,
-                Scope = openIdScope + " " + profileScope + " " + emailScope
+                ClientId = clientId, Scope = openIdScope + " " + profileScope + " " + emailScope
             };
-            IEnumerable<Consent> consents = new List<Consent>
+            IReadOnlyCollection<Consent> consents = new List<Consent>
             {
                 new Consent
                 {
-                    Client = new Client {ClientId = clientId},
-                    GrantedScopes = new List<Scope>
-                    {
-                        new Scope {Name = profileScope}, new Scope {Name = openIdScope}
-                    }
+                    Client = new Client {ClientId = clientId}, GrantedScopes = new[] {profileScope, openIdScope}
                 }
             };
 
-            //var scopes = new List<string> {openIdScope, profileScope, emailScope};
+            _consentRepositoryFake
+                .Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(consents);
 
-            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>()))
-                .Returns(Task.FromResult(consents));
-
-            var result = await _consentRepositoryFake.Object.GetConfirmedConsents(subject, authorizationParameter)
+            var result = await _consentRepositoryFake.Object
+                .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.Null(result);
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _consentRepositoryFake = new Mock<IConsentRepository>();
         }
     }
 }

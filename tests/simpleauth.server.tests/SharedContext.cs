@@ -19,7 +19,7 @@ namespace SimpleAuth.Server.Tests
     using Shared;
     using SimpleAuth;
     using System.Net.Http;
-    using Twilio;
+    using SimpleAuth.Sms;
 
     public class SharedContext
     {
@@ -85,7 +85,7 @@ namespace SimpleAuth.Server.Tests
             //    SerializedKey = serializedRsa,
             //};
             ConfirmationCodeStore = new Mock<IConfirmationCodeStore>();
-            TwilioClient = new Mock<ITwilioClient>();
+            TwilioClient = new Mock<ISmsClient>();
         }
 
         public JsonWebKey EncryptionKey { get; }
@@ -93,7 +93,7 @@ namespace SimpleAuth.Server.Tests
         public JsonWebKey SignatureKey { get; }
         public JsonWebKey ModelSignatureKey { get; }
         public Mock<IConfirmationCodeStore> ConfirmationCodeStore { get; }
-        public Mock<ITwilioClient> TwilioClient { get; }
+        public Mock<ISmsClient> TwilioClient { get; }
         public HttpClient Client { get; set; }
     }
 }

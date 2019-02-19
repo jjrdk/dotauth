@@ -14,40 +14,35 @@
 
 namespace SimpleAuth.Api.PermissionController
 {
-    using Errors;
-    using Exceptions;
-    using Parameters;
     using Repositories;
     using Shared;
     using Shared.Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Repositories;
 
     internal class AddPermissionAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly ITicketStore _ticketStore;
-        private readonly UmaConfigurationOptions _configurationService;
+        private readonly RuntimeSettings _configurationService;
 
         public AddPermissionAction(
             IResourceSetRepository resourceSetRepository,
             ITicketStore ticketStore,
-            UmaConfigurationOptions configurationService)
+            RuntimeSettings configurationService)
         {
             _resourceSetRepository = resourceSetRepository;
             _ticketStore = ticketStore;
             _configurationService = configurationService;
         }
 
-        public async Task<string> Execute(string clientId, AddPermissionParameter addPermissionParameter)
-        {
-            var result = await Execute(clientId, new[] { addPermissionParameter }).ConfigureAwait(false);
-            return result;
-        }
-
-        public async Task<string> Execute(string clientId, AddPermissionParameter[] addPermissionParameters)
+        public async Task<string> Execute(string clientId, CancellationToken cancellationToken, params PostPermission[] addPermissionParameters)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -76,10 +71,10 @@ namespace SimpleAuth.Api.PermissionController
                 Scopes = addPermissionParameter.Scopes,
                 ResourceSetId = addPermissionParameter.ResourceSetId
             })
-                .ToList();
+                .ToArray();
 
             ticket.Lines = ticketLines;
-            if (!await _ticketStore.Add(ticket).ConfigureAwait(false))
+            if (!await _ticketStore.Add(ticket, cancellationToken).ConfigureAwait(false))
             {
                 throw new SimpleAuthException(ErrorCodes.InternalError, ErrorDescriptions.TheTicketCannotBeInserted);
             }
@@ -87,14 +82,14 @@ namespace SimpleAuth.Api.PermissionController
             return ticket.Id;
         }
 
-        private async Task CheckAddPermissionParameter(IEnumerable<AddPermissionParameter> addPermissionParameters)
+        private async Task CheckAddPermissionParameter(PostPermission[] addPermissionParameters)
         {
             // 1. Get resource sets.
 
             IEnumerable<ResourceSet> resourceSets;
             try
             {
-                resourceSets = await _resourceSetRepository.Get(addPermissionParameters.Select(p => p.ResourceSetId));
+                resourceSets = await _resourceSetRepository.Get(addPermissionParameters.Select(p => p.ResourceSetId).ToArray()).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

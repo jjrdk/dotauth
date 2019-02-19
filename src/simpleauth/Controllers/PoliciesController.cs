@@ -12,226 +12,283 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleAuth.Api.PolicyController.Actions;
 using SimpleAuth.Repositories;
 
 namespace SimpleAuth.Controllers
 {
-    using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Parameters;
     using Shared.DTOs;
     using Shared.Responses;
+    using SimpleAuth.Shared.Repositories;
+    using System.Linq;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Api.PolicyController;
+    using SimpleAuth.Shared.Errors;
 
+    /// <summary>
+    /// Defines the policies controller
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Route(UmaConstants.RouteValues.Policies)]
-    public class PoliciesController : Controller
+    public class PoliciesController : ControllerBase
     {
+        private readonly IPolicyRepository _policyRepository;
         private readonly AddAuthorizationPolicyAction _addpolicy;
         private readonly DeleteAuthorizationPolicyAction _deletePolicy;
         private readonly DeleteResourcePolicyAction _deleteResourceSet;
         private readonly AddResourceSetToPolicyAction _addResourceSet;
         private readonly UpdatePolicyAction _updatePolicy;
-        private readonly GetAuthorizationPolicyAction _getPolicy;
-        private readonly GetAuthorizationPoliciesAction _getPolicies;
-        private readonly SearchAuthPoliciesAction _searchPolicy;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PoliciesController"/> class.
+        /// </summary>
+        /// <param name="policyRepository">The policy repository.</param>
+        /// <param name="resourceSetRepository">The resource set repository.</param>
         public PoliciesController(IPolicyRepository policyRepository, IResourceSetRepository resourceSetRepository)
         {
+            _policyRepository = policyRepository;
             _addpolicy = new AddAuthorizationPolicyAction(policyRepository, resourceSetRepository);
             _deletePolicy = new DeleteAuthorizationPolicyAction(policyRepository);
             _addResourceSet = new AddResourceSetToPolicyAction(policyRepository, resourceSetRepository);
             _deleteResourceSet = new DeleteResourcePolicyAction(policyRepository, resourceSetRepository);
             _updatePolicy = new UpdatePolicyAction(policyRepository, resourceSetRepository);
-            _getPolicy = new GetAuthorizationPolicyAction(policyRepository);
-            _getPolicies = new GetAuthorizationPoliciesAction(policyRepository);
-            _searchPolicy = new SearchAuthPoliciesAction(policyRepository);
         }
 
+        /// <summary>
+        /// Searches the policies.
+        /// </summary>
+        /// <param name="searchAuthPolicies">The search authentication policies.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPost(".search")]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> SearchPolicies([FromBody] SearchAuthPolicies searchAuthPolicies)
+        public async Task<IActionResult> SearchPolicies(
+            [FromBody] SearchAuthPolicies searchAuthPolicies,
+            CancellationToken cancellationToken)
         {
             if (searchAuthPolicies == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "no parameter in body request",
+                    HttpStatusCode.BadRequest);
             }
 
-            var parameter = searchAuthPolicies.ToParameter();
-            var result = await _searchPolicy.Execute(parameter).ConfigureAwait(false);
+            var result = await _policyRepository.Search(searchAuthPolicies, cancellationToken).ConfigureAwait(false);
             return new OkObjectResult(result.ToResponse());
         }
 
+        /// <summary>
+        /// Gets the policy.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> GetPolicy(string id)
+        public async Task<IActionResult> GetPolicy(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "the identifier must be specified",
+                    HttpStatusCode.BadRequest);
             }
 
-            var result = await _getPolicy.Execute(id).ConfigureAwait(false);
+            var result = await _policyRepository.Get(id, cancellationToken).ConfigureAwait(false);
             if (result == null)
             {
                 return GetNotFoundPolicy();
             }
 
             var content = result.ToResponse();
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id);
             return new OkObjectResult(content);
         }
 
+        /// <summary>
+        /// Gets the policies.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpGet]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> GetPolicies()
+        public async Task<IActionResult> GetPolicies(CancellationToken cancellationToken)
         {
-            var policies = await _getPolicies.Execute().ConfigureAwait(false);
-            return new OkObjectResult(policies);
+            var policies = await _policyRepository.GetAll(cancellationToken).ConfigureAwait(false);
+            var policyNames = policies.Select(x => x.Id);
+            return new OkObjectResult(policyNames);
         }
 
-        // Partial update
+        /// <summary>
+        /// Updates the policy.
+        /// </summary>
+        /// <param name="putPolicy">The put policy.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPut]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> PutPolicy([FromBody] PutPolicy putPolicy)
+        public async Task<IActionResult> PutPolicy([FromBody] PutPolicy putPolicy, CancellationToken cancellationToken)
         {
             if (putPolicy == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "no parameter in body request",
+                    HttpStatusCode.BadRequest);
             }
 
-            var isPolicyExists = await _updatePolicy.Execute(putPolicy.ToParameter()).ConfigureAwait(false);
-            if (!isPolicyExists)
-            {
-                return GetNotFoundPolicy();
-            }
-
-            return new StatusCodeResult((int)HttpStatusCode.NoContent);
+            var isPolicyExists = await _updatePolicy.Execute(putPolicy, cancellationToken).ConfigureAwait(false);
+            return !isPolicyExists ? GetNotFoundPolicy() : new StatusCodeResult((int) HttpStatusCode.NoContent);
         }
 
+        /// <summary>
+        /// Adds the resource set.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="postAddResourceSet">The post add resource set.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPost("{id}/resources")]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> PostAddResourceSet(string id, [FromBody] PostAddResourceSet postAddResourceSet)
+        public async Task<IActionResult> PostAddResourceSet(
+            string id,
+            [FromBody] PostAddResourceSet postAddResourceSet,
+            CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "the identifier must be specified",
+                    HttpStatusCode.BadRequest);
             }
 
             if (postAddResourceSet == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "no parameter in body request",
+                    HttpStatusCode.BadRequest);
             }
 
             var isPolicyExists = await _addResourceSet.Execute(
-                new AddResourceSetParameter
-                {
-                    PolicyId = id,
-                    ResourceSets = postAddResourceSet.ResourceSets
-                }).ConfigureAwait(false);
+                    new AddResourceSetParameter {PolicyId = id, ResourceSets = postAddResourceSet.ResourceSets},
+                    cancellationToken)
+                .ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
             }
 
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id, false);
-            return new StatusCodeResult((int)HttpStatusCode.NoContent);
+            return new StatusCodeResult((int) HttpStatusCode.NoContent);
         }
 
+        /// <summary>
+        /// Deletes the resource set.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="resourceId">The resource identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpDelete("{id}/resources/{resourceId}")]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> DeleteResourceSet(string id, string resourceId)
+        public async Task<IActionResult> DeleteResourceSet(string id, string resourceId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "the identifier must be specified",
+                    HttpStatusCode.BadRequest);
             }
 
             if (string.IsNullOrWhiteSpace(resourceId))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "the resource_id must be specified", HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "the resource_id must be specified",
+                    HttpStatusCode.BadRequest);
             }
 
-            var isPolicyExists = await _deleteResourceSet.Execute(id, resourceId).ConfigureAwait(false);
+            var isPolicyExists = await _deleteResourceSet.Execute(id, resourceId, cancellationToken).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
             }
 
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id, false);
-            return new StatusCodeResult((int)HttpStatusCode.NoContent);
+            return new StatusCodeResult((int) HttpStatusCode.NoContent);
         }
 
+        /// <summary>
+        /// Adds the policy.
+        /// </summary>
+        /// <param name="postPolicy">The post policy.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> PostPolicy([FromBody] PostPolicy postPolicy)
+        public async Task<IActionResult> PostPolicy(
+            [FromBody] PostPolicy postPolicy,
+            CancellationToken cancellationToken)
         {
             if (postPolicy == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "no parameter in body request",
+                    HttpStatusCode.BadRequest);
             }
 
-            var policyId = await _addpolicy.Execute(postPolicy.ToParameter()).ConfigureAwait(false);
-            var content = new AddPolicyResponse
-            {
-                PolicyId = policyId
-            };
+            var policyId = await _addpolicy.Execute(postPolicy, cancellationToken).ConfigureAwait(false);
+            var content = new AddPolicyResponse {PolicyId = policyId};
 
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName, false);
-            return new ObjectResult(content)
-            {
-                StatusCode = (int)HttpStatusCode.Created
-            };
+            return new ObjectResult(content) {StatusCode = (int) HttpStatusCode.Created};
         }
 
+        /// <summary>
+        /// Deletes the policy.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> DeletePolicy(string id)
+        public async Task<IActionResult> DeletePolicy(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "the identifier must be specified",
+                    HttpStatusCode.BadRequest);
             }
 
-            var isPolicyExists = await _deletePolicy.Execute(id).ConfigureAwait(false);
+            var isPolicyExists = await _deletePolicy.Execute(id, cancellationToken).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
             }
 
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id, false);
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName, false);
-            return new StatusCodeResult((int)HttpStatusCode.NoContent);
+            return new StatusCodeResult((int) HttpStatusCode.NoContent);
         }
 
         private static ActionResult GetNotFoundPolicy()
         {
-            var errorResponse = new ErrorResponse
-            {
-                Error = "not_found",
-                ErrorDescription = "policy cannot be found"
-            };
+            var errorResponse = new ErrorResponse {Error = "not_found", ErrorDescription = "policy cannot be found"};
 
-            return new ObjectResult(errorResponse)
-            {
-                StatusCode = (int)HttpStatusCode.NotFound
-            };
+            return new ObjectResult(errorResponse) {StatusCode = (int) HttpStatusCode.NotFound};
         }
 
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorResponse
-            {
-                Error = code,
-                ErrorDescription = message
-            };
-            return new JsonResult(error)
-            {
-                StatusCode = (int)statusCode
-            };
+            var error = new ErrorResponse {Error = code, ErrorDescription = message};
+            return new JsonResult(error) {StatusCode = (int) statusCode};
         }
     }
 }

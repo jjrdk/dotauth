@@ -15,13 +15,29 @@
 namespace SimpleAuth.Shared.Repositories
 {
     using Models;
-    using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
 
-    public interface IConsentRepository
+    /// <summary>
+    /// Defines the consent repository.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.Repositories.IConsentStore" />
+    public interface IConsentRepository : IConsentStore
     {
-        Task<IEnumerable<Consent>> GetConsentsForGivenUser(string subject);
-        Task<bool> Insert(Consent record);
-        Task<bool> Delete(Consent record);
+        /// <summary>
+        /// Inserts the specified record.
+        /// </summary>
+        /// <param name="record">The record.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<bool> Insert(Consent record, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Deletes the specified record.
+        /// </summary>
+        /// <param name="record">The record.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<bool> Delete(Consent record, CancellationToken cancellationToken);
     }
 }

@@ -16,8 +16,19 @@ namespace SimpleAuth.Shared.Events.Openid
 {
     using System;
 
+    /// <summary>
+    /// Defines the consent accepted event.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.Event" />
     public class ConsentAccepted : Event
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConsentAccepted"/> class.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="processId">The process identifier.</param>
+        /// <param name="payload">The payload.</param>
+        /// <param name="timestamp">The timestamp.</param>
         public ConsentAccepted(string id, string processId, object payload, DateTime timestamp)
             : base(id, timestamp)
         {
@@ -25,7 +36,20 @@ namespace SimpleAuth.Shared.Events.Openid
             Payload = payload;
         }
 
+        /// <summary>
+        /// Gets the process identifier.
+        /// </summary>
+        /// <value>
+        /// The process identifier.
+        /// </value>
         public string ProcessId { get; }
+
+        /// <summary>
+        /// Gets the payload.
+        /// </summary>
+        /// <value>
+        /// The payload.
+        /// </value>
         public object Payload { get; }
     }
 }

@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,109 +17,227 @@ namespace SimpleAuth.Shared.Requests
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Defines the authorization request.
+    /// </summary>
     [DataContract]
     public class AuthorizationRequest
     {
-        private readonly Dictionary<string, string> _mappingResponseTypesToNames = new Dictionary<string, string>
-        {
-            { ResponseTypeNames.Code, ResponseTypeNames.Code },
-            { ResponseTypeNames.Token, ResponseTypeNames.Token },
-            { ResponseTypeNames.IdToken, ResponseTypeNames.IdToken }
-        };
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthorizationRequest"/> class.
+        /// </summary>
         public AuthorizationRequest() { }
 
-        public AuthorizationRequest(IEnumerable<string> scopes, IEnumerable<string> responseTypes, string clientId, Uri redirectUri, string state)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthorizationRequest"/> class.
+        /// </summary>
+        /// <param name="scopes">The scopes.</param>
+        /// <param name="responseTypes">The response types.</param>
+        /// <param name="clientId">The client identifier.</param>
+        /// <param name="redirectUri">The redirect URI.</param>
+        /// <param name="requestState">State of the request.</param>
+        public AuthorizationRequest(IEnumerable<string> scopes, IEnumerable<string> responseTypes, string clientId, Uri redirectUri, string requestState)
         {
-            Scope = string.Join(" ", scopes);
-            ResponseType = string.Join(" ", responseTypes.Select(s => _mappingResponseTypesToNames[s]));
-            ClientId = clientId;
-            RedirectUri = redirectUri;
-            State = state;
+            scope = string.Join(" ", scopes);
+            response_type = string.Join(" ", responseTypes);
+            client_id = clientId;
+            redirect_uri = redirectUri;
+            state = requestState;
         }
 
-        [DataMember(Name = RequestAuthorizationCodeNames.Scope)]
-        public string Scope { get; set; }
-        [DataMember(Name = RequestAuthorizationCodeNames.ResponseType)]
-        public string ResponseType { get; set; }
-        [DataMember(Name = RequestAuthorizationCodeNames.RedirectUri)]
-        public Uri RedirectUri { get; set; }
-        [DataMember(Name = RequestAuthorizationCodeNames.State)]
-        public string State { get; set; }
-        [DataMember(Name = RequestAuthorizationCodeNames.ResponseMode)]
-        public ResponseModes? ResponseMode { get; set; }
-        [DataMember(Name = RequestAuthorizationCodeNames.Nonce)]
-        public string Nonce { get; set; }
-        [DataMember(Name = RequestAuthorizationCodeNames.Display)]
-        public DisplayModes? Display { get; set; }
+        /// <summary>
+        /// Gets or sets the scope.
+        /// </summary>
+        /// <value>
+        /// The scope.
+        /// </value>
+        [DataMember(Name = "scope")]
+        public string scope { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the response.
+        /// </summary>
+        /// <value>
+        /// The type of the response.
+        /// </value>
+        [DataMember(Name = "response_type")]
+        public string response_type { get; set; }
+
+        /// <summary>
+        /// Gets or sets the redirect URI.
+        /// </summary>
+        /// <value>
+        /// The redirect URI.
+        /// </value>
+        [DataMember(Name = "redirect_uri")]
+        public Uri redirect_uri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the state.
+        /// </summary>
+        /// <value>
+        /// The state.
+        /// </value>
+        [DataMember(Name = "state")]
+        public string state { get; set; }
+
+        /// <summary>
+        /// Gets or sets the response mode.
+        /// </summary>
+        /// <value>
+        /// The response mode.
+        /// </value>
+        [DataMember(Name = "response_mode")]
+        public string response_mode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the nonce.
+        /// </summary>
+        /// <value>
+        /// The nonce.
+        /// </value>
+        [DataMember(Name = "nonce")]
+        public string nonce { get; set; }
+
+        /// <summary>
+        /// Gets or sets the display.
+        /// </summary>
+        /// <value>
+        /// The display.
+        /// </value>
+        [DataMember(Name = "display")]
+        public DisplayModes? display { get; set; }
+
         /// <summary>
         /// The possible values are : none, login, consent, select_account
         /// </summary>
-        [DataMember(Name = RequestAuthorizationCodeNames.Prompt)]
-        public string Prompt { get; set; }
+        [DataMember(Name = "prompt")]
+        public string prompt { get; set; }
+
         /// <summary>
         /// Maximum authentication age.
         /// Specifies allowable elapsed time in seconds since the last time the end-user
         ///  was actively authenticated by the OP.
         /// </summary>
-        [DataMember(Name = RequestAuthorizationCodeNames.MaxAge)]
-        public double MaxAge { get; set; }
+        [DataMember(Name = "max_age")]
+        public double max_age { get; set; }
+
         /// <summary>
         /// End-User's preferred languages
         /// </summary>
-        [DataMember(Name = RequestAuthorizationCodeNames.UiLocales)]
-        public string UiLocales { get; set; }
+        [DataMember(Name = "ui_locales")]
+        public string ui_locales { get; set; }
+
         /// <summary>
         /// Token previousely issued by the Authorization Server.
         /// </summary>
-        [DataMember(Name = RequestAuthorizationCodeNames.IdTokenHint)]
-        public string IdTokenHint { get; set; }
+        [DataMember(Name = "id_token_hint")]
+        public string id_token_hint { get; set; }
+
         /// <summary>
         /// Hint to the authorization server about the login identifier the end-user might use to log in.
         /// </summary>
-        [DataMember(Name = RequestAuthorizationCodeNames.LoginHint)]
-        public string LoginHint { get; set; }
+        [DataMember(Name = "login_hint")]
+        public string login_hint { get; set; }
+
         /// <summary>
         /// Request that specific Claims be returned from the UserInfo endpoint and/or in the id token.
         /// </summary>
-        [DataMember(Name = RequestAuthorizationCodeNames.Claims)]
-        public string Claims { get; set; }
+        [DataMember(Name = "claims")]
+        public string claims { get; set; }
+
         /// <summary>
         /// Requested Authentication Context Class References values.
         /// </summary>
-        [DataMember(Name = RequestAuthorizationCodeNames.AcrValues)]
-        public string AcrValues { get; set; }
+        [DataMember(Name = "acr_values")]
+        public string acr_values { get; set; }
+
         /// <summary>
         /// Self-contained parameter and can be optionally be signed and / or encrypted
         /// </summary>
-        [DataMember(Name = RequestAuthorizationCodeNames.Request)]
-        public string Request { get; set; }
+        [DataMember(Name = "request")]
+        public string request { get; set; }
+
         /// <summary>
         /// Enables OpenID connect requests to be passed by reference rather than by value.
         /// </summary>
-        [DataMember(Name = RequestAuthorizationCodeNames.RequestUri)]
-        public string RequestUri { get; set; }
+        [DataMember(Name = "request_uri")]
+        public Uri request_uri { get; set; }
+
         /// <summary>
         /// Code challenge.
         /// </summary>
-        [DataMember(Name = RequestAuthorizationCodeNames.CodeChallenge)]
-        public string CodeChallenge { get; set; }
+        [DataMember(Name = "code_challenge")]
+        public string code_challenge { get; set; }
+
         /// <summary>
         /// Code challenge method.
         /// </summary>
-        [DataMember(Name = RequestAuthorizationCodeNames.CodeChallengeMethod)]
-        public CodeChallengeMethods? CodeChallengeMethod { get; set; }
-        [DataMember(Name = ClientAuthNames.ClientId)]
-        public string ClientId { get; set; }
-        [DataMember(Name = EventResponseNames.AggregateId)]
-        public string ProcessId { get; set; }
+        [DataMember(Name = "code_challenge_method")]
+        public string code_challenge_method { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client identifier.
+        /// </summary>
+        /// <value>
+        /// The client identifier.
+        /// </value>
+        [DataMember(Name = "client_id")]
+        public string client_id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the aggregate identifier.
+        /// </summary>
+        /// <value>
+        /// The aggregate identifier.
+        /// </value>
+        [DataMember(Name = "aggregate_id")]
+        public string aggregate_id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the origin URL.
+        /// </summary>
+        /// <value>
+        /// The origin URL.
+        /// </value>
         [DataMember(Name = "origin_url")]
-        public string OriginUrl { get; set; }
+        public string origin_url { get; set; }
+
+        /// <summary>
+        /// Gets or sets the session identifier.
+        /// </summary>
+        /// <value>
+        /// The session identifier.
+        /// </value>
         [DataMember(Name = "session_id")]
-        public string SessionId { get; set; }
+        public string session_id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the amr values.
+        /// </summary>
+        /// <value>
+        /// The amr values.
+        /// </value>
         [DataMember(Name = "amr_values")]
-        public string AmrValues { get; set; }
+        public string amr_values { get; set; }
+
+        /// <summary>
+        /// Converts to request string.
+        /// </summary>
+        /// <returns>The request as a <see cref="string"/>.</returns>
+        public string ToRequest()
+        {
+            var properties = typeof(AuthorizationRequest).GetProperties()
+                .Where(x => x.GetValue(this) != null)
+                .Select(
+                    x => (x.GetCustomAttribute(typeof(DataMemberAttribute)) as DataMemberAttribute).Name
+                         + "="
+                         + x.GetValue(this));
+
+            return string.Join("&", properties);
+        }
     }
 }

@@ -1,9 +1,11 @@
 ﻿namespace SimpleAuth.WebSite.User.Actions
 {
-    using Exceptions;
     using Shared.Repositories;
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
 
     internal sealed class UpdateUserTwoFactorAuthenticatorOperation
     {
@@ -14,21 +16,23 @@
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
-        public async Task<bool> Execute(string subject, string twoFactorAuth)
+        public async Task<bool> Execute(string subject, string twoFactorAuth, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(subject))
             {
                 throw new ArgumentNullException(nameof(subject));
             }
 
-            var resourceOwner = await _resourceOwnerRepository.Get(subject).ConfigureAwait(false);
+            var resourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheRoDoesntExist);
+                throw new SimpleAuthException(
+                    ErrorCodes.InternalError,
+                    ErrorDescriptions.TheRoDoesntExist);
             }
 
             resourceOwner.TwoFactorAuthentication = twoFactorAuth;
-            return await _resourceOwnerRepository.UpdateAsync(resourceOwner).ConfigureAwait(false);
+            return await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
         }
     }
 }

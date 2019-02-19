@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,71 +17,68 @@ using SimpleAuth.Shared.Repositories;
 namespace SimpleAuth.Controllers
 {
     using Api.Introspection;
-    using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Shared.Requests;
     using Shared.Responses;
-    using Shared.Serializers;
-    using System;
-    using System.Collections.Specialized;
-    using System.Linq;
     using System.Net;
     using System.Net.Http.Headers;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
 
+    /// <summary>
+    /// Defines the introspection controller.
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(CoreConstants.EndPoints.Introspection)]
     public class IntrospectionController : Controller
     {
         private readonly PostIntrospectionAction _introspectionActions;
 
-        public IntrospectionController(
-            IClientStore clientStore,
-            ITokenStore tokenStore)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntrospectionController"/> class.
+        /// </summary>
+        /// <param name="clientStore">The client store.</param>
+        /// <param name="tokenStore">The token store.</param>
+        public IntrospectionController(IClientStore clientStore, ITokenStore tokenStore)
         {
             _introspectionActions = new PostIntrospectionAction(clientStore, tokenStore);
         }
 
+        /// <summary>
+        /// Handles the specified introspection request.
+        /// </summary>
+        /// <param name="introspectionRequest">The introspection request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Post()
+        public async Task<IActionResult> Post(
+            [FromForm] IntrospectionRequest introspectionRequest,
+            CancellationToken cancellationToken)
         {
-            try
+            if (introspectionRequest.token == null)
             {
-
-                if (Request.Form == null)
-                {
-                    return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
-                }
-            }
-            catch (Exception)
-            {
-                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "no parameter in body request",
+                    HttpStatusCode.BadRequest);
             }
 
-            var nameValueCollection = new NameValueCollection();
-            foreach (var kvp in Request.Form)
-            {
-                nameValueCollection.Add(kvp.Key, kvp.Value);
-            }
-
-            var serializer = new ParamSerializer();
-            var introspectionRequest = serializer.Deserialize<IntrospectionRequest>(nameValueCollection);
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
             {
-                var authorizationHeaderValue = authorizationHeader.First();
-                var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
-                if (splittedAuthorizationHeaderValue.Length == 2)
-                {
-                    authenticationHeaderValue = new AuthenticationHeaderValue(
-                        splittedAuthorizationHeaderValue[0],
-                        splittedAuthorizationHeaderValue[1]);
-                }
+                authenticationHeaderValue = AuthenticationHeaderValue.Parse(authorizationHeader);
             }
 
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-            var result = await _introspectionActions.Execute(introspectionRequest.ToParameter(), authenticationHeaderValue, issuerName).ConfigureAwait(false);
-            return new OkObjectResult(result.ToDto());
+            var result = await _introspectionActions.Execute(
+                    introspectionRequest.ToParameter(),
+                    authenticationHeaderValue,
+                    issuerName,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            return new OkObjectResult(result);
         }
 
         /// <summary>
@@ -93,15 +90,8 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorResponse
-            {
-                Error = code,
-                ErrorDescription = message
-            };
-            return new JsonResult(error)
-            {
-                StatusCode = (int)statusCode
-            };
+            var error = new ErrorResponse {Error = code, ErrorDescription = message};
+            return new JsonResult(error) {StatusCode = (int) statusCode};
         }
     }
 }

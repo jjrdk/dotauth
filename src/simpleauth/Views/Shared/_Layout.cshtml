@@ -1,4 +1,4 @@
-﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+﻿@using SimpleAuth.Extensions
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,8 +16,8 @@
     <!-- Top Navigation Bar -->
     <nav class="white">
         <div class="nav-wrapper">
-            <a href="@Url.Content("~/")" class="brand-logo"><img src="@Url.Content("~/img/icon.png")" class="hide-on-small-only" />SimpleAuth</a>
-            @if (ViewBag.IsAuthenticated)
+            <a href="@Url.Content("~/")" class="brand-logo"><img src="@Url.Content("~/img/icon.png")" alt="icon" class="hide-on-small-only" />@Globals.ApplicationName</a>
+            @if (ViewBag.IsAuthenticated == true)
             {
                 <ul id="nav-mobile" class="right">
                     <li>
@@ -26,15 +26,14 @@
                         </a>
                     </li>
                     <ul id='dropdown1' class='dropdown-content'>
-                        <li><a href="@Url.Content("~/User")">Profile</a></li>
-                        <li><a href="@Url.Content("~/Authenticate/Logout")">Disconnect</a></li>
+                        <li><a href="@Url.Content("~/Authenticate/Logout")">Log Out</a></li>
                     </ul>
                 </ul>
             }
         </div>
     </nav>
 
-    @if (ViewBag.IsAuthenticated)
+    @if (ViewBag.IsAuthenticated == true)
     {
         <script type="text/javascript" src="@Url.Content("~/js/jquery.min.js")"></script>
         <script type="text/javascript" src="@Url.Content("~/js/materialize.min.js")"></script>
@@ -46,7 +45,7 @@
         </div>
     </div>
     @RenderSection("Scripts", required: false)
-    @if (ViewBag.IsAuthenticated)
+    @if (ViewBag.IsAuthenticated == true)
     {
         <script type="text/javascript">
             $(document).ready(function () {

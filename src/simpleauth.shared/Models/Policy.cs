@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,12 +14,35 @@
 
 namespace SimpleAuth.Shared.Models
 {
-    using System.Collections.Generic;
+    using System;
 
+    /// <summary>
+    /// Defines the policy content.
+    /// </summary>
     public class Policy
     {
+        /// <summary>
+        /// Gets or sets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
         public string Id { get; set; }
-        public List<PolicyRule> Rules { get; set; } = new List<PolicyRule>();
-        public List<string> ResourceSetIds { get; set; } = new List<string>();
+
+        /// <summary>
+        /// Gets or sets the rules.
+        /// </summary>
+        /// <value>
+        /// The rules.
+        /// </value>
+        public PolicyRule[] Rules { get; set; } = Array.Empty<PolicyRule>();
+
+        /// <summary>
+        /// Gets or sets the resource set ids.
+        /// </summary>
+        /// <value>
+        /// The resource set ids.
+        /// </value>
+        public string[] ResourceSetIds { get; set; } = Array.Empty<string>();
     }
 }

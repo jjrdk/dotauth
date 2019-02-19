@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,25 +20,29 @@ namespace SimpleAuth.Tests.Api.Registration
     using Repositories;
     using Shared;
     using Shared.Models;
-    using Shared.Parameters;
     using Shared.Repositories;
     using SimpleAuth;
+    using SimpleAuth.Shared.Requests;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using Xunit;
 
     public sealed class DefaultClientRepositoryFixture : IDisposable
     {
-        private IClientRepository _clientRepositoryFake;
+        private readonly IClientRepository _clientRepositoryFake;
         private readonly HttpClient _httpClient;
 
         public DefaultClientRepositoryFixture()
         {
             _httpClient = new HttpClient();
-            InitializeFakeObjects();
+            _clientRepositoryFake = new InMemoryClientRepository(
+                _httpClient,
+                new InMemoryScopeRepository(new[] {new Scope {Name = "scope"}}),
+                new Client[0]);
         }
 
         [Fact]
@@ -46,7 +50,9 @@ namespace SimpleAuth.Tests.Api.Registration
         {
             const string clientId = "client_id";
 
-            var result = await _clientRepositoryFake.Search(new SearchClientParameter {ClientIds = new[] {clientId}})
+            var result = await _clientRepositoryFake.Search(
+                    new SearchClientsRequest {ClientIds = new[] {clientId}},
+                    CancellationToken.None)
                 .ConfigureAwait(false);
             Assert.Empty(result.Content);
         }
@@ -59,13 +65,15 @@ namespace SimpleAuth.Tests.Api.Registration
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 ClientId = clientId,
-                AllowedScopes = new[] {new Scope {Name = "scope"}},
+                AllowedScopes = new[] {"scope"},
                 RedirectionUrls = new[] {new Uri("https://localhost"),},
                 RequestUris = new[] {new Uri("https://localhost"),}
             };
-            await _clientRepositoryFake.Insert(client).ConfigureAwait(false);
+            await _clientRepositoryFake.Insert(client, CancellationToken.None).ConfigureAwait(false);
 
-            var result = await _clientRepositoryFake.Search(new SearchClientParameter {ClientIds = new[] {clientId}})
+            var result = await _clientRepositoryFake.Search(
+                    new SearchClientsRequest {ClientIds = new[] {clientId}},
+                    CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.Equal(clientId, result.Content.First().ClientId);
@@ -74,7 +82,8 @@ namespace SimpleAuth.Tests.Api.Registration
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientRepositoryFake.Insert(null))
+            await Assert
+                .ThrowsAsync<ArgumentNullException>(() => _clientRepositoryFake.Insert(null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
@@ -97,13 +106,10 @@ namespace SimpleAuth.Tests.Api.Registration
                 ClientId = "testclient",
                 ClientName = clientName,
                 ResponseTypes = new[] {ResponseTypeNames.Token},
-                GrantTypes = new List<GrantType> {GrantType.@implicit},
-                Secrets = new List<ClientSecret>
-                {
-                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}
-                },
-                AllowedScopes = new[] {new Scope {Name = "scope"}},
-                ApplicationType = ApplicationTypes.native,
+                GrantTypes = new[] {GrantTypes.Implicit},
+                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}},
+                AllowedScopes = new[] {"scope"},
+                ApplicationType = ApplicationTypes.Native,
                 ClientUri = clientUri,
                 PolicyUri = policyUri,
                 TosUri = tosUri,
@@ -120,28 +126,20 @@ namespace SimpleAuth.Tests.Api.Registration
                 RequestObjectSigningAlg = SecurityAlgorithms.RsaSha256,
                 RequestObjectEncryptionAlg = SecurityAlgorithms.RsaPKCS1,
                 RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
-                TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
+                TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretBasic,
                 TokenEndPointAuthSigningAlg = SecurityAlgorithms.RsaSha256,
                 //DefaultMaxAge = defaultMaxAge,
                 DefaultAcrValues = defaultAcrValues,
                 RequireAuthTime = requireAuthTime,
                 InitiateLoginUri = initiateLoginUri,
-                RequestUris = new List<Uri> {requestUri}
+                RequestUris = new [] {requestUri}
             };
 
             var jsonClient = JsonConvert.SerializeObject(client);
-            var result = await _clientRepositoryFake.Insert(client).ConfigureAwait(false);
+            var result = await _clientRepositoryFake.Insert(client, CancellationToken.None).ConfigureAwait(false);
             var jsonResult = JsonConvert.SerializeObject(result);
 
             Assert.Equal(jsonClient, jsonResult);
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _clientRepositoryFake = new DefaultClientRepository(
-                new Client[0],
-                _httpClient,
-                new DefaultScopeRepository(new[] {new Scope {Name = "scope"}}));
         }
 
         public void Dispose()

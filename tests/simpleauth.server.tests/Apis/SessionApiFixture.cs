@@ -5,14 +5,14 @@
     using System.Threading.Tasks;
     using Xunit;
 
-    public class SessionApiFixture : IClassFixture<TestOauthServerFixture>
+    public class SessionApiFixture
     {
         private const string BaseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
 
-        public SessionApiFixture(TestOauthServerFixture server)
+        public SessionApiFixture()
         {
-            _server = server;
+            _server = new TestOauthServerFixture();
         }
 
         [Fact]

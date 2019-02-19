@@ -14,21 +14,20 @@
 
 namespace SimpleAuth.Authenticate
 {
-    using Errors;
     using Microsoft.IdentityModel.Tokens;
-    using Shared;
     using Shared.Repositories;
     using System;
     using System.IdentityModel.Tokens.Jwt;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
 
     internal class ClientAssertionAuthentication
     {
         private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
         private readonly IClientStore _clientRepository;
 
-        public ClientAssertionAuthentication(
-            IClientStore clientRepository)
+        public ClientAssertionAuthentication(IClientStore clientRepository)
         {
             _clientRepository = clientRepository;
         }
@@ -40,7 +39,8 @@ namespace SimpleAuth.Authenticate
         /// <returns></returns>
         public string GetClientId(AuthenticateInstruction instruction)
         {
-            if (instruction.ClientAssertionType != ClientAssertionTypes.JwtBearer || string.IsNullOrWhiteSpace(instruction.ClientAssertion))
+            if (instruction.ClientAssertionType != "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+                || string.IsNullOrWhiteSpace(instruction.ClientAssertion))
             {
                 return string.Empty;
             }
@@ -65,9 +65,10 @@ namespace SimpleAuth.Authenticate
             return token.Issuer ?? string.Empty;
         }
 
-        public async Task<AuthenticationResult> AuthenticateClientWithPrivateKeyJwtAsync(
+        public async Task<AuthenticationResult> AuthenticateClientWithPrivateKeyJwt(
             AuthenticateInstruction instruction,
-            string expectedIssuer)
+            string expectedIssuer,
+            CancellationToken cancellationToken)
         {
             if (instruction == null)
             {
@@ -88,7 +89,7 @@ namespace SimpleAuth.Authenticate
             }
 
             var clientId = jwsPayload.Issuer;
-            var client = await _clientRepository.GetById(clientId).ConfigureAwait(false);
+            var client = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
 
             try
             {
@@ -97,7 +98,6 @@ namespace SimpleAuth.Authenticate
                     client.CreateValidationParameters(expectedIssuer, clientId),
                     out var securityToken);
                 var payload = (securityToken as JwtSecurityToken)?.Payload;
-                //await _jwtParser.UnSignAsync(jws, clientId).ConfigureAwait(false);
                 return payload == null
                     ? new AuthenticationResult(null, ErrorDescriptions.TheSignatureIsNotCorrect)
                     : new AuthenticationResult(client, null);
@@ -108,7 +108,9 @@ namespace SimpleAuth.Authenticate
             }
         }
 
-        public async Task<AuthenticationResult> AuthenticateClientWithClientSecretJwtAsync(AuthenticateInstruction instruction)
+        public async Task<AuthenticationResult> AuthenticateClientWithClientSecretJwt(
+            AuthenticateInstruction instruction,
+            CancellationToken cancellationToken)
         {
             if (instruction == null)
             {
@@ -124,29 +126,14 @@ namespace SimpleAuth.Authenticate
 
             var jwe = instruction.ClientAssertion;
             var clientId = instruction.ClientIdFromHttpRequestBody;
-            var client = await _clientRepository.GetById(clientId).ConfigureAwait(false);
+            var client = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
             var validationParameters = client.CreateValidationParameters();
             _handler.ValidateToken(jwe, validationParameters, out var securityToken);
             var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
-            //var jws = await _jwtParser.DecryptWithPasswordAsync(jwe, clientId, clientSecret).ConfigureAwait(false);
-            //if (string.IsNullOrWhiteSpace(jws))
-            //{
-            //    return new AuthenticationResult(null, ErrorDescriptions.TheJweTokenCannotBeDecrypted);
-            //}
 
-            //var isJwsToken = _jwtParser.IsJwsToken(jws);
-            //if (!isJwsToken)
-            //{
-            //    return new AuthenticationResult(null, ErrorDescriptions.TheClientAssertionIsNotAJwsToken);
-            //}
-
-            //var jwsPayload = await _jwtParser.UnSignAsync(jws, clientId).ConfigureAwait(false);
-            if (jwsPayload == null)
-            {
-                return new AuthenticationResult(null, ErrorDescriptions.TheJwsPayloadCannotBeExtracted);
-            }
-
-            return new AuthenticationResult(client, null);
+            return jwsPayload == null
+                ? new AuthenticationResult(null, ErrorDescriptions.TheJwsPayloadCannotBeExtracted)
+                : new AuthenticationResult(client, null);
         }
     }
 }

@@ -14,7 +14,7 @@
 
 namespace SimpleAuth.Parameters
 {
-    public class ClientCredentialsGrantTypeParameter : GrantTypeParameter
+    internal class ClientCredentialsGrantTypeParameter : GrantTypeParameter
     {
         /// <summary>
         /// Gets or sets the scope

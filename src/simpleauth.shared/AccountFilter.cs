@@ -7,18 +7,34 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Text.RegularExpressions;
+    using System.Threading;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Defines the account filtering.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.IAccountFilter" />
     public class AccountFilter : IAccountFilter
     {
         private readonly IFilterStore _filterStore;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccountFilter"/> class.
+        /// </summary>
+        /// <param name="filterStore">The filter store.</param>
         public AccountFilter(IFilterStore filterStore)
         {
             _filterStore = filterStore;
         }
 
-        public async Task<AccountFilterResult> Check(IEnumerable<Claim> claims)
+        /// <summary>
+        /// Checks the specified claims to determine whether the account should be filtered.
+        /// </summary>
+        /// <param name="claims">The claims.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">claims</exception>
+        public async Task<AccountFilterResult> Check(IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
             if (claims == null)
             {
@@ -26,7 +42,7 @@
             }
 
             var accountFilterRules = new List<AccountFilterRuleResult>();
-            var filters = await _filterStore.GetAll().ConfigureAwait(false);
+            var filters = await _filterStore.GetAll(cancellationToken).ConfigureAwait(false);
             if (filters != null)
             {
                 foreach (var filter in filters)
@@ -37,10 +53,10 @@
                     {
                         foreach (var rule in filter.Rules)
                         {
-                            var claim = claims.FirstOrDefault(c => c.Type == rule.ClaimKey);
+                            var claim = claims.FirstOrDefault(c => c.Type == rule.ClaimType);
                             if (claim == null)
                             {
-                                errorMessages.Add($"the claim '{rule.ClaimKey}' doesn't exist");
+                                errorMessages.Add($"the claim '{rule.ClaimType}' doesn't exist");
                                 continue;
                             }
 
@@ -85,7 +101,7 @@
 
             return new AccountFilterResult
             {
-                AccountFilterRules = accountFilterRules,
+                AccountFilterRules = accountFilterRules.ToArray(),
                 IsValid = accountFilterRules.Any(u => u.IsValid)
             };
         }

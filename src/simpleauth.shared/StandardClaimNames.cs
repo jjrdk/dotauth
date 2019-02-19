@@ -1,30 +1,96 @@
 namespace SimpleAuth.Shared
 {
+    /// <summary>
+    /// Parameter names of a token request
+    /// </summary>
+    internal static class StandardTokenRequestParameterNames
+    {
+        public const string ClientIdName = "client_id";
+        public const string UserName = "username";
+        public const string PasswordName = "password";
+        public const string AuthorizationCodeName = "code";
+        public const string RefreshToken = "refresh_token";
+        public const string ScopeName = "scope";
+    }
+
+    /// <summary>
+    /// Defines the standard claim names.
+    /// </summary>
     public static class StandardClaimNames
     {
-        public static string Issuer = "iss";
-        public static string Audiences = "aud";
-        public static string ExpirationTime = "exp";
-        public static string Iat = "iat";
-        public static string AuthenticationTime = "auth_time";
-        public static string Nonce = "nonce";
-        public static string Acr = "acr";
-        public static string Amr = "amr";
-        public static string Azp = "azp";
+        /// <summary>
+        /// The issuer
+        /// </summary>
+        public const string Issuer = "iss";
+
+        /// <summary>
+        /// The audiences
+        /// </summary>
+        public const string Audiences = "aud";
+
+        /// <summary>
+        /// The expiration time
+        /// </summary>
+        public const string ExpirationTime = "exp";
+
+        /// <summary>
+        /// The iat
+        /// </summary>
+        public const string Iat = "iat";
+
+        /// <summary>
+        /// The authentication time
+        /// </summary>
+        public const string AuthenticationTime = "auth_time";
+
+        /// <summary>
+        /// The nonce
+        /// </summary>
+        public const string Nonce = "nonce";
+
+        /// <summary>
+        /// The acr
+        /// </summary>
+        public const string Acr = "acr";
+
+        /// <summary>
+        /// The amr
+        /// </summary>
+        public const string Amr = "amr";
+
+        /// <summary>
+        /// The azp
+        /// </summary>
+        public const string Azp = "azp";
+
         /// <summary>
         /// Unique identifier of the JWT.
         /// </summary>
-        public static string Jti = "jti";
+        public const string Jti = "jti";
+
         /// <summary>
         /// Access token hash value
         /// </summary>
-        public static string AtHash = "at_hash";
+        public const string AtHash = "at_hash";
+
         /// <summary>
         /// Authorization code hash value
         /// </summary>
-        public static string CHash = "c_hash";
-        public static string ClientId = "client_id";
-        public static string Scopes = "scope";
-        public static string Subject = "sub";
+        public const string CHash = "c_hash";
+
+        /// <summary>
+        /// The client identifier
+        /// </summary>
+        public const string ClientId = "client_id";
+
+        /// <summary>
+        /// The scopes
+        /// </summary>
+        public const string Scopes = "scope";
+
+        /// <summary>
+        /// The subject
+        /// </summary>
+        public const string Subject = "sub";
     }
 }

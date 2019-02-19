@@ -14,78 +14,92 @@
 
 namespace SimpleAuth.Server.Tests
 {
-    using Client;
     using Controllers;
     using Extensions;
     using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.IdentityModel.Logging;
+    using Microsoft.IdentityModel.Tokens;
     using MiddleWares;
-    using SimpleAuth;
-    using SimpleAuth.Services;
+    using SimpleAuth.Repositories;
+    using SimpleAuth.Shared.Repositories;
     using Stores;
     using System;
-    using System.Net.Http;
-    using Twilio;
-    using Twilio.Actions;
-    using Twilio.Controllers;
-    using Twilio.Services;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Sms.Controllers;
+    using SimpleAuth.Sms.Services;
 
     public class FakeStartup : IStartup
     {
-        public const string ScimEndPoint = "http://localhost:5555/";
+        private const string Bearer = "Bearer ";
+        private static readonly int StartIndex = Bearer.Length;
+        private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
         public const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
-        private readonly SimpleAuthOptions _options;
         private readonly SharedContext _context;
 
         public FakeStartup(SharedContext context)
         {
-            _options = new SimpleAuthOptions
-            {
-                Configuration = new OpenIdServerConfiguration
-                {
-                    Clients = DefaultStores.Clients(context),
-                    Consents = DefaultStores.Consents(),
-                    Users = DefaultStores.Users()
-                },
-                Scim = new ScimOptions
-                {
-                    IsEnabled = true,
-                    EndPoint = ScimEndPoint
-                }
-            };
+            IdentityModelEventSource.ShowPII = true;
             _context = context;
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             // 1. Add the dependencies needed to enable CORS
-            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader()));
+            services.AddCors(
+                options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
             // 2. Configure server
             ConfigureIdServer(services);
-            services.AddAuthentication(opts =>
-            {
-                opts.DefaultAuthenticateScheme = DefaultSchema;
-                opts.DefaultChallengeScheme = DefaultSchema;
-            })
-            .AddFakeCustomAuth(o => { })
-            .AddFakeOAuth2Introspection(o =>
-            {
-                o.WellKnownConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration";
-                o.ClientId = "stateless_client";
-                o.ClientSecret = "stateless_client";
-                o.Client = _context.Client;
-                // o.IdentityServerClientFactory = new IdentityServerClientFactory(_context.Oauth2IntrospectionHttpClientFactory.Object);
-            })
-            .AddFakeUserInfoIntrospection(o => { });
-            services.AddAuthorization(opt =>
-            {
-                opt.AddAuthPolicies(DefaultSchema);
-            });
+            services.AddAuthentication(
+                    opts =>
+                    {
+                        opts.DefaultAuthenticateScheme = DefaultSchema;
+                        opts.DefaultChallengeScheme = DefaultSchema;
+                    })
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                    cfg =>
+                    {
+                        cfg.RequireHttpsMetadata = false;
+                        cfg.Events = new JwtBearerEvents
+                        {
+                            OnAuthenticationFailed = ctx =>
+                            {
+                                string authorization = ctx.Request.Headers["Authorization"];
+                                if (string.IsNullOrWhiteSpace(authorization))
+                                {
+                                    ctx.NoResult();
+                                    return Task.CompletedTask;
+                                }
+
+                                string token = null;
+                                if (authorization.StartsWith(Bearer, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    token = authorization.Substring(StartIndex).Trim();
+                                }
+
+                                var jwt = (JwtSecurityToken)_handler.ReadToken(token);
+                                var claimsIdentity = new ClaimsIdentity(jwt.Claims, JwtBearerDefaults.AuthenticationScheme);
+                                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+                                ctx.Principal = claimsPrincipal;
+                                ctx.Success();
+                                return Task.CompletedTask;
+                            }
+                        };
+                        cfg.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateAudience = false,
+                        };
+                    })
+                .AddFakeCustomAuth(o => { });
+
+            services.AddAuthorization(opt => { opt.AddAuthPolicies(DefaultSchema, JwtBearerDefaults.AuthenticationScheme); });
             // 3. Configure MVC
             var mvc = services.AddMvc();
             var parts = mvc.PartManager.ApplicationParts;
@@ -101,7 +115,7 @@ namespace SimpleAuth.Server.Tests
             //1 . Enable CORS.
             app.UseCors("AllowAll");
             // 4. Use simple identity server.
-            app.UseSimpleAuth(o => { });
+            app.UseSimpleAuthExceptionHandler();
             //// 5. Client JWKS endpoint
             //app.Map("/jwks_client", a =>
             //{
@@ -127,30 +141,22 @@ namespace SimpleAuth.Server.Tests
 
         private void ConfigureIdServer(IServiceCollection services)
         {
-            _options.Configuration = new OpenIdServerConfiguration
-            {
-                Clients = DefaultStores.Clients(_context),
-                Consents = DefaultStores.Consents(),
-                //JsonWebKeys = DefaultStores.JsonWebKeys(_context),
-                Profiles = DefaultStores.Profiles(),
-                Users = DefaultStores.Users()
-            };
-            services.AddSingleton(new SmsAuthenticationOptions());
-            services.AddSingleton(_context.TwilioClient.Object);
-            services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
-            services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();
-            services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
-            services.AddSimpleAuth(_options)
-                .AddDefaultTokenStore()
+            services.AddSingleton(_context.TwilioClient.Object)
+                .AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>()
+                .AddSimpleAuth(options =>
+                {
+                    options.Clients = sp => new InMemoryClientRepository(
+                        _context.Client,
+                        sp.GetService<IScopeStore>(),
+                        DefaultStores.Clients(_context));
+                    options.Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents());
+                    options.Users = sp => new InMemoryResourceOwnerRepository(DefaultStores.Users());
+                    options.UserClaimsToIncludeInAuthToken = new[] { "sub", "role", "name" };
+                })
                 .AddLogging()
-                .AddAccountFilter();
-            services.AddSingleton(_context.ConfirmationCodeStore.Object);
-            services.AddSingleton(sp => _context.Client);
-            services.AddSingleton<IUsersClient>(sp =>
-            {
-                var baseUrl = _options.Scim.EndPoint;
-                return new UsersClient(new Uri(baseUrl), sp.GetService<HttpClient>());
-            });
+                .AddAccountFilter()
+                .AddSingleton(_context.ConfirmationCodeStore.Object)
+                .AddSingleton(sp => _context.Client);
         }
     }
 }

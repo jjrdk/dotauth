@@ -16,11 +16,13 @@ namespace SimpleAuth.WebSite.User.Actions
 {
     using System;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Exceptions;
     using Extensions;
     using Shared.Models;
     using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
 
     internal class GetUserOperation
     {
@@ -30,32 +32,32 @@ namespace SimpleAuth.WebSite.User.Actions
         {
             _resourceOwnerRepository = resourceOwnerRepository;
         }
-        
-        public Task<ResourceOwner> Execute(ClaimsPrincipal claimsPrincipal)
+
+        public Task<ResourceOwner> Execute(ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken)
         {
             if (claimsPrincipal == null)
             {
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            if (claimsPrincipal.Identity == null ||
-                !claimsPrincipal.Identity.IsAuthenticated ||
-                !(claimsPrincipal.Identity is ClaimsIdentity))
+            if (claimsPrincipal.Identity == null
+                || !claimsPrincipal.Identity.IsAuthenticated
+                || !(claimsPrincipal.Identity is ClaimsIdentity))
             {
                 throw new SimpleAuthException(
-                      Errors.ErrorCodes.UnhandledExceptionCode,
-                      Errors.ErrorDescriptions.TheUserNeedsToBeAuthenticated);
+                    ErrorCodes.UnhandledExceptionCode,
+                    ErrorDescriptions.TheUserNeedsToBeAuthenticated);
             }
 
             var subject = claimsPrincipal.GetSubject();
             if (string.IsNullOrWhiteSpace(subject))
             {
                 throw new SimpleAuthException(
-                    Errors.ErrorCodes.UnhandledExceptionCode,
-                    Errors.ErrorDescriptions.TheSubjectCannotBeRetrieved);
+                    ErrorCodes.UnhandledExceptionCode,
+                    ErrorDescriptions.TheSubjectCannotBeRetrieved);
             }
-            
-            return _resourceOwnerRepository.Get(subject);
+
+            return _resourceOwnerRepository.Get(subject, cancellationToken);
         }
     }
 }

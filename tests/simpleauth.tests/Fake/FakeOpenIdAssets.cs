@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,13 +14,13 @@
 
 namespace SimpleAuth.Tests.Fake
 {
+    using Helpers;
+    using Microsoft.IdentityModel.Tokens;
     using Shared;
     using Shared.Models;
     using SimpleAuth;
     using System;
     using System.Collections.Generic;
-    using Helpers;
-    using Microsoft.IdentityModel.Tokens;
 
     public static class FakeOpenIdAssets
     {
@@ -28,126 +28,35 @@ namespace SimpleAuth.Tests.Fake
         /// Get a list of fake clients
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<Client> GetClients()
+        public static Client[] GetClients()
         {
-            return new List<Client>
+            return new[]
             {
                 new Client
                 {
                     ClientId = "MyBlog",
                     ClientName = "My blog",
-                    Secrets = new List<ClientSecret>
-                    {
-                        new ClientSecret
-                        {
-                            Type = ClientSecretTypes.SharedSecret,
-                            Value = "MyBlog"
-                        }
-                    },
-                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
-                    AllowedScopes = new List<Scope>
+                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "MyBlog"}},
+                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretBasic,
+                    AllowedScopes = new[]
                     {
                         // PROTECTED API SCOPES
-                        new Scope
-                        {
-                            Name = "BlogApi"
-                        },
-                        new Scope
-                        {
-                            Name = "BlogApi:AddArticle"
-                        },
-                        new Scope
-                        {
-                            Name = "openid",
-                            IsExposed = true,
-                            IsOpenIdScope = true,
-                            Description = "openid",
-                            Type = ScopeType.ProtectedApi
-                        },
+                        "BlogApi",
+                        "BlogApi:AddArticle",
+                        "openid",
                         // RO SCOPES
-                        new Scope
-                        {
-                            Name = "profile",
-                            IsExposed = true,
-                            IsOpenIdScope = true,
-                            Description = "Access to the profile",
-                            Claims = new List<string>
-                            {
-                                JwtConstants.StandardResourceOwnerClaimNames.Name,
-                                JwtConstants.StandardResourceOwnerClaimNames.FamilyName,
-                                JwtConstants.StandardResourceOwnerClaimNames.GivenName,
-                                JwtConstants.StandardResourceOwnerClaimNames.MiddleName,
-                                JwtConstants.StandardResourceOwnerClaimNames.NickName,
-                                JwtConstants.StandardResourceOwnerClaimNames.PreferredUserName,
-                                JwtConstants.StandardResourceOwnerClaimNames.Profile,
-                                JwtConstants.StandardResourceOwnerClaimNames.Picture,
-                                JwtConstants.StandardResourceOwnerClaimNames.WebSite,
-                                JwtConstants.StandardResourceOwnerClaimNames.Gender,
-                                JwtConstants.StandardResourceOwnerClaimNames.BirthDate,
-                                JwtConstants.StandardResourceOwnerClaimNames.ZoneInfo,
-                                JwtConstants.StandardResourceOwnerClaimNames.Locale,
-                                JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt
-                            },
-                            Type = ScopeType.ResourceOwner
-                        },
-                        new Scope
-                        {
-                            Name = "email",
-                            IsExposed = true,
-                            IsOpenIdScope = true,
-                            IsDisplayedInConsent = true,
-                            Description = "Access to the email",
-                            Claims = new List<string>
-                            {
-                                JwtConstants.StandardResourceOwnerClaimNames.Email,
-                                JwtConstants.StandardResourceOwnerClaimNames.EmailVerified
-                            },
-                            Type = ScopeType.ResourceOwner
-                        },
-                        new Scope
-                        {
-                            Name = "address",
-                            IsExposed = true,
-                            IsOpenIdScope = true,
-                            IsDisplayedInConsent = true,
-                            Description = "Access to the address",
-                            Claims = new List<string>
-                            {
-                                JwtConstants.StandardResourceOwnerClaimNames.Address
-                            },
-                            Type = ScopeType.ResourceOwner
-                        },
-                        new Scope
-                        {
-                            Name = "phone",
-                            IsExposed = true,
-                            IsOpenIdScope = true,
-                            IsDisplayedInConsent = true,
-                            Description = "Access to the phone",
-                            Claims = new List<string>
-                            {
-                                JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber,
-                                JwtConstants.StandardResourceOwnerClaimNames.PhoneNumberVerified
-                            },
-                            Type = ScopeType.ResourceOwner
-                        }
+                        "profile",
+                        "email",
+                        "address",
+                        "phone"
                     },
-                    GrantTypes = new []
-                    {
-                        GrantType.@implicit,
-                        GrantType.authorization_code
-                    },
-                    ResponseTypes = new []
-                    {
-                        ResponseTypeNames.Token,
-                        ResponseTypeNames.Code,
-                        ResponseTypeNames.IdToken
-                    },
+                    GrantTypes = new[] {GrantTypes.Implicit, GrantTypes.AuthorizationCode},
+                    ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.Code, ResponseTypeNames.IdToken},
                     JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, //"RS256",
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256, //"RS256",
                     // IdTokenEncryptedResponseAlg = "RSA1_5",
                     // IdTokenEncryptedResponseEnc = "A128CBC-HS256",
-                    RedirectionUrls = new List<Uri>
+                    RedirectionUrls = new []
                     {
                         new Uri("https://op.certification.openid.net:60360/authz_cb"),
                         new Uri("http://localhost"),
@@ -186,7 +95,7 @@ namespace SimpleAuth.Tests.Fake
                     IsOpenIdScope = true,
                     IsDisplayedInConsent = false,
                     Description = "openid",
-                    Type = ScopeType.ProtectedApi
+                    Type = ScopeTypes.ProtectedApi
                 },
                 new Scope
                 {
@@ -194,24 +103,24 @@ namespace SimpleAuth.Tests.Fake
                     IsExposed = true,
                     IsOpenIdScope = true,
                     Description = "Access to the profile",
-                    Claims = new List<string>
+                    Claims = new[]
                     {
-                        JwtConstants.StandardResourceOwnerClaimNames.Name,
-                        JwtConstants.StandardResourceOwnerClaimNames.FamilyName,
-                        JwtConstants.StandardResourceOwnerClaimNames.GivenName,
-                        JwtConstants.StandardResourceOwnerClaimNames.MiddleName,
-                        JwtConstants.StandardResourceOwnerClaimNames.NickName,
-                        JwtConstants.StandardResourceOwnerClaimNames.PreferredUserName,
-                        JwtConstants.StandardResourceOwnerClaimNames.Profile,
-                        JwtConstants.StandardResourceOwnerClaimNames.Picture,
-                        JwtConstants.StandardResourceOwnerClaimNames.WebSite,
-                        JwtConstants.StandardResourceOwnerClaimNames.Gender,
-                        JwtConstants.StandardResourceOwnerClaimNames.BirthDate,
-                        JwtConstants.StandardResourceOwnerClaimNames.ZoneInfo,
-                        JwtConstants.StandardResourceOwnerClaimNames.Locale,
-                        JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt
+                        OpenIdClaimTypes.Name,
+                        OpenIdClaimTypes.FamilyName,
+                        OpenIdClaimTypes.GivenName,
+                        OpenIdClaimTypes.MiddleName,
+                        OpenIdClaimTypes.NickName,
+                        OpenIdClaimTypes.PreferredUserName,
+                        OpenIdClaimTypes.Profile,
+                        OpenIdClaimTypes.Picture,
+                        OpenIdClaimTypes.WebSite,
+                        OpenIdClaimTypes.Gender,
+                        OpenIdClaimTypes.BirthDate,
+                        OpenIdClaimTypes.ZoneInfo,
+                        OpenIdClaimTypes.Locale,
+                        OpenIdClaimTypes.UpdatedAt
                     },
-                    Type = ScopeType.ResourceOwner,
+                    Type = ScopeTypes.ResourceOwner,
                     IsDisplayedInConsent = true
                 },
                 new Scope
@@ -221,12 +130,8 @@ namespace SimpleAuth.Tests.Fake
                     IsOpenIdScope = true,
                     IsDisplayedInConsent = true,
                     Description = "Access to the email",
-                    Claims = new List<string>
-                    {
-                        JwtConstants.StandardResourceOwnerClaimNames.Email,
-                        JwtConstants.StandardResourceOwnerClaimNames.EmailVerified
-                    },
-                    Type = ScopeType.ResourceOwner
+                    Claims = new[] {OpenIdClaimTypes.Email, OpenIdClaimTypes.EmailVerified},
+                    Type = ScopeTypes.ResourceOwner
                 },
                 new Scope
                 {
@@ -235,11 +140,8 @@ namespace SimpleAuth.Tests.Fake
                     IsOpenIdScope = true,
                     IsDisplayedInConsent = true,
                     Description = "Access to the address",
-                    Claims = new List<string>
-                    {
-                        JwtConstants.StandardResourceOwnerClaimNames.Address
-                    },
-                    Type = ScopeType.ResourceOwner
+                    Claims = new[] {OpenIdClaimTypes.Address},
+                    Type = ScopeTypes.ResourceOwner
                 },
                 new Scope
                 {
@@ -248,12 +150,8 @@ namespace SimpleAuth.Tests.Fake
                     IsOpenIdScope = true,
                     IsDisplayedInConsent = true,
                     Description = "Access to the phone",
-                    Claims = new List<string>
-                    {
-                        JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber,
-                        JwtConstants.StandardResourceOwnerClaimNames.PhoneNumberVerified
-                    },
-                    Type = ScopeType.ResourceOwner
+                    Claims = new[] {OpenIdClaimTypes.PhoneNumber, OpenIdClaimTypes.PhoneNumberVerified},
+                    Type = ScopeTypes.ResourceOwner
                 }
             };
         }

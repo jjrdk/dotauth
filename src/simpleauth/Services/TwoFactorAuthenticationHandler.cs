@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,20 +14,22 @@
 
 namespace SimpleAuth.Services
 {
+    using Shared;
+    using Shared.Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Shared;
-    using Shared.Models;
 
     internal class TwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandler
     {
-        private readonly IEnumerable<ITwoFactorAuthenticationService> _twoFactorServices;
+        private readonly ITwoFactorAuthenticationService[] _twoFactorServices;
 
         public TwoFactorAuthenticationHandler(IEnumerable<ITwoFactorAuthenticationService> twoFactorServices)
         {
-            _twoFactorServices = twoFactorServices;
+            _twoFactorServices = twoFactorServices == null
+                ? Array.Empty<ITwoFactorAuthenticationService>()
+                : twoFactorServices.ToArray();
         }
 
         public ITwoFactorAuthenticationService Get(string twoFactorAuthType)
@@ -37,15 +39,10 @@ namespace SimpleAuth.Services
                 throw new ArgumentNullException(nameof(twoFactorAuthType));
             }
 
-            if (_twoFactorServices == null)
-            {
-                return null;
-            }
-
-            return _twoFactorServices.FirstOrDefault(s => s.Name == twoFactorAuthType);
+            return _twoFactorServices?.FirstOrDefault(s => s.Name == twoFactorAuthType);
         }
 
-        public IEnumerable<ITwoFactorAuthenticationService> GetAll()
+        public ITwoFactorAuthenticationService[] GetAll()
         {
             return _twoFactorServices;
         }
@@ -73,7 +70,7 @@ namespace SimpleAuth.Services
                 return false;
             }
 
-            await service.SendAsync(code, user).ConfigureAwait(false);
+            await service.Send(code, user).ConfigureAwait(false);
             return true;
         }
     }

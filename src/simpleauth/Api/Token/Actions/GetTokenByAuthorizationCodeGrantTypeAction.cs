@@ -17,22 +17,21 @@ using SimpleAuth.Shared.Repositories;
 namespace SimpleAuth.Api.Token.Actions
 {
     using Authenticate;
-    using Errors;
-    using Exceptions;
-    using Helpers;
     using JwtToken;
-    using Logging;
     using Parameters;
     using Shared;
     using Shared.Models;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Events.Logging;
     using System;
     using System.Linq;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Validators;
 
-    public class GetTokenByAuthorizationCodeGrantTypeAction
+    internal class GetTokenByAuthorizationCodeGrantTypeAction
     {
         private class ValidationResult
         {
@@ -40,70 +39,88 @@ namespace SimpleAuth.Api.Token.Actions
             public Client Client { get; set; }
         }
 
-        private readonly ClientValidator _clientValidator;
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
-        private readonly OAuthConfigurationOptions _configurationService;
+        private readonly RuntimeSettings _configurationService;
         private readonly AuthenticateClient _authenticateClient;
         private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;
-        private readonly IJwtGenerator _jwtGenerator;
+        private readonly IJwksStore _jwksStore;
+        private readonly JwtGenerator _jwtGenerator;
 
         public GetTokenByAuthorizationCodeGrantTypeAction(
             IAuthorizationCodeStore authorizationCodeStore,
-            OAuthConfigurationOptions configurationService,
+            RuntimeSettings configurationService,
             IClientStore clientStore,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
-            IJwtGenerator jwtGenerator)
+            IScopeRepository scopeRepository,
+            IJwksStore jwksStore)
         {
-            _clientValidator = new ClientValidator();
             _authorizationCodeStore = authorizationCodeStore;
             _configurationService = configurationService;
             _authenticateClient = new AuthenticateClient(clientStore);
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
-            _jwtGenerator = jwtGenerator;
+            _jwksStore = jwksStore;
+            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore);
         }
 
-        public async Task<GrantedToken> Execute(AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
+        public async Task<GrantedToken> Execute(
+            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
+            AuthenticationHeaderValue authenticationHeaderValue,
+            X509Certificate2 certificate,
+            string issuerName,
+            CancellationToken cancellationToken)
         {
             if (authorizationCodeGrantTypeParameter == null)
             {
                 throw new ArgumentNullException(nameof(authorizationCodeGrantTypeParameter));
             }
 
-            var result = await ValidateParameter(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
-            await _authorizationCodeStore.RemoveAuthorizationCode(result.AuthCode.Code).ConfigureAwait(false); // 1. Invalidate the authorization code by removing it !
-            var grantedToken = await _tokenStore.GetValidGrantedTokenAsync(
-                result.AuthCode.Scopes,
-                result.AuthCode.ClientId,
-                result.AuthCode.IdTokenPayload,
-                result.AuthCode.UserInfoPayLoad).ConfigureAwait(false);
+            var result = await ValidateParameter(
+                    authorizationCodeGrantTypeParameter,
+                    authenticationHeaderValue,
+                    certificate,
+                    issuerName,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            await _authorizationCodeStore.RemoveAuthorizationCode(result.AuthCode.Code)
+                .ConfigureAwait(false); // 1. Invalidate the authorization code by removing it !
+            var grantedToken = await _tokenStore.GetValidGrantedToken(
+                    result.AuthCode.Scopes,
+                    result.AuthCode.ClientId,
+                    cancellationToken,
+                    idTokenJwsPayload: result.AuthCode.IdTokenPayload,
+                    userInfoJwsPayload: result.AuthCode.UserInfoPayLoad)
+                .ConfigureAwait(false);
             if (grantedToken == null)
             {
                 grantedToken = await result.Client.GenerateToken(
+                        _jwksStore,
                         result.AuthCode.Scopes,
                         issuerName,
                         result.AuthCode.UserInfoPayLoad,
                         result.AuthCode.IdTokenPayload,
-                        result.AuthCode.IdTokenPayload?.Claims
-                            .Where(c => _configurationService.UserClaimsToIncludeInAuthToken.Contains(c.Type))
+                        cancellationToken,
+                        result.AuthCode.IdTokenPayload?.Claims.Where(
+                                c => _configurationService.UserClaimsToIncludeInAuthToken.Contains(c.Type))
                             .ToArray())
                     .ConfigureAwait(false);
-                await _eventPublisher.Publish(new AccessToClientGranted(
-                    Id.Create(),
-                    result.AuthCode.ClientId,
-                    grantedToken.AccessToken,
-                    grantedToken.IdToken,
-                    DateTime.UtcNow)).ConfigureAwait(false);
+                await _eventPublisher.Publish(
+                        new AccessToClientGranted(
+                            Id.Create(),
+                            result.AuthCode.ClientId,
+                            grantedToken.IdToken,
+                            DateTime.UtcNow))
+                    .ConfigureAwait(false);
                 // Fill-in the id-token
                 if (grantedToken.IdTokenPayLoad != null)
                 {
-                    _jwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad, result.Client);
-                    grantedToken.IdToken = await result.Client.GenerateIdTokenAsync(grantedToken.IdTokenPayLoad).ConfigureAwait(false);
+                    _jwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad, result.Client?.TokenLifetime);
+                    grantedToken.IdToken = result.Client.GenerateIdToken(grantedToken.IdTokenPayLoad);
                 }
 
-                await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);
+                await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
             }
 
             return grantedToken;
@@ -116,16 +133,21 @@ namespace SimpleAuth.Api.Token.Actions
         /// <param name="authenticationHeaderValue"></param>
         /// <param name="certificate"></param>
         /// <param name="issuerName"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         private async Task<ValidationResult> ValidateParameter(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
-            string issuerName)
+            string issuerName,
+            CancellationToken cancellationToken)
         {
             // 1. Authenticate the client
-            var instruction = authenticationHeaderValue.GetAuthenticateInstruction(authorizationCodeGrantTypeParameter, certificate);
-            var authResult = await _authenticateClient.Authenticate(instruction, issuerName).ConfigureAwait(false);
+            var instruction = authenticationHeaderValue.GetAuthenticateInstruction(
+                authorizationCodeGrantTypeParameter,
+                certificate);
+            var authResult = await _authenticateClient.Authenticate(instruction, issuerName, cancellationToken)
+                .ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {
@@ -133,27 +155,39 @@ namespace SimpleAuth.Api.Token.Actions
             }
 
             // 2. Check the client
-            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.authorization_code))
+            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantTypes.AuthorizationCode))
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidClient, string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.authorization_code));
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidClient,
+                    string.Format(
+                        ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                        client.ClientId,
+                        GrantTypes.AuthorizationCode));
             }
 
             if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseTypeNames.Code))
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidClient,
-                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, ResponseTypeNames.Code));
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidClient,
+                    string.Format(
+                        ErrorDescriptions.TheClientDoesntSupportTheResponseType,
+                        client.ClientId,
+                        ResponseTypeNames.Code));
             }
 
-            var authorizationCode = await _authorizationCodeStore.GetAuthorizationCode(authorizationCodeGrantTypeParameter.Code).ConfigureAwait(false);
+            var authorizationCode = await _authorizationCodeStore
+                .GetAuthorizationCode(authorizationCodeGrantTypeParameter.Code)
+                .ConfigureAwait(false);
             // 2. Check if the authorization code is valid
             if (authorizationCode == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidGrant,
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidGrant,
                     ErrorDescriptions.TheAuthorizationCodeIsNotCorrect);
             }
 
             // 3. Check PKCE
-            if (!_clientValidator.CheckPkce(client, authorizationCodeGrantTypeParameter.CodeVerifier, authorizationCode))
+            if (!client.CheckPkce(authorizationCodeGrantTypeParameter.CodeVerifier, authorizationCode))
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidGrant, ErrorDescriptions.TheCodeVerifierIsNotCorrect);
             }
@@ -162,15 +196,16 @@ namespace SimpleAuth.Api.Token.Actions
             var authorizationClientId = authorizationCode.ClientId;
             if (authorizationClientId != client.ClientId)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidGrant,
-                    string.Format(ErrorDescriptions.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidGrant,
+                    string.Format(
+                        ErrorDescriptions.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
                         client.ClientId));
             }
 
             if (authorizationCode.RedirectUri != authorizationCodeGrantTypeParameter.RedirectUri)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidGrant,
-                    ErrorDescriptions.TheRedirectionUrlIsNotTheSame);
+                throw new SimpleAuthException(ErrorCodes.InvalidGrant, ErrorDescriptions.TheRedirectionUrlIsNotTheSame);
             }
 
             // 5. Ensure the authorization code is still valid.
@@ -179,24 +214,23 @@ namespace SimpleAuth.Api.Token.Actions
             var currentDateTime = DateTime.UtcNow;
             if (currentDateTime > expirationDateTime)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidGrant,
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidGrant,
                     ErrorDescriptions.TheAuthorizationCodeIsObsolete);
             }
 
             // Ensure that the redirect_uri parameter value is identical to the redirect_uri parameter value.
-            var redirectionUrl = _clientValidator.GetRedirectionUrls(client, authorizationCodeGrantTypeParameter.RedirectUri);
+            var redirectionUrl = client.GetRedirectionUrls(authorizationCodeGrantTypeParameter.RedirectUri);
             if (!redirectionUrl.Any())
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidGrant,
-                    string.Format(ErrorDescriptions.RedirectUrlIsNotValid, authorizationCodeGrantTypeParameter.RedirectUri));
+                    string.Format(
+                        ErrorDescriptions.RedirectUrlIsNotValid,
+                        authorizationCodeGrantTypeParameter.RedirectUri));
             }
 
-            return new ValidationResult
-            {
-                Client = client,
-                AuthCode = authorizationCode
-            };
+            return new ValidationResult { Client = client, AuthCode = authorizationCode };
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,38 +14,52 @@
 
 namespace SimpleAuth.Api.Authorization
 {
-    using System;
-    using System.Security.Claims;
-    using System.Security.Principal;
-    using System.Threading.Tasks;
-    using Errors;
     using Exceptions;
     using Parameters;
     using Results;
     using Shared.Models;
     using SimpleAuth.Common;
-    using Validators;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Security.Claims;
+    using System.Security.Principal;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using SimpleAuth.Extensions;
 
     internal sealed class GetAuthorizationCodeOperation
     {
         private readonly ProcessAuthorizationRequest _processAuthorizationRequest;
-        private readonly ClientValidator _clientValidator;
-        private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
+        private readonly GenerateAuthorizationResponse _generateAuthorizationResponse;
 
         public GetAuthorizationCodeOperation(
-            ProcessAuthorizationRequest processAuthorizationRequest,
-            IGenerateAuthorizationResponse generateAuthorizationResponse)
+            IAuthorizationCodeStore authorizationCodeStore,
+            ITokenStore tokenStore,
+            IScopeRepository scopeRepository,
+            IClientStore clientStore,
+            IConsentRepository consentRepository,
+            IJwksStore jwksStore,
+            IEventPublisher eventPublisher)
         {
-            _processAuthorizationRequest = processAuthorizationRequest;
-            _clientValidator = new ClientValidator();
-            _generateAuthorizationResponse = generateAuthorizationResponse;
+            _processAuthorizationRequest = new ProcessAuthorizationRequest(clientStore, consentRepository);
+            _generateAuthorizationResponse = new GenerateAuthorizationResponse(
+                authorizationCodeStore,
+                tokenStore,
+                scopeRepository,
+                clientStore,
+                consentRepository,
+                jwksStore,
+                eventPublisher);
         }
 
         public async Task<EndpointResult> Execute(
             AuthorizationParameter authorizationParameter,
             IPrincipal principal,
             Client client,
-            string issuerName)
+            string issuerName,
+            CancellationToken cancellationToken)
         {
             if (authorizationParameter == null)
             {
@@ -59,21 +73,27 @@ namespace SimpleAuth.Api.Authorization
 
             var claimsPrincipal = principal as ClaimsPrincipal;
 
-            var result = await _processAuthorizationRequest
-                .ProcessAsync(authorizationParameter, claimsPrincipal, client, issuerName)
+            var result = await _processAuthorizationRequest.Process(
+                    authorizationParameter,
+                    claimsPrincipal,
+                    client,
+                    issuerName,
+                    cancellationToken)
                 .ConfigureAwait(false);
-            if (!_clientValidator.CheckGrantTypes(client, GrantType.authorization_code)
-            ) // 1. Check the client is authorized to use the authorization_code flow.
+
+            // 1. Check the client is authorized to use the authorization_code flow.
+            if (!client.CheckGrantTypes(GrantTypes.AuthorizationCode))
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                    string.Format(
+                        ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
                         "authorization_code"),
                     authorizationParameter.State);
             }
 
-            if (result.Type == TypeActionResult.RedirectToCallBackUrl)
+            if (result.Type == ActionResultType.RedirectToCallBackUrl)
             {
                 if (claimsPrincipal == null)
                 {
@@ -83,8 +103,13 @@ namespace SimpleAuth.Api.Authorization
                         authorizationParameter.State);
                 }
 
-                await _generateAuthorizationResponse
-                    .Generate(result, authorizationParameter, claimsPrincipal, client, issuerName)
+                await _generateAuthorizationResponse.Generate(
+                        result,
+                        authorizationParameter,
+                        claimsPrincipal,
+                        client,
+                        issuerName,
+                        CancellationToken.None)
                     .ConfigureAwait(false);
             }
 

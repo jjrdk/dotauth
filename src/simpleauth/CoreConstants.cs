@@ -15,38 +15,38 @@
 namespace SimpleAuth
 {
     using Api.Authorization;
-    using Parameters;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
     using System.Collections.Generic;
 
     internal static class CoreConstants
     {
-        public const string SESSION_ID = "session_id";
-        public const string DEFAULT_AMR = "pwd";
+        public const string SessionId = "session_id";
+        public const string DefaultAmr = "pwd";
 
-        // Open-Id Provider Authentication Policy Extension 1.0
+        // Open-ClientId Provider Authentication Policy Extension 1.0
         public static class StandardArcParameterNames
         {
-            public static string OpenIdNsPage = "openid.ns.pape";
+            public static string _openIdNsPage = "openid.ns.pape";
 
-            public static string OpenIdMaxAuthAge = "openid.pape.max_auth_age";
+            public static string _openIdMaxAuthAge = "openid.pape.max_auth_age";
 
-            public static string OpenIdAuthPolicies = "openid.pape.preferred_auth_policies";
+            public static string _openIdAuthPolicies = "openid.pape.preferred_auth_policies";
 
             // Namespace for the custom Assurance Level
-            public static string OpenIdCustomAuthLevel = "openid.pape.auth_level.ns";
+            public static string _openIdCustomAuthLevel = "openid.pape.auth_level.ns";
 
-            public static string OpenIdPreferredCustomAuthLevel = "openid.pape.preferred_auth_levels";
+            public static string _openIdPreferredCustomAuthLevel = "openid.pape.preferred_auth_levels";
         }
 
         public static class StandardAuthorizationResponseNames
         {
-            public static string IdTokenName = "id_token";
-            public static string AccessTokenName = "access_token";
-            public static string AuthorizationCodeName = "code";
-            public static string StateName = "state";
-            public static string SessionState = "session_state";
+            public static string _idTokenName = "id_token";
+            public static string _accessTokenName = "access_token";
+            public static string _authorizationCodeName = "code";
+            public static string _stateName = "state";
+            public static string _sessionState = "session_state";
         }
 
         //// Standard authentication policies.
@@ -74,22 +74,22 @@ namespace SimpleAuth
         //        Description = "Access to the profile",
         //        Claims = new[]
         //        {
-        //            JwtConstants.StandardResourceOwnerClaimNames.Name,
-        //            JwtConstants.StandardResourceOwnerClaimNames.FamilyName,
-        //            JwtConstants.StandardResourceOwnerClaimNames.GivenName,
-        //            JwtConstants.StandardResourceOwnerClaimNames.MiddleName,
-        //            JwtConstants.StandardResourceOwnerClaimNames.NickName,
-        //            JwtConstants.StandardResourceOwnerClaimNames.PreferredUserName,
-        //            JwtConstants.StandardResourceOwnerClaimNames.Profile,
-        //            JwtConstants.StandardResourceOwnerClaimNames.Picture,
-        //            JwtConstants.StandardResourceOwnerClaimNames.WebSite,
-        //            JwtConstants.StandardResourceOwnerClaimNames.Gender,
-        //            JwtConstants.StandardResourceOwnerClaimNames.BirthDate,
-        //            JwtConstants.StandardResourceOwnerClaimNames.ZoneInfo,
-        //            JwtConstants.StandardResourceOwnerClaimNames.Locale,
-        //            JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt
+        //            OpenIdClaimTypes.Name,
+        //            OpenIdClaimTypes.FamilyName,
+        //            OpenIdClaimTypes.GivenName,
+        //            OpenIdClaimTypes.MiddleName,
+        //            OpenIdClaimTypes.NickName,
+        //            OpenIdClaimTypes.PreferredUserName,
+        //            OpenIdClaimTypes.Profile,
+        //            OpenIdClaimTypes.Picture,
+        //            OpenIdClaimTypes.WebSite,
+        //            OpenIdClaimTypes.Gender,
+        //            OpenIdClaimTypes.BirthDate,
+        //            OpenIdClaimTypes.ZoneInfo,
+        //            OpenIdClaimTypes.Locale,
+        //            OpenIdClaimTypes.UpdatedAt
         //        },
-        //        Type = ScopeType.ResourceOwner
+        //        Type = ScopeTypes.ResourceOwner
         //    };
 
         //    public static Scope Email = new Scope
@@ -101,10 +101,10 @@ namespace SimpleAuth
         //        Description = "Access to the email",
         //        Claims = new[]
         //        {
-        //            JwtConstants.StandardResourceOwnerClaimNames.Email,
-        //            JwtConstants.StandardResourceOwnerClaimNames.EmailVerified
+        //            OpenIdClaimTypes.Email,
+        //            OpenIdClaimTypes.EmailVerified
         //        },
-        //        Type = ScopeType.ResourceOwner
+        //        Type = ScopeTypes.ResourceOwner
         //    };
 
         //    public static Scope Address = new Scope
@@ -116,9 +116,9 @@ namespace SimpleAuth
         //        Description = "Access to the address",
         //        Claims = new[]
         //        {
-        //            JwtConstants.StandardResourceOwnerClaimNames.Address
+        //            OpenIdClaimTypes.Address
         //        },
-        //        Type = ScopeType.ResourceOwner
+        //        Type = ScopeTypes.ResourceOwner
         //    };
 
         //    public static Scope Phone = new Scope
@@ -130,10 +130,10 @@ namespace SimpleAuth
         //        Description = "Access to the phone",
         //        Claims = new[]
         //        {
-        //            JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber,
-        //            JwtConstants.StandardResourceOwnerClaimNames.PhoneNumberVerified
+        //            OpenIdClaimTypes.PhoneNumber,
+        //            OpenIdClaimTypes.PhoneNumberVerified
         //        },
-        //        Type = ScopeType.ResourceOwner
+        //        Type = ScopeTypes.ResourceOwner
         //    };
 
         //    public static Scope OpenId = new Scope
@@ -143,7 +143,7 @@ namespace SimpleAuth
         //        IsOpenIdScope = true,
         //        IsDisplayedInConsent = false,
         //        Description = "openid",
-        //        Type = ScopeType.ProtectedApi
+        //        Type = ScopeTypes.ProtectedApi
         //    };
         //}
 
@@ -159,7 +159,7 @@ namespace SimpleAuth
 
         public static class StandardTokenTypes
         {
-            public static string Bearer = "Bearer";
+            public static string _bearer = "Bearer";
         }
 
         public static class StandardClaimParameterValueNames
@@ -173,9 +173,9 @@ namespace SimpleAuth
 
         public static class StandardClaimParameterNames
         {
-            public static string UserInfoName = "userinfo";
+            public static string _userInfoName = "userinfo";
 
-            public static string IdTokenName = "id_token";
+            public static string _idTokenName = "id_token";
         }
 
         public static class StandardTokenTypeHintNames
@@ -184,7 +184,7 @@ namespace SimpleAuth
             public const string RefreshToken = "refresh_token";
         }
 
-        public static string[] AllStandardTokenTypeHintNames = new[]
+        public static readonly string[] AllStandardTokenTypeHintNames =
         {
             StandardTokenTypeHintNames.AccessToken,
             StandardTokenTypeHintNames.RefreshToken
@@ -193,28 +193,28 @@ namespace SimpleAuth
         /// <summary>
         /// Parameter names of an authorization request
         /// </summary>
-        public static class StandardAuthorizationRequestParameterNames
+        internal static class StandardAuthorizationRequestParameterNames
         {
-            public static string ScopeName = "scope";
-            public static string ResponseTypeName = "response_type";
-            public static string ClientIdName = "client_id";
-            public static string RedirectUriName = "redirect_uri";
-            public static string StateName = "state";
-            public static string ResponseModeName = "response_mode";
-            public static string NonceName = "nonce";
-            public static string DisplayName = "display";
-            public static string PromptName = "prompt";
-            public static string MaxAgeName = "max_age";
-            public static string UiLocalesName = "ui_locales";
-            public static string IdTokenHintName = "id_token_hint";
-            public static string LoginHintName = "login_hint";
-            public static string ClaimsName = "claims";
-            public static string AcrValuesName = "acr_values";
-            public static string RequestName = "request";
-            public static string RequestUriName = "request_uri";
+            public const string ScopeName = "scope";
+            public const string ResponseTypeName = "response_type";
+            public const string ClientIdName = "client_id";
+            public const string RedirectUriName = "redirect_uri";
+            public const string StateName = "state";
+            public const string ResponseModeName = "response_mode";
+            public const string NonceName = "nonce";
+            public const string DisplayName = "display";
+            public const string PromptName = "prompt";
+            public const string MaxAgeName = "max_age";
+            public const string UiLocalesName = "ui_locales";
+            public const string IdTokenHintName = "id_token_hint";
+            public const string LoginHintName = "login_hint";
+            public const string ClaimsName = "claims";
+            public const string AcrValuesName = "acr_values";
+            public const string RequestName = "request";
+            public const string RequestUriName = "request_uri";
         }
 
-        public static class IntrospectionRequestNames
+        internal static class IntrospectionRequestNames
         {
             public const string Token = "token";
             public const string TokenTypeHint = "token_type_hint";
@@ -222,61 +222,6 @@ namespace SimpleAuth
             public const string ClientSecret = "client_secret";
             public const string ClientAssertion = "client_assertion";
             public const string ClientAssertionType = "client_assertion_type";
-        }
-
-        /// <summary>
-        /// Parameter names of a token request
-        /// </summary>
-        public static class StandardTokenRequestParameterNames
-        {
-            public static string ClientIdName = "client_id";
-            public static string UserName = "username";
-            public static string PasswordName = "password";
-            public static string AuthorizationCodeName = "code";
-            public static string RefreshToken = "refresh_token";
-            public static string ScopeName = "scope";
-        }
-
-        public static class StandardTranslationCodes
-        {
-            public const string ApplicationWouldLikeToCode = "application_would_like_to";
-            public const string ScopesCode = "scopes";
-            public const string IndividualClaimsCode = "individual_claims";
-            public const string NameCode = "Name";
-            public const string LoginExternalAccount = "login_external_account";
-            public const string LoginLocalAccount = "login_local_account";
-            public const string UserNameCode = "username";
-            public const string PasswordCode = "password";
-            public const string LoginCode = "login";
-            public const string RememberMyLoginCode = "remember_my_login";
-            public const string CancelCode = "cancel";
-            public const string ConfirmCode = "confirm";
-            public const string LinkToThePolicy = "policy";
-            public const string Tos = "tos";
-            public const string SendCode = "send_code";
-            public const string Code = "code";
-            public const string EditResourceOwner = "edit_resource_owner";
-            public const string YourName = "your_name";
-            public const string YourPassword = "your_password";
-            public const string Email = "email";
-            public const string YourEmail = "your_email";
-            public const string TwoAuthenticationFactor = "two_authentication_factor";
-            public const string UserIsUpdated = "user_is_updated";
-            public const string SendConfirmationCode = "send_confirmation_code";
-            public const string Phone = "phone";
-            public const string HashedPassword = "hashed_password";
-            public const string CreateResourceOwner = "create_resource_owner";
-            public const string Credentials = "credentials";
-            public const string RepeatPassword = "repeat_password";
-            public const string Claims = "claims";
-            public const string UserIsCreated = "user_is_created";
-            public const string TwoFactor = "two_factor";
-            public const string UpdateClaim = "update_claim";
-            public const string ConfirmationCode = "confirmation_code";
-            public const string ResetConfirmationCode = "resend_confirmation_code";
-            public const string ValidateConfirmationCode = "validate_confirmation_code";
-            public const string NoTwoFactorAuthenticator = "no_two_factor_authenticator";
-            public const string NoTwoFactorAuthenticatorSelected = "no_two_factor_authenticator_selected";
         }
 
         internal static readonly Dictionary<string[], AuthorizationFlow> MappingResponseTypesToAuthorizationFlows =
@@ -331,16 +276,16 @@ namespace SimpleAuth
                 }
             };
 
-        internal static Dictionary<AuthorizationFlow, ResponseMode> MappingAuthorizationFlowAndResponseModes = new Dictionary<AuthorizationFlow, ResponseMode>
+        internal static readonly Dictionary<AuthorizationFlow, string> MappingAuthorizationFlowAndResponseModes = new Dictionary<AuthorizationFlow, string>
         {
             {
-                AuthorizationFlow.AuthorizationCodeFlow, ResponseMode.query
+                AuthorizationFlow.AuthorizationCodeFlow, ResponseModes.Query
             },
             {
-                AuthorizationFlow.ImplicitFlow, ResponseMode.fragment
+                AuthorizationFlow.ImplicitFlow, ResponseModes.Fragment
             },
             {
-                AuthorizationFlow.HybridFlow, ResponseMode.fragment
+                AuthorizationFlow.HybridFlow, ResponseModes.Fragment
             }
         };
 
@@ -352,42 +297,37 @@ namespace SimpleAuth
 
         internal static class Supported
         {
-            public static List<AuthorizationFlow> SupportedAuthorizationFlows = new List<AuthorizationFlow>
+            public static readonly AuthorizationFlow[] SupportedAuthorizationFlows =
             {
                 AuthorizationFlow.AuthorizationCodeFlow,
                 AuthorizationFlow.ImplicitFlow,
                 AuthorizationFlow.HybridFlow
             };
 
-            public static List<GrantType> SupportedGrantTypes = new List<GrantType>
+            public static readonly string[] SupportedGrantTypes =
             {
-                GrantType.authorization_code,
-                GrantType.client_credentials,
-                GrantType.password,
-                GrantType.refresh_token,
-                GrantType.@implicit
+                GrantTypes.AuthorizationCode,
+                GrantTypes.ClientCredentials,
+                GrantTypes.Password,
+                GrantTypes.RefreshToken,
+                GrantTypes.Implicit
             };
 
-            public static string[] SupportedResponseModes = new[]
-            {
-                "query"
-            };
+            public static readonly string[] SupportedResponseModes = { "query" };
 
-            public static string[] SupportedSubjectTypes = new[]
+            public static readonly string[] SupportedSubjectTypes =
             {
                 // Same subject value to all clients.
-                SubjectTypeNames.Public,
-                SubjectTypeNames.PairWise
+                SubjectTypeNames.Public, SubjectTypeNames.PairWise
             };
 
-            public static List<TokenEndPointAuthenticationMethods> SupportedTokenEndPointAuthenticationMethods =
-                new List<TokenEndPointAuthenticationMethods>
+            public static readonly string[] SupportedTokenEndPointAuthenticationMethods =
             {
-                TokenEndPointAuthenticationMethods.client_secret_basic,
-                TokenEndPointAuthenticationMethods.client_secret_post,
-                TokenEndPointAuthenticationMethods.client_secret_jwt,
-                TokenEndPointAuthenticationMethods.private_key_jwt,
-                TokenEndPointAuthenticationMethods.tls_client_auth
+                TokenEndPointAuthenticationMethods.ClientSecretBasic,
+                TokenEndPointAuthenticationMethods.ClientSecretPost,
+                TokenEndPointAuthenticationMethods.ClientSecretJwt,
+                TokenEndPointAuthenticationMethods.PrivateKeyJwt,
+                TokenEndPointAuthenticationMethods.TlsClientAuth
             };
         }
 

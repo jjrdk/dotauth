@@ -1,22 +1,19 @@
-﻿using SimpleAuth.Services;
-
-namespace SimpleAuth.Tests.WebSite.Authenticate
+﻿namespace SimpleAuth.Tests.WebSite.Authenticate
 {
-    using Exceptions;
     using Moq;
     using Parameters;
     using Shared;
     using Shared.Models;
-    using SimpleAuth.WebSite.Authenticate.Actions;
-    using SimpleAuth.WebSite.Authenticate.Common;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.WebSite.Authenticate;
     using System;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using Xunit;
 
     public sealed class LocalOpenIdUserAuthenticationActionFixture
     {
-        private Mock<IAuthenticateHelper> _authenticateHelperFake;
         private LocalOpenIdUserAuthenticationAction _localUserAuthenticationAction;
 
         public LocalOpenIdUserAuthenticationActionFixture()
@@ -29,8 +26,17 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         {
             var localAuthenticationParameter = new LocalAuthenticationParameter();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _localUserAuthenticationAction.Execute(null, null, null, null)).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _localUserAuthenticationAction.Execute(localAuthenticationParameter, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                    () => _localUserAuthenticationAction.Execute(null, null, null, null, CancellationToken.None))
+                .ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                    () => _localUserAuthenticationAction.Execute(
+                        localAuthenticationParameter,
+                        null,
+                        null,
+                        null,
+                        CancellationToken.None))
+                .ConfigureAwait(false);
         }
 
         [Fact]
@@ -38,7 +44,12 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         {
             var authenticateService = new Mock<IAuthenticateResourceOwnerService>();
             authenticateService.SetupGet(x => x.Amr).Returns("pwd");
-            authenticateService.Setup(x => x.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
+            authenticateService
+                .Setup(
+                    x => x.AuthenticateResourceOwner(
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<CancellationToken>()))
                 .ReturnsAsync((ResourceOwner) null);
             InitializeFakeObjects(authenticateService.Object);
             var localAuthenticationParameter = new LocalAuthenticationParameter();
@@ -49,7 +60,8 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                         localAuthenticationParameter,
                         authorizationParameter,
                         null,
-                        null))
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
@@ -59,32 +71,47 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             const string subject = "subject";
             var localAuthenticationParameter = new LocalAuthenticationParameter();
             var authorizationParameter = new AuthorizationParameter();
-            var resourceOwner = new ResourceOwner { Id = subject };
+            var resourceOwner = new ResourceOwner {Subject = subject};
             var authenticateService = new Mock<IAuthenticateResourceOwnerService>();
             authenticateService.SetupGet(x => x.Amr).Returns("pwd");
-            authenticateService.Setup(x => x.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
+            authenticateService
+                .Setup(
+                    x => x.AuthenticateResourceOwner(
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<CancellationToken>()))
                 .ReturnsAsync(resourceOwner);
             InitializeFakeObjects(authenticateService.Object);
 
-            var result = await _localUserAuthenticationAction
-                .Execute(localAuthenticationParameter, authorizationParameter, null, null)
+            var result = await _localUserAuthenticationAction.Execute(
+                    localAuthenticationParameter,
+                    authorizationParameter,
+                    null,
+                    null,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
 
             // Specify the resource owner authentication date
-            Assert.NotNull(result);
             Assert.NotNull(result.Claims);
             Assert.Contains(
                 result.Claims,
                 r => r.Type == ClaimTypes.AuthenticationInstant
-                     || r.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject);
+                     || r.Type == OpenIdClaimTypes.Subject);
         }
 
         private void InitializeFakeObjects(params IAuthenticateResourceOwnerService[] services)
         {
-            _authenticateHelperFake = new Mock<IAuthenticateHelper>();
+            var mock = new Mock<IClientStore>();
+            mock.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Client());
             _localUserAuthenticationAction = new LocalOpenIdUserAuthenticationAction(
+                new Mock<IAuthorizationCodeStore>().Object,
                 services,
-                _authenticateHelperFake.Object);
+                new Mock<IConsentRepository>().Object,
+                new Mock<ITokenStore>().Object,
+                new Mock<IScopeRepository>().Object,
+                mock.Object,
+                new InMemoryJwksRepository(), 
+                new NoOpPublisher());
         }
     }
 }
