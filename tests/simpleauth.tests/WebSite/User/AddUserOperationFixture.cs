@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Tests.WebSite.User
 {
-    using Logging;
     using Moq;
     using Shared;
     using Shared.Models;
@@ -23,93 +22,76 @@ namespace SimpleAuth.Tests.WebSite.User
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Events.Logging;
     using Xunit;
 
     public class AddUserOperationFixture
     {
-        private Mock<IEventPublisher> _eventPublisher;
-        private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private AddUserOperation _addResourceOwnerAction;
+        private readonly Mock<IEventPublisher> _eventPublisher;
+        private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
+        private readonly AddUserOperation _addResourceOwnerAction;
+
+        public AddUserOperationFixture()
+        {
+            _eventPublisher = new Mock<IEventPublisher>();
+            _eventPublisher.Setup(s => s.Publish(It.IsAny<ResourceOwnerAdded>())).Returns(Task.CompletedTask);
+            _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
+            _addResourceOwnerAction = new AddUserOperation(
+                _resourceOwnerRepositoryStub.Object,
+                Array.Empty<IAccountFilter>(),
+                _eventPublisher.Object);
+        }
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
-            InitializeFakeObjects();
-
-
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(null))
-                .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new ResourceOwner()))
+            await Assert
+                .ThrowsAsync<NullReferenceException>(() => _addResourceOwnerAction.Execute(null, CancellationToken.None))
                 .ConfigureAwait(false);
             await Assert
-                .ThrowsAsync<ArgumentNullException>(() =>
-                    _addResourceOwnerAction.Execute(new ResourceOwner { Id = "test" }))
+                .ThrowsAsync<ArgumentNullException>(
+                    () => _addResourceOwnerAction.Execute(new ResourceOwner(), CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_ResourceOwner_With_Same_Credentials_Exists_Then_Returns_False()
         {
-            InitializeFakeObjects();
-            var parameter = new ResourceOwner { Id = "name", Password = "password" };
+            var parameter = new ResourceOwner {Subject = "name", Password = "password"};
 
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(new ResourceOwner()));
+                .ReturnsAsync(new ResourceOwner());
 
-            var result = await _addResourceOwnerAction.Execute(parameter).ConfigureAwait(false);
+            var result = await _addResourceOwnerAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
             Assert.False(result);
         }
 
         [Fact]
         public async Task When_ResourceOwner_Cannot_Be_Added_Then_Returns_False()
         {
-            InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.InsertAsync(It.IsAny<ResourceOwner>()))
-                .Returns(Task.FromResult(false));
-            var parameter = new ResourceOwner
-            {
-                Id = "name",
-                Password = "password"
-            };
+            _resourceOwnerRepositoryStub.Setup(r => r.Insert(It.IsAny<ResourceOwner>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(false);
+            var parameter = new ResourceOwner {Subject = "name", Password = "password"};
 
-            var result = await _addResourceOwnerAction.Execute(parameter).ConfigureAwait(false);
+            var result = await _addResourceOwnerAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
             Assert.False(result);
         }
 
         [Fact]
         public async Task When_Add_ResourceOwner_Then_Operation_Is_Called()
         {
-            InitializeFakeObjects();
-
-            var parameter = new ResourceOwner
-            {
-                Id = "name",
-                Password = "password"
-            };
+            var parameter = new ResourceOwner {Subject = "name", Password = "password"};
 
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult((ResourceOwner)null));
-            _resourceOwnerRepositoryStub.Setup(r => r.InsertAsync(It.IsAny<ResourceOwner>()))
-                .Returns(Task.FromResult(true));
+                .ReturnsAsync((ResourceOwner) null);
+            _resourceOwnerRepositoryStub.Setup(r => r.Insert(It.IsAny<ResourceOwner>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
 
-            await _addResourceOwnerAction.Execute(parameter).ConfigureAwait(false);
+            await _addResourceOwnerAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
 
-            _resourceOwnerRepositoryStub.Verify(r => r.InsertAsync(It.IsAny<ResourceOwner>()));
+            _resourceOwnerRepositoryStub.Verify(
+                r => r.Insert(It.IsAny<ResourceOwner>(), It.IsAny<CancellationToken>()));
             _eventPublisher.Verify(o => o.Publish(It.IsAny<ResourceOwnerAdded>()));
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _eventPublisher = new Mock<IEventPublisher>();
-            _eventPublisher.Setup(s => s.Publish(It.IsAny<ResourceOwnerAdded>())).Returns(Task.CompletedTask);
-            _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            //_claimsRepositoryStub = new Mock<IClaimRepository>();
-            //_tokenStoreStub = new Mock<IAccessTokenStore>();
-            _addResourceOwnerAction = new AddUserOperation(
-                _resourceOwnerRepositoryStub.Object,
-                //_claimsRepositoryStub.Object,
-                null,
-              _eventPublisher.Object);
         }
     }
 }

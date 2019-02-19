@@ -22,13 +22,14 @@
             {
                 throw new ArgumentNullException(nameof(keyOperations));
             }
+
             JsonWebKey jwk = null;
             if (certificate.HasPrivateKey)
             {
                 var keyAlg = certificate.SignatureAlgorithm.FriendlyName;
                 if (keyAlg.Contains("RSA"))
                 {
-                    var rsa = (RSA)certificate.PrivateKey;
+                    var rsa = (RSA) certificate.PrivateKey;
                     var parameters = rsa.ExportParameters(true);
                     jwk = new JsonWebKey
                     {
@@ -85,6 +86,7 @@
             {
                 throw new ArgumentException("Key must be at least 16 characters.", nameof(key));
             }
+
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var jwk = JsonWebKeyConverter.ConvertFromSymmetricSecurityKey(securityKey);
             jwk.Kty = JsonWebAlgorithmsKeyTypes.Octet;
@@ -97,6 +99,7 @@
                     jwk.KeyOps.Add(keyOperation);
                 }
             }
+
             return jwk;
         }
 
@@ -105,9 +108,31 @@
             return CreateJwk(key, JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify);
         }
 
+        public static JsonWebKey CreateSignatureJwk(this RSA rsa, string keyid, bool includePrivateParameters)
+        {
+            return CreateJwk(
+                rsa,
+                keyid,
+                JsonWebKeyUseNames.Sig,
+                includePrivateParameters,
+                KeyOperations.Sign,
+                KeyOperations.Verify);
+        }
+
         public static JsonWebKey CreateEncryptionJwk(this string key)
         {
             return CreateJwk(key, JsonWebKeyUseNames.Enc, KeyOperations.Encrypt, KeyOperations.Decrypt);
+        }
+
+        public static JsonWebKey CreateEncryptionJwk(this RSA rsa, string keyid, bool includePrivateParameters)
+        {
+            return CreateJwk(
+                rsa,
+                keyid,
+                JsonWebKeyUseNames.Enc,
+                includePrivateParameters,
+                KeyOperations.Encrypt,
+                KeyOperations.Decrypt);
         }
 
         public static void ReadJwk(this RSA rsa, JsonWebKey jwk)
@@ -126,16 +151,24 @@
             rsa.ImportParameters(parameters);
         }
 
-        public static JsonWebKey CreateJwk(this RSA rsa, string use, bool includePrivateParameters = false, params string[] keyops)
+        public static JsonWebKey CreateJwk(
+            this RSA rsa,
+            string keyId,
+            string use,
+            bool includePrivateParameters = false,
+            params string[] keyops)
         {
             var parameters = rsa.ExportParameters(includePrivateParameters);
             var key = new RsaSecurityKey(parameters);
             var jwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(key);
             jwk.Use = use;
+            jwk.Kid = keyId;
+            jwk.Alg = SecurityAlgorithms.RsaSha256;
             foreach (var keyop in keyops)
             {
                 jwk.KeyOps.Add(keyop);
             }
+
             return jwk;
         }
     }

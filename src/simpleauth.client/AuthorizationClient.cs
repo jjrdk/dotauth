@@ -1,11 +1,11 @@
 ﻿// Copyright © 2016 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,76 +14,70 @@
 
 namespace SimpleAuth.Client
 {
-    using System;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using Errors;
     using Newtonsoft.Json;
-    using Operations;
     using Results;
     using Shared.Requests;
     using Shared.Responses;
-    using Shared.Serializers;
+    using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using SimpleAuth.Shared;
 
-    internal class AuthorizationClient : IAuthorizationClient
+    /// <summary>
+    /// Defines the authorization client.
+    /// </summary>
+    public class AuthorizationClient
     {
         private readonly HttpClient _client;
-        private readonly IGetDiscoveryOperation _getDiscoveryOperation;
+        private readonly DiscoveryInformation _discoveryInformation;
 
-        public AuthorizationClient(HttpClient client, IGetDiscoveryOperation getDiscoveryOperation)
+        private AuthorizationClient(HttpClient client, DiscoveryInformation discoveryInformation)
         {
             _client = client;
-            _getDiscoveryOperation = getDiscoveryOperation;
+            _discoveryInformation = discoveryInformation;
         }
 
-        public async Task<GetAuthorizationResult> ResolveAsync(string discoveryDocumentationUrl, AuthorizationRequest request)
+        /// <summary>
+        /// Creates the specified client.
+        /// </summary>
+        /// <param name="client">The client.</param>
+        /// <param name="discoveryUrl">The discovery URL.</param>
+        /// <returns></returns>
+        public static async Task<AuthorizationClient> Create(HttpClient client, Uri discoveryUrl)
         {
-            if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
-            {
-                throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
-            }
+            var discoveryOperation = new GetDiscoveryOperation(client);
+            var information = await discoveryOperation.Execute(discoveryUrl).ConfigureAwait(false);
 
-            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out var uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
-            }
-
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            return await GetAuthorization(new Uri(discoveryDocument.AuthorizationEndPoint), request).ConfigureAwait(false);
+            return new AuthorizationClient(client, information);
         }
 
-        private async Task<GetAuthorizationResult> GetAuthorization(Uri uri, AuthorizationRequest request)
+        /// <summary>
+        /// Gets the authorization.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">request</exception>
+        public async Task<GetAuthorizationResult> GetAuthorization(AuthorizationRequest request)
         {
-            if (uri == null)
-            {
-                throw new ArgumentNullException(nameof(uri));
-            }
-
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var uriBuilder = new UriBuilder(uri);
-            var pSerializer = new ParamSerializer();
-            uriBuilder.Query = pSerializer.Serialize(request);
+            var uriBuilder = new UriBuilder(_discoveryInformation.AuthorizationEndPoint) { Query = request.ToRequest() };
             var response = await _client.GetAsync(uriBuilder.Uri).ConfigureAwait(false);
             var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (response.StatusCode >= System.Net.HttpStatusCode.BadRequest)
+            if ((int)response.StatusCode < 400)
             {
-                return new GetAuthorizationResult
-                {
-                    ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(content),
-                    Status = response.StatusCode
-                };
+                return new GetAuthorizationResult { ContainsError = false, Location = response.Headers.Location };
             }
-
             return new GetAuthorizationResult
             {
-                ContainsError = false,
-                Location = response.Headers.Location
+                ContainsError = true,
+                Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(content),
+                Status = response.StatusCode
             };
+
         }
     }
 }

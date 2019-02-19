@@ -1,0 +1,36 @@
+﻿@{
+    ViewBag.Title = "Confirm code";
+}
+
+@model SimpleAuth.Sms.ViewModels.ConfirmCodeViewModel
+
+@section PageTitle
+{
+    <h1>Log In</h1>
+}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Confirmation code</div>
+            <div class="panel-body">
+                @using (Html.BeginForm("ConfirmCode", "Authenticate", null, FormMethod.Post))
+                {
+                    @Html.ValidationMessage("message_error")
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(i => i.Code)
+                    <!-- Confirmation code -->
+                    <fieldset class="form-group">
+                        <label class="control-label">Code</label>
+                        @Html.TextBoxFor(i => i.ConfirmationCode, new { type = "number", @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
+                    </fieldset>
+                    <!-- Submit buttons code -->
+                    <fieldset class="form-group">
+                        <button type="submit" class="btn btn-primary" name="Action" value="submit">Validate confirmation code</button>
+                        <button type="submit" class="btn btn-primary" name="Action" value="resend">Resend confirmation code</button>
+                    </fieldset>
+                }
+            </div>
+        </div>
+    </div>
+</div>

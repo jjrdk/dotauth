@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,11 +14,38 @@
 
 namespace SimpleAuth.Results
 {
-    public class EndpointResult
+    /// <summary>
+    /// Represents an endpoint result value.
+    /// </summary>
+    internal class EndpointResult
     {
-        public TypeActionResult Type { get; set; }
+        /// <summary>
+        /// Gets or sets the type of action result.
+        /// </summary>
+        public ActionResultType Type { get; set; }
+
+        /// <summary>
+        /// Gets or sets the redirect instruction.
+        /// </summary>
+        /// <value>
+        /// The redirect instruction.
+        /// </value>
         public RedirectInstruction RedirectInstruction { get; set; }
+
+        /// <summary>
+        /// Gets or sets the process identifier.
+        /// </summary>
+        /// <value>
+        /// The process identifier.
+        /// </value>
         public string ProcessId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the amr.
+        /// </summary>
+        /// <value>
+        /// The amr.
+        /// </value>
         public string Amr { get; set; }
 
         /// <summary>
@@ -30,7 +57,7 @@ namespace SimpleAuth.Results
             return new EndpointResult
             {
                 RedirectInstruction = new RedirectInstruction(),
-                Type = TypeActionResult.RedirectToAction
+                Type = ActionResultType.RedirectToAction
             };
         }
 
@@ -43,7 +70,7 @@ namespace SimpleAuth.Results
             return new EndpointResult
             {
                 RedirectInstruction = null,
-                Type = TypeActionResult.Output
+                Type = ActionResultType.Output
             };
         }
 
@@ -55,7 +82,7 @@ namespace SimpleAuth.Results
         {
             return new EndpointResult
             {
-                Type = TypeActionResult.None
+                Type = ActionResultType.None
             };
         }
 
@@ -67,7 +94,7 @@ namespace SimpleAuth.Results
         {
             return new EndpointResult
             {
-                Type = TypeActionResult.RedirectToCallBackUrl,
+                Type = ActionResultType.RedirectToCallBackUrl,
                 RedirectInstruction = new RedirectInstruction()
             };
         }

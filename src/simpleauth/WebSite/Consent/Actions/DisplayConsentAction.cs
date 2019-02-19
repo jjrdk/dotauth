@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,37 +16,49 @@ namespace SimpleAuth.WebSite.Consent.Actions
 {
     using Api.Authorization;
     using Common;
-    using Errors;
     using Exceptions;
     using Extensions;
-    using Helpers;
     using Parameters;
     using Results;
     using Shared.Models;
     using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
 
-    public class DisplayConsentAction : IDisplayConsentAction
+    internal class DisplayConsentAction
     {
         private readonly IScopeRepository _scopeRepository;
         private readonly IClientStore _clientRepository;
         private readonly IConsentRepository _consentRepository;
-        private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
+        private readonly GenerateAuthorizationResponse _generateAuthorizationResponse;
 
         public DisplayConsentAction(
             IScopeRepository scopeRepository,
             IClientStore clientRepository,
             IConsentRepository consentRepository,
-            IGenerateAuthorizationResponse generateAuthorizationResponse)
+            IAuthorizationCodeStore authorizationCodeStore,
+            ITokenStore tokenStore,
+            IJwksStore jwksStore,
+            IEventPublisher eventPublisher)
         {
             _scopeRepository = scopeRepository;
             _clientRepository = clientRepository;
             _consentRepository = consentRepository;
-            _generateAuthorizationResponse = generateAuthorizationResponse;
+            _generateAuthorizationResponse = new GenerateAuthorizationResponse(
+                authorizationCodeStore,
+                tokenStore,
+                scopeRepository,
+                clientRepository,
+                consentRepository,
+                jwksStore,
+                eventPublisher);
         }
 
         /// <summary>
@@ -55,11 +67,14 @@ namespace SimpleAuth.WebSite.Consent.Actions
         /// </summary>
         /// <param name="authorizationParameter">Authorization code grant type parameter.</param>
         /// <param name="claimsPrincipal"></param>
+        /// <param name="issuerName"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Action result.</returns>
         public async Task<DisplayContentResult> Execute(
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal,
-            string issuerName)
+            string issuerName,
+            CancellationToken cancellationToken)
         {
             if (authorizationParameter == null)
             {
@@ -71,7 +86,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            var client = await _clientRepository.GetById(authorizationParameter.ClientId).ConfigureAwait(false);
+            var client = await _clientRepository.GetById(authorizationParameter.ClientId, cancellationToken).ConfigureAwait(false);
             if (client == null)
             {
                 throw new SimpleAuthExceptionWithState(
@@ -82,7 +97,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
 
             EndpointResult endpointResult;
             var subject = claimsPrincipal.GetSubject();
-            var assignedConsent = await _consentRepository.GetConfirmedConsents(subject, authorizationParameter)
+            var assignedConsent = await _consentRepository.GetConfirmedConsents(subject, authorizationParameter, cancellationToken)
                 .ConfigureAwait(false);
             // If there's already a consent then redirect to the callback
             if (assignedConsent != null)
@@ -93,10 +108,11 @@ namespace SimpleAuth.WebSite.Consent.Actions
                         authorizationParameter,
                         claimsPrincipal,
                         client,
-                        issuerName)
+                        issuerName,
+                        cancellationToken)
                     .ConfigureAwait(false);
                 var responseMode = authorizationParameter.ResponseMode;
-                if (responseMode == ResponseMode.None)
+                if (responseMode == ResponseModes.None)
                 {
                     var responseTypes = authorizationParameter.ResponseType.ParseResponseTypes();
                     var authorizationFlow = GetAuthorizationFlow(responseTypes, authorizationParameter.State);
@@ -104,7 +120,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                 }
 
                 endpointResult.RedirectInstruction.ResponseMode = responseMode;
-                return new DisplayContentResult {EndpointResult = endpointResult};
+                return new DisplayContentResult { EndpointResult = endpointResult };
             }
 
             ICollection<string> allowedClaims = null;
@@ -116,7 +132,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             }
             else
             {
-                allowedScopes = (await GetScopes(authorizationParameter.Scope).ConfigureAwait(false))
+                allowedScopes = (await GetScopes(authorizationParameter.Scope, cancellationToken).ConfigureAwait(false))
                     .Where(s => s.IsDisplayedInConsent)
                     .ToList();
             }
@@ -131,15 +147,10 @@ namespace SimpleAuth.WebSite.Consent.Actions
             };
         }
 
-        /// <summary>
-        /// Returns a list of scopes from a concatenate list of scopes separated by whitespaces.
-        /// </summary>
-        /// <param name="concatenateListOfScopes"></param>
-        /// <returns>List of scopes</returns>
-        private async Task<IEnumerable<Scope>> GetScopes(string concatenateListOfScopes)
+        private async Task<IEnumerable<Scope>> GetScopes(string concatenateListOfScopes, CancellationToken cancellationToken)
         {
             var scopeNames = concatenateListOfScopes.Split(' ');
-            return await _scopeRepository.SearchByNames(scopeNames).ConfigureAwait(false);
+            return await _scopeRepository.SearchByNames(cancellationToken, scopeNames).ConfigureAwait(false);
         }
 
         private static AuthorizationFlow GetAuthorizationFlow(ICollection<string> responseTypes, string state)
@@ -165,7 +176,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             return CoreConstants.MappingResponseTypesToAuthorizationFlows[record];
         }
 
-        private static ResponseMode GetResponseMode(AuthorizationFlow authorizationFlow)
+        private static string GetResponseMode(AuthorizationFlow authorizationFlow)
         {
             return CoreConstants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
         }

@@ -14,8 +14,19 @@
 
 namespace SimpleAuth.Exceptions
 {
+    using SimpleAuth.Shared;
+
+    /// <summary>
+    /// Defines the authorization exception.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.SimpleAuthException" />
     public class AuthorizationException : SimpleAuthException
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthorizationException"/> class.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="message">The message.</param>
         public AuthorizationException(string code, string message) : base(code, message)
         {
         }

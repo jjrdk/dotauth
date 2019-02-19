@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Repositories;
     using Shared.Models;
@@ -31,7 +32,10 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
         {
             InitializeFakeObjects();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _resourceOwnerRepositoryStub.UpdateAsync(null)).ConfigureAwait(false);
+            await Assert
+                .ThrowsAsync<ArgumentNullException>(
+                    () => _resourceOwnerRepositoryStub.Update(null, CancellationToken.None))
+                .ConfigureAwait(false);
         }
 
         [Fact]
@@ -41,7 +45,7 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
 
             InitializeFakeObjects();
 
-            var owner = await _resourceOwnerRepositoryStub.Get(subject).ConfigureAwait(false);
+            var owner = await _resourceOwnerRepositoryStub.Get(subject, CancellationToken.None).ConfigureAwait(false);
 
             Assert.Null(owner);
         }
@@ -51,7 +55,8 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
         {
             InitializeFakeObjects();
 
-            var result = await _resourceOwnerRepositoryStub.UpdateAsync(new ResourceOwner { Id = "blah" })
+            var result = await _resourceOwnerRepositoryStub
+                .Update(new ResourceOwner {Subject = "blah"}, CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.False(result);
@@ -59,7 +64,7 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
 
         private void InitializeFakeObjects(params ResourceOwner[] resourceOwners)
         {
-            _resourceOwnerRepositoryStub = new DefaultResourceOwnerRepository(new List<ResourceOwner>(resourceOwners));
+            _resourceOwnerRepositoryStub = new InMemoryResourceOwnerRepository(new List<ResourceOwner>(resourceOwners));
         }
     }
 }

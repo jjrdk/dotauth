@@ -1,11 +1,11 @@
 // Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,12 +17,11 @@ namespace SimpleAuth.Api.ResourceSetController
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using Errors;
-    using Exceptions;
-    using Parameters;
     using Repositories;
     using Shared;
     using Shared.Models;
+    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Errors;
 
     internal class AddResourceSetAction
     {
@@ -33,7 +32,7 @@ namespace SimpleAuth.Api.ResourceSetController
             _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<string> Execute(AddResouceSetParameter addResourceSetParameter)
+        public async Task<string> Execute(PostResourceSet addResourceSetParameter)
         {
             if (addResourceSetParameter == null)
             {
@@ -60,21 +59,15 @@ namespace SimpleAuth.Api.ResourceSetController
             return resourceSet.Id;
         }
 
-        public void CheckResourceSetParameter(ResourceSet resourceSet)
+        private void CheckResourceSetParameter(ResourceSet resourceSet)
         {
-            if (resourceSet == null)
-            {
-                throw new ArgumentNullException(nameof(resourceSet));
-            }
-
             if (string.IsNullOrWhiteSpace(resourceSet.Name))
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "name"));
             }
 
-            if (resourceSet.Scopes == null ||
-                !resourceSet.Scopes.Any())
+            if (resourceSet.Scopes == null || !resourceSet.Scopes.Any())
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"));

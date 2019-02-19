@@ -2,15 +2,33 @@
 {
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Defines the display modes
+    /// </summary>
     public enum DisplayModes
     {
-        [EnumMember(Value = PageNames.Page)]
+        /// <summary>
+        /// Page
+        /// </summary>
+        [EnumMember(Value = "page")]
         Page,
-        [EnumMember(Value = PageNames.Popup)]
+
+        /// <summary>
+        /// Popup
+        /// </summary>
+        [EnumMember(Value = "popup")]
         Popup,
-        [EnumMember(Value = PageNames.Touch)]
+
+        /// <summary>
+        /// Touch
+        /// </summary>
+        [EnumMember(Value = "touch")]
         Touch,
-        [EnumMember(Value = PageNames.Wap)]
+
+        /// <summary>
+        /// Wap
+        /// </summary>
+        [EnumMember(Value = "wap")]
         Wap
     }
 }

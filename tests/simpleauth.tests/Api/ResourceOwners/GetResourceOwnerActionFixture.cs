@@ -14,7 +14,7 @@
 
 namespace SimpleAuth.Tests.Api.ResourceOwners
 {
-    using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Repositories;
     using Shared.Models;
@@ -26,21 +26,12 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
         private IResourceOwnerRepository _resourceOwnerRepository;
 
         [Fact]
-        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            InitializeFakeObjects();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _resourceOwnerRepository.Get(null))
-                .ConfigureAwait(false);
-        }
-
-        [Fact]
         public async Task When_ResourceOwner_Does_Not_Exist_Then_ReturnsNull()
         {
             const string subject = "invalid_subject";
             InitializeFakeObjects();
 
-            var owner = await _resourceOwnerRepository.Get(subject).ConfigureAwait(false);
+            var owner = await _resourceOwnerRepository.Get(subject, CancellationToken.None).ConfigureAwait(false);
 
             Assert.Null(owner);
         }
@@ -49,16 +40,16 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
         public async Task When_Getting_Resource_Owner_Then_ResourceOwner_Is_Returned()
         {
             const string subject = "subject";
-            InitializeFakeObjects(new ResourceOwner { Id = "subject" });
+            InitializeFakeObjects(new ResourceOwner {Subject = "subject"});
 
-            var result = await _resourceOwnerRepository.Get(subject).ConfigureAwait(false);
+            var result = await _resourceOwnerRepository.Get(subject, CancellationToken.None).ConfigureAwait(false);
 
             Assert.NotNull(result);
         }
 
         private void InitializeFakeObjects(params ResourceOwner[] resourceOwners)
         {
-            _resourceOwnerRepository = new DefaultResourceOwnerRepository(resourceOwners);
+            _resourceOwnerRepository = new InMemoryResourceOwnerRepository(resourceOwners);
         }
     }
 }

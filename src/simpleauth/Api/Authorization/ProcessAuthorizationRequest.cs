@@ -14,10 +14,8 @@
 
 namespace SimpleAuth.Api.Authorization
 {
-    using Errors;
     using Exceptions;
     using Extensions;
-    using Helpers;
     using Parameters;
     using Results;
     using Shared.Models;
@@ -27,13 +25,13 @@ namespace SimpleAuth.Api.Authorization
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Validators;
-    using JwtConstants = Shared.JwtConstants;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
 
     internal sealed class ProcessAuthorizationRequest
     {
-        private readonly ClientValidator _clientValidator;
         private readonly IClientStore _clientStore;
         private readonly IConsentRepository _consentRepository;
 
@@ -41,36 +39,40 @@ namespace SimpleAuth.Api.Authorization
         {
             _clientStore = clientStore;
             _consentRepository = consentRepository;
-            _clientValidator = new ClientValidator();
         }
 
-        public async Task<EndpointResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client, string issuerName)
+        public async Task<EndpointResult> Process(
+            AuthorizationParameter authorizationParameter,
+            ClaimsPrincipal claimsPrincipal,
+            Client client,
+            string issuerName,
+            CancellationToken cancellationToken)
         {
             var endUserIsAuthenticated = IsAuthenticated(claimsPrincipal);
             Consent confirmedConsent = null;
             if (endUserIsAuthenticated)
             {
-                confirmedConsent = await GetResourceOwnerConsent(claimsPrincipal, authorizationParameter).ConfigureAwait(false);
+                confirmedConsent =
+                    await GetResourceOwnerConsent(claimsPrincipal, authorizationParameter, cancellationToken)
+                        .ConfigureAwait(false);
             }
 
-            //var serializedAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
-            //_oauthEventSource.StartProcessingAuthorizationRequest(serializedAuthorizationParameter);
             EndpointResult result = null;
             var prompts = authorizationParameter.Prompt.ParsePrompts();
             if (prompts == null || !prompts.Any())
             {
-                prompts = new List<PromptParameter>();
+                prompts = new List<string>();
                 if (!endUserIsAuthenticated)
                 {
-                    prompts.Add(PromptParameter.login);
+                    prompts.Add(PromptParameters.Login);
                 }
                 else
                 {
-                    prompts.Add(confirmedConsent == null ? PromptParameter.consent : PromptParameter.none);
+                    prompts.Add(confirmedConsent == null ? PromptParameters.Consent : PromptParameters.None);
                 }
             }
 
-            var redirectionUrls = _clientValidator.GetRedirectionUrls(client, authorizationParameter.RedirectUrl);
+            var redirectionUrls = client.GetRedirectionUrls(authorizationParameter.RedirectUrl);
             if (!redirectionUrls.Any())
             {
                 throw new SimpleAuthExceptionWithState(
@@ -102,15 +104,18 @@ namespace SimpleAuth.Api.Authorization
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
+                    string.Format(
+                        ErrorDescriptions.MissingParameter,
+                        CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
                     authorizationParameter.State);
             }
 
-            if (!_clientValidator.CheckResponseTypes(client, responseTypes.ToArray()))
+            if (!client.CheckResponseTypes(responseTypes.ToArray()))
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType,
+                    string.Format(
+                        ErrorDescriptions.TheClientDoesntSupportTheResponseType,
                         authorizationParameter.ClientId,
                         string.Join(",", responseTypes)),
                     authorizationParameter.State);
@@ -119,7 +124,8 @@ namespace SimpleAuth.Api.Authorization
             // Check if the user connection is still valid.
             if (endUserIsAuthenticated && !authorizationParameter.MaxAge.Equals(default))
             {
-                var authenticationDateTimeClaim = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
+                var authenticationDateTimeClaim =
+                    claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
                 if (authenticationDateTimeClaim != null)
                 {
                     var maxAge = authorizationParameter.MaxAge;
@@ -135,17 +141,16 @@ namespace SimpleAuth.Api.Authorization
 
             if (result == null)
             {
-                result = ProcessPromptParameters(
-                    prompts,
-                    claimsPrincipal,
-                    authorizationParameter,
-                    confirmedConsent);
+                result = ProcessPromptParameters(prompts, claimsPrincipal, authorizationParameter, confirmedConsent);
 
-                await ProcessIdTokenHint(result,
-                    authorizationParameter,
-                    prompts,
-                    claimsPrincipal,
-                    issuerName).ConfigureAwait(false);
+                await ProcessIdTokenHint(
+                        result,
+                        authorizationParameter,
+                        prompts,
+                        claimsPrincipal,
+                        issuerName,
+                        cancellationToken)
+                    .ConfigureAwait(false);
             }
 
             return result;
@@ -154,13 +159,14 @@ namespace SimpleAuth.Api.Authorization
         private async Task ProcessIdTokenHint(
             EndpointResult endpointResult,
             AuthorizationParameter authorizationParameter,
-            ICollection<PromptParameter> prompts,
+            ICollection<string> prompts,
             ClaimsPrincipal claimsPrincipal,
-            string issuerName)
+            string issuerName,
+            CancellationToken cancellationToken)
         {
-            if (!string.IsNullOrWhiteSpace(authorizationParameter.IdTokenHint) &&
-                prompts.Contains(PromptParameter.none) &&
-                endpointResult.Type == TypeActionResult.RedirectToCallBackUrl)
+            if (!string.IsNullOrWhiteSpace(authorizationParameter.IdTokenHint)
+                && prompts.Contains(PromptParameters.None)
+                && endpointResult.Type == ActionResultType.RedirectToCallBackUrl)
             {
                 var handler = new JwtSecurityTokenHandler();
                 var token = authorizationParameter.IdTokenHint;
@@ -168,12 +174,13 @@ namespace SimpleAuth.Api.Authorization
                 if (!canRead)
                 {
                     throw new SimpleAuthExceptionWithState(
-                            ErrorCodes.InvalidRequestCode,
-                            ErrorDescriptions.TheIdTokenHintParameterIsNotAValidToken,
-                            authorizationParameter.State);
+                        ErrorCodes.InvalidRequestCode,
+                        ErrorDescriptions.TheIdTokenHintParameterIsNotAValidToken,
+                        authorizationParameter.State);
                 }
 
-                var client = await _clientStore.GetById(authorizationParameter.ClientId).ConfigureAwait(false);
+                var client = await _clientStore.GetById(authorizationParameter.ClientId, cancellationToken)
+                    .ConfigureAwait(false);
                 handler.ValidateToken(token, client.CreateValidationParameters(issuerName), out var securityToken);
                 var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
 
@@ -186,7 +193,7 @@ namespace SimpleAuth.Api.Authorization
                 }
 
                 var currentSubject = string.Empty;
-                var expectedSubject = jwsPayload.GetClaimValue(JwtConstants.StandardResourceOwnerClaimNames.Subject);
+                var expectedSubject = jwsPayload.GetClaimValue(OpenIdClaimTypes.Subject);
                 if (claimsPrincipal != null && claimsPrincipal.IsAuthenticated())
                 {
                     currentSubject = claimsPrincipal.GetSubject();
@@ -202,7 +209,11 @@ namespace SimpleAuth.Api.Authorization
             }
         }
 
-        private EndpointResult ProcessPromptParameters(ICollection<PromptParameter> prompts, ClaimsPrincipal principal, AuthorizationParameter authorizationParameter, Consent confirmedConsent)
+        private EndpointResult ProcessPromptParameters(
+            ICollection<string> prompts,
+            ClaimsPrincipal principal,
+            AuthorizationParameter authorizationParameter,
+            Consent confirmedConsent)
         {
             if (prompts == null || !prompts.Any())
             {
@@ -216,7 +227,7 @@ namespace SimpleAuth.Api.Authorization
 
             // Raise "login_required" exception : if the prompt authorizationParameter is "none" AND the user is not authenticated
             // Raise "interaction_required" exception : if there's no consent from the user.
-            if (prompts.Contains(PromptParameter.none))
+            if (prompts.Contains(PromptParameters.None))
             {
                 if (!endUserIsAuthenticated)
                 {
@@ -229,9 +240,9 @@ namespace SimpleAuth.Api.Authorization
                 if (confirmedConsent == null)
                 {
                     throw new SimpleAuthExceptionWithState(
-                            ErrorCodes.InteractionRequiredCode,
-                            ErrorDescriptions.TheUserNeedsToGiveHisConsent,
-                            authorizationParameter.State);
+                        ErrorCodes.InteractionRequiredCode,
+                        ErrorDescriptions.TheUserNeedsToGiveHisConsent,
+                        authorizationParameter.State);
                 }
 
                 var result = EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
@@ -241,14 +252,14 @@ namespace SimpleAuth.Api.Authorization
             // Redirects to the authentication screen
             // if the "prompt" authorizationParameter is equal to "login" OR
             // The user is not authenticated AND the prompt authorizationParameter is different from "none"
-            if (prompts.Contains(PromptParameter.login))
+            if (prompts.Contains(PromptParameters.Login))
             {
                 var result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
                 result.RedirectInstruction.Action = SimpleAuthEndPoints.AuthenticateIndex;
                 return result;
             }
 
-            if (prompts.Contains(PromptParameter.consent))
+            if (prompts.Contains(PromptParameters.Consent))
             {
                 var result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
                 if (!endUserIsAuthenticated)
@@ -267,10 +278,14 @@ namespace SimpleAuth.Api.Authorization
                 authorizationParameter.State);
         }
 
-        private async Task<Consent> GetResourceOwnerConsent(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
+        private async Task<Consent> GetResourceOwnerConsent(
+            ClaimsPrincipal claimsPrincipal,
+            AuthorizationParameter authorizationParameter,
+            CancellationToken cancellationToken)
         {
             var subject = claimsPrincipal.GetSubject();
-            return await _consentRepository.GetConfirmedConsents(subject, authorizationParameter).ConfigureAwait(false);
+            return await _consentRepository.GetConfirmedConsents(subject, authorizationParameter, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         private static bool IsAuthenticated(ClaimsPrincipal principal)

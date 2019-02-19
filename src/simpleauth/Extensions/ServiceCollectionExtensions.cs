@@ -14,63 +14,36 @@
 
 namespace SimpleAuth.Extensions
 {
-    using Api.Token;
-    using Common;
-    using JwtToken;
-    using Logging;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
-    using Policies;
-    using Repositories;
-    using Services;
-    using Shared;
-    using Shared.AccountFiltering;
-    using Shared.Repositories;
+    using SimpleAuth.Policies;
+    using SimpleAuth.Repositories;
+    using SimpleAuth.Services;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.AccountFiltering;
+    using SimpleAuth.Shared.Events.Logging;
+    using SimpleAuth.Shared.Repositories;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
-    using System.Security.Claims;
-    using Translation;
-    using Validators;
-    using WebSite.Authenticate;
-    using WebSite.Authenticate.Actions;
-    using WebSite.Authenticate.Common;
-    using WebSite.Consent;
-    using WebSite.Consent.Actions;
 
+    /// <summary>
+    /// Defines the service collection extensions.
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
-        //private static readonly List<Scope> DEFAULT_SCOPES = new List<Scope>
-        //{
-        //    new Scope
-        //    {
-        //        Name = "uma_protection",
-        //        Description = "Access to UMA permission, resource set",
-        //        IsOpenIdScope = false,
-        //        IsDisplayedInConsent = false,
-        //        Type = ScopeType.ProtectedApi,
-        //        UpdateDateTime = DateTime.MinValue,
-        //        CreateDateTime = DateTime.MinValue
-        //    }
-        //};
-
-        public static IServiceCollection AddDefaultTokenStore(this IServiceCollection serviceCollection)
-        {
-            if (serviceCollection == null)
-            {
-                throw new ArgumentNullException(nameof(serviceCollection));
-            }
-
-            serviceCollection.AddSingleton<IAuthorizationCodeStore>(new InMemoryAuthorizationCodeStore());
-            serviceCollection.AddSingleton<ITokenStore>(new InMemoryTokenStore());
-            serviceCollection.AddSingleton<IConfirmationCodeStore>(new InMemoryConfirmationCode());
-            return serviceCollection;
-        }
-
-        public static AuthorizationOptions AddAuthPolicies(this AuthorizationOptions options, string cookieName)
+        /// <summary>
+        /// Adds the authentication policies.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="authenticationSchemes">The authentication schemes.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">options</exception>
+        public static AuthorizationOptions AddAuthPolicies(
+            this AuthorizationOptions options,
+            params string[] authenticationSchemes)
         {
             if (options == null)
             {
@@ -78,152 +51,142 @@ namespace SimpleAuth.Extensions
             }
 
 
-            options.AddPolicy("UmaProtection", policy =>
-            {
-                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
-                policy.RequireAssertion(p =>
+            options.AddPolicy(
+                "UmaProtection",
+                policy =>
                 {
-                    if (p.User?.Identity == null || !p.User.Identity.IsAuthenticated)
-                    {
-                        return false;
-                    }
+                    policy.AddAuthenticationSchemes(authenticationSchemes);
+                    policy.RequireAuthenticatedUser();
+                    //policy.RequireRole("administrator");
+                    //policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                    policy.RequireAssertion(
+                        p =>
+                        {
+                            var claimScopes = p.User.Claims.FirstOrDefault(c => c.Type == "scope");
+                            return claimScopes != null && claimScopes.Value.Split(' ').Any(s => s == "uma_protection");
 
-                    var claimRole = p.User.Claims.Where(c => c.Type == ClaimTypes.Role);
-                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope").ToArray();
-                    if (claimRole == null && !claimScopes.Any())
-                    {
-                        return false;
-                    }
-
-                    return claimRole.Any(role => role.Value == "administrator") || claimScopes.Any(s => s.Value == "uma_protection");
+                            //return claimRole.Value.Split(separator, StringSplitOptions.RemoveEmptyEntries)
+                            //           .Any(role => role == "administrator")
+                        });
                 });
-            });
-            options.AddPolicy(ScimConstants.ScimPolicies.ScimManage, policy =>
-            {
-                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
-                policy.RequireAssertion(p =>
+            options.AddPolicy(
+                "authenticated",
+                policy =>
                 {
-                    if (p.User?.Identity?.IsAuthenticated != true)
-                    {
-                        return false;
-                    }
-
-                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
-                    if (claimRole == null && !claimScopes.Any())
-                    {
-                        return false;
-                    }
-
-                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(c => c.Value == ScimConstants.ScimPolicies.ScimManage);
+                    policy.AddAuthenticationSchemes(authenticationSchemes);
+                    //policy.AddAuthenticationSchemes(cookieName);
+                    policy.RequireAuthenticatedUser();
                 });
-            });
-            options.AddPolicy("scim_read", policy =>
-            {
-                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
-                policy.RequireAssertion(p =>
+            options.AddPolicy(
+                "manager",
+                policy =>
                 {
-                    if (p.User?.Identity == null || !p.User.Identity.IsAuthenticated)
-                    {
-                        return false;
-                    }
+                    policy.AddAuthenticationSchemes(authenticationSchemes);
+                    //policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                    policy.RequireAssertion(
+                        p =>
+                        {
+                            if (p.User?.Identity?.IsAuthenticated != true)
+                            {
+                                return false;
+                            }
 
-                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
-                    if (claimRole == null && !claimScopes.Any())
-                    {
-                        return false;
-                    }
+                            var claimsScope = p.User.Claims.Where(c => c.Type == "scope");
+                            if (!claimsScope.Any())
+                            {
+                                return false;
+                            }
 
-                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(c => c.Value == "scim_read");
+                            return claimsScope.Any(c => c.Value == "manager");
+                        });
                 });
-            });
-            options.AddPolicy("authenticated", policy =>
-            {
-                //policy.AddAuthenticationSchemes("UserInfoIntrospection");
-                policy.RequireAuthenticatedUser();
-            });
-            options.AddPolicy("manager", policy =>
-            {
-                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
-                policy.RequireAssertion(p =>
+
+            options.AddPolicy(
+                "Connected",
+                policy => // User is connected
                 {
-                    if (p.User?.Identity?.IsAuthenticated != true)
-                    {
-                        return false;
-                    }
-
-                    var claimsRole = p.User.Claims.Where(c => c.Type == "role");
-                    var claimsScope = p.User.Claims.Where(c => c.Type == "scope");
-                    if (!claimsRole.Any() && !claimsScope.Any())
-                    {
-                        return false;
-                    }
-
-                    return claimsRole.Any(c => c.Value == "administrator") || claimsScope.Any(c => c.Value == "manager");
+                    policy.AddAuthenticationSchemes(authenticationSchemes);
+                    //policy.AddAuthenticationSchemes(cookieName);
+                    policy.RequireAuthenticatedUser();
                 });
-            });
-
-            options.AddPolicy("Connected", policy => // User is connected
-            {
-                policy.AddAuthenticationSchemes(cookieName);
-                policy.RequireAuthenticatedUser();
-            });
-            options.AddPolicy("registration", policy => // Access token with scope = register_client
-            {
-                policy.AddAuthenticationSchemes("OAuth2Introspection");
-                policy.RequireClaim("scope", "register_client");
-            });
-            options.AddPolicy("connected_user", policy => // Introspect the identity token.
-            {
-                policy.AddAuthenticationSchemes("UserInfoIntrospection");
-                policy.RequireAuthenticatedUser();
-            });
-            options.AddPolicy("manage_profile", policy => // Access token with scope = manage_profile or with role = administrator
-            {
-                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
-                policy.RequireAssertion(p =>
+            options.AddPolicy(
+                "registration",
+                policy => // Access token with scope = register_client
                 {
-                    if (p.User?.Identity == null || !p.User.Identity.IsAuthenticated)
-                    {
-                        return false;
-                    }
-
-                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
-                    if (claimRole == null && !claimScopes.Any())
-                    {
-                        return false;
-                    }
-
-                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(s => s.Value == "manage_profile");
+                    policy.AddAuthenticationSchemes(authenticationSchemes);
+                    //policy.AddAuthenticationSchemes("OAuth2Introspection");
+                    policy.RequireClaim("scope", "register_client");
                 });
-            });
-            options.AddPolicy("manage_account_filtering", policy => // Access token with scope = manage_account_filtering or role = administrator
-            {
-                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
-                policy.RequireAssertion(p =>
+            options.AddPolicy(
+                "connected_user",
+                policy => // Introspect the identity token.
                 {
-                    if (p.User?.Identity == null || !p.User.Identity.IsAuthenticated)
-                    {
-                        return false;
-                    }
-
-                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope").ToArray();
-                    if (claimRole == null && !claimScopes.Any())
-                    {
-                        return false;
-                    }
-
-                    return claimRole != null && claimRole.Value == "administrator" ||
-                           claimScopes.SelectMany(s => s.Value.Split(' ')).Any(s => s == "manage_account_filtering");
+                    policy.AddAuthenticationSchemes(authenticationSchemes);
+                    //policy.AddAuthenticationSchemes("UserInfoIntrospection");
+                    policy.RequireAuthenticatedUser();
                 });
-            });
+            options.AddPolicy(
+                "manage_profile",
+                policy => // Access token with scope = manage_profile or with role = administrator
+                {
+                    policy.AddAuthenticationSchemes(authenticationSchemes);
+                    //policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                    policy.RequireAssertion(
+                        p =>
+                        {
+                            if (p.User?.Identity == null || !p.User.Identity.IsAuthenticated)
+                            {
+                                return false;
+                            }
+
+                            var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
+                            var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
+                            if (claimRole == null && !claimScopes.Any())
+                            {
+                                return false;
+                            }
+
+                            return claimRole != null && claimRole.Value == "administrator"
+                                   || claimScopes.Any(s => s.Value == "manage_profile");
+                        });
+                });
+            options.AddPolicy(
+                "manage_account_filtering",
+                policy => // Access token with scope = manage_account_filtering or role = administrator
+                {
+                    policy.AddAuthenticationSchemes(authenticationSchemes);
+                    //policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                    policy.RequireAssertion(
+                        p =>
+                        {
+                            if (p.User?.Identity == null || !p.User.Identity.IsAuthenticated)
+                            {
+                                return false;
+                            }
+
+                            var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
+                            var claimScopes = p.User.Claims.Where(c => c.Type == "scope").ToArray();
+                            if (claimRole == null && !claimScopes.Any())
+                            {
+                                return false;
+                            }
+
+                            return claimRole != null && claimRole.Value == "administrator"
+                                   || claimScopes.SelectMany(s => s.Value.Split(' '))
+                                       .Any(s => s == "manage_account_filtering");
+                        });
+                });
             return options;
         }
 
-        public static IServiceCollection AddAccountFilter(this IServiceCollection services, List<Filter> filters = null)
+        /// <summary>
+        /// Adds the account filter.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="filters">The filters.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">services</exception>
+        public static IServiceCollection AddAccountFilter(this IServiceCollection services, params Filter[] filters)
         {
             if (services == null)
             {
@@ -235,55 +198,78 @@ namespace SimpleAuth.Extensions
             return services;
         }
 
+        /// <summary>
+        /// Adds SimpleAuth.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="configuration">The configuration.</param>
+        /// <returns></returns>
         public static IServiceCollection AddSimpleAuth(
             this IServiceCollection services,
-            SimpleAuthOptions options = null)
+            Action<SimpleAuthOptions> configuration)
         {
-            var s = services
-            .AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>()
-            .AddTransient<IUpdateResourceOwnerClaimsParameterValidator, UpdateResourceOwnerClaimsParameterValidator>()
-            .AddTransient<IUpdateResourceOwnerPasswordParameterValidator, UpdateResourceOwnerPasswordParameterValidator>()
-            .AddTransient<ITokenActions, TokenActions>()
-            .AddTransient<IConsentActions, ConsentActions>()
-            .AddTransient<IConfirmConsentAction, ConfirmConsentAction>()
-            .AddTransient<IDisplayConsentAction, DisplayConsentAction>()
-            .AddTransient<IAuthenticateActions, AuthenticateActions>()
-            .AddTransient<IAuthenticateResourceOwnerOpenIdAction, AuthenticateResourceOwnerOpenIdAction>()
-            .AddTransient<IAuthenticateHelper, AuthenticateHelper>()
-            .AddTransient<IJwtGenerator, JwtGenerator>()
-            .AddTransient<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>()
-            .AddTransient<ITranslationManager, TranslationManager>()
-            .AddTransient<IGenerateAndSendCodeAction, GenerateAndSendCodeAction>()
-            .AddTransient<IValidateConfirmationCodeAction, ValidateConfirmationCodeAction>()
-            .AddTransient<IRemoveConfirmationCodeAction, RemoveConfirmationCodeAction>()
-            .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
-            .AddSingleton(options?.EventPublisher ?? new DefaultEventPublisher())
-            .AddSingleton(options?.SubjectBuilder ?? new DefaultSubjectBuilder())
-            .AddSingleton(options?.OAuthConfigurationOptions ?? new OAuthConfigurationOptions())
-            .AddSingleton(options?.BasicAuthenticationOptions ?? new BasicAuthenticateOptions())
-            .AddSingleton(options?.Scim ?? new ScimOptions { IsEnabled = false })
-            .AddSingleton(sp => new DefaultClientRepository(options?.Configuration?.Clients, sp.GetService<HttpClient>(), sp.GetService<IScopeStore>()))
-            .AddSingleton(typeof(IClientStore), sp => sp.GetService<DefaultClientRepository>())
-            .AddSingleton(typeof(IClientRepository), sp => sp.GetService<DefaultClientRepository>())
-            .AddSingleton<IConsentRepository>(new DefaultConsentRepository(options?.Configuration?.Consents))
-            .AddSingleton<IProfileRepository>(new DefaultProfileRepository(options?.Configuration?.Profiles))
-            .AddSingleton<IResourceOwnerRepository>(new DefaultResourceOwnerRepository(options?.Configuration?.Users))
-            .AddSingleton(new DefaultScopeRepository(options?.Configuration?.Scopes))
-            .AddSingleton<IScopeRepository>(sp => sp.GetService<DefaultScopeRepository>())
-            .AddSingleton<IScopeStore>(sp => sp.GetService<DefaultScopeRepository>())
-            .AddSingleton<ITranslationRepository>(new DefaultTranslationRepository(options?.Configuration?.Translations))
-            .AddSingleton(options?.Scim ?? new ScimOptions { IsEnabled = false })
-            .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-            .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
-            .AddTransient<IAuthorizationPolicyValidator, AuthorizationPolicyValidator>()
-            .AddTransient<IBasicAuthorizationPolicy, BasicAuthorizationPolicy>()
-            .AddTransient<IUmaTokenActions, UmaTokenActions>()
-            .AddSingleton(options?.UmaConfigurationOptions ?? new UmaConfigurationOptions())
-            .AddSingleton<IPolicyRepository>(new DefaultPolicyRepository(options?.UmaConfigurationOptions?.Policies))
-            .AddSingleton<IResourceSetRepository>(new DefaultResourceSetRepository(options?.UmaConfigurationOptions?.ResourceSets))
-            .AddSingleton<ITicketStore>(new DefaultTicketStore());
+            var options = new SimpleAuthOptions();
+            configuration(options);
+
+            return AddSimpleAuth(services, options);
+        }
+
+        /// <summary>
+        /// Adds the SimpleAuth.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="options">The options.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">options</exception>
+        public static IServiceCollection AddSimpleAuth(this IServiceCollection services, SimpleAuthOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            Globals.ApplicationName = options.ApplicationName ?? string.Empty;
+            var runtimeConfig = GetRuntimeConfig(options);
+            var s = services.AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>()
+                .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
+                .AddSingleton(runtimeConfig)
+                .AddSingleton(options.HttpClientFactory?.Invoke() ?? new HttpClient())
+                .AddSingleton(sp => options.EventPublisher?.Invoke(sp) ?? new DefaultEventPublisher())
+                .AddSingleton(sp => options.SubjectBuilder?.Invoke(sp) ?? new DefaultSubjectBuilder())
+                .AddSingleton(sp => options.JsonWebKeys?.Invoke(sp) ?? new InMemoryJwksRepository())
+                .AddSingleton<IJwksStore>(sp => sp.GetService<IJwksRepository>())
+                .AddSingleton(
+                    sp => options.Clients?.Invoke(sp)
+                          ?? new InMemoryClientRepository(sp.GetService<HttpClient>(), sp.GetService<IScopeStore>()))
+                .AddSingleton<IClientStore>(sp => sp.GetService<IClientRepository>())
+                .AddSingleton(sp => options.Consents?.Invoke(sp) ?? new InMemoryConsentRepository())
+                .AddSingleton<IConsentStore>(sp => sp.GetService<IConsentRepository>())
+                .AddSingleton(sp => options.Users?.Invoke(sp) ?? new InMemoryResourceOwnerRepository())
+                .AddSingleton<IResourceOwnerStore>(sp => sp.GetService<IResourceOwnerRepository>())
+                .AddSingleton(sp => options.Scopes?.Invoke(sp) ?? new InMemoryScopeRepository())
+                .AddSingleton<IScopeStore>(sp => sp.GetService<IScopeRepository>())
+                .AddSingleton(sp => options.Policies?.Invoke(sp) ?? new InMemoryPolicyRepository())
+                .AddSingleton(sp => options.ResourceSets?.Invoke(sp) ?? new InMemoryResourceSetRepository())
+                .AddSingleton(sp => options.Tickets?.Invoke(sp) ?? new InMemoryTicketStore())
+                .AddSingleton(sp => options.AuthorizationCodes?.Invoke(sp) ?? new InMemoryAuthorizationCodeStore())
+                .AddSingleton(sp => options.Tokens?.Invoke(sp) ?? new InMemoryTokenStore())
+                .AddSingleton(sp => options.ConfirmationCodes?.Invoke(sp) ?? new InMemoryConfirmationCodeStore())
+                .AddSingleton(sp => options.AccountFilters?.Invoke(sp) ?? new DefaultFilterStore())
+                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+                .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
+                .AddTransient<IBasicAuthorizationPolicy, BasicAuthorizationPolicy>();
             services.AddDataProtection();
             return s;
+        }
+
+        private static RuntimeSettings GetRuntimeConfig(SimpleAuthOptions options)
+        {
+            return new RuntimeSettings(
+                authorizationCodeValidityPeriod: options.AuthorizationCodeValidityPeriod,
+                userClaimsToIncludeInAuthToken: options.UserClaimsToIncludeInAuthToken,
+                claimsIncludedInUserCreation: options.ClaimsIncludedInUserCreation,
+                rptLifeTime: options.RptLifeTime,
+                ticketLifeTime: options.TicketLifeTime);
         }
     }
 }

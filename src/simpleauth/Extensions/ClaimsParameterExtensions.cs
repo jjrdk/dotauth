@@ -16,7 +16,6 @@ namespace SimpleAuth.Extensions
 {
     using Parameters;
     using Shared;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -30,20 +29,15 @@ namespace SimpleAuth.Extensions
         public static List<string> GetClaimNames(this ClaimsParameter parameter)
         {
             var result = new List<string>();
-
-            var fillInClaims = new Action<List<ClaimParameter>, List<string>>((cps, r) =>
+            if (parameter.IdToken != null)
             {
-                if (cps != null &&
-                    cps.Any())
-                {
-                    r.AddRange(cps
-                        .Where(cl => IsStandardClaim(cl.Name))
-                        .Select(s => s.Name));
-                }
-            });
+                result.AddRange(parameter.IdToken.Where(cl => IsStandardClaim(cl.Name)).Select(s => s.Name));
+            }
+            if (parameter.UserInfo != null)
+            {
+                result.AddRange(parameter.UserInfo.Where(cl => IsStandardClaim(cl.Name)).Select(s => s.Name));
+            }
 
-            fillInClaims(parameter.IdToken, result);
-            fillInClaims(parameter.UserInfo, result);
             return result;
         }
 

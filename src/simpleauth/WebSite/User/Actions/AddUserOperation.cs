@@ -14,8 +14,7 @@
 
 namespace SimpleAuth.WebSite.User.Actions
 {
-    using Helpers;
-    using Logging;
+    using Extensions;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
@@ -24,13 +23,14 @@ namespace SimpleAuth.WebSite.User.Actions
     using System.Globalization;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Extensions;
+    using SimpleAuth.Shared.Events.Logging;
 
-    public class AddUserOperation
+    internal class AddUserOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IEnumerable<IAccountFilter> _accountFilters;
+        private readonly IAccountFilter[] _accountFilters;
         private readonly IEventPublisher _eventPublisher;
 
         public AddUserOperation(
@@ -39,42 +39,27 @@ namespace SimpleAuth.WebSite.User.Actions
             IEventPublisher eventPublisher)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _accountFilters = accountFilters;
+            _accountFilters = accountFilters.ToArray();
             _eventPublisher = eventPublisher;
         }
 
-        public async Task<bool> Execute(ResourceOwner resourceOwner, Uri scimBaseUrl = null)
+        public async Task<bool> Execute(ResourceOwner resourceOwner, CancellationToken cancellationToken)
         {
-            if (resourceOwner == null)
-            {
-                throw new ArgumentNullException(nameof(resourceOwner));
-            }
-
-            if (string.IsNullOrEmpty(resourceOwner.Id))
-            {
-                throw new ArgumentNullException(nameof(resourceOwner.Id), "The parameter login is missing");
-            }
-
-            if (string.IsNullOrWhiteSpace(resourceOwner.Password))
-            {
-                throw new ArgumentNullException(nameof(resourceOwner.Password), "The parameter password is missing");
-            }
-
             // 1. Check the resource owner already exists.
-            if (await _resourceOwnerRepository.Get(resourceOwner.Id).ConfigureAwait(false) != null)
+            if (await _resourceOwnerRepository.Get(resourceOwner.Subject, cancellationToken).ConfigureAwait(false) != null)
             {
                 return false;
             }
 
             var newClaims = new List<Claim>
             {
-                new Claim(JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt,
+                new Claim(OpenIdClaimTypes.UpdatedAt,
                     DateTime.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture)),
-                new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, resourceOwner.Id)
+                new Claim(OpenIdClaimTypes.Subject, resourceOwner.Subject)
             };
 
             // 2. Populate the claims.
-            //var existedClaims = await _claimRepository.GetAllAsync().ConfigureAwait(false);
+            //var existedClaims = await _claimRepository.GetAll().ConfigureAwait(false);
             if (resourceOwner.Claims != null)
             {
                 foreach (var claim in resourceOwner.Claims)
@@ -91,7 +76,7 @@ namespace SimpleAuth.WebSite.User.Actions
                 var isFilterValid = true;
                 foreach (var resourceOwnerFilter in _accountFilters)
                 {
-                    var userFilterResult = await resourceOwnerFilter.Check(newClaims).ConfigureAwait(false);
+                    var userFilterResult = await resourceOwnerFilter.Check(newClaims, cancellationToken).ConfigureAwait(false);
                     if (!userFilterResult.IsValid)
                     {
                         isFilterValid = false;
@@ -120,40 +105,25 @@ namespace SimpleAuth.WebSite.User.Actions
                 }
             }
 
-            // 3. Add the scim resource.
-            if (scimBaseUrl != null)
-            {
-                newClaims.Add(new Claim(JwtConstants.StandardResourceOwnerClaimNames.ScimId, resourceOwner.Id));
-                newClaims.Add(new Claim(JwtConstants.StandardResourceOwnerClaimNames.ScimLocation,
-                    $"{scimBaseUrl}/Users/{resourceOwner.Id}"));
-            }
-
             // 4. Add the resource owner.
             var newResourceOwner = new ResourceOwner
             {
-                Id = resourceOwner.Id,
-                Claims = newClaims,
-                TwoFactorAuthentication = string.Empty,
-                IsLocalAccount = true,
-                Password = resourceOwner.Password.ToSha256Hash(),
-                UserProfile = resourceOwner.UserProfile
+                Subject = resourceOwner.Subject,
+                Claims = newClaims.ToArray(),
+                ExternalLogins = resourceOwner.ExternalLogins,
+                TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication,
+                IsLocalAccount = resourceOwner.IsLocalAccount,
+                Password = resourceOwner.Password,
             };
-            if (!await _resourceOwnerRepository.InsertAsync(newResourceOwner).ConfigureAwait(false))
+            if (!await _resourceOwnerRepository.Insert(newResourceOwner, cancellationToken).ConfigureAwait(false))
             {
                 return false;
             }
 
-            //// 5. Link to a profile.
-            //if (!string.IsNullOrWhiteSpace(issuer))
-            //{
-            //    await _linkProfileAction.Execute(resourceOwner.Login, resourceOwner.ExternalLogin, issuer)
-            //        .ConfigureAwait(false);
-            //}
-
             await _eventPublisher.Publish(
                     new ResourceOwnerAdded(
                         Id.Create(),
-                        newResourceOwner.Id,
+                        newResourceOwner.Subject,
                         DateTime.UtcNow))
                 .ConfigureAwait(false);
             return true;

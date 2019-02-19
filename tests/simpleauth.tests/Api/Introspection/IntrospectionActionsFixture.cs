@@ -14,32 +14,36 @@
 
 namespace SimpleAuth.Tests.Api.Introspection
 {
-    using System;
-    using System.Net.Http;
-    using System.Threading.Tasks;
     using Repositories;
     using Shared.Models;
     using SimpleAuth.Api.Introspection;
+    using System;
+    using System.Net.Http;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class IntrospectionActionsFixture
     {
-        private PostIntrospectionAction _introspectionActions;
+        private readonly PostIntrospectionAction _introspectionActions;
+
+        public IntrospectionActionsFixture()
+        {
+            _introspectionActions = new PostIntrospectionAction(
+                new InMemoryClientRepository(
+                    new HttpClient(),
+                    new InMemoryScopeRepository(new Scope[0]),
+                    new Client[0]),
+                new InMemoryTokenStore());
+        }
 
         [Fact]
         public async Task When_Passing_Null_Parameter_To_PostIntrospection_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _introspectionActions.Execute(null, null, null))
+            await Assert
+                .ThrowsAsync<ArgumentNullException>(
+                    () => _introspectionActions.Execute(null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _introspectionActions = new PostIntrospectionAction(
-                new DefaultClientRepository(new Client[0], new HttpClient(), new DefaultScopeRepository(new Scope[0])),
-                new InMemoryTokenStore());
         }
     }
 }

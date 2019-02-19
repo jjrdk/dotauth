@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,28 +14,21 @@
 
 namespace SimpleAuth.Policies
 {
+    using Parameters;
+    using Shared.Models;
+    using Shared.Repositories;
+    using Shared.Responses;
     using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Parameters;
-    using Shared.Models;
-    using Shared.Repositories;
-    using Shared.Responses;
 
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy
     {
         private readonly IClientStore _clientStore;
-        //private readonly IJwtTokenParser _jwtTokenParser;
-        //private readonly IJwksClient _jwksClient;
-
-        //public BasicAuthorizationPolicy(IJwksClient jwksClient)
-        //{
-        //    _jwtTokenParser = jwtTokenParser;
-        //    _jwksClient = jwksClient;
-        //}
 
         public BasicAuthorizationPolicy(IClientStore clientStore)
         {
@@ -45,7 +38,8 @@ namespace SimpleAuth.Policies
         public async Task<AuthorizationPolicyResult> Execute(
             TicketLineParameter ticketLineParameter,
             Policy authorizationPolicy,
-            ClaimTokenParameter claimTokenParameter)
+            ClaimTokenParameter claimTokenParameter,
+            CancellationToken cancellationToken)
         {
             if (ticketLineParameter == null)
             {
@@ -69,7 +63,7 @@ namespace SimpleAuth.Policies
             AuthorizationPolicyResult result = null;
             foreach (var rule in authorizationPolicy.Rules)
             {
-                result = await ExecuteAuthorizationPolicyRule(ticketLineParameter, rule, claimTokenParameter)
+                result = await ExecuteAuthorizationPolicyRule(ticketLineParameter, rule, claimTokenParameter, cancellationToken)
                     .ConfigureAwait(false);
                 if (result.Type == AuthorizationPolicyResultEnum.Authorized)
                 {
@@ -83,7 +77,7 @@ namespace SimpleAuth.Policies
         private async Task<AuthorizationPolicyResult> ExecuteAuthorizationPolicyRule(
             TicketLineParameter ticketLineParameter,
             PolicyRule authorizationPolicy,
-            ClaimTokenParameter claimTokenParameter)
+            ClaimTokenParameter claimTokenParameter, CancellationToken cancellationToken)
         {
             // 1. Check can access to the scope
             if (ticketLineParameter.Scopes.Any(s => !authorizationPolicy.Scopes.Contains(s)))
@@ -104,7 +98,7 @@ namespace SimpleAuth.Policies
 
             // 3. Check claims are correct
             var claimAuthorizationResult =
-                await CheckClaims(ticketLineParameter.ClientId, authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
+                await CheckClaims(ticketLineParameter.ClientId, authorizationPolicy, claimTokenParameter, cancellationToken).ConfigureAwait(false);
             if (claimAuthorizationResult != null &&
                 claimAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
@@ -126,7 +120,7 @@ namespace SimpleAuth.Policies
             };
         }
 
-        private AuthorizationPolicyResult GetNeedInfoResult(List<Claim> claims, string openidConfigurationUrl)
+        private AuthorizationPolicyResult GetNeedInfoResult(Claim[] claims, string openidConfigurationUrl)
         {
             var requestingPartyClaims = new Dictionary<string, object>();
             var requiredClaims = new List<Dictionary<string, string>>();
@@ -164,28 +158,28 @@ namespace SimpleAuth.Policies
         private async Task<AuthorizationPolicyResult> CheckClaims(
             string clientId,
             PolicyRule authorizationPolicy,
-            ClaimTokenParameter claimTokenParameter)
+            ClaimTokenParameter claimTokenParameter,
+            CancellationToken cancellationToken)
         {
             if (authorizationPolicy.Claims == null || !authorizationPolicy.Claims.Any())
             {
                 return null;
             }
 
-            if (claimTokenParameter == null || claimTokenParameter.Format != UmaConstants.IdTokenType)
+            if (claimTokenParameter == null || claimTokenParameter.Format != UmaConstants._idTokenType)
             {
                 return GetNeedInfoResult(authorizationPolicy.Claims, authorizationPolicy.OpenIdProvider);
             }
 
-            var client = await _clientStore.GetById(clientId).ConfigureAwait(false);
-            //var idToken = claimTokenParameter.Token;
-            //var keyset = await _jwksClient.ResolveAsync(new Uri(authorizationPolicy.OpenIdProvider)).ConfigureAwait(false);
+            var client = await _clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
+
             var handler = new JwtSecurityTokenHandler();
             handler.ValidateToken(
                 claimTokenParameter.Token,
                 client.CreateValidationParameters(),
                 out var securityToken);
             var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
-            //var jwsPayload = _jwtTokenParser.UnSign(idToken, authorizationPolicy.OpenIdProvider, keyset);
+
             if (jwsPayload == null)
             {
                 return new AuthorizationPolicyResult
@@ -216,7 +210,7 @@ namespace SimpleAuth.Policies
                     }
                 }
 
-                //if (claim.Type == JwtConstants.StandardResourceOwnerClaimNames.Role)
+                //if (claim.Type == OpenIdClaimTypes.Role)
                 //{
                 //    IEnumerable<string> roles = null;
                 //    if (payload.Value is string)

@@ -2,14 +2,37 @@
 {
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Defines the error response.
+    /// </summary>
     [DataContract]
     public class ErrorResponse
     {
-        [DataMember(Name = SharedConstants.ErrorResponseNames.Error)]
+        /// <summary>
+        /// Gets or sets the error.
+        /// </summary>
+        /// <value>
+        /// The error.
+        /// </value>
+        [DataMember(Name = "error")]
         public string Error { get; set; }
-        [DataMember(Name = SharedConstants.ErrorResponseNames.ErrorDescription)]
+
+        /// <summary>
+        /// Gets or sets the error description.
+        /// </summary>
+        /// <value>
+        /// The error description.
+        /// </value>
+        [DataMember(Name = "error_description")]
         public string ErrorDescription { get; set; }
-        [DataMember(Name = SharedConstants.ErrorResponseNames.ErrorUri)]
+
+        /// <summary>
+        /// Gets or sets the error URI.
+        /// </summary>
+        /// <value>
+        /// The error URI.
+        /// </value>
+        [DataMember(Name = "error_uri")]
         public string ErrorUri { get; set; }
     }
 }

@@ -14,7 +14,7 @@
 
 namespace SimpleAuth.Parameters
 {
-    public class LocalAuthenticationParameter
+    internal class LocalAuthenticationParameter
     {
         public string UserName { get; set; }
         public string Password { get; set; }

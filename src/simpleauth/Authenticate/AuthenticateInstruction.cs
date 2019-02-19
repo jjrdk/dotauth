@@ -16,7 +16,7 @@ namespace SimpleAuth.Authenticate
 {
     using System.Security.Cryptography.X509Certificates;
 
-    public class AuthenticateInstruction
+    internal class AuthenticateInstruction
     {
         public string ClientIdFromHttpRequestBody { get; set; }
         public string ClientSecretFromHttpRequestBody { get; set; }

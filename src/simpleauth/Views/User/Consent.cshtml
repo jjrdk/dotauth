@@ -32,7 +32,7 @@
     else
     {
         var clients = Model.GroupBy(m => m.ClientDisplayName);
-        @foreach (var client in clients)
+        foreach (var client in clients)
         {
             <div class="card">
                 <div class="card-content">
@@ -41,11 +41,11 @@
                         <div class="col s12 m3">
                             @if (string.IsNullOrWhiteSpace(client.First().LogoUri))
                             {
-                                <img class="center-align left" src="@Url.Content("~/img/OAuth2.png")" style="width:100%"  />
+                                <img class="center-align left" alt="logo" src="@Url.Content("~/img/OAuth2.png")" style="width:100%"  />
                             }
                             else
                             {
-                                <img class="center-align left" src="@Url.Content(client.First().LogoUri)" style="width:100%"  />
+                                <img class="center-align left" alt="logo" src="@Url.Content(client.First().LogoUri)" style="width:100%"  />
                             }
                         </div>
                         <div class="col s12 m9">
@@ -62,7 +62,7 @@
                                     }
                                     else
                                     {
-                                        @foreach (var scope in consent.AllowedScopeDescriptions)
+                                        foreach (var scope in consent.AllowedScopeDescriptions)
                                         {
                                             <li class="collection-item">@scope</li>
                                         }
@@ -78,7 +78,7 @@
                                     }
                                     else
                                     {
-                                        @foreach (var claim in consent.AllowedIndividualClaims)
+                                        foreach (var claim in consent.AllowedIndividualClaims)
                                         {
                                             <li class="collection-item">@claim</li>
                                         }

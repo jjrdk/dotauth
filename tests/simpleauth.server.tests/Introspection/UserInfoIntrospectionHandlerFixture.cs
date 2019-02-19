@@ -1,49 +1,46 @@
 namespace SimpleAuth.Server.Tests.Introspection
 {
     using Client;
-    using Client.Operations;
-    using Client.Results;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Microsoft.Extensions.WebEncoders.Testing;
     using Moq;
-    using Newtonsoft.Json.Linq;
+    using System;
     using System.Threading.Tasks;
     using UserInfoIntrospection;
     using Xunit;
 
-    public class UserInfoIntrospectionHandlerFixture : IClassFixture<TestOauthServerFixture>
+    public class UserInfoIntrospectionHandlerFixture
     {
         private const string BaseUrl = "http://localhost:5000";
+        private const string WellKnownOpenidConfiguration = "/.well-known/openid-configuration";
         private readonly TestOauthServerFixture _server;
 
-        public UserInfoIntrospectionHandlerFixture(TestOauthServerFixture server)
+        public UserInfoIntrospectionHandlerFixture()
         {
-            _server = server;
+            _server = new TestOauthServerFixture();
         }
 
         [Fact]
         public async Task When_Introspect_Identity_Token_Then_Claims_Are_Returned()
         {
-            var result = await new TokenClient(
+            var client = await TokenClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    TokenRequest.FromPassword("superuser", "password", new[] {"role"}),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
                 .ConfigureAwait(false);
-            var userInfoClient = new Mock<IUserInfoClient>();
-            var userInfoResult = new GetUserInfoResult {Content = new JObject()};
-            userInfoClient.Setup(x => x.Resolve(It.IsAny<string>(), It.IsAny<string>(), false))
-                .ReturnsAsync(userInfoResult);
+            var result = await client.GetToken(TokenRequest.FromPassword("superuser", "password", new[] { "role" }))
+                .ConfigureAwait(false);
+
             var authResult = await new UserInfoIntrospectionHandler(
                     new Mock<IOptionsMonitor<UserInfoIntrospectionOptions>>().Object,
                     new Mock<ILoggerFactory>().Object,
                     new UrlTestEncoder(),
-                    userInfoClient.Object,
-                    new Mock<ISystemClock>().Object)
-                .HandleAuthenticate(BaseUrl + "/.well-known/openid-configuration", result.Content.AccessToken)
+                    _server.Client,
+                    new Mock<ISystemClock>().Object).HandleAuthenticate(
+                    BaseUrl + WellKnownOpenidConfiguration,
+                    result.Content.AccessToken)
                 .ConfigureAwait(false);
 
             Assert.True(authResult.Succeeded);

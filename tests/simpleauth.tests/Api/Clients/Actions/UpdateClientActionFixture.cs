@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Tests.Api.Clients.Actions
 {
-    using Exceptions;
     using Helpers;
     using Moq;
     using Newtonsoft.Json;
@@ -24,7 +23,9 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
     using Xunit;
 
     public class UpdateClientActionFixture
@@ -37,7 +38,8 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
         {
             InitializeFakeObjects();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientRepositoryMock.Update(null))
+            await Assert
+                .ThrowsAsync<ArgumentNullException>(() => _clientRepositoryMock.Update(null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
@@ -45,12 +47,9 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
         public async Task When_No_Client_Id_Is_Passed_Then_ReturnsNull()
         {
             InitializeFakeObjects();
-            var parameter = new Client
-            {
-                ClientId = null
-            };
+            var parameter = new Client {ClientId = null};
 
-            var result = await _clientRepositoryMock.Update(parameter).ConfigureAwait(false);
+            var result = await _clientRepositoryMock.Update(parameter, CancellationToken.None).ConfigureAwait(false);
 
             Assert.Null(result);
         }
@@ -64,19 +63,12 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
             var parameter = new Client
             {
                 ClientId = clientId,
-                RedirectionUrls = new List<Uri> { new Uri("https://localhost") },
-                Secrets = new List<ClientSecret>
-                {
-                    new ClientSecret
-                    {
-                        Type = ClientSecretTypes.SharedSecret,
-                        Value = "test"
-                    }
-                }
+                RedirectionUrls = new[] {new Uri("https://localhost")},
+                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}}
             };
 
             var jsonParameter = JsonConvert.SerializeObject(parameter);
-            var result = await _clientRepositoryMock.Update(parameter).ConfigureAwait(false);
+            var result = await _clientRepositoryMock.Update(parameter, CancellationToken.None).ConfigureAwait(false);
 
             Assert.Null(result);
         }
@@ -85,36 +77,22 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
         public async Task When_Scope_Are_Not_Supported_Then_Exception_Is_Thrown()
         {
             const string clientId = "client_id";
-            var client = new Client
-            {
-                ClientId = clientId
-            };
+            var client = new Client {ClientId = clientId};
             var parameter = new Client
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 ClientId = clientId,
-                AllowedScopes = new List<Scope>
-                {
-                    new Scope
-                    {
-                        Name = "not_supported_scope"
-                    }
-                },
-                RequestUris = new[] { new Uri("https://localhost"), },
-                RedirectionUrls = new[] { new Uri("https://localhost") }
+                AllowedScopes = new[] {"not_supported_scope"},
+                RequestUris = new[] {new Uri("https://localhost"),},
+                RedirectionUrls = new[] {new Uri("https://localhost")}
             };
-            InitializeFakeObjects(new[] { client });
+            InitializeFakeObjects(new[] {client});
 
-            _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<IEnumerable<string>>()))
-                .Returns(Task.FromResult((ICollection<Scope>)new List<Scope>
-                {
-                    new Scope
-                    {
-                        Name = "scope"
-                    }
-                }));
+            _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
+                .ReturnsAsync(new[] {new Scope {Name = "scope"}});
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _clientRepositoryMock.Update(parameter))
+            var ex = await Assert
+                .ThrowsAsync<SimpleAuthException>(() => _clientRepositoryMock.Update(parameter, CancellationToken.None))
                 .ConfigureAwait(false);
 
             Assert.Equal("Unknown scopes: not_supported_scope", ex.Message);
@@ -122,9 +100,10 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
 
         private void InitializeFakeObjects(IReadOnlyCollection<Client> clients = null)
         {
-            _clientRepositoryMock = new DefaultClientRepository(clients ?? new Client[0],
+            _clientRepositoryMock = new InMemoryClientRepository(
                 new HttpClient(),
-                new DefaultScopeRepository());
+                new InMemoryScopeRepository(),
+                clients ?? new Client[0]);
             _scopeRepositoryStub = new Mock<IScopeRepository>();
         }
     }

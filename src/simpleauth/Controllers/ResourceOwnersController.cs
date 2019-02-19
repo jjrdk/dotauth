@@ -14,16 +14,7 @@
 
 namespace SimpleAuth.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
-    using Errors;
-    using Exceptions;
     using Extensions;
-    using Helpers;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Shared;
@@ -31,14 +22,32 @@ namespace SimpleAuth.Controllers
     using Shared.Repositories;
     using Shared.Requests;
     using Shared.Responses;
+    using SimpleAuth.Shared.Errors;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Security.Claims;
+    using System.Threading;
+    using System.Threading.Tasks;
     using WebSite.User.Actions;
 
+    /// <summary>
+    /// Defines the resource owner controller.
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(CoreConstants.EndPoints.ResourceOwners)]
     public class ResourceOwnersController : Controller
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly AddUserOperation _addUserOperation;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceOwnersController"/> class.
+        /// </summary>
+        /// <param name="resourceOwnerRepository">The resource owner repository.</param>
+        /// <param name="accountFilters">The account filters.</param>
+        /// <param name="eventPublisher">The event publisher.</param>
         public ResourceOwnersController(
             IResourceOwnerRepository resourceOwnerRepository,
             IEnumerable<AccountFilter> accountFilters,
@@ -48,130 +57,157 @@ namespace SimpleAuth.Controllers
             _addUserOperation = new AddUserOperation(resourceOwnerRepository, accountFilters, eventPublisher);
         }
 
+        /// <summary>
+        /// Gets the specified cancellation token.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpGet]
         [Authorize("manager")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            var content = (await _resourceOwnerRepository.GetAllAsync().ConfigureAwait(false)).ToDtos();
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners);
-            return new OkObjectResult(content);
+            var resourceOwners = (await _resourceOwnerRepository.GetAll(cancellationToken).ConfigureAwait(false));
+            return new OkObjectResult(resourceOwners);
         }
 
+        /// <summary>
+        /// Gets the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="SimpleAuthException"></exception>
         [HttpGet("{id}")]
         [Authorize("manager")]
-        public async Task<IActionResult> Get(string id)
+        public async Task<IActionResult> Get(string id, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return BuildError(ErrorCodes.InvalidRequestCode, "the id parameter must be specified", HttpStatusCode.BadRequest);
-            }
-
-            var resourceOwner = await _resourceOwnerRepository.Get(id).ConfigureAwait(false);
+            var resourceOwner = await _resourceOwnerRepository.Get(id, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, id));
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, id));
             }
 
-            return Ok(resourceOwner.ToDto());
+            return Ok(resourceOwner);
         }
 
+        /// <summary>
+        /// Deletes the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize("manager")]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(string id, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (!await _resourceOwnerRepository.Delete(id, cancellationToken).ConfigureAwait(false))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "the id parameter must be specified", HttpStatusCode.BadRequest);
-            }
-
-            if (!await _resourceOwnerRepository.Delete(id).ConfigureAwait(false))
-            {
-                return BadRequest(new ErrorResponse
-                {
-                    Error = ErrorCodes.UnhandledExceptionCode,
-                    ErrorDescription = ErrorDescriptions.TheResourceOwnerCannotBeRemoved
-                });
+                return BadRequest(
+                    new ErrorResponse
+                    {
+                        Error = ErrorCodes.UnhandledExceptionCode,
+                        ErrorDescription = ErrorDescriptions.TheResourceOwnerCannotBeRemoved
+                    });
             }
 
             return Ok();
         }
 
+        /// <summary>
+        /// Updates the claims.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="SimpleAuthException"></exception>
         [HttpPut("claims")]
         [Authorize("manager")]
-        public async Task<IActionResult> UpdateClaims([FromBody] UpdateResourceOwnerClaimsRequest request)
+        public async Task<IActionResult> UpdateClaims(
+            [FromBody] UpdateResourceOwnerClaimsRequest request,
+            CancellationToken cancellationToken)
         {
             if (request == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "no parameter in body request",
+                    HttpStatusCode.BadRequest);
             }
 
-            //await _resourceOwnerActions.UpdateResourceOwnerClaims(request.ToParameter()).ConfigureAwait(false);
-            //await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + request.Login, false);
-
-            var resourceOwner = await _resourceOwnerRepository.Get(request.Login).ConfigureAwait(false);
+            var resourceOwner =
+                await _resourceOwnerRepository.Get(request.Subject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidParameterCode, string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Login));
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidParameterCode,
+                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Subject));
             }
 
             resourceOwner.UpdateDateTime = DateTime.UtcNow;
-            var claims = new List<Claim>();
-            //var existingClaims = (await _claimRepository.GetAllAsync().ConfigureAwait(false)).ToArray();
-            //if (existingClaims.Any() && request.Claims != null && request.Claims.Any())
-            //{
-            foreach (var claim in request.Claims)
-            {
-                //var cl = existingClaims.FirstOrDefault(c => c.Code == claim.Key);
-                //if (cl == null)
-                //{
-                //    continue;
-                //}
-
-                claims.Add(new Claim(claim.Key, claim.Value));
-            }
-            //}
+            var claims = request.Claims.Select(claim => new Claim(claim.Type, claim.Value)).ToArray();
 
             resourceOwner.Claims = claims;
-            Claim updatedClaim, subjectClaim;
-            if (((updatedClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt)) != null))
+            Claim updatedClaim;
+            if ((updatedClaim = resourceOwner.Claims.FirstOrDefault(
+                    c => c.Type == OpenIdClaimTypes.UpdatedAt))
+                != null)
             {
                 resourceOwner.Claims.Remove(updatedClaim);
             }
 
-            if (((subjectClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject)) != null))
+            Claim subjectClaim;
+            if ((subjectClaim =
+                    resourceOwner.Claims.FirstOrDefault(
+                        c => c.Type == OpenIdClaimTypes.Subject))
+                != null)
             {
                 resourceOwner.Claims.Remove(subjectClaim);
             }
 
-            resourceOwner.Claims.Add(new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, request.Login));
-            resourceOwner.Claims.Add(new Claim(JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
-            var result = await _resourceOwnerRepository.UpdateAsync(resourceOwner).ConfigureAwait(false);
+            resourceOwner.Claims = resourceOwner.Claims.Add(
+                new Claim(OpenIdClaimTypes.Subject, request.Subject),
+                new Claim(OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ToString()));
+
+            var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
             if (!result)
             {
                 return BadRequest(ErrorDescriptions.TheClaimsCannotBeUpdated);
-                //throw new SimpleAuthException(Core.Errors.ErrorCodes.InternalErrorCode, ErrorDescriptions.TheClaimsCannotBeUpdated);
             }
 
             return new OkResult();
         }
 
+        /// <summary>
+        /// Updates the password.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="SimpleAuthException"></exception>
         [HttpPut("password")]
         [Authorize("manager")]
-        public async Task<IActionResult> UpdatePassword([FromBody] UpdateResourceOwnerPasswordRequest request)
+        public async Task<IActionResult> UpdatePassword(
+            [FromBody] UpdateResourceOwnerPasswordRequest request,
+            CancellationToken cancellationToken)
         {
             if (request == null)
             {
                 return BadRequest("Parameter in request body not valid");
             }
 
-            var resourceOwner = await _resourceOwnerRepository.Get(request.Login).ConfigureAwait(false);
+            var resourceOwner =
+                await _resourceOwnerRepository.Get(request.Subject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidParameterCode, string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Login));
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidParameterCode,
+                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Subject));
             }
 
-            resourceOwner.Password = request.Password.ToSha256Hash();
-            var result = await _resourceOwnerRepository.UpdateAsync(resourceOwner).ConfigureAwait(false);
+            resourceOwner.Password = request.Password;
+            var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
             if (!result)
             {
                 return BadRequest(ErrorDescriptions.ThePasswordCannotBeUpdated);
@@ -180,9 +216,17 @@ namespace SimpleAuth.Controllers
             return new OkResult();
         }
 
+        /// <summary>
+        /// Adds the specified add resource owner request.
+        /// </summary>
+        /// <param name="addResourceOwnerRequest">The add resource owner request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize("manager")]
-        public async Task<IActionResult> Add([FromBody] AddResourceOwnerRequest addResourceOwnerRequest)
+        public async Task<IActionResult> Add(
+            [FromBody] AddResourceOwnerRequest addResourceOwnerRequest,
+            CancellationToken cancellationToken)
         {
             if (addResourceOwnerRequest == null)
             {
@@ -190,45 +234,55 @@ namespace SimpleAuth.Controllers
             }
 
             if (await _addUserOperation.Execute(
-                new ResourceOwner
-                {
-                    Id = addResourceOwnerRequest.Subject,
-                    Password = addResourceOwnerRequest.Password
-                }).ConfigureAwait(false))
+                    new ResourceOwner
+                    {
+                        Subject = addResourceOwnerRequest.Subject,
+                        Password = addResourceOwnerRequest.Password,
+                        IsLocalAccount = true,
+                    },
+                    cancellationToken)
+                .ConfigureAwait(false))
             {
                 return NoContent();
             }
-            return BadRequest(new ErrorResponse
-            {
-                Error = ErrorCodes.UnhandledExceptionCode,
-                ErrorDescription = "a resource owner with same credentials already exists"
-            });
+
+            return BadRequest(
+                new ErrorResponse
+                {
+                    Error = ErrorCodes.UnhandledExceptionCode,
+                    ErrorDescription = "a resource owner with same credentials already exists"
+                });
         }
 
+        /// <summary>
+        /// Searches the specified search resource owners request.
+        /// </summary>
+        /// <param name="searchResourceOwnersRequest">The search resource owners request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPost(".search")]
         [Authorize("manager")]
-        public async Task<IActionResult> Search([FromBody] SearchResourceOwnersRequest searchResourceOwnersRequest)
+        public async Task<IActionResult> Search(
+            [FromBody] SearchResourceOwnersRequest searchResourceOwnersRequest,
+            CancellationToken cancellationToken)
         {
             if (searchResourceOwnersRequest == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "Parameter in request body not valid", HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "Parameter in request body not valid",
+                    HttpStatusCode.BadRequest);
             }
 
-            var result = await _resourceOwnerRepository.Search(searchResourceOwnersRequest.ToParameter()).ConfigureAwait(false);
+            var result = await _resourceOwnerRepository.Search(searchResourceOwnersRequest, cancellationToken)
+                .ConfigureAwait(false);
             return new OkObjectResult(result.ToDto());
         }
 
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorResponse
-            {
-                Error = code,
-                ErrorDescription = message
-            };
-            return new JsonResult(error)
-            {
-                StatusCode = (int)statusCode
-            };
+            var error = new ErrorResponse { Error = code, ErrorDescription = message };
+            return new JsonResult(error) { StatusCode = (int)statusCode };
         }
     }
 }

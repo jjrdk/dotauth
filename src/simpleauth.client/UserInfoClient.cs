@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,32 +14,48 @@
 
 namespace SimpleAuth.Client
 {
-    using Errors;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-    using Operations;
     using Results;
-    using Shared;
     using Shared.Responses;
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
 
-    internal class UserInfoClient : IUserInfoClient
+    /// <summary>
+    /// Defines the user info client.
+    /// </summary>
+    public class UserInfoClient
     {
         private readonly HttpClient _client;
-        private readonly IGetDiscoveryOperation _getDiscoveryOperation;
+        private readonly GetDiscoveryOperation _getDiscoveryOperation;
 
-        public UserInfoClient(
-            HttpClient client,
-            IGetDiscoveryOperation getDiscoveryOperation)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserInfoClient"/> class.
+        /// </summary>
+        /// <param name="client">The client.</param>
+        public UserInfoClient(HttpClient client)
         {
             _client = client;
-            _getDiscoveryOperation = getDiscoveryOperation ?? throw new ArgumentNullException(nameof(getDiscoveryOperation));
+            _getDiscoveryOperation = new GetDiscoveryOperation(client);
         }
 
-        public async Task<GetUserInfoResult> Resolve(string configurationUrl, string accessToken, bool inBody = false)
+        /// <summary>
+        /// Gets the specified user info based on the configuration URL and access token.
+        /// </summary>
+        /// <param name="configurationUrl">The configuration URL.</param>
+        /// <param name="accessToken">The access token.</param>
+        /// <param name="inBody">if set to <c>true</c> [in body].</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// configurationUrl
+        /// or
+        /// accessToken
+        /// </exception>
+        /// <exception cref="ArgumentException"></exception>
+        public async Task<GetUserInfoResult> Get(string configurationUrl, string accessToken, bool inBody = false)
         {
             if (string.IsNullOrWhiteSpace(configurationUrl))
             {
@@ -56,7 +72,7 @@ namespace SimpleAuth.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            var discoveryDocument = await _getDiscoveryOperation.Execute(uri).ConfigureAwait(false);
 
             var request = new HttpRequestMessage
             {
@@ -70,7 +86,7 @@ namespace SimpleAuth.Client
                 request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
                 {
                     {
-                        GrantedTokenNames.AccessToken, accessToken
+                        "access_token", accessToken
                     }
                 });
             }

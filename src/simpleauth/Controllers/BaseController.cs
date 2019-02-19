@@ -6,28 +6,36 @@
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Mvc;
 
-    public class BaseController : Controller
+    /// <summary>
+    /// Defines the abstract base controller.
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    public abstract class BaseController : Controller
     {
+        /// <summary>
+        /// The authentication service
+        /// </summary>
         protected readonly IAuthenticationService _authenticationService;
 
-        public BaseController(IAuthenticationService authenticationService)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseController"/> class.
+        /// </summary>
+        /// <param name="authenticationService">The authentication service.</param>
+        protected BaseController(IAuthenticationService authenticationService)
         {
             _authenticationService = authenticationService;
         }
 
-        public async Task<ClaimsPrincipal> SetUser()
+        /// <summary>
+        /// Sets the user.
+        /// </summary>
+        /// <returns></returns>
+        protected async Task<ClaimsPrincipal> SetUser()
         {
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName).ConfigureAwait(false);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName).ConfigureAwait(false);
             var isAuthenticed = authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated;
             ViewBag.IsAuthenticated = isAuthenticed;
-            if (isAuthenticed)
-            {
-                ViewBag.Name = authenticatedUser.GetName();
-            }
-            else
-            {
-                ViewBag.Name = "unknown";
-            }
+            ViewBag.Name = isAuthenticed ? authenticatedUser.GetName() : "unknown";
 
             return authenticatedUser;
         }

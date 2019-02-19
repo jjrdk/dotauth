@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>SimpleAuth SMS Authentication Library</Description>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <AssemblyName>simpleauth.sms</AssemblyName>
+    <PackageId>simpleauth.sms</PackageId>
+    <RootNamespace>SimpleAuth.Sms</RootNamespace>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
+  </PropertyGroup>
+
+  <Import Project="../../shared.proj" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.3.3.23" />
+    <PackageReference Include="microsoft.extensions.fileproviders.embedded" Version="2.2.0" />
+    <PackageReference Include="microsoft.aspnetcore.mvc.razor" Version="2.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Areas\**\*.cshtml" />
+  </ItemGroup>
+</Project>

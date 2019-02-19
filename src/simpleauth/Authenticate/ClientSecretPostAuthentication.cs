@@ -43,15 +43,5 @@ namespace SimpleAuth.Authenticate
                         StringComparison.CurrentCultureIgnoreCase) == 0;
             return sameSecret ? client : null;
         }
-
-        public static string GetClientId(AuthenticateInstruction instruction)
-        {
-            if (instruction == null)
-            {
-                throw new ArgumentNullException(nameof(instruction), "the instruction parameter cannot be null");
-            }
-
-            return instruction.ClientIdFromHttpRequestBody;
-        }
     }
 }

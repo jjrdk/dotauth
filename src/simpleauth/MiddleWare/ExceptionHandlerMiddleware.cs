@@ -14,17 +14,17 @@
 
 namespace SimpleAuth.MiddleWare
 {
-    using Errors;
     using Exceptions;
-    using Logging;
     using Microsoft.AspNetCore.Http;
     using Shared;
     using Shared.Responses;
     using System;
     using System.Net;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Events.Logging;
 
-    public class ExceptionHandlerMiddleware
+    internal class ExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IEventPublisher _publisher;

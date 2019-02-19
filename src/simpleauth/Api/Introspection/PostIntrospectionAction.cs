@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,34 +17,33 @@ using SimpleAuth.Shared.Repositories;
 namespace SimpleAuth.Api.Introspection
 {
     using Authenticate;
-    using Errors;
-    using Exceptions;
     using Parameters;
-    using Results;
     using Shared;
     using Shared.Models;
     using System;
     using System.Linq;
     using System.Net.Http.Headers;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Responses;
 
-    public class PostIntrospectionAction
+    internal class PostIntrospectionAction
     {
         private readonly AuthenticateClient _authenticateClient;
         private readonly ITokenStore _tokenStore;
 
-        public PostIntrospectionAction(
-            IClientStore clientStore,
-            ITokenStore tokenStore)
+        public PostIntrospectionAction(IClientStore clientStore, ITokenStore tokenStore)
         {
             _authenticateClient = new AuthenticateClient(clientStore);
             _tokenStore = tokenStore;
         }
 
-        public async Task<IntrospectionResult> Execute(
+        public async Task<IntrospectionResponse> Execute(
             IntrospectionParameter introspectionParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
-            string issuerName)
+            string issuerName,
+            CancellationToken cancellationToken)
         {
             // 1. Validate the parameters
             if (introspectionParameter == null)
@@ -62,7 +61,8 @@ namespace SimpleAuth.Api.Introspection
 
             // 2. Authenticate the client
             var instruction = CreateAuthenticateInstruction(introspectionParameter, authenticationHeaderValue);
-            var authResult = await _authenticateClient.Authenticate(instruction, issuerName).ConfigureAwait(false);
+            var authResult = await _authenticateClient.Authenticate(instruction, issuerName, cancellationToken)
+                .ConfigureAwait(false);
             if (authResult.Client == null)
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
@@ -79,28 +79,32 @@ namespace SimpleAuth.Api.Introspection
             GrantedToken grantedToken;
             if (tokenTypeHint == CoreConstants.StandardTokenTypeHintNames.AccessToken)
             {
-                grantedToken = await _tokenStore.GetAccessToken(introspectionParameter.Token).ConfigureAwait(false) ??
-                               await _tokenStore.GetRefreshToken(introspectionParameter.Token).ConfigureAwait(false);
+                grantedToken =
+                    await _tokenStore.GetAccessToken(introspectionParameter.Token, cancellationToken)
+                        .ConfigureAwait(false)
+                    ?? await _tokenStore.GetRefreshToken(introspectionParameter.Token, cancellationToken)
+                        .ConfigureAwait(false);
             }
             else
             {
-                grantedToken = await _tokenStore.GetRefreshToken(introspectionParameter.Token).ConfigureAwait(false) ??
-                               await _tokenStore.GetAccessToken(introspectionParameter.Token).ConfigureAwait(false);
+                grantedToken =
+                    await _tokenStore.GetRefreshToken(introspectionParameter.Token, cancellationToken)
+                        .ConfigureAwait(false)
+                    ?? await _tokenStore.GetAccessToken(introspectionParameter.Token, cancellationToken)
+                        .ConfigureAwait(false);
             }
 
             // 5. Throw an exception if there's no granted token
             if (grantedToken == null)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidToken,
-                    ErrorDescriptions.TheTokenIsNotValid);
+                throw new SimpleAuthException(ErrorCodes.InvalidToken, ErrorDescriptions.TheTokenIsNotValid);
             }
 
             // 6. Fill-in parameters
-            //// TODO : Specifiy the other parameters : NBF & JTI
-            var result = new IntrospectionResult
+            //// default : Specifiy the other parameters : NBF & JTI
+            var result = new IntrospectionResponse
             {
-                Scope = grantedToken.Scope,
+                Scope = grantedToken.Scope?.Split(' '),
                 ClientId = grantedToken.ClientId,
                 Expiration = grantedToken.ExpiresIn,
                 TokenType = grantedToken.TokenType
@@ -114,9 +118,9 @@ namespace SimpleAuth.Api.Introspection
                 var issuedAt = grantedToken.IdTokenPayLoad.Iat;
                 var issuer = grantedToken.IdTokenPayLoad.Iss;
                 var subject =
-                    grantedToken.IdTokenPayLoad.GetClaimValue(JwtConstants.StandardResourceOwnerClaimNames.Subject);
+                    grantedToken.IdTokenPayLoad.GetClaimValue(OpenIdClaimTypes.Subject);
                 var userName =
-                    grantedToken.IdTokenPayLoad.GetClaimValue(JwtConstants.StandardResourceOwnerClaimNames.Name);
+                    grantedToken.IdTokenPayLoad.GetClaimValue(OpenIdClaimTypes.Name);
                 if (audiencesArr.Any())
                 {
                     audiences = string.Join(" ", audiencesArr);

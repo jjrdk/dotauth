@@ -17,6 +17,9 @@ namespace SimpleAuth.Shared.Models
     using System;
     using System.IdentityModel.Tokens.Jwt;
 
+    /// <summary>
+    /// Defines the authorization code.
+    /// </summary>
     public class AuthorizationCode
     {
         /// <summary>
@@ -62,6 +65,6 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Code challenge method.
         /// </summary>
-        public CodeChallengeMethods? CodeChallengeMethod { get; set; }
+        public string CodeChallengeMethod { get; set; }
     }
 }

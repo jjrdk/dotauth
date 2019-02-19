@@ -1,6 +1,6 @@
 namespace SimpleAuth.Shared
 {
-    public static class RequestTokenNames
+    internal static class RequestTokenNames
     {
         public const string GrantType = "grant_type";
         public const string Username = "username";

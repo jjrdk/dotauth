@@ -16,7 +16,7 @@ namespace SimpleAuth
 {
     internal static class UmaConstants
     {
-        public static string IdTokenType = "http://openid.net/specs/openid-connect-core-1_0.html#IDToken";
+        public static string _idTokenType = "http://openid.net/specs/openid-connect-core-1_0.html#IDToken";
 
         public static class RptClaims
         {

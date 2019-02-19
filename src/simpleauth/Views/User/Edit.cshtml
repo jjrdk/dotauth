@@ -17,15 +17,13 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 @model SimpleAuth.ViewModels.UpdateResourceOwnerViewModel
 
-<h4 class="header col s12">
-    @ViewBag.Translations["edit_resource_owner"]
-</h4>
+<h4 class="header col s12">Edit Resource Owner</h4>
 
 <div class="col s12">
 
     @if (errors.Count > 0)
     {
-        @foreach (var error in errors)
+        foreach (var error in errors)
         {
             <div class="card red accent-1">
                 <div class="card-content red-text text-darken-4">
@@ -41,7 +39,7 @@
         <div class="card light-green accent-1">
             <div class="card-content light-green-text text-darken-4">
                 <i class="material-icons prefix">check_circle</i>
-                @ViewBag.Translations["user_is_updated"]
+                User is updated
             </div>
         </div>
     }
@@ -51,7 +49,7 @@
         @Html.AntiForgeryToken()
         <div class="card">
             <div class="card-content">
-                <div class="card-title">@ViewBag.Translations["credentials"]</div>
+                <div class="card-title">Credentials</div>
             </div>
             <div class="card-action">
                 <div class="row">
@@ -59,7 +57,7 @@
                     <div class="input-field col s12 m6">
                         <i class="material-icons prefix">account_circle</i>
                         <input type="text" id="Login" value="@Model.Credentials.Login" disabled="disabled" readonly />
-                        <label for="Login">@ViewBag.Translations["login"]</label>
+                        <label for="Login">Log In</label>
                     </div>
                 </div>
                 <div class="row">
@@ -67,18 +65,18 @@
                     <div class="input-field col s12 m6">
                         <i class="material-icons prefix">lock_outline</i>
                         <input type="password" class="" value="@Model.Credentials.Password" name="Password" id="Password"/>
-                        <label for="Password">@ViewBag.Translations["your_password"]</label>
+                        <label for="Password">Your password</label>
                     </div>
                     <!-- Repeat password -->
                     <div class="input-field col s12 m6">
                         <i class="material-icons prefix">lock</i>
                         <input type="password" class="" value="@Model.Credentials.RepeatPassword" name="RepeatPassword" id="RepeatPassword"/>
-                        <label for="RepeatPassword">@ViewBag.Translations["repeat_password"]</label>
+                        <label for="RepeatPassword">Repeat password</label>
                     </div>
                 </div>
                 <!-- Submit -->
                 <div class="input-field">
-                    <button type="submit" class="btn blue darken-3 waves-effect waves-light blue darken-3 waves-effect waves-light">@ViewBag.Translations["confirm"]</button>
+                    <button type="submit" class="btn blue darken-3 waves-effect waves-light blue darken-3 waves-effect waves-light">Confirm</button>
                 </div>
             </div>
         </div>
@@ -89,44 +87,44 @@
         @Html.AntiForgeryToken()
         <div class="card">
             <div class="card-content">
-                <div class="card-title">@ViewBag.Translations["two_factor"]</div>
+                <div class="card-title">Two-Factor Authentication</div>
             </div>
             <div class="card-action">
                 <div class="row">
-                @if (Model.TwoFactorAuthTypes == null || !Model.TwoFactorAuthTypes.Any())
-                {
-                    <div class="col s12 grey-text text-lighten-1">
-                        <i class="material-icons prefix">info_outline</i>@ViewBag.Translations["no_two_factor_authenticator"]
-                    </div>
-                }
-                else
-                {
-                    <div class="input-field col s12 m6">
-                        <select value="@Model.SelectedTwoFactorAuthType" name="SelectedTwoFactorAuthType">
-                            <option value="">@ViewBag.Translations["no_two_factor_authenticator_selected"]</option>
-                            @foreach (var twoFactorAuthType in Model.TwoFactorAuthTypes)
-                            {
-                                @if (twoFactorAuthType == Model.SelectedTwoFactorAuthType)
+                    @if (Model.TwoFactorAuthTypes == null || !Model.TwoFactorAuthTypes.Any())
+                    {
+                        <div class="col s12 grey-text text-lighten-1">
+                            <i class="material-icons prefix">info_outline</i>No two-factor authenticator
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="input-field col s12 m6">
+                            <select value="@Model.SelectedTwoFactorAuthType" name="SelectedTwoFactorAuthType">
+                                <option value="">No two-factor authentication selected</option>
+                                @foreach (var twoFactorAuthType in Model.TwoFactorAuthTypes)
                                 {
-                                    <option value="@twoFactorAuthType" selected>@twoFactorAuthType</option>
+                                    if (twoFactorAuthType == Model.SelectedTwoFactorAuthType)
+                                    {
+                                        <option value="@twoFactorAuthType" selected>@twoFactorAuthType</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@twoFactorAuthType">@twoFactorAuthType</option>
+                                    }
                                 }
-                                else
-                                {
-                                    <option value="@twoFactorAuthType">@twoFactorAuthType</option>
-                                }
-                            }
-                        </select>
-                    </div>
-                    <script>
-                        $(document).ready(function(){
-                            $('select').formSelect();
-                        });
-                    </script>
-                }
-                </div>
-                <!-- Submit -->
-                <div class="input-field">
-                    <button type="submit" class="btn blue darken-3 waves-effect waves-light">@ViewBag.Translations["confirm"]</button>
+                            </select>
+                        </div>
+                        <script>
+                            $(document).ready(function () {
+                                $('select').formSelect();
+                            });
+                        </script>
+                        <!-- Submit -->
+                        <div class="input-field">
+                            <button type="submit" class="btn blue darken-3 waves-effect waves-light">Confirm</button>
+                        </div>
+                    }
                 </div>
             </div>
         </div>

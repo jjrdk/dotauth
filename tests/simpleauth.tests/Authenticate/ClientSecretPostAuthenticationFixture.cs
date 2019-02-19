@@ -3,7 +3,6 @@
     using Shared.Models;
     using SimpleAuth.Authenticate;
     using System;
-    using System.Collections.Generic;
     using Xunit;
 
     public sealed class ClientSecretPostAuthenticationFixture
@@ -30,7 +29,7 @@
             };
             var secondClient = new Client
             {
-                Secrets = new List<ClientSecret>
+                Secrets = new []
                 {
                     new ClientSecret
                     {
@@ -53,7 +52,7 @@
             };
             var client = new Client
             {
-                Secrets = new List<ClientSecret>
+                Secrets = new []
                 {
                     new ClientSecret
                     {
@@ -78,7 +77,7 @@
             };
             var client = new Client
             {
-                Secrets = new List<ClientSecret>
+                Secrets = new []
                 {
                     new ClientSecret
                     {
@@ -91,26 +90,6 @@
             var result = ClientSecretPostAuthentication.AuthenticateClient(authenticateInstruction, client);
 
             Assert.NotNull(result);
-        }
-
-        [Fact]
-        public void When_Requesting_ClientId_And_Instruction_Is_Null_Then_Exception_Is_Thrown()
-        {
-            Assert.Throws<ArgumentNullException>(() => ClientSecretPostAuthentication.GetClientId(null));
-        }
-
-        [Fact]
-        public void When_Requesting_ClientId_Then_ClientId_Is_Returned()
-        {
-            const string clientId = "clientId";
-            var instruction = new AuthenticateInstruction
-            {
-                ClientIdFromHttpRequestBody = clientId
-            };
-
-            var result = ClientSecretPostAuthentication.GetClientId(instruction);
-
-            Assert.True(clientId == result);
         }
     }
 }

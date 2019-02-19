@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Server.Tests
 {
-    using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
     using Microsoft.IdentityModel.Tokens;
     using Shared;
@@ -8,18 +7,6 @@
 
     public class CertificateTests
     {
-        [Fact]
-        public void CanExportPrivateKey()
-        {
-            var certificate = new X509Certificate2("mycert.pfx", "simpleauth", X509KeyStorageFlags.Exportable);
-            using (var rsa = (RSA) certificate.PrivateKey)
-            {
-                var xml = rsa.ToXml(true);
-
-                Assert.NotEmpty(xml);
-            }
-        }
-
         [Fact]
         public void CanCreateJwk()
         {
