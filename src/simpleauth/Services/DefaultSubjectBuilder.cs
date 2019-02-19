@@ -4,11 +4,10 @@
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Shared;
-    using Shared.DTOs;
 
     public class DefaultSubjectBuilder : ISubjectBuilder
     {
-        public Task<string> BuildSubject(IEnumerable<Claim> claims, ScimUser scimUser = null)
+        public Task<string> BuildSubject(IEnumerable<Claim> claims)
         {
             return Task.FromResult(Id.Create());
         }

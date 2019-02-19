@@ -17,32 +17,28 @@ using SimpleAuth.Services;
 namespace SimpleAuth.Controllers
 {
     using Api.Authorization;
-    using Common;
-    using Errors;
     using Exceptions;
     using Extensions;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Mvc;
     using Parameters;
-    using Parsers;
     using Results;
     using Shared;
     using Shared.Repositories;
     using Shared.Requests;
-    using Shared.Responses;
-    using Shared.Serializers;
     using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
-    using System.Linq;
-    using System.Net;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
 
     [Route(CoreConstants.EndPoints.Authorization)]
     public class AuthorizationController : Controller
     {
+        private readonly HttpClient _httpClient;
         private readonly IClientStore _clientStore;
         private readonly AuthorizationActions _authorizationActions;
         private readonly IDataProtector _dataProtector;
@@ -50,18 +46,24 @@ namespace SimpleAuth.Controllers
         private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
 
         public AuthorizationController(
-            IGenerateAuthorizationResponse generateAuthorizationResponse,
+            HttpClient httpClient,
             IEventPublisher eventPublisher,
             IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
             IClientStore clientStore,
+            ITokenStore tokenStore,
+            IScopeRepository scopeRepository,
+            IAuthorizationCodeStore authorizationCodeStore,
             IConsentRepository consentRepository,
             IDataProtectionProvider dataProtectionProvider,
             IAuthenticationService authenticationService)
         {
+            _httpClient = httpClient;
             _clientStore = clientStore;
             _authorizationActions = new AuthorizationActions(
-                generateAuthorizationResponse,
+                authorizationCodeStore,
                 clientStore,
+                tokenStore,
+                scopeRepository,
                 consentRepository,
                 eventPublisher,
                 resourceOwnerServices);
@@ -70,75 +72,63 @@ namespace SimpleAuth.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] AuthorizationRequest authorizationRequest, CancellationToken cancellationToken)
         {
-            var query = Request.Query;
-            if (query == null)
-            {
-                return BuildError(ErrorCodes.InvalidRequestCode,
-                    "no parameter in body request",
-                    HttpStatusCode.BadRequest);
-            }
-
             var originUrl = this.GetOriginUrl();
             var sessionId = GetSessionId();
-            var serializer = new ParamSerializer();
-            var authorizationRequest =
-                serializer.Deserialize<AuthorizationRequest>(query.Select(x =>
-                    new KeyValuePair<string, string[]>(x.Key, x.Value)));
-            authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest).ConfigureAwait(false);
-            authorizationRequest.OriginUrl = originUrl;
-            authorizationRequest.SessionId = sessionId;
+
+            authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest, cancellationToken).ConfigureAwait(false);
+            authorizationRequest.origin_url = originUrl;
+            authorizationRequest.session_id = sessionId;
             var authenticatedUser = await _authenticationService
                 .GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName)
                 .ConfigureAwait(false);
             var parameter = authorizationRequest.ToParameter();
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-            var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser, issuerName)
+            var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser, issuerName, cancellationToken)
                 .ConfigureAwait(false);
 
             switch (actionResult.Type)
             {
-                case TypeActionResult.RedirectToCallBackUrl:
+                case ActionResultType.RedirectToCallBackUrl:
                     {
                         //var redirectUrl = new Uri();
                         return this.CreateRedirectHttpTokenResponse(
-                            authorizationRequest.RedirectUri,
+                            authorizationRequest.redirect_uri,
                             actionResult.GetRedirectionParameters(),
                             actionResult.RedirectInstruction.ResponseMode);
                     }
-                case TypeActionResult.RedirectToAction:
+                case ActionResultType.RedirectToAction:
                     {
-                        if (actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.AuthenticateIndex ||
-                            actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.ConsentIndex)
+                        if (actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.AuthenticateIndex
+                            || actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.ConsentIndex)
                         {
                             // Force the resource owner to be reauthenticated
                             if (actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.AuthenticateIndex)
                             {
-                                authorizationRequest.Prompt = Enum.GetName(typeof(PromptParameter), PromptParameter.login);
+                                authorizationRequest.prompt = PromptParameters.Login;
                             }
 
                             // Set the process id into the request.
                             if (!string.IsNullOrWhiteSpace(actionResult.ProcessId))
                             {
-                                authorizationRequest.ProcessId = actionResult.ProcessId;
+                                authorizationRequest.aggregate_id = actionResult.ProcessId;
                             }
 
                             // Add the encoded request into the query string
                             var encryptedRequest = _dataProtector.Protect(authorizationRequest);
                             actionResult.RedirectInstruction.AddParameter(
-                                CoreConstants.StandardAuthorizationResponseNames.AuthorizationCodeName,
+                                CoreConstants.StandardAuthorizationResponseNames._authorizationCodeName,
                                 encryptedRequest);
                         }
 
                         var url = GetRedirectionUrl(Request, actionResult.Amr, actionResult.RedirectInstruction.Action);
                         var uri = new Uri(url);
-                        var redirectionUrl =
-                            uri.AddParametersInQuery(actionResult.GetRedirectionParameters());
+                        var redirectionUrl = uri.AddParametersInQuery(actionResult.GetRedirectionParameters());
                         return new RedirectResult(redirectionUrl.AbsoluteUri);
                     }
-                //case TypeActionResult.Output:
-                //case TypeActionResult.None:
+                //case ActionResultType.Output:
+                //case ActionResultType.None:
                 default:
                     return null;
             }
@@ -146,26 +136,32 @@ namespace SimpleAuth.Controllers
 
         private string GetSessionId()
         {
-            return !Request.Cookies.ContainsKey(CoreConstants.SESSION_ID) ? Id.Create() : Request.Cookies[CoreConstants.SESSION_ID];
+            return !Request.Cookies.ContainsKey(CoreConstants.SessionId)
+                ? Id.Create()
+                : Request.Cookies[CoreConstants.SessionId];
         }
 
-        private async Task<AuthorizationRequest> GetAuthorizationRequestFromJwt(string token, string clientId)
+        private async Task<AuthorizationRequest> GetAuthorizationRequestFromJwt(
+            string token,
+            string clientId,
+            CancellationToken cancellationToken)
         {
-            var client = await _clientStore.GetById(clientId).ConfigureAwait(false);
+            var client = await _clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
             _handler.ValidateToken(token, client.CreateValidationParameters(), out var securityToken);
 
             return (securityToken as JwtSecurityToken)?.Payload?.ToAuthorizationRequest();
         }
 
-        private static string GetRedirectionUrl(Microsoft.AspNetCore.Http.HttpRequest request,
+        private static string GetRedirectionUrl(
+            Microsoft.AspNetCore.Http.HttpRequest request,
             string amr,
             SimpleAuthEndPoints simpleAuthEndPoints)
         {
             var uri = request.GetAbsoluteUriWithVirtualPath();
-            var partialUri = HostConstants.MappingEndPointToPartialUrl[simpleAuthEndPoints];
-            if (!string.IsNullOrWhiteSpace(amr) &&
-                simpleAuthEndPoints != SimpleAuthEndPoints.ConsentIndex &&
-                simpleAuthEndPoints != SimpleAuthEndPoints.FormIndex)
+            var partialUri = HostConstants._mappingEndPointToPartialUrl[simpleAuthEndPoints];
+            if (!string.IsNullOrWhiteSpace(amr)
+                && simpleAuthEndPoints != SimpleAuthEndPoints.ConsentIndex
+                && simpleAuthEndPoints != SimpleAuthEndPoints.FormIndex)
             {
                 partialUri = "/" + amr + partialUri;
             }
@@ -179,46 +175,51 @@ namespace SimpleAuth.Controllers
         /// 2. The request_uri can be used to download the JWT token and constructs the authorization request from it.
         /// </summary>
         /// <param name="authorizationRequest"></param>
+        /// <param name="cancellationToken">The cancellation token for the callback.</param>
         /// <returns></returns>
-        private async Task<AuthorizationRequest> ResolveAuthorizationRequest(AuthorizationRequest authorizationRequest)
+        private async Task<AuthorizationRequest> ResolveAuthorizationRequest(
+            AuthorizationRequest authorizationRequest,
+            CancellationToken cancellationToken)
         {
-            if (!string.IsNullOrWhiteSpace(authorizationRequest.Request))
+            if (!string.IsNullOrWhiteSpace(authorizationRequest.request))
             {
-                var result =
-                    await GetAuthorizationRequestFromJwt(authorizationRequest.Request, authorizationRequest.ClientId)
-                        .ConfigureAwait(false);
+                var result = await GetAuthorizationRequestFromJwt(
+                        authorizationRequest.request,
+                        authorizationRequest.client_id,
+                        cancellationToken)
+                    .ConfigureAwait(false);
                 if (result == null)
                 {
-                    throw new SimpleAuthExceptionWithState(ErrorCodes.InvalidRequestCode,
+                    throw new SimpleAuthExceptionWithState(
+                        ErrorCodes.InvalidRequestCode,
                         ErrorDescriptions.TheRequestParameterIsNotCorrect,
-                        authorizationRequest.State);
+                        authorizationRequest.state);
                 }
 
                 return result;
             }
 
-            if (!string.IsNullOrWhiteSpace(authorizationRequest.RequestUri))
+            if (authorizationRequest.request_uri != null)
             {
-                if (Uri.TryCreate(authorizationRequest.RequestUri, UriKind.Absolute, out var uri))
+                if (!authorizationRequest.request_uri.IsAbsoluteUri)
                 {
                     try
                     {
-                        var httpClient = new HttpClient
-                        {
-                            BaseAddress = uri
-                        };
-
-                        var httpResult = await httpClient.GetAsync(uri.AbsoluteUri).ConfigureAwait(false);
+                        var httpResult = await _httpClient.GetAsync(authorizationRequest.request_uri)
+                            .ConfigureAwait(false);
                         httpResult.EnsureSuccessStatusCode();
-                        var request = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        var result = await GetAuthorizationRequestFromJwt(request, authorizationRequest.ClientId)
+                        var token = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        var result = await GetAuthorizationRequestFromJwt(
+                                token,
+                                authorizationRequest.client_id,
+                                cancellationToken)
                             .ConfigureAwait(false);
                         if (result == null)
                         {
                             throw new SimpleAuthExceptionWithState(
                                 ErrorCodes.InvalidRequestCode,
                                 ErrorDescriptions.TheRequestDownloadedFromRequestUriIsNotValid,
-                                authorizationRequest.State);
+                                authorizationRequest.state);
                         }
 
                         return result;
@@ -228,37 +229,17 @@ namespace SimpleAuth.Controllers
                         throw new SimpleAuthExceptionWithState(
                             ErrorCodes.InvalidRequestCode,
                             ErrorDescriptions.TheRequestDownloadedFromRequestUriIsNotValid,
-                            authorizationRequest.State);
+                            authorizationRequest.state);
                     }
                 }
 
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestUriCode,
                     ErrorDescriptions.TheRequestUriParameterIsNotWellFormed,
-                    authorizationRequest.State);
+                    authorizationRequest.state);
             }
 
             return authorizationRequest;
-        }
-
-        /// <summary>
-        /// Build the JSON error message.
-        /// </summary>
-        /// <param name="code"></param>
-        /// <param name="message"></param>
-        /// <param name="statusCode"></param>
-        /// <returns></returns>
-        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
-        {
-            var error = new ErrorResponse
-            {
-                Error = code,
-                ErrorDescription = message
-            };
-            return new JsonResult(error)
-            {
-                StatusCode = (int)statusCode
-            };
         }
     }
 }

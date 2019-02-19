@@ -83,21 +83,21 @@
 //            };
 //            var client = new AuthenticationResult(new Client
 //            {
-//                GrantTypes = new List<GrantType>
+//                GrantTypes = new []
 //                {
-//                    GrantType.password
+//                    GrantTypes.password
 //                }
 //            }, null);
 //            var authenticateInstruction = new AuthenticateInstruction();
 //            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
 //                .Returns(authenticateInstruction);
 //            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
-//                .Returns(Task.FromResult(client));
+//                .ReturnsAsync(client));
 
 //            //            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
 //            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
-//            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.Client.ClientId, GrantType.client_credentials));
+//            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.Client.ClientId, GrantTypes.client_credentials));
 //        }
 
 //        [Fact]
@@ -110,9 +110,9 @@
 //            };
 //            var client = new AuthenticationResult(new Client
 //            {
-//                GrantTypes = new List<GrantType>
+//                GrantTypes = new []
 //                {
-//                    GrantType.client_credentials
+//                    GrantTypes.client_credentials
 //                },
 //                ResponseTypes = new List<ResponseType>
 //                {
@@ -123,7 +123,7 @@
 //            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
 //                .Returns(authenticateInstruction);
 //            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
-//                .Returns(Task.FromResult(client));
+//                .ReturnsAsync(client));
 
 //            //            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
@@ -142,9 +142,9 @@
 //            };
 //            var client = new AuthenticationResult(new Client
 //            {
-//                GrantTypes = new List<GrantType>
+//                GrantTypes = new []
 //                {
-//                    GrantType.client_credentials
+//                    GrantTypes.client_credentials
 //                },
 //                ResponseTypes = new List<ResponseType>
 //                {
@@ -155,8 +155,8 @@
 //            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
 //                .Returns(authenticateInstruction);
 //            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
-//                .Returns(Task.FromResult(client));
-//            _clientValidatorStub.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<string[]>())).Returns(new string[0]);
+//                .ReturnsAsync(client));
+//            _clientValidatorStub.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<string[]>())).Returns(Array.Empty<string>());
 //            _scopeValidatorStub.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Client>()))
 //                .Returns(() => new ScopeValidationResult(false)
 //                {
@@ -183,9 +183,9 @@
 //            };
 //            var client = new AuthenticationResult(new Client
 //            {
-//                GrantTypes = new List<GrantType>
+//                GrantTypes = new []
 //                {
-//                    GrantType.client_credentials
+//                    GrantTypes.client_credentials
 //                },
 //                ResponseTypes = new List<ResponseType>
 //                {
@@ -203,7 +203,7 @@
 //            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
 //                .Returns(authenticateInstruction);
 //            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
-//                .Returns(Task.FromResult(client));
+//                .ReturnsAsync(client));
 //            _scopeValidatorStub.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Client>()))
 //                .Returns(() => new ScopeValidationResult(true)
 //                {
@@ -216,7 +216,7 @@
 //                    It.IsAny<IDictionary<string, object>>(),
 //                    It.IsAny<JwtSecurityToken>(),
 //                    It.IsAny<JwtSecurityToken>()))
-//                .Returns(Task.FromResult(grantedToken));
+//                .ReturnsAsync(grantedToken));
 
 //            //            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
 
@@ -240,9 +240,9 @@
 //            };
 //            var client = new AuthenticationResult(new Client
 //            {
-//                GrantTypes = new List<GrantType>
+//                GrantTypes = new []
 //                {
-//                    GrantType.client_credentials
+//                    GrantTypes.client_credentials
 //                },
 //                ResponseTypes = new List<ResponseType>
 //                {
@@ -259,7 +259,7 @@
 //            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
 //                .Returns(authenticateInstruction);
 //            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
-//                .Returns(Task.FromResult(client));
+//                .ReturnsAsync(client));
 //            _scopeValidatorStub.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Client>()))
 //                .Returns(() => new ScopeValidationResult(true)
 //                {
@@ -270,16 +270,16 @@
 //                    It.IsAny<IEnumerable<string>>(),
 //                    It.IsAny<string>(),
 //                    It.IsAny<IDictionary<string, object>>()))
-//                .Returns(Task.FromResult(jwsPayload));
-//            _clientHelperStub.Setup(g => g.GenerateIdTokenAsync(It.IsAny<Client>(),
+//                .ReturnsAsync(jwsPayload));
+//            _clientHelperStub.Setup(g => g.GenerateIdToken(It.IsAny<Client>(),
 //                It.IsAny<JwtSecurityToken>()))
-//                .Returns(Task.FromResult(accessToken));
+//                .ReturnsAsync(accessToken));
 //            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateToken(It.IsAny<Client>(),
 //                It.IsAny<string>(),
 //                It.IsAny<string>(),
 //                It.IsAny<IDictionary<string, object>>(),
 //                It.IsAny<JwtSecurityToken>(),
-//                It.IsAny<JwtSecurityToken>())).Returns(Task.FromResult(grantedToken));
+//                It.IsAny<JwtSecurityToken>())).ReturnsAsync(grantedToken));
 
 //            //            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
 

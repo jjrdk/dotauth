@@ -10,7 +10,6 @@
   <Import Project="../../shared.proj" />
 
   <ItemGroup>  
-    <ProjectReference Include="..\simpleauth.twilio.shared\simpleauth.twilio.shared.csproj" />  
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />  
   </ItemGroup>
   <ItemGroup>

@@ -19,11 +19,11 @@ namespace SimpleAuth.Shared.DTOs
     [DataContract]
     public class PutScope
     {
-        [DataMember(Name = ScopeResponseNames.Id)]
+        [DataMember(Name = "id")]
         public string Id { get; set; }
-        [DataMember(Name = ScopeResponseNames.Name)]
+        [DataMember(Name = "name")]
         public string Name { get; set; }
-        [DataMember(Name = ScopeResponseNames.IconUri)]
+        [DataMember(Name = "icon_uri")]
         public string IconUri { get; set; }
     }
 }

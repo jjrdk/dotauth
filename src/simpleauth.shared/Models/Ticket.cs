@@ -15,16 +15,66 @@
 namespace SimpleAuth.Shared.Models
 {
     using System;
-    using System.Collections.Generic;
 
+    /// <summary>
+    /// Defines the ticket content.
+    /// </summary>
     public class Ticket
     {
+        /// <summary>
+        /// Gets or sets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
         public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client identifier.
+        /// </summary>
+        /// <value>
+        /// The client identifier.
+        /// </value>
         public string ClientId { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is authorized by ro.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is authorized by ro; otherwise, <c>false</c>.
+        /// </value>
         public bool IsAuthorizedByRo { get; set; }
+
+        /// <summary>
+        /// Gets or sets the expiration date time.
+        /// </summary>
+        /// <value>
+        /// The expiration date time.
+        /// </value>
         public DateTime ExpirationDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the create date time.
+        /// </summary>
+        /// <value>
+        /// The create date time.
+        /// </value>
         public DateTime CreateDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the expires in.
+        /// </summary>
+        /// <value>
+        /// The expires in.
+        /// </value>
         public int ExpiresIn { get; set; }
-        public IEnumerable<TicketLine> Lines { get; set; }
+
+        /// <summary>
+        /// Gets or sets the lines.
+        /// </summary>
+        /// <value>
+        /// The lines.
+        /// </value>
+        public TicketLine[] Lines { get; set; }
     }
 }

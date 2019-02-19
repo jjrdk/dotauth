@@ -16,7 +16,6 @@ using SimpleAuth.Services;
 
 namespace SimpleAuth.Tests.Api.Authorization
 {
-    using Errors;
     using Exceptions;
     using Moq;
     using Parameters;
@@ -24,9 +23,10 @@ namespace SimpleAuth.Tests.Api.Authorization
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth.Api.Authorization;
-    using SimpleAuth.Common;
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
     using Xunit;
 
     public sealed class AuthorizationActionsFixture
@@ -47,10 +47,10 @@ namespace SimpleAuth.Tests.Api.Authorization
             InitializeFakeObjects(
                 new Client
                 {
-                    ResponseTypes = new[] { ResponseTypeNames.IdToken },
+                    ResponseTypes = new[] {ResponseTypeNames.IdToken},
                     ClientId = clientId,
                     RequirePkce = true,
-                    RedirectionUrls = new[] { redirectUrl }
+                    RedirectionUrls = new[] {redirectUrl}
                 });
 
             var authorizationParameter = new AuthorizationParameter
@@ -61,7 +61,13 @@ namespace SimpleAuth.Tests.Api.Authorization
                 RedirectUrl = redirectUrl
             };
 
-            var result = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() => _authorizationActions.GetAuthorization(authorizationParameter, null, null)).ConfigureAwait(false);
+            var result = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
+                    () => _authorizationActions.GetAuthorization(
+                        authorizationParameter,
+                        null,
+                        null,
+                        CancellationToken.None))
+                .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequestCode, result.Code);
             Assert.Equal(string.Format(ErrorDescriptions.TheClientRequiresPkce, clientId), result.Message);
         }
@@ -72,13 +78,15 @@ namespace SimpleAuth.Tests.Api.Authorization
             _clientStore = new Mock<IClientStore>();
             if (client != null)
             {
-                _clientStore.Setup(x => x.GetById(It.IsAny<string>()))
+                _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(client);
             }
 
             _authorizationActions = new AuthorizationActions(
-                new Mock<IGenerateAuthorizationResponse>().Object,
+                new Mock<IAuthorizationCodeStore>().Object,
                 _clientStore.Object,
+                new Mock<ITokenStore>().Object,
+                new Mock<IScopeRepository>().Object,
                 new Mock<IConsentRepository>().Object,
                 _eventPublisherStub.Object,
                 new IAuthenticateResourceOwnerService[0]);

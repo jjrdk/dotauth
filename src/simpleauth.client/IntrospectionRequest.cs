@@ -23,8 +23,8 @@
 
             var dict = new Dictionary<string, string>
             {
-                { IntrospectionRequestNames.Token, token },
-                { IntrospectionRequestNames.TokenTypeHint, tokenType }
+                { "token", token },
+                { "token_type_hint", tokenType }
             };
 
             return new IntrospectionRequest(dict);

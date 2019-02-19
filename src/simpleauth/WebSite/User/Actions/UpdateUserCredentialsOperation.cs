@@ -1,10 +1,11 @@
 ﻿namespace SimpleAuth.WebSite.User.Actions
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Exceptions;
-    using Helpers;
     using Shared.Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
 
     internal sealed class UpdateUserCredentialsOperation
     {
@@ -15,7 +16,7 @@
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
-        public async Task<bool> Execute(string subject, string newPassword)
+        public async Task<bool> Execute(string subject, string newPassword, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(subject))
             {
@@ -27,14 +28,16 @@
                 throw new ArgumentNullException(nameof(newPassword));
             }
 
-            var resourceOwner = await _resourceOwnerRepository.Get(subject).ConfigureAwait(false);
+            var resourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheRoDoesntExist);
+                throw new SimpleAuthException(
+                    ErrorCodes.InternalError,
+                    ErrorDescriptions.TheRoDoesntExist);
             }
 
-            resourceOwner.Password = newPassword.ToSha256Hash();
-            return await _resourceOwnerRepository.UpdateAsync(resourceOwner).ConfigureAwait(false);
+            resourceOwner.Password = newPassword;
+            return await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
         }
     }
 }

@@ -1,24 +1,40 @@
 namespace SimpleAuth.Twilio.Controllers
 {
-    using System;
-    using System.Net;
-    using System.Threading.Tasks;
     using Actions;
-    using Errors;
-    using Exceptions;
     using Microsoft.AspNetCore.Mvc;
     using Shared;
-    using Shared.Requests;
+    using SimpleAuth.Services;
+    using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Responses;
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
 
     [Route(SmsConstants.CodeController)]
     public class CodeController : Controller
     {
-        private readonly ISmsAuthenticationOperation _smsAuthenticationOperation;
+        private readonly SmsAuthenticationOperation _smsAuthenticationOperation;
 
-        public CodeController(ISmsAuthenticationOperation smsAuthenticationOperation)
+        public CodeController(
+            ITwilioClient twilioClient,
+            IConfirmationCodeStore confirmationCodeStore,
+            IResourceOwnerRepository resourceOwnerRepository,
+            ISubjectBuilder subjectBuilder,
+            IEnumerable<IAccountFilter> accountFilters,
+            IEventPublisher eventPublisher,
+            SmsAuthenticationOptions smsOptions)
         {
-            _smsAuthenticationOperation = smsAuthenticationOperation;
+            _smsAuthenticationOperation = new SmsAuthenticationOperation(
+                twilioClient,
+                confirmationCodeStore,
+                resourceOwnerRepository,
+                subjectBuilder,
+                accountFilters,
+                eventPublisher,
+                smsOptions);
         }
 
         /// <summary>
@@ -27,7 +43,9 @@ namespace SimpleAuth.Twilio.Controllers
         /// <param name="confirmationCodeRequest"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Send([FromBody] ConfirmationCodeRequest confirmationCodeRequest)
+        public async Task<IActionResult> Send(
+            [FromBody] ConfirmationCodeRequest confirmationCodeRequest,
+            CancellationToken cancellationToken)
         {
             var checkResult = Check(confirmationCodeRequest);
             if (checkResult != null)
@@ -38,16 +56,20 @@ namespace SimpleAuth.Twilio.Controllers
             IActionResult result;
             try
             {
-                await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber).ConfigureAwait(false);
+                await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber, cancellationToken)
+                    .ConfigureAwait(false);
                 result = new OkResult();
             }
-            catch(SimpleAuthException ex)
+            catch (SimpleAuthException ex)
             {
                 result = BuildError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
             }
-            catch(Exception)
+            catch (Exception)
             {
-                result = BuildError(ErrorCodes.UnhandledExceptionCode, "unhandled exception occured please contact the administrator", HttpStatusCode.InternalServerError);
+                result = BuildError(
+                    ErrorCodes.UnhandledExceptionCode,
+                    "unhandled exception occured please contact the administrator",
+                    HttpStatusCode.InternalServerError);
             }
 
             return result;
@@ -67,7 +89,10 @@ namespace SimpleAuth.Twilio.Controllers
 
             if (string.IsNullOrWhiteSpace(confirmationCodeRequest.PhoneNumber))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, $"parameter {Constants.ConfirmationCodeRequestNames.PhoneNumber} is missing", HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "parameter phone_number is missing",
+                    HttpStatusCode.BadRequest);
             }
 
             return null;
@@ -82,15 +107,8 @@ namespace SimpleAuth.Twilio.Controllers
         /// <returns></returns>
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorResponse
-            {
-                Error = code,
-                ErrorDescription = message
-            };
-            return new JsonResult(error)
-            {
-                StatusCode = (int)statusCode
-            };
+            var error = new ErrorResponse {Error = code, ErrorDescription = message};
+            return new JsonResult(error) {StatusCode = (int) statusCode};
         }
     }
 }

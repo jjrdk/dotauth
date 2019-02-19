@@ -1,11 +1,11 @@
 ﻿// Copyright © 2018 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,8 +15,6 @@
 namespace SimpleAuth.Server.Tests.Apis
 {
     using Client;
-    using Client.Operations;
-    using Errors;
     using Newtonsoft.Json;
     using Shared;
     using Shared.Responses;
@@ -26,16 +24,18 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
     using Xunit;
 
-    public class IntrospectClientFixture : IClassFixture<TestOauthServerFixture>
+    public class IntrospectClientFixture
     {
         private const string BaseUrl = "http://localhost:5000";
+        private const string WellKnownOpenidConfiguration = "/.well-known/openid-configuration";
         private readonly TestOauthServerFixture _server;
 
-        public IntrospectClientFixture(TestOauthServerFixture server)
+        public IntrospectClientFixture()
         {
-            _server = server;
+            _server = new TestOauthServerFixture();
         }
 
         [Fact]
@@ -43,8 +43,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri($"{BaseUrl}/introspect")
+                Method = HttpMethod.Post, RequestUri = new Uri($"{BaseUrl}/introspect")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -66,9 +65,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
-                Content = body,
-                RequestUri = new Uri($"{BaseUrl}/introspect")
+                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/introspect")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -76,18 +73,19 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
             Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
-            Assert.Equal("the parameter token is missing", error.ErrorDescription);
+            Assert.Equal("no parameter in body request", error.ErrorDescription);
         }
 
         [Fact]
         public async Task When_Introspect_And_Client_Not_Authenticated_Then_Error_Is_Returned()
         {
-            var introspection = await new IntrospectClient(
+            var introspectClient = await IntrospectClient.Create(
                     TokenCredentials.FromClientCredentials("invalid_client", "invalid_client"),
-                    IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
+                .ConfigureAwait(false);
+            var introspection = await introspectClient
+                .Introspect(IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
             Assert.True(introspection.ContainsError);
@@ -98,12 +96,13 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Introspect_And_Token_Does_Not_Exist_Then_Error_Is_Returned()
         {
-            var introspection = await new IntrospectClient(
+            var introspectClient = await IntrospectClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
+                .ConfigureAwait(false);
+            var introspection = await introspectClient.Introspect(
+                    IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
             Assert.True(introspection.ContainsError);
@@ -114,22 +113,23 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Introspecting_AccessToken_Then_Information_Are_Returned()
         {
-            var result = await new TokenClient(
+            var tokenClient = await TokenClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
                 .ConfigureAwait(false);
-            var introspection = await new IntrospectClient(
+            var result = await tokenClient.GetToken(
+                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                .ConfigureAwait(false);
+            var introspectionClient = await IntrospectClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
+                .ConfigureAwait(false);
+            var introspection = await introspectionClient.Introspect(
+                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
-            Assert.NotNull(introspection.Content.Scope);
             Assert.Single(introspection.Content.Scope);
             Assert.Equal("scim", introspection.Content.Scope.First());
         }
@@ -137,22 +137,23 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Introspecting_RefreshToken_Then_Information_Are_Returned()
         {
-            var result = await new TokenClient(
+            var tokenClient = await TokenClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
                 .ConfigureAwait(false);
-            var introspection = await new IntrospectClient(
+            var result = await tokenClient.GetToken(
+                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                .ConfigureAwait(false);
+            var introspectionClient = await IntrospectClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.RefreshToken),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
+                .ConfigureAwait(false);
+            var introspection = await introspectionClient.Introspect(
+                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.RefreshToken))
                 .ConfigureAwait(false);
 
-            Assert.NotNull(introspection.Content.Scope);
             Assert.Single(introspection.Content.Scope);
             Assert.Equal("scim", introspection.Content.Scope.First());
         }

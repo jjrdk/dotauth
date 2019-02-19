@@ -3,8 +3,7 @@
     using Shared;
     using Shared.Responses;
 
-    public class PagedResult<T> : BaseResponse
+    public class PagedResult<T> : GenericResponse<PagedResponse<T>>
     {
-        public PagedResponse<T> Content { get; set; }
     }
 }

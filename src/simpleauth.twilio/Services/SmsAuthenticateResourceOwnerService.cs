@@ -1,6 +1,7 @@
 ﻿namespace SimpleAuth.Twilio.Services
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth;
     using SimpleAuth.Services;
@@ -13,15 +14,20 @@
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IConfirmationCodeStore _confirmationCodeStore;
 
-        public SmsAuthenticateResourceOwnerService(IResourceOwnerRepository resourceOwnerRepository, IConfirmationCodeStore confirmationCodeStore)
+        public SmsAuthenticateResourceOwnerService(
+            IResourceOwnerRepository resourceOwnerRepository,
+            IConfirmationCodeStore confirmationCodeStore)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _confirmationCodeStore = confirmationCodeStore;
         }
 
-        public string Amr => SmsConstants.AMR;
+        public string Amr => SmsConstants.Amr;
 
-        public async Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password)
+        public async Task<ResourceOwner> AuthenticateResourceOwner(
+            string login,
+            string password,
+            CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(login))
             {
@@ -44,7 +50,11 @@
                 return null;
             }
 
-            var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber, login).ConfigureAwait(false);
+            var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(
+                    JwtConstants.OpenIdClaimTypes.PhoneNumber,
+                    login,
+                    cancellationToken)
+                .ConfigureAwait(false);
             if (resourceOwner != null)
             {
                 await _confirmationCodeStore.Remove(password).ConfigureAwait(false);

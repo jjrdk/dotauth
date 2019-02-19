@@ -7,7 +7,7 @@
     <PackageId>simpleauth.client</PackageId>
     <RootNamespace>SimpleAuth.Client</RootNamespace>
   </PropertyGroup>
-  <Import Project="../../shared.proj"/>
+  <Import Project="../../shared.proj" />
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />

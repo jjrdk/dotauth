@@ -16,8 +16,6 @@ using SimpleAuth.Shared.Repositories;
 
 namespace SimpleAuth.Tests.Api.Introspection.Actions
 {
-    using Errors;
-    using Exceptions;
     using Moq;
     using Parameters;
     using Shared;
@@ -27,44 +25,50 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Net.Http.Headers;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
     using Xunit;
     using JwtConstants = Shared.JwtConstants;
 
     public class PostIntrospectionActionFixture
     {
-        private Mock<IClientStore> _clientStore;
-        private Mock<ITokenStore> _tokenStoreStub;
-        private PostIntrospectionAction _postIntrospectionAction;
+        private readonly Mock<IClientStore> _clientStore;
+        private readonly Mock<ITokenStore> _tokenStoreStub;
+        private readonly PostIntrospectionAction _postIntrospectionAction;
+
+        public PostIntrospectionActionFixture()
+        {
+            _clientStore = new Mock<IClientStore>();
+            _tokenStoreStub = new Mock<ITokenStore>();
+            _postIntrospectionAction = new PostIntrospectionAction(_clientStore.Object, _tokenStoreStub.Object);
+        }
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _postIntrospectionAction.Execute(null, null, null)).ConfigureAwait(false);
+            await Assert
+                .ThrowsAsync<ArgumentNullException>(
+                    () => _postIntrospectionAction.Execute(null, null, null, CancellationToken.None))
+                .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Client_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
-            var parameter = new IntrospectionParameter
-            {
-                Token = "token"
-            };
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(new Client());
-            //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //   .Returns(Task.FromResult(new AuthenticationResult(null, null)));
+            var parameter = new IntrospectionParameter {Token = "token"};
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Client());
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _postIntrospectionAction.Execute(parameter, null, null)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
+                    () => _postIntrospectionAction.Execute(parameter, null, null, CancellationToken.None))
+                .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
         }
 
         [Fact]
         public async Task When_AccessToken_Cannot_Be_Extracted_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
             var parameter = new IntrospectionParameter
             {
                 ClientId = "test",
@@ -72,25 +76,28 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
                 TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken,
                 Token = "token"
             };
-            //var client = new AuthenticationResult(new Client(), null);
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>()))
+
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(
                     new Client
                     {
                         ClientId = "test",
-                        Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "test" } }
+                        Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}}
                     });
 
             var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", "test:test".Base64Encode());
-            //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //    .Returns(Task.FromResult(client));
-            _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((GrantedToken)null));
-            _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((GrantedToken)null));
+
+            _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult((GrantedToken) null));
+            _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult((GrantedToken) null));
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _postIntrospectionAction.Execute(parameter, authenticationHeaderValue, null))
+                    () => _postIntrospectionAction.Execute(
+                        parameter,
+                        authenticationHeaderValue,
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidToken, exception.Code);
             Assert.Equal(ErrorDescriptions.TheTokenIsNotValid, exception.Message);
@@ -99,30 +106,27 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
         [Fact]
         public async Task When_Passing_Expired_AccessToken_Then_Result_Should_Be_Returned()
         {
-            InitializeFakeObjects();
             const string clientId = "client_id";
             const string clientSecret = "secret";
             const string subject = "subject";
             const string audience = "audience";
-            var authenticationHeaderValue = new AuthenticationHeaderValue("Basic", $"{clientId}:{clientSecret}".Base64Encode());
-            var audiences = new[]
-            {
-                audience
-            };
+            var authenticationHeaderValue = new AuthenticationHeaderValue(
+                "Basic",
+                $"{clientId}:{clientSecret}".Base64Encode());
+            var audiences = new[] {audience};
             var parameter = new IntrospectionParameter
             {
-                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken,
-                Token = "token"
+                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
             };
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } }
+                Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}}
             };
             var idtp = new JwtPayload
             {
-                { JwtConstants.StandardResourceOwnerClaimNames.Subject, subject },
-                { StandardClaimNames.Audiences, audiences }
+                {JwtConstants.OpenIdClaimTypes.Subject, subject},
+                {StandardClaimNames.Audiences, audiences}
             };
             var grantedToken = new GrantedToken
             {
@@ -131,15 +135,16 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
                 CreateDateTime = DateTime.UtcNow.AddDays(-2),
                 ExpiresIn = 2
             };
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
-            //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //    .Returns(() => Task.FromResult(client));
-            _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((GrantedToken)null));
-            _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>()))
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+
+            _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult((GrantedToken) null));
+            _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(grantedToken));
 
-            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue, null).ConfigureAwait(false);
+            var result = await _postIntrospectionAction
+                .Execute(parameter, authenticationHeaderValue, null, CancellationToken.None)
+                .ConfigureAwait(false);
 
             Assert.False(result.Active);
             Assert.Equal(audience, result.Audience);
@@ -149,59 +154,48 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
         [Fact]
         public async Task When_Passing_Active_AccessToken_Then_Result_Should_Be_Returned()
         {
-            InitializeFakeObjects();
             const string clientId = "client_id";
             const string clientSecret = "secret";
             const string subject = "subject";
             const string audience = "audience";
-            var authenticationHeaderValue = new AuthenticationHeaderValue("Basic", $"{clientId}:{clientSecret}".Base64Encode());
-            var audiences = new[]
-            {
-                audience
-            };
+            var authenticationHeaderValue = new AuthenticationHeaderValue(
+                "Basic",
+                $"{clientId}:{clientSecret}".Base64Encode());
+            var audiences = new[] {audience};
             var parameter = new IntrospectionParameter
             {
-                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken,
-                Token = "token"
+                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
             };
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } }
+                Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}}
             };
             var grantedToken = new GrantedToken
             {
                 ClientId = clientId,
                 IdTokenPayLoad = new JwtPayload
                 {
-                    {JwtConstants.StandardResourceOwnerClaimNames.Subject, subject},
+                    {JwtConstants.OpenIdClaimTypes.Subject, subject},
                     {StandardClaimNames.Audiences, audiences}
                 },
                 CreateDateTime = DateTime.UtcNow,
                 ExpiresIn = 20000
             };
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
-            //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //    .Returns(Task.FromResult(client));
-            _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((GrantedToken)null));
-            _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>()))
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+
+            _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult((GrantedToken) null));
+            _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(grantedToken));
 
-            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue, null).ConfigureAwait(false);
+            var result = await _postIntrospectionAction
+                .Execute(parameter, authenticationHeaderValue, null, CancellationToken.None)
+                .ConfigureAwait(false);
 
             Assert.True(result.Active);
             Assert.Equal(audience, result.Audience);
             Assert.Equal(subject, result.Subject);
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _clientStore = new Mock<IClientStore>();
-            _tokenStoreStub = new Mock<ITokenStore>();
-            _postIntrospectionAction = new PostIntrospectionAction(
-                _clientStore.Object,
-                _tokenStoreStub.Object);
         }
     }
 }

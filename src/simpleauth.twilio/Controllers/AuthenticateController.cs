@@ -1,82 +1,103 @@
 ﻿namespace SimpleAuth.Twilio.Controllers
 {
     using Actions;
-    using Errors;
     using Exceptions;
     using Extensions;
-    using Logging;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.AspNetCore.Mvc.Routing;
     using SimpleAuth;
+    using SimpleAuth.Controllers;
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.ViewModels;
+    using SimpleAuth.WebSite.Authenticate;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Controllers;
-    using SimpleAuth.ViewModels;
-    using Translation;
+    using SimpleAuth.Shared.Events.Logging;
     using ViewModels;
-    using WebSite.Authenticate;
-    using WebSite.Authenticate.Common;
     using WebSite.User.Actions;
 
-    [Area(SmsConstants.AMR)]
+    [Area(SmsConstants.Amr)]
     public class AuthenticateController : BaseAuthenticateController
     {
         private readonly IEventPublisher _eventPublisher;
         private readonly GetUserOperation _getUserOperation;
-        private readonly ISmsAuthenticationOperation _smsAuthenticationOperation;
-        private readonly IGenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
+        private readonly SmsAuthenticationOperation _smsAuthenticationOperation;
+        private readonly GenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
+        private readonly ValidateConfirmationCodeAction _validateConfirmationCode;
+        private readonly AuthenticateHelper _authenticateHelper;
 
         public AuthenticateController(
-            IAuthenticateActions authenticateActions,
+            ITwilioClient twilioClient,
             IDataProtectionProvider dataProtectionProvider,
-            ITranslationManager translationManager,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IEventPublisher eventPublisher,
+            IAuthorizationCodeStore authorizationCodeStore,
             IAuthenticationService authenticationService,
             IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IAuthenticateHelper authenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
-            ISmsAuthenticationOperation smsAuthenticationOperation,
-            IGenerateAndSendSmsCodeOperation generateAndSendSmsCodeOperation,
             ISubjectBuilder subjectBuilder,
-            IProfileRepository profileRepository,
+            IConsentRepository consentRepository,
+            IScopeRepository scopeRepository,
+            ITokenStore tokenStore,
             IResourceOwnerRepository resourceOwnerRepository,
+            IConfirmationCodeStore confirmationCodeStore,
+            IClientStore clientStore,
             IEnumerable<IAccountFilter> accountFilters,
-            SmsAuthenticationOptions basicAuthenticateOptions)
+            RuntimeSettings runtimeSettings,
+            SmsAuthenticationOptions smsOptions)
             : base(
-                authenticateActions,
                 dataProtectionProvider,
-                translationManager,
                 urlHelperFactory,
                 actionContextAccessor,
                 eventPublisher,
                 authenticationService,
                 authenticationSchemeProvider,
-                authenticateHelper,
                 twoFactorAuthenticationHandler,
+                authorizationCodeStore,
                 subjectBuilder,
-                profileRepository,
+                consentRepository,
+                scopeRepository,
+                tokenStore,
                 resourceOwnerRepository,
+                confirmationCodeStore,
+                clientStore,
                 accountFilters,
-                basicAuthenticateOptions)
+                runtimeSettings)
         {
             _eventPublisher = eventPublisher;
             _getUserOperation = new GetUserOperation(resourceOwnerRepository);
-            _smsAuthenticationOperation = smsAuthenticationOperation;
-            _generateAndSendSmsCodeOperation = generateAndSendSmsCodeOperation;
+            var generateSms = new GenerateAndSendSmsCodeOperation(twilioClient, confirmationCodeStore, smsOptions);
+            _smsAuthenticationOperation = new SmsAuthenticationOperation(
+                twilioClient,
+                confirmationCodeStore,
+                resourceOwnerRepository,
+                subjectBuilder,
+                accountFilters,
+                eventPublisher,
+                smsOptions);
+            _validateConfirmationCode = new ValidateConfirmationCodeAction(confirmationCodeStore);
+            _authenticateHelper = new AuthenticateHelper(
+                authorizationCodeStore,
+                tokenStore,
+                scopeRepository,
+                consentRepository,
+                clientStore,
+                eventPublisher);
+            _generateAndSendSmsCodeOperation = generateSms;
         }
 
         [HttpGet]
@@ -85,7 +106,6 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 var viewModel = new AuthorizeViewModel();
                 await SetIdProviders(viewModel).ConfigureAwait(false);
                 return View(viewModel);
@@ -95,7 +115,9 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> LocalLogin(SmsAuthenticationViewModel localAuthenticationViewModel)
+        public async Task<IActionResult> LocalLogin(
+            SmsAuthenticationViewModel localAuthenticationViewModel,
+            CancellationToken cancellationToken)
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated)
@@ -113,16 +135,13 @@
                 ResourceOwner resourceOwner = null;
                 try
                 {
-                    resourceOwner = await _smsAuthenticationOperation.Execute(localAuthenticationViewModel.PhoneNumber)
+                    resourceOwner = await _smsAuthenticationOperation
+                        .Execute(localAuthenticationViewModel.PhoneNumber, cancellationToken)
                         .ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
-                    await _eventPublisher.Publish(
-                            new ExceptionMessage(
-                                Id.Create(),
-                                ex,
-                                DateTime.UtcNow))
+                    await _eventPublisher.Publish(new ExceptionMessage(Id.Create(), ex, DateTime.UtcNow))
                         .ConfigureAwait(false);
                     // _openIdEventSource.Failure(ex.Message);
                     ModelState.AddModelError("message_error", ex.Message);
@@ -130,22 +149,19 @@
 
                 if (resourceOwner != null)
                 {
-                    var claims = resourceOwner.Claims;
-                    claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
-                        DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
-                        ClaimValueTypes.Integer));
-                    await SetPasswordLessCookie(claims).ConfigureAwait(false);
+                    resourceOwner.Claims = resourceOwner.Claims.Add(
+                        new Claim(
+                            ClaimTypes.AuthenticationInstant,
+                            DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
+                            ClaimValueTypes.Integer));
+                    await SetPasswordLessCookie(resourceOwner.Claims).ConfigureAwait(false);
                     try
                     {
                         return RedirectToAction("ConfirmCode");
                     }
                     catch (Exception ex)
                     {
-                        await _eventPublisher.Publish(
-                                new ExceptionMessage(
-                                    Id.Create(),
-                                    ex,
-                                    DateTime.UtcNow))
+                        await _eventPublisher.Publish(new ExceptionMessage(Id.Create(), ex, DateTime.UtcNow))
                             .ConfigureAwait(false);
                         ModelState.AddModelError("message_error", "TWILIO account is not valid");
                     }
@@ -154,7 +170,6 @@
 
             var viewModel = new AuthorizeViewModel();
             await SetIdProviders(viewModel).ConfigureAwait(false);
-            await TranslateView(DefaultLanguage).ConfigureAwait(false);
             return View("Index", viewModel);
         }
 
@@ -172,20 +187,19 @@
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
+                throw new SimpleAuthException(
+                    ErrorCodes.UnhandledExceptionCode,
                     "SMS authentication cannot be performed");
             }
 
-            await TranslateView(DefaultLanguage).ConfigureAwait(false);
-            return View(new ConfirmCodeViewModel
-            {
-                Code = code
-            });
+            return View(new ConfirmCodeViewModel { Code = code });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ConfirmCode(ConfirmCodeViewModel confirmCodeViewModel)
+        public async Task<IActionResult> ConfirmCode(
+            ConfirmCodeViewModel confirmCodeViewModel,
+            CancellationToken cancellationToken)
         {
             if (confirmCodeViewModel == null)
             {
@@ -203,40 +217,41 @@
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
+                throw new SimpleAuthException(
+                    ErrorCodes.UnhandledExceptionCode,
                     "SMS authentication cannot be performed");
             }
 
-            var subject = authenticatedUser.Claims
-                .First(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject)
+            var authenticatedUserClaims = authenticatedUser.Claims.ToArray();
+            var subject = authenticatedUserClaims
+                .First(c => c.Type == JwtConstants.OpenIdClaimTypes.Subject)
                 .Value;
-            var phoneNumber = authenticatedUser.Claims.First(c =>
-                c.Type == JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber);
+            var phoneNumber = authenticatedUserClaims.First(
+                c => c.Type == JwtConstants.OpenIdClaimTypes.PhoneNumber);
             if (confirmCodeViewModel.Action == "resend") // Resend the confirmation code.
             {
                 var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value).ConfigureAwait(false);
-                await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 return View("ConfirmCode", confirmCodeViewModel);
             }
 
-            if (!await _authenticateActions.ValidateCode(confirmCodeViewModel.ConfirmationCode).ConfigureAwait(false)
+            if (!await _validateConfirmationCode.Execute(confirmCodeViewModel.ConfirmationCode).ConfigureAwait(false)
             ) // Check the confirmation code.
             {
                 ModelState.AddModelError("message_error", "Confirmation code is not valid");
-                await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 return View("ConfirmCode", confirmCodeViewModel);
             }
 
-            await _authenticationService.SignOutAsync(HttpContext,
+            await _authenticationService.SignOutAsync(
+                    HttpContext,
                     HostConstants.CookieNames.PasswordLessCookieName,
                     new AuthenticationProperties())
                 .ConfigureAwait(false);
-            var resourceOwner = await _getUserOperation.Execute(authenticatedUser).ConfigureAwait(false);
+            var resourceOwner = await _getUserOperation.Execute(authenticatedUser, cancellationToken).ConfigureAwait(false);
             if (!string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication)) // Execute TWO Factor authentication
             {
                 try
                 {
-                    await SetTwoFactorCookie(authenticatedUser.Claims).ConfigureAwait(false);
+                    await SetTwoFactorCookie(authenticatedUserClaims).ConfigureAwait(false);
                     await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value).ConfigureAwait(false);
                     return RedirectToAction("SendCode", new { code = confirmCodeViewModel.Code });
                 }
@@ -247,7 +262,6 @@
                 catch (Exception)
                 {
                     ModelState.AddModelError("message_error", "Two factor authenticator is not properly configured");
-                    await TranslateView(DefaultLanguage).ConfigureAwait(false);
                     return View("ConfirmCode", confirmCodeViewModel);
                 }
             }
@@ -256,29 +270,33 @@
             if (!string.IsNullOrWhiteSpace(confirmCodeViewModel.Code)) // Execute OPENID workflow
             {
                 var request = _dataProtector.Unprotect<AuthorizationRequest>(confirmCodeViewModel.Code);
-                await SetLocalCookie(authenticatedUser.Claims, request.SessionId).ConfigureAwait(false);
+                await SetLocalCookie(authenticatedUserClaims, request.session_id).ConfigureAwait(false);
                 var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-                var actionResult = await _authenticateHelper.ProcessRedirection(request.ToParameter(),
+                var actionResult = await _authenticateHelper.ProcessRedirection(
+                        request.ToParameter(),
                         confirmCodeViewModel.Code,
                         subject,
-                        authenticatedUser.Claims.ToList(),
-                        issuerName)
+                        authenticatedUserClaims,
+                        issuerName,
+                        cancellationToken)
                     .ConfigureAwait(false);
                 var result = this.CreateRedirectionFromActionResult(actionResult, request);
                 if (result != null)
                 {
-                    await LogAuthenticateUser(actionResult, request.ProcessId).ConfigureAwait(false);
+                    await LogAuthenticateUser(actionResult, request.aggregate_id).ConfigureAwait(false);
                     return result;
                 }
             }
 
-            await SetLocalCookie(authenticatedUser.Claims, Id.Create())
+            await SetLocalCookie(authenticatedUserClaims, Id.Create())
                 .ConfigureAwait(false); // Authenticate the resource owner
             return RedirectToAction("Index", "User");
         }
 
         [HttpPost]
-        public async Task<IActionResult> LocalLoginOpenId(SmsOpenIdLocalAuthenticationViewModel viewModel)
+        public async Task<IActionResult> LocalLoginOpenId(
+            SmsOpenIdLocalAuthenticationViewModel viewModel,
+            CancellationToken cancellationToken)
         {
             if (viewModel == null)
             {
@@ -294,51 +312,43 @@
             // 1. Decrypt the request
             var request = _dataProtector.Unprotect<AuthorizationRequest>(viewModel.Code);
             // 2. Retrieve the default language
-            var uiLocales = string.IsNullOrWhiteSpace(request.UiLocales) ? DefaultLanguage : request.UiLocales;
+            var uiLocales = string.IsNullOrWhiteSpace(request.ui_locales) ? DefaultLanguage : request.ui_locales;
             if (ModelState.IsValid)
             {
                 ResourceOwner resourceOwner = null;
                 try
                 {
-                    resourceOwner = await _smsAuthenticationOperation.Execute(viewModel.PhoneNumber)
+                    resourceOwner = await _smsAuthenticationOperation.Execute(viewModel.PhoneNumber, cancellationToken)
                         .ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
-                    await _eventPublisher.Publish(
-                            new ExceptionMessage(
-                                Id.Create(),
-                                ex,
-                                DateTime.UtcNow))
+                    await _eventPublisher.Publish(new ExceptionMessage(Id.Create(), ex, DateTime.UtcNow))
                         .ConfigureAwait(false);
                     ModelState.AddModelError("message_error", ex.Message);
                 }
 
                 if (resourceOwner != null)
                 {
-                    var claims = resourceOwner.Claims;
-                    claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
-                        DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
-                        ClaimValueTypes.Integer));
-                    await SetPasswordLessCookie(claims).ConfigureAwait(false);
+                    resourceOwner.Claims = resourceOwner.Claims.Add(
+                        new Claim(
+                            ClaimTypes.AuthenticationInstant,
+                            DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
+                            ClaimValueTypes.Integer));
+                    await SetPasswordLessCookie(resourceOwner.Claims).ConfigureAwait(false);
                     try
                     {
                         return RedirectToAction("ConfirmCode", new { code = viewModel.Code });
                     }
                     catch (Exception ex)
                     {
-                        await _eventPublisher.Publish(
-                                new ExceptionMessage(
-                                    Id.Create(),
-                                    ex,
-                                    DateTime.UtcNow))
+                        await _eventPublisher.Publish(new ExceptionMessage(Id.Create(), ex, DateTime.UtcNow))
                             .ConfigureAwait(false);
                         ModelState.AddModelError("message_error", "TWILIO account is not valid");
                     }
                 }
             }
 
-            await TranslateView(uiLocales).ConfigureAwait(false);
             await SetIdProviders(viewModel).ConfigureAwait(false);
             return View("OpenId", viewModel);
         }
@@ -347,14 +357,11 @@
         {
             var identity = new ClaimsIdentity(claims, HostConstants.CookieNames.PasswordLessCookieName);
             var principal = new ClaimsPrincipal(identity);
-            await _authenticationService.SignInAsync(HttpContext,
+            await _authenticationService.SignInAsync(
+                    HttpContext,
                     HostConstants.CookieNames.PasswordLessCookieName,
                     principal,
-                    new AuthenticationProperties
-                    {
-                        ExpiresUtc = DateTime.UtcNow.AddMinutes(20),
-                        IsPersistent = false
-                    })
+                    new AuthenticationProperties { ExpiresUtc = DateTime.UtcNow.AddMinutes(20), IsPersistent = false })
                 .ConfigureAwait(false);
         }
     }

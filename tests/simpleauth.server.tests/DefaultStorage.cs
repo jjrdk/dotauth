@@ -14,9 +14,9 @@
                 new ResourceOwner
                 {
                     Id = "administrator",
-                    Claims = new List<Claim>
+                    Claims = new []
                     {
-                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "administrator")
+                        new Claim(JwtConstants.OpenIdClaimTypes.Subject, "administrator")
                     },
                     Password = "password",
                     IsLocalAccount = true
@@ -25,9 +25,9 @@
                 {
                     Id = "user",
                     Password = "password",
-                    Claims = new List<Claim>
+                    Claims = new []
                     {
-                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "user")
+                        new Claim(JwtConstants.OpenIdClaimTypes.Subject, "user")
                     },
                     IsLocalAccount = true
                 }

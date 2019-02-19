@@ -28,7 +28,7 @@ namespace SimpleAuth
             public const string TwoFactorCookieName = "sa2fa";
         }
 
-        public static Dictionary<SimpleAuthEndPoints, string> MappingEndPointToPartialUrl = new Dictionary<SimpleAuthEndPoints, string>
+        public static Dictionary<SimpleAuthEndPoints, string> _mappingEndPointToPartialUrl = new Dictionary<SimpleAuthEndPoints, string>
         {
             {
                 SimpleAuthEndPoints.AuthenticateIndex,

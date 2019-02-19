@@ -5,7 +5,7 @@
     [DataContract]
     public class ErrorResponseWithState : ErrorResponse
     {
-        [DataMember(Name = ErrorResponseWithStateNames.State)]
+        [DataMember(Name = "state")]
         public string State { get; set; }
     }
 }

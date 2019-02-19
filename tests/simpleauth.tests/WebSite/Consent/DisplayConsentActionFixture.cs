@@ -2,31 +2,41 @@
 
 namespace SimpleAuth.Tests.WebSite.Consent
 {
-    using Errors;
     using Exceptions;
+    using Microsoft.IdentityModel.Tokens;
     using Moq;
     using Parameters;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth.Common;
+    using SimpleAuth.Shared.Requests;
     using SimpleAuth.WebSite.Consent.Actions;
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
     using Xunit;
 
     public sealed class DisplayConsentActionFixture
     {
-        private Mock<IScopeRepository> _scopeRepositoryFake;
-        private Mock<IClientStore> _clientRepositoryFake;
-        private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
-        private IDisplayConsentAction _displayConsentAction;
-        private Mock<IConsentRepository> _consentRepository;
+        private readonly Mock<IScopeRepository> _scopeRepositoryFake;
+        private readonly Mock<IClientStore> _clientRepositoryFake;
+        private readonly DisplayConsentAction _displayConsentAction;
+        private readonly Mock<IConsentRepository> _consentRepository;
 
         public DisplayConsentActionFixture()
         {
-            InitializeFakeObjects();
+            _scopeRepositoryFake = new Mock<IScopeRepository>();
+            _clientRepositoryFake = new Mock<IClientStore>();
+            _consentRepository = new Mock<IConsentRepository>();
+            _displayConsentAction = new DisplayConsentAction(
+                _scopeRepositoryFake.Object,
+                _clientRepositoryFake.Object,
+                _consentRepository.Object,
+                new Mock<IAuthorizationCodeStore>().Object,
+                new Mock<ITokenStore>().Object,
+                new Mock<IEventPublisher>().Object);
         }
 
         [Fact]
@@ -34,11 +44,13 @@ namespace SimpleAuth.Tests.WebSite.Consent
         {
             var authorizationParameter = new AuthorizationParameter();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _displayConsentAction.Execute(null, null, null))
+            await Assert
+                .ThrowsAsync<ArgumentNullException>(
+                    () => _displayConsentAction.Execute(null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
             await Assert
                 .ThrowsAsync<ArgumentNullException>(
-                    () => _displayConsentAction.Execute(authorizationParameter, null, null))
+                    () => _displayConsentAction.Execute(authorizationParameter, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
@@ -49,33 +61,39 @@ namespace SimpleAuth.Tests.WebSite.Consent
             var clientid = "client";
             var client = new Client
             {
+                JsonWebKeys =
+                    "verylongkeyfortesting".CreateJwk(
+                            JsonWebKeyUseNames.Sig,
+                            KeyOperations.Sign,
+                            KeyOperations.Verify)
+                        .ToSet(),
+                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                 ClientId = clientid,
                 AllowedScopes = new List<Scope> { new Scope { Name = scope, IsDisplayedInConsent = true } }
             };
-            var consent = new Consent
-            {
-                Client = client,
-                GrantedScopes = new List<Scope> { new Scope { Name = scope } }
-            };
-            _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>()))
+            var consent = new Consent { Client = client, GrantedScopes = new List<Scope> { new Scope { Name = scope } } };
+            _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<Consent> { consent });
-            _scopeRepositoryFake.Setup(x => x.SearchByNames(It.IsAny<IEnumerable<string>>()))
-                .ReturnsAsync(new List<Scope> { new Scope { Name = scope, IsDisplayedInConsent = true } });
-            var claimsIdentity = new ClaimsIdentity(new[] { new Claim("sub", "test"), });
+            _scopeRepositoryFake.Setup(x => x.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
+                .ReturnsAsync(new[] { new Scope { Name = scope, IsDisplayedInConsent = true } });
+            var claimsIdentity = new ClaimsIdentity(new[] { new Claim("sub", "test"), }, "test");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = clientid,
                 Scope = scope,
-                ResponseMode = ResponseMode.fragment
+                ResponseMode = ResponseModes.Fragment
             };
 
-            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult(client));
-            var result = await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null)
+            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(client);
+            _clientRepositoryFake.Setup(x => x.GetAll(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Array.Empty<Client>());
+            var result = await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Equal(ResponseMode.fragment, result.EndpointResult.RedirectInstruction.ResponseMode);
+            Assert.Equal(ResponseModes.Fragment, result.EndpointResult.RedirectInstruction.ResponseMode);
         }
 
         [Fact]
@@ -84,7 +102,7 @@ namespace SimpleAuth.Tests.WebSite.Consent
         {
             const string clientId = "clientId";
             const string state = "state";
-            var claimsIdentity = new ClaimsIdentity(new[] { new Claim("sub", "test") });
+            var claimsIdentity = new ClaimsIdentity(new[] { new Claim("sub", "test") }, "test");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var authorizationParameter = new AuthorizationParameter
             {
@@ -92,22 +110,33 @@ namespace SimpleAuth.Tests.WebSite.Consent
                 Scope = "scope",
                 ClientId = clientId,
                 State = state,
-                ResponseMode = ResponseMode.None // No response mode is defined
+                ResponseMode = ResponseModes.None // No response mode is defined
             };
             var consent = new Consent
             {
                 GrantedScopes = new List<Scope> { new Scope { Name = "scope" } },
-                Client = new Client
-                {
-                    ClientId = clientId,
-                    AllowedScopes = new List<Scope> { new Scope { Name = "scope" } }
-                }
+                Client = new Client { ClientId = clientId, AllowedScopes = new List<Scope> { new Scope { Name = "scope" } } }
             };
-            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult(new Client()));
-            _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>())).ReturnsAsync(new[] { consent });
+            var returnedClient = new Client
+            {
+                ClientId = clientId,
+                JsonWebKeys = "verylongkeyfortesting".CreateJwk(
+                        JsonWebKeyUseNames.Sig,
+                        KeyOperations.Sign,
+                        KeyOperations.Verify)
+                    .ToSet(),
+                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256
+            };
+            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(returnedClient);
+            _clientRepositoryFake.Setup(x => x.GetAll(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Array.Empty<Client>());
+            _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new[] { consent });
             var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null))
+                    () => _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, "issuer", CancellationToken.None))
                 .ConfigureAwait(false);
+
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.Equal(ErrorDescriptions.TheAuthorizationFlowIsNotSupported, exception.Message);
             Assert.Equal(state, exception.State);
@@ -123,10 +152,11 @@ namespace SimpleAuth.Tests.WebSite.Consent
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var authorizationParameter = new AuthorizationParameter { ClientId = clientId, State = state };
 
-            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult((Client)null));
+            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Client)null);
 
             var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null))
+                    () => _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.Equal(string.Format(ErrorDescriptions.ClientIsNotValid, clientId), exception.Message);
@@ -139,7 +169,7 @@ namespace SimpleAuth.Tests.WebSite.Consent
             const string clientId = "clientId";
             const string state = "state";
             const string scopeName = "profile";
-            var claimsIdentity = new ClaimsIdentity(new[] {new Claim("sub", "test")});
+            var claimsIdentity = new ClaimsIdentity(new[] { new Claim("sub", "test") });
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Client();
             var authorizationParameter = new AuthorizationParameter
@@ -149,28 +179,15 @@ namespace SimpleAuth.Tests.WebSite.Consent
                 Claims = null,
                 Scope = scopeName
             };
-            ICollection<Scope> scopes = new List<Scope> { new Scope { IsDisplayedInConsent = true, Name = scopeName } };
+            var scopes = new[] { new Scope { IsDisplayedInConsent = true, Name = scopeName } };
 
-            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>())).Returns(Task.FromResult(client));
-            _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<IEnumerable<string>>()))
-                .Returns(Task.FromResult(scopes));
+            _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(client);
+            _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>())).ReturnsAsync(scopes);
 
-            await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null).ConfigureAwait(false);
+            await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None).ConfigureAwait(false);
 
             Assert.Contains(scopes, s => s.Name == scopeName);
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _scopeRepositoryFake = new Mock<IScopeRepository>();
-            _clientRepositoryFake = new Mock<IClientStore>();
-            _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
-            _consentRepository = new Mock<IConsentRepository>();
-            _displayConsentAction = new DisplayConsentAction(
-                _scopeRepositoryFake.Object,
-                _clientRepositoryFake.Object,
-                _consentRepository.Object,
-                _generateAuthorizationResponseFake.Object);
         }
     }
 }

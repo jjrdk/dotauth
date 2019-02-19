@@ -14,10 +14,8 @@
 
 namespace SimpleAuth.JwtToken
 {
-    using Errors;
     using Exceptions;
     using Extensions;
-    using Helpers;
     using Microsoft.IdentityModel.Tokens;
     using Parameters;
     using Shared;
@@ -31,13 +29,12 @@ namespace SimpleAuth.JwtToken
     using System.Security.Claims;
     using System.Security.Cryptography;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Validators;
-    using JwtConstants = Shared.JwtConstants;
+    using SimpleAuth.Shared.Errors;
 
-    internal class JwtGenerator : IJwtGenerator
+    internal class JwtGenerator
     {
-        private readonly ClientValidator _clientValidator;
         private readonly IScopeRepository _scopeRepository;
         private readonly IClientStore _clientRepository;
 
@@ -61,7 +58,6 @@ namespace SimpleAuth.JwtToken
         public JwtGenerator(IClientStore clientRepository, IScopeRepository scopeRepository)
         {
             _clientRepository = clientRepository;
-            _clientValidator = new ClientValidator();
             _scopeRepository = scopeRepository;
         }
 
@@ -109,11 +105,7 @@ namespace SimpleAuth.JwtToken
             var timeKeyValuePair = GetExpirationAndIssuedTime(client);
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
-            //var jwks = await _jsonWebKeyRepository.GetByAlgorithmAsync(
-            //    JsonWebKeyUseNames.Sig,
-            //    client.IdTokenEncryptedResponseAlg,
-            //    KeyOperations.Sign)
-            //    .ConfigureAwait(false);
+
             var key = client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First();
 
             var jwtHeader = new JwtHeader(key);
@@ -142,10 +134,11 @@ namespace SimpleAuth.JwtToken
             return token;
         }
 
-        public async Task<JwtPayload> GenerateIdTokenPayloadForScopesAsync(
+        public async Task<JwtPayload> GenerateIdTokenPayloadForScopes(
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter,
-            string issuerName)
+            string issuerName,
+            CancellationToken cancellationToken)
         {
             if (authorizationParameter == null)
             {
@@ -163,18 +156,24 @@ namespace SimpleAuth.JwtToken
                     authorizationParameter,
                     new List<ClaimParameter>(),
                     claimsPrincipal,
-                    issuerName)
+                    issuerName,
+                    cancellationToken)
                 .ConfigureAwait(false);
-            await FillInResourceOwnerClaimsFromScopes(result, authorizationParameter, claimsPrincipal)
+            await FillInResourceOwnerClaimsFromScopes(
+                    result,
+                    authorizationParameter,
+                    claimsPrincipal,
+                    cancellationToken)
                 .ConfigureAwait(false);
             return result;
         }
 
-        public async Task<JwtPayload> GenerateFilteredIdTokenPayloadAsync(
+        public async Task<JwtPayload> GenerateFilteredIdTokenPayload(
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter,
             List<ClaimParameter> claimParameters,
-            string issuerName)
+            string issuerName,
+            CancellationToken cancellationToken)
         {
             if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
             {
@@ -192,7 +191,8 @@ namespace SimpleAuth.JwtToken
                     authorizationParameter,
                     claimParameters,
                     claimsPrincipal,
-                    issuerName)
+                    issuerName,
+                    cancellationToken)
                 .ConfigureAwait(false);
             FillInResourceOwnerClaimsByClaimsParameter(
                 result,
@@ -202,9 +202,10 @@ namespace SimpleAuth.JwtToken
             return result;
         }
 
-        public async Task<JwtPayload> GenerateUserInfoPayloadForScopeAsync(
+        public async Task<JwtPayload> GenerateUserInfoPayloadForScope(
             ClaimsPrincipal claimsPrincipal,
-            AuthorizationParameter authorizationParameter)
+            AuthorizationParameter authorizationParameter,
+            CancellationToken cancellationToken)
         {
             if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
             {
@@ -217,7 +218,11 @@ namespace SimpleAuth.JwtToken
             }
 
             var result = new JwtPayload();
-            await FillInResourceOwnerClaimsFromScopes(result, authorizationParameter, claimsPrincipal)
+            await FillInResourceOwnerClaimsFromScopes(
+                    result,
+                    authorizationParameter,
+                    claimsPrincipal,
+                    cancellationToken)
                 .ConfigureAwait(false);
             return result;
         }
@@ -287,32 +292,30 @@ namespace SimpleAuth.JwtToken
             }
         }
 
-        private async Task FillInResourceOwnerClaimsFromScopes(
+        private async Task<JwtPayload> FillInResourceOwnerClaimsFromScopes(
             JwtPayload jwsPayload,
             AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal)
+            ClaimsPrincipal claimsPrincipal,
+            CancellationToken cancellationToken)
         {
             // 1. Fill-in the subject claim
             var subject = claimsPrincipal.GetSubject();
-            jwsPayload.Add(JwtConstants.StandardResourceOwnerClaimNames.Subject, subject);
+            jwsPayload.Add(Shared.JwtConstants.OpenIdClaimTypes.Subject, subject);
 
-            if (authorizationParameter == null || string.IsNullOrWhiteSpace(authorizationParameter.Scope))
+            if (authorizationParameter != null && !string.IsNullOrWhiteSpace(authorizationParameter.Scope))
             {
-                return;
+                var scopes = authorizationParameter.Scope.ParseScopes();
+                var claims = await GetClaimsFromRequestedScopes(claimsPrincipal, cancellationToken, scopes)
+                    .ConfigureAwait(false);
+                foreach (var claim in claims.GroupBy(c => c.Type)
+                    .Where(x => x.Key != Shared.JwtConstants.OpenIdClaimTypes.Subject))
+                {
+                    jwsPayload.Add(claim.Key, string.Join(" ", claim.Select(c => c.Value)));
+                }
             }
 
             // 2. Fill-in the other claims
-            var scopes = authorizationParameter.Scope.ParseScopes();
-            var claims = await GetClaimsFromRequestedScopes(scopes, claimsPrincipal).ConfigureAwait(false);
-            foreach (var claim in claims.GroupBy(c => c.Type))
-            {
-                if (claim.Key == JwtConstants.StandardResourceOwnerClaimNames.Subject)
-                {
-                    continue;
-                }
-
-                jwsPayload.Add(claim.Key, string.Join(" ", claim.Select(c => c.Value)));
-            }
+            return jwsPayload;
         }
 
         private void FillInResourceOwnerClaimsByClaimsParameter(
@@ -324,11 +327,11 @@ namespace SimpleAuth.JwtToken
             var state = authorizationParameter == null ? string.Empty : authorizationParameter.State;
 
             // 1. Fill-In the subject - set the subject as an essential claim
-            if (claimParameters.All(c => c.Name != JwtConstants.StandardResourceOwnerClaimNames.Subject))
+            if (claimParameters.All(c => c.Name != Shared.JwtConstants.OpenIdClaimTypes.Subject))
             {
                 var essentialSubjectClaimParameter = new ClaimParameter
                 {
-                    Name = JwtConstants.StandardResourceOwnerClaimNames.Subject,
+                    Name = Shared.JwtConstants.OpenIdClaimTypes.Subject,
                     Parameters = new Dictionary<string, object>
                     {
                         {CoreConstants.StandardClaimParameterValueNames.EssentialName, true}
@@ -345,12 +348,12 @@ namespace SimpleAuth.JwtToken
             }
 
             var resourceOwnerClaimParameters = claimParameters
-                .Where(c => JwtConstants.AllStandardResourceOwnerClaimNames.Contains(c.Name))
+                .Where(c => Shared.JwtConstants.AllStandardResourceOwnerClaimNames.Contains(c.Name))
                 .ToList();
             if (resourceOwnerClaimParameters.Any())
             {
                 var requestedClaimNames = resourceOwnerClaimParameters.Select(r => r.Name).ToArray();
-                var resourceOwnerClaims = GetClaims(requestedClaimNames, claimsPrincipal);
+                var resourceOwnerClaims = GetClaims(claimsPrincipal, requestedClaimNames);
                 foreach (var resourceOwnerClaimParameter in resourceOwnerClaimParameters)
                 {
                     var resourceOwnerClaim =
@@ -375,14 +378,15 @@ namespace SimpleAuth.JwtToken
             AuthorizationParameter authorizationParameter,
             List<ClaimParameter> claimParameters,
             ClaimsPrincipal claimsPrincipal,
-            string issuerName)
+            string issuerName,
+            CancellationToken cancellationToken)
         {
             var nonce = authorizationParameter.Nonce;
             var state = authorizationParameter.State;
             var clientId = authorizationParameter.ClientId;
             var maxAge = authorizationParameter.MaxAge;
             var amrValues = authorizationParameter.AmrValues;
-            var cl = await _clientRepository.GetById(clientId).ConfigureAwait(false);
+            var cl = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
             var issuerClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Issuer);
             var audiencesClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Audiences);
             var expirationTimeClaimParameter =
@@ -398,7 +402,7 @@ namespace SimpleAuth.JwtToken
             var timeKeyValuePair = GetExpirationAndIssuedTime(cl);
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
-            var acrValues = CoreConstants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
+            var acrValues = CoreConstants.StandardArcParameterNames._openIdCustomAuthLevel + ".password=1";
             var amr = new[] {"password"};
             if (amrValues != null)
             {
@@ -407,10 +411,9 @@ namespace SimpleAuth.JwtToken
 
             var azp = string.Empty;
 
-            var clients = await _clientRepository.GetAllAsync().ConfigureAwait(false);
+            var clients = await _clientRepository.GetAll(cancellationToken).ConfigureAwait(false);
             var audiences = (from client in clients
-                let isClientSupportIdTokenResponseType =
-                    _clientValidator.CheckResponseTypes(client, ResponseTypeNames.IdToken)
+                let isClientSupportIdTokenResponseType = client.CheckResponseTypes(ResponseTypeNames.IdToken)
                 where isClientSupportIdTokenResponseType || client.ClientId == authorizationParameter.ClientId
                 select client.ClientId).ToList();
 
@@ -617,21 +620,16 @@ namespace SimpleAuth.JwtToken
             return true;
         }
 
-        private async Task<IList<Claim>> GetClaimsFromRequestedScopes(
-            IEnumerable<string> scopes,
-            ClaimsPrincipal claimsPrincipal)
+        private async Task<List<Claim>> GetClaimsFromRequestedScopes(
+            ClaimsPrincipal claimsPrincipal,
+            CancellationToken cancellationToken,
+            params string[] scopes)
         {
-            var result = new List<Claim>();
-            var returnedScopes = await _scopeRepository.SearchByNames(scopes).ConfigureAwait(false);
-            foreach (var returnedScope in returnedScopes)
-            {
-                result.AddRange(GetClaims(returnedScope.Claims.ToArray(), claimsPrincipal));
-            }
-
-            return result;
+            var returnedScopes = await _scopeRepository.SearchByNames(cancellationToken, scopes).ConfigureAwait(false);
+            return returnedScopes.SelectMany(x => GetClaims(claimsPrincipal, x.Claims.ToArray())).ToList();
         }
 
-        private IList<Claim> GetClaims(IReadOnlyCollection<string> claims, ClaimsPrincipal claimsPrincipal)
+        private IList<Claim> GetClaims(ClaimsPrincipal claimsPrincipal, params string[] claims)
         {
             var openIdClaims = MapToOpenIdClaims(claimsPrincipal.Claims);
             return openIdClaims.Where(oc => claims.Contains(oc.Type)).ToArray();
@@ -641,8 +639,8 @@ namespace SimpleAuth.JwtToken
         {
             return claims.Select(
                 claim => new Claim(
-                    JwtConstants.MapWifClaimsToOpenIdClaims.ContainsKey(claim.Type)
-                        ? JwtConstants.MapWifClaimsToOpenIdClaims[claim.Type]
+                    Shared.JwtConstants.MapWifClaimsToOpenIdClaims.ContainsKey(claim.Type)
+                        ? Shared.JwtConstants.MapWifClaimsToOpenIdClaims[claim.Type]
                         : claim.Type,
                     claim.Value));
         }
@@ -689,11 +687,7 @@ namespace SimpleAuth.JwtToken
             var secondHalf = new byte[halfIndex];
             Buffer.BlockCopy(arr, 0, firstHalf, 0, halfIndex);
             Buffer.BlockCopy(arr, halfIndex, secondHalf, 0, halfIndex);
-            return new[]
-            {
-                firstHalf,
-                secondHalf
-            };
+            return new[] {firstHalf, secondHalf};
         }
     }
 }

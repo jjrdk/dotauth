@@ -5,9 +5,9 @@
     [DataContract]
     public class PostClaimToken
     {
-        [DataMember(Name = PostClaimTokenNames.Format)]
+        [DataMember(Name = "format")]
         public string Format { get; set; }
-        [DataMember(Name = PostClaimTokenNames.Token)]
+        [DataMember(Name = "token")]
         public string Token { get; set; }
     }
 }

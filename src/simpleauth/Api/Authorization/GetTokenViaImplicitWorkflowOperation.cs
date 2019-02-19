@@ -14,38 +14,50 @@
 
 namespace SimpleAuth.Api.Authorization
 {
-    using System;
-    using System.Security.Claims;
-    using System.Security.Principal;
-    using System.Threading.Tasks;
-    using Errors;
     using Exceptions;
     using Parameters;
     using Results;
     using Shared.Models;
     using SimpleAuth.Common;
-    using Validators;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Security.Claims;
+    using System.Security.Principal;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using SimpleAuth.Extensions;
 
     internal sealed class GetTokenViaImplicitWorkflowOperation
     {
         private readonly ProcessAuthorizationRequest _processAuthorizationRequest;
-        private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
-        private readonly ClientValidator _clientValidator;
+        private readonly GenerateAuthorizationResponse _generateAuthorizationResponse;
 
         public GetTokenViaImplicitWorkflowOperation(
-            ProcessAuthorizationRequest processAuthorizationRequest,
-            IGenerateAuthorizationResponse generateAuthorizationResponse)
+            IClientStore clientStore,
+            IConsentRepository consentRepository,
+            IAuthorizationCodeStore authorizationCodeStore,
+            ITokenStore tokenStore,
+            IScopeRepository scopeRepository,
+            IEventPublisher eventPublisher)
         {
-            _processAuthorizationRequest = processAuthorizationRequest;
-            _generateAuthorizationResponse = generateAuthorizationResponse;
-            _clientValidator = new ClientValidator();
+            _processAuthorizationRequest = new ProcessAuthorizationRequest(clientStore, consentRepository);
+            _generateAuthorizationResponse = new GenerateAuthorizationResponse(
+                authorizationCodeStore,
+                tokenStore,
+                scopeRepository,
+                clientStore,
+                consentRepository,
+                eventPublisher);
         }
 
         public async Task<EndpointResult> Execute(
             AuthorizationParameter authorizationParameter,
             IPrincipal principal,
             Client client,
-            string issuerName)
+            string issuerName,
+            CancellationToken cancellationToken)
         {
             if (authorizationParameter == null)
             {
@@ -66,7 +78,7 @@ namespace SimpleAuth.Api.Authorization
                     authorizationParameter.State);
             }
 
-            if (!_clientValidator.CheckGrantTypes(client, GrantType.@implicit))
+            if (!client.CheckGrantTypes(GrantTypes.Implicit))
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
@@ -77,13 +89,13 @@ namespace SimpleAuth.Api.Authorization
             }
 
             var result = await _processAuthorizationRequest
-                .ProcessAsync(authorizationParameter, principal as ClaimsPrincipal, client, issuerName)
+                .Process(authorizationParameter, principal as ClaimsPrincipal, client, issuerName, cancellationToken)
                 .ConfigureAwait(false);
-            if (result.Type == TypeActionResult.RedirectToCallBackUrl)
+            if (result.Type == ActionResultType.RedirectToCallBackUrl)
             {
                 var claimsPrincipal = principal as ClaimsPrincipal;
                 await _generateAuthorizationResponse
-                    .Generate(result, authorizationParameter, claimsPrincipal, client, issuerName)
+                    .Generate(result, authorizationParameter, claimsPrincipal, client, issuerName, cancellationToken)
                     .ConfigureAwait(false);
             }
 

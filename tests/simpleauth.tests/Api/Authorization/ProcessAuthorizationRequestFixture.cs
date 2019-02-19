@@ -5,26 +5,13 @@
     using Shared.Repositories;
     using SimpleAuth.Api.Authorization;
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Xunit;
 
     public sealed class ProcessAuthorizationRequestFixture
     {
         private ProcessAuthorizationRequest _processAuthorizationRequest;
-
-        [Fact(Skip = "Invalid code path")]
-        public async Task When_Passing_NullAuthorization_To_Function_Then_ArgumentNullException_Is_Thrown()
-        {
-            InitializeMockingObjects();
-
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(() =>
-                    _processAuthorizationRequest.ProcessAsync(null, null, null, null))
-                .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() =>
-                    _processAuthorizationRequest.ProcessAsync(new AuthorizationParameter(), null, null, null))
-                .ConfigureAwait(false);
-        }
 
         [Fact]
         public void When_Passing_NotValidRedirectUrl_To_AuthorizationParameter_Then_Exception_Is_Thrown()
@@ -33,326 +20,16 @@
             const string state = "state";
             const string clientId = "MyBlog";
             const string redirectUrl = "not valid redirect url";
-            Assert.Throws<UriFormatException>(() =>
-            {
-                var authorizationParameter = new AuthorizationParameter
+            Assert.Throws<UriFormatException>(
+                () =>
                 {
-                    ClientId = clientId,
-                    Prompt = "login",
-                    State = state,
-                    RedirectUrl = new Uri(redirectUrl)
-                };
-            });
-        }
-
-        /*
-        [Fact]
-        public async Task When_Passing_AuthorizationParameterWithoutOpenIdScope_Then_Exception_Is_Thrown()
-        {
-            InitializeMockingObjects();
-            const string state = "state";
-            const string clientId = "MyBlog";
-            const string redirectUrl = "http://localhost";
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = clientId,
-                Prompt = "login",
-                State = state,
-                RedirectUrl = redirectUrl,
-                Scope = "email"
-            };
-
-            var exception =await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-        () => _processAuthorizationRequest.ProcessAsync(authorizationParameter, null));
-            Assert.True(exception.Code.Equals(ErrorCodes.InvalidScope));
-            Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, CoreConstants.StandardScopes.OpenId.Name)));
-            Assert.True(exception.State.Equals(state));
-        }
-
-        [Fact]
-        public void When_Passing_AuthorizationRequestWithMissingResponseType_Then_Exception_Is_Thrown()
-        {            InitializeMockingObjects();
-            const string state = "state";
-            const string clientId = "MyBlog";
-            const string redirectUrl = "http://localhost";
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = clientId,
-                Prompt = "login",
-                State = state,
-                RedirectUrl = redirectUrl,
-                Scope = "openid"
-            };
-
-                        var exception =
-                Assert.Throws<SimpleAuthExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, null));
-            Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
-            Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.MissingParameter
-                , Core.JwtConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName)));
-            Assert.True(exception.State.Equals(state));
-        }
-
-        [Fact]
-        public void When_Passing_AuthorizationRequestWithNotSupportedResponseType_Then_Exception_Is_Thrown()
-        {            InitializeMockingObjects();
-            const string state = "state";
-            const string clientId = "MyBlog";
-            const string redirectUrl = "http://localhost";
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = clientId,
-                Prompt = "login",
-                State = state,
-                RedirectUrl = redirectUrl,
-                Scope = "openid",
-                ResponseType = "code"
-            };
-
-                        var client = FakeFactories.FakeDataSource.Clients.FirstOrDefault(c => c.ClientId == clientId);
-            Assert.NotNull(client);
-            client.ResponseTypes.Remove(ResponseType.code);
-
-                        var exception =
-                Assert.Throws<SimpleAuthExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, null));
-            Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
-            Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType
-                , clientId, "code")));
-            Assert.True(exception.State.Equals(state));
-        }
-
-        [Fact]
-        public void When_TryingToByPassLoginAndConsentScreen_But_UserIsNotAuthenticated_Then_Exception_Is_Thrown()
-        {            InitializeMockingObjects();
-            const string state = "state";
-            const string clientId = "MyBlog";
-            const string redirectUrl = "http://localhost";
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = clientId,
-                Prompt = "none",
-                State = state,
-                RedirectUrl = redirectUrl,
-                Scope = "openid",
-                ResponseType = "code"
-            };
-
-                        var exception =
-                Assert.Throws<SimpleAuthExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, null));
-            Assert.True(exception.Code.Equals(ErrorCodes.LoginRequiredCode));
-            Assert.True(exception.Message.Equals(ErrorDescriptions.TheUserNeedsToBeAuthenticated));
-            Assert.True(exception.State.Equals(state));
-        }
-
-        [Fact]
-        public void When_TryingToByPassLoginAndConsentScreen_But_TheUserDidntGiveHisConsent_Then_Exception_Is_Thrown()
-        {            InitializeMockingObjects();
-            const string state = "state";
-            const string clientId = "MyBlog";
-            const string redirectUrl = "http://localhost";
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = clientId,
-                Prompt = "none",
-                State = state,
-                RedirectUrl = redirectUrl,
-                Scope = "openid",
-                ResponseType = "code"
-            };
-
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
-
-                        var exception =
-                Assert.Throws<SimpleAuthExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
-            Assert.True(exception.Code.Equals(ErrorCodes.InteractionRequiredCode));
-            Assert.True(exception.Message.Equals(ErrorDescriptions.TheUserNeedsToGiveHisConsent));
-            Assert.True(exception.State.Equals(state));
-        }
-
-        [Fact]
-        public void When_Passing_A_NotValid_IdentityTokenHint_Parameter_Then_An_Exception_Is_Thrown()
-        {            InitializeMockingObjects();
-            const string state = "state";
-            const string clientId = "MyBlog";
-            const string subject = "john.doe@email.com";
-            const string redirectUrl = "http://localhost";
-            FakeFactories.FakeDataSource.Consents.Add(new Consent
-            {
-                ResourceOwner = new ResourceOwner
-                {
-                    Id = subject
-                },
-                GrantedScopes = new List<Scope>
-                {
-                    new Scope
+                    var authorizationParameter = new AuthorizationParameter
                     {
-                        Name = "openid"
-                    }
-                },
-                Client = FakeFactories.FakeDataSource.Clients.First()
-            });
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = clientId,
-                State = state,
-                RedirectUrl = redirectUrl,
-                Scope = "openid",
-                ResponseType = "code",
-                Prompt = "none",
-                IdTokenHint = "invalid identity token hint"
-            };
-
-            var claims = new List<Claim>
-            {
-                new Claim(Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
-            };
-            var claimIdentity = new ClaimsIdentity(claims, "fake");
-            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-
-                        var exception = Assert.Throws<SimpleAuthExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
-            Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
-            Assert.True(exception.Message.Equals(ErrorDescriptions.TheIdTokenHintParameterIsNotAValidToken));
-        }
-
-        [Fact]
-        public void When_Passing_An_IdentityToken_Valid_ForWrongAudience_Then_An_Exception_Is_Thrown()
-        {            InitializeMockingObjects();
-            const string state = "state";
-            const string clientId = "MyBlog";
-            const string subject = "john.doe@email.com";
-            const string redirectUrl = "http://localhost";
-            FakeFactories.FakeDataSource.Consents.Add(new Consent
-            {
-                ResourceOwner = new ResourceOwner
-                {
-                    Id = subject
-                },
-                GrantedScopes = new List<Scope>
-                {
-                    new Scope
-                    {
-                        Name = "openid"
-                    }
-                },
-                Client = FakeFactories.FakeDataSource.Clients.First()
-            });
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = clientId,
-                State = state,
-                RedirectUrl = redirectUrl,
-                Scope = "openid",
-                ResponseType = "code",
-                Prompt = "none",
-            };
-
-            var subjectClaim = new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject);
-            var claims = new List<Claim>
-            {
-                subjectClaim
-            };
-            var claimIdentity = new ClaimsIdentity(claims, "fake");
-            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var jwtPayload = new JwtSecurityToken
-            {
-                {
-                    subjectClaim.Type, subjectClaim.Value
-                }
-            };
-
-            authorizationParameter.IdTokenHint = _jwtGenerator.Sign(jwtPayload, JwsAlg.RS256);
-
-                        var exception = Assert.Throws<SimpleAuthExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
-            Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
-            Assert.True(exception.Message.Equals(ErrorDescriptions.TheIdentityTokenDoesntContainSimpleAuthAsAudience));
+                        ClientId = clientId, Prompt = "login", State = state, RedirectUrl = new Uri(redirectUrl)
+                    };
+                });
         }
         
-        [Fact]
-        public void When_Passing_An_IdentityToken_Different_From_The_Current_Authenticated_User_Then_An_Exception_Is_Thrown()
-        {            InitializeMockingObjects();
-            const string state = "state";
-            const string clientId = "MyBlog";
-            const string subject = "john.doe@email.com";
-            const string issuerName = "audience";
-            const string redirectUrl = "http://localhost";
-            FakeFactories.FakeDataSource.Consents.Add(new Consent
-            {
-                ResourceOwner = new ResourceOwner
-                {
-                    Id = subject
-                },
-                GrantedScopes = new List<Scope>
-                {
-                    new Scope
-                    {
-                        Name = "openid"
-                    }
-                },
-                Client = FakeFactories.FakeDataSource.Clients.First()
-            });
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = clientId,
-                State = state,
-                RedirectUrl = redirectUrl,
-                Scope = "openid",
-                ResponseType = "code",
-                Prompt = "none",
-            };
-
-            var subjectClaim = new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject);
-            var claims = new List<Claim>
-            {
-                subjectClaim
-            };
-            var claimIdentity = new ClaimsIdentity(claims, "fake");
-            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var jwtPayload = new JwtSecurityToken
-            {
-                {
-                    subjectClaim.Type, "wrong subjet"
-                },
-                {
-                    Jwt.JwtConstants.StandardClaimNames.Audiences, new [] {  issuerName }
-                }
-            };
-            _oAuthConfiguration.Setup(s => s.GetIssuerName()).Returns(issuerName);
-            authorizationParameter.IdTokenHint = _jwtGenerator.Sign(jwtPayload, JwsAlg.RS256);
-
-                        var exception = Assert.Throws<SimpleAuthExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
-            Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
-            Assert.True(exception.Message.Equals(ErrorDescriptions.TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken));
-        }
-
-        [Fact]
-        public void When_Passing_Not_Supported_Prompts_Parameter_Then_An_Exception_Is_Thrown()
-        {            InitializeMockingObjects();
-            const string state = "state";
-            const string clientId = "MyBlog";
-            const string redirectUrl = "http://localhost";
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = clientId,
-                Prompt = "select_account",
-                State = state,
-                RedirectUrl = redirectUrl,
-                Scope = "openid",
-                ResponseType = "code"
-            };
-
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
-
-                        var exception =
-                Assert.Throws<SimpleAuthExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
-            Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
-            Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.ThePromptParameterIsNotSupported, "select_account")));
-            Assert.True(exception.State.Equals(state));
-        }
-        */
         /*
         #region TEST VALID SCENARIOS
 
@@ -424,7 +101,7 @@
                 Scope = "openid",
                 ResponseType = "code",
             };
-            
+
             var claimIdentity = new ClaimsIdentity("fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
 
@@ -467,7 +144,7 @@
             {
                 ResourceOwner = new ResourceOwner
                 {
-                    Id = subject
+                    ClientId = subject
                 },
                 GrantedScopes = new List<Scope>
                 {
@@ -490,18 +167,18 @@
 
             var claims = new List<Claim>
             {
-                new Claim(Core.Jwt.JwtConstants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Core.Jwt.JwtConstants.OpenIdClaimTypes.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
 
                         var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
-            
+
                         Assert.NotNull(result);
-            Assert.True(result.Type.Equals(TypeActionResult.RedirectToCallBackUrl));
+            Assert.True(result.Type.Equals(ActionResultType.RedirectToCallBackUrl));
             Assert.True(result.RedirectInstruction.Parameters.Count().Equals(0));
         }
-        
+
         #endregion
 
         #region TEST THE LOGIN

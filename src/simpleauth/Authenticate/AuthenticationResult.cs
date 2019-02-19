@@ -16,7 +16,7 @@ namespace SimpleAuth.Authenticate
 {
     using Shared.Models;
 
-    public class AuthenticationResult
+    internal class AuthenticationResult
     {
         public AuthenticationResult(Client client, string errorMessage)
         {
@@ -24,7 +24,7 @@ namespace SimpleAuth.Authenticate
             ErrorMessage = errorMessage;
         }
 
-        public Client Client { get; set; }
-        public string ErrorMessage { get; set; }
+        public Client Client { get; }
+        public string ErrorMessage { get; }
     }
 }

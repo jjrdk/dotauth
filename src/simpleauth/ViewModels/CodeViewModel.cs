@@ -19,8 +19,8 @@ namespace SimpleAuth.ViewModels
 
     public class CodeViewModel
     {
-        public const string RESEND_ACTION = "resend";
-        public const string SUBMIT_ACTION = "submit";
+        public const string ResendAction = "resend";
+        public const string SubmitAction = "submit";
 
         public string Code { get; set; }
         public string AuthRequestCode { get; set; }
@@ -35,7 +35,7 @@ namespace SimpleAuth.ViewModels
                 throw new ArgumentNullException(nameof(modelState));
             }
 
-            if (Action == RESEND_ACTION)
+            if (Action == ResendAction)
             {
                 if (string.IsNullOrWhiteSpace(ClaimValue))
                 {
@@ -43,7 +43,7 @@ namespace SimpleAuth.ViewModels
                 }
             }
 
-            if (Action == SUBMIT_ACTION)
+            if (Action == SubmitAction)
             {
                 if (string.IsNullOrWhiteSpace(Code))
                 {

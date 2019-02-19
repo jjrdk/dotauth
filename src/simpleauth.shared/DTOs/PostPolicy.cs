@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,15 +14,30 @@
 
 namespace SimpleAuth.Shared.DTOs
 {
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Defines the policy creation.
+    /// </summary>
     [DataContract]
     public class PostPolicy
     {
-        [DataMember(Name = PolicyNames.ResourceSetIds)]
-        public List<string> ResourceSetIds { get; set; }
-        [DataMember(Name = PolicyNames.Rules)]
-        public List<PostPolicyRule> Rules { get; set; }
+        /// <summary>
+        /// Gets or sets the resource set ids.
+        /// </summary>
+        /// <value>
+        /// The resource set ids.
+        /// </value>
+        [DataMember(Name = "resource_set_ids")]
+        public string[] ResourceSetIds { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rules.
+        /// </summary>
+        /// <value>
+        /// The rules.
+        /// </value>
+        [DataMember(Name = "rules")]
+        public PostPolicyRule[] Rules { get; set; }
     }
 }

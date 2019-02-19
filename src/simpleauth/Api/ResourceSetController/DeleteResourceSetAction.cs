@@ -16,9 +16,9 @@ namespace SimpleAuth.Api.ResourceSetController
 {
     using System;
     using System.Threading.Tasks;
-    using Errors;
-    using Exceptions;
     using Repositories;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
 
     internal class DeleteResourceSetAction
     {

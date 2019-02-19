@@ -21,6 +21,7 @@ namespace SimpleAuth.Server.Tests
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
     using SimpleAuth;
+    using SimpleAuth.Repositories;
     using System;
     using System.Reflection;
 
@@ -41,7 +42,7 @@ namespace SimpleAuth.Server.Tests
         public void Configure(IApplicationBuilder app)
         {
             app.UseAuthentication()
-                .UseSimpleAuth(o => { })
+                .UseSimpleAuthExceptionHandler()
                 .UseMvc(
                     routes =>
                     {
@@ -51,17 +52,9 @@ namespace SimpleAuth.Server.Tests
 
         private void RegisterServices(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton(new ScimOptions
-            {
-                IsEnabled = true,
-                EndPoint = "http://localhost:5555/"
-            });
             serviceCollection.AddSimpleAuth(new SimpleAuthOptions
             {
-                Configuration = new OpenIdServerConfiguration
-                {
-                    Users = DefaultStorage.GetUsers()
-                }
+                Users = sp => new InMemoryResourceOwnerRepository(DefaultStorage.GetUsers())
             });
             serviceCollection.AddAuthentication(opts =>
             {

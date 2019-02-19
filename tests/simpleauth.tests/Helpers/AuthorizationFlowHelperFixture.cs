@@ -1,11 +1,11 @@
 ﻿namespace SimpleAuth.Tests.Helpers
 {
-    using Errors;
     using Exceptions;
     using Shared;
     using SimpleAuth.Api.Authorization;
-    using SimpleAuth.Helpers;
     using System.Collections.Generic;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Shared.Errors;
     using Xunit;
 
     public sealed class AuthorizationFlowHelperFixture

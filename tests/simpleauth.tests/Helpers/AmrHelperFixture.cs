@@ -1,9 +1,9 @@
 ﻿namespace SimpleAuth.Tests.Helpers
 {
-    using Errors;
-    using Exceptions;
-    using SimpleAuth.Helpers;
     using System;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
     using Xunit;
 
     public class AmrHelperFixture

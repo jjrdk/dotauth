@@ -16,7 +16,7 @@ namespace SimpleAuth.Extensions
 {
     using System;
 
-    public static class DateTimeExtensions
+    internal static class DateTimeExtensions
     {
         private static readonly DateTime UnixStart;
 

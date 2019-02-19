@@ -2,8 +2,6 @@
 {
     using Exceptions;
     using Extensions;
-    using Helpers;
-    using Logging;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Mvc;
@@ -14,62 +12,102 @@
     using Shared;
     using Shared.Repositories;
     using Shared.Requests;
-    using SimpleAuth.Errors;
-    using SimpleAuth.WebSite.Authenticate.Actions;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.WebSite.Authenticate;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Translation;
+    using SimpleAuth.Shared.Events.Logging;
     using ViewModels;
-    using WebSite.Authenticate;
-    using WebSite.Authenticate.Common;
 
+    /// <summary>
+    /// Defines the authentication controller.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Controllers.BaseAuthenticateController" />
     public class AuthenticateController : BaseAuthenticateController
     {
         private readonly IEventPublisher _eventPublisher;
         private readonly IAuthenticateResourceOwnerService[] _resourceOwnerServices;
         private readonly LocalOpenIdUserAuthenticationAction _localOpenIdAuthentication;
+        private readonly GenerateAndSendCodeAction _generateAndSendCode;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthenticateController"/> class.
+        /// </summary>
+        /// <param name="dataProtectionProvider">The data protection provider.</param>
+        /// <param name="urlHelperFactory">The URL helper factory.</param>
+        /// <param name="actionContextAccessor">The action context accessor.</param>
+        /// <param name="eventPublisher">The event publisher.</param>
+        /// <param name="authenticationService">The authentication service.</param>
+        /// <param name="authenticationSchemeProvider">The authentication scheme provider.</param>
+        /// <param name="resourceOwnerServices">The resource owner services.</param>
+        /// <param name="twoFactorAuthenticationHandler">The two factor authentication handler.</param>
+        /// <param name="subjectBuilder">The subject builder.</param>
+        /// <param name="authorizationCodeStore">The authorization code store.</param>
+        /// <param name="scopeRepository">The scope repository.</param>
+        /// <param name="tokenStore">The token store.</param>
+        /// <param name="consentRepository">The consent repository.</param>
+        /// <param name="confirmationCodeStore">The confirmation code store.</param>
+        /// <param name="clientStore">The client store.</param>
+        /// <param name="resourceOwnerRepository">The resource owner repository.</param>
+        /// <param name="accountFilters">The account filters.</param>
+        /// <param name="runtimeSettings">The runtime settings.</param>
         public AuthenticateController(
-            IAuthenticateActions authenticateActions,
             IDataProtectionProvider dataProtectionProvider,
-            ITranslationManager translationManager,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IEventPublisher eventPublisher,
             IAuthenticationService authenticationService,
             IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IAuthenticateHelper authenticateHelper,
             IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             ISubjectBuilder subjectBuilder,
-            IProfileRepository profileRepository,
+            IAuthorizationCodeStore authorizationCodeStore,
+            IScopeRepository scopeRepository,
+            ITokenStore tokenStore,
+            IConsentRepository consentRepository,
+            IConfirmationCodeStore confirmationCodeStore,
+            IClientStore clientStore,
             IResourceOwnerRepository resourceOwnerRepository,
             IEnumerable<AccountFilter> accountFilters,
-            BasicAuthenticateOptions basicAuthenticateOptions)
+            RuntimeSettings runtimeSettings)
             : base(
-                authenticateActions,
                 dataProtectionProvider,
-                translationManager,
                 urlHelperFactory,
                 actionContextAccessor,
                 eventPublisher,
                 authenticationService,
                 authenticationSchemeProvider,
-                authenticateHelper,
                 twoFactorAuthenticationHandler,
+                authorizationCodeStore,
                 subjectBuilder,
-                profileRepository,
+                consentRepository,
+                scopeRepository,
+                tokenStore,
                 resourceOwnerRepository,
+                confirmationCodeStore,
+                clientStore,
                 accountFilters,
-                basicAuthenticateOptions)
+                runtimeSettings)
         {
             _eventPublisher = eventPublisher;
             _resourceOwnerServices = resourceOwnerServices.ToArray();
-            _localOpenIdAuthentication = new LocalOpenIdUserAuthenticationAction(resourceOwnerServices.ToArray(), authenticateHelper);
+            _generateAndSendCode = new GenerateAndSendCodeAction(
+                resourceOwnerRepository,
+                confirmationCodeStore,
+                twoFactorAuthenticationHandler);
+            _localOpenIdAuthentication = new LocalOpenIdUserAuthenticationAction(
+                authorizationCodeStore,
+                resourceOwnerServices.ToArray(),
+                consentRepository,
+                tokenStore,
+                scopeRepository,
+                clientStore,
+                eventPublisher);
         }
 
         public async Task<IActionResult> Index()
@@ -77,7 +115,6 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 var viewModel = new AuthorizeViewModel();
                 await SetIdProviders(viewModel).ConfigureAwait(false);
                 return View("Index", viewModel);
@@ -87,7 +124,9 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> LocalLogin([FromForm] LocalAuthenticationViewModel authorizeViewModel)
+        public async Task<IActionResult> LocalLogin(
+            [FromForm] LocalAuthenticationViewModel authorizeViewModel,
+            CancellationToken cancellationToken)
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated)
@@ -102,7 +141,6 @@
 
             if (!ModelState.IsValid)
             {
-                await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 var viewModel = new AuthorizeViewModel();
                 await SetIdProviders(viewModel).ConfigureAwait(false);
                 return View("Index", viewModel);
@@ -110,33 +148,38 @@
 
             try
             {
-                var resourceOwner = await _resourceOwnerServices
-                    .Authenticate(authorizeViewModel.Login, authorizeViewModel.Password)
+                var resourceOwner = await _resourceOwnerServices.Authenticate(
+                        authorizeViewModel.Login,
+                        authorizeViewModel.Password,
+                        cancellationToken)
                     .ConfigureAwait(false);
                 if (resourceOwner == null)
                 {
-                    throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, "The resource owner credentials are not correct");
+                    throw new SimpleAuthException(
+                        ErrorCodes.InvalidRequestCode,
+                        "The resource owner credentials are not correct");
                 }
 
-                var claims = resourceOwner.Claims;
-                claims.Add(
+                resourceOwner.Claims = resourceOwner.Claims.Add(
                     new Claim(
                         ClaimTypes.AuthenticationInstant,
                         DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                         ClaimValueTypes.Integer));
-                var subject = claims.First(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject).Value;
+                var subject = resourceOwner.Claims
+                    .First(c => c.Type == JwtConstants.OpenIdClaimTypes.Subject)
+                    .Value;
                 if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
                 {
-                    await SetLocalCookie(claims, Id.Create()).ConfigureAwait(false);
+                    await SetLocalCookie(resourceOwner.Claims, Id.Create()).ConfigureAwait(false);
                     return RedirectToAction("Index", "User");
                 }
 
                 // 2.1 Store temporary information in cookie
-                await SetTwoFactorCookie(claims).ConfigureAwait(false);
+                await SetTwoFactorCookie(resourceOwner.Claims).ConfigureAwait(false);
                 // 2.2. Send confirmation code
                 try
                 {
-                    await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
+                    await _generateAndSendCode.Send(subject, cancellationToken).ConfigureAwait(false);
                     return RedirectToAction("SendCode");
                 }
                 catch (ClaimRequiredException)
@@ -152,7 +195,6 @@
             {
                 await _eventPublisher.Publish(new ExceptionMessage(Id.Create(), exception, DateTime.UtcNow))
                     .ConfigureAwait(false);
-                await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 ModelState.AddModelError("invalid_credentials", exception.Message);
                 var viewModel = new AuthorizeViewModel();
                 await SetIdProviders(viewModel).ConfigureAwait(false);
@@ -161,7 +203,9 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> LocalLoginOpenId(OpenidLocalAuthenticationViewModel viewModel)
+        public async Task<IActionResult> LocalLoginOpenId(
+            OpenidLocalAuthenticationViewModel viewModel,
+            CancellationToken cancellationToken)
         {
             if (viewModel == null)
             {
@@ -181,12 +225,11 @@
                 var request = _dataProtector.Unprotect<AuthorizationRequest>(viewModel.Code);
 
                 // 2. Retrieve the default language
-                uiLocales = string.IsNullOrWhiteSpace(request.UiLocales) ? DefaultLanguage : request.UiLocales;
+                uiLocales = string.IsNullOrWhiteSpace(request.ui_locales) ? DefaultLanguage : request.ui_locales;
 
                 // 3. Check the state of the view model
                 if (!ModelState.IsValid)
                 {
-                    await TranslateView(uiLocales).ConfigureAwait(false);
                     await SetIdProviders(viewModel).ConfigureAwait(false);
                     return View("OpenId", viewModel);
                 }
@@ -195,13 +238,14 @@
                 var issuerName = Request.GetAbsoluteUriWithVirtualPath();
 
                 var actionResult = await _localOpenIdAuthentication.Execute(
-                        new LocalAuthenticationParameter { UserName = viewModel.Login, Password = viewModel.Password },
+                        new LocalAuthenticationParameter {UserName = viewModel.Login, Password = viewModel.Password},
                         request.ToParameter(),
                         viewModel.Code,
-                        issuerName)
+                        issuerName,
+                        cancellationToken)
                     .ConfigureAwait(false);
                 var subject = actionResult.Claims
-                    .First(c => c.Type == JwtConstants.StandardResourceOwnerClaimNames.Subject)
+                    .First(c => c.Type == JwtConstants.OpenIdClaimTypes.Subject)
                     .Value;
 
                 // 5. Two factor authentication.
@@ -210,12 +254,12 @@
                     try
                     {
                         await SetTwoFactorCookie(actionResult.Claims).ConfigureAwait(false);
-                        await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
-                        return RedirectToAction("SendCode", new { code = viewModel.Code });
+                        await _generateAndSendCode.Send(subject, cancellationToken).ConfigureAwait(false);
+                        return RedirectToAction("SendCode", new {code = viewModel.Code});
                     }
                     catch (ClaimRequiredException)
                     {
-                        return RedirectToAction("SendCode", new { code = viewModel.Code });
+                        return RedirectToAction("SendCode", new {code = viewModel.Code});
                     }
                     catch (Exception)
                     {
@@ -227,13 +271,14 @@
                 else
                 {
                     // 6. Authenticate the user by adding a cookie
-                    await SetLocalCookie(actionResult.Claims, request.SessionId).ConfigureAwait(false);
+                    await SetLocalCookie(actionResult.Claims, request.session_id).ConfigureAwait(false);
 
                     // 7. Redirect the user agent
                     var result = this.CreateRedirectionFromActionResult(actionResult.EndpointResult, request);
                     if (result != null)
                     {
-                        await LogAuthenticateUser(actionResult.EndpointResult, request.ProcessId).ConfigureAwait(false);
+                        await LogAuthenticateUser(actionResult.EndpointResult, request.aggregate_id)
+                            .ConfigureAwait(false);
                         return result;
                     }
                 }
@@ -245,7 +290,6 @@
                 ModelState.AddModelError("invalid_credentials", ex.Message);
             }
 
-            await TranslateView(uiLocales).ConfigureAwait(false);
             await SetIdProviders(viewModel).ConfigureAwait(false);
             return View("OpenId", viewModel);
         }

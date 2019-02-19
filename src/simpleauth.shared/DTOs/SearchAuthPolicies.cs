@@ -1,21 +1,21 @@
 ﻿namespace SimpleAuth.Shared.DTOs
 {
-    using System.Collections.Generic;
+    using System;
     using System.Runtime.Serialization;
 
     [DataContract]
     public class SearchAuthPolicies
     {
-        [DataMember(Name = SearchAuthPolicyNames.Ids)]
-        public IEnumerable<string> Ids { get; set; }
+        [DataMember(Name = "ids")]
+        public string[] Ids { get; set; } = Array.Empty<string>();
 
-        [DataMember(Name = SearchAuthPolicyNames.ResourceIds)]
-        public IEnumerable<string> ResourceIds { get; set; }
+        [DataMember(Name = "resource_ids")]
+        public string[] ResourceIds { get; set; } = Array.Empty<string>();
 
-        [DataMember(Name = SearchResponseNames.StartIndex)]
+        [DataMember(Name = "start_index")]
         public int StartIndex { get; set; }
 
-        [DataMember(Name = SearchResponseNames.TotalResults)]
+        [DataMember(Name = "count")]
         public int TotalResults { get; set; }
     }
 }

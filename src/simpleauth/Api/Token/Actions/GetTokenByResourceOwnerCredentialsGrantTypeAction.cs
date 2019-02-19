@@ -19,11 +19,7 @@ using System.Collections.Generic;
 namespace SimpleAuth.Api.Token.Actions
 {
     using Authenticate;
-    using Errors;
-    using Exceptions;
-    using Helpers;
     using JwtToken;
-    using Logging;
     using Parameters;
     using Shared;
     using Shared.Models;
@@ -32,29 +28,32 @@ namespace SimpleAuth.Api.Token.Actions
     using System.Net.Http.Headers;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Validators;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Events.Logging;
 
-    public class GetTokenByResourceOwnerCredentialsGrantTypeAction
+    internal class GetTokenByResourceOwnerCredentialsGrantTypeAction
     {
         private readonly AuthenticateClient _authenticateClient;
-        private readonly OAuthConfigurationOptions _oauthConfiguration;
-        private readonly IJwtGenerator _jwtGenerator;
+        private readonly RuntimeSettings _oauthConfiguration;
+        private readonly JwtGenerator _jwtGenerator;
         private readonly ITokenStore _tokenStore;
         private readonly IAuthenticateResourceOwnerService[] _resourceOwnerServices;
         private readonly IEventPublisher _eventPublisher;
 
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
-            OAuthConfigurationOptions oauthConfiguration,
+            RuntimeSettings oauthConfiguration,
             IClientStore clientStore,
-            IJwtGenerator jwtGenerator,
+            IScopeRepository scopeRepository,
             ITokenStore tokenStore,
             IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
             IEventPublisher eventPublisher)
         {
             _authenticateClient = new AuthenticateClient(clientStore);
             _oauthConfiguration = oauthConfiguration;
-            _jwtGenerator = jwtGenerator;
+            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository);
             _tokenStore = tokenStore;
             _resourceOwnerServices = resourceOwnerServices.ToArray();
             _eventPublisher = eventPublisher;
@@ -64,7 +63,8 @@ namespace SimpleAuth.Api.Token.Actions
             ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
-            string issuerName)
+            string issuerName,
+            CancellationToken cancellationToken)
         {
             if (resourceOwnerGrantTypeParameter == null)
             {
@@ -75,7 +75,8 @@ namespace SimpleAuth.Api.Token.Actions
             var instruction = authenticationHeaderValue.GetAuthenticateInstruction(
                 resourceOwnerGrantTypeParameter,
                 certificate);
-            var authResult = await _authenticateClient.Authenticate(instruction, issuerName).ConfigureAwait(false);
+            var authResult = await _authenticateClient.Authenticate(instruction, issuerName, cancellationToken)
+                .ConfigureAwait(false);
             var client = authResult.Client;
             if (authResult.Client == null)
             {
@@ -83,14 +84,14 @@ namespace SimpleAuth.Api.Token.Actions
             }
 
             // 2. Check the client.
-            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.password))
+            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantTypes.Password))
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidClient,
                     string.Format(
                         ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                         client.ClientId,
-                        GrantType.password));
+                        GrantTypes.Password));
             }
 
             if (client.ResponseTypes == null
@@ -109,6 +110,7 @@ namespace SimpleAuth.Api.Token.Actions
             var resourceOwner = await _resourceOwnerServices.Authenticate(
                     resourceOwnerGrantTypeParameter.UserName,
                     resourceOwnerGrantTypeParameter.Password,
+                    cancellationToken,
                     resourceOwnerGrantTypeParameter.AmrValues)
                 .ConfigureAwait(false);
             if (resourceOwner == null)
@@ -135,12 +137,16 @@ namespace SimpleAuth.Api.Token.Actions
             var claims = resourceOwner.Claims;
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuth");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var authorizationParameter = new AuthorizationParameter { Scope = resourceOwnerGrantTypeParameter.Scope };
+            var authorizationParameter = new AuthorizationParameter {Scope = resourceOwnerGrantTypeParameter.Scope};
             var payload = await _jwtGenerator
-                .GenerateUserInfoPayloadForScopeAsync(claimsPrincipal, authorizationParameter)
+                .GenerateUserInfoPayloadForScope(claimsPrincipal, authorizationParameter, cancellationToken)
                 .ConfigureAwait(false);
-            var generatedToken = await _tokenStore
-                .GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId, payload, payload)
+            var generatedToken = await _tokenStore.GetValidGrantedToken(
+                    allowedTokenScopes,
+                    client.ClientId,
+                    cancellationToken,
+                    idTokenJwsPayload: payload,
+                    userInfoJwsPayload: payload)
                 .ConfigureAwait(false);
             if (generatedToken == null)
             {
@@ -149,21 +155,22 @@ namespace SimpleAuth.Api.Token.Actions
                         issuerName,
                         payload,
                         payload,
-                        claimsIdentity.Claims.Where(c => _oauthConfiguration.UserClaimsToIncludeInAuthToken.Contains(c.Type)).ToArray())
+                        claimsIdentity.Claims
+                            .Where(c => _oauthConfiguration.UserClaimsToIncludeInAuthToken.Contains(c.Type))
+                            .ToArray())
                     .ConfigureAwait(false);
                 if (generatedToken.IdTokenPayLoad != null)
                 {
                     _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, client);
-                    generatedToken.IdToken = await client.GenerateIdTokenAsync(generatedToken.IdTokenPayLoad)
+                    generatedToken.IdToken = await client.GenerateIdToken(generatedToken.IdTokenPayLoad)
                         .ConfigureAwait(false);
                 }
 
-                await _tokenStore.AddToken(generatedToken).ConfigureAwait(false);
+                await _tokenStore.AddToken(generatedToken, cancellationToken).ConfigureAwait(false);
                 await _eventPublisher.Publish(
                         new AccessToClientGranted(
                             Id.Create(),
                             client.ClientId,
-                            generatedToken.AccessToken,
                             allowedTokenScopes,
                             DateTime.UtcNow))
                     .ConfigureAwait(false);

@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,57 +14,53 @@
 
 namespace SimpleAuth.Client
 {
+    using Newtonsoft.Json;
+    using Results;
+    using Shared.Responses;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Errors;
-    using Newtonsoft.Json;
-    using Operations;
-    using Results;
-    using Shared.Responses;
 
-    internal class IntrospectClient : IIntrospectClient
+    public class IntrospectClient
     {
         private readonly HttpClient _client;
-        private readonly IGetDiscoveryOperation _getDiscoveryOperation;
+        private readonly DiscoveryInformation _discoveryInformation;
         private readonly string _authorizationValue;
-        private readonly Dictionary<string, string> _form;
+        private readonly TokenCredentials _form;
 
-        public IntrospectClient(
+        private IntrospectClient(
             TokenCredentials credentials,
-            IntrospectionRequest request,
             HttpClient client,
-            IGetDiscoveryOperation getDiscoveryOperation,
+            DiscoveryInformation discoveryInformation,
             string authorizationValue = null)
         {
-            _form = credentials.Concat(request).ToDictionary(x => x.Key, x => x.Value);
+            _form = credentials;
             _client = client;
-            _getDiscoveryOperation = getDiscoveryOperation;
+            _discoveryInformation = discoveryInformation;
             _authorizationValue = authorizationValue;
         }
 
-        public async Task<GetIntrospectionResult> ResolveAsync(string discoveryDocumentationUrl)
+        public static async Task<IntrospectClient> Create(
+            TokenCredentials credentials,
+            HttpClient client,
+            Uri discoveryDocumentationUri,
+            string authorizationValue = null)
         {
-            if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
-            {
-                throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
-            }
+            var operation = new GetDiscoveryOperation(client);
+            var document = await operation.Execute(discoveryDocumentationUri).ConfigureAwait(false);
 
-            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out var uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
-            }
+            return new IntrospectClient(credentials, client, document, authorizationValue);
+        }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
-            
-            var body = new FormUrlEncodedContent(_form);
+        public async Task<BaseSidContentResult<IntrospectionResponse>> Introspect(IntrospectionRequest introspectionRequest)
+        {
+            var body = new FormUrlEncodedContent(_form.Concat(introspectionRequest));
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 Content = body,
-                RequestUri = new Uri(discoveryDocument.IntrospectionEndPoint)
+                RequestUri = new Uri(_discoveryInformation.IntrospectionEndPoint)
             };
             if (!string.IsNullOrWhiteSpace(_authorizationValue))
             {
@@ -79,7 +75,7 @@ namespace SimpleAuth.Client
             }
             catch (Exception)
             {
-                return new GetIntrospectionResult
+                return new BaseSidContentResult<IntrospectionResponse>
                 {
                     ContainsError = true,
                     Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json),
@@ -87,7 +83,7 @@ namespace SimpleAuth.Client
                 };
             }
 
-            return new GetIntrospectionResult
+            return new BaseSidContentResult<IntrospectionResponse>
             {
                 ContainsError = false,
                 Content = JsonConvert.DeserializeObject<IntrospectionResponse>(json)

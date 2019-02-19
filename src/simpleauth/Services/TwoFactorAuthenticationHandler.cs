@@ -37,12 +37,7 @@ namespace SimpleAuth.Services
                 throw new ArgumentNullException(nameof(twoFactorAuthType));
             }
 
-            if (_twoFactorServices == null)
-            {
-                return null;
-            }
-
-            return _twoFactorServices.FirstOrDefault(s => s.Name == twoFactorAuthType);
+            return _twoFactorServices?.FirstOrDefault(s => s.Name == twoFactorAuthType);
         }
 
         public IEnumerable<ITwoFactorAuthenticationService> GetAll()

@@ -20,11 +20,11 @@ namespace SimpleAuth.Shared.DTOs
     [DataContract]
     public class PostAuthorization
     {
-        [DataMember(Name = PostAuthorizationNames.TicketId)]
+        [DataMember(Name = "ticket")]
         public string TicketId { get; set; }
-        [DataMember(Name = PostAuthorizationNames.Rpt)]
+        [DataMember(Name = "rpt")]
         public string Rpt { get; set; }
-        [DataMember(Name = PostAuthorizationNames.ClaimTokens)]
+        [DataMember(Name = "claim_tokens")]
         public List<PostClaimToken> ClaimTokens { get; set; }
     }
 }

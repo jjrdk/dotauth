@@ -47,69 +47,69 @@
 
 //        public async Task<ApiActionResult> AddUser(ScimUser jObj, string locationPattern)
 //        {
-//            var processId = Id.Create();
+//            var processId = ClientId.Create();
 //            try
 //            {
-//                _eventPublisher.Publish(new AddUserReceived(Id.Create();, processId, jObj.ToString(), 0));
+//                _eventPublisher.Publish(new AddUserReceived(ClientId.Create();, processId, jObj.ToString(), 0));
 //                var result = await _addRepresentationAction.Execute(jObj, locationPattern, ScimConstants.SchemaUrns.User, ScimConstants.ResourceTypes.User).ConfigureAwait(false);
-//                _eventPublisher.Publish(new AddUserFinished(Id.Create();, processId, JsonConvert.SerializeObject(result).ToString(), 1));
+//                _eventPublisher.Publish(new AddUserFinished(ClientId.Create();, processId, JsonConvert.SerializeObject(result).ToString(), 1));
 //                return result;
 //            }
 //            catch (Exception ex)
 //            {
-//                _eventPublisher.Publish(new ScimErrorReceived(Id.Create();, processId, ex.Message, 1));
+//                _eventPublisher.Publish(new ScimErrorReceived(ClientId.Create();, processId, ex.Message, 1));
 //                throw;
 //            }
 //        }
 
 //        public async Task<ApiActionResult> UpdateUser(string id, JObject jObj, string locationPattern)
 //        {
-//            var processId = Id.Create();
+//            var processId = ClientId.Create();
 //            try
 //            {
-//                _eventPublisher.Publish(new UpdateUserReceived(Id.Create();, processId, jObj.ToString(), 0));
+//                _eventPublisher.Publish(new UpdateUserReceived(ClientId.Create();, processId, jObj.ToString(), 0));
 //                var result = await _updateRepresentationAction.Execute(id, jObj, ScimConstants.SchemaUrns.User, locationPattern, ScimConstants.ResourceTypes.User).ConfigureAwait(false);
-//                _eventPublisher.Publish(new UpdateUserFinished(Id.Create();, processId, JsonConvert.SerializeObject(result).ToString(), 1));
+//                _eventPublisher.Publish(new UpdateUserFinished(ClientId.Create();, processId, JsonConvert.SerializeObject(result).ToString(), 1));
 //                return result;
 //            }
 //            catch (Exception ex)
 //            {
-//                _eventPublisher.Publish(new ScimErrorReceived(Id.Create();, processId, ex.Message, 1));
+//                _eventPublisher.Publish(new ScimErrorReceived(ClientId.Create();, processId, ex.Message, 1));
 //                throw;
 //            }
 //        }
 
 //        public async Task<ApiActionResult> PatchUser(string id, JObject jObj, string locationPattern)
 //        {
-//            var processId = Id.Create();
+//            var processId = ClientId.Create();
 //            try
 //            {
-//                _eventPublisher.Publish(new PatchUserReceived(Id.Create();, processId, jObj.ToString(), 0));
+//                _eventPublisher.Publish(new PatchUserReceived(ClientId.Create();, processId, jObj.ToString(), 0));
 //                var result = await _patchRepresentationAction.Execute(id, jObj, ScimConstants.SchemaUrns.User, locationPattern).ConfigureAwait(false);
-//                _eventPublisher.Publish(new PatchUserFinished(Id.Create();, processId, JsonConvert.SerializeObject(result).ToString(), 1));
+//                _eventPublisher.Publish(new PatchUserFinished(ClientId.Create();, processId, JsonConvert.SerializeObject(result).ToString(), 1));
 //                return result;
 //            }
 //            catch (Exception ex)
 //            {
-//                _eventPublisher.Publish(new ScimErrorReceived(Id.Create();, processId, ex.Message, 1));
+//                _eventPublisher.Publish(new ScimErrorReceived(ClientId.Create();, processId, ex.Message, 1));
 //                throw;
 //            }
 //        }
 
 //        public async Task<ApiActionResult> RemoveUser(string id)
 //        {
-//            var processId = Id.Create();
+//            var processId = ClientId.Create();
 //            try
 //            {
 //                var jObj = new JObject { { "id", id } };
-//                _eventPublisher.Publish(new RemoveUserReceived(Id.Create();, processId, jObj.ToString(), 0));
+//                _eventPublisher.Publish(new RemoveUserReceived(ClientId.Create();, processId, jObj.ToString(), 0));
 //                var result = await _deleteRepresentationAction.Execute(id).ConfigureAwait(false);
-//                _eventPublisher.Publish(new RemoveUserFinished(Id.Create();, processId, JsonConvert.SerializeObject(result).ToString(), 1));
+//                _eventPublisher.Publish(new RemoveUserFinished(ClientId.Create();, processId, JsonConvert.SerializeObject(result).ToString(), 1));
 //                return result;
 //            }
 //            catch (Exception ex)
 //            {
-//                _eventPublisher.Publish(new ScimErrorReceived(Id.Create();, processId, ex.Message, 1));
+//                _eventPublisher.Publish(new ScimErrorReceived(ClientId.Create();, processId, ex.Message, 1));
 //                throw;
 //            }
 //        }

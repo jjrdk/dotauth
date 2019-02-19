@@ -1,7 +1,5 @@
 ﻿namespace SimpleAuth.Tests.WebSite.User
 {
-    using Errors;
-    using Exceptions;
     using Moq;
     using Shared.Models;
     using Shared.Repositories;
@@ -9,52 +7,58 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
     using Xunit;
 
     public class UpdateUserTwoFactorAuthenticatorOperationFixture
     {
-        private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private UpdateUserTwoFactorAuthenticatorOperation _updateUserTwoFactorAuthenticatorOperation;
+        private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
+        private readonly UpdateUserTwoFactorAuthenticatorOperation _updateUserTwoFactorAuthenticatorOperation;
+
+        public UpdateUserTwoFactorAuthenticatorOperationFixture()
+        {
+            _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
+            _updateUserTwoFactorAuthenticatorOperation = new UpdateUserTwoFactorAuthenticatorOperation(
+                _resourceOwnerRepositoryStub.Object);
+        }
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
-            InitializeFakeObjects();
-            
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserTwoFactorAuthenticatorOperation.Execute(null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                    () => _updateUserTwoFactorAuthenticatorOperation.Execute(null, null, CancellationToken.None))
+                .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_ResourceOwner_Does_not_Exist_Then_Exception_Is_Thrown()
         {
-            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult((ResourceOwner)null));
+                .ReturnsAsync((ResourceOwner) null);
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _updateUserTwoFactorAuthenticatorOperation.Execute("subject", "two_factor")).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
+                    () => _updateUserTwoFactorAuthenticatorOperation.Execute(
+                        "subject",
+                        "two_factor",
+                        CancellationToken.None))
+                .ConfigureAwait(false);
 
-            Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InternalError, exception.Code);
-            Assert.True(exception.Message == ErrorDescriptions.TheRoDoesntExist);
+            Assert.Equal(ErrorDescriptions.TheRoDoesntExist, exception.Message);
         }
 
         [Fact]
         public async Task When_Passing_Correct_Parameters_Then_ResourceOwnerIs_Updated()
         {
-            InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(new ResourceOwner()));
+                .ReturnsAsync(new ResourceOwner());
 
-            await _updateUserTwoFactorAuthenticatorOperation.Execute("subject", "two_factor").ConfigureAwait(false);
+            await _updateUserTwoFactorAuthenticatorOperation.Execute("subject", "two_factor", CancellationToken.None)
+                .ConfigureAwait(false);
 
-            _resourceOwnerRepositoryStub.Setup(r => r.UpdateAsync(It.IsAny<ResourceOwner>()));
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _updateUserTwoFactorAuthenticatorOperation = new UpdateUserTwoFactorAuthenticatorOperation(
-                _resourceOwnerRepositoryStub.Object);
+            _resourceOwnerRepositoryStub.Verify(
+                r => r.Update(It.IsAny<ResourceOwner>(), It.IsAny<CancellationToken>()));
         }
     }
 }

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Repositories;
     using Shared.Models;
@@ -10,31 +11,32 @@
 
     public class UpdateResourceOwnerPasswordActionFixture
     {
-        private IResourceOwnerRepository _resourceOwnerRepositoryStub;
+        private readonly IResourceOwnerRepository _resourceOwnerRepositoryStub;
+
+        public UpdateResourceOwnerPasswordActionFixture()
+        {
+            _resourceOwnerRepositoryStub = new InMemoryResourceOwnerRepository(new List<ResourceOwner>());
+        }
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
-            InitializeFakeObjects();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _resourceOwnerRepositoryStub.UpdateAsync(null))
-    .ConfigureAwait(false);
+            await Assert
+                .ThrowsAsync<ArgumentNullException>(
+                    () => _resourceOwnerRepositoryStub.Update(null, CancellationToken.None))
+                .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Resource_Owner_Does_Not_Exist_Then_ReturnsFalse()
         {
             const string subject = "invalid_subject";
-            InitializeFakeObjects();
 
-            var result = await _resourceOwnerRepositoryStub.UpdateAsync(new ResourceOwner { Id = subject }).ConfigureAwait(false);
+            var result = await _resourceOwnerRepositoryStub
+                .Update(new ResourceOwner {Id = subject}, CancellationToken.None)
+                .ConfigureAwait(false);
 
             Assert.False(result);
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _resourceOwnerRepositoryStub = new DefaultResourceOwnerRepository(new List<ResourceOwner>());
         }
     }
 }

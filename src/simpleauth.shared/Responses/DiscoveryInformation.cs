@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@ namespace SimpleAuth.Shared.Responses
         /// <summary>
         /// Gets or sets the list of the Claim Types supported.
         /// </summary>
-        //  [DataMember(Name = "claim_types_supported")]
+        [DataMember(Name = "claim_types_supported")]
         public string[] ClaimTypesSupported { get; set; }
         /// <summary>
         /// Gets or sets boolean specifying whether the OP supports use of the claims parameter.
@@ -55,7 +55,7 @@ namespace SimpleAuth.Shared.Responses
         [DataMember(Name = DiscoveryInformationNames.IdTokenSigningAlgValuesSupported)]
         public string[] IdTokenSigningAlgValuesSupported { get; set; }
         /// <summary>
-        /// Gets or sets the issuer. 
+        /// Gets or sets the issuer.
         /// </summary>
         [DataMember(Name = DiscoveryInformationNames.Issuer)]
         public string Issuer { get; set; }
@@ -85,7 +85,7 @@ namespace SimpleAuth.Shared.Responses
         [DataMember(Name = DiscoveryInformationNames.ResponseModesSupported)]
         public string[] ResponseModesSupported { get; set; }
         /// <summary>
-        /// Gets or sets the response types supported : code, id_token & token id_token
+        /// Gets or sets the response types supported : code, id_token &amp; token id_token
         /// </summary>
         [DataMember(Name = DiscoveryInformationNames.ResponseTypesSupported)]
         public string[] ResponseTypesSupported { get; set; }
@@ -94,12 +94,12 @@ namespace SimpleAuth.Shared.Responses
         [DataMember(Name = DiscoveryInformationNames.IntrospectionEndPoint)]
         public string IntrospectionEndPoint { get; set; }
         /// <summary>
-        /// Gets or sets the list of scupported scopes.
+        /// Gets or sets the list of supported scopes.
         /// </summary>
         [DataMember(Name = DiscoveryInformationNames.ScopesSupported)]
         public string[] ScopesSupported { get; set; }
         /// <summary>
-        /// Gets or sets the subject types supported : pairwise & public.
+        /// Gets or sets the subject types supported : pairwise &amp; public.
         /// </summary>
         [DataMember(Name = DiscoveryInformationNames.SubjectTypesSupported)]
         public string[] SubjectTypesSupported { get; set; }
@@ -128,11 +128,6 @@ namespace SimpleAuth.Shared.Responses
         /// </summary>
         [DataMember(Name = DiscoveryInformationNames.RegistrationEndPoint)]
         public string RegistrationEndPoint { get; set; }
-        /// <summary>
-        /// Gets or sets the base URI of the OP's designated SCIM service provider.
-        /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.ScimEndpoint)]
-        public string ScimEndpoint { get; set; }
         /// <summary>
         /// Gets or sets the acr values supported.
         /// </summary>
@@ -194,12 +189,12 @@ namespace SimpleAuth.Shared.Responses
         public string ServiceDocumentation { get; set; }
 
         /// <summary>
-        /// Gets or sets the languages & scripts supported for values in Claims being returned.
+        /// Gets or sets the languages &amp; scripts supported for values in Claims being returned.
         /// </summary>
         public string[] ClaimsLocalesSupported { get; set; }
 
         /// <summary>
-        /// Gets or sets the languages & scripts supported for the UI.
+        /// Gets or sets the languages &amp; scripts supported for the UI.
         /// </summary>
         public string[] UiLocalesSupported { get; set; }
 

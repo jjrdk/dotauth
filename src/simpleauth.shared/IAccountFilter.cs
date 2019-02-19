@@ -2,10 +2,20 @@
 {
     using System.Collections.Generic;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Defines the account filter interface.
+    /// </summary>
     public interface IAccountFilter
     {
-        Task<AccountFilterResult> Check(IEnumerable<Claim> claims);
+        /// <summary>
+        /// Checks the specified claims.
+        /// </summary>
+        /// <param name="claims">The claims.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<AccountFilterResult> Check(IEnumerable<Claim> claims, CancellationToken cancellationToken);
     }
 }

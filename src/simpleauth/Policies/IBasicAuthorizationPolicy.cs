@@ -1,14 +1,16 @@
 ﻿namespace SimpleAuth.Policies
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using Parameters;
     using Shared.Models;
 
-    public interface IBasicAuthorizationPolicy
+    internal interface IBasicAuthorizationPolicy
     {
         Task<AuthorizationPolicyResult> Execute(
             TicketLineParameter ticket,
             Policy policy,
-            ClaimTokenParameter claimTokenParameters);
+            ClaimTokenParameter claimTokenParameters,
+            CancellationToken cancellationToken);
     }
 }

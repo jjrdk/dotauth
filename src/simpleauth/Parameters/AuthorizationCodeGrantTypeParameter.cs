@@ -16,7 +16,7 @@ namespace SimpleAuth.Parameters
 {
     using System;
 
-    public class AuthorizationCodeGrantTypeParameter : GrantTypeParameter
+    internal class AuthorizationCodeGrantTypeParameter : GrantTypeParameter
     {
         /// <summary>
         /// Gets or sets the authorization code.

@@ -15,7 +15,7 @@
 
             Assert.Throws<ArgumentNullException>(() => ClientSecretBasicAuthentication.AuthenticateClient(null, null));
             Assert.Throws<ArgumentNullException>(
-                () => ClientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, null));
+                () => authenticateInstruction.AuthenticateClient(null));
         }
 
         [Fact]
@@ -31,8 +31,8 @@
                 Secrets = new List<ClientSecret> {new ClientSecret {Type = ClientSecretTypes.X509Thumbprint}}
             };
 
-            Assert.Null(ClientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, firstClient));
-            Assert.Null(ClientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, secondClient));
+            Assert.Null(authenticateInstruction.AuthenticateClient(firstClient));
+            Assert.Null(authenticateInstruction.AuthenticateClient(secondClient));
         }
 
         [Fact]
@@ -50,7 +50,7 @@
                 }
             };
 
-            var result = ClientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, client);
+            var result = authenticateInstruction.AuthenticateClient(client);
 
             Assert.Null(result);
         }
@@ -71,26 +71,9 @@
                 }
             };
 
-            var result = ClientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, client);
+            var result = authenticateInstruction.AuthenticateClient(client);
 
             Assert.NotNull(result);
-        }
-
-        [Fact]
-        public void When_Requesting_ClientId_And_Instruction_Is_Null_Then_Exception_Is_Thrown()
-        {
-            Assert.Throws<ArgumentNullException>(() => ClientSecretBasicAuthentication.GetClientId(null));
-        }
-
-        [Fact]
-        public void When_Requesting_ClientId_Then_ClientId_Is_Returned()
-        {
-            const string clientId = "clientId";
-            var instruction = new AuthenticateInstruction {ClientIdFromAuthorizationHeader = clientId};
-
-            var result = ClientSecretBasicAuthentication.GetClientId(instruction);
-
-            Assert.Equal(result, clientId);
         }
     }
 }

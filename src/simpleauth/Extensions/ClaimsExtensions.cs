@@ -8,29 +8,29 @@
 
     internal static class ClaimsExtensions
     {
-        private static readonly Dictionary<string, string> _mappingToOpenidClaims = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> MappingToOpenidClaims = new Dictionary<string, string>
         {
-            { ClaimTypes.NameIdentifier, JwtConstants.StandardResourceOwnerClaimNames.Subject },
-            { ClaimTypes.DateOfBirth, JwtConstants.StandardResourceOwnerClaimNames.BirthDate },
-            { ClaimTypes.Email, JwtConstants.StandardResourceOwnerClaimNames.Email },
-            { ClaimTypes.Name, JwtConstants.StandardResourceOwnerClaimNames.Name },
-            { ClaimTypes.GivenName, JwtConstants.StandardResourceOwnerClaimNames.GivenName },
-            { ClaimTypes.Surname, JwtConstants.StandardResourceOwnerClaimNames.FamilyName },
-            { ClaimTypes.Gender, JwtConstants.StandardResourceOwnerClaimNames.Gender },
-            { ClaimTypes.Locality, JwtConstants.StandardResourceOwnerClaimNames.Locale }
+            { ClaimTypes.NameIdentifier, JwtConstants.OpenIdClaimTypes.Subject },
+            { ClaimTypes.DateOfBirth, JwtConstants.OpenIdClaimTypes.BirthDate },
+            { ClaimTypes.Email, JwtConstants.OpenIdClaimTypes.Email },
+            { ClaimTypes.Name, JwtConstants.OpenIdClaimTypes.Name },
+            { ClaimTypes.GivenName, JwtConstants.OpenIdClaimTypes.GivenName },
+            { ClaimTypes.Surname, JwtConstants.OpenIdClaimTypes.FamilyName },
+            { ClaimTypes.Gender, JwtConstants.OpenIdClaimTypes.Gender },
+            { ClaimTypes.Locality, JwtConstants.OpenIdClaimTypes.Locale }
         };
 
-        public static IEnumerable<Claim> ToOpenidClaims(this IEnumerable<Claim> claims)
+        public static Claim[] ToOpenidClaims(this IEnumerable<Claim> claims)
         {
             if (claims == null)
             {
                 throw new ArgumentNullException(nameof(claims));
             }
 
-            return claims.Select(claim => _mappingToOpenidClaims.ContainsKey(claim.Type)
-                    ? new Claim(_mappingToOpenidClaims[claim.Type], claim.Value)
+            return claims.Select(claim => MappingToOpenidClaims.ContainsKey(claim.Type)
+                    ? new Claim(MappingToOpenidClaims[claim.Type], claim.Value)
                     : claim)
-                .ToList();
+                .ToArray();
         }
     }
 }

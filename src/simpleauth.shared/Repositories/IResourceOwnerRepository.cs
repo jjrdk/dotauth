@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,28 +14,55 @@
 
 namespace SimpleAuth.Shared.Repositories
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq.Expressions;
-    using System.Security.Claims;
+    using Models;
+    using Results;
     using System.Threading;
     using System.Threading.Tasks;
-    using Models;
-    using Parameters;
-    using Results;
+    using SimpleAuth.Shared.Requests;
 
-    public interface IResourceOwnerRepository
+    /// <summary>
+    /// Defines the resource owner repository.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.Repositories.IResourceOwnerStore" />
+    public interface IResourceOwnerRepository : IResourceOwnerStore
     {
-        Task<ResourceOwner> GetResourceOwnerByClaim(string key, string value);
-        Task<ResourceOwner> Get(string id, CancellationToken cancellationToken = default);
-        Task<ResourceOwner> Get(string id, string password);
-        Task<ICollection<ResourceOwner>> Get(IEnumerable<Claim> claims);
-        Task<ICollection<ResourceOwner>> Get(Expression<Func<ResourceOwner, bool>> query, CancellationToken cancellationToken = default);
-        Task<ICollection<ResourceOwner>> GetAllAsync();
-        Task<bool> InsertAsync(ResourceOwner resourceOwner);
-        Task<bool> UpdateAsync(ResourceOwner resourceOwner);
-        Task<bool> Delete(string subject);
-        Task<bool> DeleteProfile(string id);
-        Task<SearchResourceOwnerResult> Search(SearchResourceOwnerParameter parameter);
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<ResourceOwner[]> GetAll(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Inserts the specified resource owner.
+        /// </summary>
+        /// <param name="resourceOwner">The resource owner.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<bool> Insert(ResourceOwner resourceOwner, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the specified resource owner.
+        /// </summary>
+        /// <param name="resourceOwner">The resource owner.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<bool> Update(ResourceOwner resourceOwner, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Deletes the specified subject.
+        /// </summary>
+        /// <param name="subject">The subject.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<bool> Delete(string subject, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Searches the specified parameter.
+        /// </summary>
+        /// <param name="parameter">The parameter.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<SearchResourceOwnerResult> Search(SearchResourceOwnersRequest parameter, CancellationToken cancellationToken);
     }
 }

@@ -1,12 +1,12 @@
 ﻿namespace SimpleAuth.Twilio.Actions
 {
-    using Errors;
-    using Exceptions;
     using SimpleAuth;
     using System;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
 
-    internal sealed class GenerateAndSendSmsCodeOperation : IGenerateAndSendSmsCodeOperation
+    internal sealed class GenerateAndSendSmsCodeOperation
     {
         private readonly Random _random = new Random(DateTime.UtcNow.Second);
         private readonly IConfirmationCodeStore _confirmationCodeStore;
@@ -14,9 +14,9 @@
         private readonly ITwilioClient _twilioClient;
 
         public GenerateAndSendSmsCodeOperation(
+            ITwilioClient twilioClient,
             IConfirmationCodeStore confirmationCodeStore,
-            SmsAuthenticationOptions smsAuthenticationOptions,
-            ITwilioClient twilioClient)
+            SmsAuthenticationOptions smsAuthenticationOptions)
         {
             _confirmationCodeStore = confirmationCodeStore;
             _smsAuthenticationOptions = smsAuthenticationOptions;

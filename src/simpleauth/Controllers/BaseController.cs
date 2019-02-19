@@ -20,14 +20,7 @@
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName).ConfigureAwait(false);
             var isAuthenticed = authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated;
             ViewBag.IsAuthenticated = isAuthenticed;
-            if (isAuthenticed)
-            {
-                ViewBag.Name = authenticatedUser.GetName();
-            }
-            else
-            {
-                ViewBag.Name = "unknown";
-            }
+            ViewBag.Name = isAuthenticed ? authenticatedUser.GetName() : "unknown";
 
             return authenticatedUser;
         }

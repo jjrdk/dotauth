@@ -51,14 +51,14 @@
             var dict = new Dictionary<string, string>
             {
                 {RequestTokenNames.GrantType, GrantTypes.UmaTicket},
-                {RequestTokenUma.Ticket, ticketId},
-                {RequestTokenUma.ClaimTokenFormat, "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"}
+                {"ticket", ticketId},
+                {"claim_token_format", "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"}
             };
 
 
             if (!string.IsNullOrWhiteSpace(claimToken))
             {
-                dict.Add(RequestTokenUma.ClaimToken, claimToken);
+                dict.Add("claim_token", claimToken);
             }
 
             return new TokenRequest(dict);

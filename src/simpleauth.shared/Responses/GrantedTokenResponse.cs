@@ -6,17 +6,17 @@
     [DataContract]
     public class GrantedTokenResponse
     {
-        [DataMember(Name = GrantedTokenNames.AccessToken)]
+        [DataMember(Name = "access_token")]
         public string AccessToken { get; set; }
-        [DataMember(Name = GrantedTokenNames.IdToken)]
+        [DataMember(Name = "id_token")]
         public string IdToken { get; set; }
-        [DataMember(Name = GrantedTokenNames.TokenType)]
+        [DataMember(Name = "token_type")]
         public string TokenType { get; set; }
-        [DataMember(Name = GrantedTokenNames.ExpiresIn)]
+        [DataMember(Name = "expires_in")]
         public int ExpiresIn { get; set; }
-        [DataMember(Name = GrantedTokenNames.RefreshToken)]
+        [DataMember(Name = "refresh_token")]
         public string RefreshToken { get; set; }
-        [DataMember(Name = GrantedTokenNames.Scope)]
+        [DataMember(Name = "scope")]
         public IEnumerable<string> Scope { get; set; }
     }
 }
