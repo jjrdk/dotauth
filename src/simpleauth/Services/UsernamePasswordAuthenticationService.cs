@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,24 +14,25 @@
 
 namespace SimpleAuth.Services
 {
-    using System;
-    using System.Threading.Tasks;
-    using Helpers;
     using Shared.Models;
     using Shared.Repositories;
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using SimpleAuth.Shared;
 
-    public class UsernamePasswordAuthenticationService : IAuthenticateResourceOwnerService
+    internal class UsernamePasswordAuthenticationService : IAuthenticateResourceOwnerService
     {
-        private readonly IResourceOwnerRepository _resourceOwnerRepository;
+        private readonly IResourceOwnerStore _resourceOwnerRepository;
 
-        public UsernamePasswordAuthenticationService(IResourceOwnerRepository resourceOwnerRepository)
+        public UsernamePasswordAuthenticationService(IResourceOwnerStore resourceOwnerRepository)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
         public string Amr => "pwd";
 
-        public async Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password)
+        public async Task<ResourceOwner> AuthenticateResourceOwner(string login, string password, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(login))
             {
@@ -43,7 +44,7 @@ namespace SimpleAuth.Services
                 throw new ArgumentNullException(nameof(password));
             }
 
-            return await _resourceOwnerRepository.Get(login, password.ToSha256Hash()).ConfigureAwait(false);
+            return await _resourceOwnerRepository.Get(login, password, cancellationToken).ConfigureAwait(false);
         }
     }
 }

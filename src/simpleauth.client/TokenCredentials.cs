@@ -26,7 +26,7 @@
         {
             var dict = new Dictionary<string, string>
             {
-                { ClientAuthNames.ClientId, clientId },
+                { "client_id", clientId },
             };
 
             return new TokenCredentials(dict, null, certificate);
@@ -36,8 +36,8 @@
         {
             var dict = new Dictionary<string, string>
             {
-                { ClientAuthNames.ClientId, clientId },
-                { ClientAuthNames.ClientSecret, clientSecret }
+                { "client_id", clientId },
+                { "client_secret", clientSecret }
             };
 
             return new TokenCredentials(dict);
@@ -47,8 +47,8 @@
         {
             var dict = new Dictionary<string, string>
             {
-                { ClientAuthNames.ClientId, clientId },
-                { ClientAuthNames.ClientSecret, clientSecret }
+                { "client_id", clientId },
+                { "client_secret", clientSecret }
             };
 
             return new TokenCredentials(dict, Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret)));
@@ -58,9 +58,9 @@
         {
             var dict = new Dictionary<string, string>
             {
-                { ClientAuthNames.ClientId, clientId },
-                { ClientAuthNames.ClientAssertion, clientAssertion },
-                { ClientAuthNames.ClientAssertionType, ClientAssertionTypes.JwtBearer }
+                { "client_id", clientId },
+                { "client_assertion", clientAssertion },
+                { "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer" }
             };
 
             return new TokenCredentials(dict);

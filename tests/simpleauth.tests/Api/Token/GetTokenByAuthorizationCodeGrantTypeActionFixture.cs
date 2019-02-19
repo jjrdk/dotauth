@@ -17,9 +17,6 @@ using System.Net.Http.Headers;
 
 namespace SimpleAuth.Tests.Api.Token
 {
-    using Errors;
-    using Exceptions;
-    using Logging;
     using Microsoft.IdentityModel.Tokens;
     using Moq;
     using Parameters;
@@ -27,21 +24,22 @@ namespace SimpleAuth.Tests.Api.Token
     using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Api.Token.Actions;
-    using SimpleAuth.JwtToken;
+    using SimpleAuth.Shared.Errors;
     using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Events.Logging;
     using Xunit;
 
     public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
     {
         private Mock<IEventPublisher> _eventPublisher;
         private Mock<IAuthorizationCodeStore> _authorizationCodeStoreFake;
-        private OAuthConfigurationOptions _oauthConfigurationOptions;
+        private RuntimeSettings _simpleAuthOptions;
         private Mock<ITokenStore> _tokenStoreFake;
         private Mock<IClientStore> _clientStore;
-        private Mock<IJwtGenerator> _jwtGeneratorStub;
         private GetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
 
         [Fact]
@@ -49,9 +47,13 @@ namespace SimpleAuth.Tests.Api.Token
         {
             InitializeFakeObjects();
 
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(
-                    () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(null, null, null, null))
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                    () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+                        null,
+                        null,
+                        null,
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
@@ -67,7 +69,8 @@ namespace SimpleAuth.Tests.Api.Token
                 ClientSecret = "clientSecret"
             };
 
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync((Client)null);
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Client)null);
             //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
             //    .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
 
@@ -76,7 +79,8 @@ namespace SimpleAuth.Tests.Api.Token
                         authorizationCodeGrantTypeParameter,
                         null,
                         null,
-                        null))
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
         }
@@ -99,8 +103,10 @@ namespace SimpleAuth.Tests.Api.Token
                 ClientId = clientId,
                 Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } }
             };
-            var authenticationHeader = new AuthenticationHeaderValue("Basic", $"{clientId}:{clientSecret}".Base64Encode());
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
+            var authenticationHeader = new AuthenticationHeaderValue(
+                "Basic",
+                $"{clientId}:{clientSecret}".Base64Encode());
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
             //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
             //    .Returns(() => Task.FromResult(new AuthenticationResult(,
             //        null)));
@@ -110,11 +116,15 @@ namespace SimpleAuth.Tests.Api.Token
                         authorizationCodeGrantTypeParameter,
                         authenticationHeader,
                         null,
-                        null))
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
             Assert.Equal(
-                string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, clientId, GrantType.authorization_code),
+                string.Format(
+                    ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                    clientId,
+                    GrantTypes.AuthorizationCode),
                 exception.Message);
         }
 
@@ -133,12 +143,12 @@ namespace SimpleAuth.Tests.Api.Token
             };
             var client = new Client
             {
-                ResponseTypes = new string[0],
+                ResponseTypes = Array.Empty<string>(),
                 ClientId = clientId,
                 Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-                GrantTypes = new List<GrantType> { GrantType.authorization_code }
+                GrantTypes = new[] { GrantTypes.AuthorizationCode }
             };
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
             //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
             //    .Returns(() => Task.FromResult(new AuthenticationResult(,
             //        null)));
@@ -150,11 +160,15 @@ namespace SimpleAuth.Tests.Api.Token
                         authorizationCodeGrantTypeParameter,
                         authenticationValue,
                         null,
-                        null))
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
             Assert.Equal(
-                string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, clientId, ResponseTypeNames.Code),
+                string.Format(
+                    ErrorDescriptions.TheClientDoesntSupportTheResponseType,
+                    clientId,
+                    ResponseTypeNames.Code),
                 exception.Message);
         }
 
@@ -175,10 +189,10 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ClientId = clientId,
                 Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-                GrantTypes = new List<GrantType> { GrantType.authorization_code },
+                GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code }
             };
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
             //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
             //    .Returns(() => Task.FromResult(client));
@@ -192,7 +206,8 @@ namespace SimpleAuth.Tests.Api.Token
                         authorizationCodeGrantTypeParameter,
                         authorizationHeader,
                         null,
-                        null))
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.Equal(ErrorDescriptions.TheAuthorizationCodeIsNotCorrect, exception.Message);
@@ -218,18 +233,13 @@ namespace SimpleAuth.Tests.Api.Token
                 RequirePkce = true,
                 ClientId = clientId,
                 Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-                GrantTypes = new List<GrantType> { GrantType.authorization_code },
+                GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code }
             };
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
-            //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //    .ReturnsAsync(client);
             _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(authorizationCode));
-            //_clientValidatorFake.Setup(c =>
-            //        c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
-            //    .Returns(false);
 
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
@@ -239,7 +249,8 @@ namespace SimpleAuth.Tests.Api.Token
                         authorizationCodeGrantTypeParameter,
                         authenticationHeader,
                         null,
-                        null))
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.Equal(ErrorDescriptions.TheCodeVerifierIsNotCorrect, exception.Message);
@@ -263,27 +274,25 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ClientId = clientId,
                 Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-                GrantTypes = new List<GrantType> { GrantType.authorization_code },
+                GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code }
             };
             var authorizationCode = new AuthorizationCode { ClientId = "clientId" };
 
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
-            //_clientValidatorFake.Setup(c =>
-            //        c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
-            //    .Returns(true);
-            //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //    .Returns(() => Task.FromResult(result));
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
             _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(authorizationCode));
 
-            var authenticationHeader = new AuthenticationHeaderValue("Basic", $"{clientId}:{clientSecret}".Base64Encode());
+            var authenticationHeader = new AuthenticationHeaderValue(
+                "Basic",
+                $"{clientId}:{clientSecret}".Base64Encode());
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(
                         authorizationCodeGrantTypeParameter,
                         authenticationHeader,
                         null,
-                        null))
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.Equal(
@@ -312,7 +321,7 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ClientId = clientId,
                 Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-                GrantTypes = new List<GrantType> { GrantType.authorization_code },
+                GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code }
             };
             var authorizationCode = new AuthorizationCode
@@ -321,21 +330,19 @@ namespace SimpleAuth.Tests.Api.Token
                 RedirectUri = new Uri("https://redirectUri")
             };
 
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
-            //_clientValidatorFake.Setup(c =>
-            //        c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
-            //    .Returns(true);
-            //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //    .Returns(Task.FromResult(result));
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
             _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
-                .Returns(Task.FromResult(authorizationCode));
-            var authenticationHeader = new AuthenticationHeaderValue("Basic", $"{clientId}:{clientSecret}".Base64Encode());
+                .ReturnsAsync(authorizationCode);
+            var authenticationHeader = new AuthenticationHeaderValue(
+                "Basic",
+                $"{clientId}:{clientSecret}".Base64Encode());
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(
                         authorizationCodeGrantTypeParameter,
                         authenticationHeader,
                         null,
-                        null))
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.Equal(ErrorDescriptions.TheRedirectionUrlIsNotTheSame, exception.Message);
@@ -359,7 +366,7 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ClientId = clientId,
                 Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-                GrantTypes = new List<GrantType> { GrantType.authorization_code },
+                GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code }
             };
             var authorizationCode = new AuthorizationCode
@@ -369,14 +376,14 @@ namespace SimpleAuth.Tests.Api.Token
                 CreateDateTime = DateTime.UtcNow.AddSeconds(-30)
             };
 
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
             //_clientValidatorFake.Setup(c =>
             //        c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
             //    .Returns(true);
             //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //    .Returns(Task.FromResult(result));
+            //    .ReturnsAsync(result));
             _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
-                .Returns(Task.FromResult(authorizationCode));
+                .ReturnsAsync(authorizationCode);
 
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
@@ -386,7 +393,8 @@ namespace SimpleAuth.Tests.Api.Token
                         authorizationCodeGrantTypeParameter,
                         authenticationHeader,
                         null,
-                        null))
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.Equal(ErrorDescriptions.TheAuthorizationCodeIsObsolete, exception.Message);
@@ -410,7 +418,7 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ClientId = clientId,
                 Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-                GrantTypes = new List<GrantType> { GrantType.authorization_code },
+                GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code }
             };
             var authorizationCode = new AuthorizationCode
@@ -420,26 +428,21 @@ namespace SimpleAuth.Tests.Api.Token
                 CreateDateTime = DateTime.UtcNow
             };
 
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
-            //_clientValidatorFake.Setup(c =>
-            //        c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
-            //    .Returns(true);
-            _authorizationCodeStoreFake.Setup(a => a.RemoveAuthorizationCode(It.IsAny<string>()))
-                .Returns(Task.FromResult(true));
-            //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //    .Returns(Task.FromResult(result));
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+            _authorizationCodeStoreFake.Setup(a => a.RemoveAuthorizationCode(It.IsAny<string>())).ReturnsAsync(true);
             _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
-                .Returns(Task.FromResult(authorizationCode));
-            //_clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<Uri[]>()))
-            //    .Returns(new Uri[0]);
+                .ReturnsAsync(authorizationCode);
 
-            var authenticationHeader = new AuthenticationHeaderValue("Basic", $"{clientId}:{clientSecret}".Base64Encode());
+            var authenticationHeader = new AuthenticationHeaderValue(
+                "Basic",
+                $"{clientId}:{clientSecret}".Base64Encode());
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(
                         authorizationCodeGrantTypeParameter,
                         authenticationHeader,
                         null,
-                        null))
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.Equal(
@@ -470,7 +473,7 @@ namespace SimpleAuth.Tests.Api.Token
                 RedirectionUrls = new[] { new Uri("https://redirectUri") },
                 ClientId = clientId,
                 Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-                GrantTypes = new List<GrantType> { GrantType.authorization_code },
+                GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code },
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 IdTokenEncryptedResponseAlg = SecurityAlgorithms.RsaPKCS1,
@@ -493,35 +496,29 @@ namespace SimpleAuth.Tests.Api.Token
                 ExpiresIn = 100000
             };
 
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
-            //_clientValidatorFake.Setup(c =>
-            //        c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
-            //    .Returns(true);
-            //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //    .Returns(Task.FromResult(result));
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+
             _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
-                .Returns(Task.FromResult(authorizationCode));
-            //_clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<Uri>()))
-            //    .Returns(new[] { new Uri("https://redirectUri") });
-            //_grantedTokenHelperStub
-            //    .Setup(
-            //        g => g.GetValidGrantedTokenAsync(
-            //            It.IsAny<string>(),
-            //            It.IsAny<string>(),
-            //            It.IsAny<JwtPayload>(),
-            //            It.IsAny<JwtPayload>()))
-            //    .Returns(Task.FromResult(grantedToken));
+                .ReturnsAsync(authorizationCode);
+
             _tokenStoreFake
                 .Setup(
                     x => x.GetToken(
                         It.IsAny<string>(),
                         It.IsAny<string>(),
                         It.IsAny<JwtPayload>(),
-                        It.IsAny<JwtPayload>()))
+                        It.IsAny<JwtPayload>(),
+                        It.IsAny<CancellationToken>()))
                 .ReturnsAsync(grantedToken);
-            var authenticationHeader = new AuthenticationHeaderValue("Basic", $"{clientId}:{clientSecret}".Base64Encode());
-            var r = await _getTokenByAuthorizationCodeGrantTypeAction
-                .Execute(authorizationCodeGrantTypeParameter, authenticationHeader, null, null)
+            var authenticationHeader = new AuthenticationHeaderValue(
+                "Basic",
+                $"{clientId}:{clientSecret}".Base64Encode());
+            var r = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+                    authorizationCodeGrantTypeParameter,
+                    authenticationHeader,
+                    null,
+                    null,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.NotNull(r);
@@ -531,8 +528,7 @@ namespace SimpleAuth.Tests.Api.Token
         public async Task When_Requesting_Token_And_There_Is_No_Valid_Granted_Token_Then_Grant_A_New_One()
         {
             InitializeFakeObjects();
-            //const string accessToken = "accessToken";
-            //const string identityToken = "identityToken";
+
             const string clientId = "clientId";
             var clientSecret = "clientSecret";
             var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
@@ -545,12 +541,15 @@ namespace SimpleAuth.Tests.Api.Token
             };
             var client = new Client
             {
+                ClientName = clientId,
                 RedirectionUrls = new[] { new Uri("https://redirectUri") },
                 ClientId = clientId,
                 Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-                GrantTypes = new List<GrantType> { GrantType.authorization_code },
+                GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code },
-                JsonWebKeys = "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify).ToSet(),
+                JsonWebKeys =
+                    "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
+                        .ToSet(),
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256
             };
             var authorizationCode = new AuthorizationCode
@@ -560,54 +559,34 @@ namespace SimpleAuth.Tests.Api.Token
                 RedirectUri = new Uri("https://redirectUri"),
                 CreateDateTime = DateTime.UtcNow
             };
-            //var grantedToken = new GrantedToken { AccessToken = accessToken, IdToken = identityToken };
 
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>())).ReturnsAsync(client);
-            //_clientValidatorFake.Setup(c =>
-            //        c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
-            //    .Returns(true);
-            //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //    .Returns(Task.FromResult(authResult));
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+
             _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
-                .Returns(Task.FromResult(authorizationCode));
-            _oauthConfigurationOptions =
-                new OAuthConfigurationOptions(authorizationCodeValidity: TimeSpan.FromSeconds(3000));
-            //.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
-            //.Returns(Task.FromResult((double)3000));
-            //_clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<Uri>()))
-            //    .Returns(new[] { new Uri("https://redirectUri") });
+                .ReturnsAsync(authorizationCode);
+            _simpleAuthOptions = new RuntimeSettings(authorizationCodeValidityPeriod: TimeSpan.FromSeconds(3000));
+
             _tokenStoreFake.Setup(
                     x => x.GetToken(
                         It.IsAny<string>(),
                         It.IsAny<string>(),
                         It.IsAny<JwtPayload>(),
-                        It.IsAny<JwtPayload>()))
+                        It.IsAny<JwtPayload>(),
+                        It.IsAny<CancellationToken>()))
                 .ReturnsAsync((GrantedToken)null);
-            //_grantedTokenGeneratorHelperFake
-            //    .Setup(
-            //        g => g.GenerateToken(
-            //            It.IsAny<Client>(),
-            //            It.IsAny<string>(),
-            //            It.IsAny<string>(),
-            //            It.IsAny<IDictionary<string, object>>(),
-            //            It.IsAny<JwtPayload>(),
-            //            It.IsAny<JwtPayload>()))
-            //    .Returns(Task.FromResult(grantedToken));
-            //_grantedTokenHelperStub
-            //    .Setup(
-            //        g => g.GetValidGrantedTokenAsync(
-            //            It.IsAny<string>(),
-            //            It.IsAny<string>(),
-            //            It.IsAny<JwtPayload>(),
-            //            It.IsAny<JwtPayload>()))
-            //    .Returns(() => Task.FromResult((GrantedToken)null));
 
-            var authenticationHeader = new AuthenticationHeaderValue("Basic", $"{clientId}:{clientSecret}".Base64Encode());
-            var result = await _getTokenByAuthorizationCodeGrantTypeAction
-                .Execute(authorizationCodeGrantTypeParameter, authenticationHeader, null, null)
+            var authenticationHeader = new AuthenticationHeaderValue(
+                "Basic",
+                $"{clientId}:{clientSecret}".Base64Encode());
+            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+                    authorizationCodeGrantTypeParameter,
+                    authenticationHeader,
+                    null,
+                    null,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
 
-            _tokenStoreFake.Verify(g => g.AddToken(It.IsAny<GrantedToken>()));
+            _tokenStoreFake.Verify(g => g.AddToken(It.IsAny<GrantedToken>(), It.IsAny<CancellationToken>()));
             _eventPublisher.Verify(s => s.Publish(It.IsAny<AccessToClientGranted>()));
         }
 
@@ -617,18 +596,15 @@ namespace SimpleAuth.Tests.Api.Token
             _authorizationCodeStoreFake = new Mock<IAuthorizationCodeStore>();
             _tokenStoreFake = new Mock<ITokenStore>();
             _clientStore = new Mock<IClientStore>();
-            _oauthConfigurationOptions = new OAuthConfigurationOptions(
-                authorizationCodeValidity: authorizationCodeValidity == default
-                    ? TimeSpan.FromSeconds(3600)
-                    : authorizationCodeValidity);
-            _jwtGeneratorStub = new Mock<IJwtGenerator>();
+            _simpleAuthOptions = new RuntimeSettings(
+                authorizationCodeValidityPeriod: authorizationCodeValidity == default ? TimeSpan.FromSeconds(3600) : authorizationCodeValidity);
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
                 _authorizationCodeStoreFake.Object,
-                _oauthConfigurationOptions,
+                _simpleAuthOptions,
                 _clientStore.Object,
                 _eventPublisher.Object,
                 _tokenStoreFake.Object,
-                _jwtGeneratorStub.Object);
+                new Mock<IScopeRepository>().Object);
         }
     }
 }

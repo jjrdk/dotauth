@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,13 +18,13 @@ namespace SimpleAuth.Controllers
     using System.Net;
     using System.Threading.Tasks;
     using Api.ResourceSetController;
-    using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Repositories;
     using Shared.DTOs;
     using Shared.Responses;
+    using SimpleAuth.Shared.Errors;
 
     [Route(UmaConstants.RouteValues.ResourceSet)]
     public class ResourceSetController : Controller
@@ -53,8 +53,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var parameter = searchResourceSet.ToParameter();
-            var result = await _resourceSetRepository.Search(parameter).ConfigureAwait(false);
+            var result = await _resourceSetRepository.Search(searchResourceSet).ConfigureAwait(false);
             return new OkObjectResult(result.ToResponse());
         }
 
@@ -99,8 +98,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var parameter = postResourceSet.ToParameter();
-            var result = await _addResourceSet.Execute(parameter).ConfigureAwait(false);
+            var result = await _addResourceSet.Execute(postResourceSet).ConfigureAwait(false);
             var response = new AddResourceSetResponse
             {
                 Id = result
@@ -122,8 +120,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var parameter = putResourceSet.ToParameter();
-            var resourceSetExists = await _updateResourceSet.Execute(parameter).ConfigureAwait(false);
+            var resourceSetExists = await _updateResourceSet.Execute(putResourceSet).ConfigureAwait(false);
             if (!resourceSetExists)
             {
                 return GetNotFoundResourceSet();

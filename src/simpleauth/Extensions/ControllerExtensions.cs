@@ -16,7 +16,6 @@ namespace SimpleAuth.Extensions
 {
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
-    using Parsers;
     using Results;
     using Shared.Requests;
     using System;
@@ -25,7 +24,6 @@ namespace SimpleAuth.Extensions
     using System.Reflection;
     using System.Text;
     using System.Threading.Tasks;
-    using SimpleAuth.Parameters;
 
     internal static class ControllerExtensions
     {
@@ -90,12 +88,12 @@ namespace SimpleAuth.Extensions
             EndpointResult endpointResult,
             AuthorizationRequest authorizationRequest)
         {
-            if (endpointResult.Type == TypeActionResult.RedirectToCallBackUrl)
+            if (endpointResult.Type == ActionResultType.RedirectToCallBackUrl)
             {
                 var parameters = endpointResult.GetRedirectionParameters();
                 //var uri = new Uri();
                 var redirectUrl = controller.CreateRedirectHttp(
-                    authorizationRequest.RedirectUri,
+                    authorizationRequest.redirect_uri,
                     parameters,
                     endpointResult.RedirectInstruction.ResponseMode);
                 return new RedirectResult(redirectUrl);
@@ -118,19 +116,19 @@ namespace SimpleAuth.Extensions
             this ControllerBase controller,
             Uri uri,
             RouteValueDictionary parameters,
-            ResponseMode responseMode)
+            string responseMode)
         {
             switch (responseMode)
             {
-                case ResponseMode.fragment:
+                case ResponseModes.Fragment:
                     uri = uri.AddParametersInFragment(parameters);
                     break;
-                case ResponseMode.query:
+                case ResponseModes.Query:
                     uri = uri.AddParametersInQuery(parameters);
                     break;
-                case ResponseMode.None:
+                case ResponseModes.None:
                     break;
-                case ResponseMode.form_post:
+                case ResponseModes.FormPost:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(responseMode), responseMode, null);
@@ -151,11 +149,11 @@ namespace SimpleAuth.Extensions
             this ControllerBase controller,
             Uri uri,
             RouteValueDictionary parameters,
-            ResponseMode responseMode)
+            string responseMode)
         {
             switch (responseMode)
             {
-                case ResponseMode.fragment:
+                case ResponseModes.Fragment:
                     uri = uri.AddParametersInFragment(parameters);
                     break;
                 default:

@@ -1,29 +1,33 @@
 ﻿namespace SimpleAuth.UserInfoIntrospection
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Security.Claims;
-    using System.Text.Encodings.Web;
-    using System.Threading.Tasks;
     using Client;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json.Linq;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Security.Claims;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
 
-    public class UserInfoIntrospectionHandler : AuthenticationHandler<UserInfoIntrospectionOptions>
+    internal class UserInfoIntrospectionHandler : AuthenticationHandler<UserInfoIntrospectionOptions>
     {
         private const string Bearer = "Bearer ";
-        private readonly IUserInfoClient _userInfoClient;
+        private readonly UserInfoClient _userInfoClient;
         private static readonly int StartIndex = Bearer.Length;
 
-        public UserInfoIntrospectionHandler(IOptionsMonitor<UserInfoIntrospectionOptions> options,
+        public UserInfoIntrospectionHandler(
+            IOptionsMonitor<UserInfoIntrospectionOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
-            IUserInfoClient userInfoClient,
-            ISystemClock clock) : base(options, logger, encoder, clock)
+            HttpClient httpClient,
+            ISystemClock clock)
+            : base(options, logger, encoder, clock)
         {
-            _userInfoClient = userInfoClient;
+            _userInfoClient = new UserInfoClient(httpClient);
         }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -47,7 +51,7 @@
 
             return HandleAuthenticate(Options.WellKnownConfigurationUrl, token);
         }
-        
+
         internal async Task<AuthenticateResult> HandleAuthenticate(string wellKnownConfiguration, string token)
         {
             try
@@ -69,7 +73,10 @@
 
                 var claimsIdentity = new ClaimsIdentity(claims, UserInfoIntrospectionOptions.AuthenticationScheme);
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                var authenticationTicket = new AuthenticationTicket(claimsPrincipal, new AuthenticationProperties(), UserInfoIntrospectionOptions.AuthenticationScheme);
+                var authenticationTicket = new AuthenticationTicket(
+                    claimsPrincipal,
+                    new AuthenticationProperties(),
+                    UserInfoIntrospectionOptions.AuthenticationScheme);
                 return AuthenticateResult.Success(authenticationTicket);
             }
             catch (Exception)
@@ -78,21 +85,14 @@
             }
         }
 
-        private static List<Claim> Convert(KeyValuePair<string, object> kvp)
+        private static Claim[] Convert(KeyValuePair<string, object> kvp)
         {
             if (!(kvp.Value is JArray arr))
             {
-                return new List<Claim>
-                {
-                    new Claim(kvp.Key, kvp.Value.ToString())
-                };
+                return new[] { new Claim(kvp.Key, kvp.Value.ToString()) };
             }
 
-            var result = new List<Claim>();
-            foreach(var r in arr)
-            {
-                result.Add(new Claim(kvp.Key, r.ToString()));
-}
+            var result = arr.Select(x => new Claim(kvp.Key, x.ToString())).ToArray();
 
             return result;
         }

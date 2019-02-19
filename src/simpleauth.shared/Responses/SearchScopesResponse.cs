@@ -1,18 +1,10 @@
 ﻿namespace SimpleAuth.Shared.Responses
 {
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using SimpleAuth.Shared.Models;
 
     [DataContract]
-    public class SearchScopesResponse
+    public class SearchScopesResponse : GenericResult<Scope>
     {
-        [DataMember(Name = SharedConstants.SearchResponseNames.Content)]
-        public IEnumerable<ScopeResponse> Content { get; set; }
-
-        [DataMember(Name = SharedConstants.SearchResponseNames.TotalResults)]
-        public int TotalResults { get; set; }
-
-        [DataMember(Name = SharedConstants.SearchResponseNames.StartIndex)]
-        public int StartIndex { get; set; }
     }
 }

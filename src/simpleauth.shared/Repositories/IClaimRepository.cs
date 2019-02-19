@@ -22,8 +22,8 @@
 //    public interface IClaimRepository
 //    {
 //        Task<SearchClaimsResult> Search(SearchClaimsParameter parameter);
-//        Task<IEnumerable<string>> GetAllAsync();
-//        Task<bool> GetAsync(string name);
+//        Task<IEnumerable<string>> GetAll();
+//        Task<bool> Get(string name);
 //        Task<bool> Insert(AddClaimParameter claim);
 //        Task<bool> Delete(string code);
 //    }

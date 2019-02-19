@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,9 +17,9 @@ namespace SimpleAuth.Shared
     using System.Collections.Generic;
     using System.Security.Claims;
 
-    public class JwtConstants
+    internal class JwtConstants
     {
-        public static class StandardResourceOwnerClaimNames
+        public static class OpenIdClaimTypes
         {
             public const string Subject = "sub";
             public const string Name = "name";
@@ -42,46 +42,42 @@ namespace SimpleAuth.Shared
             public const string Address = "address";
             public const string UpdatedAt = "updated_at";
             public const string Role = "role";
-            public const string ScimId = "scim_id";
-            public const string ScimLocation = "scim_location";
         }
 
-        public static IEnumerable<string> NotEditableResourceOwnerClaimNames = new List<string>
+        public static readonly string[] NotEditableResourceOwnerClaimNames =
         {
-            StandardResourceOwnerClaimNames.Subject,
-            StandardResourceOwnerClaimNames.EmailVerified,
-            StandardResourceOwnerClaimNames.PhoneNumberVerified,
-            StandardResourceOwnerClaimNames.UpdatedAt,
-            StandardResourceOwnerClaimNames.ScimId,
-            StandardResourceOwnerClaimNames.ScimLocation
+            OpenIdClaimTypes.Subject,
+            OpenIdClaimTypes.EmailVerified,
+            OpenIdClaimTypes.PhoneNumberVerified,
+            OpenIdClaimTypes.UpdatedAt,
         };
 
-        public static List<string> AllStandardResourceOwnerClaimNames = new List<string>
+        public static readonly string[] AllStandardResourceOwnerClaimNames =
         {
-            StandardResourceOwnerClaimNames.Subject,
-            StandardResourceOwnerClaimNames.Address,
-            StandardResourceOwnerClaimNames.BirthDate,
-            StandardResourceOwnerClaimNames.Email,
-            StandardResourceOwnerClaimNames.EmailVerified,
-            StandardResourceOwnerClaimNames.FamilyName,
-            StandardResourceOwnerClaimNames.Gender,
-            StandardResourceOwnerClaimNames.GivenName,
-            StandardResourceOwnerClaimNames.Locale,
-            StandardResourceOwnerClaimNames.MiddleName,
-            StandardResourceOwnerClaimNames.Name,
-            StandardResourceOwnerClaimNames.NickName,
-            StandardResourceOwnerClaimNames.PhoneNumber,
-            StandardResourceOwnerClaimNames.PhoneNumberVerified,
-            StandardResourceOwnerClaimNames.Picture,
-            StandardResourceOwnerClaimNames.PreferredUserName,
-            StandardResourceOwnerClaimNames.Profile,
-            StandardResourceOwnerClaimNames.Role,
-            StandardResourceOwnerClaimNames.UpdatedAt,
-            StandardResourceOwnerClaimNames.WebSite,
-            StandardResourceOwnerClaimNames.ZoneInfo
+            OpenIdClaimTypes.Subject,
+            OpenIdClaimTypes.Address,
+            OpenIdClaimTypes.BirthDate,
+            OpenIdClaimTypes.Email,
+            OpenIdClaimTypes.EmailVerified,
+            OpenIdClaimTypes.FamilyName,
+            OpenIdClaimTypes.Gender,
+            OpenIdClaimTypes.GivenName,
+            OpenIdClaimTypes.Locale,
+            OpenIdClaimTypes.MiddleName,
+            OpenIdClaimTypes.Name,
+            OpenIdClaimTypes.NickName,
+            OpenIdClaimTypes.PhoneNumber,
+            OpenIdClaimTypes.PhoneNumberVerified,
+            OpenIdClaimTypes.Picture,
+            OpenIdClaimTypes.PreferredUserName,
+            OpenIdClaimTypes.Profile,
+            OpenIdClaimTypes.Role,
+            OpenIdClaimTypes.UpdatedAt,
+            OpenIdClaimTypes.WebSite,
+            OpenIdClaimTypes.ZoneInfo
         };
 
-        public static List<string> AllStandardClaimNames = new List<string>
+        public static readonly string[] AllStandardClaimNames =
         {
             StandardClaimNames.Acr,
             StandardClaimNames.Amr,
@@ -98,17 +94,17 @@ namespace SimpleAuth.Shared
 
         public static readonly Dictionary<string, string> MapWifClaimsToOpenIdClaims = new Dictionary<string, string>
         {
-            {ClaimTypes.Name, StandardResourceOwnerClaimNames.Name},
-            {ClaimTypes.GivenName, StandardResourceOwnerClaimNames.GivenName},
-            {ClaimTypes.Webpage, StandardResourceOwnerClaimNames.WebSite},
-            {ClaimTypes.Email, StandardResourceOwnerClaimNames.Email},
-            {ClaimTypes.Gender, StandardResourceOwnerClaimNames.Gender},
-            {ClaimTypes.DateOfBirth, StandardResourceOwnerClaimNames.BirthDate},
-            {ClaimTypes.Locality, StandardResourceOwnerClaimNames.Locale},
-            {ClaimTypes.HomePhone, StandardResourceOwnerClaimNames.PhoneNumber},
-            {ClaimTypes.MobilePhone, StandardResourceOwnerClaimNames.PhoneNumberVerified},
-            {ClaimTypes.StreetAddress, StandardResourceOwnerClaimNames.Address},
-            {ClaimTypes.Role, StandardResourceOwnerClaimNames.Role}
+            {ClaimTypes.Name, OpenIdClaimTypes.Name},
+            {ClaimTypes.GivenName, OpenIdClaimTypes.GivenName},
+            {ClaimTypes.Webpage, OpenIdClaimTypes.WebSite},
+            {ClaimTypes.Email, OpenIdClaimTypes.Email},
+            {ClaimTypes.Gender, OpenIdClaimTypes.Gender},
+            {ClaimTypes.DateOfBirth, OpenIdClaimTypes.BirthDate},
+            {ClaimTypes.Locality, OpenIdClaimTypes.Locale},
+            {ClaimTypes.HomePhone, OpenIdClaimTypes.PhoneNumber},
+            {ClaimTypes.MobilePhone, OpenIdClaimTypes.PhoneNumberVerified},
+            {ClaimTypes.StreetAddress, OpenIdClaimTypes.Address},
+            {ClaimTypes.Role, OpenIdClaimTypes.Role}
         };
     }
 }

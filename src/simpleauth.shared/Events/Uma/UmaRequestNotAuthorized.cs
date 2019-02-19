@@ -4,8 +4,8 @@
 
     public class UmaRequestNotAuthorized : Event
     {
-        public UmaRequestNotAuthorized(string id, string ticket, string clientId, DateTime timestamp) : base(id,
-            timestamp)
+        public UmaRequestNotAuthorized(string id, string ticket, string clientId, DateTime timestamp)
+            : base(id, timestamp)
         {
             Ticket = ticket;
             ClientId = clientId;

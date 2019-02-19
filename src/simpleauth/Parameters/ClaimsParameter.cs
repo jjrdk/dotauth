@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    public class ClaimsParameter
+    internal class ClaimsParameter
     {
         public List<ClaimParameter> UserInfo { get; set; }
 

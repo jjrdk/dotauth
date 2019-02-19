@@ -1,14 +1,14 @@
 ﻿namespace SimpleAuth.Server.Tests.MiddleWares
 {
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using SimpleAuth.Extensions;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Security.Claims;
     using System.Text.Encodings.Web;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using SimpleAuth.Extensions;
 
     public class TestAuthenticationHandler : AuthenticationHandler<TestAuthenticationOptions>
     {
@@ -23,12 +23,10 @@
                 return Task.FromResult(AuthenticateResult.NoResult());
             }
 
-            var claims = new List<Claim>();
-            claims.Add(new Claim("sub", UserStore.Instance().Subject));
+            var claims = new List<Claim> { new Claim("sub", UserStore.Instance().Subject) };
             if (UserStore.Instance().AuthenticationOffset != null)
             {
                 claims.Add(new Claim(ClaimTypes.AuthenticationInstant, UserStore.Instance().AuthenticationOffset.Value.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture)));
-
             }
 
             var claimsIdentity = new ClaimsIdentity(claims, FakeStartup.DefaultSchema);

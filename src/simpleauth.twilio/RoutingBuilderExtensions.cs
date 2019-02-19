@@ -15,8 +15,8 @@
 
             routeBuilder.MapRoute("BasicAuthentication",
                 "Authenticate/{action}/{id?}",
-                new { controller = "Authenticate", action = "Index", area = SmsConstants.AMR },
-                constraints: new { area = SmsConstants.AMR });
+                new { controller = "Authenticate", action = "Index", area = SmsConstants.Amr },
+                constraints: new { area = SmsConstants.Amr });
             return routeBuilder;
         }
     }

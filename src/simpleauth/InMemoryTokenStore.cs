@@ -4,9 +4,11 @@
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Shared;
     using Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     internal sealed class InMemoryTokenStore : ITokenStore
     {
@@ -21,7 +23,12 @@
             _mappingStrToAccessTokens = new Dictionary<string, string>();
         }
 
-        public Task<GrantedToken> GetToken(string scopes, string clientId, JwtPayload idTokenJwsPayload, JwtPayload userInfoJwsPayload)
+        public Task<GrantedToken> GetToken(
+            string scopes,
+            string clientId,
+            JwtPayload idTokenJwsPayload,
+            JwtPayload userInfoJwsPayload,
+            CancellationToken cancellationToken)
         {
             if (_tokens == null || !_tokens.Any())
             {
@@ -70,7 +77,7 @@
             return Task.FromResult((GrantedToken)null);
         }
 
-        public Task<GrantedToken> GetRefreshToken(string refreshToken)
+        public Task<GrantedToken> GetRefreshToken(string refreshToken, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(refreshToken))
             {
@@ -85,7 +92,7 @@
             return Task.FromResult(_tokens[_mappingStrToRefreshTokens[refreshToken]]);
         }
 
-        public Task<GrantedToken> GetAccessToken(string accessToken)
+        public Task<GrantedToken> GetAccessToken(string accessToken, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(accessToken))
             {
@@ -100,7 +107,7 @@
             return Task.FromResult(_tokens[_mappingStrToAccessTokens[accessToken]]);
         }
 
-        public Task<bool> AddToken(GrantedToken grantedToken)
+        public Task<bool> AddToken(GrantedToken grantedToken, CancellationToken cancellationToken)
         {
             if (grantedToken == null)
             {
@@ -120,7 +127,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> RemoveRefreshToken(string refreshToken)
+        public Task<bool> RemoveRefreshToken(string refreshToken, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(refreshToken))
             {
@@ -136,7 +143,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> RemoveAccessToken(string accessToken)
+        public Task<bool> RemoveAccessToken(string accessToken, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(accessToken))
             {

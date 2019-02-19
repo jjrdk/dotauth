@@ -32,7 +32,7 @@
 ////            InitializeFakeObjects();
 //            var tokenClient = new Mock<ITokenClient>();
 //            tokenClient.Setup(t => t.ResolveAsync(It.IsAny<string>()))
-//                .Returns(Task.FromResult(new GetTokenResult
+//                .ReturnsAsync(new GetTokenResult
 //                {
 //                    Content = new Core.Common.DTOs.Responses.GrantedTokenResponse
 //                    {

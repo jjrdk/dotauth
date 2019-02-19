@@ -14,14 +14,15 @@
 
 namespace SimpleAuth.Controllers
 {
-    using System.Net;
-    using System.Threading.Tasks;
-    using Errors;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Shared.Models;
     using Shared.Repositories;
     using Shared.Responses;
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
 
     [Route(CoreConstants.EndPoints.Registration)]
     [Authorize("registration")]
@@ -35,14 +36,14 @@ namespace SimpleAuth.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Client client)
+        public async Task<IActionResult> Post([FromBody] Client client, CancellationToken cancellationToken)
         {
             if (client == null)
             {
                 return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
-            
-            var result = await _registerActions.Insert(client).ConfigureAwait(false);
+
+            var result = await _registerActions.Insert(client, cancellationToken).ConfigureAwait(false);
             return new OkObjectResult(result);
         }
 

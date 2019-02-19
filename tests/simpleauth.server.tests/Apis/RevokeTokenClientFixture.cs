@@ -1,11 +1,11 @@
 ﻿// Copyright © 2016 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,28 +15,28 @@
 namespace SimpleAuth.Server.Tests.Apis
 {
     using Client;
-    using Client.Operations;
-    using Errors;
+    using Microsoft.IdentityModel.Logging;
     using Newtonsoft.Json;
     using Shared;
     using Shared.Responses;
+    using SimpleAuth.Shared.Errors;
     using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Microsoft.IdentityModel.Logging;
     using Xunit;
 
-    public class RevokeTokenClientFixture : IClassFixture<TestOauthServerFixture>
+    public class RevokeTokenClientFixture
     {
         private const string BaseUrl = "http://localhost:5000";
+        private const string WellKnownOpenidConfiguration = "/.well-known/openid-configuration";
         private readonly TestOauthServerFixture _server;
 
-        public RevokeTokenClientFixture(TestOauthServerFixture server)
+        public RevokeTokenClientFixture()
         {
             IdentityModelEventSource.ShowPII = true;
-            _server = server;
+            _server = new TestOauthServerFixture();
         }
 
         [Fact]
@@ -85,12 +85,13 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Revoke_Token_And_Client_Cannot_Be_Authenticated_Then_Error_Is_Returned()
         {
-            var ex = await new RevokeTokenClient(
+            var tokenClient = await TokenClient.Create(
                     TokenCredentials.FromClientCredentials("invalid_client", "invalid_client"),
-                    RevokeTokenRequest.RevokeToken("access_token", TokenTypes.AccessToken),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
+                .ConfigureAwait(false);
+            var ex = await tokenClient
+                .RevokeToken(RevokeTokenRequest.RevokeToken("access_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
             Assert.True(ex.ContainsError);
@@ -101,12 +102,13 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Token_Does_Not_Exist_Then_Error_Is_Returned()
         {
-            var ex = await new RevokeTokenClient(
+            var tokenClient = await TokenClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    RevokeTokenRequest.RevokeToken("access_token", TokenTypes.AccessToken),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
+                .ConfigureAwait(false);
+            var ex = await tokenClient
+                .RevokeToken(RevokeTokenRequest.RevokeToken("access_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
             Assert.True(ex.ContainsError);
@@ -117,19 +119,21 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Revoke_Token_And_Client_Is_Different_Then_Error_Is_Returned()
         {
-            var result = await new TokenClient(
+            var tokenClient = await TokenClient.Create(
                     TokenCredentials.FromClientCredentials("client_userinfo_enc_rsa15", "client_userinfo_enc_rsa15"),
-                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
                 .ConfigureAwait(false);
-            var ex = await new RevokeTokenClient(
+            var result = await tokenClient
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+                .ConfigureAwait(false);
+            var revokeClient = await TokenClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    RevokeTokenRequest.RevokeToken(result.Content.AccessToken, TokenTypes.AccessToken),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
+                .ConfigureAwait(false);
+            var ex = await revokeClient
+                .RevokeToken(RevokeTokenRequest.RevokeToken(result.Content.AccessToken, TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
             Assert.True(ex.ContainsError);
@@ -140,26 +144,24 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Revoking_AccessToken_Then_True_Is_Returned()
         {
-            var result = await new TokenClient(
+            var tokenClient = await TokenClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
                 .ConfigureAwait(false);
-            var revoke = await new RevokeTokenClient(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    RevokeTokenRequest.RevokeToken(result.Content.AccessToken, TokenTypes.AccessToken),
-                    _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+            var result = await tokenClient
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
-            var ex = await new IntrospectClient(
+            var revoke = await tokenClient
+                .RevokeToken(RevokeTokenRequest.RevokeToken(result.Content.AccessToken, TokenTypes.AccessToken))
+                .ConfigureAwait(false);
+            var introspectionClient = await IntrospectClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
+                .ConfigureAwait(false);
+            var ex = await introspectionClient.Introspect(
+                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
             Assert.False(revoke.ContainsError);
@@ -169,26 +171,24 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Revoking_RefreshToken_Then_True_Is_Returned()
         {
-            var result = await new TokenClient(
+            var tokenClient = await TokenClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
                 .ConfigureAwait(false);
-            var revoke = await new RevokeTokenClient(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    RevokeTokenRequest.RevokeToken(result.Content.RefreshToken, TokenTypes.RefreshToken),
-                    _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+            var result = await tokenClient
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
-            var ex = await new IntrospectClient(
+            var revoke = await tokenClient
+                .RevokeToken(RevokeTokenRequest.RevokeToken(result.Content.RefreshToken, TokenTypes.RefreshToken))
+                .ConfigureAwait(false);
+            var introspectClient = await IntrospectClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),
-                    IntrospectionRequest.Create(result.Content.RefreshToken, TokenTypes.RefreshToken),
                     _server.Client,
-                    new GetDiscoveryOperation(_server.Client))
-                .ResolveAsync(BaseUrl + "/.well-known/openid-configuration")
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
+                .ConfigureAwait(false);
+            var ex = await introspectClient.Introspect(
+                    IntrospectionRequest.Create(result.Content.RefreshToken, TokenTypes.RefreshToken))
                 .ConfigureAwait(false);
 
             Assert.False(revoke.ContainsError);

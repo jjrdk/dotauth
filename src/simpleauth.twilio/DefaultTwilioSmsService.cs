@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,24 +14,24 @@
 
 namespace SimpleAuth.Twilio
 {
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
 
-    public class DefaultTwilioSmsService : ITwoFactorAuthenticationService
+    internal class DefaultTwilioSmsService : ITwoFactorAuthenticationService
     {
         private readonly TwoFactorTwilioOptions _options;
-        private readonly TwilioClient _twilioClient;
+        private readonly ITwilioClient _twilioClient;
 
-        public DefaultTwilioSmsService(TwoFactorTwilioOptions options)
+        public DefaultTwilioSmsService(ITwilioClient twilioClient, TwoFactorTwilioOptions options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
-            _twilioClient = new TwilioClient();
+            _twilioClient = twilioClient;
         }
 
-        public string RequiredClaim => JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber;
+        public string RequiredClaim => JwtConstants.OpenIdClaimTypes.PhoneNumber;
         public string Name => "SMS";
 
         public async Task SendAsync(string code, ResourceOwner user)

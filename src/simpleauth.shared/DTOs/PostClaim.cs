@@ -5,9 +5,9 @@
     [DataContract]
     public class PostClaim
     {
-        [DataMember(Name = ClaimNames.Type)]
+        [DataMember(Name = "type")]
         public string Type { get; set; }
-        [DataMember(Name = ClaimNames.Value)]
+        [DataMember(Name = "value")]
         public string Value { get; set; }
     }
 }

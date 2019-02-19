@@ -1,55 +1,70 @@
 ﻿namespace SimpleAuth.Tests.WebSite.Authenticate
 {
-    using Errors;
     using Moq;
     using Parameters;
     using Results;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth.Common;
-    using SimpleAuth.WebSite.Authenticate.Common;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.WebSite.Authenticate;
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Events.Logging;
     using Xunit;
 
     public sealed class AuthenticateHelperFixture
     {
-        private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
-        private Mock<IClientStore> _clientRepositoryStub;
-        private IAuthenticateHelper _authenticateHelper;
-        private Mock<IConsentRepository> _consentRepository;
+        private readonly Mock<IClientStore> _clientRepositoryStub;
+        private readonly AuthenticateHelper _authenticateHelper;
+        private readonly Mock<IConsentRepository> _consentRepository;
 
         public AuthenticateHelperFixture()
         {
-            InitializeFakeObjects();
+            _clientRepositoryStub = new Mock<IClientStore>();
+            _consentRepository = new Mock<IConsentRepository>();
+            var scopeRepository = new Mock<IScopeRepository>();
+            scopeRepository.Setup(x => x.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
+                .ReturnsAsync(new[] { new Scope { Name = "scope" } });
+            _authenticateHelper = new AuthenticateHelper(
+                new Mock<IAuthorizationCodeStore>().Object,
+                new Mock<ITokenStore>().Object,
+                scopeRepository.Object,
+                _consentRepository.Object,
+                _clientRepositoryStub.Object,
+                new DefaultEventPublisher());
         }
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(() =>
-                    _authenticateHelper.ProcessRedirection(null, null, null, null, null))
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                    () => _authenticateHelper.ProcessRedirection(null, null, null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Client_Does_Not_Exist_Then_Exception_Is_Thrown()
         {
-            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
-                .Returns(Task.FromResult((Client)null));
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = "client_id"
-            };
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Client) null);
+            var authorizationParameter = new AuthorizationParameter {ClientId = "client_id"};
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-                    _authenticateHelper.ProcessRedirection(authorizationParameter, null, null, null, null))
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+                    () => _authenticateHelper.ProcessRedirection(
+                        authorizationParameter,
+                        null,
+                        null,
+                        null,
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.True(exception.Message ==
-                        string.Format(ErrorDescriptions.TheClientIdDoesntExist, authorizationParameter.ClientId));
+            Assert.Equal(
+                string.Format(ErrorDescriptions.TheClientIdDoesntExist, authorizationParameter.ClientId),
+                exception.Message);
         }
 
         [Fact]
@@ -57,23 +72,21 @@
         {
             const string subject = "subject";
             const string code = "code";
-            //var prompts = new List<PromptParameter>
-            //{
-            //    PromptParameter.consent
-            //};
+
             var authorizationParameter = new AuthorizationParameter();
-            var claims = new List<Claim>();
-            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
-                .Returns(Task.FromResult(new Client()));
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Client());
             //_parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
             //    .Returns(prompts);
 
-            var actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
-                       code,
-                       subject,
-                       claims,
-                       null)
-                   .ConfigureAwait(false);
+            var actionResult = await _authenticateHelper.ProcessRedirection(
+                    authorizationParameter,
+                    code,
+                    subject,
+                    Array.Empty<Claim>(),
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false);
 
             Assert.Equal(SimpleAuthEndPoints.ConsentIndex, actionResult.RedirectInstruction.Action);
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == code && p.Value == code);
@@ -84,45 +97,37 @@
         {
             const string subject = "subject";
             const string code = "code";
-            //var prompts = new List<PromptParameter>
-            //{
-            //    PromptParameter.none
-            //};
-            //var consent = new Consent();
+
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = "client",
                 Scope = "scope",
                 Prompt = "none",
-                ResponseMode = ResponseMode.form_post
+                RedirectUrl = new Uri("https://localhost"),
+                ResponseMode = ResponseModes.FormPost
             };
-            var claims = new List<Claim>();
-            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
-                .Returns(Task.FromResult(new Client()));
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Client());
+            _clientRepositoryStub.Setup(x => x.GetAll(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Array.Empty<Client>());
             var consent = new Consent
             {
                 GrantedScopes = new List<Scope> { new Scope { Name = "scope" } },
-                Client = new Client
-                {
-                    ClientId = "client",
-                    AllowedScopes = new List<Scope> { new Scope { Name = "scope" } }
-                }
+                Client = new Client { ClientId = "client", AllowedScopes = new List<Scope> { new Scope { Name = "scope" } } }
             };
-            _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>())).ReturnsAsync(new[] { consent });
-            //_parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
-            //    .Returns(prompts);
-            //_consentHelperFake.Setup(c => c.GetConfirmedConsents(It.IsAny<string>(),
-            //        It.IsAny<AuthorizationParameter>()))
-            //    .Returns(Task.FromResult(consent));
+            _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new[] { consent });
 
-            var actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
+            var actionResult = await _authenticateHelper.ProcessRedirection(
+                    authorizationParameter,
                     code,
                     subject,
-                    claims,
-                    null)
+                    Array.Empty<Claim>(),
+                    null,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Equal(ResponseMode.form_post, actionResult.RedirectInstruction.ResponseMode);
+            Assert.Equal(ResponseModes.FormPost, actionResult.RedirectInstruction.ResponseMode);
         }
 
         [Fact]
@@ -130,40 +135,22 @@
         {
             const string subject = "subject";
             const string code = "code";
-            //var prompts = new List<PromptParameter>
-            //{
-            //    PromptParameter.none
-            //};
+
             var authorizationParameter = new AuthorizationParameter();
-            var claims = new List<Claim>();
-            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>()))
-                .Returns(Task.FromResult(new Client()));
-            //_parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
-            //    .Returns(prompts);
-            //_consentHelperFake.Setup(c => c.GetConfirmedConsents(It.IsAny<string>(),
-            //        It.IsAny<AuthorizationParameter>()))
-            //    .Returns(() => Task.FromResult((Consent)null));
+            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Client());
 
-            var actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
-                         code,
-                         subject,
-                         claims,
-                         null)
-                     .ConfigureAwait(false);
+            var actionResult = await _authenticateHelper.ProcessRedirection(
+                    authorizationParameter,
+                    code,
+                    subject,
+                    Array.Empty<Claim>(),
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false);
 
-            Assert.True(actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.ConsentIndex);
+            Assert.Equal(SimpleAuthEndPoints.ConsentIndex, actionResult.RedirectInstruction.Action);
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == code && p.Value == code);
-        }
-
-        private void InitializeFakeObjects()
-        {
-            _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
-            _clientRepositoryStub = new Mock<IClientStore>();
-            _consentRepository = new Mock<IConsentRepository>();
-            _authenticateHelper = new AuthenticateHelper(
-                _generateAuthorizationResponseFake.Object,
-                _consentRepository.Object,
-                _clientRepositoryStub.Object);
         }
     }
 }

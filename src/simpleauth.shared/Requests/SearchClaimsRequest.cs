@@ -1,18 +1,17 @@
 ﻿namespace SimpleAuth.Shared.Requests
 {
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
 
     [DataContract]
     public class SearchClaimsRequest
     {
-        [DataMember(Name = SharedConstants.SearchClaimNames.Codes)]
-        public IEnumerable<string> Codes { get; set; }
-        [DataMember(Name = SharedConstants.SearchResponseNames.StartIndex)]
+        [DataMember(Name = "codes")]
+        public string[] Codes { get; set; }
+        [DataMember(Name = "start_index")]
         public int StartIndex { get; set; }
-        [DataMember(Name = SharedConstants.SearchResponseNames.TotalResults)]
+        [DataMember(Name = "count")]
         public int NbResults { get; set; }
-        [DataMember(Name = SharedConstants.SearchScopeNames.Order)]
-        public OrderRequest Order { get; set; }
+        [DataMember(Name = "order")]
+        public bool Descending { get; set; }
     }
 }

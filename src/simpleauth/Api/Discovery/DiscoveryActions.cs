@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,9 +23,10 @@ namespace SimpleAuth.Api.Discovery
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
 
-    public class DiscoveryActions
+    internal class DiscoveryActions
     {
         private readonly IScopeRepository _scopeRepository;
 
@@ -34,37 +35,31 @@ namespace SimpleAuth.Api.Discovery
             _scopeRepository = scopeRepository;
         }
 
-        public async Task<DiscoveryInformation> CreateDiscoveryInformation(string issuer, string scimEndpoint = null)
+        public async Task<DiscoveryInformation> CreateDiscoveryInformation(string issuer, CancellationToken cancellationToken)
         {
             var result = new DiscoveryInformation();
             issuer = issuer.TrimEnd('/');
             // Returns only the exposed scopes
-            var scopes = await _scopeRepository.GetAll().ConfigureAwait(false);
-            string[] scopeSupportedNames;
-            if (scopes != null && scopes.Any())
-            {
-                scopeSupportedNames = scopes.Where(s => s.IsExposed).Select(s => s.Name).ToArray();
-            }
-            else
-            {
-                scopeSupportedNames = Array.Empty<string>();
-            }
+            var scopes = await _scopeRepository.GetAll(cancellationToken).ConfigureAwait(false);
+            var scopeSupportedNames = scopes != null && scopes.Any()
+                ? scopes.Where(s => s.IsExposed).Select(s => s.Name).ToArray()
+                : Array.Empty<string>();
 
-            var responseTypesSupported = GetSupportedResponseTypes(CoreConstants.Supported.SupportedAuthorizationFlows);
+            var responseTypesSupported = GetSupportedResponseTypes(CoreConstants.Supported._supportedAuthorizationFlows);
 
-            var grantTypesSupported = GetSupportedGrantTypes();
+            var grantTypesSupported = CoreConstants.Supported._supportedGrantTypes;
             var tokenAuthMethodSupported = GetSupportedTokenEndPointAuthMethods();
 
             result.ClaimsParameterSupported = true;
             result.RequestParameterSupported = true;
             result.RequestUriParameterSupported = true;
             result.RequireRequestUriRegistration = true;
-            result.ClaimsSupported = new string[0]; //(await _claimRepository.GetAllAsync().ConfigureAwait(false)).ToArray();
+            result.ClaimsSupported = Array.Empty<string>(); //(await _claimRepository.GetAll().ConfigureAwait(false)).ToArray();
             result.ScopesSupported = scopeSupportedNames;
             result.ResponseTypesSupported = responseTypesSupported;
-            result.ResponseModesSupported = CoreConstants.Supported.SupportedResponseModes.ToArray();
+            result.ResponseModesSupported = CoreConstants.Supported._supportedResponseModes.ToArray();
             result.GrantTypesSupported = grantTypesSupported;
-            result.SubjectTypesSupported = CoreConstants.Supported.SupportedSubjectTypes.ToArray();
+            result.SubjectTypesSupported = CoreConstants.Supported._supportedSubjectTypes.ToArray();
             result.TokenEndpointAuthMethodSupported = tokenAuthMethodSupported;
             result.IdTokenSigningAlgValuesSupported = new[] { SecurityAlgorithms.RsaSha256, SecurityAlgorithms.EcdsaSha256 };
             //var issuer = Request.GetAbsoluteUriWithVirtualPath();
@@ -74,7 +69,7 @@ namespace SimpleAuth.Api.Discovery
             var jwksUri = issuer + "/" + CoreConstants.EndPoints.Jwks;
             var registrationEndPoint = issuer + "/" + CoreConstants.EndPoints.Registration;
             var revocationEndPoint = issuer + "/" + CoreConstants.EndPoints.Revocation;
-            // TODO : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
+            // default : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
             var checkSessionIframe = issuer + "/" + CoreConstants.EndPoints.CheckSession;
             var endSessionEndPoint = issuer + "/" + CoreConstants.EndPoints.EndSession;
             var introspectionEndPoint = issuer + "/" + CoreConstants.EndPoints.Introspection;
@@ -97,10 +92,6 @@ namespace SimpleAuth.Api.Discovery
             result.Version = "1.0";
             result.CheckSessionEndPoint = checkSessionIframe;
             result.EndSessionEndPoint = endSessionEndPoint;
-            if (!string.IsNullOrWhiteSpace(scimEndpoint))
-            {
-                result.ScimEndpoint = scimEndpoint;
-            }
 
             return result;
         }
@@ -121,22 +112,22 @@ namespace SimpleAuth.Api.Discovery
             return result.ToArray();
         }
 
-        private static string[] GetSupportedGrantTypes()
-        {
-            var result = new List<string>();
-            foreach (var supportedGrantType in CoreConstants.Supported.SupportedGrantTypes)
-            {
-                var record = Enum.GetName(typeof(GrantType), supportedGrantType);
-                result.Add(record);
-            }
+        //private static string[] GetSupportedGrantTypes()
+        //{
+        //    var result = new List<string>();
+        //    foreach (var supportedGrantType in )
+        //    {
+        //        //var record = Enum.GetName(typeof(GrantType), supportedGrantType);
+        //        result.Add(supportedGrantType);
+        //    }
 
-            return result.ToArray();
-        }
+        //    return result.ToArray();
+        //}
 
         private static string[] GetSupportedTokenEndPointAuthMethods()
         {
             var result = new List<string>();
-            foreach (var supportedAuthMethod in CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods)
+            foreach (var supportedAuthMethod in CoreConstants.Supported._supportedTokenEndPointAuthenticationMethods)
             {
                 var record = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), supportedAuthMethod);
                 result.Add(record);

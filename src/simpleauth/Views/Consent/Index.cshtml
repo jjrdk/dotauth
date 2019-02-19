@@ -6,7 +6,7 @@
 @model SimpleAuth.ViewModels.ConsentViewModel
 
 @{
-    var accessToCode = ViewBag.Translations["application_would_like_to"];
+    var accessToCode = "Application would like to";
     var accessToValue = string.Format(accessToCode, Model.ClientDisplayName);
 }
 <div class="row">
@@ -15,11 +15,11 @@
             <div class="card-image valign-wrapper center" style="padding:20px">
                 @if (string.IsNullOrWhiteSpace(Model.LogoUri))
                 {
-                    <img src="@Url.Content("~/img/OAuth2.png")" width="250" height="250" />
+                    <img src="@Url.Content("~/img/OAuth2.png")" alt="logo" width="250" height="250" />
                 }
                 else
                 {
-                    <img src="@Url.Content(Model.LogoUri)" width="250" height="250" />
+                    <img src="@Url.Content(Model.LogoUri)" alt="logo" width="250" height="250" />
                 }
             </div>
             <div class="card-stacked">
@@ -32,12 +32,10 @@
                         {
                         <div class="col s12">
                         <ul class="collection  with-header">
-                            <li class="collection-header"><h5>@ViewBag.Translations["scopes"]</h5></li>
+                            <li class="collection-header"><h5>Scopes</h5></li>
                             @foreach (var scope in Model.AllowedScopeDescriptions)
                             {
-                                <li class="collection-item">
-                                    @scope
-                                </li>
+                                <li class="collection-item">@scope</li>
                             }
                         </ul>
                         </div>
@@ -47,7 +45,7 @@
                         {
                         <div class="col s12">
                         <ul class="collection  with-header">
-                            <li class="collection-header"><h5>@ViewBag.Translations["individual_claims"]</h5></li>
+                            <li class="collection-header"><h5>Individual claims</h5></li>
                             @foreach (var claim in Model.AllowedIndividualClaims)
                             {
                                 <li class="collection-item">
@@ -64,17 +62,17 @@
                                                 <div class="col s12">
                             @if (!string.IsNullOrWhiteSpace(Model.PolicyUri))
                             {
-                                <a href="@Model.PolicyUri" target="_blank">@ViewBag.Translations["policy"] &nbsp;</a>
+                                <a href="@Model.PolicyUri" target="_blank">Policy &nbsp;</a>
                             }
                             @if (!string.IsNullOrWhiteSpace(Model.TosUri))
                             {
-                                <a href="@Model.TosUri" target="_blank">@ViewBag.Translations["tos"]</a>
+                                <a href="@Model.TosUri" target="_blank">Terms of Service</a>
                             }
                         </div>
                         }
                         <div class="col s12">
-                            <a href="@Url.Action("Cancel", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">@ViewBag.Translations["cancel"]</a>
-                            <a href="@Url.Action("Confirm", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">@ViewBag.Translations["confirm"]</a>
+                            <a href="@Url.Action("Cancel", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">Cancel</a>
+                            <a href="@Url.Action("Confirm", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">Confirm</a>
                         </div>
                     </div>
                 </div>
@@ -84,11 +82,11 @@
             <div class="card-image valign-wrapper center-align">
                 @if (string.IsNullOrWhiteSpace(Model.LogoUri))
                 {
-                    <img src="@Url.Content("~/img/OAuth2.png")" class="center-align" style="width:50%; margin: 24px auto 0;" />
+                    <img src="@Url.Content("~/img/OAuth2.png")" alt="logo" class="center-align" style="width:50%; margin: 24px auto 0;" />
                 }
                 else
                 {
-                    <img src="@Url.Content(Model.LogoUri)" class="center-align" style="width:30%; margin: 24px auto 0;" />
+                    <img src="@Url.Content(Model.LogoUri)" alt="logo" class="center-align" style="width:30%; margin: 24px auto 0;" />
                 }
             </div>
             <div class="card-content">
@@ -100,12 +98,10 @@
                     {
                     <div class="col s12">
                         <ul class="collection  with-header">
-                            <li class="collection-header"><strong>@ViewBag.Translations["scopes"]</strong></li>
+                            <li class="collection-header"><strong>Scopes</strong></li>
                             @foreach (var scope in Model.AllowedScopeDescriptions)
                             {
-                                <li class="collection-item">
-                                    @scope
-                                </li>
+                                <li class="collection-item">@scope</li>
                             }
                         </ul>
                     </div>
@@ -115,12 +111,10 @@
                     {
                     <div class="col s12">
                         <ul class="collection  with-header">
-                            <li class="collection-header"><strong>@ViewBag.Translations["individual_claims"]</strong></li>
+                            <li class="collection-header"><strong>Individual claims</strong></li>
                             @foreach (var claim in Model.AllowedIndividualClaims)
                             {
-                                <li class="collection-item">
-                                    @claim
-                                </li>
+                                <li class="collection-item">@claim</li>
                             }
                         </ul>
                     </div>
@@ -132,19 +126,19 @@
                         <div class="col s12">
                             @if (!string.IsNullOrWhiteSpace(Model.PolicyUri))
                             {
-                                <a href="@Model.PolicyUri" target="_blank">@ViewBag.Translations["policy"] &nbsp;</a>
+                                <a href="@Model.PolicyUri" target="_blank">Policy &nbsp;</a>
                             }
                             @if (!string.IsNullOrWhiteSpace(Model.TosUri))
                             {
-                                <a href="@Model.TosUri" target="_blank">@ViewBag.Translations["tos"]</a>
+                                <a href="@Model.TosUri" target="_blank">Terms of Service</a>
                             }
                         </div>
                     }
                 </div>
             </div>
             <div class="card-action">
-                <a href="@Url.Action("Cancel", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">@ViewBag.Translations["cancel"]</a>
-                <a href="@Url.Action("Confirm", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">@ViewBag.Translations["confirm"]</a>
+                <a href="@Url.Action("Cancel", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">Cancel</a>
+                <a href="@Url.Action("Confirm", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">Confirm</a>
             </div>
         </div>
     </div>

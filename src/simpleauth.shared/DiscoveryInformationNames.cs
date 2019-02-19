@@ -25,6 +25,5 @@ namespace SimpleAuth.Shared
         public const string UserInfoEndPoint = "userinfo_endpoint";
         public const string Version = "version";
         public const string RegistrationEndPoint = "registration_endpoint";
-        public const string ScimEndpoint = "scim_endpoint";
     }
 }

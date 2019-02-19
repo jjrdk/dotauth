@@ -14,31 +14,30 @@
 
 namespace SimpleAuth.Api.PolicyController.Actions
 {
-    using Errors;
-    using Exceptions;
-    using Parameters;
     using Repositories;
     using Shared.Models;
+    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Repositories;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
 
     internal class UpdatePolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
         private readonly IResourceSetRepository _resourceSetRepository;
 
-        public UpdatePolicyAction(
-            IPolicyRepository policyRepository,
-            IResourceSetRepository resourceSetRepository)
+        public UpdatePolicyAction(IPolicyRepository policyRepository, IResourceSetRepository resourceSetRepository)
         {
             _policyRepository = policyRepository;
             _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<bool> Execute(UpdatePolicyParameter updatePolicyParameter)
+        public async Task<bool> Execute(PutPolicy updatePolicyParameter, CancellationToken cancellationToken)
         {
             // Check the parameters
             if (updatePolicyParameter == null)
@@ -48,14 +47,17 @@ namespace SimpleAuth.Api.PolicyController.Actions
 
             if (string.IsNullOrWhiteSpace(updatePolicyParameter.PolicyId))
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
             }
 
             if (updatePolicyParameter.Rules == null || !updatePolicyParameter.Rules.Any())
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified,
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(
+                        ErrorDescriptions.TheParameterNeedsToBeSpecified,
                         UmaConstants.AddPolicyParameterNames.Rules));
             }
 
@@ -63,13 +65,16 @@ namespace SimpleAuth.Api.PolicyController.Actions
             Policy policy;
             try
             {
-                policy = await _policyRepository.Get(updatePolicyParameter.PolicyId).ConfigureAwait(false);
+                policy = await _policyRepository.Get(updatePolicyParameter.PolicyId, cancellationToken)
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InternalError,
-                    string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
+                    string.Format(
+                        ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved,
+                        updatePolicyParameter.PolicyId),
                     ex);
             }
 
@@ -78,49 +83,47 @@ namespace SimpleAuth.Api.PolicyController.Actions
                 return false;
             }
 
-            policy.Rules = new List<PolicyRule>();
             // Check all the scopes are valid.
             foreach (var resourceSetId in policy.ResourceSetIds)
             {
                 var resourceSet = await _resourceSetRepository.Get(resourceSetId).ConfigureAwait(false);
-                if (updatePolicyParameter.Rules.Any(r =>
-                    r.Scopes != null && !r.Scopes.All(s => resourceSet.Scopes.Contains(s))))
+                if (updatePolicyParameter.Rules.Any(
+                    r => r.Scopes != null && !r.Scopes.All(s => resourceSet.Scopes.Contains(s))))
                 {
-                    throw new SimpleAuthException(ErrorCodes.InvalidScope,
+                    throw new SimpleAuthException(
+                        ErrorCodes.InvalidScope,
                         ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
                 }
             }
 
-            // Update the authorization policy.
-            foreach (var ruleParameter in updatePolicyParameter.Rules)
-            {
-                var claims = new List<Claim>();
-                if (ruleParameter.Claims != null)
-                {
-                    claims = ruleParameter.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
-                }
 
-                policy.Rules.Add(new PolicyRule
-                {
-                    Id = ruleParameter.Id,
-                    ClientIdsAllowed = ruleParameter.ClientIdsAllowed,
-                    IsResourceOwnerConsentNeeded = ruleParameter.IsResourceOwnerConsentNeeded,
-                    Scopes = ruleParameter.Scopes,
-                    Script = ruleParameter.Script,
-                    Claims = claims,
-                    OpenIdProvider = ruleParameter.OpenIdProvider
-                });
-            }
+            // Update the authorization policy.
+            policy.Rules = updatePolicyParameter.Rules.Select(
+                    ruleParameter => new PolicyRule
+                    {
+                        Id = ruleParameter.Id,
+                        ClientIdsAllowed = ruleParameter.ClientIdsAllowed,
+                        IsResourceOwnerConsentNeeded = ruleParameter.IsResourceOwnerConsentNeeded,
+                        Scopes = ruleParameter.Scopes,
+                        Script = ruleParameter.Script,
+                        Claims = ruleParameter.Claims == null
+                            ? Array.Empty<Claim>()
+                            : ruleParameter.Claims.Select(c => new Claim(c.Type, c.Value)).ToArray(),
+                        OpenIdProvider = ruleParameter.OpenIdProvider
+                    })
+                .ToArray();
 
             try
             {
-                return await _policyRepository.Update(policy).ConfigureAwait(false);
+                return await _policyRepository.Update(policy, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InternalError,
-                    string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated, updatePolicyParameter.PolicyId),
+                    string.Format(
+                        ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated,
+                        updatePolicyParameter.PolicyId),
                     ex);
             }
         }

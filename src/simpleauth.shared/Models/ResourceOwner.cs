@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,10 +15,11 @@
 namespace SimpleAuth.Shared.Models
 {
     using System;
-    using System.Collections.Generic;
     using System.Security.Claims;
-    using DTOs;
 
+    /// <summary>
+    /// Defines the resource owner content.
+    /// </summary>
     public class ResourceOwner
     {
         /// <summary>
@@ -32,7 +33,7 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Gets or sets the list of claims.
         /// </summary>
-        public IList<Claim> Claims { get; set; } = Array.Empty<Claim>();
+        public Claim[] Claims { get; set; } = Array.Empty<Claim>();
         /// <summary>
         /// Gets or sets the two factor authentications
         /// </summary>
@@ -50,10 +51,12 @@ namespace SimpleAuth.Shared.Models
         /// </summary>
         public DateTime UpdateDateTime { get; set; }
 
-        public bool ScimOnly { get; set; }
-
-        public ScimUser UserProfile { get; set; }
-
-        public string[] ExternalLogins { get; set; } = Array.Empty<string>();
+        /// <summary>
+        /// Gets or sets the external logins.
+        /// </summary>
+        /// <value>
+        /// The external logins.
+        /// </value>
+        public ExternalAccountLink[] ExternalLogins { get; set; } = Array.Empty<ExternalAccountLink>();
     }
 }

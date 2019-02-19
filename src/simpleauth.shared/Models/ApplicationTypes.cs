@@ -1,8 +1,17 @@
 ﻿namespace SimpleAuth.Shared.Models
 {
+    /// <summary>
+    /// Defines the application types.
+    /// </summary>
     public enum ApplicationTypes
     {
-        native = 0,
-        web = 1
+        /// <summary>
+        /// Native application
+        /// </summary>
+        Native = 0,
+        /// <summary>
+        /// Web application
+        /// </summary>
+        Web = 1
     }
 }

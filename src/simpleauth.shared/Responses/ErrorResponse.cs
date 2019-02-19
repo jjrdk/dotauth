@@ -5,11 +5,11 @@
     [DataContract]
     public class ErrorResponse
     {
-        [DataMember(Name = SharedConstants.ErrorResponseNames.Error)]
+        [DataMember(Name = "error")]
         public string Error { get; set; }
-        [DataMember(Name = SharedConstants.ErrorResponseNames.ErrorDescription)]
+        [DataMember(Name = "error_description")]
         public string ErrorDescription { get; set; }
-        [DataMember(Name = SharedConstants.ErrorResponseNames.ErrorUri)]
+        [DataMember(Name = "error_uri")]
         public string ErrorUri { get; set; }
     }
 }

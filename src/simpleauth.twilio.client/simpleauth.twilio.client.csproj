@@ -9,10 +9,8 @@
   <Import Project="../../shared.proj" />
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />
-    <ProjectReference Include="..\simpleauth.twilio.shared\simpleauth.twilio.shared.csproj" />
   </ItemGroup>
 </Project>

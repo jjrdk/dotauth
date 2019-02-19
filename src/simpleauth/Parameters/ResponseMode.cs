@@ -1,10 +1,10 @@
-﻿namespace SimpleAuth.Parameters
-{
-    public enum ResponseMode
-    {
-        None,
-        query,
-        fragment,
-        form_post
-    }
-}
+﻿//namespace SimpleAuth.Parameters
+//{
+//    public enum ResponseMode
+//    {
+//        None,
+//        Query,
+//        Fragment,
+//        FormPost
+//    }
+//}

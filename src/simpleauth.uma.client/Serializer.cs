@@ -1,11 +1,11 @@
 ﻿namespace SimpleAuth.Uma.Client
 {
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using System;
     using System.IO;
     using System.Linq;
     using System.Security.Claims;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
 
     public sealed class Serializer
     {
@@ -16,6 +16,7 @@
         {
             _serializer = new JsonSerializer
             {
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
                 DefaultValueHandling = DefaultValueHandling.Ignore,
                 NullValueHandling = NullValueHandling.Ignore,
                 StringEscapeHandling = StringEscapeHandling.EscapeHtml

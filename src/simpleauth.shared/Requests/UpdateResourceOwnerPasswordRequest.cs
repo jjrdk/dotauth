@@ -2,12 +2,28 @@
 {
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Defines the request to update a resource owner password.
+    /// </summary>
     [DataContract]
     public class UpdateResourceOwnerPasswordRequest
     {
-        [DataMember(Name = SharedConstants.ResourceOwnerResponseNames.Login)]
+        /// <summary>
+        /// Gets or sets the login.
+        /// </summary>
+        /// <value>
+        /// The login.
+        /// </value>
+        [DataMember(Name = "login")]
         public string Login { get; set; }
-        [DataMember(Name = SharedConstants.ResourceOwnerResponseNames.Password)]
+
+        /// <summary>
+        /// Gets or sets the password.
+        /// </summary>
+        /// <value>
+        /// The password.
+        /// </value>
+        [DataMember(Name = "password")]
         public string Password { get; set; }
     }
 }

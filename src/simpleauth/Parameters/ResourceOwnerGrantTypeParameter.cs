@@ -14,8 +14,6 @@
 
 namespace SimpleAuth.Parameters
 {
-    using System.Collections.Generic;
-
     public sealed class ResourceOwnerGrantTypeParameter : GrantTypeParameter
     {
         public string Scope { get; set; }

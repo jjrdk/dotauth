@@ -3,8 +3,6 @@
 namespace SimpleAuth.Api.Token
 {
     using Authenticate;
-    using Errors;
-    using Exceptions;
     using JwtToken;
     using Newtonsoft.Json.Linq;
     using Parameters;
@@ -20,32 +18,34 @@ namespace SimpleAuth.Api.Token
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
 
-    internal sealed class UmaTokenActions : IUmaTokenActions
+    internal sealed class UmaTokenActions
     {
         private readonly ITicketStore _ticketStore;
-        private readonly UmaConfigurationOptions _configurationService;
-        private readonly IAuthorizationPolicyValidator _authorizationPolicyValidator;
+        private readonly RuntimeSettings _configurationService;
+        private readonly AuthorizationPolicyValidator _authorizationPolicyValidator;
         private readonly AuthenticateClient _authenticateClient;
-        private readonly IJwtGenerator _jwtGenerator;
+        private readonly JwtGenerator _jwtGenerator;
         private readonly ITokenStore _tokenStore;
         private readonly IEventPublisher _eventPublisher;
 
         public UmaTokenActions(
             ITicketStore ticketStore,
-            UmaConfigurationOptions configurationService,
-            IAuthorizationPolicyValidator authorizationPolicyValidator,
+            RuntimeSettings configurationService,
             IClientStore clientStore,
-            IJwtGenerator jwtGenerator,
+            IScopeRepository scopeRepository,
             ITokenStore tokenStore,
+            IResourceSetRepository resourceSetRepository,
             IEventPublisher eventPublisher)
         {
             _ticketStore = ticketStore;
             _configurationService = configurationService;
-            _authorizationPolicyValidator = authorizationPolicyValidator;
+            _authorizationPolicyValidator = new AuthorizationPolicyValidator(clientStore, resourceSetRepository, eventPublisher);
             _authenticateClient = new AuthenticateClient(clientStore);
-            _jwtGenerator = jwtGenerator;
+            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository);
             _tokenStore = tokenStore;
             _eventPublisher = eventPublisher;
         }
@@ -54,7 +54,8 @@ namespace SimpleAuth.Api.Token
             GetTokenViaTicketIdParameter parameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
-            string issuerName)
+            string issuerName,
+            CancellationToken cancellationToken)
         {
             // 1. Check parameters.
             if (parameter == null)
@@ -67,7 +68,7 @@ namespace SimpleAuth.Api.Token
                 throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
                     string.Format(
                         ErrorDescriptions.TheParameterNeedsToBeSpecified,
-                        PostAuthorizationNames.TicketId));
+                        "ticket"));
             }
 
             if (string.IsNullOrWhiteSpace(parameter.Ticket))
@@ -80,21 +81,21 @@ namespace SimpleAuth.Api.Token
                 authenticationHeaderValue.GetAuthenticateInstruction(
                     parameter,
                     certificate);
-            var authResult = await _authenticateClient.Authenticate(instruction, issuerName).ConfigureAwait(false);
+            var authResult = await _authenticateClient.Authenticate(instruction, issuerName, cancellationToken).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
-            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.uma_ticket))
+            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantTypes.UmaTicket))
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidGrant,
-                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.uma_ticket));
+                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantTypes.UmaTicket));
             }
 
             // 3. Retrieve the ticket.
-            var ticket = await _ticketStore.Get(parameter.Ticket).ConfigureAwait(false);
+            var ticket = await _ticketStore.Get(parameter.Ticket, cancellationToken).ConfigureAwait(false);
             if (ticket == null)
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidTicket,
@@ -115,7 +116,7 @@ namespace SimpleAuth.Api.Token
 
             // 4. Check the authorization.
             var authorizationResult = await _authorizationPolicyValidator
-                .IsAuthorized(ticket, client.ClientId, claimTokenParameter)
+                .IsAuthorized(ticket, client.ClientId, claimTokenParameter, cancellationToken)
                 .ConfigureAwait(false);
             if (authorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
@@ -130,13 +131,13 @@ namespace SimpleAuth.Api.Token
             }
 
             // 5. Generate a granted token.
-            var grantedToken = GenerateTokenAsync(client, ticket.Lines, "openid", issuerName);
-            await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);
-            await _ticketStore.Remove(ticket.Id).ConfigureAwait(false);
+            var grantedToken = GenerateToken(client, ticket.Lines, "openid", issuerName);
+            await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
+            await _ticketStore.Remove(ticket.Id, cancellationToken).ConfigureAwait(false);
             return grantedToken;
         }
 
-        public GrantedToken GenerateTokenAsync(
+        private GrantedToken GenerateToken(
             Client client,
             IEnumerable<TicketLine> ticketLines,
             string scope,
@@ -181,7 +182,7 @@ namespace SimpleAuth.Api.Token
                 AccessToken = accessToken,
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
                 ExpiresIn = (int)expiresIn.TotalSeconds,
-                TokenType = CoreConstants.StandardTokenTypes.Bearer,
+                TokenType = CoreConstants.StandardTokenTypes._bearer,
                 CreateDateTime = DateTime.UtcNow,
                 Scope = scope,
                 ClientId = client.ClientId

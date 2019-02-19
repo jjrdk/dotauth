@@ -1,15 +1,14 @@
 ﻿namespace SimpleAuth.Twilio.Client
 {
+    using Newtonsoft.Json;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
     using System;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
-    using Newtonsoft.Json;
-    using Shared.Requests;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Responses;
 
-    internal sealed class SidSmsAuthenticateClient : ISidSmsAuthenticateClient
+    public sealed class SidSmsAuthenticateClient
     {
         private readonly HttpClient _client;
 
@@ -18,13 +17,19 @@
             _client = client;
         }
 
-        public Task<BaseResponse> Send(string requestUrl, ConfirmationCodeRequest request, string authorizationValue = null)
+        public Task<GenericResponse<object>> Send(
+            string requestUrl,
+            ConfirmationCodeRequest request,
+            string authorizationValue = null)
         {
             requestUrl += "/code";
             return SendSms(new Uri(requestUrl), request, authorizationValue);
         }
 
-        private async Task<BaseResponse> SendSms(Uri requestUri, ConfirmationCodeRequest request, string authorizationValue = null)
+        private async Task<GenericResponse<object>> SendSms(
+            Uri requestUri,
+            ConfirmationCodeRequest request,
+            string authorizationValue = null)
         {
             if (requestUri == null)
             {
@@ -57,7 +62,7 @@
             }
             catch
             {
-                return new BaseResponse
+                return new GenericResponse<object>
                 {
                     ContainsError = true,
                     Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
@@ -65,7 +70,7 @@
                 };
             }
 
-            return new BaseResponse();
+            return new GenericResponse<object>();
         }
     }
 }

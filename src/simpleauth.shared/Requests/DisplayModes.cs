@@ -4,13 +4,13 @@
 
     public enum DisplayModes
     {
-        [EnumMember(Value = PageNames.Page)]
+        [EnumMember(Value = "page")]
         Page,
-        [EnumMember(Value = PageNames.Popup)]
+        [EnumMember(Value = "popup")]
         Popup,
-        [EnumMember(Value = PageNames.Touch)]
+        [EnumMember(Value = "touch")]
         Touch,
-        [EnumMember(Value = PageNames.Wap)]
+        [EnumMember(Value = "wap")]
         Wap
     }
 }

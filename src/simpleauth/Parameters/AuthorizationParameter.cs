@@ -14,11 +14,9 @@
 
 namespace SimpleAuth.Parameters
 {
-    using Shared.Models;
     using System;
-    using System.Collections.Generic;
 
-    public sealed class AuthorizationParameter
+    internal sealed class AuthorizationParameter
     {
         public string ClientId { get; set; }
         public string Scope { get; set; }
@@ -26,7 +24,7 @@ namespace SimpleAuth.Parameters
         public string ResponseType { get; set; }
         public Uri RedirectUrl { get; set; }
         public string State { get; set; }
-        public ResponseMode ResponseMode { get; set; }
+        public string ResponseMode { get; set; }
         public string Nonce { get; set; }
         public string Prompt { get; set; }
         public double MaxAge { get; set; }
@@ -36,7 +34,7 @@ namespace SimpleAuth.Parameters
         public string AcrValues { get; set; }
         public ClaimsParameter Claims { get; set; }
         public string CodeChallenge { get; set; }
-        public CodeChallengeMethods? CodeChallengeMethod { get; set; }
+        public string CodeChallengeMethod { get; set; }
         public string ProcessId { get; set; }
         public string OriginUrl { get; set; }
         public string SessionId { get; set; }

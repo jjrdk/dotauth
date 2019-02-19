@@ -14,11 +14,8 @@
 
 namespace SimpleAuth.ViewModels
 {
-    using System.Collections.Generic;
-
-    public class AuthorizeOpenIdViewModel
+    public class AuthorizeOpenIdViewModel:IdProviderAuthorizeViewModel
     {
         public string Code { get; set; }
-        public List<IdProviderViewModel> IdProviders { get; set; } = new List<IdProviderViewModel>();
     }
 }

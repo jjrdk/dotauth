@@ -1,11 +1,11 @@
 ﻿// Copyright © 2016 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS I S" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,31 +14,27 @@
 
 namespace SimpleAuth.Client
 {
+    using Newtonsoft.Json;
+    using Results;
+    using Shared.Models;
+    using Shared.Responses;
     using System;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
-    using Errors;
-    using Newtonsoft.Json;
-    using Operations;
-    using Results;
-    using Shared.Models;
-    using Shared.Responses;
 
-    internal class RegistrationClient : IRegistrationClient
+    internal class RegistrationClient
     {
         private readonly HttpClient _client;
-        private readonly IGetDiscoveryOperation _getDiscoveryOperation;
+        private readonly GetDiscoveryOperation _getDiscoveryOperation;
 
-        public RegistrationClient(HttpClient client, IGetDiscoveryOperation getDiscoveryOperation)
+        public RegistrationClient(HttpClient client)
         {
             _client = client;
-            _getDiscoveryOperation = getDiscoveryOperation;
+            _getDiscoveryOperation = new GetDiscoveryOperation(client);
         }
 
-        public async Task<GetRegisterClientResult> ResolveAsync(Client client,
-            string configurationUrl,
-            string accessToken)
+        public async Task<BaseSidContentResult<Client>> Resolve(Client client, string configurationUrl, string accessToken)
         {
             if (string.IsNullOrWhiteSpace(configurationUrl))
             {
@@ -50,14 +46,11 @@ namespace SimpleAuth.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            var discoveryDocument = await _getDiscoveryOperation.Execute(uri).ConfigureAwait(false);
 
             var json = JsonConvert.SerializeObject(
                 client,
-                new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -78,7 +71,7 @@ namespace SimpleAuth.Client
             }
             catch (Exception)
             {
-                return new GetRegisterClientResult
+                return new BaseSidContentResult<Client>
                 {
                     ContainsError = true,
                     Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(content),
@@ -86,7 +79,7 @@ namespace SimpleAuth.Client
                 };
             }
 
-            return new GetRegisterClientResult
+            return new BaseSidContentResult<Client>
             {
                 ContainsError = false,
                 Content = JsonConvert.DeserializeObject<Client>(content)

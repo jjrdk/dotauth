@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@ namespace SimpleAuth.Shared.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Security.Claims;
     using Microsoft.IdentityModel.Tokens;
 
     public class Client
@@ -68,35 +69,35 @@ namespace SimpleAuth.Shared.Models
         public string IdTokenEncryptedResponseEnc { get; set; }
 
         /// <summary>
-        /// Gets or sets the client authentication method for the Token Endpoint. 
+        /// Gets or sets the client authentication method for the Token Endpoint.
         /// </summary>
         public TokenEndPointAuthenticationMethods TokenEndPointAuthMethod { get; set; } =
-            TokenEndPointAuthenticationMethods.client_secret_basic;
+            TokenEndPointAuthenticationMethods.ClientSecretBasic;
 
         /// <summary>
         /// Gets or sets an array containing a list of OAUTH2.0 response_type values
         /// </summary>
-        public IList<string> ResponseTypes { get; set; } = ResponseTypeNames.All;
+        public ICollection<string> ResponseTypes { get; set; } = ResponseTypeNames.All;
 
         /// <summary>
         /// Gets or sets an array containing a list of OAUTH2.0 grant types
         /// </summary>
-        public IList<GrantType> GrantTypes { get; set; } = new List<GrantType>();
+        public ICollection<string> GrantTypes { get; set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets a list of OAUTH2.0 grant_types.
         /// </summary>
-        public IList<Scope> AllowedScopes { get; set; } = new List<Scope>();
+        public ICollection<Scope> AllowedScopes { get; set; } = new List<Scope>();
 
         /// <summary>
         /// Gets or sets an array of Redirection URI values used by the client.
         /// </summary>
-        public IList<Uri> RedirectionUrls { get; set; } = new List<Uri>();
+        public ICollection<Uri> RedirectionUrls { get; set; } = new List<Uri>();
 
         /// <summary>
         /// Gets or sets the type of application
         /// </summary>
-        public ApplicationTypes ApplicationType { get; set; } = ApplicationTypes.web;
+        public ApplicationTypes ApplicationType { get; set; } = ApplicationTypes.Web;
 
         ///// <summary>
         ///// Url for the Client's JSON Web Key Set document
@@ -111,7 +112,9 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Gets or sets the list of contacts
         /// </summary>
-        public IList<string> Contacts { get; set; } = new List<string>();
+        public ICollection<string> Contacts { get; set; } = new List<string>();
+
+        public ICollection<Claim> Claims { get; set; } = new List<Claim>();
 
         /// <summary>
         /// Get or set the sector identifier uri
@@ -181,7 +184,7 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Gets or sets the list of request uris
         /// </summary>
-        public IList<Uri> RequestUris { get; set; } = new List<Uri>();
+        public ICollection<Uri> RequestUris { get; set; } = new List<Uri>();
 
         /// <summary>
         /// Gets or sets use SCIM protocol to access user information.
@@ -196,6 +199,6 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Get or sets the post logout redirect uris.
         /// </summary>
-        public IList<Uri> PostLogoutRedirectUris { get; set; } = new List<Uri>();
+        public ICollection<Uri> PostLogoutRedirectUris { get; set; } = new List<Uri>();
     }
 }

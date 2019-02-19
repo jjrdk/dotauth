@@ -15,7 +15,6 @@
 namespace SimpleAuth.Results
 {
     using System.Collections.Generic;
-    using Parameters;
 
     public class RedirectInstruction
     {
@@ -26,7 +25,7 @@ namespace SimpleAuth.Results
 
         public IList<Parameter> Parameters { get; }
         public SimpleAuthEndPoints Action { get; set; }
-        public ResponseMode ResponseMode { get; set; }
+        public string ResponseMode { get; set; }
 
         public void AddParameter(string name, string value)
         {

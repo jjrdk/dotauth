@@ -15,29 +15,29 @@
 
 //        private readonly List<string> DEFAULT_CLAIMS = new List<string>
 //        {
-//             JwtConstants.StandardResourceOwnerClaimNames.Subject ,
-//             JwtConstants.StandardResourceOwnerClaimNames.Name ,
-//             JwtConstants.StandardResourceOwnerClaimNames.FamilyName ,
-//             JwtConstants.StandardResourceOwnerClaimNames.GivenName ,
-//             JwtConstants.StandardResourceOwnerClaimNames.MiddleName ,
-//             JwtConstants.StandardResourceOwnerClaimNames.NickName ,
-//             JwtConstants.StandardResourceOwnerClaimNames.PreferredUserName ,
-//             JwtConstants.StandardResourceOwnerClaimNames.Profile ,
-//             JwtConstants.StandardResourceOwnerClaimNames.Picture ,
-//             JwtConstants.StandardResourceOwnerClaimNames.WebSite ,
-//             JwtConstants.StandardResourceOwnerClaimNames.Gender ,
-//             JwtConstants.StandardResourceOwnerClaimNames.BirthDate ,
-//             JwtConstants.StandardResourceOwnerClaimNames.ZoneInfo ,
-//             JwtConstants.StandardResourceOwnerClaimNames.Locale ,
-//             JwtConstants.StandardResourceOwnerClaimNames.UpdatedAt ,
-//             JwtConstants.StandardResourceOwnerClaimNames.Email ,
-//             JwtConstants.StandardResourceOwnerClaimNames.EmailVerified ,
-//             JwtConstants.StandardResourceOwnerClaimNames.Address ,
-//             JwtConstants.StandardResourceOwnerClaimNames.PhoneNumber ,
-//             JwtConstants.StandardResourceOwnerClaimNames.PhoneNumberVerified ,
-//             JwtConstants.StandardResourceOwnerClaimNames.Role ,
-//             JwtConstants.StandardResourceOwnerClaimNames.ScimId ,
-//             JwtConstants.StandardResourceOwnerClaimNames.ScimLocation
+//             JwtConstants.OpenIdClaimTypes.Subject ,
+//             JwtConstants.OpenIdClaimTypes.Name ,
+//             JwtConstants.OpenIdClaimTypes.FamilyName ,
+//             JwtConstants.OpenIdClaimTypes.GivenName ,
+//             JwtConstants.OpenIdClaimTypes.MiddleName ,
+//             JwtConstants.OpenIdClaimTypes.NickName ,
+//             JwtConstants.OpenIdClaimTypes.PreferredUserName ,
+//             JwtConstants.OpenIdClaimTypes.Profile ,
+//             JwtConstants.OpenIdClaimTypes.Picture ,
+//             JwtConstants.OpenIdClaimTypes.WebSite ,
+//             JwtConstants.OpenIdClaimTypes.Gender ,
+//             JwtConstants.OpenIdClaimTypes.BirthDate ,
+//             JwtConstants.OpenIdClaimTypes.ZoneInfo ,
+//             JwtConstants.OpenIdClaimTypes.Locale ,
+//             JwtConstants.OpenIdClaimTypes.UpdatedAt ,
+//             JwtConstants.OpenIdClaimTypes.Email ,
+//             JwtConstants.OpenIdClaimTypes.EmailVerified ,
+//             JwtConstants.OpenIdClaimTypes.Address ,
+//             JwtConstants.OpenIdClaimTypes.PhoneNumber ,
+//             JwtConstants.OpenIdClaimTypes.PhoneNumberVerified ,
+//             JwtConstants.OpenIdClaimTypes.Role ,
+//             JwtConstants.OpenIdClaimTypes.ScimId ,
+//             JwtConstants.OpenIdClaimTypes.ScimLocation
 //        };
 
 //        public DefaultClaimRepository(IReadOnlyCollection<string> claims = null)
@@ -64,7 +64,7 @@
 //            return Task.FromResult(true);
 //        }
 
-//        public Task<IEnumerable<string>> GetAllAsync()
+//        public Task<IEnumerable<string>> GetAll()
 //        {
 //            return Task.FromResult(_claims.Select(c => c));
 //        }

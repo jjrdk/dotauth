@@ -14,25 +14,44 @@
 
 namespace SimpleAuth.Authenticate
 {
-    using Errors;
     using Shared.Models;
     using Shared.Repositories;
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
 
-    public class AuthenticateClient
+    /// <summary>
+    /// Defines the authenticate client.
+    /// </summary>
+    internal class AuthenticateClient
     {
         private readonly ClientAssertionAuthentication _clientAssertionAuthentication;
         private readonly IClientStore _clientRepository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthenticateClient"/> class.
+        /// </summary>
+        /// <param name="clientRepository">The client repository.</param>
         public AuthenticateClient(IClientStore clientRepository)
         {
             _clientAssertionAuthentication = new ClientAssertionAuthentication(clientRepository);
             _clientRepository = clientRepository;
         }
 
-        public async Task<AuthenticationResult> Authenticate(AuthenticateInstruction instruction, string issuerName)
+        /// <summary>
+        /// Authenticates the specified instruction.
+        /// </summary>
+        /// <param name="instruction">The instruction.</param>
+        /// <param name="issuerName">Name of the issuer.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">instruction</exception>
+        public async Task<AuthenticationResult> Authenticate(
+            AuthenticateInstruction instruction,
+            string issuerName,
+            CancellationToken cancellationToken)
         {
             if (instruction == null)
             {
@@ -45,7 +64,7 @@ namespace SimpleAuth.Authenticate
             var clientId = TryGettingClientId(instruction);
             if (!string.IsNullOrWhiteSpace(clientId))
             {
-                client = await _clientRepository.GetById(clientId).ConfigureAwait(false);
+                client = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
             }
 
             if (client == null)
@@ -56,35 +75,44 @@ namespace SimpleAuth.Authenticate
             var errorMessage = string.Empty;
             switch (client.TokenEndPointAuthMethod)
             {
-                case TokenEndPointAuthenticationMethods.client_secret_basic:
-                    client = ClientSecretBasicAuthentication.AuthenticateClient(instruction, client);
+                case TokenEndPointAuthenticationMethods.ClientSecretBasic:
+                    client = instruction.AuthenticateClient(client);
                     if (client == null)
                     {
                         errorMessage = ErrorDescriptions.TheClientCannotBeAuthenticatedWithSecretBasic;
                     }
+
                     break;
-                case TokenEndPointAuthenticationMethods.client_secret_post:
+                case TokenEndPointAuthenticationMethods.ClientSecretPost:
                     client = ClientSecretPostAuthentication.AuthenticateClient(instruction, client);
                     if (client == null)
                     {
                         errorMessage = ErrorDescriptions.TheClientCannotBeAuthenticatedWithSecretPost;
                     }
+
                     break;
-                case TokenEndPointAuthenticationMethods.client_secret_jwt:
+                case TokenEndPointAuthenticationMethods.ClientSecretJwt:
                     if (client.Secrets == null || client.Secrets.All(s => s.Type != ClientSecretTypes.SharedSecret))
                     {
-                        errorMessage = string.Format(ErrorDescriptions.TheClientDoesntContainASharedSecret, client.ClientId);
+                        errorMessage = string.Format(
+                            ErrorDescriptions.TheClientDoesntContainASharedSecret,
+                            client.ClientId);
                         break;
                     }
-                    return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction).ConfigureAwait(false);
-                case TokenEndPointAuthenticationMethods.private_key_jwt:
-                    return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, issuerName).ConfigureAwait(false);
-                case TokenEndPointAuthenticationMethods.tls_client_auth:
+
+                    return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(instruction, cancellationToken)
+                        .ConfigureAwait(false);
+                case TokenEndPointAuthenticationMethods.PrivateKeyJwt:
+                    return await _clientAssertionAuthentication
+                        .AuthenticateClientWithPrivateKeyJwt(instruction, issuerName, cancellationToken)
+                        .ConfigureAwait(false);
+                case TokenEndPointAuthenticationMethods.TlsClientAuth:
                     client = ClientTlsAuthentication.AuthenticateClient(instruction, client);
                     if (client == null)
                     {
                         errorMessage = ErrorDescriptions.TheClientCannotBeAuthenticatedWithTls;
                     }
+
                     break;
             }
 
@@ -104,8 +132,10 @@ namespace SimpleAuth.Authenticate
                 return clientId;
             }
 
-            clientId = ClientSecretBasicAuthentication.GetClientId(instruction);
-            return !string.IsNullOrWhiteSpace(clientId) ? clientId : ClientSecretPostAuthentication.GetClientId(instruction);
+            clientId = instruction.ClientIdFromAuthorizationHeader;
+            return !string.IsNullOrWhiteSpace(clientId)
+                ? clientId
+                : instruction.ClientIdFromHttpRequestBody;
         }
     }
 }

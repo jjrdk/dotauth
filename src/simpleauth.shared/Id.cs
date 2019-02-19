@@ -2,7 +2,7 @@
 {
     using System;
 
-    public static class Id
+    internal static class Id
     {
         public static string Create()
         {

@@ -14,17 +14,17 @@
 
 namespace SimpleAuth.Api.PolicyController.Actions
 {
-    using Errors;
-    using Exceptions;
-    using Parameters;
     using Repositories;
     using Shared;
     using Shared.Models;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Repositories;
 
     internal class AddAuthorizationPolicyAction
     {
@@ -39,7 +39,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
             _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<string> Execute(AddPolicyParameter addPolicyParameter)
+        public async Task<string> Execute(PostPolicy addPolicyParameter, CancellationToken cancellationToken)
         {
             if (addPolicyParameter == null)
             {
@@ -89,26 +89,20 @@ namespace SimpleAuth.Api.PolicyController.Actions
                 }
             }
 
-            var rules = new List<PolicyRule>();
-            foreach (var ruleParameter in addPolicyParameter.Rules)
-            {
-                var claims = new List<Claim>();
-                if (ruleParameter.Claims != null)
-                {
-                    claims = ruleParameter.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
-                }
-
-                rules.Add(new PolicyRule
-                {
-                    Id = Id.Create(),
-                    IsResourceOwnerConsentNeeded = ruleParameter.IsResourceOwnerConsentNeeded,
-                    ClientIdsAllowed = ruleParameter.ClientIdsAllowed,
-                    Scopes = ruleParameter.Scopes,
-                    Script = ruleParameter.Script,
-                    Claims = claims,
-                    OpenIdProvider = ruleParameter.OpenIdProvider
-                });
-            }
+            var rules = addPolicyParameter.Rules.Select(
+                    ruleParameter => new PolicyRule
+                    {
+                        Id = Id.Create(),
+                        IsResourceOwnerConsentNeeded = ruleParameter.IsResourceOwnerConsentNeeded,
+                        ClientIdsAllowed = ruleParameter.ClientIdsAllowed,
+                        Scopes = ruleParameter.Scopes,
+                        Script = ruleParameter.Script,
+                        Claims = ruleParameter.Claims == null
+                            ? Array.Empty<Claim>()
+                            : ruleParameter.Claims.Select(c => new Claim(c.Type, c.Value)).ToArray(),
+                        OpenIdProvider = ruleParameter.OpenIdProvider
+                    })
+                .ToArray();
 
             // Insert policy
             var policy = new Policy
@@ -120,7 +114,7 @@ namespace SimpleAuth.Api.PolicyController.Actions
 
             try
             {
-                var result = await _policyRepository.Add(policy).ConfigureAwait(false);
+                var result = await _policyRepository.Add(policy, cancellationToken).ConfigureAwait(false);
                 return result ? policy.Id : null;
             }
             catch (Exception ex)

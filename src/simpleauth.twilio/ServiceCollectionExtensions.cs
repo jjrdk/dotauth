@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Twilio
 {
     using System;
-    using Actions;
     using Controllers;
     using Microsoft.AspNetCore.Mvc.Razor;
     using Microsoft.Extensions.DependencyInjection;
@@ -53,9 +52,6 @@
                 opts.FileProviders.Add(embeddedFileProvider);
             });
             services.AddSingleton(smsAuthenticationOptions);
-            services.AddSingleton<ITwilioClient, TwilioClient>();
-            services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
-            services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
             mvcBuilder.AddApplicationPart(assembly);
             return services;

@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,11 +17,11 @@ namespace SimpleAuth.Api.ResourceSetController
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using Errors;
-    using Exceptions;
-    using Parameters;
     using Repositories;
     using Shared.Models;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Errors;
 
     internal class UpdateResourceSetAction
     {
@@ -32,7 +32,7 @@ namespace SimpleAuth.Api.ResourceSetController
             _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<bool> Execute(UpdateResourceSetParameter udpateResourceSetParameter)
+        public async Task<bool> Execute(PutResourceSet udpateResourceSetParameter)
         {
             if (udpateResourceSetParameter == null)
             {
@@ -68,7 +68,7 @@ namespace SimpleAuth.Api.ResourceSetController
             return true;
         }
 
-        public void CheckResourceSetParameter(ResourceSet resourceSet)
+        private void CheckResourceSetParameter(ResourceSet resourceSet)
         {
             if (resourceSet == null)
             {

@@ -3,12 +3,28 @@
     using System.Collections.Generic;
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Defines the request to update resource owner claims.
+    /// </summary>
     [DataContract]
     public class UpdateResourceOwnerClaimsRequest
     {
-        [DataMember(Name = SharedConstants.ResourceOwnerResponseNames.Login)]
+        /// <summary>
+        /// Gets or sets the login.
+        /// </summary>
+        /// <value>
+        /// The login.
+        /// </value>
+        [DataMember(Name = "login")]
         public string Login { get; set; }
-        [DataMember(Name = SharedConstants.ResourceOwnerResponseNames.Claims)]
+
+        /// <summary>
+        /// Gets or sets the claims.
+        /// </summary>
+        /// <value>
+        /// The claims.
+        /// </value>
+        [DataMember(Name = "claims")]
         public List<KeyValuePair<string, string>> Claims { get; set; }
     }
 }

@@ -1,45 +1,100 @@
 ﻿namespace SimpleAuth.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net.Http.Headers;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Threading.Tasks;
     using Api.Token;
-    using Errors;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Primitives;
     using Shared;
     using Shared.Models;
-    using Shared.Requests;
     using Shared.Responses;
-    using GrantTypes = Shared.Requests.GrantTypes;
+    using SimpleAuth.Common;
+    using SimpleAuth.Repositories;
+    using SimpleAuth.Services;
+    using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
 
+    /// <summary>
+    /// Defines the token controller.
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(UmaConstants.RouteValues.Token)]
     public class TokenController : Controller
     {
-        private readonly ITokenActions _tokenActions;
-        private readonly IUmaTokenActions _umaTokenActions;
+        private readonly TokenActions _tokenActions;
+        private readonly UmaTokenActions _umaTokenActions;
 
-        public TokenController(ITokenActions tokenActions, IUmaTokenActions umaTokenActions)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenController"/> class.
+        /// </summary>
+        /// <param name="settings">The settings.</param>
+        /// <param name="authorizationCodeStore">The authorization code store.</param>
+        /// <param name="clientStore">The client store.</param>
+        /// <param name="scopeRepository">The scope repository.</param>
+        /// <param name="authenticateResourceOwnerServices">The authenticate resource owner services.</param>
+        /// <param name="tokenStore">The token store.</param>
+        /// <param name="ticketStore">The ticket store.</param>
+        /// <param name="resourceSetRepository">The resource set repository.</param>
+        /// <param name="eventPublisher">The event publisher.</param>
+        public TokenController(
+            RuntimeSettings settings,
+            IAuthorizationCodeStore authorizationCodeStore,
+            IClientStore clientStore,
+            IScopeRepository scopeRepository,
+            IEnumerable<IAuthenticateResourceOwnerService> authenticateResourceOwnerServices,
+            ITokenStore tokenStore,
+            ITicketStore ticketStore,
+            IResourceSetRepository resourceSetRepository,
+            IEventPublisher eventPublisher)
         {
-            _tokenActions = tokenActions;
-            _umaTokenActions = umaTokenActions;
+            _tokenActions = new TokenActions(
+                settings,
+                authorizationCodeStore,
+                clientStore,
+                scopeRepository,
+                authenticateResourceOwnerServices,
+                eventPublisher,
+                tokenStore);
+            _umaTokenActions = new UmaTokenActions(
+                ticketStore,
+                settings,
+                clientStore,
+                scopeRepository,
+                tokenStore,
+                resourceSetRepository,
+                eventPublisher);
         }
 
+        /// <summary>
+        /// Handles the token request.
+        /// </summary>
+        /// <param name="tokenRequest">The token request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         [HttpPost]
-        public async Task<IActionResult> PostToken([FromForm]TokenRequest tokenRequest)
+        public async Task<IActionResult> PostToken(
+            [FromForm] TokenRequest tokenRequest,
+            CancellationToken cancellationToken)
         {
             var certificate = GetCertificate();
             if (tokenRequest.grant_type == null)
             {
-                return BadRequest(new ErrorResponse
-                {
-                    Error = ErrorCodes.InvalidRequestCode,
-                    ErrorDescription = string.Format(ErrorDescriptions.MissingParameter, RequestTokenNames.GrantType)
-                });
+                return BadRequest(
+                    new ErrorResponse
+                    {
+                        Error = ErrorCodes.InvalidRequestCode,
+                        ErrorDescription = string.Format(
+                            ErrorDescriptions.MissingParameter,
+                            RequestTokenNames.GrantType)
+                    });
             }
 
             GrantedToken result = null;
@@ -59,26 +114,56 @@
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             switch (tokenRequest.grant_type)
             {
-                case GrantTypes.password:
-                    result = await GetClientCredentialsGrantedToken(tokenRequest, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
+                case GrantTypes.Password:
+                    result = await GetClientCredentialsGrantedToken(
+                            tokenRequest,
+                            authenticationHeaderValue,
+                            certificate,
+                            issuerName,
+                            cancellationToken)
+                        .ConfigureAwait(false);
                     break;
-                case GrantTypes.authorization_code:
+                case GrantTypes.AuthorizationCode:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(authCodeParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
+                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(
+                            authCodeParameter,
+                            authenticationHeaderValue,
+                            certificate,
+                            issuerName,
+                            cancellationToken)
+                        .ConfigureAwait(false);
                     break;
-                case GrantTypes.refresh_token:
+                case GrantTypes.RefreshToken:
                     var refreshTokenParameter = tokenRequest.ToRefreshTokenGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
+                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(
+                            refreshTokenParameter,
+                            authenticationHeaderValue,
+                            certificate,
+                            issuerName,
+                            cancellationToken)
+                        .ConfigureAwait(false);
                     break;
-                case GrantTypes.client_credentials:
+                case GrantTypes.ClientCredentials:
                     var clientCredentialsParameter = tokenRequest.ToClientCredentialsGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
+                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(
+                            clientCredentialsParameter,
+                            authenticationHeaderValue,
+                            certificate,
+                            issuerName,
+                            cancellationToken)
+                        .ConfigureAwait(false);
                     break;
-                case GrantTypes.uma_ticket:
+                case GrantTypes.UmaTicket:
                     var tokenIdParameter = tokenRequest.ToTokenIdGrantTypeParameter();
-                    result = await _umaTokenActions.GetTokenByTicketId(tokenIdParameter, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
+                    result = await _umaTokenActions.GetTokenByTicketId(
+                            tokenIdParameter,
+                            authenticationHeaderValue,
+                            certificate,
+                            issuerName,
+                            cancellationToken)
+                        .ConfigureAwait(false);
                     break;
-                case GrantTypes.validate_bearer:
+                case GrantTypes.ValidateBearer:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -91,26 +176,29 @@
             TokenRequest tokenRequest,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
-            string issuerName)
+            string issuerName,
+            CancellationToken cancellationToken)
         {
             var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
             return _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(
-                    resourceOwnerParameter,
-                    authenticationHeaderValue,
-                    certificate,
-                    issuerName);
+                resourceOwnerParameter,
+                authenticationHeaderValue,
+                certificate,
+                issuerName,
+                cancellationToken);
         }
 
+        /// <summary>
+        /// Handles the token revocation.
+        /// </summary>
+        /// <param name="revocationRequest">The revocation request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPost("revoke")]
-        public async Task<IActionResult> PostRevoke([FromForm]RevocationRequest revocationRequest)
+        public async Task<IActionResult> PostRevoke(
+            [FromForm] RevocationRequest revocationRequest,
+            CancellationToken cancellationToken)
         {
-            //if (Request.Form == null)
-            //{
-            //    throw new ArgumentNullException(nameof(Request.Form));
-            //}
-
-            //var serializer = new ParamSerializer();
-            //var revocationRequest = serializer.Deserialize<RevocationRequest>(Request.Form.Select(x => new KeyValuePair<string, string[]>(x.Key, x.Value)));
             // 1. Fetch the authorization header
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
@@ -127,8 +215,14 @@
 
             // 2. Revoke the token
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-            await _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue, GetCertificate(), issuerName).ConfigureAwait(false);
-            return new OkResult();
+            var result = await _tokenActions.RevokeToken(
+                    revocationRequest.ToParameter(),
+                    authenticationHeaderValue,
+                    GetCertificate(),
+                    issuerName,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            return result ? new OkResult() : StatusCode((int) HttpStatusCode.BadRequest);
         }
 
         private X509Certificate2 GetCertificate()

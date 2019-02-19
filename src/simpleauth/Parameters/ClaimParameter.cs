@@ -3,11 +3,11 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class ClaimParameter
+    internal class ClaimParameter
     {
         public string Name { get; set; }
 
-        public Dictionary<string, object> Parameters { get; set; }
+        public Dictionary<string, object> Parameters { get; set; } = new Dictionary<string, object>();
 
         public bool Essential => GetBoolean(CoreConstants.StandardClaimParameterValueNames.EssentialName);
 
@@ -15,29 +15,11 @@
 
         public string[] Values => GetArray(CoreConstants.StandardClaimParameterValueNames.ValuesName);
 
-        public bool EssentialParameterExist
-        {
-            get
-            {
-                return Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.EssentialName);
-            }
-        }
+        public bool EssentialParameterExist => Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.EssentialName);
 
-        public bool ValueParameterExist
-        {
-            get
-            {
-                return Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.ValueName);
-            }
-        }
+        public bool ValueParameterExist => Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.ValueName);
 
-        public bool ValuesParameterExist
-        {
-            get
-            {
-                return Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.ValuesName);
-            }
-        }
+        public bool ValuesParameterExist => Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.ValuesName);
 
         private bool GetBoolean(string name)
         {

@@ -27,101 +27,27 @@ namespace SimpleAuth.Tests.Authenticate
         public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
             Assert.Throws<ArgumentNullException>(() => ClientTlsAuthentication.AuthenticateClient(null, null));
-            Assert.Throws<ArgumentNullException>(() => ClientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction(), null));
+            Assert.Throws<ArgumentNullException>(
+                () => ClientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction(), null));
         }
 
         [Fact]
         public void When_Passing_NoSecret_Or_Certificate_Then_Null_Is_Returned()
         {
             Assert.Null(ClientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction(), new Client()));
-            Assert.Null(ClientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
-            {
-                Certificate = new X509Certificate2()
-            }, new Client()));
+            Assert.Null(
+                ClientTlsAuthentication.AuthenticateClient(
+                    new AuthenticateInstruction {Certificate = new X509Certificate2()},
+                    new Client()));
         }
 
         [Fact]
         public void When_Client_Does_Not_Contain_ThumbprintAndName_Then_Null_Is_Returned()
         {
-            Assert.Null(ClientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
-            {
-                Certificate = new X509Certificate2()
-            }, new Client
-            {
-                Secrets = new List<ClientSecret>()
-            }));
+            Assert.Null(
+                ClientTlsAuthentication.AuthenticateClient(
+                    new AuthenticateInstruction {Certificate = new X509Certificate2()},
+                    new Client {Secrets = new List<ClientSecret>()}));
         }
-
-        /*
-        [Fact]
-        public void When_ThumbPrint_Is_Not_Correct_Then_Null_Is_Returned()
-        {            InitializeFakeObjects();
-            var certificate = new X509Certificate2("testCert.pfx", "testPassword");
-
-            Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
-            {
-                Certificate = certificate
-            }, new Client
-            {
-                Secrets = new List<ClientSecret>
-                {
-                    new ClientSecret
-                    {
-                        Type = ClientSecretTypes.X509Thumbprint,
-                        Value = "not_correct"
-                    }
-                }
-            }));
-        }
-
-        [Fact]
-        public void When_Name_Is_Not_Correct_Then_Null_Is_Returned()
-        {            InitializeFakeObjects();
-            var certificate = new X509Certificate2("testCert.pfx", "testPassword");
-
-            Assert.Null(_clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
-            {
-                Certificate = certificate
-            }, new Client
-            {
-                Secrets = new List<ClientSecret>
-                {
-                    new ClientSecret
-                    {
-                        Type = ClientSecretTypes.X509Name,
-                        Value = "not_correct"
-                    }
-                }
-            }));
-        }
-
-        [Fact]
-        public void When_Client_Is_Authenticated_Then_Client_Is_Returned()
-        {            InitializeFakeObjects();
-            var certificate = new X509Certificate2("testCert.pfx", "testPassword");
-
-                        var result = _clientTlsAuthentication.AuthenticateClient(new AuthenticateInstruction
-            {
-                Certificate = certificate
-            }, new Client
-            {
-                Secrets = new List<ClientSecret>
-                {
-                    new ClientSecret
-                    {
-                        Type = ClientSecretTypes.X509Name,
-                        Value = certificate.SubjectName.Name
-                    },
-                    new ClientSecret
-                    {
-                        Type = ClientSecretTypes.X509Thumbprint,
-                        Value = certificate.Thumbprint
-                    }
-                }
-            });
-
-                        Assert.NotNull(result);
-        }
-        */
     }
 }

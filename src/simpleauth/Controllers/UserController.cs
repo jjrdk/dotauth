@@ -5,46 +5,50 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.AspNetCore.Mvc.Routing;
-    using SimpleAuth.Errors;
     using SimpleAuth.Exceptions;
     using SimpleAuth.Extensions;
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Parameters;
     using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Translation;
     using SimpleAuth.ViewModels;
     using SimpleAuth.WebSite.User.Actions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Handles user related requests.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Controllers.BaseController" />
     [Authorize("Connected")]
     public class UserController : BaseController
     {
-        private const string DefaultLanguage = "en";
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IProfileRepository _profileRepository;
         private readonly GetUserOperation _getUserOperation;
-        private readonly GetConsentsOperation _getConsentsOperation;
         private readonly UpdateUserTwoFactorAuthenticatorOperation _updateUserTwoFactorAuthenticatorOperation;
         private readonly UpdateUserCredentialsOperation _updateUserCredentialsOperation;
-
-        private readonly RemoveConsentOperation _removeConsentOperation;
-
-        // private readonly IProfileActions _profileActions;
-        private readonly ITranslationManager _translationManager;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
+        private readonly IConsentRepository _consentRepository;
         private readonly IUrlHelper _urlHelper;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserController"/> class.
+        /// </summary>
+        /// <param name="resourceOwnerRepository">The resource owner repository.</param>
+        /// <param name="authenticationService">The authentication service.</param>
+        /// <param name="authenticationSchemeProvider">The authentication scheme provider.</param>
+        /// <param name="urlHelperFactory">The URL helper factory.</param>
+        /// <param name="actionContextAccessor">The action context accessor.</param>
+        /// <param name="consentRepository">The consent repository.</param>
+        /// <param name="twoFactorAuthenticationHandler">The two factor authentication handler.</param>
         public UserController(
             IResourceOwnerRepository resourceOwnerRepository,
-            IProfileRepository profileRepository,
-            ITranslationManager translationManager,
             IAuthenticationService authenticationService,
             IAuthenticationSchemeProvider authenticationSchemeProvider,
             IUrlHelperFactory urlHelperFactory,
@@ -54,123 +58,33 @@
             : base(authenticationService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _profileRepository = profileRepository;
             _getUserOperation = new GetUserOperation(resourceOwnerRepository);
-            _getConsentsOperation = new GetConsentsOperation(consentRepository);
             _updateUserTwoFactorAuthenticatorOperation =
                 new UpdateUserTwoFactorAuthenticatorOperation(resourceOwnerRepository);
             _updateUserCredentialsOperation = new UpdateUserCredentialsOperation(resourceOwnerRepository);
-            _removeConsentOperation = new RemoveConsentOperation(consentRepository);
-            // _profileActions = profileActions;
-            _translationManager = translationManager;
             _authenticationSchemeProvider = authenticationSchemeProvider;
+            _consentRepository = consentRepository;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Index()
-        {
-            await SetUser().ConfigureAwait(false);
-            return View();
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Consent()
-        {
-            await SetUser().ConfigureAwait(false);
-            return await GetConsents().ConfigureAwait(false);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Consent(string id)
-        {
-            if (!await _removeConsentOperation.Execute(id).ConfigureAwait(false))
-            {
-                ViewBag.ErrorMessage = "the consent cannot be deleted";
-                return await GetConsents().ConfigureAwait(false);
-            }
-
-            return RedirectToAction("Consent");
-        }
-
-        [HttpGet("User/Edit")]
-        [HttpGet("User/UpdateCredentials")]
-        [HttpGet("User/UpdateTwoFactor")]
-        public async Task<IActionResult> Edit()
-        {
-            var authenticatedUser = await SetUser().ConfigureAwait(false);
-            await TranslateUserEditView(DefaultLanguage).ConfigureAwait(false);
-            ViewBag.IsUpdated = false;
-            ViewBag.IsCreated = false;
-            return await GetEditView(authenticatedUser).ConfigureAwait(false);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateCredentials(UpdateResourceOwnerCredentialsViewModel viewModel)
-        {
-            if (viewModel == null)
-            {
-                throw new ArgumentNullException(nameof(viewModel));
-            }
-
-            // 1. Validate the view model.
-            await TranslateUserEditView(DefaultLanguage).ConfigureAwait(false);
-            var authenticatedUser = await SetUser().ConfigureAwait(false);
-            ViewBag.IsUpdated = false;
-            viewModel.Validate(ModelState);
-            if (!ModelState.IsValid)
-            {
-                return await GetEditView(authenticatedUser).ConfigureAwait(false);
-            }
-
-            // 2. CreateJwk a new user if he doesn't exist or update the credentials.
-            //var resourceOwner = await _getUserOperation.Execute(authenticatedUser).ConfigureAwait(false);
-            var subject = authenticatedUser.GetSubject();
-            await _updateUserCredentialsOperation.Execute(subject, viewModel.Password).ConfigureAwait(false);
-            ViewBag.IsUpdated = true;
-            return await GetEditView(authenticatedUser).ConfigureAwait(false);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateTwoFactor(UpdateTwoFactorAuthenticatorViewModel viewModel)
-        {
-            if (viewModel == null)
-            {
-                throw new ArgumentNullException(nameof(viewModel));
-            }
-
-            await TranslateUserEditView(DefaultLanguage).ConfigureAwait(false);
-            var authenticatedUser = await SetUser().ConfigureAwait(false);
-            ViewBag.IsUpdated = false;
-            ViewBag.IsCreated = false;
-            await _updateUserTwoFactorAuthenticatorOperation.Execute(
-                    authenticatedUser.GetSubject(),
-                    viewModel.SelectedTwoFactorAuthType)
-                .ConfigureAwait(false);
-            ViewBag.IsUpdated = true;
-            return await GetEditView(authenticatedUser).ConfigureAwait(false);
-        }
-
         /// <summary>
-        /// Display the profiles linked to the user account.
+        /// Displays the default consent view.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Profile()
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             var actualScheme = authenticatedUser.Identity.AuthenticationType;
-            var profiles = await GetUserProfiles(authenticatedUser.GetSubject()).ConfigureAwait(false);
+            var ro = await GetUserProfile(authenticatedUser.GetSubject(), cancellationToken).ConfigureAwait(false);
             var authenticationSchemes =
                 (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false)).Where(
                     a => !string.IsNullOrWhiteSpace(a.DisplayName));
-            var viewModel = new ProfileViewModel();
-            if (profiles != null && profiles.Any())
+            var viewModel = new ProfileViewModel(ro.Claims);
+            //if (profiles != null && profiles.Any())
             {
-                foreach (var profile in profiles)
+                foreach (var profile in ro.ExternalLogins)
                 {
                     var record = new IdentityProviderViewModel(profile.Issuer, profile.Subject);
                     viewModel.LinkedIdentityProviders.Add(record);
@@ -178,10 +92,124 @@
             }
 
             viewModel.UnlinkedIdentityProviders = authenticationSchemes
-                .Where(a => profiles != null && !profiles.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
+                .Where(a => !ro.ExternalLogins.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
                 .Select(p => new IdentityProviderViewModel(p.Name))
                 .ToList();
-            return View("Profile", viewModel);
+            return View("Index", viewModel);
+        }
+
+        /// <summary>
+        /// Consents the specified cancellation token.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Consent(CancellationToken cancellationToken)
+        {
+            await SetUser().ConfigureAwait(false);
+            return await GetConsents(cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Consents the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> Consent(string id, CancellationToken cancellationToken)
+        {
+            var removed = await _consentRepository.Delete(new Consent { Id = id }, cancellationToken)
+                .ConfigureAwait(false);
+            if (!removed)
+            {
+                ViewBag.ErrorMessage = "the consent cannot be deleted";
+                return await GetConsents(cancellationToken).ConfigureAwait(false);
+            }
+
+            return RedirectToAction("Consent");
+        }
+
+        /// <summary>
+        /// Displays the user edit screen.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        [HttpGet("User/Edit")]
+        [HttpGet("User/UpdateCredentials")]
+        [HttpGet("User/UpdateTwoFactor")]
+        public async Task<IActionResult> Edit(CancellationToken cancellationToken)
+        {
+            var authenticatedUser = await SetUser().ConfigureAwait(false);
+            ViewBag.IsUpdated = false;
+            ViewBag.IsCreated = false;
+            return await GetEditView(authenticatedUser, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Updates the credentials.
+        /// </summary>
+        /// <param name="viewModel">The view model.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">viewModel</exception>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateCredentials(
+            UpdateResourceOwnerCredentialsViewModel viewModel,
+            CancellationToken cancellationToken)
+        {
+            if (viewModel == null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
+
+            // 1. Validate the view model.
+            var authenticatedUser = await SetUser().ConfigureAwait(false);
+            ViewBag.IsUpdated = false;
+            viewModel.Validate(ModelState);
+            if (!ModelState.IsValid)
+            {
+                return await GetEditView(authenticatedUser, cancellationToken).ConfigureAwait(false);
+            }
+
+            // 2. CreateJwk a new user if he doesn't exist or update the credentials.
+            //var resourceOwner = await _getUserOperation.Execute(authenticatedUser).ConfigureAwait(false);
+            var subject = authenticatedUser.GetSubject();
+            await _updateUserCredentialsOperation.Execute(subject, viewModel.Password, cancellationToken)
+                .ConfigureAwait(false);
+            ViewBag.IsUpdated = true;
+            return await GetEditView(authenticatedUser, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Updates the two factor authentication.
+        /// </summary>
+        /// <param name="viewModel">The view model.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">viewModel</exception>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateTwoFactor(
+            UpdateTwoFactorAuthenticatorViewModel viewModel,
+            CancellationToken cancellationToken)
+        {
+            if (viewModel == null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
+
+            var authenticatedUser = await SetUser().ConfigureAwait(false);
+            ViewBag.IsUpdated = false;
+            ViewBag.IsCreated = false;
+            await _updateUserTwoFactorAuthenticatorOperation.Execute(
+                    authenticatedUser.GetSubject(),
+                    viewModel.SelectedTwoFactorAuthType,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            ViewBag.IsUpdated = true;
+            return await GetEditView(authenticatedUser, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -209,9 +237,10 @@
         /// Callback operation used to link an external account to the local one.
         /// </summary>
         /// <param name="error"></param>
+        /// <param name="cancellationToken">The cancellation token for the callback.</param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> LinkCallback(string error)
+        public async Task<IActionResult> LinkCallback(string error, CancellationToken cancellationToken)
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
@@ -226,22 +255,19 @@
                 var externalClaims = await _authenticationService
                     .GetAuthenticatedUser(this, HostConstants.CookieNames.ExternalCookieName)
                     .ConfigureAwait(false);
-                await InnerLinkProfile(
-                        authenticatedUser.GetSubject(),
-                        externalClaims.GetSubject(),
-                        externalClaims.Identity.AuthenticationType)
+                await InnerLinkProfile(authenticatedUser.GetSubject(), externalClaims, cancellationToken)
                     .ConfigureAwait(false);
                 await _authenticationService.SignOutAsync(
                         HttpContext,
                         HostConstants.CookieNames.ExternalCookieName,
                         new AuthenticationProperties())
                     .ConfigureAwait(false);
-                return RedirectToAction("Profile", "User");
+                return RedirectToAction("Index", "User");
             }
-            catch (ProfileAssignedAnotherAccountException)
-            {
-                return RedirectToAction("LinkProfileConfirmation");
-            }
+            //catch (ProfileAssignedAnotherAccountException)
+            //{
+            //    return RedirectToAction("LinkProfileConfirmation");
+            //}
             catch (Exception)
             {
                 await _authenticationService.SignOutAsync(
@@ -281,7 +307,7 @@
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> ConfirmProfileLinking()
+        public async Task<IActionResult> ConfirmProfileLinking(CancellationToken cancellationToken)
         {
             var externalClaims = await _authenticationService
                 .GetAuthenticatedUser(this, HostConstants.CookieNames.ExternalCookieName)
@@ -296,13 +322,9 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             try
             {
-                await InnerLinkProfile(
-                        authenticatedUser.GetSubject(),
-                        externalClaims.GetSubject(),
-                        externalClaims.Identity.AuthenticationType,
-                        true)
+                await InnerLinkProfile(authenticatedUser.GetSubject(), externalClaims, cancellationToken)
                     .ConfigureAwait(false);
-                return RedirectToAction("Profile", "User");
+                return RedirectToAction("Index", "User");
             }
             finally
             {
@@ -318,9 +340,10 @@
         /// Unlink the external account.
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Unlink(string id)
+        public async Task<IActionResult> Unlink(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -330,7 +353,12 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             try
             {
-                await UnlinkProfile(authenticatedUser.GetSubject(), id).ConfigureAwait(false);
+                await UnlinkProfile(
+                        authenticatedUser.GetSubject(),
+                        id,
+                        authenticatedUser.Identity.AuthenticationType,
+                        cancellationToken)
+                    .ConfigureAwait(false);
             }
             catch (SimpleAuthException ex)
             {
@@ -341,12 +369,15 @@
                 return RedirectToAction("Index", "Error", new { code = ErrorCodes.InternalError, message = ex.Message });
             }
 
-            return await Profile().ConfigureAwait(false);
+            return await Index(cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<IActionResult> GetEditView(ClaimsPrincipal authenticatedUser)
+        private async Task<IActionResult> GetEditView(
+            ClaimsPrincipal authenticatedUser,
+            CancellationToken cancellationToken)
         {
-            var resourceOwner = await _getUserOperation.Execute(authenticatedUser).ConfigureAwait(false);
+            var resourceOwner =
+                await _getUserOperation.Execute(authenticatedUser, cancellationToken).ConfigureAwait(false);
             UpdateResourceOwnerViewModel viewModel;
             if (resourceOwner == null)
             {
@@ -367,10 +398,12 @@
             return View("Edit", viewModel);
         }
 
-        private async Task<IActionResult> GetConsents()
+        private async Task<IActionResult> GetConsents(CancellationToken cancellationToken)
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
-            var consents = await _getConsentsOperation.Execute(authenticatedUser).ConfigureAwait(false);
+            var consents = await _consentRepository
+                .GetConsentsForGivenUser(authenticatedUser.GetSubject(), cancellationToken)
+                .ConfigureAwait(false);
             var result = new List<ConsentViewModel>();
             if (consents != null)
             {
@@ -394,39 +427,6 @@
             }
 
             return View(result);
-        }
-
-        private async Task TranslateUserEditView(string uiLocales)
-        {
-            var translations = await _translationManager.GetTranslationsAsync(
-                    uiLocales,
-                    new List<string>
-                    {
-                        CoreConstants.StandardTranslationCodes.LoginCode,
-                        CoreConstants.StandardTranslationCodes.EditResourceOwner,
-                        CoreConstants.StandardTranslationCodes.NameCode,
-                        CoreConstants.StandardTranslationCodes.YourName,
-                        CoreConstants.StandardTranslationCodes.PasswordCode,
-                        CoreConstants.StandardTranslationCodes.YourPassword,
-                        CoreConstants.StandardTranslationCodes.Email,
-                        CoreConstants.StandardTranslationCodes.YourEmail,
-                        CoreConstants.StandardTranslationCodes.ConfirmCode,
-                        CoreConstants.StandardTranslationCodes.TwoAuthenticationFactor,
-                        CoreConstants.StandardTranslationCodes.UserIsUpdated,
-                        CoreConstants.StandardTranslationCodes.Phone,
-                        CoreConstants.StandardTranslationCodes.HashedPassword,
-                        CoreConstants.StandardTranslationCodes.CreateResourceOwner,
-                        CoreConstants.StandardTranslationCodes.Credentials,
-                        CoreConstants.StandardTranslationCodes.RepeatPassword,
-                        CoreConstants.StandardTranslationCodes.Claims,
-                        CoreConstants.StandardTranslationCodes.UserIsCreated,
-                        CoreConstants.StandardTranslationCodes.TwoFactor,
-                        CoreConstants.StandardTranslationCodes.NoTwoFactorAuthenticator,
-                        CoreConstants.StandardTranslationCodes.NoTwoFactorAuthenticatorSelected
-                    })
-                .ConfigureAwait(false);
-
-            ViewBag.Translations = translations;
         }
 
         private UpdateResourceOwnerViewModel BuildViewModel(
@@ -462,15 +462,16 @@
         /// Get the profiles linked to the user account.
         /// </summary>
         /// <param name="subject"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private async Task<ResourceOwnerProfile[]> GetUserProfiles(string subject)
+        private async Task<ResourceOwner> GetUserProfile(string subject, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(subject))
             {
                 throw new ArgumentNullException(nameof(subject));
             }
 
-            var resourceOwner = await _resourceOwnerRepository.Get(subject).ConfigureAwait(false);
+            var resourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new SimpleAuthException(
@@ -478,24 +479,17 @@
                     string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, subject));
             }
 
-            var profiles = await _profileRepository.Search(new SearchProfileParameter { ResourceOwnerIds = new[] { subject } })
-                .ConfigureAwait(false);
-            return profiles.ToArray();
+            return resourceOwner;
         }
 
-        private async Task<bool> UnlinkProfile(string localSubject, string externalSubject)
+        private async Task<bool> UnlinkProfile(
+            string localSubject,
+            string externalSubject,
+            string issuer,
+            CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(localSubject))
-            {
-                throw new ArgumentNullException(nameof(localSubject));
-            }
-
-            if (string.IsNullOrWhiteSpace(externalSubject))
-            {
-                throw new ArgumentNullException(nameof(externalSubject));
-            }
-
-            var resourceOwner = await _resourceOwnerRepository.Get(localSubject).ConfigureAwait(false);
+            var resourceOwner =
+                await _resourceOwnerRepository.Get(localSubject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new SimpleAuthException(
@@ -503,46 +497,28 @@
                     string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, localSubject));
             }
 
-            var profile = await _profileRepository.Get(externalSubject).ConfigureAwait(false);
-            if (profile == null || profile.ResourceOwnerId != localSubject)
+            var unlink = resourceOwner.ExternalLogins.Where(
+                    x => x.Subject == externalSubject
+                         && (x.Issuer == issuer || issuer == HostConstants.CookieNames.CookieName))
+                .ToArray();
+            if (unlink.Length > 0)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InternalError,
-                    ErrorDescriptions.NotAuthorizedToRemoveTheProfile);
+                resourceOwner.ExternalLogins = resourceOwner.ExternalLogins.Remove(unlink);
+                var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken)
+                    .ConfigureAwait(false);
+                return result;
             }
 
-            if (profile.Subject == localSubject)
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InternalError,
-                    ErrorDescriptions.TheExternalAccountAccountCannotBeUnlinked);
-            }
-
-            return await _profileRepository.Remove(new[] { externalSubject }).ConfigureAwait(false);
+            return false;
         }
 
         private async Task<bool> InnerLinkProfile(
             string localSubject,
-            string externalSubject,
-            string issuer,
-            bool force = false)
+            ClaimsPrincipal externalPrincipal,
+            CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(localSubject))
-            {
-                throw new ArgumentNullException(nameof(localSubject));
-            }
-
-            if (string.IsNullOrWhiteSpace(externalSubject))
-            {
-                throw new ArgumentNullException(nameof(externalSubject));
-            }
-
-            if (string.IsNullOrWhiteSpace(issuer))
-            {
-                throw new ArgumentNullException(nameof(issuer));
-            }
-
-            var resourceOwner = await _resourceOwnerRepository.Get(localSubject).ConfigureAwait(false);
+            var resourceOwner =
+                await _resourceOwnerRepository.Get(localSubject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new SimpleAuthException(
@@ -550,41 +526,31 @@
                     string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, localSubject));
             }
 
-            var profile = await _profileRepository.Get(externalSubject).ConfigureAwait(false);
-            if (profile != null && profile.ResourceOwnerId != localSubject)
+            var issuer = externalPrincipal.Identity.AuthenticationType;
+            var externalSubject = externalPrincipal.GetSubject();
+            if (resourceOwner.ExternalLogins.Any(x => x.Subject == externalSubject && x.Issuer == issuer))
             {
-                if (!force)
-                {
-                    throw new ProfileAssignedAnotherAccountException();
-                }
-
-                await _profileRepository.Remove(new[] { externalSubject }).ConfigureAwait(false);
-                if (profile.ResourceOwnerId == profile.Subject)
-                {
-                    await _resourceOwnerRepository.Delete(profile.ResourceOwnerId).ConfigureAwait(false);
-                }
-
-                profile = null;
+                return false;
             }
 
-            if (profile != null)
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InternalError,
-                    ErrorDescriptions.TheProfileAlreadyLinked);
-            }
+            var newClaims = externalPrincipal.Claims.ToOpenidClaims()
+                .Where(c => resourceOwner.Claims.All(x => x.Type != c.Type));
+            resourceOwner.Claims = resourceOwner.Claims.Add(newClaims);
 
-            return await _profileRepository
-                .Add(
-                    new ResourceOwnerProfile
+            resourceOwner.ExternalLogins = resourceOwner.ExternalLogins.Concat(
+                    new[]
                     {
-                        ResourceOwnerId = localSubject,
-                        Subject = externalSubject,
-                        Issuer = issuer,
-                        CreateDateTime = DateTime.UtcNow,
-                        UpdateTime = DateTime.UtcNow
+                        new ExternalAccountLink
+                        {
+                            Issuer = issuer,
+                            Subject = externalSubject,
+                            ExternalClaims = externalPrincipal.Claims.ToArray()
+                        }
                     })
-                .ConfigureAwait(false);
+                .ToArray();
+            await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
+            return true;
+
         }
     }
 }

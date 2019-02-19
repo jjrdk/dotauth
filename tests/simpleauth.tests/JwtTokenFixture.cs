@@ -10,7 +10,7 @@
     {
         public class GivenAJwtTokenHandler
         {
-            private JwtSecurityTokenHandler _handler;
+            private readonly JwtSecurityTokenHandler _handler;
 
             public GivenAJwtTokenHandler()
             {

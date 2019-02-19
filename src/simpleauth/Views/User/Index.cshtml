@@ -1,27 +1,30 @@
 @using System.Linq
 @using System.Security.Claims
-
+@model SimpleAuth.ViewModels.ProfileViewModel
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.IsEditDisplayed = false;
     ViewBag.IsConsentDisplayed = false;
     ViewBag.IsIndexDisplayed = true;
     ViewBag.IsProfileDisplayed = false;
-    var identity = User.Identity as ClaimsIdentity;
-    var nameClaim = identity.Claims.FirstOrDefault(c => c.Type == "name");
-    var givenNameClaim = identity.Claims.FirstOrDefault(c => c.Type == "given_name");
-    var familyNameClaim = identity.Claims.FirstOrDefault(c => c.Type == "family_name");
-    var pictureClaim = identity.Claims.FirstOrDefault(c => c.Type == "picture");
-    //var roles = identity.Claims.Where(c => c.Type == "role").Select(c => c.Value).ToList();
-    var name = nameClaim == null ? "Unknown" : nameClaim.Value;
-    var givenName = givenNameClaim == null ? " - " : givenNameClaim.Value;
-    var familyName = familyNameClaim == null ? " - " : familyNameClaim.Value;
-    var picture = pictureClaim == null ? Url.Content("~/img/unknown.png") : pictureClaim.Value;
+    var picture = Model.Picture ?? Url.Content("~/img/unknown.png");
 }
-
 <!-- Display the information -->
+<h4 class="header col s12">User Information</h4>
 
-<h4 class="header col s12">Information</h4>
+<div class="row">
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="s12">
+            <div class="card red accent-1">
+                <div class="card-content red-text text-darken-4">
+                    <i class="material-icons prefix">check_circle</i>
+                    @ViewBag.ErrorMessage
+                </div>
+            </div>
+        </div>
+    }
+</div>
 <div class="col s12">
     <div class="card horizontal hide-on-small-only">
         <div class="card-image">
@@ -31,44 +34,92 @@
             <div class="card-content">
                 <table>
                     <tbody>
-                    <tr>
-                        <td><strong>Name</strong></td>
-                        <td>@name</td>
-                    </tr>
-                    <tr>
-                        <td><strong>First name</strong></td>
-                        <td>@givenName</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Last name</strong></td>
-                        <td>@familyName</td>
-                    </tr>
+                        <tr>
+                            <td><strong>Name</strong></td>
+                            <td>@Model.Name</td>
+                        </tr>
+                        <tr>
+                            <td><strong>First name</strong></td>
+                            <td>@Model.GivenName</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Last name</strong></td>
+                            <td>@Model.FamilyName</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    <div class="card  hide-on-med-and-up">
+    <div class="card hide-on-med-and-up">
         <div class="card-image">
             <img src="@picture" alt="Picture" class="img-thumbnail" />
         </div>
         <div class="card-content">
             <table>
                 <tbody>
-                <tr>
-                    <td><strong>Name</strong></td>
-                    <td>@name</td>
-                </tr>
-                <tr>
-                    <td><strong>First name</strong></td>
-                    <td>@givenName</td>
-                </tr>
-                <tr>
-                    <td><strong>Last name</strong></td>
-                    <td>@familyName</td>
-                </tr>
+                    <tr>
+                        <td><strong>Name</strong></td>
+                        <td>@Model.Name</td>
+                    </tr>
+                    <tr>
+                        <td><strong>First name</strong></td>
+                        <td>@Model.GivenName</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Last name</strong></td>
+                        <td>@Model.FamilyName</td>
+                    </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<div class="s12">
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">The following profiles are linked to your account</div>
+        </div>
+        <div class="card-action">
+            @if (Model.LinkedIdentityProviders == null || !Model.LinkedIdentityProviders.Any())
+            {
+                <div class="grey-text text-lighten-1">
+                    <i class="material-icons prefix">info_outline</i>No identity providers linked to your profile
+                </div>
+            }
+            else
+            {
+                <table>
+                    @foreach (var linkedIdProvider in Model.LinkedIdentityProviders)
+                    {
+                        <tr>
+                            <td>@linkedIdProvider.DisplayName</td>
+                            <td class="right-align">
+                                <form method="post" action="@Url.Action("Unlink", new { @id = linkedIdProvider.ExternalSubject })">
+                                    <button type="submit" class="btn red darken-3 waves-effect waves-light">Unlink</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            }
+        </div>
+    </div>
+</div>
+<div class="s12">
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">Link to an external identity provider</div>
+        </div>
+        <div class="card-action">
+            @using (Html.BeginForm("Link", "User"))
+            {
+                foreach (var loginProvider in Model.UnlinkedIdentityProviders)
+                {
+                    <button type="submit" class="btn blue darken-3 waves-effect waves-light" id="@loginProvider.DisplayName" name="provider" value="@loginProvider.DisplayName" title="Log in using your @loginProvider.DisplayName account">@loginProvider.DisplayName</button>
+                }
+            }
         </div>
     </div>
 </div>

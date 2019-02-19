@@ -25,8 +25,11 @@ namespace SimpleAuth.AuthServer
     using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Logging;
     using SimpleAuth;
+    using SimpleAuth.Repositories;
+    using SimpleAuth.Shared.Repositories;
     using System.IO.Compression;
     using System.Reflection;
+    using System.Security.Claims;
 
     public class Startup
     {
@@ -39,14 +42,32 @@ namespace SimpleAuth.AuthServer
             _configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
             _options = new SimpleAuthOptions
             {
-                Configuration = new OpenIdServerConfiguration
+                ApplicationName = "iThemba",
+                Users = sp => new InMemoryResourceOwnerRepository(DefaultConfiguration.GetUsers()),
+                Clients =
+                    sp => new InMemoryClientRepository(
+                        null,
+                        sp.GetService<IScopeStore>(),
+                        DefaultConfiguration.GetClients()),
+                Scopes = sp => new InMemoryScopeRepository(),
+                EventPublisher = sp => new ConsolePublisher(),
+                UserClaimsToIncludeInAuthToken = new[] { "sub", "role" },
+                ClaimsIncludedInUserCreation = new[]
                 {
-                    Users = DefaultConfiguration.GetUsers(),
-                    Translations = DefaultConfiguration.GetTranslations(),
-                    // JsonWebKeys = DefaultConfiguration.GetJsonWebKeys(),
-                    Clients = DefaultConfiguration.GetClients()
-                },
-                Scim = new ScimOptions { IsEnabled = false }
+                    ClaimTypes.Name,
+                    ClaimTypes.Uri,
+                    ClaimTypes.Country,
+                    ClaimTypes.DateOfBirth,
+                    ClaimTypes.Email,
+                    ClaimTypes.Gender,
+                    ClaimTypes.GivenName,
+                    ClaimTypes.Locality,
+                    ClaimTypes.PostalCode,
+                    ClaimTypes.Role,
+                    ClaimTypes.StateOrProvince,
+                    ClaimTypes.StreetAddress,
+                    ClaimTypes.Surname
+                }
             };
         }
 
@@ -90,15 +111,9 @@ namespace SimpleAuth.AuthServer
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddApplicationPart(_assembly);
             services.AddSimpleAuth(_options);
-            services.AddDefaultTokenStore();
-            //services.Configure<RazorViewEngineOptions>(x =>
-            //{
-            //    x.FileProviders.Add(new EmbeddedFileProvider(_assembly, "SimpleAuth"));
-            //    x.AdditionalCompilationReferences.Add(MetadataReference.CreateFromFile(typeof(BasicAuthenticateOptions).Assembly.Location));
-            //});
         }
 
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseHttpsRedirection()
                 //.UseHsts()
@@ -108,9 +123,9 @@ namespace SimpleAuth.AuthServer
             // 2. Use static files.
             app.UseStaticFiles(
                 new StaticFileOptions { FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot") });
-            app.UseSimpleAuth(o => { });
+            app.UseSimpleAuthExceptionHandler();
             // 3. Redirect error to custom pages.
-            app.UseStatusCodePagesWithRedirects("~/Error/{0}");
+            app.UseStatusCodePagesWithRedirects("/Error/{0}");
             // 4. Enable SimpleAuth
             //app.AddSimpleAuth(_options, loggerFactory);
             // 5. Configure ASP.NET MVC

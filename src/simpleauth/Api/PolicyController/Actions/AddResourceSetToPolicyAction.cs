@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,14 +14,16 @@
 
 namespace SimpleAuth.Api.PolicyController.Actions
 {
-    using Errors;
-    using Exceptions;
     using Parameters;
     using Repositories;
     using Shared.Models;
+    using SimpleAuth.Shared.Repositories;
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
 
     internal class AddResourceSetToPolicyAction
     {
@@ -36,7 +38,9 @@ namespace SimpleAuth.Api.PolicyController.Actions
             _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<bool> Execute(AddResourceSetParameter addResourceSetParameter)
+        public async Task<bool> Execute(
+            AddResourceSetParameter addResourceSetParameter,
+            CancellationToken cancellationToken)
         {
             if (addResourceSetParameter == null)
             {
@@ -45,24 +49,35 @@ namespace SimpleAuth.Api.PolicyController.Actions
 
             if (string.IsNullOrWhiteSpace(addResourceSetParameter.PolicyId))
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddResourceSetParameterNames.PolicyId));
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(
+                        ErrorDescriptions.TheParameterNeedsToBeSpecified,
+                        UmaConstants.AddResourceSetParameterNames.PolicyId));
             }
 
             if (addResourceSetParameter.ResourceSets == null || !addResourceSetParameter.ResourceSets.Any())
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddResourceSetParameterNames.ResourceSet));
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(
+                        ErrorDescriptions.TheParameterNeedsToBeSpecified,
+                        UmaConstants.AddResourceSetParameterNames.ResourceSet));
             }
 
             Policy policy;
             try
             {
-                policy = await _policyRepository.Get(addResourceSetParameter.PolicyId).ConfigureAwait(false);
+                policy = await _policyRepository.Get(addResourceSetParameter.PolicyId, cancellationToken)
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InternalError,
-                    string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, addResourceSetParameter.PolicyId),
+                    string.Format(
+                        ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved,
+                        addResourceSetParameter.PolicyId),
                     ex);
             }
 
@@ -88,22 +103,21 @@ namespace SimpleAuth.Api.PolicyController.Actions
 
                 if (resourceSet == null)
                 {
-                    throw new SimpleAuthException(ErrorCodes.InvalidResourceSetId, string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
+                    throw new SimpleAuthException(
+                        ErrorCodes.InvalidResourceSetId,
+                        string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
                 }
             }
 
-            policy.ResourceSetIds.AddRange(addResourceSetParameter.ResourceSets);
+            policy.ResourceSetIds = policy.ResourceSetIds.Concat(addResourceSetParameter.ResourceSets).ToArray();
 
             try
             {
-                return await _policyRepository.Update(policy).ConfigureAwait(false);
+                return await _policyRepository.Update(policy, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InternalError,
-                    ErrorDescriptions.ThePolicyCannotBeUpdated,
-                    ex);
+                throw new SimpleAuthException(ErrorCodes.InternalError, ErrorDescriptions.ThePolicyCannotBeUpdated, ex);
             }
         }
     }

@@ -6,9 +6,15 @@
     using System.Net.Http;
     using System.Threading.Tasks;
 
-    public class TwilioClient : ITwilioClient
+    internal class TwilioClient : ITwilioClient
     {
+        private readonly HttpClient _client;
         private const string TwilioSmsEndpointFormat = "https://api.twilio.com/2010-04-01/Accounts/{0}/Messages.json";
+
+        public TwilioClient(HttpClient client)
+        {
+            _client = client;
+        }
 
         public async Task<bool> SendMessage(TwilioSmsCredentials credentials, string toPhoneNumber, string message)
         {
@@ -22,7 +28,6 @@
                 throw new ArgumentException(nameof(message));
             }
 
-            var client = new HttpClient();
             var keyValues = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("To", toPhoneNumber),
@@ -42,18 +47,18 @@
             httpRequest.Headers.Add("Accept-Encoding", "utf-8");
             httpRequest.Headers.Add("Authorization",
                 "Basic " + CreateBasicAuthenticationHeader(credentials.AccountSid, credentials.AuthToken));
-            var response = await client.SendAsync(httpRequest).ConfigureAwait(false);
+            var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
             try
             {
                 response.EnsureSuccessStatusCode();
+
+                return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new TwilioException(json);
+                throw new TwilioException(json, ex);
             }
-
-            return true;
         }
 
         private string CreateBasicAuthenticationHeader(string username, string password)

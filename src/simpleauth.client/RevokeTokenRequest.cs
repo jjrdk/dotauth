@@ -1,9 +1,9 @@
 ﻿namespace SimpleAuth.Client
 {
+    using SimpleAuth.Shared.Responses;
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using Shared;
 
     public class RevokeTokenRequest : IEnumerable<KeyValuePair<string, string>>
     {
@@ -12,6 +12,11 @@
         private RevokeTokenRequest(Dictionary<string, string> form)
         {
             _form = form;
+        }
+
+        public static RevokeTokenRequest RevokeToken(GrantedTokenResponse tokenResponse)
+        {
+            return RevokeToken(tokenResponse.AccessToken, tokenResponse.TokenType);
         }
 
         public static RevokeTokenRequest RevokeToken(string token, string tokenType)
@@ -23,8 +28,8 @@
 
             var dict = new Dictionary<string, string>
             {
-                {IntrospectionRequestNames.Token, token},
-                {IntrospectionRequestNames.TokenTypeHint, tokenType}
+                {"token", token},
+                {"token_type_hint", tokenType}
             };
             return new RevokeTokenRequest(dict);
         }
