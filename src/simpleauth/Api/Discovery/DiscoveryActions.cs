@@ -48,7 +48,6 @@ namespace SimpleAuth.Api.Discovery
             var responseTypesSupported = GetSupportedResponseTypes(CoreConstants.Supported._supportedAuthorizationFlows);
 
             var grantTypesSupported = CoreConstants.Supported._supportedGrantTypes;
-            var tokenAuthMethodSupported = GetSupportedTokenEndPointAuthMethods();
 
             result.ClaimsParameterSupported = true;
             result.RequestParameterSupported = true;
@@ -57,10 +56,10 @@ namespace SimpleAuth.Api.Discovery
             result.ClaimsSupported = Array.Empty<string>(); //(await _claimRepository.GetAll().ConfigureAwait(false)).ToArray();
             result.ScopesSupported = scopeSupportedNames;
             result.ResponseTypesSupported = responseTypesSupported;
-            result.ResponseModesSupported = CoreConstants.Supported._supportedResponseModes.ToArray();
+            result.ResponseModesSupported = CoreConstants.Supported.SupportedResponseModes.ToArray();
             result.GrantTypesSupported = grantTypesSupported;
-            result.SubjectTypesSupported = CoreConstants.Supported._supportedSubjectTypes.ToArray();
-            result.TokenEndpointAuthMethodSupported = tokenAuthMethodSupported;
+            result.SubjectTypesSupported = CoreConstants.Supported.SupportedSubjectTypes.ToArray();
+            result.TokenEndpointAuthMethodSupported = CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods;
             result.IdTokenSigningAlgValuesSupported = new[] { SecurityAlgorithms.RsaSha256, SecurityAlgorithms.EcdsaSha256 };
             //var issuer = Request.GetAbsoluteUriWithVirtualPath();
             var authorizationEndPoint = issuer + "/" + CoreConstants.EndPoints.Authorization;
@@ -124,17 +123,16 @@ namespace SimpleAuth.Api.Discovery
         //    return result.ToArray();
         //}
 
-        private static string[] GetSupportedTokenEndPointAuthMethods()
-        {
-            var result = new List<string>();
-            foreach (var supportedAuthMethod in CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods)
-            {
-                var record = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), supportedAuthMethod);
-                result.Add(record);
-            }
+        //private static string[] GetSupportedTokenEndPointAuthMethods()
+        //{
+        //    var result = new List<string>();
+        //    foreach (var supportedAuthMethod in CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods)
+        //    {
+        //        var record = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), supportedAuthMethod);
+        //        result.Add(record);
+        //    }
 
-            return result.ToArray();
-        }
-
+        //    return result.ToArray();
+        //}
     }
 }
