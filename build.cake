@@ -1,4 +1,5 @@
 #tool nuget:?package=GitVersion.CommandLine&version=4.0.0
+#addin nuget:?package=Cake.Docker
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -142,6 +143,14 @@ Task("Pack")
         DotNetCorePack("./src/simpleauth.uma.client/simpleauth.uma.client.csproj", packSettings);
     });
 
+// the rest of your build script
+Task("Docker-Build")
+.IsDependentOn("Pack")
+.Does(() => {
+    var settings = new DockerImageBuildSettings { Tag = new[] {"simpleauth:" + versionInfo.MajorMinorPatch }};
+    DockerBuild(settings, "./");
+});
+
 Task("Warp")
     .IsDependentOn("Pack")
     .Does(()=>
@@ -170,7 +179,7 @@ Task("Warp")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Warp");
+    .IsDependentOn("Docker-Build");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
