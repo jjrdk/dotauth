@@ -1,5 +1,4 @@
-﻿using SimpleAuth.Services;
-using SimpleAuth.Shared.Repositories;
+﻿using SimpleAuth.Shared.Repositories;
 using System.Net.Http.Headers;
 
 namespace SimpleAuth.Tests.Api.Token

@@ -10,7 +10,6 @@
     using Microsoft.AspNetCore.Mvc.Routing;
     using SimpleAuth;
     using SimpleAuth.Controllers;
-    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
@@ -183,7 +182,7 @@
             }
 
             var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, HostConstants.CookieNames.PasswordLessCookieName)
+                .GetAuthenticatedUser(this, CookieNames.PasswordLessCookieName)
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
@@ -213,7 +212,7 @@
             }
 
             var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, HostConstants.CookieNames.PasswordLessCookieName)
+                .GetAuthenticatedUser(this, CookieNames.PasswordLessCookieName)
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
@@ -224,10 +223,10 @@
 
             var authenticatedUserClaims = authenticatedUser.Claims.ToArray();
             var subject = authenticatedUserClaims
-                .First(c => c.Type == JwtConstants.OpenIdClaimTypes.Subject)
+                .First(c => c.Type == OpenIdClaimTypes.Subject)
                 .Value;
             var phoneNumber = authenticatedUserClaims.First(
-                c => c.Type == JwtConstants.OpenIdClaimTypes.PhoneNumber);
+                c => c.Type == OpenIdClaimTypes.PhoneNumber);
             if (confirmCodeViewModel.Action == "resend") // Resend the confirmation code.
             {
                 var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value).ConfigureAwait(false);
@@ -243,7 +242,7 @@
 
             await _authenticationService.SignOutAsync(
                     HttpContext,
-                    HostConstants.CookieNames.PasswordLessCookieName,
+                    CookieNames.PasswordLessCookieName,
                     new AuthenticationProperties())
                 .ConfigureAwait(false);
             var resourceOwner = await _getUserOperation.Execute(authenticatedUser, cancellationToken).ConfigureAwait(false);
@@ -355,11 +354,11 @@
 
         private async Task SetPasswordLessCookie(IEnumerable<Claim> claims)
         {
-            var identity = new ClaimsIdentity(claims, HostConstants.CookieNames.PasswordLessCookieName);
+            var identity = new ClaimsIdentity(claims, CookieNames.PasswordLessCookieName);
             var principal = new ClaimsPrincipal(identity);
             await _authenticationService.SignInAsync(
                     HttpContext,
-                    HostConstants.CookieNames.PasswordLessCookieName,
+                    CookieNames.PasswordLessCookieName,
                     principal,
                     new AuthenticationProperties { ExpiresUtc = DateTime.UtcNow.AddMinutes(20), IsPersistent = false })
                 .ConfigureAwait(false);

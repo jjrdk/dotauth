@@ -26,7 +26,7 @@
             {
                 UserInfo = new List<ClaimParameter>
                 {
-                    new ClaimParameter { Name = JwtConstants.OpenIdClaimTypes.Subject },
+                    new ClaimParameter { Name = OpenIdClaimTypes.Subject },
                     new ClaimParameter { Name = notStandardClaimName }
                 }
             };
@@ -34,7 +34,7 @@
                         var claimNames = claimsParameter.GetClaimNames();
 
                         Assert.NotNull(claimNames);
-            Assert.Contains(JwtConstants.OpenIdClaimTypes.Subject, claimNames);
+            Assert.Contains(OpenIdClaimTypes.Subject, claimNames);
             Assert.DoesNotContain(notStandardClaimName, claimNames);
         }
     }

@@ -2,7 +2,6 @@
 {
     using Moq;
     using SimpleAuth;
-    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -110,7 +109,7 @@
 
             _resourceOwnerRepositoryStub.Verify(
                 r => r.GetResourceOwnerByClaim(
-                    JwtConstants.OpenIdClaimTypes.PhoneNumber,
+                    OpenIdClaimTypes.PhoneNumber,
                     login,
                     CancellationToken.None));
             _confirmationCodeStoreStub.Verify(c => c.Remove("password"));

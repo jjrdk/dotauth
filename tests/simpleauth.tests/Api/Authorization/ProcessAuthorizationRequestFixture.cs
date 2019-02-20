@@ -5,8 +5,6 @@
     using Shared.Repositories;
     using SimpleAuth.Api.Authorization;
     using System;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Xunit;
 
     public sealed class ProcessAuthorizationRequestFixture
@@ -167,7 +165,7 @@
 
             var claims = new List<Claim>
             {
-                new Claim(Core.Jwt.JwtConstants.OpenIdClaimTypes.Subject, subject)
+                new Claim(Core.Jwt.OpenIdClaimTypes.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);

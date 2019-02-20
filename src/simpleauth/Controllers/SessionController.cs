@@ -37,7 +37,7 @@
         public async Task RevokeSession()
         {
             var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName)
+                .GetAuthenticatedUser(this, CookieNames.CookieName)
                 .ConfigureAwait(false);
             if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
             {
@@ -60,7 +60,7 @@
         [HttpGet(CoreConstants.EndPoints.EndSessionCallback)]
         public async Task RevokeSessionCallback([FromQuery]RevokeSessionRequest request, CancellationToken cancellationToken)
         {
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName).ConfigureAwait(false);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName).ConfigureAwait(false);
             if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 await this.DisplayInternalHtml("SimpleAuth.Views.UserNotConnected.html").ConfigureAwait(false);
@@ -68,7 +68,7 @@
             }
 
             Response.Cookies.Delete(CoreConstants.SessionId);
-            await _authenticationService.SignOutAsync(HttpContext, HostConstants.CookieNames.CookieName, new AuthenticationProperties()).ConfigureAwait(false);
+            await _authenticationService.SignOutAsync(HttpContext, CookieNames.CookieName, new AuthenticationProperties()).ConfigureAwait(false);
             if (request != null
                 && request.PostLogoutRedirectUri != null
                 && !string.IsNullOrWhiteSpace(request.IdTokenHint))

@@ -108,7 +108,7 @@ namespace SimpleAuth.Controllers
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
             var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName)
+                .GetAuthenticatedUser(this, CookieNames.CookieName)
                 .ConfigureAwait(false);
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _confirmConsent.Execute(parameter, authenticatedUser, issuerName, cancellationToken)

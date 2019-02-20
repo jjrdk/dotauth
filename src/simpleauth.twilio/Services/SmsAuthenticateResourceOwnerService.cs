@@ -4,7 +4,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth;
-    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -51,7 +50,7 @@
             }
 
             var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(
-                    JwtConstants.OpenIdClaimTypes.PhoneNumber,
+                    OpenIdClaimTypes.PhoneNumber,
                     login,
                     cancellationToken)
                 .ConfigureAwait(false);

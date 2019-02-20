@@ -19,7 +19,6 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
     using Parameters;
     using Results;
     using Shared;
-    using SimpleAuth.MiddleWare;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.WebSite.Authenticate;
@@ -117,7 +116,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             const string code = "code";
             const string subject = "subject";
             var authorizationParameter = new AuthorizationParameter();
-            var claims = new List<Claim> { new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
             var claimsIdentity = new ClaimsIdentity(claims, "authServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 

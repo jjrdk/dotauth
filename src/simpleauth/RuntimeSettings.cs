@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth
 {
     using System;
-    using System.Globalization;
 
     public class RuntimeSettings
     {

@@ -62,14 +62,14 @@ namespace SimpleAuth.WebSite.User.Actions
 
             Claim updatedClaim;
             if (((updatedClaim = resourceOwner.Claims.FirstOrDefault(
-                     c => c.Type == JwtConstants.OpenIdClaimTypes.UpdatedAt))
+                     c => c.Type == OpenIdClaimTypes.UpdatedAt))
                  != null))
             {
                 resourceOwner.Claims.Remove(updatedClaim);
             }
 
             resourceOwner.Claims = resourceOwner.Claims.Add(
-                     new Claim(JwtConstants.OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ToString()));
+                     new Claim(OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ToString()));
             return await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
         }
     }

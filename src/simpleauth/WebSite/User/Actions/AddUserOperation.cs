@@ -53,9 +53,9 @@ namespace SimpleAuth.WebSite.User.Actions
 
             var newClaims = new List<Claim>
             {
-                new Claim(JwtConstants.OpenIdClaimTypes.UpdatedAt,
+                new Claim(OpenIdClaimTypes.UpdatedAt,
                     DateTime.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture)),
-                new Claim(JwtConstants.OpenIdClaimTypes.Subject, resourceOwner.Id)
+                new Claim(OpenIdClaimTypes.Subject, resourceOwner.Id)
             };
 
             // 2. Populate the claims.

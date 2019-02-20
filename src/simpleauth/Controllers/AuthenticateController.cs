@@ -8,7 +8,6 @@
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.AspNetCore.Mvc.Routing;
     using Parameters;
-    using Services;
     using Shared;
     using Shared.Repositories;
     using Shared.Requests;
@@ -166,7 +165,7 @@
                         DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                         ClaimValueTypes.Integer));
                 var subject = resourceOwner.Claims
-                    .First(c => c.Type == JwtConstants.OpenIdClaimTypes.Subject)
+                    .First(c => c.Type == OpenIdClaimTypes.Subject)
                     .Value;
                 if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
                 {
@@ -245,7 +244,7 @@
                         cancellationToken)
                     .ConfigureAwait(false);
                 var subject = actionResult.Claims
-                    .First(c => c.Type == JwtConstants.OpenIdClaimTypes.Subject)
+                    .First(c => c.Type == OpenIdClaimTypes.Subject)
                     .Value;
 
                 // 5. Two factor authentication.

@@ -17,7 +17,7 @@
 
         public async Task<ClaimsPrincipal> SetUser()
         {
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName).ConfigureAwait(false);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName).ConfigureAwait(false);
             var isAuthenticed = authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated;
             ViewBag.IsAuthenticated = isAuthenticed;
             ViewBag.Name = isAuthenticed ? authenticatedUser.GetName() : "unknown";

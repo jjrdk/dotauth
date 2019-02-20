@@ -3,7 +3,6 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using Shared;
 
     public class IntrospectionRequest : IEnumerable<KeyValuePair<string, string>>
     {

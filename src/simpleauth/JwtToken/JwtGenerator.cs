@@ -300,7 +300,7 @@ namespace SimpleAuth.JwtToken
         {
             // 1. Fill-in the subject claim
             var subject = claimsPrincipal.GetSubject();
-            jwsPayload.Add(Shared.JwtConstants.OpenIdClaimTypes.Subject, subject);
+            jwsPayload.Add(Shared.OpenIdClaimTypes.Subject, subject);
 
             if (authorizationParameter != null && !string.IsNullOrWhiteSpace(authorizationParameter.Scope))
             {
@@ -308,7 +308,7 @@ namespace SimpleAuth.JwtToken
                 var claims = await GetClaimsFromRequestedScopes(claimsPrincipal, cancellationToken, scopes)
                     .ConfigureAwait(false);
                 foreach (var claim in claims.GroupBy(c => c.Type)
-                    .Where(x => x.Key != Shared.JwtConstants.OpenIdClaimTypes.Subject))
+                    .Where(x => x.Key != Shared.OpenIdClaimTypes.Subject))
                 {
                     jwsPayload.Add(claim.Key, string.Join(" ", claim.Select(c => c.Value)));
                 }
@@ -327,11 +327,11 @@ namespace SimpleAuth.JwtToken
             var state = authorizationParameter == null ? string.Empty : authorizationParameter.State;
 
             // 1. Fill-In the subject - set the subject as an essential claim
-            if (claimParameters.All(c => c.Name != Shared.JwtConstants.OpenIdClaimTypes.Subject))
+            if (claimParameters.All(c => c.Name != Shared.OpenIdClaimTypes.Subject))
             {
                 var essentialSubjectClaimParameter = new ClaimParameter
                 {
-                    Name = Shared.JwtConstants.OpenIdClaimTypes.Subject,
+                    Name = Shared.OpenIdClaimTypes.Subject,
                     Parameters = new Dictionary<string, object>
                     {
                         {CoreConstants.StandardClaimParameterValueNames.EssentialName, true}

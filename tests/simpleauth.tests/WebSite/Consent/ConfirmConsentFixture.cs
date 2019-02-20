@@ -6,7 +6,6 @@
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth.MiddleWare;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.WebSite.Consent.Actions;
     using System;
@@ -64,7 +63,7 @@
             {
                 Claims = null, Scope = "profile", ResponseMode = ResponseModes.None, State = state
             };
-            var claims = new List<Claim> {new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject)};
+            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Client {ClientId = "clientId"};
@@ -103,12 +102,12 @@
                 {
                     UserInfo = new List<ClaimParameter>
                     {
-                        new ClaimParameter {Name = JwtConstants.OpenIdClaimTypes.Subject}
+                        new ClaimParameter {Name = OpenIdClaimTypes.Subject}
                     }
                 },
                 Scope = "profile"
             };
-            var claims = new List<Claim> {new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject)};
+            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Client {ClientId = clientId};
@@ -130,7 +129,7 @@
             await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Contains(JwtConstants.OpenIdClaimTypes.Subject, insertedConsent.Claims);
+            Assert.Contains(OpenIdClaimTypes.Subject, insertedConsent.Claims);
             Assert.Equal(subject, insertedConsent.ResourceOwner.Id);
             Assert.Equal(clientId, insertedConsent.Client.ClientId);
         }
@@ -143,7 +142,7 @@
             {
                 ResponseType = "code", Claims = null, Scope = "profile", ResponseMode = ResponseModes.None
             };
-            var claims = new List<Claim> {new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject)};
+            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Client {ClientId = "clientId"};

@@ -3,7 +3,6 @@ namespace SimpleAuth.Twilio.Controllers
     using Actions;
     using Microsoft.AspNetCore.Mvc;
     using Shared;
-    using SimpleAuth.Services;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Responses;
     using System;

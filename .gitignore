@@ -215,3 +215,4 @@ log-*.txt
 appsettings.json
 simpleauth.authserver.exe
 /src/simpleauth.authserver/simpleauth.authserver
+tests/**/TestData.cs

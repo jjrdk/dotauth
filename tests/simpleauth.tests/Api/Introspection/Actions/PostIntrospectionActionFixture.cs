@@ -125,7 +125,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             };
             var idtp = new JwtPayload
             {
-                {JwtConstants.OpenIdClaimTypes.Subject, subject},
+                {OpenIdClaimTypes.Subject, subject},
                 {StandardClaimNames.Audiences, audiences}
             };
             var grantedToken = new GrantedToken
@@ -176,7 +176,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
                 ClientId = clientId,
                 IdTokenPayLoad = new JwtPayload
                 {
-                    {JwtConstants.OpenIdClaimTypes.Subject, subject},
+                    {OpenIdClaimTypes.Subject, subject},
                     {StandardClaimNames.Audiences, audiences}
                 },
                 CreateDateTime = DateTime.UtcNow,

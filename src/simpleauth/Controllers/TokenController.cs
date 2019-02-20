@@ -9,7 +9,6 @@
     using Shared.Responses;
     using SimpleAuth.Common;
     using SimpleAuth.Repositories;
-    using SimpleAuth.Services;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Collections.Generic;

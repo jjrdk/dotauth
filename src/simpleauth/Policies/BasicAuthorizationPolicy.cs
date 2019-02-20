@@ -210,7 +210,7 @@ namespace SimpleAuth.Policies
                     }
                 }
 
-                //if (claim.Type == JwtConstants.OpenIdClaimTypes.Role)
+                //if (claim.Type == OpenIdClaimTypes.Role)
                 //{
                 //    IEnumerable<string> roles = null;
                 //    if (payload.Value is string)

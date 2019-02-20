@@ -17,7 +17,6 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
 {
     using Exceptions;
     using Moq;
-    using Services;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;

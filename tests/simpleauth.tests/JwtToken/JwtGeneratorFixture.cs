@@ -101,7 +101,7 @@ namespace SimpleAuth.Tests.JwtToken
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
-                new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject)
+                new Claim(OpenIdClaimTypes.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -118,11 +118,11 @@ namespace SimpleAuth.Tests.JwtToken
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Contains(result.Claims, c => c.Type == JwtConstants.OpenIdClaimTypes.Subject);
+            Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
             Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.AuthenticationTime);
             Assert.Equal(
                 subject,
-                result.Claims.First(c => c.Type == JwtConstants.OpenIdClaimTypes.Subject).Value);
+                result.Claims.First(c => c.Type == OpenIdClaimTypes.Subject).Value);
             Assert.NotEmpty(result.Claims.First(c => c.Type == StandardClaimNames.AuthenticationTime).Value);
         }
 
@@ -133,7 +133,7 @@ namespace SimpleAuth.Tests.JwtToken
             const string issuerName = "IssuerName";
             var clientId = FakeOpenIdAssets.GetClients().First().ClientId;
             const string subject = "john.doe@email.com";
-            var claims = new List<Claim> { new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var authorizationParameter = new AuthorizationParameter { ClientId = clientId };
@@ -149,7 +149,7 @@ namespace SimpleAuth.Tests.JwtToken
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Contains(result.Claims, c => c.Type == JwtConstants.OpenIdClaimTypes.Subject);
+            Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
             Assert.True(result.Aud.Count > 1);
             Assert.Equal(clientId, result.Azp);
         }
@@ -160,7 +160,7 @@ namespace SimpleAuth.Tests.JwtToken
             const string issuerName = "IssuerName";
             const string clientId = "clientId";
             const string subject = "john.doe@email.com";
-            var claims = new List<Claim> { new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var authorizationParameter = new AuthorizationParameter { ClientId = clientId };
@@ -175,7 +175,7 @@ namespace SimpleAuth.Tests.JwtToken
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Contains(result.Claims, c => c.Type == JwtConstants.OpenIdClaimTypes.Subject);
+            Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
             Assert.Single(result.Aud);
             Assert.Equal(clientId, result.Azp);
         }
@@ -186,7 +186,7 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "john.doe@email.com";
             var authorizationParameter = new AuthorizationParameter();
-            var claims = new List<Claim> { new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -201,7 +201,7 @@ namespace SimpleAuth.Tests.JwtToken
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Contains(result.Claims, c => c.Type == JwtConstants.OpenIdClaimTypes.Subject);
+            Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
             Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.Audiences);
             Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.ExpirationTime);
             Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.Iat);
@@ -235,7 +235,7 @@ namespace SimpleAuth.Tests.JwtToken
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
-                new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject)
+                new Claim(OpenIdClaimTypes.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -282,7 +282,7 @@ namespace SimpleAuth.Tests.JwtToken
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
-                new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject)
+                new Claim(OpenIdClaimTypes.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -329,7 +329,7 @@ namespace SimpleAuth.Tests.JwtToken
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
-                new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject)
+                new Claim(OpenIdClaimTypes.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -373,7 +373,7 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "john.doe@email.com";
             const string notValidSubject = "jane.doe@email.com";
-            var claims = new List<Claim> { new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
             var authorizationParameter = new AuthorizationParameter();
 
             var claimIdentity = new ClaimsIdentity(claims, "fake");
@@ -382,7 +382,7 @@ namespace SimpleAuth.Tests.JwtToken
             {
                 new ClaimParameter
                 {
-                    Name = JwtConstants.OpenIdClaimTypes.Subject,
+                    Name = OpenIdClaimTypes.Subject,
                     Parameters = new Dictionary<string, object>
                     {
                         {CoreConstants.StandardClaimParameterValueNames.EssentialName, true},
@@ -409,7 +409,7 @@ namespace SimpleAuth.Tests.JwtToken
                 result.Message,
                 string.Format(
                     ErrorDescriptions.TheClaimIsNotValid,
-                    JwtConstants.OpenIdClaimTypes.Subject));
+                    OpenIdClaimTypes.Subject));
         }
 
         [Fact]
@@ -424,9 +424,9 @@ namespace SimpleAuth.Tests.JwtToken
                 new Claim(
                     ClaimTypes.AuthenticationInstant,
                     currentDateTimeOffset.ToString(CultureInfo.InvariantCulture)),
-                new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject),
+                new Claim(OpenIdClaimTypes.Subject, subject),
                 new Claim(
-                    JwtConstants.OpenIdClaimTypes.Role,
+                    OpenIdClaimTypes.Role,
                     "['role1', 'role2']",
                     ClaimValueTypes.String)
             };
@@ -464,7 +464,7 @@ namespace SimpleAuth.Tests.JwtToken
                 },
                 new ClaimParameter
                 {
-                    Name = JwtConstants.OpenIdClaimTypes.Role,
+                    Name = OpenIdClaimTypes.Role,
                     Parameters = new Dictionary<string, object>
                     {
                         {CoreConstants.StandardClaimParameterValueNames.EssentialName, true}
@@ -487,12 +487,12 @@ namespace SimpleAuth.Tests.JwtToken
 
             Assert.Equal(
                 subject,
-                result.Claims.First(c => c.Type == JwtConstants.OpenIdClaimTypes.Subject).Value);
+                result.Claims.First(c => c.Type == OpenIdClaimTypes.Subject).Value);
             Assert.Equal(
                 currentDateTimeOffset,
                 double.Parse(result.Claims.First(c => c.Type == StandardClaimNames.AuthenticationTime).Value));
 
-            Assert.Contains(result.Claims, c => c.Type == JwtConstants.OpenIdClaimTypes.Role);
+            Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Role);
             Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.AuthenticationTime);
             Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.Nonce);
         }
@@ -520,8 +520,8 @@ namespace SimpleAuth.Tests.JwtToken
             const string name = "John Doe";
             var claims = new List<Claim>
             {
-                new Claim(JwtConstants.OpenIdClaimTypes.Name, name),
-                new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject)
+                new Claim(OpenIdClaimTypes.Name, name),
+                new Claim(OpenIdClaimTypes.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -540,10 +540,10 @@ namespace SimpleAuth.Tests.JwtToken
 
             Assert.Equal(
                 subject,
-                result.Claims.First(c => c.Type == JwtConstants.OpenIdClaimTypes.Subject).Value);
+                result.Claims.First(c => c.Type == OpenIdClaimTypes.Subject).Value);
             Assert.Equal(
                 name,
-                result.Claims.First(c => c.Type == JwtConstants.OpenIdClaimTypes.Name).Value);
+                result.Claims.First(c => c.Type == OpenIdClaimTypes.Name).Value);
         }
 
         [Fact]
@@ -561,14 +561,14 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "";
             const string state = "state";
-            var claims = new List<Claim> {new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject)};
+            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var claimsParameter = new List<ClaimParameter>
             {
                 new ClaimParameter
                 {
-                    Name = JwtConstants.OpenIdClaimTypes.Subject,
+                    Name = OpenIdClaimTypes.Subject,
                     Parameters = new Dictionary<string, object>
                     {
                         {CoreConstants.StandardClaimParameterValueNames.EssentialName, true}
@@ -593,7 +593,7 @@ namespace SimpleAuth.Tests.JwtToken
             Assert.Equal(
                 string.Format(
                     ErrorDescriptions.TheClaimIsNotValid,
-                    JwtConstants.OpenIdClaimTypes.Subject),
+                    OpenIdClaimTypes.Subject),
                 exception.Message);
             Assert.Equal(state, exception.State);
         }
@@ -604,14 +604,14 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "invalid@loki.be";
             const string state = "state";
-            var claims = new List<Claim> { new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var claimsParameter = new List<ClaimParameter>
             {
                 new ClaimParameter
                 {
-                    Name = JwtConstants.OpenIdClaimTypes.Subject,
+                    Name = OpenIdClaimTypes.Subject,
                     Parameters = new Dictionary<string, object>
                     {
                         {CoreConstants.StandardClaimParameterValueNames.ValueName, "john.doe@email.com"}
@@ -637,7 +637,7 @@ namespace SimpleAuth.Tests.JwtToken
                 exception.Message
                 == string.Format(
                     ErrorDescriptions.TheClaimIsNotValid,
-                    JwtConstants.OpenIdClaimTypes.Subject));
+                    OpenIdClaimTypes.Subject));
             Assert.True(exception.State == state);
         }
 
@@ -646,14 +646,14 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "john.doe@email.com";
             const string state = "state";
-            var claims = new List<Claim> { new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var claimsParameter = new List<ClaimParameter>
             {
                 new ClaimParameter
                 {
-                    Name = JwtConstants.OpenIdClaimTypes.Name,
+                    Name = OpenIdClaimTypes.Name,
                     Parameters = new Dictionary<string, object>
                     {
                         {CoreConstants.StandardClaimParameterValueNames.EssentialName, true}
@@ -679,7 +679,7 @@ namespace SimpleAuth.Tests.JwtToken
                 exception.Message
                 == string.Format(
                     ErrorDescriptions.TheClaimIsNotValid,
-                    JwtConstants.OpenIdClaimTypes.Name));
+                    OpenIdClaimTypes.Name));
             Assert.True(exception.State == state);
         }
 
@@ -690,8 +690,8 @@ namespace SimpleAuth.Tests.JwtToken
             const string state = "state";
             var claims = new List<Claim>
             {
-                new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject),
-                new Claim(JwtConstants.OpenIdClaimTypes.Name, "invalid_name")
+                new Claim(OpenIdClaimTypes.Subject, subject),
+                new Claim(OpenIdClaimTypes.Name, "invalid_name")
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -699,7 +699,7 @@ namespace SimpleAuth.Tests.JwtToken
             {
                 new ClaimParameter
                 {
-                    Name = JwtConstants.OpenIdClaimTypes.Subject,
+                    Name = OpenIdClaimTypes.Subject,
                     Parameters = new Dictionary<string, object>
                     {
                         {CoreConstants.StandardClaimParameterValueNames.ValueName, subject}
@@ -707,7 +707,7 @@ namespace SimpleAuth.Tests.JwtToken
                 },
                 new ClaimParameter
                 {
-                    Name = JwtConstants.OpenIdClaimTypes.Name,
+                    Name = OpenIdClaimTypes.Name,
                     Parameters = new Dictionary<string, object>
                     {
                         {CoreConstants.StandardClaimParameterValueNames.ValueName, "name"}
@@ -733,7 +733,7 @@ namespace SimpleAuth.Tests.JwtToken
                 exception.Message
                 == string.Format(
                     ErrorDescriptions.TheClaimIsNotValid,
-                    JwtConstants.OpenIdClaimTypes.Name));
+                    OpenIdClaimTypes.Name));
             Assert.True(exception.State == state);
         }
 
@@ -744,8 +744,8 @@ namespace SimpleAuth.Tests.JwtToken
             const string name = "John Doe";
             var claims = new List<Claim>
             {
-                new Claim(JwtConstants.OpenIdClaimTypes.Name, name),
-                new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject)
+                new Claim(OpenIdClaimTypes.Name, name),
+                new Claim(OpenIdClaimTypes.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -753,7 +753,7 @@ namespace SimpleAuth.Tests.JwtToken
             {
                 new ClaimParameter
                 {
-                    Name = JwtConstants.OpenIdClaimTypes.Name,
+                    Name = OpenIdClaimTypes.Name,
                     Parameters = new Dictionary<string, object>
                     {
                         {CoreConstants.StandardClaimParameterValueNames.EssentialName, true}
@@ -761,7 +761,7 @@ namespace SimpleAuth.Tests.JwtToken
                 },
                 new ClaimParameter
                 {
-                    Name = JwtConstants.OpenIdClaimTypes.Subject,
+                    Name = OpenIdClaimTypes.Subject,
                     Parameters = new Dictionary<string, object>
                     {
                         {CoreConstants.StandardClaimParameterValueNames.EssentialName, true},
@@ -784,10 +784,10 @@ namespace SimpleAuth.Tests.JwtToken
 
             Assert.Equal(
                 subject,
-                result.Claims.First(c => c.Type == JwtConstants.OpenIdClaimTypes.Subject).Value);
+                result.Claims.First(c => c.Type == OpenIdClaimTypes.Subject).Value);
             Assert.Equal(
                 name,
-                result.Claims.First(c => c.Type == JwtConstants.OpenIdClaimTypes.Name).Value);
+                result.Claims.First(c => c.Type == OpenIdClaimTypes.Name).Value);
         }
 
         [Fact]

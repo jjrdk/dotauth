@@ -7,7 +7,6 @@
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth.Api.Authorization;
-    using SimpleAuth.MiddleWare;
     using System;
     using System.Threading;
     using System.Threading.Tasks;

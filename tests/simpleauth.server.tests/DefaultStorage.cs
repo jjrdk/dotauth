@@ -16,7 +16,7 @@
                     Id = "administrator",
                     Claims = new []
                     {
-                        new Claim(JwtConstants.OpenIdClaimTypes.Subject, "administrator")
+                        new Claim(OpenIdClaimTypes.Subject, "administrator")
                     },
                     Password = "password",
                     IsLocalAccount = true
@@ -27,7 +27,7 @@
                     Password = "password",
                     Claims = new []
                     {
-                        new Claim(JwtConstants.OpenIdClaimTypes.Subject, "user")
+                        new Claim(OpenIdClaimTypes.Subject, "user")
                     },
                     IsLocalAccount = true
                 }

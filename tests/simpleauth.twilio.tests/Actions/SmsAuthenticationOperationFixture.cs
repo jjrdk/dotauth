@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Twilio.Tests.Actions
 {
     using Moq;
-    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;

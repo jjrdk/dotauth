@@ -6,7 +6,6 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.FileProviders;
     using Services;
-    using SimpleAuth.Services;
     using SimpleAuth.Shared;
 
     public static class ServiceCollectionExtensions

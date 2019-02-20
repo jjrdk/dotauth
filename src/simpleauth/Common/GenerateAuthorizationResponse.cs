@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Common
 {
-    using Api.Authorization;
     using Extensions;
     using JwtToken;
     using Parameters;

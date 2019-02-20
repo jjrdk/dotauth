@@ -117,7 +117,7 @@ namespace SimpleAuth.Controllers
             resourceOwner.Claims = claims;
             Claim updatedClaim;
             if ((updatedClaim = resourceOwner.Claims.FirstOrDefault(
-                    c => c.Type == JwtConstants.OpenIdClaimTypes.UpdatedAt))
+                    c => c.Type == OpenIdClaimTypes.UpdatedAt))
                 != null)
             {
                 resourceOwner.Claims.Remove(updatedClaim);
@@ -126,15 +126,15 @@ namespace SimpleAuth.Controllers
             Claim subjectClaim;
             if ((subjectClaim =
                     resourceOwner.Claims.FirstOrDefault(
-                        c => c.Type == JwtConstants.OpenIdClaimTypes.Subject))
+                        c => c.Type == OpenIdClaimTypes.Subject))
                 != null)
             {
                 resourceOwner.Claims.Remove(subjectClaim);
             }
 
             resourceOwner.Claims = resourceOwner.Claims.Add(
-                new Claim(JwtConstants.OpenIdClaimTypes.Subject, request.Login),
-                new Claim(JwtConstants.OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ToString()));
+                new Claim(OpenIdClaimTypes.Subject, request.Login),
+                new Claim(OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ToString()));
 
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
             if (!result)
