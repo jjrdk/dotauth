@@ -5,9 +5,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.AspNetCore.Mvc.Routing;
-    using SimpleAuth.Exceptions;
     using SimpleAuth.Extensions;
-    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
@@ -253,13 +251,13 @@
             {
                 var authenticatedUser = await SetUser().ConfigureAwait(false);
                 var externalClaims = await _authenticationService
-                    .GetAuthenticatedUser(this, HostConstants.CookieNames.ExternalCookieName)
+                    .GetAuthenticatedUser(this, CookieNames.ExternalCookieName)
                     .ConfigureAwait(false);
                 await InnerLinkProfile(authenticatedUser.GetSubject(), externalClaims, cancellationToken)
                     .ConfigureAwait(false);
                 await _authenticationService.SignOutAsync(
                         HttpContext,
-                        HostConstants.CookieNames.ExternalCookieName,
+                        CookieNames.ExternalCookieName,
                         new AuthenticationProperties())
                     .ConfigureAwait(false);
                 return RedirectToAction("Index", "User");
@@ -272,7 +270,7 @@
             {
                 await _authenticationService.SignOutAsync(
                         HttpContext,
-                        HostConstants.CookieNames.ExternalCookieName,
+                        CookieNames.ExternalCookieName,
                         new AuthenticationProperties())
                     .ConfigureAwait(false);
                 throw;
@@ -287,7 +285,7 @@
         public async Task<IActionResult> LinkProfileConfirmation()
         {
             var externalClaims = await _authenticationService
-                .GetAuthenticatedUser(this, HostConstants.CookieNames.ExternalCookieName)
+                .GetAuthenticatedUser(this, CookieNames.ExternalCookieName)
                 .ConfigureAwait(false);
             if (externalClaims?.Identity == null
                 || !externalClaims.Identity.IsAuthenticated
@@ -310,7 +308,7 @@
         public async Task<IActionResult> ConfirmProfileLinking(CancellationToken cancellationToken)
         {
             var externalClaims = await _authenticationService
-                .GetAuthenticatedUser(this, HostConstants.CookieNames.ExternalCookieName)
+                .GetAuthenticatedUser(this, CookieNames.ExternalCookieName)
                 .ConfigureAwait(false);
             if (externalClaims?.Identity == null
                 || !externalClaims.Identity.IsAuthenticated
@@ -330,7 +328,7 @@
             {
                 await _authenticationService.SignOutAsync(
                         HttpContext,
-                        HostConstants.CookieNames.ExternalCookieName,
+                        CookieNames.ExternalCookieName,
                         new AuthenticationProperties())
                     .ConfigureAwait(false);
             }
@@ -499,7 +497,7 @@
 
             var unlink = resourceOwner.ExternalLogins.Where(
                     x => x.Subject == externalSubject
-                         && (x.Issuer == issuer || issuer == HostConstants.CookieNames.CookieName))
+                         && (x.Issuer == issuer || issuer == CookieNames.CookieName))
                 .ToArray();
             if (unlink.Length > 0)
             {

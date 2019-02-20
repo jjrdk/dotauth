@@ -1,6 +1,6 @@
 namespace SimpleAuth.Shared
 {
-    internal static class StandardClaimNames
+    public static class StandardClaimNames
     {
         public const string Issuer = "iss";
         public const string Audiences = "aud";

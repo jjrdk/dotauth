@@ -1,12 +1,9 @@
-﻿using SimpleAuth.Services;
-
-namespace SimpleAuth.Tests.WebSite.Authenticate
+﻿namespace SimpleAuth.Tests.WebSite.Authenticate
 {
     using Moq;
     using Parameters;
     using Shared;
     using Shared.Models;
-    using SimpleAuth.MiddleWare;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.WebSite.Authenticate;
     using System;
@@ -99,7 +96,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             Assert.Contains(
                 result.Claims,
                 r => r.Type == ClaimTypes.AuthenticationInstant
-                     || r.Type == JwtConstants.OpenIdClaimTypes.Subject);
+                     || r.Type == OpenIdClaimTypes.Subject);
         }
 
         private void InitializeFakeObjects(params IAuthenticateResourceOwnerService[] services)

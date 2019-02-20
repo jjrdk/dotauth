@@ -81,7 +81,7 @@ namespace SimpleAuth.Tests.WebSite.User
         public void When_Correct_Subject_Is_Passed_Then_ResourceOwner_Is_Returned()
         {
             var claimsIdentity = new ClaimsIdentity("test");
-            claimsIdentity.AddClaim(new Claim(JwtConstants.OpenIdClaimTypes.Subject, "subject"));
+            claimsIdentity.AddClaim(new Claim(OpenIdClaimTypes.Subject, "subject"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ResourceOwner());

@@ -3,36 +3,36 @@
     /// <summary>
     /// Defines the token endpoint authentication methods.
     /// </summary>
-    public enum TokenEndPointAuthenticationMethods
+    public static class TokenEndPointAuthenticationMethods
     {
         /// <summary>
         /// Client secret basic
         /// </summary>
-        ClientSecretBasic = 0,
+        public const string ClientSecretBasic = "client_secret_basic";
 
         /// <summary>
         /// Client secret post
         /// </summary>
-        ClientSecretPost = 1,
+        public const string ClientSecretPost = "client_secret_post";
 
         /// <summary>
         /// Client secret JWT
         /// </summary>
-        ClientSecretJwt = 2,
+        public const string ClientSecretJwt = "client_secret_jwt";
 
         /// <summary>
         /// Private key JWT
         /// </summary>
-        PrivateKeyJwt = 3,
+        public const string PrivateKeyJwt = "private_key_jwt";
 
         /// <summary>
         /// TLS client authentication
         /// </summary>
-        TlsClientAuth = 4,
+        public const string TlsClientAuth = "tls_client_auth";
 
         /// <summary>
         /// None
         /// </summary>
-        None = 5
+        public const string None = "none";
     }
 }

@@ -27,6 +27,7 @@ namespace SimpleAuth.Api.Authorization
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using JwtConstants = Shared.JwtConstants;
 
@@ -193,7 +194,7 @@ namespace SimpleAuth.Api.Authorization
                 }
 
                 var currentSubject = string.Empty;
-                var expectedSubject = jwsPayload.GetClaimValue(JwtConstants.OpenIdClaimTypes.Subject);
+                var expectedSubject = jwsPayload.GetClaimValue(OpenIdClaimTypes.Subject);
                 if (claimsPrincipal != null && claimsPrincipal.IsAuthenticated())
                 {
                     currentSubject = claimsPrincipal.GetSubject();

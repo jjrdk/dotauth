@@ -16,13 +16,13 @@ namespace SimpleAuth.AcceptanceTests
 {
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
-    using SimpleAuth.Extensions;
 
     public static class DefaultStores
     {
@@ -149,9 +149,9 @@ namespace SimpleAuth.AcceptanceTests
                     Id = "administrator",
                     Claims = new []
                     {
-                        new Claim(JwtConstants.OpenIdClaimTypes.Subject, "administrator"),
-                        new Claim(JwtConstants.OpenIdClaimTypes.Role, "administrator"),
-                        new Claim(JwtConstants.OpenIdClaimTypes.Address, "{ country : 'france' }")
+                        new Claim(OpenIdClaimTypes.Subject, "administrator"),
+                        new Claim(OpenIdClaimTypes.Role, "administrator"),
+                        new Claim(OpenIdClaimTypes.Address, "{ country : 'france' }")
                     },
                     Password = "password".ToSha256Hash(),
                     IsLocalAccount = true
@@ -162,8 +162,8 @@ namespace SimpleAuth.AcceptanceTests
                     Password = "password".ToSha256Hash(),
                     Claims = new []
                     {
-                        new Claim(JwtConstants.OpenIdClaimTypes.Subject, "user"),
-                        new Claim(JwtConstants.OpenIdClaimTypes.Name, "John Doe")
+                        new Claim(OpenIdClaimTypes.Subject, "user"),
+                        new Claim(OpenIdClaimTypes.Name, "John Doe")
                     },
                     IsLocalAccount = true
                 },
@@ -173,9 +173,9 @@ namespace SimpleAuth.AcceptanceTests
                     Password = "password".ToSha256Hash(),
                     Claims = new []
                     {
-                        new Claim(JwtConstants.OpenIdClaimTypes.Subject, "superuser"),
-                        new Claim(JwtConstants.OpenIdClaimTypes.Role, "administrator"),
-                        new Claim(JwtConstants.OpenIdClaimTypes.Role, "role")
+                        new Claim(OpenIdClaimTypes.Subject, "superuser"),
+                        new Claim(OpenIdClaimTypes.Role, "administrator"),
+                        new Claim(OpenIdClaimTypes.Role, "role")
                     },
                     IsLocalAccount = true
                 }

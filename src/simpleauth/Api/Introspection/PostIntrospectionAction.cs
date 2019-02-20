@@ -18,7 +18,6 @@ namespace SimpleAuth.Api.Introspection
 {
     using Authenticate;
     using Parameters;
-    using Results;
     using Shared;
     using Shared.Models;
     using System;
@@ -119,9 +118,9 @@ namespace SimpleAuth.Api.Introspection
                 var issuedAt = grantedToken.IdTokenPayLoad.Iat;
                 var issuer = grantedToken.IdTokenPayLoad.Iss;
                 var subject =
-                    grantedToken.IdTokenPayLoad.GetClaimValue(JwtConstants.OpenIdClaimTypes.Subject);
+                    grantedToken.IdTokenPayLoad.GetClaimValue(OpenIdClaimTypes.Subject);
                 var userName =
-                    grantedToken.IdTokenPayLoad.GetClaimValue(JwtConstants.OpenIdClaimTypes.Name);
+                    grantedToken.IdTokenPayLoad.GetClaimValue(OpenIdClaimTypes.Name);
                 if (audiencesArr.Any())
                 {
                     audiences = string.Join(" ", audiencesArr);

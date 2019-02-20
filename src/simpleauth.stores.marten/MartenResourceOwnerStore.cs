@@ -141,7 +141,7 @@
                 var results = await session.Query<ResourceOwner>()
                     .Where(
                         r => r.Claims.Any(
-                            x => x.Type == JwtConstants.OpenIdClaimTypes.Subject
+                            x => x.Type == OpenIdClaimTypes.Subject
                                  && x.Value.IsOneOf(subjects)))
                     .Skip(parameter.StartIndex)
                     .Take(parameter.NbResults)

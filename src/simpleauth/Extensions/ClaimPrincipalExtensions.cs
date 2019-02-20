@@ -60,7 +60,7 @@ namespace SimpleAuth.Extensions
                 return null;
             }
 
-            var claim = claims.FirstOrDefault(c => c.Type == JwtConstants.OpenIdClaimTypes.Subject);
+            var claim = claims.FirstOrDefault(c => c.Type == OpenIdClaimTypes.Subject);
             if (claim == null)
             {
                 claim = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
@@ -75,92 +75,92 @@ namespace SimpleAuth.Extensions
 
         public static string GetName(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.Name);
+            return GetClaimValue(principal, OpenIdClaimTypes.Name);
         }
 
         public static string GetEmail(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.Email);
+            return GetClaimValue(principal, OpenIdClaimTypes.Email);
         }
 
         public static bool GetEmailVerified(this ClaimsPrincipal principal)
         {
-            return GetBooleanClaimValue(principal, JwtConstants.OpenIdClaimTypes.EmailVerified);
+            return GetBooleanClaimValue(principal, OpenIdClaimTypes.EmailVerified);
         }
 
         public static string GetFamilyName(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.FamilyName);
+            return GetClaimValue(principal, OpenIdClaimTypes.FamilyName);
         }
 
         public static string GetGender(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.Gender);
+            return GetClaimValue(principal, OpenIdClaimTypes.Gender);
         }
 
         public static string GetGivenName(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.GivenName);
+            return GetClaimValue(principal, OpenIdClaimTypes.GivenName);
         }
 
         public static string GetLocale(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.Locale);
+            return GetClaimValue(principal, OpenIdClaimTypes.Locale);
         }
 
         public static string GetMiddleName(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.MiddleName);
+            return GetClaimValue(principal, OpenIdClaimTypes.MiddleName);
         }
 
         public static string GetNickName(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.NickName);
+            return GetClaimValue(principal, OpenIdClaimTypes.NickName);
         }
 
         public static string GetPhoneNumber(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.PhoneNumber);
+            return GetClaimValue(principal, OpenIdClaimTypes.PhoneNumber);
         }
 
         public static bool GetPhoneNumberVerified(this ClaimsPrincipal principal)
         {
-            return GetBooleanClaimValue(principal, JwtConstants.OpenIdClaimTypes.PhoneNumberVerified);
+            return GetBooleanClaimValue(principal, OpenIdClaimTypes.PhoneNumberVerified);
         }
 
         public static string GetPicture(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.Picture);
+            return GetClaimValue(principal, OpenIdClaimTypes.Picture);
         }
 
         public static string GetPreferredUserName(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.PreferredUserName);
+            return GetClaimValue(principal, OpenIdClaimTypes.PreferredUserName);
         }
 
         public static string GetProfile(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.Profile);
+            return GetClaimValue(principal, OpenIdClaimTypes.Profile);
         }
 
         public static string GetRole(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.Role);
+            return GetClaimValue(principal, OpenIdClaimTypes.Role);
         }
 
         public static string GetWebSite(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.WebSite);
+            return GetClaimValue(principal, OpenIdClaimTypes.WebSite);
         }
 
         public static string GetZoneInfo(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.ZoneInfo);
+            return GetClaimValue(principal, OpenIdClaimTypes.ZoneInfo);
         }
 
         public static string GetBirthDate(this ClaimsPrincipal principal)
         {
-            return GetClaimValue(principal, JwtConstants.OpenIdClaimTypes.BirthDate);
+            return GetClaimValue(principal, OpenIdClaimTypes.BirthDate);
         }
 
         private static string GetClaimValue(ClaimsPrincipal principal, string claimName)

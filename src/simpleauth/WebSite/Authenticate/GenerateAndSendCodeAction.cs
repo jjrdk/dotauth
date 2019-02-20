@@ -19,7 +19,6 @@ namespace SimpleAuth.WebSite.Authenticate
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Exceptions;
-    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;

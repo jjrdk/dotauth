@@ -10,14 +10,14 @@
     {
         private static readonly Dictionary<string, string> MappingToOpenidClaims = new Dictionary<string, string>
         {
-            { ClaimTypes.NameIdentifier, JwtConstants.OpenIdClaimTypes.Subject },
-            { ClaimTypes.DateOfBirth, JwtConstants.OpenIdClaimTypes.BirthDate },
-            { ClaimTypes.Email, JwtConstants.OpenIdClaimTypes.Email },
-            { ClaimTypes.Name, JwtConstants.OpenIdClaimTypes.Name },
-            { ClaimTypes.GivenName, JwtConstants.OpenIdClaimTypes.GivenName },
-            { ClaimTypes.Surname, JwtConstants.OpenIdClaimTypes.FamilyName },
-            { ClaimTypes.Gender, JwtConstants.OpenIdClaimTypes.Gender },
-            { ClaimTypes.Locality, JwtConstants.OpenIdClaimTypes.Locale }
+            { ClaimTypes.NameIdentifier, OpenIdClaimTypes.Subject },
+            { ClaimTypes.DateOfBirth, OpenIdClaimTypes.BirthDate },
+            { ClaimTypes.Email, OpenIdClaimTypes.Email },
+            { ClaimTypes.Name, OpenIdClaimTypes.Name },
+            { ClaimTypes.GivenName, OpenIdClaimTypes.GivenName },
+            { ClaimTypes.Surname, OpenIdClaimTypes.FamilyName },
+            { ClaimTypes.Gender, OpenIdClaimTypes.Gender },
+            { ClaimTypes.Locality, OpenIdClaimTypes.Locale }
         };
 
         public static Claim[] ToOpenidClaims(this IEnumerable<Claim> claims)

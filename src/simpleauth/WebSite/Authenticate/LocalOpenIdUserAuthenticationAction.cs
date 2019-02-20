@@ -16,7 +16,6 @@ namespace SimpleAuth.WebSite.Authenticate
 {
     using SimpleAuth.Extensions;
     using SimpleAuth.Parameters;
-    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;

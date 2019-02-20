@@ -43,8 +43,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		build.ps1 = build.ps1
 		build.sh = build.sh
 		cakebuild.ps1 = cakebuild.ps1
+		Dockerfile = Dockerfile
 		shared.proj = shared.proj
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.awslambda", "src\simpleauth.awslambda\simpleauth.awslambda.csproj", "{5849CA1C-C6D8-4B94-8C3F-F90AA92B6FAC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.stores.marten.acceptancetests", "tests\simpleauth.stores.marten.acceptancetests\simpleauth.stores.marten.acceptancetests.csproj", "{46822F14-77CF-4315-B97E-F552CE9B0C2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -108,6 +113,14 @@ Global
 		{D850CA90-E757-4328-B371-7D8957901D65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D850CA90-E757-4328-B371-7D8957901D65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D850CA90-E757-4328-B371-7D8957901D65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5849CA1C-C6D8-4B94-8C3F-F90AA92B6FAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5849CA1C-C6D8-4B94-8C3F-F90AA92B6FAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5849CA1C-C6D8-4B94-8C3F-F90AA92B6FAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5849CA1C-C6D8-4B94-8C3F-F90AA92B6FAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46822F14-77CF-4315-B97E-F552CE9B0C2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46822F14-77CF-4315-B97E-F552CE9B0C2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46822F14-77CF-4315-B97E-F552CE9B0C2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46822F14-77CF-4315-B97E-F552CE9B0C2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -127,6 +140,8 @@ Global
 		{C05030A0-23DC-4B48-891C-791BCAEB96AF} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{A068C8CC-6F6E-4239-A4A5-5835580D9FF2} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{D850CA90-E757-4328-B371-7D8957901D65} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
+		{5849CA1C-C6D8-4B94-8C3F-F90AA92B6FAC} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
+		{46822F14-77CF-4315-B97E-F552CE9B0C2C} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}

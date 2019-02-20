@@ -16,9 +16,6 @@ namespace SimpleAuth.Server.Tests.MiddleWares
 {
     using System;
     using Microsoft.AspNetCore.Authentication;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth.Extensions;
 
     public static class FakeCustomAuthExtensions
     {

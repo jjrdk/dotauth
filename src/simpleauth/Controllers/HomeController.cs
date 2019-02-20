@@ -14,7 +14,7 @@
         public async Task<IActionResult> Index()
         {
             await SetUser().ConfigureAwait(false);
-            return View();
+            return View("Index");
         }
     }
 }

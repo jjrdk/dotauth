@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleAuth.Services;
-
 namespace SimpleAuth.Controllers
 {
     using Api.Authorization;
@@ -81,7 +79,7 @@ namespace SimpleAuth.Controllers
             authorizationRequest.origin_url = originUrl;
             authorizationRequest.session_id = sessionId;
             var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, HostConstants.CookieNames.CookieName)
+                .GetAuthenticatedUser(this, CookieNames.CookieName)
                 .ConfigureAwait(false);
             var parameter = authorizationRequest.ToParameter();
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
@@ -158,7 +156,7 @@ namespace SimpleAuth.Controllers
             SimpleAuthEndPoints simpleAuthEndPoints)
         {
             var uri = request.GetAbsoluteUriWithVirtualPath();
-            var partialUri = HostConstants._mappingEndPointToPartialUrl[simpleAuthEndPoints];
+            var partialUri = HostConstants.MappingEndPointToPartialUrl[simpleAuthEndPoints];
             if (!string.IsNullOrWhiteSpace(amr)
                 && simpleAuthEndPoints != SimpleAuthEndPoints.ConsentIndex
                 && simpleAuthEndPoints != SimpleAuthEndPoints.FormIndex)

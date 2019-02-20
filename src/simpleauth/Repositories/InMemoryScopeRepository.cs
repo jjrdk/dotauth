@@ -35,20 +35,20 @@
                 Description = "Access to the profile",
                 Claims = new []
                 {
-                    JwtConstants.OpenIdClaimTypes.Name,
-                    JwtConstants.OpenIdClaimTypes.FamilyName,
-                    JwtConstants.OpenIdClaimTypes.GivenName,
-                    JwtConstants.OpenIdClaimTypes.MiddleName,
-                    JwtConstants.OpenIdClaimTypes.NickName,
-                    JwtConstants.OpenIdClaimTypes.PreferredUserName,
-                    JwtConstants.OpenIdClaimTypes.Profile,
-                    JwtConstants.OpenIdClaimTypes.Picture,
-                    JwtConstants.OpenIdClaimTypes.WebSite,
-                    JwtConstants.OpenIdClaimTypes.Gender,
-                    JwtConstants.OpenIdClaimTypes.BirthDate,
-                    JwtConstants.OpenIdClaimTypes.ZoneInfo,
-                    JwtConstants.OpenIdClaimTypes.Locale,
-                    JwtConstants.OpenIdClaimTypes.UpdatedAt
+                    OpenIdClaimTypes.Name,
+                    OpenIdClaimTypes.FamilyName,
+                    OpenIdClaimTypes.GivenName,
+                    OpenIdClaimTypes.MiddleName,
+                    OpenIdClaimTypes.NickName,
+                    OpenIdClaimTypes.PreferredUserName,
+                    OpenIdClaimTypes.Profile,
+                    OpenIdClaimTypes.Picture,
+                    OpenIdClaimTypes.WebSite,
+                    OpenIdClaimTypes.Gender,
+                    OpenIdClaimTypes.BirthDate,
+                    OpenIdClaimTypes.ZoneInfo,
+                    OpenIdClaimTypes.Locale,
+                    OpenIdClaimTypes.UpdatedAt
                 },
                 Type = ScopeTypes.ResourceOwner,
                 IsDisplayedInConsent = true
@@ -62,8 +62,8 @@
                 Description = "Access to the email",
                 Claims = new []
                 {
-                    JwtConstants.OpenIdClaimTypes.Email,
-                    JwtConstants.OpenIdClaimTypes.EmailVerified
+                    OpenIdClaimTypes.Email,
+                    OpenIdClaimTypes.EmailVerified
                 },
                 Type = ScopeTypes.ResourceOwner
             },
@@ -74,7 +74,7 @@
                 IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the address",
-                Claims = new [] {JwtConstants.OpenIdClaimTypes.Address},
+                Claims = new [] {OpenIdClaimTypes.Address},
                 Type = ScopeTypes.ResourceOwner
             },
             new Scope
@@ -86,8 +86,8 @@
                 Description = "Access to the phone",
                 Claims = new []
                 {
-                    JwtConstants.OpenIdClaimTypes.PhoneNumber,
-                    JwtConstants.OpenIdClaimTypes.PhoneNumberVerified
+                    OpenIdClaimTypes.PhoneNumber,
+                    OpenIdClaimTypes.PhoneNumberVerified
                 },
                 Type = ScopeTypes.ResourceOwner
             },
@@ -98,7 +98,7 @@
                 IsOpenIdScope = false,
                 IsDisplayedInConsent = true,
                 Description = "Access to your roles",
-                Claims = new [] {JwtConstants.OpenIdClaimTypes.Role},
+                Claims = new [] {OpenIdClaimTypes.Role},
                 Type = ScopeTypes.ResourceOwner
             },
             new Scope

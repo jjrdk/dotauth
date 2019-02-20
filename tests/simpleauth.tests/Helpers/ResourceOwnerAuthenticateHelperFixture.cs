@@ -1,6 +1,4 @@
-﻿using SimpleAuth.Services;
-
-namespace SimpleAuth.Tests.Helpers
+﻿namespace SimpleAuth.Tests.Helpers
 {
     using System;
     using System.Threading;

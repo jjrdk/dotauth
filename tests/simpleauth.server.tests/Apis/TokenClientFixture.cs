@@ -759,7 +759,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 new[]
                 {
                     new Claim(StandardClaimNames.Issuer, "jwt_client"),
-                    new Claim(JwtConstants.OpenIdClaimTypes.Subject, "jwt_client"),
+                    new Claim(OpenIdClaimTypes.Subject, "jwt_client"),
                     new Claim(StandardClaimNames.Audiences, "http://localhost:5000"),
                     new Claim(
                         StandardClaimNames.ExpirationTime,
@@ -798,7 +798,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 new[]
                 {
                     new Claim(StandardClaimNames.Issuer, "private_key_client"),
-                    new Claim(JwtConstants.OpenIdClaimTypes.Subject, "private_key_client"),
+                    new Claim(OpenIdClaimTypes.Subject, "private_key_client"),
                     new Claim(StandardClaimNames.Audiences, "http://localhost:5000"),
                     new Claim(
                         StandardClaimNames.ExpirationTime,

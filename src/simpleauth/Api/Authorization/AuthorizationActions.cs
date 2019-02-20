@@ -20,7 +20,6 @@ namespace SimpleAuth.Api.Authorization
     using Shared;
     using Shared.Events.OAuth;
     using Shared.Repositories;
-    using SimpleAuth.Services;
     using System;
     using System.Collections.Generic;
     using System.Linq;

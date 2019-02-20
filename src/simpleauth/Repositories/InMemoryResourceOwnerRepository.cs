@@ -13,7 +13,7 @@
 
     internal sealed class InMemoryResourceOwnerRepository : IResourceOwnerRepository
     {
-        public readonly List<ResourceOwner> _users;
+        private readonly List<ResourceOwner> _users;
 
         public InMemoryResourceOwnerRepository(IReadOnlyCollection<ResourceOwner> users = null)
         {

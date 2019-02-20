@@ -19,7 +19,6 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
     using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth.Helpers;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 
@@ -148,33 +147,33 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
                     Id = "administrator",
                     Claims = new []
                     {
-                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "administrator"),
-                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Role, "administrator"),
-                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Address, "{ country : 'france' }")
+                        new Claim(OpenIdClaimTypes.Subject, "administrator"),
+                        new Claim(OpenIdClaimTypes.Role, "administrator"),
+                        new Claim(OpenIdClaimTypes.Address, "{ country : 'france' }")
                     },
-                    Password = "password".ToSha256Hash(),
+                    Password = "password",
                     IsLocalAccount = true
                 },
                 new ResourceOwner
                 {
                     Id = "user",
-                    Password = "password".ToSha256Hash(),
+                    Password = "password",
                     Claims = new []
                     {
-                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "user"),
-                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Name, "John Doe")
+                        new Claim(OpenIdClaimTypes.Subject, "user"),
+                        new Claim(OpenIdClaimTypes.Name, "John Doe")
                     },
                     IsLocalAccount = true
                 },
                 new ResourceOwner
                 {
                     Id = "superuser",
-                    Password = "password".ToSha256Hash(),
+                    Password = "password",
                     Claims = new []
                     {
-                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Subject, "superuser"),
-                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Role, "administrator"),
-                        new Claim(JwtConstants.StandardResourceOwnerClaimNames.Role, "role")
+                        new Claim(OpenIdClaimTypes.Subject, "superuser"),
+                        new Claim(OpenIdClaimTypes.Role, "administrator"),
+                        new Claim(OpenIdClaimTypes.Role, "role")
                     },
                     IsLocalAccount = true
                 }

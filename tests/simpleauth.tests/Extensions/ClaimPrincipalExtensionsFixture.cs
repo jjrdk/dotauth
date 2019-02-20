@@ -50,7 +50,7 @@
         {
             const string subject = "subject"; var claims = new List<Claim>
             {
-                new Claim(JwtConstants.OpenIdClaimTypes.Subject, subject)
+                new Claim(OpenIdClaimTypes.Subject, subject)
             };
             var claimsIdentity = new ClaimsIdentity(claims);
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);

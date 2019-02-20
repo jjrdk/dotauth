@@ -149,9 +149,9 @@ namespace SimpleAuth.Server.Tests.Stores
                     Id = "administrator",
                     Claims = new []
                     {
-                        new Claim(JwtConstants.OpenIdClaimTypes.Subject, "administrator"),
-                        new Claim(JwtConstants.OpenIdClaimTypes.Role, "administrator"),
-                        new Claim(JwtConstants.OpenIdClaimTypes.Address, "{ country : 'france' }")
+                        new Claim(OpenIdClaimTypes.Subject, "administrator"),
+                        new Claim(OpenIdClaimTypes.Role, "administrator"),
+                        new Claim(OpenIdClaimTypes.Address, "{ country : 'france' }")
                     },
                     Password = "password".ToSha256Hash(),
                     IsLocalAccount = true
@@ -162,7 +162,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     Password = "password".ToSha256Hash(),
                     Claims = new []
                     {
-                        new Claim(JwtConstants.OpenIdClaimTypes.Subject, "user")
+                        new Claim(OpenIdClaimTypes.Subject, "user")
                     },
                     IsLocalAccount = true
                 },
@@ -172,9 +172,9 @@ namespace SimpleAuth.Server.Tests.Stores
                     Password = "password".ToSha256Hash(),
                     Claims = new []
                     {
-                        new Claim(JwtConstants.OpenIdClaimTypes.Subject, "superuser"),
-                        new Claim(JwtConstants.OpenIdClaimTypes.Role, "administrator"),
-                        new Claim(JwtConstants.OpenIdClaimTypes.Role, "role")
+                        new Claim(OpenIdClaimTypes.Subject, "superuser"),
+                        new Claim(OpenIdClaimTypes.Role, "administrator"),
+                        new Claim(OpenIdClaimTypes.Role, "role")
                     },
                     IsLocalAccount = true
                 }

@@ -67,7 +67,7 @@
                 {
                     claims.Add(
                         new Claim(
-                            JwtConstants.OpenIdClaimTypes.Subject,
+                            OpenIdClaimTypes.Subject,
                             introspectionResult.Content.Subject));
                 }
 

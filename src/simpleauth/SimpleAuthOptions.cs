@@ -14,12 +14,10 @@
 
 namespace SimpleAuth
 {
-    using Services;
     using Shared;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Repositories;
     using System;
-    using System.Globalization;
     using System.Net.Http;
 
     public class SimpleAuthOptions

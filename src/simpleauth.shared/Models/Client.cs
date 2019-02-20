@@ -14,10 +14,10 @@
 
 namespace SimpleAuth.Shared.Models
 {
+    using Microsoft.IdentityModel.Tokens;
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
-    using Microsoft.IdentityModel.Tokens;
 
     public class Client
     {
@@ -71,8 +71,7 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Gets or sets the client authentication method for the Token Endpoint.
         /// </summary>
-        public TokenEndPointAuthenticationMethods TokenEndPointAuthMethod { get; set; } =
-            TokenEndPointAuthenticationMethods.ClientSecretBasic;
+        public string TokenEndPointAuthMethod { get; set; } = TokenEndPointAuthenticationMethods.ClientSecretBasic;
 
         /// <summary>
         /// Gets or sets an array containing a list of OAUTH2.0 response_type values
@@ -97,7 +96,7 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Gets or sets the type of application
         /// </summary>
-        public ApplicationTypes ApplicationType { get; set; } = ApplicationTypes.Web;
+        public string ApplicationType { get; set; } = ApplicationTypes.Web;
 
         ///// <summary>
         ///// Url for the Client's JSON Web Key Set document

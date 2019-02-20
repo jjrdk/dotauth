@@ -26,7 +26,6 @@ namespace SimpleAuth.Server.Tests
     using Microsoft.IdentityModel.Tokens;
     using MiddleWares;
     using SimpleAuth.Repositories;
-    using SimpleAuth.Services;
     using SimpleAuth.Shared.Repositories;
     using Stores;
     using System;

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleAuth.Services;
 using SimpleAuth.Shared.Repositories;
 using System.Collections.Generic;
 

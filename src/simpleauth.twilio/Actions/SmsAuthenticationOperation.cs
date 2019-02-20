@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Twilio.Actions
 {
-    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -48,7 +47,7 @@
             await _generateAndSendSmsCodeOperation.Execute(phoneNumber).ConfigureAwait(false);
             // 2. Try to get the resource owner.
             var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(
-                    JwtConstants.OpenIdClaimTypes.PhoneNumber,
+                    OpenIdClaimTypes.PhoneNumber,
                     phoneNumber,
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -60,8 +59,8 @@
             // 3. CreateJwk a new resource owner.
             var claims = new[]
             {
-                new Claim(JwtConstants.OpenIdClaimTypes.PhoneNumber, phoneNumber),
-                new Claim(JwtConstants.OpenIdClaimTypes.PhoneNumberVerified, "false")
+                new Claim(OpenIdClaimTypes.PhoneNumber, phoneNumber),
+                new Claim(OpenIdClaimTypes.PhoneNumberVerified, "false")
             };
             var id = await _subjectBuilder.BuildSubject(claims).ConfigureAwait(false);
             var record = new ResourceOwner {Id = id, Password = Id.Create().ToSha256Hash(), Claims = claims};
@@ -71,7 +70,7 @@
             //}
 
             return await _resourceOwnerRepository.GetResourceOwnerByClaim(
-                    JwtConstants.OpenIdClaimTypes.PhoneNumber,
+                    OpenIdClaimTypes.PhoneNumber,
                     phoneNumber,
                     cancellationToken)
                 .ConfigureAwait(false);

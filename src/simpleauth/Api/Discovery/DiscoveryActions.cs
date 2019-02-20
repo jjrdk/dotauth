@@ -127,7 +127,7 @@ namespace SimpleAuth.Api.Discovery
         private static string[] GetSupportedTokenEndPointAuthMethods()
         {
             var result = new List<string>();
-            foreach (var supportedAuthMethod in CoreConstants.Supported._supportedTokenEndPointAuthenticationMethods)
+            foreach (var supportedAuthMethod in CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods)
             {
                 var record = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), supportedAuthMethod);
                 result.Add(record);

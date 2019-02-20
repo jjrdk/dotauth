@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Requests
 {
     using System.Runtime.Serialization;
-    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the client search request.
@@ -34,7 +33,7 @@
         /// The client types.
         /// </value>
         [DataMember(Name = "client_types")]
-        public ApplicationTypes[] ClientTypes { get; set; }
+        public string[] ClientTypes { get; set; }
 
         /// <summary>
         /// Gets or sets the start index.

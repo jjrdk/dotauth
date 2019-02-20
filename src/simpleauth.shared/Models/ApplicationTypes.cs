@@ -3,15 +3,16 @@
     /// <summary>
     /// Defines the application types.
     /// </summary>
-    public enum ApplicationTypes
+    public static class ApplicationTypes
     {
         /// <summary>
         /// Native application
         /// </summary>
-        Native = 0,
+        public const string Native = "native";
+
         /// <summary>
         /// Web application
         /// </summary>
-        Web = 1
+        public const string Web = "web";
     }
 }

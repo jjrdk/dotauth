@@ -14,8 +14,6 @@
 
 namespace SimpleAuth.Shared.Models
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// Defines the resource set content.
     /// </summary>
