@@ -326,20 +326,15 @@ namespace SimpleAuth
                 GrantTypes.Implicit
             };
 
-            public static string[] _supportedResponseModes = new[]
-            {
-                "query"
-            };
+            public static readonly string[] SupportedResponseModes = {"query"};
 
-            public static string[] _supportedSubjectTypes = new[]
+            public static readonly string[] SupportedSubjectTypes =
             {
                 // Same subject value to all clients.
-                SubjectTypeNames.Public,
-                SubjectTypeNames.PairWise
+                SubjectTypeNames.Public, SubjectTypeNames.PairWise
             };
 
-            public static readonly List<string> SupportedTokenEndPointAuthenticationMethods =
-                new List<string>
+            public static readonly string[] SupportedTokenEndPointAuthenticationMethods =
             {
                 TokenEndPointAuthenticationMethods.ClientSecretBasic,
                 TokenEndPointAuthenticationMethods.ClientSecretPost,
