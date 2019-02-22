@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Shared.Responses
 {
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
 
     [DataContract]
@@ -17,6 +16,6 @@
         [DataMember(Name = "refresh_token")]
         public string RefreshToken { get; set; }
         [DataMember(Name = "scope")]
-        public IEnumerable<string> Scope { get; set; }
+        public string[] Scope { get; set; }
     }
 }

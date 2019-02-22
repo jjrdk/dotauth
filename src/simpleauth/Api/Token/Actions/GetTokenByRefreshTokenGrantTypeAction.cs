@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleAuth.Shared.Repositories;
-
 namespace SimpleAuth.Api.Token.Actions
 {
     using Authenticate;
@@ -29,8 +27,9 @@ namespace SimpleAuth.Api.Token.Actions
     using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Events.Logging;
+    using SimpleAuth.Shared.Repositories;
 
-    public sealed class GetTokenByRefreshTokenGrantTypeAction
+    internal sealed class GetTokenByRefreshTokenGrantTypeAction
     {
         private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;

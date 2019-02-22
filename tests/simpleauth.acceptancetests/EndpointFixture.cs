@@ -33,8 +33,8 @@ namespace SimpleAuth.AcceptanceTests
         }
 
         [Theory]
-        [InlineData("", HttpStatusCode.OK)]
-        [InlineData("home", HttpStatusCode.OK)]
+        [InlineData("", HttpStatusCode.MovedPermanently)]
+        [InlineData("home", HttpStatusCode.MovedPermanently)]
         [InlineData(".well-known/openid-configuration", HttpStatusCode.OK)]
         [InlineData("authenticate", HttpStatusCode.OK)]
         public async Task WhenRequestingEndpointThenReturnsExpectedStatus(string path, HttpStatusCode statusCode)

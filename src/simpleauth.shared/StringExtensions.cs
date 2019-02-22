@@ -21,7 +21,7 @@ namespace SimpleAuth.Shared
     /// Implementation of base64 encoding &amp; decoding according to the RFC
     /// https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#appendix-C
     /// </summary>
-    public static class StringExtensions
+    internal static class StringExtensions
     {
         public static string Base64Encode(this string plainText)
         {

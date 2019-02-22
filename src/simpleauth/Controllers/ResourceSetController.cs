@@ -26,6 +26,10 @@ namespace SimpleAuth.Controllers
     using Shared.Responses;
     using SimpleAuth.Shared.Errors;
 
+    /// <summary>
+    /// Defines the resource set controller.
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(UmaConstants.RouteValues.ResourceSet)]
     public class ResourceSetController : Controller
     {
@@ -34,6 +38,10 @@ namespace SimpleAuth.Controllers
         private readonly UpdateResourceSetAction _updateResourceSet;
         private readonly DeleteResourceSetAction _removeResourceSet;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceSetController"/> class.
+        /// </summary>
+        /// <param name="resourceSetRepository">The resource set repository.</param>
         public ResourceSetController(IResourceSetRepository resourceSetRepository)
         {
             _resourceSetRepository = resourceSetRepository;
@@ -42,6 +50,11 @@ namespace SimpleAuth.Controllers
             _removeResourceSet = new DeleteResourceSetAction(resourceSetRepository);
         }
 
+        /// <summary>
+        /// Searches the resource sets.
+        /// </summary>
+        /// <param name="searchResourceSet">The search resource set.</param>
+        /// <returns></returns>
         [HttpPost(".search")]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> SearchResourceSets([FromBody] SearchResourceSet searchResourceSet)
@@ -57,6 +70,10 @@ namespace SimpleAuth.Controllers
             return new OkObjectResult(result.ToResponse());
         }
 
+        /// <summary>
+        /// Gets the resource sets.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> GetResourceSets()
@@ -66,6 +83,11 @@ namespace SimpleAuth.Controllers
             return new OkObjectResult(resourceSetIds);
         }
 
+        /// <summary>
+        /// Gets the resource set.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> GetResourceSet(string id)
@@ -87,6 +109,11 @@ namespace SimpleAuth.Controllers
             return new OkObjectResult(content);
         }
 
+        /// <summary>
+        /// Adds the resource set.
+        /// </summary>
+        /// <param name="postResourceSet">The post resource set.</param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> AddResourceSet([FromBody] PostResourceSet postResourceSet)
@@ -109,6 +136,11 @@ namespace SimpleAuth.Controllers
             };
         }
 
+        /// <summary>
+        /// Updates the resource set.
+        /// </summary>
+        /// <param name="putResourceSet">The put resource set.</param>
+        /// <returns></returns>
         [HttpPut]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> UpdateResourceSet([FromBody] PutResourceSet putResourceSet)
@@ -137,6 +169,11 @@ namespace SimpleAuth.Controllers
             };
         }
 
+        /// <summary>
+        /// Deletes the resource set.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> DeleteResourceSet(string id)

@@ -12,6 +12,7 @@
     using SimpleAuth.Controllers;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
@@ -24,7 +25,6 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Events.Logging;
     using ViewModels;
     using WebSite.User.Actions;
 
@@ -265,7 +265,6 @@
                 }
             }
 
-            //_openIdEventSource.AuthenticateResourceOwner(subject);
             if (!string.IsNullOrWhiteSpace(confirmCodeViewModel.Code)) // Execute OPENID workflow
             {
                 var request = _dataProtector.Unprotect<AuthorizationRequest>(confirmCodeViewModel.Code);
@@ -282,7 +281,7 @@
                 var result = this.CreateRedirectionFromActionResult(actionResult, request);
                 if (result != null)
                 {
-                    await LogAuthenticateUser(actionResult, request.aggregate_id).ConfigureAwait(false);
+                    await LogAuthenticateUser(resourceOwner.Id, actionResult.Amr, request.aggregate_id).ConfigureAwait(false);
                     return result;
                 }
             }
@@ -309,9 +308,7 @@
 
             await SetUser().ConfigureAwait(false);
             // 1. Decrypt the request
-            var request = _dataProtector.Unprotect<AuthorizationRequest>(viewModel.Code);
             // 2. Retrieve the default language
-            var uiLocales = string.IsNullOrWhiteSpace(request.ui_locales) ? DefaultLanguage : request.ui_locales;
             if (ModelState.IsValid)
             {
                 ResourceOwner resourceOwner = null;

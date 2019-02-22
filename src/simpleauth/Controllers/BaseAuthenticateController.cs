@@ -22,7 +22,6 @@ namespace SimpleAuth.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.AspNetCore.Mvc.Routing;
-    using Results;
     using Shared;
     using Shared.Events.Openid;
     using Shared.Models;
@@ -47,7 +46,6 @@ namespace SimpleAuth.Controllers
     public abstract class BaseAuthenticateController : BaseController
     {
         private const string ExternalAuthenticateCookieName = "ExternalAuth-{0}";
-        protected const string DefaultLanguage = "en";
         private readonly GenerateAndSendCodeAction _generateAndSendCode;
         private readonly ValidateConfirmationCodeAction _validateConfirmationCode;
         private readonly AuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenId;
@@ -357,7 +355,7 @@ namespace SimpleAuth.Controllers
                         issuerName,
                         cancellationToken)
                     .ConfigureAwait(false);
-                await LogAuthenticateUser(actionResult, request.aggregate_id).ConfigureAwait(false);
+                await LogAuthenticateUser(authenticatedUser.GetSubject(), actionResult.Amr, request.aggregate_id).ConfigureAwait(false);
                 var result = this.CreateRedirectionFromActionResult(actionResult, request);
                 return result;
             }
@@ -389,7 +387,7 @@ namespace SimpleAuth.Controllers
             var result = this.CreateRedirectionFromActionResult(actionResult, request);
             if (result != null)
             {
-                await LogAuthenticateUser(actionResult, request.aggregate_id).ConfigureAwait(false);
+                await LogAuthenticateUser(authenticatedUser.GetSubject(), actionResult.Amr, request.aggregate_id).ConfigureAwait(false);
                 return result;
             }
 
@@ -530,13 +528,18 @@ namespace SimpleAuth.Controllers
                         CookieNames.ExternalCookieName,
                         new AuthenticationProperties())
                     .ConfigureAwait(false);
-                await LogAuthenticateUser(actionResult, authorizationRequest.aggregate_id).ConfigureAwait(false);
+                await LogAuthenticateUser(subject, actionResult.Amr, authorizationRequest.aggregate_id).ConfigureAwait(false);
                 return this.CreateRedirectionFromActionResult(actionResult, authorizationRequest);
             }
 
             return RedirectToAction("OpenId", "Authenticate", new { code });
         }
 
+        /// <summary>
+        /// Sets the identifier providers.
+        /// </summary>
+        /// <param name="authorizeViewModel">The authorize view model.</param>
+        /// <returns></returns>
         protected async Task SetIdProviders(IdProviderAuthorizeViewModel authorizeViewModel)
         {
             var schemes =
@@ -553,14 +556,14 @@ namespace SimpleAuth.Controllers
             authorizeViewModel.IdProviders = idProviders;
         }
 
-        protected async Task LogAuthenticateUser(EndpointResult act, string processId)
+        internal async Task LogAuthenticateUser(string resourceOwner, string amr, string processId)
         {
             if (string.IsNullOrWhiteSpace(processId))
             {
                 return;
             }
 
-            await _eventPublisher.Publish(new ResourceOwnerAuthenticated(Id.Create(), processId, act, DateTime.UtcNow))
+            await _eventPublisher.Publish(new ResourceOwnerAuthenticated(Id.Create(), processId, resourceOwner, amr, DateTime.UtcNow))
                 .ConfigureAwait(false);
         }
 

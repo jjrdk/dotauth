@@ -32,7 +32,6 @@ namespace SimpleAuth.Shared.Events.OAuth
         public AuthorizationGranted(string id, string processId, object payload, DateTime timestamp)
         : base(id, timestamp)
         {
-            Id = id;
             ProcessId = processId;
             Payload = payload;
         }
