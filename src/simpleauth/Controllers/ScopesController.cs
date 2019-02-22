@@ -27,19 +27,36 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
 
+    /// <summary>
+    /// Defines the scopes controller.
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(CoreConstants.EndPoints.Scopes)]
     public class ScopesController : Controller
     {
         private readonly IScopeRepository _scopeRepository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScopesController"/> class.
+        /// </summary>
+        /// <param name="scopeRepository">The scope repository.</param>
         public ScopesController(IScopeRepository scopeRepository)
         {
             _scopeRepository = scopeRepository;
         }
 
+        /// <summary>
+        /// Searches the specified request.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">request</exception>
         [HttpPost(".search")]
         [Authorize("manager")]
-        public async Task<IActionResult> Search([FromBody] SearchScopesRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Search(
+            [FromBody] SearchScopesRequest request,
+            CancellationToken cancellationToken)
         {
             if (request == null)
             {
@@ -50,6 +67,11 @@ namespace SimpleAuth.Controllers
             return new OkObjectResult(result.ToDto());
         }
 
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpGet]
         [Authorize("manager")]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
@@ -58,6 +80,12 @@ namespace SimpleAuth.Controllers
             return new OkObjectResult(result);
         }
 
+        /// <summary>
+        /// Gets the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         [Authorize("manager")]
         public async Task<IActionResult> Get(string id, CancellationToken cancellationToken)
@@ -66,6 +94,13 @@ namespace SimpleAuth.Controllers
             return new OkObjectResult(result);
         }
 
+        /// <summary>
+        /// Deletes the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">id</exception>
         [HttpDelete("{id}")]
         [Authorize("manager")]
         public async Task<IActionResult> Delete(string id, CancellationToken cancellationToken)
@@ -98,6 +133,12 @@ namespace SimpleAuth.Controllers
                     });
         }
 
+        /// <summary>
+        /// Adds the specified request.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">request</exception>
         [HttpPost]
         [Authorize("manager")]
         public async Task<IActionResult> Add([FromBody] Scope request)
@@ -112,6 +153,13 @@ namespace SimpleAuth.Controllers
                 : new NoContentResult();
         }
 
+        /// <summary>
+        /// Updates the specified request.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">request</exception>
         [HttpPut]
         [Authorize("manager")]
         public async Task<IActionResult> Update([FromBody] Scope request, CancellationToken cancellationToken)

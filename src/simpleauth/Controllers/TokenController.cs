@@ -96,79 +96,83 @@
                     });
             }
 
-            GrantedToken result = null;
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
             {
                 var authorizationHeaderValue = authorizationHeader[0];
-                var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
-                if (splittedAuthorizationHeaderValue.Length == 2)
+                var splitAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
+                if (splitAuthorizationHeaderValue.Length == 2)
                 {
                     authenticationHeaderValue = new AuthenticationHeaderValue(
-                        splittedAuthorizationHeaderValue[0],
-                        splittedAuthorizationHeaderValue[1]);
+                        splitAuthorizationHeaderValue[0],
+                        splitAuthorizationHeaderValue[1]);
                 }
             }
 
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
+            var result = await GetGrantedToken(tokenRequest, cancellationToken, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
+
+            return new OkObjectResult(result.ToDto());
+        }
+
+        private async Task<GrantedToken> GetGrantedToken(
+            TokenRequest tokenRequest,
+            CancellationToken cancellationToken,
+            AuthenticationHeaderValue authenticationHeaderValue,
+            X509Certificate2 certificate,
+            string issuerName)
+        {
             switch (tokenRequest.grant_type)
             {
                 case GrantTypes.Password:
-                    result = await GetClientCredentialsGrantedToken(
+                    return await GetClientCredentialsGrantedToken(
                             tokenRequest,
                             authenticationHeaderValue,
                             certificate,
                             issuerName,
                             cancellationToken)
                         .ConfigureAwait(false);
-                    break;
                 case GrantTypes.AuthorizationCode:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(
+                    return await _tokenActions.GetTokenByAuthorizationCodeGrantType(
                             authCodeParameter,
                             authenticationHeaderValue,
                             certificate,
                             issuerName,
                             cancellationToken)
                         .ConfigureAwait(false);
-                    break;
                 case GrantTypes.RefreshToken:
                     var refreshTokenParameter = tokenRequest.ToRefreshTokenGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(
+                    return await _tokenActions.GetTokenByRefreshTokenGrantType(
                             refreshTokenParameter,
                             authenticationHeaderValue,
                             certificate,
                             issuerName,
                             cancellationToken)
                         .ConfigureAwait(false);
-                    break;
                 case GrantTypes.ClientCredentials:
                     var clientCredentialsParameter = tokenRequest.ToClientCredentialsGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(
+                    return await _tokenActions.GetTokenByClientCredentialsGrantType(
                             clientCredentialsParameter,
                             authenticationHeaderValue,
                             certificate,
                             issuerName,
                             cancellationToken)
                         .ConfigureAwait(false);
-                    break;
                 case GrantTypes.UmaTicket:
                     var tokenIdParameter = tokenRequest.ToTokenIdGrantTypeParameter();
-                    result = await _umaTokenActions.GetTokenByTicketId(
+                    return await _umaTokenActions.GetTokenByTicketId(
                             tokenIdParameter,
                             authenticationHeaderValue,
                             certificate,
                             issuerName,
                             cancellationToken)
                         .ConfigureAwait(false);
-                    break;
                 case GrantTypes.ValidateBearer:
-                    break;
+                    return null;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            return new OkObjectResult(result.ToDto());
         }
 
         private Task<GrantedToken> GetClientCredentialsGrantedToken(

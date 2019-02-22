@@ -16,16 +16,53 @@ namespace SimpleAuth.Shared.Events.Openid
 {
     using System;
 
+    /// <summary>
+    /// Defines the resource owner authenticated event
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.Event" />
     public class ResourceOwnerAuthenticated : Event
     {
-        public ResourceOwnerAuthenticated(string id, string aggregateId, object payload, DateTime timestamp)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceOwnerAuthenticated"/> class.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="aggregateId">The aggregate identifier.</param>
+        /// <param name="amr"></param>
+        /// <param name="timestamp">The timestamp.</param>
+        /// <param name="resourceOwnerId"></param>
+        public ResourceOwnerAuthenticated(string id, string aggregateId, string resourceOwnerId, string amr, DateTime timestamp)
             : base(id, timestamp)
         {
+            Id = id;
             AggregateId = aggregateId;
-            Payload = payload;
+            ResourceOwnerId = resourceOwnerId;
+            Amr = amr;
         }
 
+        public string Id { get; }
+
+        /// <summary>
+        /// Gets the aggregate identifier.
+        /// </summary>
+        /// <value>
+        /// The aggregate identifier.
+        /// </value>
         public string AggregateId { get; }
-        public object Payload { get; }
+
+        /// <summary>
+        /// Gets the resource owner identifier.
+        /// </summary>
+        /// <value>
+        /// The resource owner identifier.
+        /// </value>
+        public string ResourceOwnerId { get; }
+
+        /// <summary>
+        /// Gets the amr.
+        /// </summary>
+        /// <value>
+        /// The amr.
+        /// </value>
+        public string Amr { get; }
     }
 }

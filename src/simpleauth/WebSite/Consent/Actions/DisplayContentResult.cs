@@ -4,7 +4,7 @@
     using Results;
     using Shared.Models;
 
-    public class DisplayContentResult
+    internal class DisplayContentResult
     {
         public Client Client { get; set; }
         public ICollection<Scope> Scopes { get; set; }

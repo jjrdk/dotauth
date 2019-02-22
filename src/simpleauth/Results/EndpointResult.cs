@@ -17,7 +17,7 @@ namespace SimpleAuth.Results
     /// <summary>
     /// Represents an endpoint result value.
     /// </summary>
-    public class EndpointResult
+    internal class EndpointResult
     {
         /// <summary>
         /// Gets or sets the type of action result.

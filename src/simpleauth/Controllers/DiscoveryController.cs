@@ -21,18 +21,29 @@ namespace SimpleAuth.Controllers
     using System.Threading;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Defines the discovery controller
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(CoreConstants.EndPoints.DiscoveryAction)]
     public class DiscoveryController : Controller
     {
         private readonly DiscoveryActions _discoveryActions;
-        private readonly RuntimeSettings _runtimeSettings;
 
-        public DiscoveryController(RuntimeSettings runtimeSettings, IScopeRepository scopeRepository)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DiscoveryController"/> class.
+        /// </summary>
+        /// <param name="scopeRepository">The scope repository.</param>
+        public DiscoveryController(IScopeRepository scopeRepository)
         {
             _discoveryActions = new DiscoveryActions(scopeRepository);
-            _runtimeSettings = runtimeSettings;
         }
 
+        /// <summary>
+        /// Handles the default GET request..
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<DiscoveryInformation> Get(CancellationToken cancellationToken)
         {

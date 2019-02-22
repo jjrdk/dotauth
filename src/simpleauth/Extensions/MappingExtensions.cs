@@ -117,7 +117,7 @@ namespace SimpleAuth.Extensions
                 ExpiresIn = grantedToken.ExpiresIn,
                 RefreshToken = grantedToken.RefreshToken,
                 TokenType = grantedToken.TokenType,
-                Scope = grantedToken.Scope.Split(' ').ToList()
+                Scope = grantedToken.Scope.Split(' ').ToArray()
             };
         }
 

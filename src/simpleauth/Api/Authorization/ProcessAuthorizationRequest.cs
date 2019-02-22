@@ -29,7 +29,6 @@ namespace SimpleAuth.Api.Authorization
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
-    using JwtConstants = Shared.JwtConstants;
 
     internal sealed class ProcessAuthorizationRequest
     {

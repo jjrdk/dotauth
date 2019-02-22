@@ -12,6 +12,7 @@
     using Shared.Repositories;
     using Shared.Requests;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.WebSite.Authenticate;
     using System;
     using System.Collections.Generic;
@@ -20,7 +21,6 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Events.Logging;
     using ViewModels;
 
     /// <summary>
@@ -109,6 +109,10 @@
                 eventPublisher);
         }
 
+        /// <summary>
+        /// Indexes the specified cancellation token.
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> Index()
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
@@ -122,6 +126,15 @@
             return RedirectToAction("Index", "User");
         }
 
+        /// <summary>
+        /// Handles the local login request.
+        /// </summary>
+        /// <param name="authorizeViewModel">The authorize view model.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">authorizeViewModel</exception>
+        /// <exception cref="SimpleAuthException">The resource owner credentials are not correct</exception>
+        /// <exception cref="Exception">Two factor authenticator is not properly configured</exception>
         [HttpPost]
         public async Task<IActionResult> LocalLogin(
             [FromForm] LocalAuthenticationViewModel authorizeViewModel,
@@ -201,6 +214,17 @@
             }
         }
 
+        /// <summary>
+        /// Handles the local open id login.
+        /// </summary>
+        /// <param name="viewModel">The view model.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// viewModel
+        /// or
+        /// Code
+        /// </exception>
         [HttpPost]
         public async Task<IActionResult> LocalLoginOpenId(
             OpenidLocalAuthenticationViewModel viewModel,
@@ -217,14 +241,10 @@
             }
 
             await SetUser().ConfigureAwait(false);
-            var uiLocales = DefaultLanguage;
             try
             {
                 // 1. Decrypt the request
                 var request = _dataProtector.Unprotect<AuthorizationRequest>(viewModel.Code);
-
-                // 2. Retrieve the default language
-                uiLocales = string.IsNullOrWhiteSpace(request.ui_locales) ? DefaultLanguage : request.ui_locales;
 
                 // 3. Check the state of the view model
                 if (!ModelState.IsValid)
@@ -237,7 +257,7 @@
                 var issuerName = Request.GetAbsoluteUriWithVirtualPath();
 
                 var actionResult = await _localOpenIdAuthentication.Execute(
-                        new LocalAuthenticationParameter {UserName = viewModel.Login, Password = viewModel.Password},
+                        new LocalAuthenticationParameter { UserName = viewModel.Login, Password = viewModel.Password },
                         request.ToParameter(),
                         viewModel.Code,
                         issuerName,
@@ -254,11 +274,11 @@
                     {
                         await SetTwoFactorCookie(actionResult.Claims).ConfigureAwait(false);
                         await _generateAndSendCode.Send(subject, cancellationToken).ConfigureAwait(false);
-                        return RedirectToAction("SendCode", new {code = viewModel.Code});
+                        return RedirectToAction("SendCode", new { code = viewModel.Code });
                     }
                     catch (ClaimRequiredException)
                     {
-                        return RedirectToAction("SendCode", new {code = viewModel.Code});
+                        return RedirectToAction("SendCode", new { code = viewModel.Code });
                     }
                     catch (Exception)
                     {
@@ -276,7 +296,7 @@
                     var result = this.CreateRedirectionFromActionResult(actionResult.EndpointResult, request);
                     if (result != null)
                     {
-                        await LogAuthenticateUser(actionResult.EndpointResult, request.aggregate_id)
+                        await LogAuthenticateUser(subject, actionResult?.EndpointResult?.Amr, request.aggregate_id)
                             .ConfigureAwait(false);
                         return result;
                     }

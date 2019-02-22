@@ -2,8 +2,19 @@
 {
     using System;
 
+    /// <summary>
+    /// Defines the runtime settings.
+    /// </summary>
     public class RuntimeSettings
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RuntimeSettings"/> class.
+        /// </summary>
+        /// <param name="authorizationCodeValidityPeriod">The authorization code validity period.</param>
+        /// <param name="userClaimsToIncludeInAuthToken">The user claims to include in authentication token.</param>
+        /// <param name="claimsIncludedInUserCreation">The claims included in user creation.</param>
+        /// <param name="rptLifeTime">The RPT life time.</param>
+        /// <param name="ticketLifeTime">The ticket life time.</param>
         public RuntimeSettings(
             TimeSpan authorizationCodeValidityPeriod = default,
             string[] userClaimsToIncludeInAuthToken = null,
@@ -20,7 +31,20 @@
             ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? Array.Empty<string>();
         }
 
+        /// <summary>
+        /// Gets the authorization code validity period.
+        /// </summary>
+        /// <value>
+        /// The authorization code validity period.
+        /// </value>
         public TimeSpan AuthorizationCodeValidityPeriod { get; }
+
+        /// <summary>
+        /// Gets the user claims to include in authentication token.
+        /// </summary>
+        /// <value>
+        /// The user claims to include in authentication token.
+        /// </value>
         public string[] UserClaimsToIncludeInAuthToken { get; }
 
         /// <summary>

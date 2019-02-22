@@ -16,6 +16,9 @@ namespace SimpleAuth.Shared.Responses
 {
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Defines the update scope response.
+    /// </summary>
     public class UpdateScopeResponse
     {
         /// <summary>

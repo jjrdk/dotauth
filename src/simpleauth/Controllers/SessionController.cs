@@ -12,11 +12,20 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Defines the session controller
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     public class SessionController : Controller
     {
         private readonly IAuthenticationService _authenticationService;
         private readonly IClientStore _clientRepository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SessionController"/> class.
+        /// </summary>
+        /// <param name="authenticationService">The authentication service.</param>
+        /// <param name="clientRepository">The client repository.</param>
         public SessionController(
             IAuthenticationService authenticationService,
             IClientStore clientRepository)
@@ -25,6 +34,10 @@
             _clientRepository = clientRepository;
         }
 
+        /// <summary>
+        /// Checks the session.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet(CoreConstants.EndPoints.CheckSession)]
         public async Task CheckSession()
         {
@@ -33,6 +46,10 @@
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Revokes the session.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet(CoreConstants.EndPoints.EndSession)]
         public async Task RevokeSession()
         {
@@ -57,6 +74,12 @@
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Handles the revoke session callback.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpGet(CoreConstants.EndPoints.EndSessionCallback)]
         public async Task RevokeSessionCallback([FromQuery]RevokeSessionRequest request, CancellationToken cancellationToken)
         {

@@ -32,12 +32,22 @@ namespace SimpleAuth.Controllers
     using System.Threading.Tasks;
     using WebSite.User.Actions;
 
+    /// <summary>
+    /// Defines the resource owner controller.
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(CoreConstants.EndPoints.ResourceOwners)]
     public class ResourceOwnersController : Controller
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly AddUserOperation _addUserOperation;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceOwnersController"/> class.
+        /// </summary>
+        /// <param name="resourceOwnerRepository">The resource owner repository.</param>
+        /// <param name="accountFilters">The account filters.</param>
+        /// <param name="eventPublisher">The event publisher.</param>
         public ResourceOwnersController(
             IResourceOwnerRepository resourceOwnerRepository,
             IEnumerable<AccountFilter> accountFilters,
@@ -47,14 +57,26 @@ namespace SimpleAuth.Controllers
             _addUserOperation = new AddUserOperation(resourceOwnerRepository, accountFilters, eventPublisher);
         }
 
+        /// <summary>
+        /// Gets the specified cancellation token.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpGet]
         [Authorize("manager")]
         public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            var content = (await _resourceOwnerRepository.GetAll(cancellationToken).ConfigureAwait(false)).ToDtos();
-            return new OkObjectResult(content);
+            var resourceOwners = (await _resourceOwnerRepository.GetAll(cancellationToken).ConfigureAwait(false)).ToDtos();
+            return new OkObjectResult(resourceOwners);
         }
 
+        /// <summary>
+        /// Gets the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="SimpleAuthException"></exception>
         [HttpGet("{id}")]
         [Authorize("manager")]
         public async Task<IActionResult> Get(string id, CancellationToken cancellationToken)
@@ -70,6 +92,12 @@ namespace SimpleAuth.Controllers
             return Ok(resourceOwner.ToDto());
         }
 
+        /// <summary>
+        /// Deletes the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize("manager")]
         public async Task<IActionResult> Delete(string id, CancellationToken cancellationToken)
@@ -87,6 +115,13 @@ namespace SimpleAuth.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Updates the claims.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="SimpleAuthException"></exception>
         [HttpPut("claims")]
         [Authorize("manager")]
         public async Task<IActionResult> UpdateClaims(
@@ -100,8 +135,7 @@ namespace SimpleAuth.Controllers
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
-
-
+            
             var resourceOwner =
                 await _resourceOwnerRepository.Get(request.Login, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
@@ -145,6 +179,13 @@ namespace SimpleAuth.Controllers
             return new OkResult();
         }
 
+        /// <summary>
+        /// Updates the password.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="SimpleAuthException"></exception>
         [HttpPut("password")]
         [Authorize("manager")]
         public async Task<IActionResult> UpdatePassword(
@@ -175,6 +216,12 @@ namespace SimpleAuth.Controllers
             return new OkResult();
         }
 
+        /// <summary>
+        /// Adds the specified add resource owner request.
+        /// </summary>
+        /// <param name="addResourceOwnerRequest">The add resource owner request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize("manager")]
         public async Task<IActionResult> Add(
@@ -206,6 +253,12 @@ namespace SimpleAuth.Controllers
                 });
         }
 
+        /// <summary>
+        /// Searches the specified search resource owners request.
+        /// </summary>
+        /// <param name="searchResourceOwnersRequest">The search resource owners request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPost(".search")]
         [Authorize("manager")]
         public async Task<IActionResult> Search(

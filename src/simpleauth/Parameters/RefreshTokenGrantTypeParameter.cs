@@ -14,7 +14,7 @@
 
 namespace SimpleAuth.Parameters
 {
-    public sealed class RefreshTokenGrantTypeParameter : GrantTypeParameter
+    internal sealed class RefreshTokenGrantTypeParameter : GrantTypeParameter
     {
         public string RefreshToken { get; set; }
     }

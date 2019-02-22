@@ -33,6 +33,10 @@ namespace SimpleAuth.Controllers
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Errors;
 
+    /// <summary>
+    /// Defines the authorization controller.
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(CoreConstants.EndPoints.Authorization)]
     public class AuthorizationController : Controller
     {
@@ -43,6 +47,19 @@ namespace SimpleAuth.Controllers
         private readonly IAuthenticationService _authenticationService;
         private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthorizationController"/> class.
+        /// </summary>
+        /// <param name="httpClient">The HTTP client.</param>
+        /// <param name="eventPublisher">The event publisher.</param>
+        /// <param name="resourceOwnerServices">The resource owner services.</param>
+        /// <param name="clientStore">The client store.</param>
+        /// <param name="tokenStore">The token store.</param>
+        /// <param name="scopeRepository">The scope repository.</param>
+        /// <param name="authorizationCodeStore">The authorization code store.</param>
+        /// <param name="consentRepository">The consent repository.</param>
+        /// <param name="dataProtectionProvider">The data protection provider.</param>
+        /// <param name="authenticationService">The authentication service.</param>
         public AuthorizationController(
             HttpClient httpClient,
             IEventPublisher eventPublisher,
@@ -69,6 +86,12 @@ namespace SimpleAuth.Controllers
             _authenticationService = authenticationService;
         }
 
+        /// <summary>
+        /// Handles the authorization request.
+        /// </summary>
+        /// <param name="authorizationRequest">The authorization request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] AuthorizationRequest authorizationRequest, CancellationToken cancellationToken)
         {
