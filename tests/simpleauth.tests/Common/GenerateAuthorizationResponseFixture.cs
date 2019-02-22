@@ -63,6 +63,7 @@ namespace SimpleAuth.Tests.Common
                 scopeRepository.Object,
                 _clientStore.Object,
                 _consentRepository.Object,
+                new InMemoryJwksRepository(),
                 _eventPublisher.Object);
         }
 
@@ -115,7 +116,7 @@ namespace SimpleAuth.Tests.Common
                 JsonWebKeys =
                     "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
                         .ToSet(),
-                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
             await _generateAuthorizationResponse.Generate(
@@ -153,7 +154,7 @@ namespace SimpleAuth.Tests.Common
                 JsonWebKeys =
                     "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
                         .ToSet(),
-                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256
             };
 
             var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };

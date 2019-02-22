@@ -28,6 +28,7 @@
             IScopeRepository scopeRepository,
             IConsentRepository consentRepository,
             IClientStore clientRepository,
+            IJwksStore jwksStore,
             IEventPublisher eventPublisher)
         {
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
@@ -36,6 +37,7 @@
                 scopeRepository,
                 clientRepository,
                 consentRepository,
+                jwksStore,
                 eventPublisher);
             _consentRepository = consentRepository;
             _clientRepository = clientRepository;

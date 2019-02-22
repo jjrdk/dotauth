@@ -20,6 +20,7 @@ namespace SimpleAuth.Common
     using Results;
     using Shared;
     using Shared.Models;
+    using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
     using System;
@@ -28,7 +29,6 @@ namespace SimpleAuth.Common
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Events.Logging;
 
     internal class GenerateAuthorizationResponse
     {
@@ -37,6 +37,7 @@ namespace SimpleAuth.Common
         private readonly JwtGenerator _jwtGenerator;
         private readonly IClientStore _clientStore;
         private readonly IConsentRepository _consentRepository;
+        private readonly IJwksStore _jwksStore;
         private readonly IEventPublisher _eventPublisher;
 
         public GenerateAuthorizationResponse(
@@ -45,14 +46,16 @@ namespace SimpleAuth.Common
             IScopeRepository scopeRepository,
             IClientStore clientStore,
             IConsentRepository consentRepository,
+            IJwksStore jwksStore,
             IEventPublisher eventPublisher)
         {
             _authorizationCodeStore = authorizationCodeStore;
             _tokenStore = tokenStore;
-            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository);
+            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore);
             _eventPublisher = eventPublisher;
             _clientStore = clientStore;
             _consentRepository = consentRepository;
+            _jwksStore = jwksStore;
         }
 
         public async Task Generate(
@@ -96,6 +99,7 @@ namespace SimpleAuth.Common
                 if (grantedToken == null)
                 {
                     grantedToken = await client.GenerateToken(
+                            _jwksStore,
                             allowedTokenScopes,
                             issuerName,
                             userInformationPayload,
@@ -144,7 +148,7 @@ namespace SimpleAuth.Common
                 client);
 
             if (newAccessTokenGranted)
-                // 3. Insert the stateful access token into the DB OR insert the access token into the caching.
+            // 3. Insert the stateful access token into the DB OR insert the access token into the caching.
             {
                 await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
                 await _eventPublisher.Publish(
@@ -176,6 +180,7 @@ namespace SimpleAuth.Common
             if (responses.Contains(ResponseTypeNames.IdToken))
             {
                 var idToken = await _clientStore.GenerateIdToken(
+                        _jwksStore,
                         authorizationParameter.ClientId,
                         idTokenPayload,
                         cancellationToken)

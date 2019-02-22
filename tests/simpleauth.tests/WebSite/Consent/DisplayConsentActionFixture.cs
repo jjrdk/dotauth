@@ -36,6 +36,7 @@ namespace SimpleAuth.Tests.WebSite.Consent
                 _consentRepository.Object,
                 new Mock<IAuthorizationCodeStore>().Object,
                 new Mock<ITokenStore>().Object,
+                new InMemoryJwksRepository(), 
                 new Mock<IEventPublisher>().Object);
         }
 
@@ -67,7 +68,7 @@ namespace SimpleAuth.Tests.WebSite.Consent
                             KeyOperations.Sign,
                             KeyOperations.Verify)
                         .ToSet(),
-                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 ClientId = clientid,
                 AllowedScopes = new List<Scope> { new Scope { Name = scope, IsDisplayedInConsent = true } }
             };
@@ -125,7 +126,7 @@ namespace SimpleAuth.Tests.WebSite.Consent
                         KeyOperations.Sign,
                         KeyOperations.Verify)
                     .ToSet(),
-                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256
             };
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(returnedClient);

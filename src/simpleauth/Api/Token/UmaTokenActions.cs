@@ -39,13 +39,14 @@ namespace SimpleAuth.Api.Token
             IScopeRepository scopeRepository,
             ITokenStore tokenStore,
             IResourceSetRepository resourceSetRepository,
+            IJwksStore jwksStore,
             IEventPublisher eventPublisher)
         {
             _ticketStore = ticketStore;
             _configurationService = configurationService;
             _authorizationPolicyValidator = new AuthorizationPolicyValidator(clientStore, resourceSetRepository, eventPublisher);
             _authenticateClient = new AuthenticateClient(clientStore);
-            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository);
+            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore);
             _tokenStore = tokenStore;
             _eventPublisher = eventPublisher;
         }
@@ -131,13 +132,13 @@ namespace SimpleAuth.Api.Token
             }
 
             // 5. Generate a granted token.
-            var grantedToken = GenerateToken(client, ticket.Lines, "openid", issuerName);
+            var grantedToken = await GenerateToken(client, ticket.Lines, "openid", issuerName).ConfigureAwait(false);
             await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
             await _ticketStore.Remove(ticket.Id, cancellationToken).ConfigureAwait(false);
             return grantedToken;
         }
 
-        private GrantedToken GenerateToken(
+        private async Task<GrantedToken> GenerateToken(
             Client client,
             IEnumerable<TicketLine> ticketLines,
             string scope,
@@ -159,7 +160,7 @@ namespace SimpleAuth.Api.Token
             }
 
             var expiresIn = _configurationService.RptLifeTime; // 1. Retrieve the expiration time of the granted token.
-            var jwsPayload = _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName, null);
+            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName).ConfigureAwait(false);
             // 2. Construct the JWT token (client).
             var jArr = new JArray();
             foreach (var ticketLine in ticketLines)

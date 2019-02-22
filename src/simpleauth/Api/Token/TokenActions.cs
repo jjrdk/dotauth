@@ -39,6 +39,7 @@ namespace SimpleAuth.Api.Token
         private readonly GetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
         private readonly AuthenticateClient _authenticateClient;
         private readonly RevokeTokenAction _revokeTokenAction;
+        private readonly IJwksStore _jwksStore;
         private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;
 
@@ -47,6 +48,7 @@ namespace SimpleAuth.Api.Token
             IAuthorizationCodeStore authorizationCodeStore,
             IClientStore clientStore,
             IScopeRepository scopeRepository,
+            IJwksStore jwksStore,
             IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore)
@@ -56,6 +58,7 @@ namespace SimpleAuth.Api.Token
                 clientStore,
                 scopeRepository,
                 tokenStore,
+                jwksStore,
                 resourceOwnerServices,
                 eventPublisher);
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
@@ -64,14 +67,17 @@ namespace SimpleAuth.Api.Token
                 clientStore,
                 eventPublisher,
                 tokenStore,
-                scopeRepository);
+                scopeRepository,
+                jwksStore);
             _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
                 eventPublisher,
                 tokenStore,
                 scopeRepository,
+                jwksStore,
                 clientStore);
             _authenticateClient = new AuthenticateClient(clientStore);
             _revokeTokenAction = new RevokeTokenAction(clientStore, tokenStore);
+            _jwksStore = jwksStore;
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
         }
@@ -331,7 +337,7 @@ namespace SimpleAuth.Api.Token
                 .ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await client.GenerateToken(allowedTokenScopes, issuerName).ConfigureAwait(false);
+                grantedToken = await client.GenerateToken(_jwksStore, allowedTokenScopes, issuerName).ConfigureAwait(false);
                 await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
                 await _eventPublisher.Publish(
                         new AccessToClientGranted(

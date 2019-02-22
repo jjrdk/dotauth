@@ -28,6 +28,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.WebUtilities;
     using Xunit;
     using TokenRequest = Client.TokenRequest;
 
@@ -341,7 +342,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     Subject = new ClaimsIdentity(new[] { new Claim("sub", "administrator") }),
                     SigningCredentials = new SigningCredentials(
                         TestKeys.SecretKey.CreateSignatureJwk(),
-                        SecurityAlgorithms.HmacSha256)
+                        SecurityAlgorithms.HmacSha256Signature)
                 });
 
             var result = await _authorizationClient.GetAuthorization(
@@ -546,7 +547,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     })
                 .ConfigureAwait(false);
             var location = result.Location;
-            var queries = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(location.Query);
+            var queries = QueryHelpers.ParseQuery(location.Query);
             var tokenClient = await TokenClient.Create(
                     TokenCredentials.FromClientCredentials("pkce_client", "pkce_client"),
                     _server.Client,

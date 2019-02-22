@@ -49,6 +49,7 @@ namespace SimpleAuth.Controllers
             IDataProtectionProvider dataProtectionProvider,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
+            IJwksStore jwksStore,
             IAuthorizationCodeStore authorizationCodeStore,
             IAuthenticationService authenticationService)
             : base(authenticationService)
@@ -61,6 +62,7 @@ namespace SimpleAuth.Controllers
                 consentRepository,
                 authorizationCodeStore,
                 tokenStore,
+                jwksStore,
                 eventPublisher);
             _confirmConsent = new ConfirmConsentAction(
                 authorizationCodeStore,
@@ -69,6 +71,7 @@ namespace SimpleAuth.Controllers
                 clientStore,
                 scopeRepository,
                 resourceOwnerStore,
+                jwksStore,
                 eventPublisher);
         }
 

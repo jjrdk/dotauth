@@ -30,6 +30,7 @@ namespace SimpleAuth.Extensions
     {
         public static async Task<GrantedToken> GenerateToken(
             this IClientStore clientStore,
+            IJwksStore jwksStore,
             string clientId,
             string scope,
             string issuerName,
@@ -51,20 +52,24 @@ namespace SimpleAuth.Extensions
 
             return await GenerateToken(
                     client,
+                    jwksStore,
                     scope,
                     issuerName,
                     userInformationPayload,
                     idTokenPayload,
+                    cancellationToken,
                     additionalClaims)
                 .ConfigureAwait(false);
         }
 
-        public static Task<GrantedToken> GenerateToken(
+        public static async Task<GrantedToken> GenerateToken(
             this Client client,
+            IJwksStore jwksStore,
             string scope,
             string issuerName,
             JwtPayload userInformationPayload = null,
             JwtPayload idTokenPayload = null,
+            CancellationToken cancellationToken = default,
             params Claim[] additionalClaims)
         {
             if (client == null)
@@ -94,7 +99,8 @@ namespace SimpleAuth.Extensions
                 idTokenPayload.AddClaim(new Claim(StandardClaimNames.Issuer, issuerName));
             }
 
-            var signingCredentials = client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First();
+            var signingCredentials = await jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg, cancellationToken);
+                //client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First();
 
             var accessToken = handler.CreateEncodedJwt(
                 issuerName,
@@ -107,11 +113,11 @@ namespace SimpleAuth.Extensions
 
             var refreshTokenId = Encoding.UTF8.GetBytes(Id.Create());
             // 3. Construct the refresh token.
-            return Task.FromResult(new GrantedToken
+            return new GrantedToken
             {
                 AccessToken = accessToken,
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
-                ExpiresIn = (int)client.TokenLifetime.TotalSeconds,
+                ExpiresIn = (int) client.TokenLifetime.TotalSeconds,
                 TokenType = CoreConstants.StandardTokenTypes._bearer,
                 CreateDateTime = DateTime.UtcNow,
                 // IDS
@@ -119,7 +125,7 @@ namespace SimpleAuth.Extensions
                 UserInfoPayLoad = userInformationPayload,
                 IdTokenPayLoad = idTokenPayload,
                 ClientId = client.ClientId
-            });
+            };
         }
     }
 }

@@ -19,15 +19,15 @@ namespace SimpleAuth.Api.Authorization
     using Results;
     using Shared.Models;
     using SimpleAuth.Common;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Security.Claims;
     using System.Security.Principal;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Shared.Errors;
 
     internal sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperation
     {
@@ -40,6 +40,7 @@ namespace SimpleAuth.Api.Authorization
             IAuthorizationCodeStore authorizationCodeStore,
             ITokenStore tokenStore,
             IScopeRepository scopeRepository,
+            IJwksStore jwksStore,
             IEventPublisher eventPublisher)
         {
             _processAuthorizationRequest = new ProcessAuthorizationRequest(clientStore, consentRepository);
@@ -49,6 +50,7 @@ namespace SimpleAuth.Api.Authorization
                 scopeRepository,
                 clientStore,
                 consentRepository,
+                jwksStore,
                 eventPublisher);
         }
 

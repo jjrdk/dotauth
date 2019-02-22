@@ -238,7 +238,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateJwk(JsonWebKeyUseNames.Sig,
                         KeyOperations.Sign,
                         KeyOperations.Verify)),
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha512, //SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new List<Uri>
                     {
@@ -292,8 +292,8 @@ namespace SimpleAuth.Server.Tests.Stores
                         ResponseTypeNames.IdToken
                     },
                     JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
-                    UserInfoSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
+                    UserInfoSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
                 },
@@ -345,8 +345,8 @@ namespace SimpleAuth.Server.Tests.Stores
                     },
                     JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk())
                         .AddKey(TestKeys.SecretKey.CreateEncryptionJwk()),
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
-                    UserInfoSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
+                    UserInfoSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     UserInfoEncryptedResponseAlg = SecurityAlgorithms.EcdsaSha256,
                     UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
                     ApplicationType = ApplicationTypes.Web,
@@ -396,7 +396,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
                 },
@@ -432,7 +432,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         ResponseTypeNames.Token
                     },
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
                 },
@@ -468,7 +468,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         ResponseTypeNames.Token
                     },
                     JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha384, //SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
                 },
@@ -503,7 +503,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         ResponseTypeNames.Token
                     },
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
                 },
@@ -538,7 +538,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         ResponseTypeNames.Token
                     },
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")},
                     JsonWebKeys = new[]
@@ -579,7 +579,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         ResponseTypeNames.Token
                     },
                     JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256Signature, //SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256Signature, //SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")},
                     //JwksUri = new Uri("http://localhost:5000/jwks_client")
@@ -622,7 +622,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         ResponseTypeNames.IdToken
                     },
                     JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet().AddKey(TestKeys.SuperSecretKey.CreateEncryptionJwk()),
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, //SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256, //SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new List<Uri> {new Uri("http://localhost:5000/callback")}
                 },
@@ -661,7 +661,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new List<Uri> {new Uri("http://localhost:5000/callback")}
                 },
@@ -702,7 +702,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         ResponseTypeNames.Token,
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new List<Uri> {new Uri("http://localhost:5000/callback")}
                 },
@@ -744,7 +744,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         ResponseTypeNames.IdToken
                     },
                     JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new List<Uri> {new Uri("http://localhost:5000/callback")},
                     RequirePkce = true
@@ -788,7 +788,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         ResponseTypeNames.Token,
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new List<Uri> {new Uri("http://localhost:5000/callback")},
                 },
@@ -836,7 +836,7 @@ namespace SimpleAuth.Server.Tests.Stores
                         ResponseTypeNames.Token,
                         ResponseTypeNames.IdToken
                     },
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaV15KeyWrap, //SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaV15KeyWrap, //SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Native
                 },
                 // Client credentials + stateless access token.
@@ -884,7 +884,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     {
                         ResponseTypeNames.Token
                     },
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256, // SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Native
                 }
             };

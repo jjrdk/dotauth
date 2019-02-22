@@ -17,7 +17,6 @@ namespace SimpleAuth.Api.Discovery
     using Authorization;
     using Microsoft.IdentityModel.Tokens;
     using Shared;
-    using Shared.Models;
     using Shared.Repositories;
     using Shared.Responses;
     using System;
@@ -45,9 +44,9 @@ namespace SimpleAuth.Api.Discovery
                 ? scopes.Where(s => s.IsExposed).Select(s => s.Name).ToArray()
                 : Array.Empty<string>();
 
-            var responseTypesSupported = GetSupportedResponseTypes(CoreConstants.Supported._supportedAuthorizationFlows);
+            var responseTypesSupported = GetSupportedResponseTypes(CoreConstants.Supported.SupportedAuthorizationFlows);
 
-            var grantTypesSupported = CoreConstants.Supported._supportedGrantTypes;
+            var grantTypesSupported = CoreConstants.Supported.SupportedGrantTypes;
 
             result.ClaimsParameterSupported = true;
             result.RequestParameterSupported = true;
@@ -62,25 +61,17 @@ namespace SimpleAuth.Api.Discovery
             result.TokenEndpointAuthMethodSupported = CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods;
             result.IdTokenSigningAlgValuesSupported = new[] { SecurityAlgorithms.RsaSha256, SecurityAlgorithms.EcdsaSha256 };
             //var issuer = Request.GetAbsoluteUriWithVirtualPath();
-            var authorizationEndPoint = issuer + "/" + CoreConstants.EndPoints.Authorization;
-            var tokenEndPoint = issuer + "/" + CoreConstants.EndPoints.Token;
-            var userInfoEndPoint = issuer + "/" + CoreConstants.EndPoints.UserInfo;
-            var jwksUri = issuer + "/" + CoreConstants.EndPoints.Jwks;
-            var registrationEndPoint = issuer + "/" + CoreConstants.EndPoints.Registration;
-            var revocationEndPoint = issuer + "/" + CoreConstants.EndPoints.Revocation;
+
             // default : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
-            var checkSessionIframe = issuer + "/" + CoreConstants.EndPoints.CheckSession;
-            var endSessionEndPoint = issuer + "/" + CoreConstants.EndPoints.EndSession;
-            var introspectionEndPoint = issuer + "/" + CoreConstants.EndPoints.Introspection;
 
             result.Issuer = issuer;
-            result.AuthorizationEndPoint = authorizationEndPoint;
-            result.TokenEndPoint = tokenEndPoint;
-            result.UserInfoEndPoint = userInfoEndPoint;
-            result.JwksUri = jwksUri;
-            result.RegistrationEndPoint = registrationEndPoint;
-            result.RevocationEndPoint = revocationEndPoint;
-            result.IntrospectionEndPoint = introspectionEndPoint;
+            result.AuthorizationEndPoint = issuer + "/" + CoreConstants.EndPoints.Authorization;
+            result.TokenEndPoint = issuer + "/" + CoreConstants.EndPoints.Token;
+            result.UserInfoEndPoint = issuer + "/" + CoreConstants.EndPoints.UserInfo;
+            result.JwksUri = issuer + "/" + CoreConstants.EndPoints.Jwks;
+            result.RegistrationEndPoint = issuer + "/" + CoreConstants.EndPoints.Registration;
+            result.RevocationEndPoint = issuer + "/" + CoreConstants.EndPoints.Revocation;
+            result.IntrospectionEndPoint = issuer + "/" + CoreConstants.EndPoints.Introspection;
             result.Jws = issuer + "/" + CoreConstants.EndPoints.Jws;
             result.Jwe = issuer + "/" + CoreConstants.EndPoints.Jwe;
             result.Clients = issuer + "/" + CoreConstants.EndPoints.Clients;
@@ -89,8 +80,8 @@ namespace SimpleAuth.Api.Discovery
             result.Manage = issuer + "/" + CoreConstants.EndPoints.Manage;
             result.Claims = issuer + "/" + CoreConstants.EndPoints.Claims;
             result.Version = "1.0";
-            result.CheckSessionEndPoint = checkSessionIframe;
-            result.EndSessionEndPoint = endSessionEndPoint;
+            result.CheckSessionEndPoint = issuer + "/" + CoreConstants.EndPoints.CheckSession;
+            result.EndSessionEndPoint = issuer + "/" + CoreConstants.EndPoints.EndSession;
 
             return result;
         }

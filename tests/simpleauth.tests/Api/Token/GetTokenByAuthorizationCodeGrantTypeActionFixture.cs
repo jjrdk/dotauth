@@ -550,7 +550,7 @@ namespace SimpleAuth.Tests.Api.Token
                 JsonWebKeys =
                     "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
                         .ToSet(),
-                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256
             };
             var authorizationCode = new AuthorizationCode
             {
@@ -604,7 +604,8 @@ namespace SimpleAuth.Tests.Api.Token
                 _clientStore.Object,
                 _eventPublisher.Object,
                 _tokenStoreFake.Object,
-                new Mock<IScopeRepository>().Object);
+                new Mock<IScopeRepository>().Object,
+                new InMemoryJwksRepository());
         }
     }
 }

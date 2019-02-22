@@ -110,6 +110,7 @@
                 new Mock<ITokenStore>().Object,
                 new Mock<IScopeRepository>().Object,
                 mock.Object,
+                new InMemoryJwksRepository(), 
                 new NoOpPublisher());
         }
     }

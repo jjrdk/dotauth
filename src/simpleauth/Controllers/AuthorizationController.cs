@@ -58,6 +58,7 @@ namespace SimpleAuth.Controllers
         /// <param name="scopeRepository">The scope repository.</param>
         /// <param name="authorizationCodeStore">The authorization code store.</param>
         /// <param name="consentRepository">The consent repository.</param>
+        /// <param name="jwksStore"></param>
         /// <param name="dataProtectionProvider">The data protection provider.</param>
         /// <param name="authenticationService">The authentication service.</param>
         public AuthorizationController(
@@ -69,6 +70,7 @@ namespace SimpleAuth.Controllers
             IScopeRepository scopeRepository,
             IAuthorizationCodeStore authorizationCodeStore,
             IConsentRepository consentRepository,
+            IJwksStore jwksStore,
             IDataProtectionProvider dataProtectionProvider,
             IAuthenticationService authenticationService)
         {
@@ -80,6 +82,7 @@ namespace SimpleAuth.Controllers
                 tokenStore,
                 scopeRepository,
                 consentRepository,
+                jwksStore,
                 eventPublisher,
                 resourceOwnerServices);
             _dataProtector = dataProtectionProvider.CreateProtector("Request");

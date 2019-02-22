@@ -21,15 +21,15 @@ namespace SimpleAuth.Api.Token.Actions
     using Parameters;
     using Shared;
     using Shared.Models;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Events.Logging;
     using System;
     using System.Linq;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Events.Logging;
 
     internal class GetTokenByAuthorizationCodeGrantTypeAction
     {
@@ -44,6 +44,7 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly AuthenticateClient _authenticateClient;
         private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;
+        private readonly IJwksStore _jwksStore;
         private readonly JwtGenerator _jwtGenerator;
 
         public GetTokenByAuthorizationCodeGrantTypeAction(
@@ -52,14 +53,16 @@ namespace SimpleAuth.Api.Token.Actions
             IClientStore clientStore,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
-            IScopeRepository scopeRepository)
+            IScopeRepository scopeRepository,
+            IJwksStore jwksStore)
         {
             _authorizationCodeStore = authorizationCodeStore;
             _configurationService = configurationService;
             _authenticateClient = new AuthenticateClient(clientStore);
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
-            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository);
+            _jwksStore = jwksStore;
+            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore);
         }
 
         public async Task<GrantedToken> Execute(
@@ -93,10 +96,12 @@ namespace SimpleAuth.Api.Token.Actions
             if (grantedToken == null)
             {
                 grantedToken = await result.Client.GenerateToken(
+                        _jwksStore,
                         result.AuthCode.Scopes,
                         issuerName,
                         result.AuthCode.UserInfoPayLoad,
                         result.AuthCode.IdTokenPayload,
+                        cancellationToken,
                         result.AuthCode.IdTokenPayload?.Claims.Where(
                                 c => _configurationService.UserClaimsToIncludeInAuthToken.Contains(c.Type))
                             .ToArray())
@@ -112,7 +117,7 @@ namespace SimpleAuth.Api.Token.Actions
                 if (grantedToken.IdTokenPayLoad != null)
                 {
                     _jwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad, result.Client);
-                    grantedToken.IdToken = await result.Client.GenerateIdToken(grantedToken.IdTokenPayLoad)
+                    grantedToken.IdToken = await result.Client.GenerateIdToken(_jwksStore, grantedToken.IdTokenPayLoad, cancellationToken)
                         .ConfigureAwait(false);
                 }
 
@@ -226,7 +231,7 @@ namespace SimpleAuth.Api.Token.Actions
                         authorizationCodeGrantTypeParameter.RedirectUri));
             }
 
-            return new ValidationResult {Client = client, AuthCode = authorizationCode};
+            return new ValidationResult { Client = client, AuthCode = authorizationCode };
         }
     }
 }

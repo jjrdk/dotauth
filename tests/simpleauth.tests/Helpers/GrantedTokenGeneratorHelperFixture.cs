@@ -18,12 +18,12 @@ namespace SimpleAuth.Tests.Helpers
     using Moq;
     using Shared.Models;
     using Shared.Repositories;
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
     using SimpleAuth.Extensions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class GrantedTokenGeneratorHelperFixture
@@ -40,11 +40,12 @@ namespace SimpleAuth.Tests.Helpers
         {
             await Assert.ThrowsAsync<ArgumentNullException>(
                     () => _clientRepositoryStub.Object.GenerateToken(
+                        new InMemoryJwksRepository(),
                         string.Empty,
                         null,
                         null,
                         CancellationToken.None,
-                        null))
+                        userInformationPayload: null))
                 .ConfigureAwait(false);
         }
 
@@ -56,11 +57,12 @@ namespace SimpleAuth.Tests.Helpers
 
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _clientRepositoryStub.Object.GenerateToken(
+                        new InMemoryJwksRepository(),
                         "invalid_client",
                         null,
                         null,
                         CancellationToken.None,
-                        null))
+                        userInformationPayload: null))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClient, ex.Code);
             Assert.Equal(ErrorDescriptions.TheClientIdDoesntExist, ex.Message);
@@ -74,7 +76,7 @@ namespace SimpleAuth.Tests.Helpers
                 TokenLifetime = TimeSpan.FromSeconds(3700),
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 ClientId = "client_id",
-                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 IdTokenEncryptedResponseAlg = SecurityAlgorithms.RsaSha256,
                 IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
@@ -82,8 +84,13 @@ namespace SimpleAuth.Tests.Helpers
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(client);
 
-            var result = await _clientRepositoryStub.Object
-                .GenerateToken("client_id", "scope", "issuer", CancellationToken.None, null)
+            var result = await _clientRepositoryStub.Object.GenerateToken(
+                    new InMemoryJwksRepository(),
+                    "client_id",
+                    "scope",
+                    "issuer",
+                    CancellationToken.None,
+                    userInformationPayload: null)
                 .ConfigureAwait(false);
 
             Assert.Equal(3700, result.ExpiresIn);

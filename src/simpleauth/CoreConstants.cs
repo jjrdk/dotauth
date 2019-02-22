@@ -184,7 +184,7 @@ namespace SimpleAuth
             public const string RefreshToken = "refresh_token";
         }
 
-        public static readonly string[] AllStandardTokenTypeHintNames = new[]
+        public static readonly string[] AllStandardTokenTypeHintNames =
         {
             StandardTokenTypeHintNames.AccessToken,
             StandardTokenTypeHintNames.RefreshToken
@@ -310,14 +310,14 @@ namespace SimpleAuth
 
         internal static class Supported
         {
-            public static List<AuthorizationFlow> _supportedAuthorizationFlows = new List<AuthorizationFlow>
+            public static readonly AuthorizationFlow[] SupportedAuthorizationFlows =
             {
                 AuthorizationFlow.AuthorizationCodeFlow,
                 AuthorizationFlow.ImplicitFlow,
                 AuthorizationFlow.HybridFlow
             };
 
-            public static string[] _supportedGrantTypes = new[]
+            public static readonly string[] SupportedGrantTypes =
             {
                 GrantTypes.AuthorizationCode,
                 GrantTypes.ClientCredentials,
@@ -326,7 +326,7 @@ namespace SimpleAuth
                 GrantTypes.Implicit
             };
 
-            public static readonly string[] SupportedResponseModes = {"query"};
+            public static readonly string[] SupportedResponseModes = { "query" };
 
             public static readonly string[] SupportedSubjectTypes =
             {

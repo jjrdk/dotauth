@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.AcceptanceTests
 {
-    using System;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
@@ -10,7 +9,7 @@
     using SimpleAuth;
     using SimpleAuth.Extensions;
     using SimpleAuth.Repositories;
-    using SimpleAuth.Shared;
+    using System;
 
     public class ServerStartup : IStartup
     {
@@ -22,6 +21,11 @@
         {
             _options = new SimpleAuthOptions
             {
+                JsonWebKeys = sp =>
+                {
+                    var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
+                    return new InMemoryJwksRepository(keyset, keyset);
+                },
                 Clients =
                     sp => new InMemoryClientRepository(
                         context.Client,
@@ -57,7 +61,7 @@
                     cfg =>
                     {
                         cfg.RequireHttpsMetadata = false;
-                        cfg.TokenValidationParameters = new NoOpTokenValidationParameters();
+                        cfg.TokenValidationParameters = new NoOpTokenValidationParameters(_context);
                     });
             services.AddAuthorization(
                 opt => { opt.AddAuthPolicies(DefaultSchema, JwtBearerDefaults.AuthenticationScheme); });
@@ -81,8 +85,7 @@
 
     internal class NoOpTokenValidationParameters : TokenValidationParameters
     {
-        public NoOpTokenValidationParameters()
-            : base()
+        public NoOpTokenValidationParameters(SharedContext context)
         {
             RequireExpirationTime = false;
             RequireSignedTokens = false;
@@ -93,10 +96,11 @@
             ValidateIssuerSigningKey = true;
             ValidateLifetime = false;
             ValidateTokenReplay = false;
-            IssuerSigningKey = TestKeys.SecretKey.CreateJwk(
-                JsonWebKeyUseNames.Sig,
-                KeyOperations.Sign,
-                KeyOperations.Verify);
+            IssuerSigningKey = context.SignatureKey;
+            //TestKeys.SecretKey.CreateJwk(
+            //JsonWebKeyUseNames.Sig,
+            //KeyOperations.Sign,
+            //KeyOperations.Verify);
         }
     }
 }

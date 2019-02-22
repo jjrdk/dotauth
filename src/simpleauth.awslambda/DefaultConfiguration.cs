@@ -21,44 +21,33 @@
                     {
                         ClientId = "api",
                         ClientName = "api",
-                        Secrets = new List<ClientSecret>
-                        {
-                            new ClientSecret
+                        Secrets =
+                            new List<ClientSecret>
                             {
-                                Type = ClientSecretTypes.SharedSecret,
-                                Value = "api"
-                            }
-                        },
-                        JsonWebKeys = new[]
-                        {
-                            rsa
-                                .CreateJwk(JsonWebKeyUseNames.Sig,
+                                new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "api"}
+                            },
+                        JsonWebKeys =
+                            new[]
+                            {
+                                rsa.CreateJwk(
+                                    "1",
+                                    JsonWebKeyUseNames.Sig,
                                     true,
                                     KeyOperations.Sign,
                                     KeyOperations.Verify),
-                            rsa.CreateJwk(JsonWebKeyUseNames.Enc,
-                                true,
-                                KeyOperations.Encrypt,
-                                KeyOperations.Decrypt)
-                        }.ToJwks(),
+                                rsa.CreateJwk(
+                                    "2",
+                                    JsonWebKeyUseNames.Enc,
+                                    true,
+                                    KeyOperations.Encrypt,
+                                    KeyOperations.Decrypt)
+                            }.ToJwks(),
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                         PolicyUri = new Uri("http://openid.net"),
                         TosUri = new Uri("http://openid.net"),
-                        AllowedScopes = new List<Scope>
-                        {
-                            new Scope
-                            {
-                                Name = "register_client"
-                            }
-                        },
-                        GrantTypes = new List<string>
-                        {
-                            GrantTypes.ClientCredentials
-                        },
-                        ResponseTypes = new List<string>
-                        {
-                            ResponseTypeNames.Token
-                        },
+                        AllowedScopes = new List<Scope> {new Scope {Name = "register_client"}},
+                        GrantTypes = new List<string> {GrantTypes.ClientCredentials},
+                        ResponseTypes = new List<string> {ResponseTypeNames.Token},
                         ApplicationType = ApplicationTypes.Native
                     }
                 };
@@ -72,7 +61,7 @@
                 new ResourceOwner
                 {
                     Id = "administrator",
-                    Claims = new []
+                    Claims = new[]
                     {
                         new Claim(StandardClaimNames.Subject, "administrator"),
                         new Claim("role", "administrator")

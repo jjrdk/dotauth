@@ -49,6 +49,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             IClientStore clientRepository,
             IScopeRepository scopeRepository,
             IResourceOwnerStore resourceOwnerRepository,
+            IJwksStore jwksStore,
             IEventPublisher eventPublisher)
         {
             _consentRepository = consentRepository;
@@ -61,6 +62,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                 scopeRepository,
                 clientRepository,
                 consentRepository,
+                jwksStore,
                 eventPublisher);
             _eventPublisher = eventPublisher;
         }

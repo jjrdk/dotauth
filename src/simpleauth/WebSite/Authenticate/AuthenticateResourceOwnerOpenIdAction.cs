@@ -35,6 +35,7 @@ namespace SimpleAuth.WebSite.Authenticate
             IScopeRepository scopeRepository,
             IConsentRepository consentRepository,
             IClientStore clientStore,
+            IJwksStore jwksStore,
             IEventPublisher eventPublisher)
         {
             _authenticateHelper = new AuthenticateHelper(
@@ -43,6 +44,7 @@ namespace SimpleAuth.WebSite.Authenticate
                 scopeRepository,
                 consentRepository,
                 clientStore,
+                jwksStore,
                 eventPublisher);
         }
 
