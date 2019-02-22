@@ -50,6 +50,7 @@
             IEnumerable<IAuthenticateResourceOwnerService> authenticateResourceOwnerServices,
             ITokenStore tokenStore,
             ITicketStore ticketStore,
+            IJwksStore jwksStore,
             IResourceSetRepository resourceSetRepository,
             IEventPublisher eventPublisher)
         {
@@ -58,6 +59,7 @@
                 authorizationCodeStore,
                 clientStore,
                 scopeRepository,
+                jwksStore,
                 authenticateResourceOwnerServices,
                 eventPublisher,
                 tokenStore);
@@ -68,6 +70,7 @@
                 scopeRepository,
                 tokenStore,
                 resourceSetRepository,
+                jwksStore,
                 eventPublisher);
         }
 

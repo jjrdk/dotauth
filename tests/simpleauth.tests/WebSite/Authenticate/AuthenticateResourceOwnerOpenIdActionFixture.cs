@@ -43,6 +43,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                 new Mock<IScopeRepository>().Object,
                 new Mock<IConsentRepository>().Object,
                 mock.Object,
+                new InMemoryJwksRepository(), 
                 new NoOpPublisher());
         }
 

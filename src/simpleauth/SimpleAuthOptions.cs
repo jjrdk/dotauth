@@ -74,6 +74,14 @@ namespace SimpleAuth
         public Func<IServiceProvider, IClientRepository> Clients { get; set; }
 
         /// <summary>
+        /// Gets or sets the json web keys.
+        /// </summary>
+        /// <value>
+        /// The json web keys.
+        /// </value>
+        public Func<IServiceProvider, IJwksRepository> JsonWebKeys { get; set; }
+
+        /// <summary>
         /// Gets or sets the consents.
         /// </summary>
         /// <value>

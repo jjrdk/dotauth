@@ -27,6 +27,7 @@
                 new Mock<IScopeRepository>().Object,
                 new Mock<IClientStore>().Object,
                 new Mock<IConsentRepository>().Object,
+                new InMemoryJwksRepository(), 
                 new NoOpPublisher());
         }
 

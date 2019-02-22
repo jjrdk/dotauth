@@ -21,6 +21,7 @@ namespace SimpleAuth.JwtToken
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
+    using SimpleAuth.Shared.Errors;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -31,11 +32,11 @@ namespace SimpleAuth.JwtToken
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Errors;
 
     internal class JwtGenerator
     {
         private readonly IScopeRepository _scopeRepository;
+        private readonly IJwksStore _jwksStore;
         private readonly IClientStore _clientRepository;
 
         private readonly Dictionary<string, Func<string, string>> _mappingJwsAlgToHashingFunctions =
@@ -55,10 +56,11 @@ namespace SimpleAuth.JwtToken
                 {SecurityAlgorithms.RsaSha512, HashWithSha512}
             };
 
-        public JwtGenerator(IClientStore clientRepository, IScopeRepository scopeRepository)
+        public JwtGenerator(IClientStore clientRepository, IScopeRepository scopeRepository, IJwksStore jwksStore)
         {
             _clientRepository = clientRepository;
             _scopeRepository = scopeRepository;
+            _jwksStore = jwksStore;
         }
 
         public JwtPayload UpdatePayloadDate(JwtPayload jwsPayload, Client client)
@@ -86,10 +88,11 @@ namespace SimpleAuth.JwtToken
             return jwsPayload;
         }
 
-        public JwtSecurityToken GenerateAccessToken(
+        public async Task<JwtSecurityToken> GenerateAccessToken(
             Client client,
             IEnumerable<string> scopes,
             string issuerName,
+            CancellationToken cancellationToken = default,
             params Claim[] additionalClaims)
         {
             if (client == null)
@@ -106,7 +109,8 @@ namespace SimpleAuth.JwtToken
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
 
-            var key = client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First();
+            var key = await _jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg, cancellationToken).ConfigureAwait(false);
+            //client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First();
 
             var jwtHeader = new JwtHeader(key);
             var payload = new JwtPayload(
@@ -403,7 +407,7 @@ namespace SimpleAuth.JwtToken
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
             var acrValues = CoreConstants.StandardArcParameterNames._openIdCustomAuthLevel + ".password=1";
-            var amr = new[] {"password"};
+            var amr = new[] { "password" };
             if (amrValues != null)
             {
                 amr = amrValues.ToArray();
@@ -413,9 +417,9 @@ namespace SimpleAuth.JwtToken
 
             var clients = await _clientRepository.GetAll(cancellationToken).ConfigureAwait(false);
             var audiences = (from client in clients
-                let isClientSupportIdTokenResponseType = client.CheckResponseTypes(ResponseTypeNames.IdToken)
-                where isClientSupportIdTokenResponseType || client.ClientId == authorizationParameter.ClientId
-                select client.ClientId).ToList();
+                             let isClientSupportIdTokenResponseType = client.CheckResponseTypes(ResponseTypeNames.IdToken)
+                             where isClientSupportIdTokenResponseType || client.ClientId == authorizationParameter.ClientId
+                             select client.ClientId).ToList();
 
             // The identity token can be reused by the identity server.
             if (!string.IsNullOrWhiteSpace(issuerName))
@@ -687,7 +691,7 @@ namespace SimpleAuth.JwtToken
             var secondHalf = new byte[halfIndex];
             Buffer.BlockCopy(arr, 0, firstHalf, 0, halfIndex);
             Buffer.BlockCopy(arr, halfIndex, secondHalf, 0, halfIndex);
-            return new[] {firstHalf, secondHalf};
+            return new[] { firstHalf, secondHalf };
         }
     }
 }

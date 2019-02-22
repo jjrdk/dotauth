@@ -72,6 +72,7 @@
             IConfirmationCodeStore confirmationCodeStore,
             IClientStore clientStore,
             IResourceOwnerRepository resourceOwnerRepository,
+            IJwksStore jwksStore,
             IEnumerable<AccountFilter> accountFilters,
             RuntimeSettings runtimeSettings)
             : base(
@@ -90,6 +91,7 @@
                 resourceOwnerRepository,
                 confirmationCodeStore,
                 clientStore,
+                jwksStore,
                 accountFilters,
                 runtimeSettings)
         {
@@ -106,6 +108,7 @@
                 tokenStore,
                 scopeRepository,
                 clientStore,
+                jwksStore,
                 eventPublisher);
         }
 

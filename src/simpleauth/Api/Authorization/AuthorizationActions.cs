@@ -49,6 +49,7 @@ namespace SimpleAuth.Api.Authorization
             ITokenStore tokenStore,
             IScopeRepository scopeRepository,
             IConsentRepository consentRepository,
+            IJwksStore jwksStore,
             IEventPublisher eventPublisher,
             IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices)
         {
@@ -58,6 +59,7 @@ namespace SimpleAuth.Api.Authorization
                 scopeRepository,
                 clientStore,
                 consentRepository,
+                jwksStore,
                 eventPublisher);
             _getTokenViaImplicitWorkflowOperation = new GetTokenViaImplicitWorkflowOperation(
                 clientStore,
@@ -65,6 +67,7 @@ namespace SimpleAuth.Api.Authorization
                 authorizationCodeStore,
                 tokenStore,
                 scopeRepository,
+                jwksStore,
                 eventPublisher);
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperation =
                 new GetAuthorizationCodeAndTokenViaHybridWorkflowOperation(
@@ -73,6 +76,7 @@ namespace SimpleAuth.Api.Authorization
                     authorizationCodeStore,
                     tokenStore,
                     scopeRepository,
+                    jwksStore,
                     eventPublisher);
             _authorizationCodeGrantTypeParameterValidator =
                 new AuthorizationCodeGrantTypeParameterAuthEdpValidator(clientStore);

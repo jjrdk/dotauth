@@ -115,7 +115,7 @@
             var jwks = "verylongsecretkey".CreateSignatureJwk().ToSet();
 
             var token = new JwtSecurityToken(
-                new JwtHeader(new SigningCredentials(jwks.Keys[0], SecurityAlgorithms.HmacSha256)),
+                new JwtHeader(new SigningCredentials(jwks.Keys[0], SecurityAlgorithms.HmacSha256Signature)),
                 jwsPayload);
             jwt = _handler.WriteToken(token);
             return jwks;

@@ -23,11 +23,11 @@ namespace SimpleAuth.Extensions
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.AccountFiltering;
+    using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Linq;
     using System.Net.Http;
-    using SimpleAuth.Shared.Events.Logging;
 
     public static class Globals
     {
@@ -213,6 +213,8 @@ namespace SimpleAuth.Extensions
                 .AddSingleton(options.HttpClientFactory?.Invoke() ?? new HttpClient())
                 .AddSingleton(sp => options.EventPublisher?.Invoke(sp) ?? new DefaultEventPublisher())
                 .AddSingleton(sp => options.SubjectBuilder?.Invoke(sp) ?? new DefaultSubjectBuilder())
+                .AddSingleton(sp => options.JsonWebKeys?.Invoke(sp) ?? new InMemoryJwksRepository())
+                .AddSingleton<IJwksStore>(sp => sp.GetService<IJwksRepository>())
                 .AddSingleton(
                     sp => options.Clients?.Invoke(sp)
                           ?? new InMemoryClientRepository(sp.GetService<HttpClient>(), sp.GetService<IScopeStore>()))

@@ -79,7 +79,7 @@
                         ResponseTypeNames.Token
                     },
                     JsonWebKeys = "verylongsecretkey".CreateSignatureJwk().ToSet(),
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, //"RS256",
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Native
                 },
                 // Anonymous.

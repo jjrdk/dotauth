@@ -86,6 +86,7 @@ namespace SimpleAuth.Tests.Api.Authorization
                 new Mock<ITokenStore>().Object,
                 new Mock<IScopeRepository>().Object,
                 new Mock<IConsentRepository>().Object,
+                new InMemoryJwksRepository(), 
                 _eventPublisherStub.Object,
                 new IAuthenticateResourceOwnerService[0]);
         }

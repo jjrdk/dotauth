@@ -83,6 +83,7 @@ namespace SimpleAuth.Controllers
         /// <param name="resourceOwnerRepository">The resource owner repository.</param>
         /// <param name="confirmationCodeStore">The confirmation code store.</param>
         /// <param name="clientStore">The client store.</param>
+        /// <param name="jwksStore"></param>
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="runtimeSettings">The runtime settings.</param>
         public BaseAuthenticateController(
@@ -101,6 +102,7 @@ namespace SimpleAuth.Controllers
             IResourceOwnerRepository resourceOwnerRepository,
             IConfirmationCodeStore confirmationCodeStore,
             IClientStore clientStore,
+            IJwksStore jwksStore,
             IEnumerable<IAccountFilter> accountFilters,
             RuntimeSettings runtimeSettings)
             : base(authenticationService)
@@ -116,6 +118,7 @@ namespace SimpleAuth.Controllers
                 scopeRepository,
                 consentRepository,
                 clientStore,
+                jwksStore,
                 eventPublisher);
             _authenticateResourceOwnerOpenId = new AuthenticateResourceOwnerOpenIdAction(
                 authorizationCodeStore,
@@ -123,6 +126,7 @@ namespace SimpleAuth.Controllers
                 scopeRepository,
                 consentRepository,
                 clientStore,
+                jwksStore,
                 eventPublisher);
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);

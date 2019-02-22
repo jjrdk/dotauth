@@ -37,6 +37,7 @@ namespace SimpleAuth.WebSite.Authenticate
             ITokenStore tokenStore,
             IScopeRepository scopeRepository,
             IClientStore clientStore,
+            IJwksStore jwksStore,
             IEventPublisher eventPublisher)
         {
             _resourceOwnerServices = resourceOwnerServices;
@@ -46,6 +47,7 @@ namespace SimpleAuth.WebSite.Authenticate
                 scopeRepository,
                 consentRepository,
                 clientStore,
+                jwksStore,
                 eventPublisher);
         }
 

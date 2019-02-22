@@ -55,6 +55,7 @@
             IResourceOwnerRepository resourceOwnerRepository,
             IConfirmationCodeStore confirmationCodeStore,
             IClientStore clientStore,
+            IJwksStore jwksStore,
             IEnumerable<IAccountFilter> accountFilters,
             RuntimeSettings runtimeSettings,
             SmsAuthenticationOptions smsOptions)
@@ -74,6 +75,7 @@
                 resourceOwnerRepository,
                 confirmationCodeStore,
                 clientStore,
+                jwksStore,
                 accountFilters,
                 runtimeSettings)
         {
@@ -95,6 +97,7 @@
                 scopeRepository,
                 consentRepository,
                 clientStore,
+                jwksStore,
                 eventPublisher);
             _generateAndSendSmsCodeOperation = generateSms;
         }

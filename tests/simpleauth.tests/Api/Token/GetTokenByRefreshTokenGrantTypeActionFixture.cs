@@ -47,6 +47,7 @@ namespace SimpleAuth.Tests.Api.Token
                 new Mock<IEventPublisher>().Object,
                 _tokenStoreStub.Object,
                 new Mock<IScopeRepository>().Object,
+                new InMemoryJwksRepository(), 
                 _clientStore.Object);
         }
 
@@ -177,7 +178,7 @@ namespace SimpleAuth.Tests.Api.Token
                 JsonWebKeys =
                     "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
                         .ToSet(),
-                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
                 GrantTypes = new[] {GrantTypes.RefreshToken}
             };

@@ -28,6 +28,7 @@
                 new Mock<IAuthorizationCodeStore>().Object,
                 new Mock<ITokenStore>().Object,
                 new Mock<IScopeRepository>().Object,
+                new InMemoryJwksRepository(), 
                 new NoOpPublisher());
         }
 

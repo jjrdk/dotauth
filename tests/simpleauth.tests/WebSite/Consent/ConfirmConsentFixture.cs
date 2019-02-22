@@ -37,6 +37,7 @@
                 _clientRepositoryFake.Object,
                 _scopeRepositoryFake.Object,
                 _resourceOwnerRepositoryFake.Object,
+                new InMemoryJwksRepository(), 
                 new NoOpPublisher());
         }
 

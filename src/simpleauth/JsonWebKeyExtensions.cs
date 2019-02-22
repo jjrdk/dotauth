@@ -7,7 +7,7 @@
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
 
-    public static class JsonWebKeyExtensions
+    internal static class JsonWebKeyExtensions
     {
         public static JsonWebKeySet ToSet(this JsonWebKey jwk)
         {
@@ -85,6 +85,7 @@
             {
                 throw new ArgumentException("Key must be at least 16 characters.", nameof(key));
             }
+
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var jwk = JsonWebKeyConverter.ConvertFromSymmetricSecurityKey(securityKey);
             jwk.Kty = JsonWebAlgorithmsKeyTypes.Octet;
@@ -126,12 +127,14 @@
             rsa.ImportParameters(parameters);
         }
 
-        public static JsonWebKey CreateJwk(this RSA rsa, string use, bool includePrivateParameters = false, params string[] keyops)
+        public static JsonWebKey CreateJwk(this RSA rsa, string keyId, string use, bool includePrivateParameters = false, params string[] keyops)
         {
             var parameters = rsa.ExportParameters(includePrivateParameters);
             var key = new RsaSecurityKey(parameters);
             var jwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(key);
             jwk.Use = use;
+            jwk.Kid = keyId;
+            jwk.Alg = SecurityAlgorithms.RsaSha256;
             foreach (var keyop in keyops)
             {
                 jwk.KeyOps.Add(keyop);

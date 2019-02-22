@@ -144,7 +144,7 @@ namespace SimpleAuth.Tests.Fake
                         ResponseTypeNames.IdToken
                     },
                     JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, //"RS256",
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256, //"RS256",
                     // IdTokenEncryptedResponseAlg = "RSA1_5",
                     // IdTokenEncryptedResponseEnc = "A128CBC-HS256",
                     RedirectionUrls = new List<Uri>

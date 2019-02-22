@@ -2,6 +2,7 @@
 {
     using System;
     using Microsoft.IdentityModel.Logging;
+    using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Responses;
@@ -25,11 +26,21 @@
             TestServerFixture fixture = null;
             GrantedTokenResponse grantedToken = null;
             UmaClient client = null;
+            JsonWebKeySet jwks = null;
             string resourceId = null;
             string ticketId = null;
 
             "Given a running auth server".x(() => fixture = new TestServerFixture(BaseUrl))
                 .Teardown(() => fixture.Dispose());
+
+            "and the server's signing key".x(
+                async () =>
+                {
+                    var json = await fixture.Client.GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+                    jwks = new JsonWebKeySet(json);
+
+                    Assert.NotEmpty(jwks.Keys);
+                });
 
             "and a valid UMA token".x(
                 async () =>

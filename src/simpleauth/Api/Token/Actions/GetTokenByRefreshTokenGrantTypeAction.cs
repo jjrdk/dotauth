@@ -33,6 +33,7 @@ namespace SimpleAuth.Api.Token.Actions
     {
         private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;
+        private readonly IJwksStore _jwksRepository;
         private readonly JwtGenerator _jwtGenerator;
         private readonly IClientStore _clientStore;
         private readonly AuthenticateClient _authenticateClient;
@@ -41,11 +42,13 @@ namespace SimpleAuth.Api.Token.Actions
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
             IScopeRepository scopeRepository,
+            IJwksStore jwksRepository,
             IClientStore clientStore)
         {
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
-            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository);
+            _jwksRepository = jwksRepository;
+            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksRepository);
             _clientStore = clientStore;
             _authenticateClient = new AuthenticateClient(clientStore);
         }
@@ -97,12 +100,13 @@ namespace SimpleAuth.Api.Token.Actions
 
             // 4. Generate a new access token & insert it
             var generatedToken = await _clientStore.GenerateToken(
+                    _jwksRepository,
                     grantedToken.ClientId,
                     grantedToken.Scope,
                     issuerName,
                     cancellationToken,
-                    grantedToken.UserInfoPayLoad,
-                    grantedToken.IdTokenPayLoad)
+                    userInformationPayload: grantedToken.UserInfoPayLoad,
+                    idTokenPayload: grantedToken.IdTokenPayLoad)
                 .ConfigureAwait(false);
             generatedToken.ParentTokenId = grantedToken.Id;
             // 5. Fill-in the idtoken
@@ -110,6 +114,7 @@ namespace SimpleAuth.Api.Token.Actions
             {
                 _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, authResult.Client);
                 generatedToken.IdToken = await _clientStore.GenerateIdToken(
+                        _jwksRepository,
                         generatedToken.ClientId,
                         generatedToken.IdTokenPayLoad,
                         cancellationToken)

@@ -36,7 +36,7 @@ namespace SimpleAuth.Tests.Api.Token
                                     KeyOperations.Sign,
                                     KeyOperations.Verify)
                                 .ToSet(),
-                        IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                        IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                         ClientId = ClientId,
                         Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = Clientsecret}},
                         AllowedScopes = new[] {new Scope {Name = scope}},
@@ -49,6 +49,7 @@ namespace SimpleAuth.Tests.Api.Token
                 new Mock<IAuthorizationCodeStore>().Object,
                 mock.Object,
                 new Mock<IScopeRepository>().Object,
+                new InMemoryJwksRepository(), 
                 new IAuthenticateResourceOwnerService[0],
                 eventPublisher.Object,
                 new Mock<ITokenStore>().Object);

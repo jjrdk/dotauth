@@ -40,6 +40,7 @@ namespace SimpleAuth.Api.Authorization
             IAuthorizationCodeStore authorizationCodeStore,
             ITokenStore tokenStore,
             IScopeRepository scopeRepository,
+            IJwksStore jwksStore,
             IEventPublisher eventPublisher)
         {
             _processAuthorizationRequest = new ProcessAuthorizationRequest(clientStore, consentRepository);
@@ -49,6 +50,7 @@ namespace SimpleAuth.Api.Authorization
                 scopeRepository,
                 clientStore,
                 consentRepository,
+                jwksStore,
                 eventPublisher);
         }
 

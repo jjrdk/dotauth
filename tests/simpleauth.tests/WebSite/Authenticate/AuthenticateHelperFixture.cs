@@ -35,6 +35,7 @@
                 scopeRepository.Object,
                 _consentRepository.Object,
                 _clientRepositoryStub.Object,
+                new InMemoryJwksRepository(), 
                 new DefaultEventPublisher());
         }
 

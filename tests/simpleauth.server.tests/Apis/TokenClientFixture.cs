@@ -774,7 +774,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 DateTime.UtcNow,
                 DateTime.UtcNow.AddHours(1),
                 DateTime.UtcNow,
-                new SigningCredentials(_server.SharedCtx.ModelSignatureKey, SecurityAlgorithms.HmacSha256),
+                new SigningCredentials(_server.SharedCtx.ModelSignatureKey, SecurityAlgorithms.HmacSha256Signature),
                 new EncryptingCredentials(
                     _server.SharedCtx.ModelEncryptionKey,
                     SecurityAlgorithms.Aes256KW,
