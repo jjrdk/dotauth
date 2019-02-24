@@ -23,11 +23,11 @@ namespace SimpleAuth.Services
 
     internal class TwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandler
     {
-        private readonly IEnumerable<ITwoFactorAuthenticationService> _twoFactorServices;
+        private readonly ITwoFactorAuthenticationService[] _twoFactorServices;
 
         public TwoFactorAuthenticationHandler(IEnumerable<ITwoFactorAuthenticationService> twoFactorServices)
         {
-            _twoFactorServices = twoFactorServices;
+            _twoFactorServices = twoFactorServices.ToArray();
         }
 
         public ITwoFactorAuthenticationService Get(string twoFactorAuthType)
@@ -40,7 +40,7 @@ namespace SimpleAuth.Services
             return _twoFactorServices?.FirstOrDefault(s => s.Name == twoFactorAuthType);
         }
 
-        public IEnumerable<ITwoFactorAuthenticationService> GetAll()
+        public ITwoFactorAuthenticationService[] GetAll()
         {
             return _twoFactorServices;
         }
@@ -68,7 +68,7 @@ namespace SimpleAuth.Services
                 return false;
             }
 
-            await service.SendAsync(code, user).ConfigureAwait(false);
+            await service.Send(code, user).ConfigureAwait(false);
             return true;
         }
     }

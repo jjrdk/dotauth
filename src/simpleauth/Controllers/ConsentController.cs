@@ -33,6 +33,10 @@ namespace SimpleAuth.Controllers
     using System.Threading.Tasks;
     using ViewModels;
 
+    /// <summary>
+    /// Defines the consent controller.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Controllers.BaseController" />
     [Authorize("Connected")]
     public class ConsentController : BaseController
     {
@@ -41,6 +45,19 @@ namespace SimpleAuth.Controllers
         private readonly IDataProtector _dataProtector;
         private readonly IEventPublisher _eventPublisher;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConsentController"/> class.
+        /// </summary>
+        /// <param name="scopeRepository">The scope repository.</param>
+        /// <param name="clientStore">The client store.</param>
+        /// <param name="consentRepository">The consent repository.</param>
+        /// <param name="resourceOwnerStore">The resource owner store.</param>
+        /// <param name="dataProtectionProvider">The data protection provider.</param>
+        /// <param name="eventPublisher">The event publisher.</param>
+        /// <param name="tokenStore">The token store.</param>
+        /// <param name="jwksStore">The JWKS store.</param>
+        /// <param name="authorizationCodeStore">The authorization code store.</param>
+        /// <param name="authenticationService">The authentication service.</param>
         public ConsentController(
             IScopeRepository scopeRepository,
             IClientStore clientStore,
@@ -75,6 +92,12 @@ namespace SimpleAuth.Controllers
                 eventPublisher);
         }
 
+        /// <summary>
+        /// Get the default page.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         public async Task<IActionResult> Index(string code, CancellationToken cancellationToken)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
@@ -106,6 +129,12 @@ namespace SimpleAuth.Controllers
             return View("Index", viewModel);
         }
 
+        /// <summary>
+        /// Confirms the specified code.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         public async Task<IActionResult> Confirm(string code, CancellationToken cancellationToken)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);

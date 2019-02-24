@@ -101,7 +101,7 @@
 
             return new AccountFilterResult
             {
-                AccountFilterRules = accountFilterRules,
+                AccountFilterRules = accountFilterRules.ToArray(),
                 IsValid = accountFilterRules.Any(u => u.IsValid)
             };
         }

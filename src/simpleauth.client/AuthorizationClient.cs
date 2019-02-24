@@ -22,6 +22,9 @@ namespace SimpleAuth.Client
     using System.Net.Http;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Defines the authorization client.
+    /// </summary>
     public class AuthorizationClient
     {
         private readonly HttpClient _client;
@@ -33,6 +36,12 @@ namespace SimpleAuth.Client
             _discoveryInformation = discoveryInformation;
         }
 
+        /// <summary>
+        /// Creates the specified client.
+        /// </summary>
+        /// <param name="client">The client.</param>
+        /// <param name="discoveryUrl">The discovery URL.</param>
+        /// <returns></returns>
         public static async Task<AuthorizationClient> Create(HttpClient client, Uri discoveryUrl)
         {
             var discoveryOperation = new GetDiscoveryOperation(client);
@@ -41,6 +50,12 @@ namespace SimpleAuth.Client
             return new AuthorizationClient(client, information);
         }
 
+        /// <summary>
+        /// Gets the authorization.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">request</exception>
         public async Task<GetAuthorizationResult> GetAuthorization(AuthorizationRequest request)
         {
             if (request == null)

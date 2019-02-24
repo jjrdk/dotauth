@@ -23,18 +23,38 @@ namespace SimpleAuth.Client
     using System.Net.Http;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Defines the user info client.
+    /// </summary>
     public class UserInfoClient
     {
         private readonly HttpClient _client;
         private readonly GetDiscoveryOperation _getDiscoveryOperation;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserInfoClient"/> class.
+        /// </summary>
+        /// <param name="client">The client.</param>
         public UserInfoClient(HttpClient client)
         {
             _client = client;
             _getDiscoveryOperation = new GetDiscoveryOperation(client);
         }
 
-        public async Task<GetUserInfoResult> Resolve(string configurationUrl, string accessToken, bool inBody = false)
+        /// <summary>
+        /// Gets the specified user info based on the configuration URL and access token.
+        /// </summary>
+        /// <param name="configurationUrl">The configuration URL.</param>
+        /// <param name="accessToken">The access token.</param>
+        /// <param name="inBody">if set to <c>true</c> [in body].</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// configurationUrl
+        /// or
+        /// accessToken
+        /// </exception>
+        /// <exception cref="ArgumentException"></exception>
+        public async Task<GetUserInfoResult> Get(string configurationUrl, string accessToken, bool inBody = false)
         {
             if (string.IsNullOrWhiteSpace(configurationUrl))
             {

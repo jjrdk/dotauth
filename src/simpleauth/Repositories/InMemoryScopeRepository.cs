@@ -3,7 +3,6 @@
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
-    using Shared.Results;
     using SimpleAuth.Shared.Requests;
     using System;
     using System.Collections.Generic;
@@ -187,7 +186,9 @@
             return Task.FromResult(true);
         }
 
-        public Task<SearchScopeResult> Search(SearchScopesRequest parameter, CancellationToken cancellationToken = default)
+        public Task<GenericResult<Scope>> Search(
+            SearchScopesRequest parameter,
+            CancellationToken cancellationToken = default)
         {
             if (parameter == null)
             {
@@ -217,7 +218,12 @@
             }
 
             return Task.FromResult(
-                new SearchScopeResult {Content = result.ToArray(), StartIndex = parameter.StartIndex, TotalResults = nbResult});
+                new GenericResult<Scope>
+                {
+                    Content = result.ToArray(),
+                    StartIndex = parameter.StartIndex,
+                    TotalResults = nbResult
+                });
         }
 
         public Task<Scope[]> SearchByNames(CancellationToken cancellationToken = default, params string[] names)

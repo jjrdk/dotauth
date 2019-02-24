@@ -3,7 +3,6 @@
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using SimpleAuth.Manager.Client.Results;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
@@ -106,7 +105,7 @@
             return _getAllResourceOwnersOperation.Execute(resourceOwnerUri, authorizationHeaderValue);
         }
 
-        public async Task<PagedResult<ResourceOwnerResponse>> ResolveSearch(Uri wellKnownConfigurationUri,
+        public async Task<GenericResponse<PagedResponse<ResourceOwnerResponse>>> ResolveSearch(Uri wellKnownConfigurationUri,
             SearchResourceOwnersRequest searchResourceOwnersRequest,
             string authorizationHeaderValue = null)
         {

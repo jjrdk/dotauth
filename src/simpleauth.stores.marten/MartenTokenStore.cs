@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Stores.Marten
 {
     using global::Marten;
-    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using System;
@@ -10,17 +9,24 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Defines the Marten based token store.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.Repositories.ITokenStore" />
     public class MartenTokenStore : ITokenStore
     {
         private readonly Func<IDocumentSession> _sessionFactory;
-        private readonly IEventPublisher _eventPublisher;
 
-        public MartenTokenStore(Func<IDocumentSession> sessionFactory, IEventPublisher eventPublisher)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MartenTokenStore"/> class.
+        /// </summary>
+        /// <param name="sessionFactory">The session factory.</param>
+        public MartenTokenStore(Func<IDocumentSession> sessionFactory)
         {
             _sessionFactory = sessionFactory;
-            _eventPublisher = eventPublisher;
         }
 
+        /// <inheritdoc />
         public async Task<GrantedToken> GetToken(
             string scopes,
             string clientId,
@@ -47,6 +53,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<GrantedToken> GetRefreshToken(string getRefreshToken, CancellationToken cancellationToken)
         {
             using (var session = _sessionFactory())
@@ -58,11 +65,13 @@
             }
         }
 
+        /// <inheritdoc />
         public Task<GrantedToken> GetAccessToken(string accessToken, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public async Task<bool> AddToken(GrantedToken grantedToken, CancellationToken cancellationToken)
         {
             using (var session = _sessionFactory())
@@ -73,6 +82,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<bool> RemoveAccessToken(string accessToken, CancellationToken cancellationToken)
         {
             using (var session = _sessionFactory())
@@ -83,6 +93,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<bool> RemoveRefreshToken(string refreshToken, CancellationToken cancellationToken)
         {
             using (var session = _sessionFactory())

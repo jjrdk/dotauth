@@ -16,9 +16,18 @@ namespace SimpleAuth.Shared.DTOs
 {
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Defines the add resource set request.
+    /// </summary>
     [DataContract]
     public class PostAddResourceSet
     {
+        /// <summary>
+        /// Gets or sets the resource sets.
+        /// </summary>
+        /// <value>
+        /// The resource sets.
+        /// </value>
         [DataMember(Name = "resources")]
         public string[] ResourceSets { get; set; }
     }

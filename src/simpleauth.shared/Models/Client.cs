@@ -19,6 +19,9 @@ namespace SimpleAuth.Shared.Models
     using System.Collections.Generic;
     using System.Security.Claims;
 
+    /// <summary>
+    /// Defines the client.
+    /// </summary>
     public class Client
     {
         /// <summary>
@@ -31,8 +34,20 @@ namespace SimpleAuth.Shared.Models
         /// </summary>
         public ICollection<ClientSecret> Secrets { get; set; } = new List<ClientSecret>();
 
+        /// <summary>
+        /// Gets or sets the name of the client.
+        /// </summary>
+        /// <value>
+        /// The name of the client.
+        /// </value>
         public string ClientName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the token lifetime.
+        /// </summary>
+        /// <value>
+        /// The token lifetime.
+        /// </value>
         public TimeSpan TokenLifetime { get; set; } = TimeSpan.FromMinutes(30);
 
         /// <summary>
@@ -113,6 +128,12 @@ namespace SimpleAuth.Shared.Models
         /// </summary>
         public ICollection<string> Contacts { get; set; } = new List<string>();
 
+        /// <summary>
+        /// Gets or sets the claims.
+        /// </summary>
+        /// <value>
+        /// The claims.
+        /// </value>
         public ICollection<Claim> Claims { get; set; } = new List<Claim>();
 
         /// <summary>

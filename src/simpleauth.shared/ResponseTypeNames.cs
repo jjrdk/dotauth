@@ -1,6 +1,6 @@
 namespace SimpleAuth.Shared
 {
-    public static class ResponseTypeNames
+    internal static class ResponseTypeNames
     {
         public const string Code = "code";
         public const string Token = "token";

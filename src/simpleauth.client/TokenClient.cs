@@ -23,6 +23,9 @@ namespace SimpleAuth.Client
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Defines the token client.
+    /// </summary>
     public class TokenClient
     {
         private readonly DiscoveryInformation _discoveryInformation;
@@ -40,6 +43,14 @@ namespace SimpleAuth.Client
             _certificate = credentials.Certificate;
         }
 
+        /// <summary>
+        /// Creates the specified client.
+        /// </summary>
+        /// <param name="credentials">The credentials.</param>
+        /// <param name="client">The client.</param>
+        /// <param name="discoveryDocumentationUrl">The discovery documentation URL.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public static async Task<TokenClient> Create(
             TokenCredentials credentials,
             HttpClient client,
@@ -56,6 +67,11 @@ namespace SimpleAuth.Client
             return new TokenClient(credentials, client, discoveryInformation);
         }
 
+        /// <summary>
+        /// Gets the token.
+        /// </summary>
+        /// <param name="tokenRequest">The token request.</param>
+        /// <returns></returns>
         public async Task<BaseSidContentResult<GrantedTokenResponse>> GetToken(TokenRequest tokenRequest)
         {
             var body = new FormUrlEncodedContent(_form.Concat(tokenRequest));
@@ -96,6 +112,11 @@ namespace SimpleAuth.Client
             return new BaseSidContentResult<GrantedTokenResponse> { Content = JsonConvert.DeserializeObject<GrantedTokenResponse>(content) };
         }
 
+        /// <summary>
+        /// Revokes the token.
+        /// </summary>
+        /// <param name="revokeTokenRequest">The revoke token request.</param>
+        /// <returns></returns>
         public async Task<RevokeTokenResult> RevokeToken(RevokeTokenRequest revokeTokenRequest)
         {
             var body = new FormUrlEncodedContent(_form.Concat(revokeTokenRequest));

@@ -8,7 +8,6 @@
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Results;
 
     internal sealed class InMemoryResourceOwnerRepository : IResourceOwnerRepository
     {
@@ -16,9 +15,7 @@
 
         public InMemoryResourceOwnerRepository(IReadOnlyCollection<ResourceOwner> users = null)
         {
-            _users = users == null
-                ? new List<ResourceOwner>()
-                : users.ToList();
+            _users = users == null ? new List<ResourceOwner>() : users.ToList();
         }
 
         public Task<bool> Delete(string subject, CancellationToken cancellationToken = default)
@@ -84,7 +81,7 @@
             var user = _users.FirstOrDefault(u => u.Id == id && u.Password == password);
             if (user == null)
             {
-                return Task.FromResult((ResourceOwner)null);
+                return Task.FromResult((ResourceOwner) null);
             }
 
             return Task.FromResult(user);
@@ -108,7 +105,7 @@
             var user = _users.FirstOrDefault(u => u.Claims.Any(c => c.Type == key && c.Value == value));
             if (user == null)
             {
-                return Task.FromResult((ResourceOwner)null);
+                return Task.FromResult((ResourceOwner) null);
             }
 
             return Task.FromResult(user);
@@ -126,7 +123,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<SearchResourceOwnerResult> Search(
+        public Task<GenericResult<ResourceOwner>> Search(
             SearchResourceOwnersRequest parameter,
             CancellationToken cancellationToken = default)
         {
@@ -152,12 +149,11 @@
                 result = result.Skip(parameter.StartIndex).Take(parameter.NbResults);
             }
 
-            return Task.FromResult(new SearchResourceOwnerResult
-            {
-                Content = result,
-                StartIndex = parameter.StartIndex,
-                TotalResults = nbResult
-            });
+            return Task.FromResult(
+                new GenericResult<ResourceOwner>
+                {
+                    Content = result.ToArray(), StartIndex = parameter.StartIndex, TotalResults = nbResult
+                });
         }
 
         public Task<bool> Update(ResourceOwner resourceOwner, CancellationToken cancellationToken = default)

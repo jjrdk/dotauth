@@ -28,6 +28,10 @@
     using ViewModels;
     using WebSite.User.Actions;
 
+    /// <summary>
+    /// Defines the authenticate controller.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Controllers.BaseAuthenticateController" />
     [Area(SmsConstants.Amr)]
     public class AuthenticateController : BaseAuthenticateController
     {
@@ -38,6 +42,29 @@
         private readonly ValidateConfirmationCodeAction _validateConfirmationCode;
         private readonly AuthenticateHelper _authenticateHelper;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthenticateController"/> class.
+        /// </summary>
+        /// <param name="twilioClient">The twilio client.</param>
+        /// <param name="dataProtectionProvider">The data protection provider.</param>
+        /// <param name="urlHelperFactory">The URL helper factory.</param>
+        /// <param name="actionContextAccessor">The action context accessor.</param>
+        /// <param name="eventPublisher">The event publisher.</param>
+        /// <param name="authorizationCodeStore">The authorization code store.</param>
+        /// <param name="authenticationService">The authentication service.</param>
+        /// <param name="authenticationSchemeProvider">The authentication scheme provider.</param>
+        /// <param name="twoFactorAuthenticationHandler">The two factor authentication handler.</param>
+        /// <param name="subjectBuilder">The subject builder.</param>
+        /// <param name="consentRepository">The consent repository.</param>
+        /// <param name="scopeRepository">The scope repository.</param>
+        /// <param name="tokenStore">The token store.</param>
+        /// <param name="resourceOwnerRepository">The resource owner repository.</param>
+        /// <param name="confirmationCodeStore">The confirmation code store.</param>
+        /// <param name="clientStore">The client store.</param>
+        /// <param name="jwksStore">The JWKS store.</param>
+        /// <param name="accountFilters">The account filters.</param>
+        /// <param name="runtimeSettings">The runtime settings.</param>
+        /// <param name="smsOptions">The SMS options.</param>
         public AuthenticateController(
             ITwilioClient twilioClient,
             IDataProtectionProvider dataProtectionProvider,
@@ -102,6 +129,10 @@
             _generateAndSendSmsCodeOperation = generateSms;
         }
 
+        /// <summary>
+        /// Get the default page.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -116,6 +147,13 @@
             return RedirectToAction("Index", "User");
         }
 
+        /// <summary>
+        /// Does a local login.
+        /// </summary>
+        /// <param name="localAuthenticationViewModel">The local authentication view model.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">localAuthenticationViewModel</exception>
         [HttpPost]
         public async Task<IActionResult> LocalLogin(
             SmsAuthenticationViewModel localAuthenticationViewModel,
@@ -175,6 +213,12 @@
             return View("Index", viewModel);
         }
 
+        /// <summary>
+        /// Confirms the code.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <returns></returns>
+        /// <exception cref="SimpleAuthException">SMS authentication cannot be performed</exception>
         [HttpGet]
         public async Task<IActionResult> ConfirmCode(string code)
         {
@@ -197,6 +241,14 @@
             return View(new ConfirmCodeViewModel { Code = code });
         }
 
+        /// <summary>
+        /// Confirms the code.
+        /// </summary>
+        /// <param name="confirmCodeViewModel">The confirm code view model.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">confirmCodeViewModel</exception>
+        /// <exception cref="SimpleAuthException">SMS authentication cannot be performed</exception>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmCode(
@@ -294,6 +346,17 @@
             return RedirectToAction("Index", "User");
         }
 
+        /// <summary>
+        /// Does the login with OpenID.
+        /// </summary>
+        /// <param name="viewModel">The view model.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// viewModel
+        /// or
+        /// Code
+        /// </exception>
         [HttpPost]
         public async Task<IActionResult> LocalLoginOpenId(
             SmsOpenIdLocalAuthenticationViewModel viewModel,

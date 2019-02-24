@@ -22,6 +22,9 @@ namespace SimpleAuth.Client
     using System.Net.Http;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Defines the introspection client.
+    /// </summary>
     public class IntrospectClient
     {
         private readonly HttpClient _client;
@@ -41,6 +44,14 @@ namespace SimpleAuth.Client
             _authorizationValue = authorizationValue;
         }
 
+        /// <summary>
+        /// Creates the client.
+        /// </summary>
+        /// <param name="credentials">The credentials.</param>
+        /// <param name="client">The client.</param>
+        /// <param name="discoveryDocumentationUri">The discovery documentation URI.</param>
+        /// <param name="authorizationValue">The authorization value.</param>
+        /// <returns></returns>
         public static async Task<IntrospectClient> Create(
             TokenCredentials credentials,
             HttpClient client,
@@ -53,6 +64,11 @@ namespace SimpleAuth.Client
             return new IntrospectClient(credentials, client, document, authorizationValue);
         }
 
+        /// <summary>
+        /// Executes the specified introspection request.
+        /// </summary>
+        /// <param name="introspectionRequest">The introspection request.</param>
+        /// <returns></returns>
         public async Task<BaseSidContentResult<IntrospectionResponse>> Introspect(IntrospectionRequest introspectionRequest)
         {
             var body = new FormUrlEncodedContent(_form.Concat(introspectionRequest));

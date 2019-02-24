@@ -12,11 +12,25 @@ namespace SimpleAuth.Twilio.Controllers
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Errors;
 
+    /// <summary>
+    /// Defines the code controller.
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(SmsConstants.CodeController)]
     public class CodeController : Controller
     {
         private readonly SmsAuthenticationOperation _smsAuthenticationOperation;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CodeController"/> class.
+        /// </summary>
+        /// <param name="twilioClient">The twilio client.</param>
+        /// <param name="confirmationCodeStore">The confirmation code store.</param>
+        /// <param name="resourceOwnerRepository">The resource owner repository.</param>
+        /// <param name="subjectBuilder">The subject builder.</param>
+        /// <param name="accountFilters">The account filters.</param>
+        /// <param name="eventPublisher">The event publisher.</param>
+        /// <param name="smsOptions">The SMS options.</param>
         public CodeController(
             ITwilioClient twilioClient,
             IConfirmationCodeStore confirmationCodeStore,
@@ -40,6 +54,7 @@ namespace SimpleAuth.Twilio.Controllers
         /// Send the confirmation code to the phone number.
         /// </summary>
         /// <param name="confirmationCodeRequest"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Send(

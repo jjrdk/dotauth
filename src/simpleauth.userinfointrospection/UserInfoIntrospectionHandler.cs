@@ -57,7 +57,7 @@
             try
             {
                 var introspectionResult = await _userInfoClient
-                    .Resolve(wellKnownConfiguration, token)
+                    .Get(wellKnownConfiguration, token)
                     .ConfigureAwait(false);
                 if (introspectionResult == null || introspectionResult.ContainsError)
                 {

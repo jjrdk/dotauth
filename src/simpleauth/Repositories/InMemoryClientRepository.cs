@@ -2,7 +2,6 @@
 {
     using Shared.Models;
     using Shared.Repositories;
-    using Shared.Results;
     using SimpleAuth.Shared.Requests;
     using System;
     using System.Collections.Generic;
@@ -74,7 +73,7 @@
             return toInsert;
         }
 
-        public Task<SearchClientResult> Search(
+        public Task<GenericResult<Client>> Search(
             SearchClientsRequest newClient,
             CancellationToken cancellationToken = default)
         {
@@ -108,7 +107,7 @@
                 result = result.Skip(newClient.StartIndex).Take(newClient.NbResults);
             }
 
-            return Task.FromResult(new SearchClientResult
+            return Task.FromResult(new GenericResult<Client>
             {
                 Content = result.ToArray(),
                 StartIndex = newClient.StartIndex,

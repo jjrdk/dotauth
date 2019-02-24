@@ -4,7 +4,6 @@
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Results;
     using System;
     using System.Linq;
     using System.Net.Http;
@@ -58,7 +57,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<SearchClientResult> Search(
+        public async Task<GenericResult<Client>> Search(
             SearchClientsRequest parameter,
             CancellationToken cancellationToken = default)
         {
@@ -72,9 +71,9 @@
                     .ToListAsync(token: cancellationToken)
                     .ConfigureAwait(false);
 
-                return new SearchClientResult
+                return new GenericResult<Client>
                 {
-                    Content = results,
+                    Content = results.ToArray(),
                     StartIndex = parameter.StartIndex,
                     TotalResults = results.Count
                 };

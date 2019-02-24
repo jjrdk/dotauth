@@ -15,10 +15,9 @@
 namespace SimpleAuth.Shared.Repositories
 {
     using Models;
-    using Results;
+    using SimpleAuth.Shared.Requests;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the resource owner repository.
@@ -63,6 +62,6 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="parameter">The parameter.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<SearchResourceOwnerResult> Search(SearchResourceOwnersRequest parameter, CancellationToken cancellationToken);
+        Task<GenericResult<ResourceOwner>> Search(SearchResourceOwnersRequest parameter, CancellationToken cancellationToken);
     }
 }

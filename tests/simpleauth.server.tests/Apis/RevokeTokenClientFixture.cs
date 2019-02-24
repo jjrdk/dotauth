@@ -91,7 +91,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     new Uri(BaseUrl + WellKnownOpenidConfiguration))
                 .ConfigureAwait(false);
             var ex = await tokenClient
-                .RevokeToken(RevokeTokenRequest.RevokeToken("access_token", TokenTypes.AccessToken))
+                .RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
             Assert.True(ex.ContainsError);
@@ -108,7 +108,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     new Uri(BaseUrl + WellKnownOpenidConfiguration))
                 .ConfigureAwait(false);
             var ex = await tokenClient
-                .RevokeToken(RevokeTokenRequest.RevokeToken("access_token", TokenTypes.AccessToken))
+                .RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
             Assert.True(ex.ContainsError);
@@ -133,7 +133,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     new Uri(BaseUrl + WellKnownOpenidConfiguration))
                 .ConfigureAwait(false);
             var ex = await revokeClient
-                .RevokeToken(RevokeTokenRequest.RevokeToken(result.Content.AccessToken, TokenTypes.AccessToken))
+                .RevokeToken(RevokeTokenRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
             Assert.True(ex.ContainsError);
@@ -153,7 +153,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
             var revoke = await tokenClient
-                .RevokeToken(RevokeTokenRequest.RevokeToken(result.Content.AccessToken, TokenTypes.AccessToken))
+                .RevokeToken(RevokeTokenRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken))
                 .ConfigureAwait(false);
             var introspectionClient = await IntrospectClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),
@@ -180,7 +180,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
             var revoke = await tokenClient
-                .RevokeToken(RevokeTokenRequest.RevokeToken(result.Content.RefreshToken, TokenTypes.RefreshToken))
+                .RevokeToken(RevokeTokenRequest.Create(result.Content.RefreshToken, TokenTypes.RefreshToken))
                 .ConfigureAwait(false);
             var introspectClient = await IntrospectClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),

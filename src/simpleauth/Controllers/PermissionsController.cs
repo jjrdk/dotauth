@@ -28,11 +28,21 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
 
+    /// <summary>
+    /// Defines the permission controller.
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(UmaConstants.RouteValues.Permission)]
     public class PermissionsController : Controller
     {
         private readonly AddPermissionAction _permissionControllerActions;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PermissionsController"/> class.
+        /// </summary>
+        /// <param name="resourceSetRepository">The resource set repository.</param>
+        /// <param name="ticketStore">The ticket store.</param>
+        /// <param name="options">The options.</param>
         public PermissionsController(
             IResourceSetRepository resourceSetRepository,
             ITicketStore ticketStore,
@@ -41,6 +51,12 @@ namespace SimpleAuth.Controllers
             _permissionControllerActions = new AddPermissionAction(resourceSetRepository, ticketStore, options);
         }
 
+        /// <summary>
+        /// Adds the permission.
+        /// </summary>
+        /// <param name="postPermission">The post permission.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> PostPermission(
@@ -70,6 +86,12 @@ namespace SimpleAuth.Controllers
             return new ObjectResult(result) {StatusCode = (int) HttpStatusCode.Created};
         }
 
+        /// <summary>
+        /// Adds the permissions.
+        /// </summary>
+        /// <param name="postPermissions">The post permissions.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPost("bulk")]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> PostPermissions(

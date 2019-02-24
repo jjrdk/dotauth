@@ -1,14 +1,26 @@
 ﻿namespace SimpleAuth.ViewModels
 {
-    using System.Collections.Generic;
+    using System;
 
+    /// <summary>
+    /// Defines the abstract ID provider authorize view model.
+    /// </summary>
     public abstract class IdProviderAuthorizeViewModel
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IdProviderAuthorizeViewModel"/> class.
+        /// </summary>
         protected IdProviderAuthorizeViewModel()
         {
-            IdProviders = new List<IdProviderViewModel>();
+            IdProviders = Array.Empty<IdProviderViewModel>();
         }
 
-        public List<IdProviderViewModel> IdProviders { get; set; }
+        /// <summary>
+        /// Gets or sets the identifier providers.
+        /// </summary>
+        /// <value>
+        /// The identifier providers.
+        /// </value>
+        public IdProviderViewModel[] IdProviders { get; set; }
     }
 }

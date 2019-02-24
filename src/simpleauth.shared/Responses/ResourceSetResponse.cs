@@ -17,19 +17,63 @@ namespace SimpleAuth.Shared.Responses
     using System.Collections.Generic;
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Defines the resource set response.
+    /// </summary>
     [DataContract]
     public class ResourceSetResponse
     {
+        /// <summary>
+        /// Gets or sets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
         [DataMember(Name = "_id")]
         public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
         [DataMember(Name = "name")]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URI.
+        /// </summary>
+        /// <value>
+        /// The URI.
+        /// </value>
         [DataMember(Name = "uri")]
         public string Uri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        /// <value>
+        /// The type.
+        /// </value>
         [DataMember(Name = "type")]
         public string Type { get; set; }
+
+        /// <summary>
+        /// Gets or sets the scopes.
+        /// </summary>
+        /// <value>
+        /// The scopes.
+        /// </value>
         [DataMember(Name = "scopes")]
-        public IEnumerable<string> Scopes { get; set; }
+        public string[] Scopes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the icon URI.
+        /// </summary>
+        /// <value>
+        /// The icon URI.
+        /// </value>
         [DataMember(Name = "icon_uri")]
         public string IconUri { get; set; }
     }

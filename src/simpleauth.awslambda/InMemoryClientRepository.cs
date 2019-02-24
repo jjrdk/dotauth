@@ -11,7 +11,6 @@
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Results;
 
     internal sealed class InMemoryClientRepository : IClientRepository
     {
@@ -77,7 +76,7 @@
             return toInsert;
         }
 
-        public Task<SearchClientResult> Search(
+        public Task<GenericResult<Client>> Search(
             SearchClientsRequest newClient,
             CancellationToken cancellationToken = default)
         {
@@ -113,9 +112,11 @@
             }
 
             return Task.FromResult(
-                new SearchClientResult
+                new GenericResult<Client>
                 {
-                    Content = result.ToArray(), StartIndex = newClient.StartIndex, TotalResults = nbResult
+                    Content = result.ToArray(),
+                    StartIndex = newClient.StartIndex,
+                    TotalResults = nbResult
                 });
         }
 

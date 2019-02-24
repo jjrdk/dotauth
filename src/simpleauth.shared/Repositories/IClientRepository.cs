@@ -15,7 +15,6 @@
 namespace SimpleAuth.Shared.Repositories
 {
     using Models;
-    using Results;
     using SimpleAuth.Shared.Requests;
     using System.Threading;
     using System.Threading.Tasks;
@@ -32,7 +31,7 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="parameter">The parameter.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<SearchClientResult> Search(SearchClientsRequest parameter, CancellationToken cancellationToken);
+        Task<GenericResult<Client>> Search(SearchClientsRequest parameter, CancellationToken cancellationToken);
 
         /// <summary>
         /// Updates the specified client.

@@ -17,9 +17,18 @@ namespace SimpleAuth.Shared.Responses
     using System.Collections.Generic;
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Defines the bulk authorization response.
+    /// </summary>
     [DataContract]
     public class BulkAuthorizationResponse
     {
+        /// <summary>
+        /// Gets or sets the RPTS.
+        /// </summary>
+        /// <value>
+        /// The RPTS.
+        /// </value>
         [DataMember(Name = "rpts")]
         public IEnumerable<string> Rpts { get; set; }
     }

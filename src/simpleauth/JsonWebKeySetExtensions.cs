@@ -7,7 +7,7 @@
     using Microsoft.IdentityModel.Tokens;
     using Shared;
 
-    public static class JsonWebKeySetExtensions
+    internal static class JsonWebKeySetExtensions
     {
         public static JsonWebKeySet AddKey(this JsonWebKeySet set, JsonWebKey key)
         {

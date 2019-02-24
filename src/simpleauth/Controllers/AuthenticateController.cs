@@ -53,6 +53,7 @@
         /// <param name="confirmationCodeStore">The confirmation code store.</param>
         /// <param name="clientStore">The client store.</param>
         /// <param name="resourceOwnerRepository">The resource owner repository.</param>
+        /// <param name="jwksStore"></param>
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="runtimeSettings">The runtime settings.</param>
         public AuthenticateController(

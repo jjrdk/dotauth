@@ -6,11 +6,14 @@
     <AssemblyName>simpleauth</AssemblyName>
     <PackageId>simpleauth</PackageId>
     <RootNamespace>SimpleAuth</RootNamespace>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
   </PropertyGroup>
+
   <Import Project="../../shared.proj" />
 
   <ItemGroup>

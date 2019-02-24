@@ -54,7 +54,7 @@ namespace SimpleAuth.Controllers
         /// <exception cref="ArgumentNullException">request</exception>
         [HttpPost(".search")]
         [Authorize("manager")]
-        public async Task<IActionResult> Search(
+        public async Task<ActionResult<GenericResult<Scope>>> Search(
             [FromBody] SearchScopesRequest request,
             CancellationToken cancellationToken)
         {
@@ -64,7 +64,7 @@ namespace SimpleAuth.Controllers
             }
 
             var result = await _scopeRepository.Search(request, cancellationToken).ConfigureAwait(false);
-            return new OkObjectResult(result.ToDto());
+            return new OkObjectResult(result);
         }
 
         /// <summary>
