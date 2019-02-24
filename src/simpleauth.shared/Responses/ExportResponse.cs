@@ -30,6 +30,6 @@ namespace SimpleAuth.Shared.Responses
         /// The clients.
         /// </value>
         [DataMember(Name = "clients")]
-        public IEnumerable<ClientResponse> Clients { get; set; }
+        public ClientResponse[] Clients { get; set; }
     }
 }

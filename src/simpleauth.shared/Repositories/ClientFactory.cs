@@ -10,7 +10,7 @@
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
 
-    public class ClientFactory
+    internal class ClientFactory
     {
         private readonly HttpClient _httpClient;
         private readonly IScopeStore _scopeRepository;

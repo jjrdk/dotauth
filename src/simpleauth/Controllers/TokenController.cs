@@ -40,6 +40,7 @@
         /// <param name="authenticateResourceOwnerServices">The authenticate resource owner services.</param>
         /// <param name="tokenStore">The token store.</param>
         /// <param name="ticketStore">The ticket store.</param>
+        /// <param name="jwksStore"></param>
         /// <param name="resourceSetRepository">The resource set repository.</param>
         /// <param name="eventPublisher">The event publisher.</param>
         public TokenController(

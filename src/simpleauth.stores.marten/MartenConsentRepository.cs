@@ -9,15 +9,24 @@
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 
+    /// <summary>
+    /// Defines the Marten based consent repository.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.Repositories.IConsentRepository" />
     public class MartenConsentRepository : IConsentRepository
     {
         private readonly Func<IDocumentSession> _sessionFactory;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MartenConsentRepository"/> class.
+        /// </summary>
+        /// <param name="sessionFactory">The session factory.</param>
         public MartenConsentRepository(Func<IDocumentSession> sessionFactory)
         {
             _sessionFactory = sessionFactory;
         }
 
+        /// <inheritdoc />
         public async Task<IReadOnlyCollection<Consent>> GetConsentsForGivenUser(
             string subject,
             CancellationToken cancellationToken = default)
@@ -32,6 +41,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<bool> Insert(Consent record, CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())
@@ -43,6 +53,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<bool> Delete(Consent record, CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())

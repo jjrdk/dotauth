@@ -50,6 +50,9 @@ namespace SimpleAuth.Controllers
         private readonly ValidateConfirmationCodeAction _validateConfirmationCode;
         private readonly AuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenId;
         private readonly AuthenticateHelper _authenticateHelper;
+        /// <summary>
+        /// The data protector
+        /// </summary>
         protected readonly IDataProtector _dataProtector;
         private readonly IUrlHelper _urlHelper;
         private readonly IEventPublisher _eventPublisher;
@@ -142,6 +145,10 @@ namespace SimpleAuth.Controllers
             _confirmationCodeStore = confirmationCodeStore;
         }
 
+        /// <summary>
+        /// Logouts this instance.
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> Logout()
         {
             HttpContext.Response.Cookies.Delete(CoreConstants.SessionId);
@@ -153,6 +160,12 @@ namespace SimpleAuth.Controllers
             return RedirectToAction("Index", "Authenticate");
         }
 
+        /// <summary>
+        /// Performs an external login.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">provider</exception>
         [HttpPost]
         public async Task ExternalLogin(string provider)
         {
@@ -169,6 +182,13 @@ namespace SimpleAuth.Controllers
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Handles the login callback.
+        /// </summary>
+        /// <param name="error">The error.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="SimpleAuthException"></exception>
         [HttpGet]
         public async Task<IActionResult> LoginCallback(string error, CancellationToken cancellationToken)
         {
@@ -246,6 +266,13 @@ namespace SimpleAuth.Controllers
             return RedirectToAction("Index", "User");
         }
 
+        /// <summary>
+        /// Sends the code.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="SimpleAuthException"></exception>
         [HttpGet]
         public async Task<IActionResult> SendCode(string code, CancellationToken cancellationToken)
         {
@@ -275,6 +302,14 @@ namespace SimpleAuth.Controllers
             return View(viewModel);
         }
 
+        /// <summary>
+        /// Sends the code.
+        /// </summary>
+        /// <param name="codeViewModel">The code view model.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">codeViewModel</exception>
+        /// <exception cref="SimpleAuthException"></exception>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendCode(CodeViewModel codeViewModel, CancellationToken cancellationToken)
@@ -370,6 +405,13 @@ namespace SimpleAuth.Controllers
             return RedirectToAction("Index", "User");
         }
 
+        /// <summary>
+        /// Logs in uses OpenID.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">code</exception>
         [HttpGet]
         public async Task<IActionResult> OpenId(string code, CancellationToken cancellationToken)
         {
@@ -401,6 +443,13 @@ namespace SimpleAuth.Controllers
             return View(viewModel);
         }
 
+        /// <summary>
+        /// Logs in using external OpenID.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="code">The code.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">code</exception>
         [HttpPost]
         public async Task ExternalLoginOpenId(string provider, string code)
         {
@@ -428,6 +477,16 @@ namespace SimpleAuth.Controllers
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Handles the local OpenID callback.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="error">The error.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">code</exception>
+        /// <exception cref="SimpleAuthException">
+        /// </exception>
         [HttpGet]
         public async Task<IActionResult> LoginCallbackOpenId(
             string code,
@@ -555,11 +614,18 @@ namespace SimpleAuth.Controllers
                         AuthenticationScheme = scheme.Name,
                         DisplayName = scheme.DisplayName
                     })
-                .ToList();
+                .ToArray();
 
             authorizeViewModel.IdProviders = idProviders;
         }
 
+        /// <summary>
+        /// Logs the authenticate user.
+        /// </summary>
+        /// <param name="resourceOwner">The resource owner.</param>
+        /// <param name="amr">The amr.</param>
+        /// <param name="processId">The process identifier.</param>
+        /// <returns></returns>
         internal async Task LogAuthenticateUser(string resourceOwner, string amr, string processId)
         {
             if (string.IsNullOrWhiteSpace(processId))
@@ -571,6 +637,12 @@ namespace SimpleAuth.Controllers
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Sets the local cookie.
+        /// </summary>
+        /// <param name="claims">The claims.</param>
+        /// <param name="sessionId">The session identifier.</param>
+        /// <returns></returns>
         protected async Task SetLocalCookie(Claim[] claims, string sessionId)
         {
             var tokenValidity = TimeSpan.FromHours(1d); //_configurationService.TokenValidityPeriod;
@@ -596,6 +668,11 @@ namespace SimpleAuth.Controllers
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Sets the two factor cookie.
+        /// </summary>
+        /// <param name="claims">The claims.</param>
+        /// <returns></returns>
         protected async Task SetTwoFactorCookie(Claim[] claims)
         {
             var identity = new ClaimsIdentity(claims, CookieNames.TwoFactorCookieName);

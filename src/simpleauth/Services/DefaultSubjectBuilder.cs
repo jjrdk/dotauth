@@ -5,7 +5,7 @@
     using System.Threading.Tasks;
     using Shared;
 
-    public class DefaultSubjectBuilder : ISubjectBuilder
+    internal class DefaultSubjectBuilder : ISubjectBuilder
     {
         public Task<string> BuildSubject(IEnumerable<Claim> claims)
         {

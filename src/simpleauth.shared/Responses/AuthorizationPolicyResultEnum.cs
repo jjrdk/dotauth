@@ -1,6 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Responses
 {
-    public enum AuthorizationPolicyResultEnum
+    internal enum AuthorizationPolicyResultEnum
     {
         NotAuthorized,
         NeedInfo, // default : Not supported yet

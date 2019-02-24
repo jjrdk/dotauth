@@ -5,7 +5,7 @@
     using System.Text;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
-    using SimpleAuth.Manager.Client.Results;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
 
@@ -18,7 +18,7 @@
             _httpClient = httpClientFactory;
         }
 
-        public async Task<PagedResult<ClientResponse>> Execute(Uri clientsUri, SearchClientsRequest parameter, string authorizationHeaderValue = null)
+        public async Task<GenericResponse<PagedResponse<ClientResponse>>> Execute(Uri clientsUri, SearchClientsRequest parameter, string authorizationHeaderValue = null)
         {
             if (clientsUri == null)
             {
@@ -47,7 +47,7 @@
             }
             catch (Exception)
             {
-                var result = new PagedResult<ClientResponse>
+                var result = new GenericResponse<PagedResponse<ClientResponse>>
                 {
                     ContainsError = true,
                     HttpStatus = httpResult.StatusCode
@@ -60,7 +60,7 @@
                 return result;
             }
 
-            return new PagedResult<ClientResponse>
+            return new GenericResponse<PagedResponse<ClientResponse>>
             {
                 Content = JsonConvert.DeserializeObject<PagedResponse<ClientResponse>>(content)
             };

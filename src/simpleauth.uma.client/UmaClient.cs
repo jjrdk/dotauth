@@ -21,8 +21,12 @@ namespace SimpleAuth.Uma.Client
     using Newtonsoft.Json;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Responses;
 
+    /// <summary>
+    /// Defines the UMA client.
+    /// </summary>
     public class UmaClient
     {
         private const string JsonMimeType = "application/json";
@@ -37,6 +41,12 @@ namespace SimpleAuth.Uma.Client
             _configurationResponse = configurationResponse;
         }
 
+        /// <summary>
+        /// Creates the specified client.
+        /// </summary>
+        /// <param name="client">The client.</param>
+        /// <param name="configurationUri">The configuration URI.</param>
+        /// <returns></returns>
         public static async Task<UmaClient> Create(HttpClient client, Uri configurationUri)
         {
             var discoveryOperation = new GetConfigurationOperation(client);
@@ -45,6 +55,17 @@ namespace SimpleAuth.Uma.Client
             return new UmaClient(client, configurationResponse);
         }
 
+        /// <summary>
+        /// Adds the permission.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// request
+        /// or
+        /// token
+        /// </exception>
         public async Task<GenericResponse<AddPermissionResponse>> AddPermission(
             PostPermission request,
             string token)
@@ -90,6 +111,17 @@ namespace SimpleAuth.Uma.Client
             };
         }
 
+        /// <summary>
+        /// Adds the permissions.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <param name="requests">The requests.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// requests
+        /// or
+        /// token
+        /// </exception>
         public async Task<GenericResponse<AddPermissionResponse>> AddPermissions(
             string token, params PostPermission[] requests)
         {
@@ -138,6 +170,17 @@ namespace SimpleAuth.Uma.Client
             };
         }
 
+        /// <summary>
+        /// Adds the policy.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="authorizationHeaderValue">The authorization header value.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// request
+        /// or
+        /// authorizationHeaderValue
+        /// </exception>
         public async Task<GenericResponse<AddPolicyResponse>> AddPolicy(
             PostPolicy request,
             string authorizationHeaderValue)
@@ -183,6 +226,17 @@ namespace SimpleAuth.Uma.Client
             };
         }
 
+        /// <summary>
+        /// Gets the policy.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// id
+        /// or
+        /// token
+        /// </exception>
         public async Task<GenericResponse<PolicyResponse>> GetPolicy(string id, string token)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -223,6 +277,12 @@ namespace SimpleAuth.Uma.Client
             };
         }
 
+        /// <summary>
+        /// Gets all policies.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">token</exception>
         public async Task<GenericResponse<string[]>> GetAllPolicies(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
@@ -251,6 +311,17 @@ namespace SimpleAuth.Uma.Client
             return new GenericResponse<string[]> { Content = JsonConvert.DeserializeObject<string[]>(content) };
         }
 
+        /// <summary>
+        /// Deletes the policy.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// id
+        /// or
+        /// token
+        /// </exception>
         public async Task<GenericResponse<object>> DeletePolicy(string id, string token)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -288,6 +359,17 @@ namespace SimpleAuth.Uma.Client
             return new GenericResponse<object>();
         }
 
+        /// <summary>
+        /// Updates the policy.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// request
+        /// or
+        /// token
+        /// </exception>
         public async Task<GenericResponse<object>> UpdatePolicy(PutPolicy request, string token)
         {
             if (request == null)
@@ -328,6 +410,13 @@ namespace SimpleAuth.Uma.Client
             return new GenericResponse<object>();
         }
 
+        /// <summary>
+        /// Adds the resource.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="request">The request.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
         public async Task<GenericResponse<object>> AddResource(
             string id,
             PostAddResourceSet request,
@@ -364,6 +453,20 @@ namespace SimpleAuth.Uma.Client
             return new GenericResponse<object>();
         }
 
+        /// <summary>
+        /// Deletes the policy resource.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="resourceId">The resource identifier.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// id
+        /// or
+        /// resourceId
+        /// or
+        /// token
+        /// </exception>
         public async Task<GenericResponse<object>> DeletePolicyResource(
             string id,
             string resourceId,
@@ -408,6 +511,17 @@ namespace SimpleAuth.Uma.Client
             return new GenericResponse<object>();
         }
 
+        /// <summary>
+        /// Deletes the resource.
+        /// </summary>
+        /// <param name="resourceSetId">The resource set identifier.</param>
+        /// <param name="authorizationHeaderValue">The authorization header value.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// resourceSetId
+        /// or
+        /// authorizationHeaderValue
+        /// </exception>
         public async Task<GenericResponse<object>> DeleteResource(string resourceSetId, string authorizationHeaderValue)
         {
             if (string.IsNullOrWhiteSpace(resourceSetId))
@@ -448,6 +562,12 @@ namespace SimpleAuth.Uma.Client
             return new GenericResponse<object>();
         }
 
+        /// <summary>
+        /// Searches the policies.
+        /// </summary>
+        /// <param name="parameter">The parameter.</param>
+        /// <param name="authorizationHeaderValue">The authorization header value.</param>
+        /// <returns></returns>
         public async Task<GenericResponse<SearchAuthPoliciesResponse>> SearchPolicies(
             SearchAuthPolicies parameter,
             string authorizationHeaderValue = null)
@@ -483,6 +603,17 @@ namespace SimpleAuth.Uma.Client
             };
         }
 
+        /// <summary>
+        /// Updates the resource.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// request
+        /// or
+        /// token
+        /// </exception>
         public async Task<GenericResponse<UpdateResourceSetResponse>> UpdateResource(PutResourceSet request, string token)
         {
             if (request == null)
@@ -526,6 +657,17 @@ namespace SimpleAuth.Uma.Client
             };
         }
 
+        /// <summary>
+        /// Adds the resource.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// request
+        /// or
+        /// token
+        /// </exception>
         public async Task<GenericResponse<AddResourceSetResponse>> AddResource(PostResourceSet request, string token)
         {
             if (request == null)
@@ -569,6 +711,12 @@ namespace SimpleAuth.Uma.Client
             };
         }
 
+        /// <summary>
+        /// Gets all resources.
+        /// </summary>
+        /// <param name="authorizationHeaderValue">The authorization header value.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">authorizationHeaderValue</exception>
         public async Task<GenericResponse<string[]>> GetAllResources(string authorizationHeaderValue)
         {
             if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
@@ -604,6 +752,17 @@ namespace SimpleAuth.Uma.Client
             };
         }
 
+        /// <summary>
+        /// Gets the resource.
+        /// </summary>
+        /// <param name="resourceSetId">The resource set identifier.</param>
+        /// <param name="authorizationHeaderValue">The authorization header value.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// resourceSetId
+        /// or
+        /// authorizationHeaderValue
+        /// </exception>
         public async Task<GenericResponse<ResourceSetResponse>> GetResource(string resourceSetId, string authorizationHeaderValue)
         {
             if (string.IsNullOrWhiteSpace(resourceSetId))
@@ -648,7 +807,13 @@ namespace SimpleAuth.Uma.Client
             };
         }
 
-        public async Task<GenericResponse<SearchResourceSetResponse>> SearchResources(SearchResourceSet parameter, string authorizationHeaderValue = null)
+        /// <summary>
+        /// Searches the resources.
+        /// </summary>
+        /// <param name="parameter">The parameter.</param>
+        /// <param name="authorizationHeaderValue">The authorization header value.</param>
+        /// <returns></returns>
+        public async Task<GenericResponse<GenericResult<ResourceSet>>> SearchResources(SearchResourceSet parameter, string authorizationHeaderValue = null)
         {
             var url = _configurationResponse.ResourceRegistrationEndpoint + "/.search";
 
@@ -673,7 +838,7 @@ namespace SimpleAuth.Uma.Client
             }
             catch (Exception)
             {
-                return new GenericResponse<SearchResourceSetResponse>()
+                return new GenericResponse<GenericResult<ResourceSet>>()
                 {
                     ContainsError = true,
                     Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
@@ -681,9 +846,9 @@ namespace SimpleAuth.Uma.Client
                 };
             }
 
-            return new GenericResponse<SearchResourceSetResponse>
+            return new GenericResponse<GenericResult<ResourceSet>>
             {
-                Content = JsonConvert.DeserializeObject<SearchResourceSetResponse>(content)
+                Content = JsonConvert.DeserializeObject<GenericResult<ResourceSet>>(content)
             };
         }
     }

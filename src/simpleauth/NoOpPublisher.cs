@@ -3,7 +3,7 @@
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
 
-    public class NoOpPublisher : IEventPublisher
+    internal class NoOpPublisher : IEventPublisher
     {
         public Task Publish<T>(T evt) where T : Event
         {

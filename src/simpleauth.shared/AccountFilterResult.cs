@@ -1,6 +1,6 @@
 ﻿namespace SimpleAuth.Shared
 {
-    using System.Collections.Generic;
+    using System;
 
     /// <summary>
     /// Defines the account filtering result.
@@ -12,7 +12,7 @@
         /// </summary>
         public AccountFilterResult()
         {
-            AccountFilterRules = new List<AccountFilterRuleResult>();
+            AccountFilterRules = Array.Empty<AccountFilterRuleResult>();
         }
 
         /// <summary>
@@ -29,6 +29,6 @@
         /// <value>
         /// The account filter rules.
         /// </value>
-        public IEnumerable<AccountFilterRuleResult> AccountFilterRules { get; set; }
+        public AccountFilterRuleResult[] AccountFilterRules { get; set; }
     }
 }

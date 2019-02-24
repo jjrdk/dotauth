@@ -30,6 +30,10 @@ namespace SimpleAuth.Controllers
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Errors;
 
+    /// <summary>
+    /// Defines the policies controller
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Route(UmaConstants.RouteValues.Policies)]
     public class PoliciesController : ControllerBase
     {
@@ -40,6 +44,11 @@ namespace SimpleAuth.Controllers
         private readonly AddResourceSetToPolicyAction _addResourceSet;
         private readonly UpdatePolicyAction _updatePolicy;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PoliciesController"/> class.
+        /// </summary>
+        /// <param name="policyRepository">The policy repository.</param>
+        /// <param name="resourceSetRepository">The resource set repository.</param>
         public PoliciesController(IPolicyRepository policyRepository, IResourceSetRepository resourceSetRepository)
         {
             _policyRepository = policyRepository;
@@ -50,6 +59,12 @@ namespace SimpleAuth.Controllers
             _updatePolicy = new UpdatePolicyAction(policyRepository, resourceSetRepository);
         }
 
+        /// <summary>
+        /// Searches the policies.
+        /// </summary>
+        /// <param name="searchAuthPolicies">The search authentication policies.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPost(".search")]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> SearchPolicies(
@@ -68,6 +83,12 @@ namespace SimpleAuth.Controllers
             return new OkObjectResult(result.ToResponse());
         }
 
+        /// <summary>
+        /// Gets the policy.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> GetPolicy(string id, CancellationToken cancellationToken)
@@ -81,7 +102,6 @@ namespace SimpleAuth.Controllers
             }
 
             var result = await _policyRepository.Get(id, cancellationToken).ConfigureAwait(false);
-            //_getPolicy.Execute(id).ConfigureAwait(false);
             if (result == null)
             {
                 return GetNotFoundPolicy();
@@ -91,6 +111,11 @@ namespace SimpleAuth.Controllers
             return new OkObjectResult(content);
         }
 
+        /// <summary>
+        /// Gets the policies.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpGet]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> GetPolicies(CancellationToken cancellationToken)
@@ -100,7 +125,12 @@ namespace SimpleAuth.Controllers
             return new OkObjectResult(policyNames);
         }
 
-        // Partial update
+        /// <summary>
+        /// Updates the policy.
+        /// </summary>
+        /// <param name="putPolicy">The put policy.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPut]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> PutPolicy([FromBody] PutPolicy putPolicy, CancellationToken cancellationToken)
@@ -117,6 +147,13 @@ namespace SimpleAuth.Controllers
             return !isPolicyExists ? GetNotFoundPolicy() : new StatusCodeResult((int) HttpStatusCode.NoContent);
         }
 
+        /// <summary>
+        /// Adds the resource set.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="postAddResourceSet">The post add resource set.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPost("{id}/resources")]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> PostAddResourceSet(
@@ -152,6 +189,13 @@ namespace SimpleAuth.Controllers
             return new StatusCodeResult((int) HttpStatusCode.NoContent);
         }
 
+        /// <summary>
+        /// Deletes the resource set.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="resourceId">The resource identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpDelete("{id}/resources/{resourceId}")]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> DeleteResourceSet(string id, string resourceId, CancellationToken cancellationToken)
@@ -181,6 +225,12 @@ namespace SimpleAuth.Controllers
             return new StatusCodeResult((int) HttpStatusCode.NoContent);
         }
 
+        /// <summary>
+        /// Adds the policy.
+        /// </summary>
+        /// <param name="postPolicy">The post policy.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> PostPolicy(
@@ -201,6 +251,12 @@ namespace SimpleAuth.Controllers
             return new ObjectResult(content) {StatusCode = (int) HttpStatusCode.Created};
         }
 
+        /// <summary>
+        /// Deletes the policy.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> DeletePolicy(string id, CancellationToken cancellationToken)

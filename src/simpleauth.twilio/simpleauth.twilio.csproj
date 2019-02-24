@@ -6,11 +6,18 @@
     <AssemblyName>simpleauth.twilio</AssemblyName>
     <PackageId>simpleauth.twilio</PackageId>
     <RootNamespace>SimpleAuth.Twilio</RootNamespace>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
+  </PropertyGroup>
+
   <Import Project="../../shared.proj" />
 
-  <ItemGroup>  
-    <ProjectReference Include="..\simpleauth\simpleauth.csproj" />  
+  <ItemGroup>
+    <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="microsoft.extensions.fileproviders.embedded" Version="2.2.0" />

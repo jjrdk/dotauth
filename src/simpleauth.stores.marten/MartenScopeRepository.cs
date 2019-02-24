@@ -4,22 +4,30 @@
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Results;
     using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Defines the Marten based scope repository.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.Repositories.IScopeRepository" />
     public class MartenScopeRepository : IScopeRepository
     {
         private readonly Func<IDocumentSession> _sessionFactory;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MartenScopeRepository"/> class.
+        /// </summary>
+        /// <param name="sessionFactory">The session factory.</param>
         public MartenScopeRepository(Func<IDocumentSession> sessionFactory)
         {
             _sessionFactory = sessionFactory;
         }
 
-        public async Task<SearchScopeResult> Search(SearchScopesRequest parameter, CancellationToken cancellationToken = default)
+        /// <inheritdoc />
+        public async Task<GenericResult<Scope>> Search(SearchScopesRequest parameter, CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())
             {
@@ -30,7 +38,7 @@
                     .ToListAsync(cancellationToken)
                     .ConfigureAwait(false);
 
-                return new SearchScopeResult
+                return new GenericResult<Scope>
                 {
                     Content = results.ToArray(),
                     StartIndex = parameter.StartIndex,
@@ -39,6 +47,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<Scope> Get(string name, CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())
@@ -49,6 +58,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<Scope[]> SearchByNames(CancellationToken cancellationToken = default, params string[] names)
         {
             using (var session = _sessionFactory())
@@ -62,6 +72,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<Scope[]> GetAll(CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())
@@ -74,6 +85,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<bool> Insert(Scope scope, CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())
@@ -84,6 +96,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<bool> Delete(Scope scope, CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())
@@ -94,6 +107,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<bool> Update(Scope scope, CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())

@@ -2,6 +2,7 @@
 
 [assembly:InternalsVisibleTo("simpleauth")]
 [assembly:InternalsVisibleTo("simpleauth.authserver")]
+[assembly:InternalsVisibleTo("simpleauth.awslambda")]
 [assembly:InternalsVisibleTo("simpleauth.client")]
 [assembly:InternalsVisibleTo("simpleauth.twilio")]
 [assembly:InternalsVisibleTo("simpleauth.twilio.tests")]

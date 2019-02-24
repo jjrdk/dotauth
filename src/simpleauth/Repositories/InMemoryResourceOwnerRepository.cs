@@ -2,14 +2,13 @@
 {
     using Shared.Models;
     using Shared.Repositories;
-    using Shared.Results;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Requests;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Extensions;
 
     internal sealed class InMemoryResourceOwnerRepository : IResourceOwnerRepository
     {
@@ -128,7 +127,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<SearchResourceOwnerResult> Search(
+        public Task<GenericResult<ResourceOwner>> Search(
             SearchResourceOwnersRequest parameter,
             CancellationToken cancellationToken = default)
         {
@@ -154,12 +153,13 @@
                 result = result.Skip(parameter.StartIndex).Take(parameter.NbResults);
             }
 
-            return Task.FromResult(new SearchResourceOwnerResult
-            {
-                Content = result,
-                StartIndex = parameter.StartIndex,
-                TotalResults = nbResult
-            });
+            return Task.FromResult(
+                new GenericResult<ResourceOwner>
+                {
+                    Content = result.ToArray(),
+                    StartIndex = parameter.StartIndex,
+                    TotalResults = nbResult
+                });
         }
 
         public Task<bool> Update(ResourceOwner resourceOwner, CancellationToken cancellationToken = default)

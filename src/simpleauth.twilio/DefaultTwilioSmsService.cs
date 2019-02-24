@@ -34,7 +34,7 @@ namespace SimpleAuth.Twilio
         public string RequiredClaim => OpenIdClaimTypes.PhoneNumber;
         public string Name => "SMS";
 
-        public async Task SendAsync(string code, ResourceOwner user)
+        public async Task Send(string code, ResourceOwner user)
         {
             if (user == null)
             {

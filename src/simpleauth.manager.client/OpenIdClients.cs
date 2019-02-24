@@ -5,7 +5,6 @@
     using System.Text;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
-    using SimpleAuth.Manager.Client.Results;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
@@ -161,7 +160,7 @@
             return await GetAll(new Uri(configuration.Content.Clients), authorizationHeaderValue).ConfigureAwait(false);
         }
 
-        public async Task<PagedResult<ClientResponse>> ResolveSearch(
+        public async Task<GenericResponse<PagedResponse<ClientResponse>>> ResolveSearch(
             Uri wellKnownConfigurationUri,
             SearchClientsRequest searchClientParameter,
             string authorizationHeaderValue = null)

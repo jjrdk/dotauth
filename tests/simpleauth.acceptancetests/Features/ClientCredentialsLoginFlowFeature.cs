@@ -132,7 +132,7 @@
             "then can revoke token".x(
                 async () =>
                 {
-                    var response = await client.RevokeToken(RevokeTokenRequest.RevokeToken(result))
+                    var response = await client.RevokeToken(RevokeTokenRequest.Create(result))
                         .ConfigureAwait(false);
                     Assert.Equal(HttpStatusCode.OK, response.Status);
                 });

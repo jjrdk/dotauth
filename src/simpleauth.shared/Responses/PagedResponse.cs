@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Shared.Responses
 {
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -35,6 +34,6 @@
         /// The content.
         /// </value>
         [DataMember(Name = "content")]
-        public IEnumerable<T> Content { get; set; }
+        public T[] Content { get; set; }
     }
 }

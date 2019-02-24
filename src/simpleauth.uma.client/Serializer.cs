@@ -7,7 +7,7 @@
     using System.Linq;
     using System.Security.Claims;
 
-    public sealed class Serializer
+    internal sealed class Serializer
     {
         private static Serializer _inner;
         private readonly JsonSerializer _serializer;

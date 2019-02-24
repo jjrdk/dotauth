@@ -21,7 +21,7 @@ namespace SimpleAuth.Extensions
     using SimpleAuth.Shared.Models;
     using CodeChallengeMethods = SimpleAuth.Shared.Models.CodeChallengeMethods;
 
-    public static class ClientValidator
+    internal static class ClientValidator
     {
         public static Uri[] GetRedirectionUrls(this Client client, params Uri[] urls)
         {

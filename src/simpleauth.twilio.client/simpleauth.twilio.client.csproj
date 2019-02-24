@@ -1,11 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-  <Description>SimpleAuth Twilio authentication client</Description>
+    <Description>SimpleAuth Twilio authentication client</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-	<AssemblyName>simpleauth.twilio.client</AssemblyName>
-	<PackageId>simpleauth.twilio.client</PackageId>
+    <AssemblyName>simpleauth.twilio.client</AssemblyName>
+    <PackageId>simpleauth.twilio.client</PackageId>
     <RootNamespace>SimpleAuth.Twilio.Client</RootNamespace>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
+  </PropertyGroup>
+
   <Import Project="../../shared.proj" />
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />

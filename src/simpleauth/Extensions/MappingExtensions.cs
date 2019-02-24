@@ -20,7 +20,6 @@ namespace SimpleAuth.Extensions
     using Shared.Models;
     using Shared.Requests;
     using Shared.Responses;
-    using Shared.Results;
     using SimpleAuth.Common;
     using System;
     using System.Collections.Generic;
@@ -30,21 +29,6 @@ namespace SimpleAuth.Extensions
 
     internal static class MappingExtensions
     {
-        public static SearchResourceSetResponse ToResponse(this GenericResult<ResourceSet> searchResourceSetResult)
-        {
-            if (searchResourceSetResult == null)
-            {
-                throw new ArgumentNullException(nameof(searchResourceSetResult));
-            }
-
-            return new SearchResourceSetResponse
-            {
-                StartIndex = searchResourceSetResult.StartIndex,
-                TotalResults = searchResourceSetResult.TotalResults,
-                Content = searchResourceSetResult.Content == null ? new List<ResourceSetResponse>() : searchResourceSetResult.Content.Select(s => s.ToResponse())
-            };
-        }
-
         public static SearchAuthPoliciesResponse ToResponse(this GenericResult<Policy> searchAuthPoliciesResult)
         {
             if (searchAuthPoliciesResult == null)
@@ -216,22 +200,7 @@ namespace SimpleAuth.Extensions
             };
         }
 
-        public static SearchScopesResponse ToDto(this SearchScopeResult parameter)
-        {
-            if (parameter == null)
-            {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-
-            return new SearchScopesResponse
-            {
-                StartIndex = parameter.StartIndex,
-                TotalResults = parameter.TotalResults,
-                Content = parameter.Content ?? Array.Empty<Scope>()
-            };
-        }
-
-        public static PagedResponse<ResourceOwnerResponse> ToDto(this SearchResourceOwnerResult parameter)
+        public static PagedResponse<ResourceOwnerResponse> ToDto(this GenericResult<ResourceOwner> parameter)
         {
             if (parameter == null)
             {
@@ -242,7 +211,7 @@ namespace SimpleAuth.Extensions
             {
                 StartIndex = parameter.StartIndex,
                 TotalResults = parameter.TotalResults,
-                Content = parameter.Content == null ? new List<ResourceOwnerResponse>() : parameter.Content.Select(ToDto)
+                Content = parameter.Content == null ? Array.Empty<ResourceOwnerResponse>() : parameter.Content.Select(ToDto).ToArray()
             };
         }
 

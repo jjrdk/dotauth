@@ -29,13 +29,18 @@ namespace SimpleAuth.Extensions
     using System.Linq;
     using System.Net.Http;
 
-    public static class Globals
-    {
-        public static string ApplicationName { get; set; }
-    }
-
+    /// <summary>
+    /// Defines the service collection extensions.
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds the authentication policies.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="authenticationSchemes">The authentication schemes.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">options</exception>
         public static AuthorizationOptions AddAuthPolicies(
             this AuthorizationOptions options,
             params string[] authenticationSchemes)
@@ -176,6 +181,13 @@ namespace SimpleAuth.Extensions
             return options;
         }
 
+        /// <summary>
+        /// Adds the account filter.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="filters">The filters.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">services</exception>
         public static IServiceCollection AddAccountFilter(this IServiceCollection services, params Filter[] filters)
         {
             if (services == null)
@@ -188,6 +200,12 @@ namespace SimpleAuth.Extensions
             return services;
         }
 
+        /// <summary>
+        /// Adds SimpleAuth.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="configuration">The configuration.</param>
+        /// <returns></returns>
         public static IServiceCollection AddSimpleAuth(
             this IServiceCollection services,
             Action<SimpleAuthOptions> configuration)
@@ -198,6 +216,13 @@ namespace SimpleAuth.Extensions
             return AddSimpleAuth(services, options);
         }
 
+        /// <summary>
+        /// Adds the SimpleAuth.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="options">The options.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">options</exception>
         public static IServiceCollection AddSimpleAuth(this IServiceCollection services, SimpleAuthOptions options)
         {
             if (options == null)

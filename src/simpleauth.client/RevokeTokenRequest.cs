@@ -5,6 +5,10 @@
     using System.Collections;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// Defines the revoke token request.
+    /// </summary>
+    /// <seealso cref="System.Collections.Generic.IEnumerable{KeyValuePair}" />
     public class RevokeTokenRequest : IEnumerable<KeyValuePair<string, string>>
     {
         private readonly Dictionary<string, string> _form;
@@ -14,12 +18,24 @@
             _form = form;
         }
 
-        public static RevokeTokenRequest RevokeToken(GrantedTokenResponse tokenResponse)
+        /// <summary>
+        /// Creates the request.
+        /// </summary>
+        /// <param name="tokenResponse">The token response.</param>
+        /// <returns></returns>
+        public static RevokeTokenRequest Create(GrantedTokenResponse tokenResponse)
         {
-            return RevokeToken(tokenResponse.AccessToken, tokenResponse.TokenType);
+            return Create(tokenResponse.AccessToken, tokenResponse.TokenType);
         }
 
-        public static RevokeTokenRequest RevokeToken(string token, string tokenType)
+        /// <summary>
+        /// Creates the request.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <param name="tokenType">Type of the token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">token</exception>
+        public static RevokeTokenRequest Create(string token, string tokenType)
         {
             if (string.IsNullOrWhiteSpace(token))
             {
@@ -34,11 +50,13 @@
             return new RevokeTokenRequest(dict);
         }
 
+        /// <inheritdoc />
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {
             return _form.GetEnumerator();
         }
 
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

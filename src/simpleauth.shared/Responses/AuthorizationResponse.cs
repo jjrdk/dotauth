@@ -16,9 +16,18 @@ namespace SimpleAuth.Shared.Responses
 {
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Defines the authorization response.
+    /// </summary>
     [DataContract]
     public class AuthorizationResponse
     {
+        /// <summary>
+        /// Gets or sets the RPT.
+        /// </summary>
+        /// <value>
+        /// The RPT.
+        /// </value>
         [DataMember(Name = "rpt")]
         public string Rpt { get; set; }
     }

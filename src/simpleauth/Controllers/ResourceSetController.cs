@@ -25,6 +25,7 @@ namespace SimpleAuth.Controllers
     using Shared.DTOs;
     using Shared.Responses;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the resource set controller.
@@ -57,7 +58,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpPost(".search")]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> SearchResourceSets([FromBody] SearchResourceSet searchResourceSet)
+        public async Task<ActionResult<GenericResult<ResourceSet>>> SearchResourceSets([FromBody] SearchResourceSet searchResourceSet)
         {
             if (searchResourceSet == null)
             {
@@ -67,7 +68,7 @@ namespace SimpleAuth.Controllers
             }
 
             var result = await _resourceSetRepository.Search(searchResourceSet).ConfigureAwait(false);
-            return new OkObjectResult(result.ToResponse());
+            return new OkObjectResult(result);
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace SimpleAuth
 {
     using Microsoft.AspNetCore.Authentication.Cookies;
 
-    public static class CookieNames
+    internal static class CookieNames
     {
         public const string CookieName = CookieAuthenticationDefaults.AuthenticationScheme;
         public const string ExternalCookieName = "saoie";

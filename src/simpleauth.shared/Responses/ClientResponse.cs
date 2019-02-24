@@ -19,6 +19,9 @@ namespace SimpleAuth.Shared.Responses
     using System.Runtime.Serialization;
     using Microsoft.IdentityModel.Tokens;
 
+    /// <summary>
+    /// Defines the client response.
+    /// </summary>
     [DataContract]
     public class ClientResponse
     {
@@ -32,7 +35,7 @@ namespace SimpleAuth.Shared.Responses
         /// Gets or sets the client secret.
         /// </summary>
         [DataMember(Name = "secrets")]
-        public IEnumerable<ResponseClientSecret> Secrets { get; set; }
+        public ResponseClientSecret[] Secrets { get; set; }
 
         /// <summary>
         /// Gets or sets the client name

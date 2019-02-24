@@ -22,7 +22,7 @@
         public async Task When_Pass_Invalid_Token_To_UserInfo_Then_Error_Is_Returned()
         {
             var getUserInfoResult = await _userInfoClient
-                .Resolve(BaseUrl + WellKnownOpenidConfiguration, "invalid_access_token")
+                .Get(BaseUrl + WellKnownOpenidConfiguration, "invalid_access_token")
                 .ConfigureAwait(false);
 
             Assert.True(getUserInfoResult.ContainsError);
@@ -40,7 +40,7 @@
                 .ConfigureAwait(false);
             var result = await tokenClient.GetToken(TokenRequest.FromScopes("openid")).ConfigureAwait(false);
             var getUserInfoResult = await _userInfoClient
-                .Resolve(BaseUrl + WellKnownOpenidConfiguration, result.Content.AccessToken)
+                .Get(BaseUrl + WellKnownOpenidConfiguration, result.Content.AccessToken)
                 .ConfigureAwait(false);
 
             Assert.True(getUserInfoResult.ContainsError);
@@ -60,7 +60,7 @@
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
             var getUserInfoResult = await _userInfoClient
-                .Resolve(BaseUrl + WellKnownOpenidConfiguration, result.Content.AccessToken)
+                .Get(BaseUrl + WellKnownOpenidConfiguration, result.Content.AccessToken)
                 .ConfigureAwait(false);
 
             Assert.NotNull(getUserInfoResult);
@@ -78,7 +78,7 @@
                 .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
             var getUserInfoResult = await _userInfoClient
-                .Resolve(BaseUrl + WellKnownOpenidConfiguration, result.Content.AccessToken)
+                .Get(BaseUrl + WellKnownOpenidConfiguration, result.Content.AccessToken)
                 .ConfigureAwait(false);
 
             Assert.NotNull(getUserInfoResult.Content);
@@ -96,7 +96,7 @@
                 .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
             var getUserInfoResult = await _userInfoClient
-                .Resolve(BaseUrl + WellKnownOpenidConfiguration, result.Content.AccessToken)
+                .Get(BaseUrl + WellKnownOpenidConfiguration, result.Content.AccessToken)
                 .ConfigureAwait(false);
 
             Assert.NotNull(getUserInfoResult.Content);

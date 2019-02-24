@@ -9,15 +9,24 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Defines the Marten based policy repository.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.Repositories.IPolicyRepository" />
     public class MartenPolicyRepository : IPolicyRepository
     {
         private readonly Func<IDocumentSession> _sessionFactory;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MartenPolicyRepository"/> class.
+        /// </summary>
+        /// <param name="sessionFactory">The session factory.</param>
         public MartenPolicyRepository(Func<IDocumentSession> sessionFactory)
         {
             _sessionFactory = sessionFactory;
         }
 
+        /// <inheritdoc />
         public async Task<GenericResult<Policy>> Search(
             SearchAuthPolicies parameter,
             CancellationToken cancellationToken = default)
@@ -33,13 +42,12 @@
                     .ConfigureAwait(false);
                 return new GenericResult<Policy>
                 {
-                    Content = results.ToArray(),
-                    StartIndex = parameter.StartIndex,
-                    TotalResults = results.Count
+                    Content = results.ToArray(), StartIndex = parameter.StartIndex, TotalResults = results.Count
                 };
             }
         }
 
+        /// <inheritdoc />
         public async Task<Policy[]> GetAll(CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())
@@ -51,6 +59,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<Policy> Get(string id, CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())
@@ -60,6 +69,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<bool> Add(Policy policy, CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())
@@ -70,6 +80,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<bool> Delete(string id, CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())
@@ -80,6 +91,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<bool> Update(Policy policy, CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())

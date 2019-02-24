@@ -16,11 +16,27 @@ namespace SimpleAuth.Shared.DTOs
 {
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Defines the add permission request.
+    /// </summary>
     [DataContract]
     public class PostPermission
     {
+        /// <summary>
+        /// Gets or sets the resource set identifier.
+        /// </summary>
+        /// <value>
+        /// The resource set identifier.
+        /// </value>
         [DataMember(Name = "resource_set_id")]
         public string ResourceSetId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the scopes.
+        /// </summary>
+        /// <value>
+        /// The scopes.
+        /// </value>
         [DataMember(Name = "scopes")]
         public string[] Scopes { get; set; }
     }
