@@ -8,6 +8,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.DTOs;
     using Xunit;
 
     public class ResourceOwnerFixture
@@ -93,7 +94,7 @@
         public async Task When_Update_Claims_And_Resource_Owner_Does_Not_Exist_Then_Error_Is_Returned()
         {
             var result = await _resourceOwnerClient.UpdateResourceOwnerClaims(
-                    new UpdateResourceOwnerClaimsRequest { Login = "invalid_login" })
+                    new UpdateResourceOwnerClaimsRequest { Subject = "invalid_login" })
                 .ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
@@ -116,7 +117,7 @@
         public async Task When_Update_Password_And_No_Password_Is_Passed_Then_Error_Is_Returned()
         {
             var result = await _resourceOwnerClient.UpdateResourceOwnerPassword(
-                    new UpdateResourceOwnerPasswordRequest { Login = "login" })
+                    new UpdateResourceOwnerPasswordRequest { Subject = "login" })
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Error);
@@ -129,7 +130,7 @@
         public async Task When_Update_Password_And_Resource_Owner_Does_Not_Exist_Then_Error_Is_Returned()
         {
             var result = await _resourceOwnerClient.UpdateResourceOwnerPassword(
-                    new UpdateResourceOwnerPasswordRequest {Login = "invalid_login", Password = "password"})
+                    new UpdateResourceOwnerPasswordRequest {Subject = "invalid_login", Password = "password"})
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Error);
@@ -155,11 +156,11 @@
             var result = await _resourceOwnerClient.UpdateResourceOwnerClaims(
                     new UpdateResourceOwnerClaimsRequest
                     {
-                        Login = "administrator",
-                        Claims = new List<KeyValuePair<string, string>>
+                        Subject = "administrator",
+                        Claims = new[]
                         {
-                            new KeyValuePair<string, string>("role", "role"),
-                            new KeyValuePair<string, string>("not_valid", "not_valid")
+                            new PostClaim {Type = "role", Value = "role"},
+                            new PostClaim {Type = "not_valid", Value = "not_valid"}
                         }
                     })
                 .ConfigureAwait(false);
@@ -175,7 +176,7 @@
         public async Task When_Update_Password_Then_ResourceOwner_Is_Updated()
         {
             var result = await _resourceOwnerClient.UpdateResourceOwnerPassword(
-                    new UpdateResourceOwnerPasswordRequest { Login = "administrator", Password = "pass" })
+                    new UpdateResourceOwnerPasswordRequest { Subject = "administrator", Password = "pass" })
                 .ConfigureAwait(false);
             var resourceOwner = await _resourceOwnerClient.GetResourceOwner(
                     "administrator")

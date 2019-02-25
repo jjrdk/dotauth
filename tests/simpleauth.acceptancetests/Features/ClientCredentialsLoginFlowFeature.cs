@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.AcceptanceTests.Features
 {
-    using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
     using SimpleAuth.Client.Results;
@@ -12,25 +11,13 @@
     using Xbehave;
     using Xunit;
 
-    public class ClientCredentialsLoginFlowFeature
+    public class ClientCredentialsLoginFlowFeature : AuthFlowFeature
     {
-        private const string BaseUrl = "http://localhost:5000";
-        private const string WellKnownOpenidConfiguration = "https://localhost/.well-known/openid-configuration";
-
-        public ClientCredentialsLoginFlowFeature()
-        {
-            IdentityModelEventSource.ShowPII = true;
-        }
-
         [Scenario(DisplayName = "Successful authorization")]
         public void SuccessfulClientCredentialsAuthentication()
         {
-            TestServerFixture fixture = null;
             TokenClient client = null;
             GrantedTokenResponse result = null;
-
-            "Given a running auth server".x(() => fixture = new TestServerFixture(BaseUrl))
-                .Teardown(() => fixture.Dispose());
 
             "and a properly configured token client".x(
                 async () => client = await TokenClient.Create(
@@ -69,12 +56,8 @@
         [Scenario(DisplayName = "Successful token refresh")]
         public void SuccessfulResourceOwnerRefresh()
         {
-            TestServerFixture fixture = null;
             TokenClient client = null;
             GrantedTokenResponse result = null;
-
-            "Given a running auth server".x(() => fixture = new TestServerFixture(BaseUrl))
-                .Teardown(() => fixture.Dispose());
 
             "and a properly token client".x(
                 async () => client = await TokenClient.Create(
@@ -105,12 +88,8 @@
         [Scenario(DisplayName = "Successful token revocation")]
         public void SuccessfulResourceOwnerRevocation()
         {
-            TestServerFixture fixture = null;
             TokenClient client = null;
             GrantedTokenResponse result = null;
-
-            "Given a running auth server".x(() => fixture = new TestServerFixture(BaseUrl))
-                .Teardown(() => fixture.Dispose());
 
             "and a properly token client".x(
                 async () => client = await TokenClient.Create(
@@ -132,8 +111,7 @@
             "then can revoke token".x(
                 async () =>
                 {
-                    var response = await client.RevokeToken(RevokeTokenRequest.Create(result))
-                        .ConfigureAwait(false);
+                    var response = await client.RevokeToken(RevokeTokenRequest.Create(result)).ConfigureAwait(false);
                     Assert.Equal(HttpStatusCode.OK, response.Status);
                 });
         }
@@ -141,12 +119,8 @@
         [Scenario(DisplayName = "Invalid client")]
         public void InvalidClientCredentials()
         {
-            TestServerFixture fixture = null;
             TokenClient client = null;
             BaseSidContentResult<GrantedTokenResponse> result = null;
-
-            "Given a running auth server".x(() => fixture = new TestServerFixture(BaseUrl))
-                .Teardown(() => fixture.Dispose());
 
             "and a token client with invalid client credentials".x(
                 async () => client = await TokenClient.Create(

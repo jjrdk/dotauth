@@ -9,13 +9,13 @@
     public class UpdateResourceOwnerPasswordRequest
     {
         /// <summary>
-        /// Gets or sets the login.
+        /// Gets or sets the subject.
         /// </summary>
         /// <value>
         /// The login.
         /// </value>
-        [DataMember(Name = "login")]
-        public string Login { get; set; }
+        [DataMember(Name = "sub")]
+        public string Subject { get; set; }
 
         /// <summary>
         /// Gets or sets the password.

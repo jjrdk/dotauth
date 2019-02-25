@@ -137,16 +137,16 @@ namespace SimpleAuth.Controllers
             }
 
             var resourceOwner =
-                await _resourceOwnerRepository.Get(request.Login, cancellationToken).ConfigureAwait(false);
+                await _resourceOwnerRepository.Get(request.Subject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidParameterCode,
-                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Login));
+                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Subject));
             }
 
             resourceOwner.UpdateDateTime = DateTime.UtcNow;
-            var claims = request.Claims.Select(claim => new Claim(claim.Key, claim.Value)).ToArray();
+            var claims = request.Claims.Select(claim => new Claim(claim.Type, claim.Value)).ToArray();
 
             resourceOwner.Claims = claims;
             Claim updatedClaim;
@@ -167,7 +167,7 @@ namespace SimpleAuth.Controllers
             }
 
             resourceOwner.Claims = resourceOwner.Claims.Add(
-                new Claim(OpenIdClaimTypes.Subject, request.Login),
+                new Claim(OpenIdClaimTypes.Subject, request.Subject),
                 new Claim(OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ToString()));
 
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
@@ -198,12 +198,12 @@ namespace SimpleAuth.Controllers
             }
 
             var resourceOwner =
-                await _resourceOwnerRepository.Get(request.Login, cancellationToken).ConfigureAwait(false);
+                await _resourceOwnerRepository.Get(request.Subject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidParameterCode,
-                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Login));
+                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Subject));
             }
 
             resourceOwner.Password = request.Password;

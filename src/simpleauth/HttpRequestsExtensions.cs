@@ -1,22 +1,28 @@
 ﻿namespace SimpleAuth
 {
+    using Microsoft.AspNetCore.Http;
+    using System;
     using System.IO;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
 
     internal static class HttpRequestsExtensions
     {
         public static string GetAbsoluteUriWithVirtualPath(this HttpRequest requestMessage)
         {
-            var host = requestMessage.Host.Value;
-            var http = "http://";
-            if (requestMessage.IsHttps)
+            var host = requestMessage.Host.Host;
+
+            var uri = new UriBuilder(requestMessage.Scheme, host);
+            if (requestMessage.Host.Port.HasValue)
             {
-                http = "https://";
+                uri.Port = requestMessage.Host.Port.Value;
             }
 
-            var relativePath = requestMessage.PathBase.Value;
-            return http + host + relativePath;
+            if (requestMessage.PathBase.HasValue)
+            {
+                uri.Path = requestMessage.PathBase.Value;
+            }
+
+            return uri.Uri.AbsoluteUri.TrimEnd('/');
         }
 
         public static async Task<string> ReadAsStringAsync(this HttpRequest request)

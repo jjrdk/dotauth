@@ -4,7 +4,7 @@
     using Xbehave;
     using Xunit;
 
-    public class ResourceOwnerManagementFeature : ManagementFeatureBase
+    public class ResourceOwnerManagementFeature : AuthorizedManagementFeatureBase
     {
         [Scenario]
         public void SuccessAddResourceOwner()
@@ -48,7 +48,7 @@
                 async () =>
                 {
                     var response = await _managerClient.UpdateResourceOwnerPassword(
-                            new UpdateResourceOwnerPasswordRequest {Login = "test", Password = "test2"},
+                            new UpdateResourceOwnerPasswordRequest { Subject = "test", Password = "test2" },
                             _grantedToken.AccessToken)
                         .ConfigureAwait(false);
 

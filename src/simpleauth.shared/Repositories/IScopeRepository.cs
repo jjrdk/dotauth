@@ -19,7 +19,7 @@ namespace SimpleAuth.Shared.Repositories
     using Models;
 
     /// <summary>
-    /// Defines the scope repository inteface.
+    /// Defines the scope repository interface.
     /// </summary>
     /// <seealso cref="SimpleAuth.Shared.Repositories.IScopeStore" />
     public interface IScopeRepository : IScopeStore

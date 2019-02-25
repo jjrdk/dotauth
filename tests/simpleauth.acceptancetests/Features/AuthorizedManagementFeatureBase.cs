@@ -7,7 +7,7 @@
     using Xbehave;
     using Xunit;
 
-    public abstract class ManagementFeatureBase
+    public abstract class AuthorizedManagementFeatureBase
     {
         private const string BaseUrl = "http://localhost";
         private static readonly Uri WellKnownUmaConfiguration = new Uri(BaseUrl + "/.well-known/openid-configuration");

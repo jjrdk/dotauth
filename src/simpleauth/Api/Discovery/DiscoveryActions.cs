@@ -28,9 +28,11 @@ namespace SimpleAuth.Api.Discovery
     internal class DiscoveryActions
     {
         private readonly IScopeRepository _scopeRepository;
+        private readonly string _version;
 
         public DiscoveryActions(IScopeRepository scopeRepository)
         {
+            _version = GetType().Assembly.GetName().Version.ToString(2);
             _scopeRepository = scopeRepository;
         }
 
@@ -60,6 +62,10 @@ namespace SimpleAuth.Api.Discovery
             result.SubjectTypesSupported = CoreConstants.Supported.SupportedSubjectTypes.ToArray();
             result.TokenEndpointAuthMethodSupported = CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods;
             result.IdTokenSigningAlgValuesSupported = new[] { SecurityAlgorithms.RsaSha256, SecurityAlgorithms.EcdsaSha256 };
+            result.IdTokenEncryptionEncValuesSupported = Array.Empty<string>();
+            result.ClaimsLocalesSupported = new[] { "en" };
+            result.UiLocalesSupported = new[] { "en" };
+            result.Version = _version;
             //var issuer = Request.GetAbsoluteUriWithVirtualPath();
 
             // default : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
@@ -79,7 +85,6 @@ namespace SimpleAuth.Api.Discovery
             result.ResourceOwners = issuer + "/" + CoreConstants.EndPoints.ResourceOwners;
             result.Manage = issuer + "/" + CoreConstants.EndPoints.Manage;
             result.Claims = issuer + "/" + CoreConstants.EndPoints.Claims;
-            result.Version = "1.0";
             result.CheckSessionEndPoint = issuer + "/" + CoreConstants.EndPoints.CheckSession;
             result.EndSessionEndPoint = issuer + "/" + CoreConstants.EndPoints.EndSession;
 
