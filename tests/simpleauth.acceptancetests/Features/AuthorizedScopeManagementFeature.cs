@@ -4,7 +4,7 @@
     using Xbehave;
     using Xunit;
 
-    public class ScopeManagementFeature : ManagementFeatureBase
+    public class AuthorizedScopeManagementFeature : AuthorizedManagementFeatureBase
     {
         [Scenario]
         public void SuccessScopeLoad()

@@ -244,7 +244,7 @@ namespace SimpleAuth.Shared.Responses
         public string OpTosUri { get; set; }
 
         /// <summary>
-        /// Gets or sets the JWS.
+        /// Gets or sets the JWS endpoint.
         /// </summary>
         /// <value>
         /// The JWS.
@@ -253,7 +253,7 @@ namespace SimpleAuth.Shared.Responses
         public string Jws { get; set; }
 
         /// <summary>
-        /// Gets or sets the jwe.
+        /// Gets or sets the jwe endpoint.
         /// </summary>
         /// <value>
         /// The jwe.
@@ -262,7 +262,7 @@ namespace SimpleAuth.Shared.Responses
         public string Jwe { get; set; }
 
         /// <summary>
-        /// Gets or sets the clients.
+        /// Gets or sets the clients endpoint.
         /// </summary>
         /// <value>
         /// The clients.
@@ -271,7 +271,7 @@ namespace SimpleAuth.Shared.Responses
         public string Clients { get; set; }
 
         /// <summary>
-        /// Gets or sets the scopes.
+        /// Gets or sets the scopes endpoint.
         /// </summary>
         /// <value>
         /// The scopes.
@@ -280,7 +280,7 @@ namespace SimpleAuth.Shared.Responses
         public string Scopes { get; set; }
 
         /// <summary>
-        /// Gets or sets the resource owners.
+        /// Gets or sets the resource owners endpoint.
         /// </summary>
         /// <value>
         /// The resource owners.
@@ -289,7 +289,7 @@ namespace SimpleAuth.Shared.Responses
         public string ResourceOwners { get; set; }
 
         /// <summary>
-        /// Gets or sets the manage.
+        /// Gets or sets the manage endpoint.
         /// </summary>
         /// <value>
         /// The manage.
@@ -298,7 +298,7 @@ namespace SimpleAuth.Shared.Responses
         public string Manage { get; set; }
 
         /// <summary>
-        /// Gets or sets the claims.
+        /// Gets or sets the claims endpoint.
         /// </summary>
         /// <value>
         /// The claims.

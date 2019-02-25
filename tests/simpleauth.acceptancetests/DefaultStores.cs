@@ -485,6 +485,26 @@ namespace SimpleAuth.AcceptanceTests
                     ResponseTypes = new[] {ResponseTypeNames.Token},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Native
+                },
+                new Client
+                {
+                    ClientId = "admin_client",
+                    ClientName = "Admin client",
+                    Secrets =
+                        new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "admin_client" } },
+                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
+                    //LogoUri = null,
+                    AllowedScopes = new[] {"admin"},
+                    GrantTypes = new[] {GrantTypes.ClientCredentials},
+                    JsonWebKeys =
+                        new JsonWebKeySet().AddKey(
+                            TestKeys.SecretKey.CreateJwk(
+                                JsonWebKeyUseNames.Sig,
+                                KeyOperations.Sign,
+                                KeyOperations.Verify)),
+                    ResponseTypes = new[] {ResponseTypeNames.Token},
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
+                    ApplicationType = ApplicationTypes.Native
                 }
             };
         }

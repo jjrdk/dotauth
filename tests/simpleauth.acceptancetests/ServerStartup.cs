@@ -5,7 +5,6 @@
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.IdentityModel.Tokens;
     using SimpleAuth;
     using SimpleAuth.Extensions;
     using SimpleAuth.Repositories;
@@ -81,27 +80,6 @@
             app.UseSimpleAuthExceptionHandler();
             // 5. Use MVC.
             app.UseMvcWithDefaultRoute();
-        }
-    }
-
-    internal class NoOpTokenValidationParameters : TokenValidationParameters
-    {
-        public NoOpTokenValidationParameters(SharedContext context)
-        {
-            RequireExpirationTime = false;
-            RequireSignedTokens = false;
-            SaveSigninToken = false;
-            ValidateActor = false;
-            ValidateAudience = false;
-            ValidateIssuer = false;
-            ValidateIssuerSigningKey = true;
-            ValidateLifetime = false;
-            ValidateTokenReplay = false;
-            IssuerSigningKey = context.SignatureKey;
-            //TestKeys.SecretKey.CreateJwk(
-            //JsonWebKeyUseNames.Sig,
-            //KeyOperations.Sign,
-            //KeyOperations.Verify);
         }
     }
 }

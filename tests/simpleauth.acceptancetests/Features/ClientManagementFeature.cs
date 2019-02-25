@@ -6,7 +6,7 @@
     using Xbehave;
     using Xunit;
 
-    public class ClientManagementFeature : ManagementFeatureBase
+    public class ClientManagementFeature : AuthorizedManagementFeatureBase
     {
         [Scenario]
         public void SuccessfulClientListing()
