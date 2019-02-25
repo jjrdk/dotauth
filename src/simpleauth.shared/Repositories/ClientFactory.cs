@@ -1,14 +1,14 @@
 ﻿namespace SimpleAuth.Shared.Repositories
 {
+    using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
 
     internal class ClientFactory
     {
@@ -123,7 +123,7 @@
             // If omitted then the default value is authorization code grant type
             if (newClient.GrantTypes == null || !newClient.GrantTypes.Any())
             {
-                client.GrantTypes = new[] {GrantTypes.AuthorizationCode};
+                client.GrantTypes = new[] { GrantTypes.AuthorizationCode };
             }
             else
             {
@@ -191,7 +191,7 @@
 
             client.AllowedScopes = newClient.AllowedScopes.ToArray();
 
-            if (newClient.RedirectionUrls == null || newClient.RedirectionUrls.Count == 0)
+            if (newClient.RedirectionUrls == null || newClient.RedirectionUrls.Length == 0)
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRedirectUri,
@@ -217,7 +217,7 @@
                             string.Format(ErrorDescriptions.TheRedirectUrlCannotContainsFragment, redirectUri));
                     }
 
-                    client.RedirectionUrls.Add(redirectUri);
+                    client.RedirectionUrls = client.RedirectionUrls.Add(redirectUri);
                 }
             }
             else
@@ -231,7 +231,7 @@
                             string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, redirectUri));
                     }
 
-                    client.RedirectionUrls.Add(redirectUri);
+                    client.RedirectionUrls = client.RedirectionUrls.Add(redirectUri);
                 }
             }
 
@@ -245,14 +245,13 @@
             // If omitted then the default value is authorization code response type
             if (newClient.ResponseTypes?.Any() != true)
             {
-                client.ResponseTypes = new[] {ResponseTypeNames.Code};
+                client.ResponseTypes = new[] { ResponseTypeNames.Code };
             }
             else
             {
                 client.ResponseTypes = newClient.ResponseTypes;
             }
 
-            client.ScimProfile = newClient.ScimProfile;
             client.Secrets = newClient.Secrets;
             client.SectorIdentifierUri = newClient.SectorIdentifierUri;
             //client.SubjectType = newClient.SubjectType;
@@ -260,7 +259,7 @@
             if (client.Secrets.Length == 0
                 && client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.PrivateKeyJwt)
             {
-                client.Secrets = new []
+                client.Secrets = new[]
                 {
                     new ClientSecret
                     {

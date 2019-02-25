@@ -16,7 +16,6 @@ namespace SimpleAuth.Shared.Models
 {
     using Microsoft.IdentityModel.Tokens;
     using System;
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
     using System.Security.Claims;
 
@@ -58,6 +57,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The token lifetime.
         /// </value>
+        [DataMember(Name = "token_lifetime")]
         public TimeSpan TokenLifetime { get; set; } = TimeSpan.FromMinutes(30);
 
         /// <summary>
@@ -126,27 +126,32 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Gets or sets an array of Redirection URI values used by the client.
         /// </summary>
-        public ICollection<Uri> RedirectionUrls { get; set; } = new List<Uri>();
+        [DataMember(Name = "redirect_uris")]
+        public Uri[] RedirectionUrls { get; set; } = Array.Empty<Uri>();
 
         /// <summary>
         /// Gets or sets the type of application
         /// </summary>
+        [DataMember(Name = "application_type")]
         public string ApplicationType { get; set; } = ApplicationTypes.Web;
 
         ///// <summary>
         ///// Url for the Client's JSON Web Key Set document
         ///// </summary>
+        //[DataMember(Name = "jwks_uri")]
         //public Uri JwksUri { get; set; }
 
         /// <summary>
         /// Gets or sets the list of json web keys
         /// </summary>
+        [DataMember(Name = "jwks")]
         public JsonWebKeySet JsonWebKeys { get; set; } = new JsonWebKeySet();
 
         /// <summary>
         /// Gets or sets the list of contacts
         /// </summary>
-        public ICollection<string> Contacts { get; set; } = new List<string>();
+        [DataMember(Name = "contacts")]
+        public string[] Contacts { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the claims.
@@ -154,91 +159,103 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The claims.
         /// </value>
+        [DataMember(Name = "claims")]
         public Claim[] Claims { get; set; } = Array.Empty<Claim>();
 
         /// <summary>
         /// Get or set the sector identifier uri
         /// </summary>
+        [DataMember(Name = "sector_identifier_uri")]
         public Uri SectorIdentifierUri { get; set; }
 
         ///// <summary>
         ///// Gets or sets the subject type
         ///// </summary>
+        //[DataMember(Name = "subject_type")]
         //public string SubjectType { get; set; }
 
         /// <summary>
         /// Gets or sets the user info signed response algorithm
         /// </summary>
+        [DataMember(Name = "userinfo_signed_response_alg")]
         public string UserInfoSignedResponseAlg { get; set; }
 
         /// <summary>
         /// Gets or sets the user info encrypted response algorithm
         /// </summary>
+        [DataMember(Name = "userinfo_encrypted_response_alg")]
         public string UserInfoEncryptedResponseAlg { get; set; }
 
         /// <summary>
         /// Gets or sets the user info encrypted response enc
         /// </summary>
+        [DataMember(Name = "userinfo_encrypted_response_enc")]
         public string UserInfoEncryptedResponseEnc { get; set; }
 
         /// <summary>
         /// Gets or sets the request objects signing algorithm
         /// </summary>
+        [DataMember(Name = "request_object_signing_alg")]
         public string RequestObjectSigningAlg { get; set; }
 
         /// <summary>
         /// Gets or sets the request object encryption algorithm
         /// </summary>
+        [DataMember(Name = "request_object_encryption_alg")]
         public string RequestObjectEncryptionAlg { get; set; }
 
         /// <summary>
         /// Gets or sets the request object encryption enc
         /// </summary>
+        [DataMember(Name = "request_object_encryption_enc")]
         public string RequestObjectEncryptionEnc { get; set; }
 
         /// <summary>
         /// Gets or sets the token endpoint authentication signing algorithm
         /// </summary>
+        [DataMember(Name = "token_endpoint_auth_signing_alg")]
         public string TokenEndPointAuthSigningAlg { get; set; }
 
         ///// <summary>
         ///// Gets or sets the default max age
         ///// </summary>
+        //[DataMember(Name = "default_max_age")]
         //public double DefaultMaxAge { get; set; }
 
         /// <summary>
         /// Gets or sets the require authentication time
         /// </summary>
+        [DataMember(Name = "require_auth_time")]
         public bool RequireAuthTime { get; set; }
 
         /// <summary>
         /// Gets or sets the default acr values
         /// </summary>
+        [DataMember(Name = "default_acr_values")]
         public string DefaultAcrValues { get; set; }
 
         /// <summary>
         /// Gets or sets the initiate login uri
         /// </summary>
+        [DataMember(Name = "initiate_login_uri")]
         public Uri InitiateLoginUri { get; set; }
 
         /// <summary>
         /// Gets or sets the list of request uris
         /// </summary>
-        public ICollection<Uri> RequestUris { get; set; } = new List<Uri>();
-
-        /// <summary>
-        /// Gets or sets use SCIM protocol to access user information.
-        /// </summary>
-        public bool ScimProfile { get; set; }
+        [DataMember(Name = "request_uris")]
+        public Uri[] RequestUris { get; set; } = Array.Empty<Uri>();
 
         /// <summary>
         /// Client require PKCE.
         /// </summary>
+        [DataMember(Name = "require_pkce")]
         public bool RequirePkce { get; set; }
 
         /// <summary>
         /// Get or sets the post logout redirect uris.
         /// </summary>
-        public ICollection<Uri> PostLogoutRedirectUris { get; set; } = new List<Uri>();
+        [DataMember(Name = "post_logout_redirect_uris")]
+        public Uri[] PostLogoutRedirectUris { get; set; } = Array.Empty<Uri>();
     }
 }

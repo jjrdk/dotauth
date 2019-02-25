@@ -9,6 +9,7 @@
     using Shared.Requests;
     using System;
     using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -104,7 +105,7 @@
                 if (claim != null)
                 {
                     var client = await _clientRepository.GetById(claim, cancellationToken).ConfigureAwait(false);
-                    if (client?.PostLogoutRedirectUris != null && client.PostLogoutRedirectUris.Contains(request.PostLogoutRedirectUri))
+                    if (client?.PostLogoutRedirectUris != null && client.PostLogoutRedirectUris.Any(x => x == request.PostLogoutRedirectUri))
                     {
                         var redirectUrl = request.PostLogoutRedirectUri;
                         if (!string.IsNullOrWhiteSpace(request.State))

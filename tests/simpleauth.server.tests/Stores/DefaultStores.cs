@@ -138,7 +138,7 @@ namespace SimpleAuth.Server.Tests.Stores
                                 KeyOperations.Verify)),
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
+                    RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
                 },
                 new Client
                 {
@@ -162,7 +162,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     UserInfoSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
+                    RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
                 },
                 new Client
                 {
@@ -190,7 +190,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     UserInfoEncryptedResponseAlg = SecurityAlgorithms.EcdsaSha256,
                     UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
+                    RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
                 },
                 new Client
                 {
@@ -212,7 +212,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     ResponseTypes = new[] {ResponseTypeNames.IdToken},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
+                    RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
                 },
                 new Client
                 {
@@ -231,7 +231,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     ResponseTypes = new[] {ResponseTypeNames.Token},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
+                    RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
                 },
                 new Client
                 {
@@ -248,7 +248,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
+                    RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
                 },
                 new Client
                 {
@@ -264,7 +264,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     ResponseTypes = new[] {ResponseTypeNames.Token},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")}
+                    RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
                 },
                 new Client
                 {
@@ -280,7 +280,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     ResponseTypes = new[] {ResponseTypeNames.Token},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")},
+                    RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")},
                     JsonWebKeys = new[] {sharedCtx.ModelSignatureKey, sharedCtx.ModelEncryptionKey}.ToJwks()
                 },
                 new Client
@@ -301,7 +301,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256Signature, //SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new List<Uri> {new Uri("https://localhost:4200/callback")},
+                    RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")},
                     //JwksUri = new Uri("http://localhost:5000/jwks_client")
                 },
                 new Client
@@ -325,7 +325,7 @@ namespace SimpleAuth.Server.Tests.Stores
                             .AddKey(TestKeys.SuperSecretKey.CreateEncryptionJwk()),
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256, //SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new List<Uri> {new Uri("http://localhost:5000/callback")}
+                    RedirectionUrls = new [] {new Uri("http://localhost:5000/callback")}
                 },
                 new Client
                 {
@@ -347,7 +347,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     ResponseTypes = new[] {ResponseTypeNames.IdToken},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new List<Uri> {new Uri("http://localhost:5000/callback")}
+                    RedirectionUrls = new [] {new Uri("http://localhost:5000/callback")}
                 },
                 new Client
                 {
@@ -367,7 +367,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new List<Uri> {new Uri("http://localhost:5000/callback")}
+                    RedirectionUrls = new [] {new Uri("http://localhost:5000/callback")}
                 },
                 new Client
                 {
@@ -384,7 +384,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new List<Uri> {new Uri("http://localhost:5000/callback")},
+                    RedirectionUrls = new [] {new Uri("http://localhost:5000/callback")},
                     RequirePkce = true
                 },
                 new Client
@@ -402,7 +402,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new List<Uri> {new Uri("http://localhost:5000/callback")},
+                    RedirectionUrls = new [] {new Uri("http://localhost:5000/callback")},
                 },
                 // Certificate test client.
                 new Client
