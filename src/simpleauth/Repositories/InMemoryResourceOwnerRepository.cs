@@ -28,7 +28,7 @@
                 throw new ArgumentNullException(nameof(subject));
             }
 
-            var user = _users.FirstOrDefault(u => u.Id == subject);
+            var user = _users.FirstOrDefault(u => u.Subject == subject);
             if (user == null)
             {
                 return Task.FromResult(false);
@@ -51,7 +51,7 @@
                 throw new ArgumentNullException(nameof(id), "The parameter login is missing");
             }
 
-            var user = _users.FirstOrDefault(u => u.Id == id);
+            var user = _users.FirstOrDefault(u => u.Subject == id);
             return Task.FromResult(user);
         }
 
@@ -81,7 +81,7 @@
                 throw new ArgumentNullException(nameof(password));
             }
 
-            var user = _users.FirstOrDefault(u => u.Id == id && u.Password == password.ToSha256Hash());
+            var user = _users.FirstOrDefault(u => u.Subject == id && u.Password == password.ToSha256Hash());
             if (user == null)
             {
                 return Task.FromResult((ResourceOwner)null);
@@ -139,7 +139,7 @@
             IEnumerable<ResourceOwner> result = _users;
             if (parameter.Subjects != null)
             {
-                result = result.Where(r => parameter.Subjects.Any(s => r.Id.Contains(s)));
+                result = result.Where(r => parameter.Subjects.Any(s => r.Subject.Contains(s)));
             }
 
             var nbResult = result.Count();
@@ -169,7 +169,7 @@
                 throw new ArgumentNullException(nameof(resourceOwner));
             }
 
-            var user = _users.FirstOrDefault(u => u.Id == resourceOwner.Id);
+            var user = _users.FirstOrDefault(u => u.Subject == resourceOwner.Subject);
             if (user == null)
             {
                 return Task.FromResult(false);

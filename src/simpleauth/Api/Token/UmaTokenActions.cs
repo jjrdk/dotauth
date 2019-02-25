@@ -12,15 +12,16 @@ namespace SimpleAuth.Api.Token
     using Shared.Events.Uma;
     using Shared.Models;
     using Shared.Responses;
+    using SimpleAuth.Shared.Errors;
     using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Errors;
 
     internal sealed class UmaTokenActions
     {
@@ -89,7 +90,7 @@ namespace SimpleAuth.Api.Token
                 throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
-            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantTypes.UmaTicket))
+            if (client.GrantTypes == null || client.GrantTypes.All(x => x != GrantTypes.UmaTicket))
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidGrant,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantTypes.UmaTicket));

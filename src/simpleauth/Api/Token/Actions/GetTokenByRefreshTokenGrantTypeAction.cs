@@ -19,15 +19,16 @@ namespace SimpleAuth.Api.Token.Actions
     using Parameters;
     using Shared;
     using Shared.Models;
-    using System;
-    using System.Net.Http.Headers;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Threading;
-    using System.Threading.Tasks;
     using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Linq;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     internal sealed class GetTokenByRefreshTokenGrantTypeAction
     {
@@ -78,7 +79,7 @@ namespace SimpleAuth.Api.Token.Actions
             }
 
             // 2. Check client
-            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantTypes.RefreshToken))
+            if (client.GrantTypes == null || client.GrantTypes.All(x => x != GrantTypes.RefreshToken))
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidClient,

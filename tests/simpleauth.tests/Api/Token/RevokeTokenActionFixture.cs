@@ -81,7 +81,7 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = clientid,
-                Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientsecret}}
+                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientsecret}}
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -116,7 +116,7 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = clientid,
-                Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientsecret}}
+                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientsecret}}
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
@@ -149,7 +149,7 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}}
+                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}}
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 

@@ -25,12 +25,11 @@ namespace SimpleAuth.Tests.Api.Token
     using SimpleAuth;
     using SimpleAuth.Api.Token.Actions;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Events.Logging;
     using System;
-    using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Events.Logging;
     using Xunit;
 
     public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
@@ -101,7 +100,7 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } }
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } }
             };
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
@@ -145,8 +144,8 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ResponseTypes = Array.Empty<string>(),
                 ClientId = clientId,
-                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-                GrantTypes = new[] { GrantTypes.AuthorizationCode }
+                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}},
+                GrantTypes = new[] {GrantTypes.AuthorizationCode}
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
             //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
@@ -188,7 +187,7 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
                 GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code }
             };
@@ -232,7 +231,7 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 RequirePkce = true,
                 ClientId = clientId,
-                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
                 GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code }
             };
@@ -273,7 +272,7 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
                 GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code }
             };
@@ -320,7 +319,7 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
                 GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code }
             };
@@ -365,7 +364,7 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
                 GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code }
             };
@@ -417,7 +416,7 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
                 GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code }
             };
@@ -469,10 +468,10 @@ namespace SimpleAuth.Tests.Api.Token
 
             var client = new Client
             {
-                AllowedScopes = new List<Scope> { new Scope { Name = "scope" } },
+                AllowedScopes = new[] { "scope" },
                 RedirectionUrls = new[] { new Uri("https://redirectUri") },
                 ClientId = clientId,
-                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
                 GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code },
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
@@ -544,7 +543,7 @@ namespace SimpleAuth.Tests.Api.Token
                 ClientName = clientId,
                 RedirectionUrls = new[] { new Uri("https://redirectUri") },
                 ClientId = clientId,
-                Secrets = { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
                 GrantTypes = new[] { GrantTypes.AuthorizationCode },
                 ResponseTypes = new[] { ResponseTypeNames.Code },
                 JsonWebKeys =
@@ -597,7 +596,9 @@ namespace SimpleAuth.Tests.Api.Token
             _tokenStoreFake = new Mock<ITokenStore>();
             _clientStore = new Mock<IClientStore>();
             _simpleAuthOptions = new RuntimeSettings(
-                authorizationCodeValidityPeriod: authorizationCodeValidity == default ? TimeSpan.FromSeconds(3600) : authorizationCodeValidity);
+                authorizationCodeValidityPeriod: authorizationCodeValidity == default
+                    ? TimeSpan.FromSeconds(3600)
+                    : authorizationCodeValidity);
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
                 _authorizationCodeStoreFake.Object,
                 _simpleAuthOptions,

@@ -200,44 +200,19 @@ namespace SimpleAuth.Extensions
             };
         }
 
-        public static PagedResponse<ResourceOwnerResponse> ToDto(this GenericResult<ResourceOwner> parameter)
+        public static PagedResponse<ResourceOwner> ToDto(this GenericResult<ResourceOwner> parameter)
         {
             if (parameter == null)
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            return new PagedResponse<ResourceOwnerResponse>
+            return new PagedResponse<ResourceOwner>
             {
                 StartIndex = parameter.StartIndex,
                 TotalResults = parameter.TotalResults,
-                Content = parameter.Content == null ? Array.Empty<ResourceOwnerResponse>() : parameter.Content.Select(ToDto).ToArray()
+                Content = parameter.Content ?? Array.Empty<ResourceOwner>()
             };
-        }
-
-        public static ResourceOwnerResponse ToDto(this ResourceOwner resourceOwner)
-        {
-            var claims = new List<KeyValuePair<string, string>>();
-            if (resourceOwner.Claims != null)
-            {
-                claims = resourceOwner.Claims.Select(s => new KeyValuePair<string, string>(s.Type, s.Value)).ToList();
-            }
-
-            return new ResourceOwnerResponse
-            {
-                Login = resourceOwner.Id,
-                Password = resourceOwner.Password,
-                IsLocalAccount = resourceOwner.IsLocalAccount,
-                Claims = claims,
-                TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication,
-                CreateDateTime = resourceOwner.CreateDateTime,
-                UpdateDateTime = resourceOwner.UpdateDateTime
-            };
-        }
-
-        public static List<ResourceOwnerResponse> ToDtos(this ICollection<ResourceOwner> resourceOwners)
-        {
-            return resourceOwners.Select(r => r.ToDto()).ToList();
         }
 
         public static AuthorizationParameter ToParameter(this AuthorizationRequest request)

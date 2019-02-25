@@ -244,7 +244,7 @@ namespace SimpleAuth.Controllers
                 await SetTwoFactorCookie(claims.ToArray()).ConfigureAwait(false);
                 try
                 {
-                    await _generateAndSendCode.Send(resourceOwner.Id, cancellationToken).ConfigureAwait(false);
+                    await _generateAndSendCode.Send(resourceOwner.Subject, cancellationToken).ConfigureAwait(false);
                     //_openIdEventSource.GetConfirmationCode(code);
                     return RedirectToAction("SendCode");
                 }
@@ -566,7 +566,7 @@ namespace SimpleAuth.Controllers
             if (resourceOwner != null && !string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
             {
                 await SetTwoFactorCookie(claims).ConfigureAwait(false);
-                await _generateAndSendCode.Send(resourceOwner.Id, cancellationToken).ConfigureAwait(false);
+                await _generateAndSendCode.Send(resourceOwner.Subject, cancellationToken).ConfigureAwait(false);
                 return RedirectToAction("SendCode", new { code = request });
             }
 
@@ -703,7 +703,7 @@ namespace SimpleAuth.Controllers
             var subject = await _subjectBuilder.BuildSubject(openidClaims).ConfigureAwait(false);
             var record = new ResourceOwner //AddUserParameter(subject, ClientId.Create(), openidClaims)
             {
-                Id = subject,
+                Subject = subject,
                 ExternalLogins =
                     new[]
                     {

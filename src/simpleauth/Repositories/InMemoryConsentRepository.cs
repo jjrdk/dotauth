@@ -44,7 +44,7 @@
             }
 
             return Task.FromResult<IReadOnlyCollection<Consent>>(
-                _consents.Where(c => c.ResourceOwner.Id == subject).ToList());
+                _consents.Where(c => c.ResourceOwner.Subject == subject).ToList());
         }
 
         public Task<bool> Insert(Consent record, CancellationToken cancellationToken = default)

@@ -27,15 +27,24 @@
                 new Mock<IScopeRepository>().Object,
                 new Mock<IClientStore>().Object,
                 new Mock<IConsentRepository>().Object,
-                new InMemoryJwksRepository(), 
+                new InMemoryJwksRepository(),
                 new NoOpPublisher());
         }
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(null, null, null, null, CancellationToken.None)).ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(new AuthorizationParameter(), null, null, null, CancellationToken.None)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                    () => _getAuthorizationCodeOperation.Execute(null, null, null, null, CancellationToken.None))
+                .ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                    () => _getAuthorizationCodeOperation.Execute(
+                        new AuthorizationParameter(),
+                        null,
+                        null,
+                        null,
+                        CancellationToken.None))
+                .ConfigureAwait(false);
         }
 
         [Fact]
@@ -55,19 +64,23 @@
             //    .Returns(false);
             var client = new Client
             {
-                GrantTypes = new[] { GrantTypes.ClientCredentials },
-                AllowedScopes = new[] { new Scope { Name = scope } },
-                RedirectionUrls = new[] { new Uri(HttpsLocalhost), }
+                GrantTypes = new[] {GrantTypes.ClientCredentials},
+                AllowedScopes = new[] {scope},
+                RedirectionUrls = new[] {new Uri(HttpsLocalhost),}
             };
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(() =>
-                    _getAuthorizationCodeOperation.Execute(authorizationParameter, null, client, null, CancellationToken.None))
+            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
+                    () => _getAuthorizationCodeOperation.Execute(
+                        authorizationParameter,
+                        null,
+                        client,
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
 
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
-            Assert.Equal(string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
-                    clientId,
-                    "authorization_code"),
+            Assert.Equal(
+                string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, clientId, "authorization_code"),
                 exception.Message);
         }
 
@@ -79,9 +92,9 @@
 
             var client = new Client
             {
-                ResponseTypes = new[] { ResponseTypeNames.Code },
-                AllowedScopes = new[] { new Scope { Name = scope } },
-                RedirectionUrls = new[] { new Uri(HttpsLocalhost), }
+                ResponseTypes = new[] {ResponseTypeNames.Code},
+                AllowedScopes = new[] {scope},
+                RedirectionUrls = new[] {new Uri(HttpsLocalhost),}
             };
             var authorizationParameter = new AuthorizationParameter
             {
@@ -92,7 +105,9 @@
                 Claims = null
             };
 
-            var result = await _getAuthorizationCodeOperation.Execute(authorizationParameter, null, client, null, CancellationToken.None).ConfigureAwait(false);
+            var result = await _getAuthorizationCodeOperation
+                .Execute(authorizationParameter, null, client, null, CancellationToken.None)
+                .ConfigureAwait(false);
 
             Assert.NotNull(result.RedirectInstruction);
         }

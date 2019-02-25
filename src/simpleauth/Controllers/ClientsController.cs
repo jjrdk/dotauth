@@ -56,7 +56,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpGet]
         [Authorize("manager")]
-        public async Task<ActionResult<IEnumerable<Client>>> GetAll(CancellationToken cancellationToken)
+        public async Task<ActionResult<Client[]>> GetAll(CancellationToken cancellationToken)
         {
             var result = await _clientStore.GetAll(cancellationToken).ConfigureAwait(false);
             return new OkObjectResult(result);

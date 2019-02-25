@@ -32,6 +32,7 @@
         private readonly UpdateUserCredentialsOperation _updateUserCredentialsOperation;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
         private readonly IConsentRepository _consentRepository;
+        private readonly IScopeRepository _scopeRepository;
         private readonly IUrlHelper _urlHelper;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
 
@@ -44,6 +45,7 @@
         /// <param name="urlHelperFactory">The URL helper factory.</param>
         /// <param name="actionContextAccessor">The action context accessor.</param>
         /// <param name="consentRepository">The consent repository.</param>
+        /// <param name="scopeRepository"></param>
         /// <param name="twoFactorAuthenticationHandler">The two factor authentication handler.</param>
         public UserController(
             IResourceOwnerRepository resourceOwnerRepository,
@@ -52,6 +54,7 @@
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IConsentRepository consentRepository,
+            IScopeRepository scopeRepository,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler)
             : base(authenticationService)
         {
@@ -62,6 +65,7 @@
             _updateUserCredentialsOperation = new UpdateUserCredentialsOperation(resourceOwnerRepository);
             _authenticationSchemeProvider = authenticationSchemeProvider;
             _consentRepository = consentRepository;
+            _scopeRepository = scopeRepository;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
         }
@@ -405,18 +409,22 @@
             var result = new List<ConsentViewModel>();
             if (consents != null)
             {
+                var scopes = (await _scopeRepository.SearchByNames(
+                        cancellationToken,
+                        consents.SelectMany(x => x.GrantedScopes).Distinct().ToArray())
+                    .ConfigureAwait(false)).ToDictionary(x => x.Name, x => x);
                 result.AddRange(
                     from consent in consents
                     let client = consent.Client
-                    let scopes = consent.GrantedScopes
+                    let scopeNames = consent.GrantedScopes
                     let claims = consent.Claims
                     select new ConsentViewModel
                     {
                         Id = consent.Id,
                         ClientDisplayName = client == null ? string.Empty : client.ClientName,
-                        AllowedScopeDescriptions = scopes?.Any() != true
+                        AllowedScopeDescriptions = scopeNames?.Any() != true
                             ? new List<string>()
-                            : scopes.Select(g => g.Description).ToList(),
+                            : scopeNames.Select(g => scopes[g].Description).ToList(),
                         AllowedIndividualClaims = claims ?? new List<string>(),
                         //LogoUri = client?.LogoUri?.AbsoluteUri,
                         PolicyUri = client?.PolicyUri?.AbsoluteUri,

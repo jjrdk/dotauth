@@ -36,7 +36,7 @@ namespace SimpleAuth.Tests.WebSite.Consent
                 _consentRepository.Object,
                 new Mock<IAuthorizationCodeStore>().Object,
                 new Mock<ITokenStore>().Object,
-                new InMemoryJwksRepository(), 
+                new InMemoryJwksRepository(),
                 new Mock<IEventPublisher>().Object);
         }
 
@@ -49,8 +49,7 @@ namespace SimpleAuth.Tests.WebSite.Consent
                 .ThrowsAsync<ArgumentNullException>(
                     () => _displayConsentAction.Execute(null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<ArgumentNullException>(
                     () => _displayConsentAction.Execute(authorizationParameter, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
@@ -70,28 +69,27 @@ namespace SimpleAuth.Tests.WebSite.Consent
                         .ToSet(),
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 ClientId = clientid,
-                AllowedScopes = new List<Scope> { new Scope { Name = scope, IsDisplayedInConsent = true } }
+                AllowedScopes = new[] {scope}
             };
-            var consent = new Consent { Client = client, GrantedScopes = new List<Scope> { new Scope { Name = scope } } };
+            var consent = new Consent {Client = client, GrantedScopes = new[] {scope}};
             _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Consent> { consent });
+                .ReturnsAsync(new List<Consent> {consent});
             _scopeRepositoryFake.Setup(x => x.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-                .ReturnsAsync(new[] { new Scope { Name = scope, IsDisplayedInConsent = true } });
-            var claimsIdentity = new ClaimsIdentity(new[] { new Claim("sub", "test"), }, "test");
+                .ReturnsAsync(new[] {new Scope {Name = scope, IsDisplayedInConsent = true}});
+            var claimsIdentity = new ClaimsIdentity(new[] {new Claim("sub", "test"),}, "test");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
             var authorizationParameter = new AuthorizationParameter
             {
-                ClientId = clientid,
-                Scope = scope,
-                ResponseMode = ResponseModes.Fragment
+                ClientId = clientid, Scope = scope, ResponseMode = ResponseModes.Fragment
             };
 
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(client);
             _clientRepositoryFake.Setup(x => x.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Array.Empty<Client>());
-            var result = await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None)
+            var result = await _displayConsentAction
+                .Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.Equal(ResponseModes.Fragment, result.EndpointResult.RedirectInstruction.ResponseMode);
@@ -103,7 +101,7 @@ namespace SimpleAuth.Tests.WebSite.Consent
         {
             const string clientId = "clientId";
             const string state = "state";
-            var claimsIdentity = new ClaimsIdentity(new[] { new Claim("sub", "test") }, "test");
+            var claimsIdentity = new ClaimsIdentity(new[] {new Claim("sub", "test")}, "test");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var authorizationParameter = new AuthorizationParameter
             {
@@ -115,8 +113,8 @@ namespace SimpleAuth.Tests.WebSite.Consent
             };
             var consent = new Consent
             {
-                GrantedScopes = new List<Scope> { new Scope { Name = "scope" } },
-                Client = new Client { ClientId = clientId, AllowedScopes = new List<Scope> { new Scope { Name = "scope" } } }
+                GrantedScopes = new[] {"scope"},
+                Client = new Client {ClientId = clientId, AllowedScopes = new[] {"scope"}}
             };
             var returnedClient = new Client
             {
@@ -133,9 +131,13 @@ namespace SimpleAuth.Tests.WebSite.Consent
             _clientRepositoryFake.Setup(x => x.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Array.Empty<Client>());
             _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new[] { consent });
+                .ReturnsAsync(new[] {consent});
             var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, "issuer", CancellationToken.None))
+                    () => _displayConsentAction.Execute(
+                        authorizationParameter,
+                        claimsPrincipal,
+                        "issuer",
+                        CancellationToken.None))
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
@@ -151,13 +153,17 @@ namespace SimpleAuth.Tests.WebSite.Consent
             const string state = "state";
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var authorizationParameter = new AuthorizationParameter { ClientId = clientId, State = state };
+            var authorizationParameter = new AuthorizationParameter {ClientId = clientId, State = state};
 
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Client)null);
+                .ReturnsAsync((Client) null);
 
             var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None))
+                    () => _displayConsentAction.Execute(
+                        authorizationParameter,
+                        claimsPrincipal,
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.Equal(string.Format(ErrorDescriptions.ClientIsNotValid, clientId), exception.Message);
@@ -170,23 +176,22 @@ namespace SimpleAuth.Tests.WebSite.Consent
             const string clientId = "clientId";
             const string state = "state";
             const string scopeName = "profile";
-            var claimsIdentity = new ClaimsIdentity(new[] { new Claim("sub", "test") });
+            var claimsIdentity = new ClaimsIdentity(new[] {new Claim("sub", "test")});
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Client();
             var authorizationParameter = new AuthorizationParameter
             {
-                ClientId = clientId,
-                State = state,
-                Claims = null,
-                Scope = scopeName
+                ClientId = clientId, State = state, Claims = null, Scope = scopeName
             };
-            var scopes = new[] { new Scope { IsDisplayedInConsent = true, Name = scopeName } };
+            var scopes = new[] {new Scope {IsDisplayedInConsent = true, Name = scopeName}};
 
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(client);
-            _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>())).ReturnsAsync(scopes);
+            _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
+                .ReturnsAsync(scopes);
 
-            await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None).ConfigureAwait(false);
+            await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None)
+                .ConfigureAwait(false);
 
             Assert.Contains(scopes, s => s.Name == scopeName);
         }

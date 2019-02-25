@@ -63,7 +63,7 @@
                 new Claim(OpenIdClaimTypes.PhoneNumberVerified, "false")
             };
             var id = await _subjectBuilder.BuildSubject(claims).ConfigureAwait(false);
-            var record = new ResourceOwner {Id = id, Password = Id.Create().ToSha256Hash(), Claims = claims};
+            var record = new ResourceOwner {Subject = id, Password = Id.Create().ToSha256Hash(), Claims = claims};
 
             // 3.2 Add user.
             await _addUser.Execute(record, cancellationToken).ConfigureAwait(false);

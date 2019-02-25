@@ -28,14 +28,14 @@
             _consentRepository = new Mock<IConsentRepository>();
             var scopeRepository = new Mock<IScopeRepository>();
             scopeRepository.Setup(x => x.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-                .ReturnsAsync(new[] { new Scope { Name = "scope" } });
+                .ReturnsAsync(new[] {new Scope {Name = "scope"}});
             _authenticateHelper = new AuthenticateHelper(
                 new Mock<IAuthorizationCodeStore>().Object,
                 new Mock<ITokenStore>().Object,
                 scopeRepository.Object,
                 _consentRepository.Object,
                 _clientRepositoryStub.Object,
-                new InMemoryJwksRepository(), 
+                new InMemoryJwksRepository(),
                 new DefaultEventPublisher());
         }
 
@@ -113,11 +113,11 @@
                 .ReturnsAsync(Array.Empty<Client>());
             var consent = new Consent
             {
-                GrantedScopes = new List<Scope> { new Scope { Name = "scope" } },
-                Client = new Client { ClientId = "client", AllowedScopes = new List<Scope> { new Scope { Name = "scope" } } }
+                GrantedScopes = new[] {"scope"},
+                Client = new Client {ClientId = "client", AllowedScopes = new[] {"scope"}}
             };
             _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new[] { consent });
+                .ReturnsAsync(new[] {consent});
 
             var actionResult = await _authenticateHelper.ProcessRedirection(
                     authorizationParameter,

@@ -39,7 +39,7 @@ namespace SimpleAuth.Extensions
                     string.Join(",", duplicates)));
             }
 
-            var scopeAllowed = client.AllowedScopes.Select(a => a.Name).ToList();
+            var scopeAllowed = client.AllowedScopes;
             var scopesNotAllowedOrInvalid = scopes
                 .Where(s => !scopeAllowed.Contains(s))
                 .ToList();

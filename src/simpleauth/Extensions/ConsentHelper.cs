@@ -40,7 +40,10 @@ namespace SimpleAuth.Extensions
                 throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
-            var consents = (await consentRepository.GetConsentsForGivenUser(subject, cancellationToken).ConfigureAwait(false))?.ToArray() ?? Array.Empty<Consent>();
+            var consents =
+                (await consentRepository.GetConsentsForGivenUser(subject, cancellationToken).ConfigureAwait(false))
+                ?.ToArray()
+                ?? Array.Empty<Consent>();
             Consent confirmedConsent = null;
             if (consents.Length > 0)
             {
@@ -61,9 +64,9 @@ namespace SimpleAuth.Extensions
                     confirmedConsent = consents.FirstOrDefault(
                         c => c.Client.ClientId == authorizationParameter.ClientId
                              && c.GrantedScopes != null
-                             && c.GrantedScopes.Count > 0
-                             && scopeNames.Length == c.GrantedScopes.Count
-                             && c.GrantedScopes.All(g => scopeNames.Contains(g.Name)));
+                             && c.GrantedScopes.Length > 0
+                             && scopeNames.Length == c.GrantedScopes.Length
+                             && c.GrantedScopes.All(g => scopeNames.Contains(g)));
                 }
             }
 

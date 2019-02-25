@@ -66,7 +66,7 @@ namespace SimpleAuth.Controllers
         [Authorize("manager")]
         public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            var resourceOwners = (await _resourceOwnerRepository.GetAll(cancellationToken).ConfigureAwait(false)).ToDtos();
+            var resourceOwners = (await _resourceOwnerRepository.GetAll(cancellationToken).ConfigureAwait(false));
             return new OkObjectResult(resourceOwners);
         }
 
@@ -89,7 +89,7 @@ namespace SimpleAuth.Controllers
                     string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, id));
             }
 
-            return Ok(resourceOwner.ToDto());
+            return Ok(resourceOwner);
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace SimpleAuth.Controllers
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
-            
+
             var resourceOwner =
                 await _resourceOwnerRepository.Get(request.Login, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
@@ -236,8 +236,9 @@ namespace SimpleAuth.Controllers
             if (await _addUserOperation.Execute(
                     new ResourceOwner
                     {
-                        Id = addResourceOwnerRequest.Subject,
-                        Password = addResourceOwnerRequest.Password
+                        Subject = addResourceOwnerRequest.Subject,
+                        Password = addResourceOwnerRequest.Password,
+                        IsLocalAccount = true,
                     },
                     cancellationToken)
                 .ConfigureAwait(false))

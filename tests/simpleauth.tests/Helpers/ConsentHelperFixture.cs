@@ -4,12 +4,12 @@
     using Parameters;
     using Shared.Models;
     using Shared.Repositories;
+    using SimpleAuth.Extensions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Extensions;
     using Xunit;
 
     public sealed class ConsentHelperFixture
@@ -86,11 +86,7 @@
             var authorizationParameter = new AuthorizationParameter {ClientId = clientId, Scope = scope};
             IReadOnlyCollection<Consent> consents = new List<Consent>
             {
-                new Consent
-                {
-                    Client = new Client {ClientId = clientId},
-                    GrantedScopes = new List<Scope> {new Scope {Name = scope}}
-                }
+                new Consent {Client = new Client {ClientId = clientId}, GrantedScopes = new[] {scope}}
             };
 
             _consentRepositoryFake
@@ -102,7 +98,7 @@
                 .ConfigureAwait(false);
 
             Assert.Single(result.GrantedScopes);
-            Assert.Equal(scope, result.GrantedScopes.First().Name);
+            Assert.Equal(scope, result.GrantedScopes.First());
         }
 
         [Fact]
@@ -122,11 +118,7 @@
             {
                 new Consent
                 {
-                    Client = new Client {ClientId = clientId},
-                    GrantedScopes = new List<Scope>
-                    {
-                        new Scope {Name = profileScope}, new Scope {Name = openIdScope}
-                    }
+                    Client = new Client {ClientId = clientId}, GrantedScopes = new[] {profileScope, openIdScope}
                 }
             };
 

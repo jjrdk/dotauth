@@ -23,14 +23,15 @@ namespace SimpleAuth.Api.Token
     using Shared;
     using Shared.Events.OAuth;
     using Shared.Models;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Events.Logging;
     using System;
+    using System.Linq;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Events.Logging;
 
     internal class TokenActions
     {
@@ -298,7 +299,7 @@ namespace SimpleAuth.Api.Token
             }
 
             // 2. Check client
-            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantTypes.ClientCredentials))
+            if (client.GrantTypes == null || client.GrantTypes.All(x => x != GrantTypes.ClientCredentials))
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidClient,

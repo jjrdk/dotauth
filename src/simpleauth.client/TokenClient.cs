@@ -22,6 +22,7 @@ namespace SimpleAuth.Client
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
 
     /// <summary>
     /// Defines the token client.

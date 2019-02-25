@@ -3,8 +3,8 @@
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Newtonsoft.Json;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Responses;
 
     internal sealed class GetResourceOwnerOperation
@@ -16,7 +16,7 @@
             _httpClient = httpClientFactory;
         }
 
-        public async Task<GenericResponse<ResourceOwnerResponse>> Execute(
+        public async Task<GenericResponse<ResourceOwner>> Execute(
             Uri clientsUri,
             string authorizationHeaderValue = null)
         {
@@ -40,17 +40,17 @@
             }
             catch (Exception)
             {
-                return new GenericResponse<ResourceOwnerResponse>
+                return new GenericResponse<ResourceOwner>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = Serializer.Default.Deserialize<ErrorResponse>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
 
-            return new GenericResponse<ResourceOwnerResponse>
+            return new GenericResponse<ResourceOwner>
             {
-                Content = JsonConvert.DeserializeObject<ResourceOwnerResponse>(content)
+                Content = Serializer.Default.Deserialize<ResourceOwner>(content)
             };
         }
     }

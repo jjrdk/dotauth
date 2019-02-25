@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
 
@@ -18,7 +19,7 @@
             _httpClient = httpClientFactory;
         }
 
-        public async Task<GenericResponse<PagedResponse<ResourceOwnerResponse>>> Execute(Uri resourceOwnerUri, SearchResourceOwnersRequest parameter, string authorizationHeaderValue = null)
+        public async Task<GenericResponse<PagedResponse<ResourceOwner>>> Execute(Uri resourceOwnerUri, SearchResourceOwnersRequest parameter, string authorizationHeaderValue = null)
         {
             if (resourceOwnerUri == null)
             {
@@ -47,22 +48,22 @@
             }
             catch
             {
-                var result = new GenericResponse<PagedResponse<ResourceOwnerResponse>>
+                var result = new GenericResponse<PagedResponse<ResourceOwner>>
                 {
                     ContainsError = true,
                     HttpStatus = httpResult.StatusCode
                 };
                 if (!string.IsNullOrWhiteSpace(content))
                 {
-                    result.Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(content);
+                    result.Error = Serializer.Default.Deserialize<ErrorResponseWithState>(content);
                 }
 
                 return result;
             }
 
-            return new GenericResponse<PagedResponse<ResourceOwnerResponse>>
+            return new GenericResponse<PagedResponse<ResourceOwner>>
             {
-                Content = JsonConvert.DeserializeObject<PagedResponse<ResourceOwnerResponse>>(content)
+                Content = Serializer.Default.Deserialize<PagedResponse<ResourceOwner>>(content)
             };
         }
     }

@@ -3,30 +3,29 @@
     using Shared;
     using Shared.Models;
     using Shared.Requests;
+    using SimpleAuth.Manager.Client;
+    using SimpleAuth.Shared.Errors;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using SimpleAuth.Manager.Client;
-    using SimpleAuth.Shared.Errors;
     using Xunit;
 
     public class ClientFixture
     {
         private const string OpenidmanagerConfiguration = "http://localhost:5000/.well-known/openid-configuration";
         private readonly TestManagerServerFixture _server;
-        private readonly OpenIdClients _openidClients;
+        private readonly ManagementClient _openidClients;
 
         public ClientFixture()
         {
             _server = new TestManagerServerFixture();
-            _openidClients = new OpenIdClients(_server.Client);
+            _openidClients = ManagementClient.Create(_server.Client, new Uri(OpenidmanagerConfiguration)).Result;
         }
 
         [Fact]
         public async Task When_Pass_No_Parameter_Then_Error_Is_Returned()
         {
-            var result = await _openidClients.ResolveAdd(new Uri(OpenidmanagerConfiguration), new Client())
-                .ConfigureAwait(false);
+            var result = await _openidClients.AddClient(new Client()).ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Error);
@@ -35,12 +34,11 @@
         [Fact]
         public async Task When_Add_User_And_Redirect_Uri_Contains_Fragment_Then_Error_Is_Returned()
         {
-            var result = await _openidClients.ResolveAdd(
-                    new Uri(OpenidmanagerConfiguration),
+            var result = await _openidClients.AddClient(
                     new Client
                     {
                         JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                        AllowedScopes = new[] {new Scope {Name = "openid"}},
+                        AllowedScopes = new[] {"openid"},
                         ClientId = "test",
                         ClientName = "name",
                         RedirectionUrls = new[] {new Uri("http://localhost#fragment")},
@@ -58,8 +56,7 @@
         [Fact]
         public async Task When_Update_And_Pass_No_Parameter_Then_Error_Is_Returned()
         {
-            var result = await _openidClients.ResolveUpdate(new Uri(OpenidmanagerConfiguration), new Client())
-                .ConfigureAwait(false);
+            var result = await _openidClients.UpdateClient(new Client()).ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Error);
@@ -72,7 +69,7 @@
             var client = new Client
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                AllowedScopes = new[] {new Scope {Name = "openid"}},
+                AllowedScopes = new[] {"openid"},
                 RequestUris = new[] {new Uri("https://localhost"),},
                 ApplicationType = ApplicationTypes.Web,
                 ClientName = "client_name",
@@ -85,12 +82,10 @@
                 PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback")},
                 //LogoUri = new Uri("http://logouri.com")
             };
-            var addClientResult = await _openidClients.ResolveAdd(new Uri(OpenidmanagerConfiguration), client)
-                .ConfigureAwait(false);
+            var addClientResult = await _openidClients.AddClient(client).ConfigureAwait(false);
             client = addClientResult.Content;
-            client.AllowedScopes = new[] {new Scope {Name = "not_valid"}};
-            var result = await _openidClients.ResolveUpdate(new Uri(OpenidmanagerConfiguration), client)
-                .ConfigureAwait(false);
+            client.AllowedScopes = new[] {"not_valid"};
+            var result = await _openidClients.UpdateClient(client).ConfigureAwait(false);
 
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
@@ -101,8 +96,7 @@
         [Fact]
         public async Task When_Get_Unknown_Client_Then_Error_Is_Returned()
         {
-            var newClient = await _openidClients.ResolveGet(new Uri(OpenidmanagerConfiguration), "unknown_client")
-                .ConfigureAwait(false);
+            var newClient = await _openidClients.GetClient("unknown_client").ConfigureAwait(false);
 
             Assert.True(newClient.ContainsError);
             Assert.Equal(ErrorCodes.InvalidRequestCode, newClient.Error.Error);
@@ -112,8 +106,7 @@
         [Fact]
         public async Task When_Delete_An_Unknown_Client_Then_Error_Is_Returned()
         {
-            var newClient = await _openidClients.ResolveDelete(new Uri(OpenidmanagerConfiguration), "unknown_client")
-                .ConfigureAwait(false);
+            var newClient = await _openidClients.DeleteClient("unknown_client").ConfigureAwait(false);
 
             Assert.True(newClient.ContainsError);
         }
@@ -124,7 +117,7 @@
             var client = new Client
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                AllowedScopes = new[] {new Scope {Name = "openid"}},
+                AllowedScopes = new[] {"openid"},
                 ApplicationType = ApplicationTypes.Web,
                 ClientName = "client_name",
                 IdTokenSignedResponseAlg = "RS256",
@@ -149,14 +142,11 @@
                 PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback"),},
                 //LogoUri = new Uri("http://logouri.com")
             };
-            var result = await _openidClients.ResolveAdd(new Uri(OpenidmanagerConfiguration), client)
-                .ConfigureAwait(false);
+            var result = await _openidClients.AddClient(client).ConfigureAwait(false);
 
             Assert.False(result.ContainsError, result.Error?.ErrorDescription);
 
-            var newClient = await _openidClients
-                .ResolveGet(new Uri(OpenidmanagerConfiguration), result.Content.ClientId)
-                .ConfigureAwait(false);
+            var newClient = await _openidClients.GetClient(result.Content.ClientId).ConfigureAwait(false);
 
             Assert.False(newClient.ContainsError);
             Assert.Equal(ApplicationTypes.Web, newClient.Content.ApplicationType);
@@ -168,8 +158,8 @@
             Assert.Single(newClient.Content.Contacts);
             Assert.Single(newClient.Content.RedirectionUrls);
             Assert.Single(newClient.Content.PostLogoutRedirectUris);
-            Assert.Equal(3, newClient.Content.GrantTypes.Count);
-            Assert.Equal(3, newClient.Content.ResponseTypes.Count);
+            Assert.Equal(3, newClient.Content.GrantTypes.Length);
+            Assert.Equal(3, newClient.Content.ResponseTypes.Length);
         }
 
         [Fact]
@@ -178,7 +168,7 @@
             var client = new Client
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                AllowedScopes = new[] {new Scope {Name = "openid"}},
+                AllowedScopes = new[] {"openid"},
                 ApplicationType = ApplicationTypes.Web,
                 ClientName = "client_name",
                 ClientUri = new Uri("http://clienturi.com"),
@@ -192,35 +182,30 @@
                 //LogoUri = new Uri("http://logouri.com")
             };
 
-            var addClientResult = await _openidClients.ResolveAdd(new Uri(OpenidmanagerConfiguration), client)
-                .ConfigureAwait(false);
+            var addClientResult = await _openidClients.AddClient(client).ConfigureAwait(false);
             client = addClientResult.Content;
             client.PostLogoutRedirectUris = new[]
             {
                 new Uri("http://localhost/callback"), new Uri("http://localhost/callback2"),
             };
             client.GrantTypes = new[] {GrantTypes.AuthorizationCode, GrantTypes.Implicit,};
-            var result = await _openidClients.ResolveUpdate(new Uri(OpenidmanagerConfiguration), client)
-                .ConfigureAwait(false);
-            var newClient = await _openidClients
-                .ResolveGet(new Uri(OpenidmanagerConfiguration), addClientResult.Content.ClientId)
-                .ConfigureAwait(false);
+            var result = await _openidClients.UpdateClient(client).ConfigureAwait(false);
+            var newClient = await _openidClients.GetClient(addClientResult.Content.ClientId).ConfigureAwait(false);
 
             Assert.False(result.ContainsError);
             Assert.Equal(2, newClient.Content.PostLogoutRedirectUris.Count);
             Assert.Single(newClient.Content.RedirectionUrls);
-            Assert.Equal(2, newClient.Content.GrantTypes.Count);
+            Assert.Equal(2, newClient.Content.GrantTypes.Length);
         }
 
         [Fact]
         public async Task When_Delete_Client_Then_Ok_Is_Returned()
         {
-            var addClientResult = await _openidClients.ResolveAdd(
-                    new Uri(OpenidmanagerConfiguration),
+            var addClientResult = await _openidClients.AddClient(
                     new Client
                     {
                         JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                        AllowedScopes = new[] {new Scope {Name = "openid"}},
+                        AllowedScopes = new[] {"openid"},
                         ApplicationType = ApplicationTypes.Web,
                         ClientName = "client_name",
                         ClientUri = new Uri("http://clienturi.com"),
@@ -235,10 +220,8 @@
                     })
                 .ConfigureAwait(false);
 
-            var deleteResult = await _openidClients.ResolveDelete(
-                    new Uri(OpenidmanagerConfiguration),
-                    addClientResult.Content.ClientId)
-                .ConfigureAwait(false);
+            var deleteResult =
+                await _openidClients.DeleteClient(addClientResult.Content.ClientId).ConfigureAwait(false);
 
             Assert.False(deleteResult.ContainsError);
         }
@@ -246,11 +229,10 @@
         [Fact]
         public async Task When_Search_One_Client_Then_One_Client_Is_Returned()
         {
-            var result = await _openidClients.ResolveAdd(
-                    new Uri(OpenidmanagerConfiguration),
+            var result = await _openidClients.AddClient(
                     new Client
                     {
-                        AllowedScopes = new[] {new Scope {Name = "openid"}},
+                        AllowedScopes = new[] {"openid"},
                         RequestUris = new[] {new Uri("https://localhost"),},
                         ApplicationType = ApplicationTypes.Web,
                         ClientName = "client_name",
@@ -281,8 +263,7 @@
                     })
                 .ConfigureAwait(false);
 
-            var searchResult = await _openidClients.ResolveSearch(
-                    new Uri(OpenidmanagerConfiguration),
+            var searchResult = await _openidClients.SearchClients(
                     new SearchClientsRequest {StartIndex = 0, NbResults = 1})
                 .ConfigureAwait(false);
 

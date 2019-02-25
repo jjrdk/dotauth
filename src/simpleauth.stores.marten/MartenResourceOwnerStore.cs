@@ -83,7 +83,7 @@
             {
                 var hashed = password.ToSha256Hash();
                 var ro = await session.Query<ResourceOwner>()
-                    .FirstOrDefaultAsync(x => x.Id == id && x.Password == hashed)
+                    .FirstOrDefaultAsync(x => x.Subject == id && x.Password == hashed)
                     .ConfigureAwait(false);
 
                 return ro;
@@ -119,7 +119,7 @@
         {
             using (var session = _sessionFactory())
             {
-                var user = await session.LoadAsync<ResourceOwner>(resourceOwner.Id, cancellationToken)
+                var user = await session.LoadAsync<ResourceOwner>(resourceOwner.Subject, cancellationToken)
                     .ConfigureAwait(false);
                 if (user == null)
                 {

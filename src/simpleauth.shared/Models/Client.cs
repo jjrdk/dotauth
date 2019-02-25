@@ -17,6 +17,7 @@ namespace SimpleAuth.Shared.Models
     using Microsoft.IdentityModel.Tokens;
     using System;
     using System.Collections.Generic;
+    using System.Runtime.Serialization;
     using System.Security.Claims;
 
     /// <summary>
@@ -27,12 +28,14 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Gets or sets the client identifier.
         /// </summary>
+        [DataMember(Name = "client_id")]
         public string ClientId { get; set; }
 
         /// <summary>
         /// Gets or sets the client secrets.
         /// </summary>
-        public ICollection<ClientSecret> Secrets { get; set; } = new List<ClientSecret>();
+        [DataMember(Name = "secrets")]
+        public ClientSecret[] Secrets { get; set; } = Array.Empty<ClientSecret>();
 
         /// <summary>
         /// Gets or sets the name of the client.
@@ -40,7 +43,14 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The name of the client.
         /// </value>
+        [DataMember(Name = "client_name")]
         public string ClientName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the logo uri
+        /// </summary>
+        [DataMember(Name = "logo_uri")]
+        public string LogoUri { get; set; }
 
         /// <summary>
         /// Gets or sets the token lifetime.
@@ -53,55 +63,65 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Gets or sets the home page of the client.
         /// </summary>
+        [DataMember(Name = "client_uri")]
         public Uri ClientUri { get; set; }
 
         /// <summary>
         /// Gets or sets the URL that the RP provides to the End-User to read about the how the profile data will be used.
         /// </summary>
+        [DataMember(Name = "policy_uri")]
         public Uri PolicyUri { get; set; }
 
         /// <summary>
         /// Gets or sets the URL that the RP provides to the End-User to read about the RP's terms of service.
         /// </summary>
+        [DataMember(Name = "tos_uri")]
         public Uri TosUri { get; set; }
 
         /// <summary>
         /// Gets or sets the JWS alg algorithm for signing the ID token issued to this client.
         /// The default is RS256. The public key for validating the signature is provided by retrieving the JWK Set referenced by the JWKS_URI
         /// </summary>
+        [DataMember(Name = "id_token_signed_response_alg")]
         public string IdTokenSignedResponseAlg { get; set; }
 
         /// <summary>
         /// Gets or sets the JWE alg algorithm. REQUIRED for encrypting the ID token issued to this client.
         /// The default is that no encryption is performed
         /// </summary>
+        [DataMember(Name = "id_token_encrypted_response_alg")]
         public string IdTokenEncryptedResponseAlg { get; set; }
 
         /// <summary>
         /// Gets or sets the JWE enc algorithm. REQUIRED for encrypting the ID token issued to this client.
         /// If IdTokenEncryptedResponseAlg is specified then the value is A128CBC-HS256
         /// </summary>
+        [DataMember(Name = "id_token_encrypted_response_enc")]
         public string IdTokenEncryptedResponseEnc { get; set; }
 
         /// <summary>
         /// Gets or sets the client authentication method for the Token Endpoint.
         /// </summary>
+        [DataMember(Name = "token_endpoint_auth_method")]
         public string TokenEndPointAuthMethod { get; set; } = TokenEndPointAuthenticationMethods.ClientSecretBasic;
 
         /// <summary>
         /// Gets or sets an array containing a list of OAUTH2.0 response_type values
         /// </summary>
-        public ICollection<string> ResponseTypes { get; set; } = ResponseTypeNames.All;
+        [DataMember(Name = "response_types")]
+        public string[] ResponseTypes { get; set; } = ResponseTypeNames.All;
 
         /// <summary>
         /// Gets or sets an array containing a list of OAUTH2.0 grant types
         /// </summary>
-        public ICollection<string> GrantTypes { get; set; } = new List<string>();
+        [DataMember(Name = "grant_types")]
+        public string[] GrantTypes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets a list of OAUTH2.0 grant_types.
         /// </summary>
-        public ICollection<Scope> AllowedScopes { get; set; } = new List<Scope>();
+        [DataMember(Name = "allowed_scopes")]
+        public string[] AllowedScopes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets an array of Redirection URI values used by the client.
@@ -134,7 +154,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The claims.
         /// </value>
-        public ICollection<Claim> Claims { get; set; } = new List<Claim>();
+        public Claim[] Claims { get; set; } = Array.Empty<Claim>();
 
         /// <summary>
         /// Get or set the sector identifier uri

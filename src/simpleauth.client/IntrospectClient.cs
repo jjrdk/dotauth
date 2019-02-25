@@ -21,6 +21,7 @@ namespace SimpleAuth.Client
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
 
     /// <summary>
     /// Defines the introspection client.

@@ -30,7 +30,7 @@
             };
             var secondClient = new Client
             {
-                Secrets = new List<ClientSecret>
+                Secrets = new []
                 {
                     new ClientSecret
                     {
@@ -53,7 +53,7 @@
             };
             var client = new Client
             {
-                Secrets = new List<ClientSecret>
+                Secrets = new []
                 {
                     new ClientSecret
                     {
@@ -78,7 +78,7 @@
             };
             var client = new Client
             {
-                Secrets = new List<ClientSecret>
+                Secrets = new []
                 {
                     new ClientSecret
                     {

@@ -29,7 +29,6 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Errors;
     using Xunit;
-    using JwtConstants = Shared.JwtConstants;
 
     public class PostIntrospectionActionFixture
     {
@@ -82,7 +81,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
                     new Client
                     {
                         ClientId = "test",
-                        Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}}
+                        Secrets = new[] { new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}}
                     });
 
             var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", "test:test".Base64Encode());
@@ -121,7 +120,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}}
+                Secrets = new[] { new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}}
             };
             var idtp = new JwtPayload
             {
@@ -169,7 +168,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}}
+                Secrets = new[] { new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}}
             };
             var grantedToken = new GrantedToken
             {

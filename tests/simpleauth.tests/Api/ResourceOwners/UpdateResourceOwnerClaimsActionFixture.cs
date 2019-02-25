@@ -56,7 +56,7 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
             InitializeFakeObjects();
 
             var result = await _resourceOwnerRepositoryStub
-                .Update(new ResourceOwner {Id = "blah"}, CancellationToken.None)
+                .Update(new ResourceOwner {Subject = "blah"}, CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.False(result);

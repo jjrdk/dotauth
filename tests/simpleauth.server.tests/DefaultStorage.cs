@@ -13,7 +13,7 @@
             {
                 new ResourceOwner
                 {
-                    Id = "administrator",
+                    Subject = "administrator",
                     Claims = new []
                     {
                         new Claim(OpenIdClaimTypes.Subject, "administrator")
@@ -23,7 +23,7 @@
                 },
                 new ResourceOwner
                 {
-                    Id = "user",
+                    Subject = "user",
                     Password = "password",
                     Claims = new []
                     {

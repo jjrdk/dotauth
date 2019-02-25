@@ -56,7 +56,7 @@ namespace SimpleAuth.Tests.Common
             _consentRepository = new Mock<IConsentRepository>();
             var scopeRepository = new Mock<IScopeRepository>();
             scopeRepository.Setup(x => x.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-                .ReturnsAsync(new[] { new Scope { Name = "openid" } });
+                .ReturnsAsync(new[] {new Scope {Name = "openid"}});
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
                 _authorizationCodeRepositoryFake.Object,
                 _tokenStore.Object,
@@ -70,7 +70,7 @@ namespace SimpleAuth.Tests.Common
         [Fact]
         public async Task When_There_Is_No_Logged_User_Then_Exception_Is_Throw()
         {
-            var redirectInstruction = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
+            var redirectInstruction = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
 
             await Assert.ThrowsAsync<ArgumentNullException>(
                     () => _generateAuthorizationResponse.Generate(
@@ -86,7 +86,7 @@ namespace SimpleAuth.Tests.Common
         [Fact]
         public async Task When_No_Client_Is_Passed_Then_Exception_Is_Thrown()
         {
-            var redirectInstruction = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
+            var redirectInstruction = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
 
             await Assert.ThrowsAsync<ArgumentNullException>(
@@ -107,8 +107,8 @@ namespace SimpleAuth.Tests.Common
             // const string idToken = "idToken";
             var clientId = "client";
             var authorizationParameter =
-                new AuthorizationParameter { ResponseType = ResponseTypeNames.IdToken, ClientId = clientId };
-            var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
+                new AuthorizationParameter {ResponseType = ResponseTypeNames.IdToken, ClientId = clientId};
+            var actionResult = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
 
             var client = new Client
             {
@@ -143,9 +143,7 @@ namespace SimpleAuth.Tests.Common
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
             var authorizationParameter = new AuthorizationParameter
             {
-                ResponseType = ResponseTypeNames.Token,
-                ClientId = clientId,
-                Scope = scope
+                ResponseType = ResponseTypeNames.Token, ClientId = clientId, Scope = scope
             };
 
             var client = new Client
@@ -157,7 +155,7 @@ namespace SimpleAuth.Tests.Common
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256
             };
 
-            var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
+            var actionResult = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
 
             await _generateAuthorizationResponse.Generate(
                     actionResult,
@@ -185,17 +183,13 @@ namespace SimpleAuth.Tests.Common
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
             var authorizationParameter = new AuthorizationParameter
             {
-                ResponseType = ResponseTypeNames.Token,
-                ClientId = clientId,
-                Scope = scope
+                ResponseType = ResponseTypeNames.Token, ClientId = clientId, Scope = scope
             };
             var grantedToken = new GrantedToken
             {
-                AccessToken = Id.Create(),
-                CreateDateTime = DateTime.UtcNow,
-                ExpiresIn = 10000
+                AccessToken = Id.Create(), CreateDateTime = DateTime.UtcNow, ExpiresIn = 10000
             };
-            var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
+            var actionResult = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
 
             _tokenStore.Setup(
                     x => x.GetToken(
@@ -210,7 +204,7 @@ namespace SimpleAuth.Tests.Common
                     actionResult,
                     authorizationParameter,
                     claimsPrincipal,
-                    new Client { ClientId = "client" },
+                    new Client {ClientId = "client"},
                     null,
                     CancellationToken.None)
                 .ConfigureAwait(false);
@@ -228,23 +222,21 @@ namespace SimpleAuth.Tests.Common
             //const string idToken = "idToken";
             const string clientId = "clientId";
             const string scope = "openid";
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("sub", "test"), }, "fake"));
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("sub", "test"),}, "fake"));
             var authorizationParameter = new AuthorizationParameter
             {
-                ResponseType = ResponseTypeNames.Code,
-                ClientId = clientId,
-                Scope = scope
+                ResponseType = ResponseTypeNames.Code, ClientId = clientId, Scope = scope
             };
 
             var consent = new Consent
             {
-                GrantedScopes = new List<Scope> { new Scope { Name = scope } },
-                Client = new Client { ClientId = clientId, AllowedScopes = new List<Scope> { new Scope { Name = scope } } }
+                GrantedScopes = new[] {scope},
+                Client = new Client {ClientId = clientId, AllowedScopes = new[] {scope}}
             };
-            var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
+            var actionResult = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
 
             _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new[] { consent });
+                .ReturnsAsync(new[] {consent});
 
             await _generateAuthorizationResponse.Generate(
                     actionResult,
@@ -273,16 +265,12 @@ namespace SimpleAuth.Tests.Common
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
             var authorizationParameter = new AuthorizationParameter
             {
-                ClientId = clientId,
-                Scope = scope,
-                ResponseType = responseType,
-                ResponseMode = ResponseModes.None
+                ClientId = clientId, Scope = scope, ResponseType = responseType, ResponseMode = ResponseModes.None
             };
 
             var actionResult = new EndpointResult
             {
-                RedirectInstruction = new RedirectInstruction(),
-                Type = ActionResultType.RedirectToCallBackUrl
+                RedirectInstruction = new RedirectInstruction(), Type = ActionResultType.RedirectToCallBackUrl
             };
 
             await _generateAuthorizationResponse.Generate(
