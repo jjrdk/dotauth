@@ -74,7 +74,7 @@
                 ApplicationType = ApplicationTypes.Web,
                 ClientName = "client_name",
                 ClientUri = new Uri("http://clienturi.com"),
-                Contacts = new List<string> {"contact"},
+                Contacts = new[] {"contact"},
                 DefaultAcrValues = "sms",
                 //DefaultMaxAge = 10,
                 GrantTypes = new[] {GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken},
@@ -172,7 +172,7 @@
                 ApplicationType = ApplicationTypes.Web,
                 ClientName = "client_name",
                 ClientUri = new Uri("http://clienturi.com"),
-                Contacts = new List<string> {"contact"},
+                Contacts = new[] {"contact"},
                 DefaultAcrValues = "sms",
                 // DefaultMaxAge = 10,
                 GrantTypes = new[] {GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken},
@@ -193,7 +193,7 @@
             var newClient = await _openidClients.GetClient(addClientResult.Content.ClientId).ConfigureAwait(false);
 
             Assert.False(result.ContainsError);
-            Assert.Equal(2, newClient.Content.PostLogoutRedirectUris.Count);
+            Assert.Equal(2, newClient.Content.PostLogoutRedirectUris.Length);
             Assert.Single(newClient.Content.RedirectionUrls);
             Assert.Equal(2, newClient.Content.GrantTypes.Length);
         }
@@ -248,7 +248,7 @@
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                         InitiateLoginUri = new Uri("https://initloginuri"),
                         ClientUri = new Uri("http://clienturi.com"),
-                        Contacts = new List<string> {"contact"},
+                        Contacts = new[] {"contact"},
                         DefaultAcrValues = "sms",
                         //DefaultMaxAge = 10,
                         GrantTypes = new[] {GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken},

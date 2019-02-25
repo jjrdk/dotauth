@@ -246,13 +246,12 @@ namespace SimpleAuth.Server.Tests.Apis
                         ClientId = "id",
                         RedirectionUrls = new[] { new Uri("https://localhost"), },
                         RequestUris = new[] { new Uri("https://localhost") },
-                        ScimProfile = true
                     },
                     BaseUrl + "/.well-known/openid-configuration",
                     grantedToken.Content.AccessToken)
                 .ConfigureAwait(false);
 
-            Assert.True(client.Content.ScimProfile);
+            Assert.NotNull(client.Content);
         }
     }
 }

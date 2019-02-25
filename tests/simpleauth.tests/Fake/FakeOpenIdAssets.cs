@@ -56,7 +56,7 @@ namespace SimpleAuth.Tests.Fake
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256, //"RS256",
                     // IdTokenEncryptedResponseAlg = "RSA1_5",
                     // IdTokenEncryptedResponseEnc = "A128CBC-HS256",
-                    RedirectionUrls = new List<Uri>
+                    RedirectionUrls = new []
                     {
                         new Uri("https://op.certification.openid.net:60360/authz_cb"),
                         new Uri("http://localhost"),

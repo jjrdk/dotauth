@@ -165,7 +165,7 @@
             return _getAllClientsOperation.Execute(new Uri(_discoveryInformation.Clients), authorizationHeaderValue);
         }
 
-        public async Task<GenericResponse<PagedResponse<ClientResponse>>> SearchClients(
+        public async Task<GenericResponse<PagedResponse<Client>>> SearchClients(
             SearchClientsRequest searchClientParameter,
             string authorizationHeaderValue = null)
         {

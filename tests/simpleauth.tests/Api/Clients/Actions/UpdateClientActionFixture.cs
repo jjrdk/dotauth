@@ -63,7 +63,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
             var parameter = new Client
             {
                 ClientId = clientId,
-                RedirectionUrls = new List<Uri> {new Uri("https://localhost")},
+                RedirectionUrls = new[] {new Uri("https://localhost")},
                 Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}}
             };
 

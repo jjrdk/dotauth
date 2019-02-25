@@ -59,7 +59,7 @@
             var parameter = new Client
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                RedirectionUrls = new List<Uri> {new Uri(localhost)},
+                RedirectionUrls = new [] {new Uri(localhost)},
                 AllowedScopes = new[] {"test"},
                 RequestUris = new[] {new Uri("https://localhost"),}
             };
@@ -76,7 +76,7 @@
             var parameter = new Client
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                RedirectionUrls = new List<Uri> {new Uri("https://google.com")},
+                RedirectionUrls = new [] {new Uri("https://google.com")},
                 ResponseTypes = Array.Empty<string>(),
                 AllowedScopes = new[] {"test"},
                 RequestUris = new[] {new Uri("https://localhost"),}
@@ -94,7 +94,7 @@
             var parameter = new Client
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                RedirectionUrls = new List<Uri> {new Uri("https://google.com")},
+                RedirectionUrls = new [] {new Uri("https://google.com")},
                 AllowedScopes = new[] {"test"},
                 RequestUris = new[] {new Uri("https://localhost"),}
             };
@@ -112,7 +112,7 @@
             var parameter = new Client
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                RedirectionUrls = new List<Uri> {new Uri("https://google.com")},
+                RedirectionUrls = new [] {new Uri("https://google.com")},
                 AllowedScopes = new[] {"test"},
                 RequestUris = new[] {new Uri("https://localhost"),}
             };
@@ -128,7 +128,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new List<Uri> {new Uri("https://google.com")},
+                RedirectionUrls = new [] {new Uri("https://google.com")},
                 SectorIdentifierUri = new Uri("https://sector_identifier_uri/")
             };
 
@@ -143,7 +143,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new List<Uri> {new Uri("https://google.com")},
+                RedirectionUrls = new [] {new Uri("https://google.com")},
                 SectorIdentifierUri = new Uri("http://localhost/identity")
             };
 
@@ -158,7 +158,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new List<Uri> {new Uri("https://google.com")},
+                RedirectionUrls = new [] {new Uri("https://google.com")},
                 SectorIdentifierUri = new Uri("https://localhost/identity")
             };
 
@@ -178,7 +178,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new List<Uri> {new Uri("https://google.com")},
+                RedirectionUrls = new [] {new Uri("https://google.com")},
                 SectorIdentifierUri = new Uri("https://localhost/identity")
             };
 
@@ -207,7 +207,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new List<Uri> {new Uri("https://google.com")},
+                RedirectionUrls = new [] {new Uri("https://google.com")},
                 IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
@@ -226,7 +226,7 @@
                 AllowedScopes = new[] {"test"},
                 RequestUris = new[] {new Uri("https://localhost"),},
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                RedirectionUrls = new List<Uri> {new Uri("https://google.com")},
+                RedirectionUrls = new [] {new Uri("https://google.com")},
                 IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
@@ -242,7 +242,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new List<Uri> {new Uri("https://google.com")},
+                RedirectionUrls = new [] {new Uri("https://google.com")},
                 UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
@@ -258,7 +258,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new List<Uri> {new Uri("https://google.com")},
+                RedirectionUrls = new [] {new Uri("https://google.com")},
                 UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
                 //UserInfoEncryptedResponseAlg = "user_info_encrypted_response_alg_not_correct"
             };
@@ -275,7 +275,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new List<Uri> {new Uri("https://google.com")},
+                RedirectionUrls = new [] {new Uri("https://google.com")},
                 RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
@@ -294,7 +294,7 @@
                 AllowedScopes = new[] {"test"},
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 RequestUris = new[] {new Uri("https://localhost")},
-                RedirectionUrls = new List<Uri> {new Uri("https://google.com")},
+                RedirectionUrls = new [] {new Uri("https://google.com")},
                 RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
             };
 
@@ -309,7 +309,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new List<Uri> {new Uri("https://google.com")},
+                RedirectionUrls = new [] {new Uri("https://google.com")},
                 InitiateLoginUri = new Uri("http://localhost/identity")
             };
 
@@ -324,7 +324,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new List<Uri> {new Uri("http://localhost")},
+                RedirectionUrls = new [] {new Uri("http://localhost")},
                 AllowedScopes = new[] {"openid"},
                 ApplicationType = ApplicationTypes.Native,
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(), //new JsonWebKeySet(),
@@ -334,7 +334,7 @@
                 UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
                 RequestObjectEncryptionAlg = SecurityAlgorithms.Aes128KW,
                 RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
-                RequestUris = new List<Uri> {new Uri("http://localhost")},
+                RequestUris = new [] {new Uri("http://localhost")},
                 SectorIdentifierUri = new Uri("https://localhost")
             };
 

@@ -132,7 +132,7 @@ namespace SimpleAuth.Tests.Api.Registration
                 DefaultAcrValues = defaultAcrValues,
                 RequireAuthTime = requireAuthTime,
                 InitiateLoginUri = initiateLoginUri,
-                RequestUris = new List<Uri> {requestUri}
+                RequestUris = new [] {requestUri}
             };
 
             var jsonClient = JsonConvert.SerializeObject(client);
