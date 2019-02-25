@@ -68,7 +68,7 @@
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Client {ClientId = "clientId"};
-            var resourceOwner = new ResourceOwner {Id = subject};
+            var resourceOwner = new ResourceOwner {Subject = subject};
 
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(client);
@@ -112,7 +112,7 @@
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Client {ClientId = clientId};
-            var resourceOwner = new ResourceOwner {Id = subject};
+            var resourceOwner = new ResourceOwner {Subject = subject};
 
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(client);
@@ -131,7 +131,7 @@
                 .ConfigureAwait(false);
 
             Assert.Contains(OpenIdClaimTypes.Subject, insertedConsent.Claims);
-            Assert.Equal(subject, insertedConsent.ResourceOwner.Id);
+            Assert.Equal(subject, insertedConsent.ResourceOwner.Subject);
             Assert.Equal(clientId, insertedConsent.Client.ClientId);
         }
 
@@ -147,7 +147,7 @@
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Client {ClientId = "clientId"};
-            var resourceOwner = new ResourceOwner {Id = subject};
+            var resourceOwner = new ResourceOwner {Subject = subject};
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(client);
             _clientRepositoryFake.Setup(x => x.GetAll(It.IsAny<CancellationToken>()))

@@ -170,7 +170,7 @@
             client.PolicyUri = newClient.PolicyUri;
             client.PostLogoutRedirectUris = newClient.PostLogoutRedirectUris;
 
-            if (newClient.AllowedScopes == null || newClient.AllowedScopes.Count == 0)
+            if (newClient.AllowedScopes == null || newClient.AllowedScopes.Length == 0)
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidScope,
@@ -179,11 +179,11 @@
 
             var scopes = await _scopeRepository.SearchByNames(
                     CancellationToken.None,
-                    newClient.AllowedScopes.Select(s => s.Name).ToArray())
+                    newClient.AllowedScopes)
                 .ConfigureAwait(false);
-            if (scopes.Length != newClient.AllowedScopes.Count)
+            if (scopes.Length != newClient.AllowedScopes.Length)
             {
-                var enumerable = newClient.AllowedScopes.Select(x => x.Name).Except(scopes.Select(x => x.Name));
+                var enumerable = newClient.AllowedScopes.Except(scopes.Select(x => x.Name));
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidScope,
                     $"Unknown scopes: {string.Join(",", enumerable)}");
@@ -257,10 +257,10 @@
             client.SectorIdentifierUri = newClient.SectorIdentifierUri;
             //client.SubjectType = newClient.SubjectType;
 
-            if (client.Secrets.Count == 0
+            if (client.Secrets.Length == 0
                 && client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.PrivateKeyJwt)
             {
-                client.Secrets = new List<ClientSecret>
+                client.Secrets = new []
                 {
                     new ClientSecret
                     {

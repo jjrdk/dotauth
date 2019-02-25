@@ -35,7 +35,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using SimpleAuth.Shared.Errors;
     using Twilio.Client;
     using Xunit;
-    using JwtConstants = Shared.JwtConstants;
 
     public class TokenClientFixture
     {

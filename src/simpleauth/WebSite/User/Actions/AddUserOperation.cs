@@ -46,7 +46,7 @@ namespace SimpleAuth.WebSite.User.Actions
         public async Task<bool> Execute(ResourceOwner resourceOwner, CancellationToken cancellationToken)
         {
             // 1. Check the resource owner already exists.
-            if (await _resourceOwnerRepository.Get(resourceOwner.Id, cancellationToken).ConfigureAwait(false) != null)
+            if (await _resourceOwnerRepository.Get(resourceOwner.Subject, cancellationToken).ConfigureAwait(false) != null)
             {
                 return false;
             }
@@ -55,7 +55,7 @@ namespace SimpleAuth.WebSite.User.Actions
             {
                 new Claim(OpenIdClaimTypes.UpdatedAt,
                     DateTime.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture)),
-                new Claim(OpenIdClaimTypes.Subject, resourceOwner.Id)
+                new Claim(OpenIdClaimTypes.Subject, resourceOwner.Subject)
             };
 
             // 2. Populate the claims.
@@ -108,7 +108,7 @@ namespace SimpleAuth.WebSite.User.Actions
             // 4. Add the resource owner.
             var newResourceOwner = new ResourceOwner
             {
-                Id = resourceOwner.Id,
+                Subject = resourceOwner.Subject,
                 Claims = newClaims.ToArray(),
                 ExternalLogins = resourceOwner.ExternalLogins,
                 TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication,
@@ -123,7 +123,7 @@ namespace SimpleAuth.WebSite.User.Actions
             await _eventPublisher.Publish(
                     new ResourceOwnerAdded(
                         Id.Create(),
-                        newResourceOwner.Id,
+                        newResourceOwner.Subject,
                         DateTime.UtcNow))
                 .ConfigureAwait(false);
             return true;

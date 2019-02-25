@@ -34,29 +34,29 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     Id = "1",
                     Client = new Client {ClientId = "authcode_client"},
-                    ResourceOwner = new ResourceOwner {Id = "administrator"},
-                    GrantedScopes = new List<Scope> {new Scope {Name = "api1"}, new Scope {Name = "openid"}}
+                    ResourceOwner = new ResourceOwner {Subject = "administrator"},
+                    GrantedScopes = new[] {"api1", "openid"}
                 },
                 new Consent
                 {
                     Id = "2",
                     Client = new Client {ClientId = "implicit_client"},
-                    ResourceOwner = new ResourceOwner {Id = "administrator"},
-                    GrantedScopes = new List<Scope> {new Scope {Name = "api1"}, new Scope {Name = "openid"}}
+                    ResourceOwner = new ResourceOwner {Subject = "administrator"},
+                    GrantedScopes = new[] {"api1", "openid"}
                 },
                 new Consent
                 {
                     Id = "3",
                     Client = new Client {ClientId = "hybrid_client"},
-                    ResourceOwner = new ResourceOwner {Id = "administrator"},
-                    GrantedScopes = new List<Scope> {new Scope {Name = "api1"}, new Scope {Name = "openid"}}
+                    ResourceOwner = new ResourceOwner {Subject = "administrator"},
+                    GrantedScopes = new[] {"api1", "openid"}
                 },
                 new Consent
                 {
                     Id = "4",
                     Client = new Client {ClientId = "pkce_client"},
-                    ResourceOwner = new ResourceOwner {Id = "administrator"},
-                    GrantedScopes = new List<Scope> {new Scope {Name = "api1"}, new Scope {Name = "openid"}}
+                    ResourceOwner = new ResourceOwner {Subject = "administrator"},
+                    GrantedScopes = new[] {"api1", "openid"}
                 }
             };
         }
@@ -82,7 +82,7 @@ namespace SimpleAuth.AcceptanceTests
             {
                 new ResourceOwner
                 {
-                    Id = "administrator",
+                    Subject = "administrator",
                     Claims = new[]
                     {
                         new Claim(OpenIdClaimTypes.Subject, "administrator"),
@@ -94,7 +94,7 @@ namespace SimpleAuth.AcceptanceTests
                 },
                 new ResourceOwner
                 {
-                    Id = "user",
+                    Subject = "user",
                     Password = "password".ToSha256Hash(),
                     Claims = new[]
                     {
@@ -105,7 +105,7 @@ namespace SimpleAuth.AcceptanceTests
                 },
                 new ResourceOwner
                 {
-                    Id = "superuser",
+                    Subject = "superuser",
                     Password = "password".ToSha256Hash(),
                     Claims = new[]
                     {
@@ -126,23 +126,12 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     ClientId = "client",
                     ClientName = "client",
-                    Secrets = new List<ClientSecret>
-                    {
-                        new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "client"}
-                    },
+                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "client"}},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes =
-                        new List<Scope>
-                        {
-                            new Scope {Name = "openid"},
-                            new Scope {Name = "role"},
-                            new Scope {Name = "profile"},
-                            new Scope {Name = "scim"},
-                            new Scope {Name = "address"}
-                        },
+                    AllowedScopes = new[] {"openid", "role", "profile", "scim", "address"},
                     GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.Password},
                     ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     JsonWebKeys =
@@ -156,7 +145,7 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     ClientId = "client_userinfo_sig_rs256",
                     ClientName = "client_userinfo_sig_rs256",
-                    Secrets = new List<ClientSecret>
+                    Secrets = new[]
                     {
                         new ClientSecret
                         {
@@ -167,14 +156,7 @@ namespace SimpleAuth.AcceptanceTests
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes =
-                        new List<Scope>
-                        {
-                            new Scope {Name = "openid"},
-                            new Scope {Name = "role"},
-                            new Scope {Name = "profile"},
-                            new Scope {Name = "scim"}
-                        },
+                    AllowedScopes = new[] {"openid", "role", "profile", "scim"},
                     GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.Password},
                     ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
@@ -187,7 +169,7 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     ClientId = "client_userinfo_enc_rsa15",
                     ClientName = "client_userinfo_enc_rsa15",
-                    Secrets = new List<ClientSecret>
+                    Secrets = new[]
                     {
                         new ClientSecret
                         {
@@ -198,14 +180,7 @@ namespace SimpleAuth.AcceptanceTests
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes =
-                        new List<Scope>
-                        {
-                            new Scope {Name = "openid"},
-                            new Scope {Name = "role"},
-                            new Scope {Name = "profile"},
-                            new Scope {Name = "scim"}
-                        },
+                    AllowedScopes = new[] {"openid", "role", "profile", "scim"},
                     GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.Password},
                     ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     JsonWebKeys =
@@ -222,7 +197,7 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     ClientId = "clientWithWrongResponseType",
                     ClientName = "clientWithWrongResponseType",
-                    Secrets = new List<ClientSecret>
+                    Secrets = new[]
                     {
                         new ClientSecret
                         {
@@ -233,14 +208,7 @@ namespace SimpleAuth.AcceptanceTests
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes =
-                        new List<Scope>
-                        {
-                            new Scope {Name = "openid"},
-                            new Scope {Name = "role"},
-                            new Scope {Name = "profile"},
-                            new Scope {Name = "scim"}
-                        },
+                    AllowedScopes = new[] {"openid", "role", "profile", "scim"},
                     GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.ClientCredentials},
                     ResponseTypes = new[] {ResponseTypeNames.IdToken},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
@@ -251,16 +219,16 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     ClientId = "clientCredentials",
                     ClientName = "clientCredentials",
-                    Secrets = new List<ClientSecret>
+                    Secrets = new[]
                     {
                         new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "clientCredentials"}
                     },
-                    Claims = new List<Claim> {new Claim("test", "test")},
+                    Claims = new[] {new Claim("test", "test")},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new[] {new Scope {Name = "api1"}, new Scope {Name = "uma_protection"}},
+                    AllowedScopes = new[] {"api1", "uma_protection"},
                     GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.ClientCredentials},
                     ResponseTypes = new[] {ResponseTypeNames.Token},
                     JsonWebKeys =
@@ -274,15 +242,12 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     ClientId = "basic_client",
                     ClientName = "basic_client",
-                    Secrets = new List<ClientSecret>
-                    {
-                        new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "basic_client"}
-                    },
+                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "basic_client"}},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretBasic,
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new List<Scope> {new Scope {Name = "api1"}},
+                    AllowedScopes = new[] {"api1"},
                     GrantTypes = new[] {GrantTypes.ClientCredentials},
                     ResponseTypes = new[] {ResponseTypeNames.Token},
                     JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
@@ -294,15 +259,12 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     ClientId = "post_client",
                     ClientName = "post_client",
-                    Secrets = new List<ClientSecret>
-                    {
-                        new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "post_client"}
-                    },
+                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "post_client"}},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new List<Scope> {new Scope {Name = "api1"}, new Scope {Name = "uma_protection"}},
+                    AllowedScopes = new[] {"api1", "uma_protection"},
                     GrantTypes = new[] {GrantTypes.ClientCredentials},
                     ResponseTypes = new[] {ResponseTypeNames.Token},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
@@ -313,15 +275,12 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     ClientId = "jwt_client",
                     ClientName = "jwt_client",
-                    Secrets = new List<ClientSecret>
-                    {
-                        new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "jwt_client"}
-                    },
+                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "jwt_client"}},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretJwt,
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new List<Scope> {new Scope {Name = "api1"}},
+                    AllowedScopes = new[] {"api1"},
                     GrantTypes = new[] {GrantTypes.ClientCredentials},
                     ResponseTypes = new[] {ResponseTypeNames.Token},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
@@ -333,7 +292,7 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     ClientId = "private_key_client",
                     ClientName = "private_key_client",
-                    Secrets = new List<ClientSecret>
+                    Secrets = new[]
                     {
                         new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "private_key_client"}
                     },
@@ -341,7 +300,7 @@ namespace SimpleAuth.AcceptanceTests
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new List<Scope> {new Scope {Name = "api1"}},
+                    AllowedScopes = new[] {"api1"},
                     GrantTypes = new[] {GrantTypes.ClientCredentials},
                     ResponseTypes = new[] {ResponseTypeNames.Token},
                     JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
@@ -354,7 +313,7 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     ClientId = "authcode_client",
                     ClientName = "authcode_client",
-                    Secrets = new List<ClientSecret>
+                    Secrets = new[]
                     {
                         new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "authcode_client"}
                     },
@@ -362,7 +321,7 @@ namespace SimpleAuth.AcceptanceTests
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new List<Scope> {new Scope {Name = "api1"}, new Scope {Name = "openid"}},
+                    AllowedScopes = new[] {"api1", "openid"},
                     GrantTypes = new[] {GrantTypes.AuthorizationCode},
                     ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     JsonWebKeys =
@@ -377,7 +336,7 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     ClientId = "incomplete_authcode_client",
                     ClientName = "incomplete_authcode_client",
-                    Secrets = new List<ClientSecret>
+                    Secrets = new[]
                     {
                         new ClientSecret
                         {
@@ -388,7 +347,7 @@ namespace SimpleAuth.AcceptanceTests
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new List<Scope> {new Scope {Name = "api1"}, new Scope {Name = "openid"}},
+                    AllowedScopes = new[] {"api1", "openid"},
                     GrantTypes = new[] {GrantTypes.AuthorizationCode},
                     ResponseTypes = new[] {ResponseTypeNames.IdToken},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
@@ -399,7 +358,7 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     ClientId = "implicit_client",
                     ClientName = "implicit_client",
-                    Secrets = new List<ClientSecret>
+                    Secrets = new[]
                     {
                         new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "implicit_client"}
                     },
@@ -408,7 +367,7 @@ namespace SimpleAuth.AcceptanceTests
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new List<Scope> {new Scope {Name = "api1"}, new Scope {Name = "openid"}},
+                    AllowedScopes = new[] {"api1", "openid"},
                     GrantTypes = new[] {GrantTypes.Implicit},
                     ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
@@ -419,15 +378,12 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     ClientId = "pkce_client",
                     ClientName = "pkce_client",
-                    Secrets = new List<ClientSecret>
-                    {
-                        new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "pkce_client"}
-                    },
+                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "pkce_client"}},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new List<Scope> {new Scope {Name = "api1"}, new Scope {Name = "openid"}},
+                    AllowedScopes = new[] {"api1", "openid"},
                     GrantTypes = new[] {GrantTypes.AuthorizationCode},
                     ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
@@ -440,16 +396,13 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     ClientId = "hybrid_client",
                     ClientName = "hybrid_client",
-                    Secrets = new List<ClientSecret>
-                    {
-                        new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "hybrid_client"}
-                    },
+                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "hybrid_client"}},
                     JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new[] {new Scope {Name = "api1"}, new Scope {Name = "openid"}},
+                    AllowedScopes = new[] {"api1", "openid"},
                     GrantTypes = new[] {GrantTypes.AuthorizationCode, GrantTypes.Implicit},
                     ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
@@ -484,7 +437,7 @@ namespace SimpleAuth.AcceptanceTests
                                     .CreateJwk(JsonWebKeyUseNames.Enc, KeyOperations.Encrypt, KeyOperations.Decrypt)),
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.TlsClientAuth,
                     //LogoUri = null,
-                    AllowedScopes = new List<Scope> {new Scope {Name = "openid"}},
+                    AllowedScopes = new[] {"openid"},
                     GrantTypes = new[] {GrantTypes.Password},
                     ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaV15KeyWrap, //SecurityAlgorithms.RsaSha256,
@@ -495,20 +448,33 @@ namespace SimpleAuth.AcceptanceTests
                 {
                     ClientId = "stateless_client",
                     ClientName = "Stateless client",
-                    Secrets = new List<ClientSecret>
+                    Secrets = new[]
                     {
                         new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "stateless_client"}
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     //LogoUri = null,
-                    AllowedScopes =
-                        new List<Scope>
-                        {
-                            new Scope {Name = "openid"},
-                            new Scope {Name = "register_client"},
-                            new Scope {Name = "manage_profile"},
-                            new Scope {Name = "manage_account_filtering"}
-                        },
+                    AllowedScopes = new[] {"openid", "register_client", "manage_profile", "manage_account_filtering"},
+                    GrantTypes = new[] {GrantTypes.ClientCredentials},
+                    JsonWebKeys =
+                        new JsonWebKeySet().AddKey(
+                            TestKeys.SecretKey.CreateJwk(
+                                JsonWebKeyUseNames.Sig,
+                                KeyOperations.Sign,
+                                KeyOperations.Verify)),
+                    ResponseTypes = new[] {ResponseTypeNames.Token},
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
+                    ApplicationType = ApplicationTypes.Native
+                },
+                new Client
+                {
+                    ClientId = "manager_client",
+                    ClientName = "Manager client",
+                    Secrets =
+                        new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "manager_client"}},
+                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
+                    //LogoUri = null,
+                    AllowedScopes = new[] {"manager"},
                     GrantTypes = new[] {GrantTypes.ClientCredentials},
                     JsonWebKeys =
                         new JsonWebKeySet().AddKey(
@@ -520,6 +486,25 @@ namespace SimpleAuth.AcceptanceTests
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Native
                 }
+            };
+        }
+
+        public static IReadOnlyCollection<Scope> Scopes()
+        {
+            return new[]
+            {
+                new Scope
+                {
+                    Claims = Array.Empty<string>(),
+                    CreateDateTime = DateTime.UtcNow,
+                    Description = "test scope",
+                    IsDisplayedInConsent = true,
+                    IsExposed = true,
+                    IsOpenIdScope = false,
+                    Name = "test",
+                    Type = ScopeTypes.ProtectedApi,
+                    UpdateDateTime = DateTime.UtcNow
+                },
             };
         }
     }

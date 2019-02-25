@@ -91,15 +91,13 @@ namespace SimpleAuth.Extensions
                                 return false;
                             }
 
-                            var claimsRole = p.User.Claims.Where(c => c.Type == "role");
                             var claimsScope = p.User.Claims.Where(c => c.Type == "scope");
-                            if (!claimsRole.Any() && !claimsScope.Any())
+                            if (!claimsScope.Any())
                             {
                                 return false;
                             }
 
-                            return claimsRole.Any(c => c.Value == "administrator")
-                                   || claimsScope.Any(c => c.Value == "manager");
+                            return claimsScope.Any(c => c.Value == "manager");
                         });
                 });
 

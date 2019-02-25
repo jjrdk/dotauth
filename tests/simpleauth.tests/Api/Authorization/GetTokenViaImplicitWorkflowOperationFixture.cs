@@ -28,26 +28,30 @@
                 new Mock<IAuthorizationCodeStore>().Object,
                 new Mock<ITokenStore>().Object,
                 new Mock<IScopeRepository>().Object,
-                new InMemoryJwksRepository(), 
+                new InMemoryJwksRepository(),
                 new NoOpPublisher());
         }
 
         [Fact]
         public async Task When_Passing_No_Authorization_Request_Then_Exception_Is_Thrown()
         {
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<ArgumentNullException>(
                     () => _getTokenViaImplicitWorkflowOperation.Execute(null, null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _getTokenViaImplicitWorkflowOperation.Execute(new AuthorizationParameter(), null, null, null, CancellationToken.None))
+                    () => _getTokenViaImplicitWorkflowOperation.Execute(
+                        new AuthorizationParameter(),
+                        null,
+                        null,
+                        null,
+                        CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task When_Passing_No_Nonce_Parameter_Then_Exception_Is_Thrown()
         {
-            var authorizationParameter = new AuthorizationParameter { State = "state" };
+            var authorizationParameter = new AuthorizationParameter {State = "state"};
 
             var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _getTokenViaImplicitWorkflowOperation.Execute(
@@ -69,7 +73,7 @@
         [Fact]
         public async Task When_Implicit_Flow_Is_Not_Supported_Then_Exception_Is_Thrown()
         {
-            var authorizationParameter = new AuthorizationParameter { Nonce = "nonce", State = "state" };
+            var authorizationParameter = new AuthorizationParameter {Nonce = "nonce", State = "state"};
 
             var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _getTokenViaImplicitWorkflowOperation.Execute(
@@ -105,17 +109,21 @@
                 RedirectUrl = new Uri("https://localhost")
             };
 
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("sub", "test") }, "fake"));
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("sub", "test")}, "fake"));
 
             var client = new Client
             {
                 ResponseTypes = ResponseTypeNames.All,
-                RedirectionUrls = new[] { new Uri("https://localhost"), },
-                GrantTypes = new[] { GrantTypes.Implicit },
-                AllowedScopes = new[] { new Scope { Name = "openid" } }
+                RedirectionUrls = new[] {new Uri("https://localhost"),},
+                GrantTypes = new[] {GrantTypes.Implicit},
+                AllowedScopes = new[] {"openid"}
             };
-            var result = await _getTokenViaImplicitWorkflowOperation
-                .Execute(authorizationParameter, claimsPrincipal, client, null, CancellationToken.None)
+            var result = await _getTokenViaImplicitWorkflowOperation.Execute(
+                    authorizationParameter,
+                    claimsPrincipal,
+                    client,
+                    null,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.NotNull(result.RedirectInstruction);

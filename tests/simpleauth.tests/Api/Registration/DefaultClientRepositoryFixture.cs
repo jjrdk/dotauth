@@ -41,7 +41,7 @@ namespace SimpleAuth.Tests.Api.Registration
             _httpClient = new HttpClient();
             _clientRepositoryFake = new InMemoryClientRepository(
                 _httpClient,
-                new InMemoryScopeRepository(new[] { new Scope { Name = "scope" } }),
+                new InMemoryScopeRepository(new[] {new Scope {Name = "scope"}}),
                 new Client[0]);
         }
 
@@ -51,7 +51,7 @@ namespace SimpleAuth.Tests.Api.Registration
             const string clientId = "client_id";
 
             var result = await _clientRepositoryFake.Search(
-                    new SearchClientsRequest { ClientIds = new[] { clientId } },
+                    new SearchClientsRequest {ClientIds = new[] {clientId}},
                     CancellationToken.None)
                 .ConfigureAwait(false);
             Assert.Empty(result.Content);
@@ -65,14 +65,14 @@ namespace SimpleAuth.Tests.Api.Registration
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 ClientId = clientId,
-                AllowedScopes = new[] { new Scope { Name = "scope" } },
-                RedirectionUrls = new[] { new Uri("https://localhost"), },
-                RequestUris = new[] { new Uri("https://localhost"), }
+                AllowedScopes = new[] {"scope"},
+                RedirectionUrls = new[] {new Uri("https://localhost"),},
+                RequestUris = new[] {new Uri("https://localhost"),}
             };
             await _clientRepositoryFake.Insert(client, CancellationToken.None).ConfigureAwait(false);
 
             var result = await _clientRepositoryFake.Search(
-                    new SearchClientsRequest { ClientIds = new[] { clientId } },
+                    new SearchClientsRequest {ClientIds = new[] {clientId}},
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
@@ -82,7 +82,8 @@ namespace SimpleAuth.Tests.Api.Registration
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientRepositoryFake.Insert(null, CancellationToken.None))
+            await Assert
+                .ThrowsAsync<ArgumentNullException>(() => _clientRepositoryFake.Insert(null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
@@ -104,20 +105,17 @@ namespace SimpleAuth.Tests.Api.Registration
             {
                 ClientId = "testclient",
                 ClientName = clientName,
-                ResponseTypes = new[] { ResponseTypeNames.Token },
-                GrantTypes = new[] { GrantTypes.Implicit },
-                Secrets = new List<ClientSecret>
-                {
-                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}
-                },
-                AllowedScopes = new[] { new Scope { Name = "scope" } },
+                ResponseTypes = new[] {ResponseTypeNames.Token},
+                GrantTypes = new[] {GrantTypes.Implicit},
+                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}},
+                AllowedScopes = new[] {"scope"},
                 ApplicationType = ApplicationTypes.Native,
                 ClientUri = clientUri,
                 PolicyUri = policyUri,
                 TosUri = tosUri,
                 //JwksUri = jwksUri,
-                JsonWebKeys = new List<JsonWebKey> { new JsonWebKey { Kid = kid } }.ToJwks(),
-                RedirectionUrls = new[] { new Uri("https://localhost"), },
+                JsonWebKeys = new List<JsonWebKey> {new JsonWebKey {Kid = kid}}.ToJwks(),
+                RedirectionUrls = new[] {new Uri("https://localhost"),},
                 //SectorIdentifierUri = sectorIdentifierUri,
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 IdTokenEncryptedResponseAlg = SecurityAlgorithms.RsaPKCS1,
@@ -134,7 +132,7 @@ namespace SimpleAuth.Tests.Api.Registration
                 DefaultAcrValues = defaultAcrValues,
                 RequireAuthTime = requireAuthTime,
                 InitiateLoginUri = initiateLoginUri,
-                RequestUris = new List<Uri> { requestUri }
+                RequestUris = new List<Uri> {requestUri}
             };
 
             var jsonClient = JsonConvert.SerializeObject(client);

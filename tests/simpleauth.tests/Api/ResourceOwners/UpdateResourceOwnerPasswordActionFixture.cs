@@ -33,7 +33,7 @@
             const string subject = "invalid_subject";
 
             var result = await _resourceOwnerRepositoryStub
-                .Update(new ResourceOwner {Id = subject}, CancellationToken.None)
+                .Update(new ResourceOwner {Subject = subject}, CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.False(result);

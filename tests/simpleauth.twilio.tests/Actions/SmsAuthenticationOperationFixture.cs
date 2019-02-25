@@ -53,14 +53,14 @@
         public async Task When_ResourceOwner_Exists_Then_ResourceOwner_Is_Returned()
         {
             const string phone = "phone";
-            var resourceOwner = new ResourceOwner {Id = "id"};
+            var resourceOwner = new ResourceOwner {Subject = "id"};
             _resourceOwnerRepositoryStub
                 .Setup(p => p.GetResourceOwnerByClaim("phone_number", phone, CancellationToken.None))
                 .Returns(() => Task.FromResult(resourceOwner));
 
             var result = await _smsAuthenticationOperation.Execute(phone, CancellationToken.None).ConfigureAwait(false);
 
-            Assert.Equal(resourceOwner.Id, result.Id);
+            Assert.Equal(resourceOwner.Subject, result.Subject);
         }
     }
 }

@@ -336,7 +336,7 @@
                 var result = this.CreateRedirectionFromActionResult(actionResult, request);
                 if (result != null)
                 {
-                    await LogAuthenticateUser(resourceOwner.Id, actionResult.Amr, request.aggregate_id).ConfigureAwait(false);
+                    await LogAuthenticateUser(resourceOwner.Subject, actionResult.Amr, request.aggregate_id).ConfigureAwait(false);
                     return result;
                 }
             }

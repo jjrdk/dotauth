@@ -18,12 +18,12 @@ namespace SimpleAuth.Server.Tests.Apis
     using Newtonsoft.Json;
     using Shared.Models;
     using Shared.Responses;
+    using SimpleAuth.Shared.Errors;
     using System;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Errors;
     using Xunit;
     using TokenRequest = Client.TokenRequest;
 
@@ -49,10 +49,10 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
             var grantedToken = await tokenClient.GetToken(TokenRequest.FromScopes("register_client"))
                 .ConfigureAwait(false);
-            var obj = new {fake = "fake"};
+            var obj = new { fake = "fake" };
             var fakeJson = JsonConvert.SerializeObject(
                 obj,
-                new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -80,16 +80,16 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
             var obj = new
             {
-                AllowedScopes = new[] {new Scope {Name = "openid"}},
-                RequestUris = new[] {new Uri("https://localhost")},
-                RedirectionUrls = new[] {"localhost"},
+                AllowedScopes = new[] { "openid" },
+                RequestUris = new[] { new Uri("https://localhost") },
+                RedirectionUrls = new[] { "localhost" },
                 ClientUri = new Uri("http://google.com"),
                 TosUri = new Uri("http://google.com"),
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet()
             };
             var fakeJson = JsonConvert.SerializeObject(
                 obj,
-                new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -119,15 +119,15 @@ namespace SimpleAuth.Server.Tests.Apis
             var obj = new
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                AllowedScopes = new[] {new Scope {Name = "openid"}},
-                RequestUris = new[] {new Uri("https://localhost")},
-                RedirectionUrls = new[] {new Uri("http://localhost#fragment")},
+                AllowedScopes = new[] { "openid" },
+                RequestUris = new[] { new Uri("https://localhost") },
+                RedirectionUrls = new[] { new Uri("http://localhost#fragment") },
                 //LogoUri = "http://google.com",
                 ClientUri = new Uri("https://valid")
             };
             var fakeJson = JsonConvert.SerializeObject(
                 obj,
-                new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -143,7 +143,9 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal("invalid_redirect_uri", error.Error);
             Assert.Equal(
-                string.Format(SimpleAuth.Shared.Errors.ErrorDescriptions.TheRedirectUrlCannotContainsFragment, "http://localhost/#fragment"),
+                string.Format(
+                    SimpleAuth.Shared.Errors.ErrorDescriptions.TheRedirectUrlCannotContainsFragment,
+                    "http://localhost/#fragment"),
                 error.ErrorDescription);
         }
 
@@ -159,15 +161,15 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
             var obj = new
             {
-                AllowedScopes = new[] {new Scope {Name = "openid"}},
-                RequestUris = new[] {new Uri("https://localhost")},
-                RedirectionUrls = new[] {new Uri("http://localhost")},
+                AllowedScopes = new[] { "openid" },
+                RequestUris = new[] { new Uri("https://localhost") },
+                RedirectionUrls = new[] { new Uri("http://localhost") },
                 LogoUri = "http://google.com",
                 ClientUri = "invalid_client_uri"
             };
             var fakeJson = JsonConvert.SerializeObject(
                 obj,
-                new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -197,16 +199,16 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
             var obj = new
             {
-                AllowedScopes = new[] {new Scope {Name = "openid"}},
-                RequestUris = new[] {new Uri("https://localhost")},
-                RedirectionUrls = new[] {new Uri("http://localhost")},
+                AllowedScopes = new[] { "openid" },
+                RequestUris = new[] { new Uri("https://localhost") },
+                RedirectionUrls = new[] { new Uri("http://localhost") },
                 LogoUri = new Uri("http://google.com"),
                 ClientUri = new Uri("https://valid_client_uri"),
                 TosUri = "invalid"
             };
             var fakeJson = JsonConvert.SerializeObject(
                 obj,
-                new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -239,11 +241,11 @@ namespace SimpleAuth.Server.Tests.Apis
                     new Client
                     {
                         JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                        AllowedScopes = new[] {new Scope {Name = "openid"}},
+                        AllowedScopes = new[] { "openid" },
                         ClientName = "Test",
                         ClientId = "id",
-                        RedirectionUrls = new[] {new Uri("https://localhost"),},
-                        RequestUris = new[] {new Uri("https://localhost")},
+                        RedirectionUrls = new[] { new Uri("https://localhost"), },
+                        RequestUris = new[] { new Uri("https://localhost") },
                         ScimProfile = true
                     },
                     BaseUrl + "/.well-known/openid-configuration",

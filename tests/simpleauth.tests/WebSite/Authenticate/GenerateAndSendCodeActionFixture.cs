@@ -95,7 +95,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                         {
                             TwoFactorAuthentication = "email",
                             Claims = new[] { new Claim("key", "value") },
-                            Id = "subject"
+                            Subject = "subject"
                         }));
             var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
             fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("claim");
@@ -117,7 +117,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                         {
                             TwoFactorAuthentication = "email",
                             Claims = new[] { new Claim("key", "value") },
-                            Id = "subject"
+                            Subject = "subject"
                         }));
             var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
             fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("key");
@@ -144,7 +144,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                         {
                             TwoFactorAuthentication = "email",
                             Claims = new[] { new Claim("key", "value") },
-                            Id = "subject"
+                            Subject = "subject"
                         }));
             var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
             fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("key");

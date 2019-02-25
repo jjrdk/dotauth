@@ -22,6 +22,7 @@ namespace SimpleAuth.Client
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
 
     internal class RegistrationClient
     {

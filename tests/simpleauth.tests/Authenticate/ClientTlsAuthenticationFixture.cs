@@ -17,7 +17,6 @@ namespace SimpleAuth.Tests.Authenticate
     using Shared.Models;
     using SimpleAuth.Authenticate;
     using System;
-    using System.Collections.Generic;
     using System.Security.Cryptography.X509Certificates;
     using Xunit;
 
@@ -47,7 +46,7 @@ namespace SimpleAuth.Tests.Authenticate
             Assert.Null(
                 ClientTlsAuthentication.AuthenticateClient(
                     new AuthenticateInstruction {Certificate = new X509Certificate2()},
-                    new Client {Secrets = new List<ClientSecret>()}));
+                    new Client()));
         }
     }
 }

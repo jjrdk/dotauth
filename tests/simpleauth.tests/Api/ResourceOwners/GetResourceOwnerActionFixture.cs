@@ -40,7 +40,7 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
         public async Task When_Getting_Resource_Owner_Then_ResourceOwner_Is_Returned()
         {
             const string subject = "subject";
-            InitializeFakeObjects(new ResourceOwner {Id = "subject"});
+            InitializeFakeObjects(new ResourceOwner {Subject = "subject"});
 
             var result = await _resourceOwnerRepository.Get(subject, CancellationToken.None).ConfigureAwait(false);
 

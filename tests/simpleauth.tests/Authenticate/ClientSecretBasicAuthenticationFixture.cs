@@ -14,8 +14,7 @@
             var authenticateInstruction = new AuthenticateInstruction();
 
             Assert.Throws<ArgumentNullException>(() => ClientSecretBasicAuthentication.AuthenticateClient(null, null));
-            Assert.Throws<ArgumentNullException>(
-                () => authenticateInstruction.AuthenticateClient(null));
+            Assert.Throws<ArgumentNullException>(() => authenticateInstruction.AuthenticateClient(null));
         }
 
         [Fact]
@@ -28,7 +27,7 @@
             var firstClient = new Client {Secrets = null};
             var secondClient = new Client
             {
-                Secrets = new List<ClientSecret> {new ClientSecret {Type = ClientSecretTypes.X509Thumbprint}}
+                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.X509Thumbprint}}
             };
 
             Assert.Null(authenticateInstruction.AuthenticateClient(firstClient));
@@ -44,10 +43,7 @@
             };
             var client = new Client
             {
-                Secrets = new List<ClientSecret>
-                {
-                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "not_correct"}
-                }
+                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "not_correct"}}
             };
 
             var result = authenticateInstruction.AuthenticateClient(client);
@@ -65,10 +61,7 @@
             };
             var client = new Client
             {
-                Secrets = new List<ClientSecret>
-                {
-                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}
-                }
+                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}}
             };
 
             var result = authenticateInstruction.AuthenticateClient(client);

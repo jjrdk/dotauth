@@ -22,6 +22,7 @@ namespace SimpleAuth.Client
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
 
     /// <summary>
     /// Defines the user info client.

@@ -71,7 +71,7 @@
             const string subject = "subject";
             var localAuthenticationParameter = new LocalAuthenticationParameter();
             var authorizationParameter = new AuthorizationParameter();
-            var resourceOwner = new ResourceOwner {Id = subject};
+            var resourceOwner = new ResourceOwner {Subject = subject};
             var authenticateService = new Mock<IAuthenticateResourceOwnerService>();
             authenticateService.SetupGet(x => x.Amr).Returns("pwd");
             authenticateService

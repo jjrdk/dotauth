@@ -23,15 +23,15 @@ namespace SimpleAuth.WebSite.Consent.Actions
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Events.Logging;
+    using SimpleAuth.Shared.Requests;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Events.Logging;
-    using SimpleAuth.Shared.Requests;
 
     internal class ConfirmConsentAction
     {
@@ -131,7 +131,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                         Client = client,
                         GrantedScopes =
                             (await GetScopes(authorizationParameter.Scope, cancellationToken).ConfigureAwait(false))
-                            .ToList(),
+                            .ToArray(),
                         ResourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken)
                             .ConfigureAwait(false),
                     };
@@ -172,12 +172,11 @@ namespace SimpleAuth.WebSite.Consent.Actions
             return result;
         }
 
-        private async Task<ICollection<Scope>> GetScopes(
-            string concatenateListOfScopes,
-            CancellationToken cancellationToken)
+        private async Task<string[]> GetScopes(string concatenateListOfScopes, CancellationToken cancellationToken)
         {
             var scopeNames = concatenateListOfScopes.ParseScopes();
-            return await _scopeRepository.SearchByNames(cancellationToken, scopeNames).ConfigureAwait(false);
+            var scopes = await _scopeRepository.SearchByNames(cancellationToken, scopeNames).ConfigureAwait(false);
+            return scopes.Select(x => x.Name).ToArray();
         }
 
         private static AuthorizationFlow GetAuthorizationFlow(ICollection<string> responseTypes, string state)

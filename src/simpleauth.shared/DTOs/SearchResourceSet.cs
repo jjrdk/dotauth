@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Shared.DTOs
 {
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
 
     /// <summary>

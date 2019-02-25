@@ -106,7 +106,7 @@ namespace SimpleAuth.WebSite.Authenticate
                     await _authenticateHelper.ProcessRedirection(
                             authorizationParameter,
                             code,
-                            resourceOwner.Id,
+                            resourceOwner.Subject,
                             claims,
                             issuerName,
                             cancellationToken)

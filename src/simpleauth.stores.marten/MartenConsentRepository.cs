@@ -34,7 +34,7 @@
             using (var session = _sessionFactory())
             {
                 var consents = await session.Query<Consent>()
-                    .Where(x => x.ResourceOwner.Id == subject)
+                    .Where(x => x.ResourceOwner.Subject == subject)
                     .ToListAsync(cancellationToken)
                     .ConfigureAwait(false);
                 return consents;

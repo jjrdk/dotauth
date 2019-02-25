@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Shared.Models
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -51,7 +52,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The granted scopes.
         /// </value>
-        public List<Scope> GrantedScopes { get; set; }
+        public string[] GrantedScopes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the claims.

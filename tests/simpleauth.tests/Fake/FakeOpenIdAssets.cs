@@ -30,119 +30,28 @@ namespace SimpleAuth.Tests.Fake
         /// <returns></returns>
         public static Client[] GetClients()
         {
-            return new []
+            return new[]
             {
                 new Client
                 {
                     ClientId = "MyBlog",
                     ClientName = "My blog",
-                    Secrets = new List<ClientSecret>
-                    {
-                        new ClientSecret
-                        {
-                            Type = ClientSecretTypes.SharedSecret,
-                            Value = "MyBlog"
-                        }
-                    },
+                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "MyBlog"}},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretBasic,
-                    AllowedScopes = new List<Scope>
+                    AllowedScopes = new[]
                     {
                         // PROTECTED API SCOPES
-                        new Scope
-                        {
-                            Name = "BlogApi"
-                        },
-                        new Scope
-                        {
-                            Name = "BlogApi:AddArticle"
-                        },
-                        new Scope
-                        {
-                            Name = "openid",
-                            IsExposed = true,
-                            IsOpenIdScope = true,
-                            Description = "openid",
-                            Type = ScopeTypes.ProtectedApi
-                        },
+                        "BlogApi",
+                        "BlogApi:AddArticle",
+                        "openid",
                         // RO SCOPES
-                        new Scope
-                        {
-                            Name = "profile",
-                            IsExposed = true,
-                            IsOpenIdScope = true,
-                            Description = "Access to the profile",
-                            Claims = new []
-                            {
-                                OpenIdClaimTypes.Name,
-                                OpenIdClaimTypes.FamilyName,
-                                OpenIdClaimTypes.GivenName,
-                                OpenIdClaimTypes.MiddleName,
-                                OpenIdClaimTypes.NickName,
-                                OpenIdClaimTypes.PreferredUserName,
-                                OpenIdClaimTypes.Profile,
-                                OpenIdClaimTypes.Picture,
-                                OpenIdClaimTypes.WebSite,
-                                OpenIdClaimTypes.Gender,
-                                OpenIdClaimTypes.BirthDate,
-                                OpenIdClaimTypes.ZoneInfo,
-                                OpenIdClaimTypes.Locale,
-                                OpenIdClaimTypes.UpdatedAt
-                            },
-                            Type = ScopeTypes.ResourceOwner
-                        },
-                        new Scope
-                        {
-                            Name = "email",
-                            IsExposed = true,
-                            IsOpenIdScope = true,
-                            IsDisplayedInConsent = true,
-                            Description = "Access to the email",
-                            Claims = new []
-                            {
-                                OpenIdClaimTypes.Email,
-                                OpenIdClaimTypes.EmailVerified
-                            },
-                            Type = ScopeTypes.ResourceOwner
-                        },
-                        new Scope
-                        {
-                            Name = "address",
-                            IsExposed = true,
-                            IsOpenIdScope = true,
-                            IsDisplayedInConsent = true,
-                            Description = "Access to the address",
-                            Claims = new []
-                            {
-                                OpenIdClaimTypes.Address
-                            },
-                            Type = ScopeTypes.ResourceOwner
-                        },
-                        new Scope
-                        {
-                            Name = "phone",
-                            IsExposed = true,
-                            IsOpenIdScope = true,
-                            IsDisplayedInConsent = true,
-                            Description = "Access to the phone",
-                            Claims = new []
-                            {
-                                OpenIdClaimTypes.PhoneNumber,
-                                OpenIdClaimTypes.PhoneNumberVerified
-                            },
-                            Type = ScopeTypes.ResourceOwner
-                        }
+                        "profile",
+                        "email",
+                        "address",
+                        "phone"
                     },
-                    GrantTypes = new []
-                    {
-                        GrantTypes.Implicit,
-                        GrantTypes.AuthorizationCode
-                    },
-                    ResponseTypes = new []
-                    {
-                        ResponseTypeNames.Token,
-                        ResponseTypeNames.Code,
-                        ResponseTypeNames.IdToken
-                    },
+                    GrantTypes = new[] {GrantTypes.Implicit, GrantTypes.AuthorizationCode},
+                    ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.Code, ResponseTypeNames.IdToken},
                     JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256, //"RS256",
                     // IdTokenEncryptedResponseAlg = "RSA1_5",
@@ -194,7 +103,7 @@ namespace SimpleAuth.Tests.Fake
                     IsExposed = true,
                     IsOpenIdScope = true,
                     Description = "Access to the profile",
-                    Claims = new []
+                    Claims = new[]
                     {
                         OpenIdClaimTypes.Name,
                         OpenIdClaimTypes.FamilyName,
@@ -221,11 +130,7 @@ namespace SimpleAuth.Tests.Fake
                     IsOpenIdScope = true,
                     IsDisplayedInConsent = true,
                     Description = "Access to the email",
-                    Claims = new []
-                    {
-                        OpenIdClaimTypes.Email,
-                        OpenIdClaimTypes.EmailVerified
-                    },
+                    Claims = new[] {OpenIdClaimTypes.Email, OpenIdClaimTypes.EmailVerified},
                     Type = ScopeTypes.ResourceOwner
                 },
                 new Scope
@@ -235,10 +140,7 @@ namespace SimpleAuth.Tests.Fake
                     IsOpenIdScope = true,
                     IsDisplayedInConsent = true,
                     Description = "Access to the address",
-                    Claims = new []
-                    {
-                        OpenIdClaimTypes.Address
-                    },
+                    Claims = new[] {OpenIdClaimTypes.Address},
                     Type = ScopeTypes.ResourceOwner
                 },
                 new Scope
@@ -248,11 +150,7 @@ namespace SimpleAuth.Tests.Fake
                     IsOpenIdScope = true,
                     IsDisplayedInConsent = true,
                     Description = "Access to the phone",
-                    Claims = new []
-                    {
-                        OpenIdClaimTypes.PhoneNumber,
-                        OpenIdClaimTypes.PhoneNumberVerified
-                    },
+                    Claims = new[] {OpenIdClaimTypes.PhoneNumber, OpenIdClaimTypes.PhoneNumberVerified},
                     Type = ScopeTypes.ResourceOwner
                 }
             };

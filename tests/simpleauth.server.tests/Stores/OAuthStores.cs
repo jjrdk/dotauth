@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Server.Tests.Stores
 {
+    using System;
     using System.Collections.Generic;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Shared;
@@ -48,36 +49,15 @@
                 {
                     ClientId = "resource_server",
                     ClientName = "Resource server",
-                    Secrets = new List<ClientSecret>
+                    Secrets = new[]
                     {
-                        new ClientSecret
-                        {
-                            Type = ClientSecretTypes.SharedSecret,
-                            Value = "resource_server"
-                        }
+                        new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "resource_server"}
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     //LogoUri = null,
-                    AllowedScopes = new List<Scope>
-                    {
-                        new Scope
-                        {
-                            Name = "uma_protection"
-                        },
-                        new Scope
-                        {
-                            Name = "uma_authorization"
-                        }
-                    },
-                    GrantTypes = new []
-                    {
-                        GrantTypes.ClientCredentials,
-                        GrantTypes.UmaTicket
-                    },
-                    ResponseTypes = new []
-                    {
-                        ResponseTypeNames.Token
-                    },
+                    AllowedScopes = new[] {"uma_protection", "uma_authorization"},
+                    GrantTypes = new[] {GrantTypes.ClientCredentials, GrantTypes.UmaTicket},
+                    ResponseTypes = new[] {ResponseTypeNames.Token},
                     JsonWebKeys = "verylongsecretkey".CreateSignatureJwk().ToSet(),
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Native
@@ -87,29 +67,15 @@
                 {
                     ClientId = "anonymous",
                     ClientName = "Anonymous",
-                    Secrets = new []
-                    {
-                        new ClientSecret
-                        {
-                            Type = ClientSecretTypes.SharedSecret,
-                            Value = "anonymous"
-                        }
-                    },
+                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "anonymous"}},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     //LogoUri = null,
-                    AllowedScopes = new List<Scope> { },
-                    GrantTypes = new []
-                    {
-                        GrantTypes.ClientCredentials
-                    },
-                    ResponseTypes = new []
-                    {
-                        ResponseTypeNames.Token
-                    },
+                    AllowedScopes = Array.Empty<string>(),
+                    GrantTypes = new[] {GrantTypes.ClientCredentials},
+                    ResponseTypes = new[] {ResponseTypeNames.Token},
                     IdTokenSignedResponseAlg = "RS256",
                     ApplicationType = ApplicationTypes.Native
                 }
-
             };
         }
     }

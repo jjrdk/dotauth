@@ -25,11 +25,7 @@
                 {
                     ClientId = "api",
                     ClientName = "api",
-                    Secrets =
-                        new List<ClientSecret>
-                        {
-                            new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "api"}
-                        },
+                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "api"}},
                     JsonWebKeys =
                         new[]
                         {
@@ -45,9 +41,9 @@
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new List<Scope> {new Scope {Name = "register_client"}},
+                    AllowedScopes = new[] {"register_client"},
                     GrantTypes = new[] {GrantTypes.ClientCredentials},
-                    ResponseTypes = new List<string> {ResponseTypeNames.Token},
+                    ResponseTypes = new[] {ResponseTypeNames.Token},
                     ApplicationType = ApplicationTypes.Native
                 }
             };
@@ -59,7 +55,7 @@
             {
                 new ResourceOwner
                 {
-                    Id = "administrator",
+                    Subject = "administrator",
                     Claims = new[]
                     {
                         new Claim(StandardClaimNames.Subject, "administrator"),

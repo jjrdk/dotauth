@@ -25,7 +25,7 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Get or sets the subject-identifier for the End-User at the issuer.
         /// </summary>
-        public string Id { get; set; }
+        public string Subject { get; set; }
         /// <summary>
         /// Gets or sets the password
         /// </summary>

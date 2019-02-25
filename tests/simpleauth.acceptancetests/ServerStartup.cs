@@ -31,6 +31,7 @@
                         context.Client,
                         new InMemoryScopeRepository(),
                         DefaultStores.Clients(context)),
+                Scopes = sp=>new InMemoryScopeRepository(DefaultStores.Scopes()),
                 Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents()),
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultStores.Users()),
                 UserClaimsToIncludeInAuthToken = new[] { "sub", "role", "name" }

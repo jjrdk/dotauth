@@ -64,10 +64,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
             {
                 ClientId = clientId,
                 RedirectionUrls = new List<Uri> {new Uri("https://localhost")},
-                Secrets = new List<ClientSecret>
-                {
-                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}
-                }
+                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}}
             };
 
             var jsonParameter = JsonConvert.SerializeObject(parameter);
@@ -85,7 +82,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 ClientId = clientId,
-                AllowedScopes = new List<Scope> {new Scope {Name = "not_supported_scope"}},
+                AllowedScopes = new[] {"not_supported_scope"},
                 RequestUris = new[] {new Uri("https://localhost"),},
                 RedirectionUrls = new[] {new Uri("https://localhost")}
             };

@@ -14,18 +14,17 @@
 
 namespace SimpleAuth.Controllers
 {
-    using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Shared.Repositories;
     using Shared.Requests;
     using Shared.Responses;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the scopes controller.
@@ -88,10 +87,9 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpGet("{id}")]
         [Authorize("manager")]
-        public async Task<IActionResult> Get(string id, CancellationToken cancellationToken)
+        public async Task<ActionResult<Scope>> Get(string id, CancellationToken cancellationToken)
         {
-            var result = await _scopeRepository.Get(id, cancellationToken).ConfigureAwait(false);
-            return new OkObjectResult(result);
+            return await _scopeRepository.Get(id, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -125,7 +123,7 @@ namespace SimpleAuth.Controllers
 
             return deleted
                 ? NoContent()
-                : (IActionResult) BadRequest(
+                : (IActionResult)BadRequest(
                     new ErrorResponse
                     {
                         Error = ErrorCodes.InvalidRequestCode,

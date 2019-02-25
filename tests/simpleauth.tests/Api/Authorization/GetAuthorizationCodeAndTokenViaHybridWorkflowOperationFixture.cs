@@ -30,7 +30,7 @@
                     new Mock<IAuthorizationCodeStore>().Object,
                     new Mock<ITokenStore>().Object,
                     new Mock<IScopeRepository>().Object,
-                    new InMemoryJwksRepository(), 
+                    new InMemoryJwksRepository(),
                     new NoOpPublisher());
         }
 
@@ -90,10 +90,7 @@
                 ResponseType = ResponseTypeNames.Code,
             };
 
-            var client = new Client
-            {
-                RedirectionUrls = new[] {redirectUrl}, AllowedScopes = new[] {new Scope {Name = "openid"}},
-            };
+            var client = new Client {RedirectionUrls = new[] {redirectUrl}, AllowedScopes = new[] {"openid"},};
             var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
                         authorizationParameter,
