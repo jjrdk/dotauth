@@ -34,10 +34,11 @@ Task("Version")
 		UpdateAssemblyInfo = false
 	});
 
+	Information("Branch: "+ versionInfo.BranchName);
 	Information("Version: "+ versionInfo.FullSemVer);
 	Information("Version: "+ versionInfo.MajorMinorPatch);
 
-    if(versionInfo.BranchName == "master")
+    if(versionInfo.BranchName != "master")
     {
         configuration = Argument("configuration", "Debug");
     }
@@ -74,8 +75,8 @@ Task("Build")
     var buildSettings = new DotNetCoreMSBuildSettings()
         .SetConfiguration(configuration)
         .SetVersion(buildVersion)
-        .SetInformationalVersion(informationalVersion)
-        .SetFileVersion(versionInfo.SemVer + versionInfo.Sha);
+        .SetInformationalVersion(informationalVersion);
+        //.SetFileVersion(versionInfo.SemVer + versionInfo.Sha);
     DotNetCoreMSBuild(buildDir + "/simpleauth.sln", buildSettings);
     DotNetCoreBuildServerShutdown();
 });
