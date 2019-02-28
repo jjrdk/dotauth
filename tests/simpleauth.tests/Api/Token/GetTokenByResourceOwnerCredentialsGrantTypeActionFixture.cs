@@ -28,6 +28,7 @@ namespace SimpleAuth.Tests.Api.Token
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Events.Logging;
+    using SimpleAuth.Tests.Helpers;
     using Xunit;
 
     public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
@@ -47,7 +48,7 @@ namespace SimpleAuth.Tests.Api.Token
         public async Task When_Passing_No_Request_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
-            await Assert.ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
                         null,
                         null,
@@ -292,9 +293,9 @@ namespace SimpleAuth.Tests.Api.Token
                 ClientId = clientId,
                 Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}},
                 JsonWebKeys =
-                    "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
+                    TestKeys.SecretKey.CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
                         .ToSet(),
-                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
+                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                 GrantTypes = new[] {GrantTypes.Password},
                 ResponseTypes = new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token}
             };

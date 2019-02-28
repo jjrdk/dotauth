@@ -214,7 +214,7 @@ namespace SimpleAuth.Shared.Models
         /// Gets or sets the token endpoint authentication signing algorithm
         /// </summary>
         [DataMember(Name = "token_endpoint_auth_signing_alg")]
-        public string TokenEndPointAuthSigningAlg { get; set; }
+        public string TokenEndPointAuthSigningAlg { get; set; } = SecurityAlgorithms.RsaSha256;
 
         ///// <summary>
         ///// Gets or sets the default max age

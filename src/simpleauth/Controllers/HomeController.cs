@@ -1,8 +1,8 @@
 ﻿namespace SimpleAuth.Controllers
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Mvc;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Defines the home controller.

@@ -22,7 +22,7 @@
                 throw new ArgumentNullException(nameof(routeBuilder));
             }
 
-            routeBuilder.MapRoute("BasicAuthentication",
+            routeBuilder.MapRoute("SmsAuthentication",
                 "Authenticate/{action}/{id?}",
                 new { controller = "Authenticate", action = "Index", area = SmsConstants.Amr },
                 constraints: new { area = SmsConstants.Amr });

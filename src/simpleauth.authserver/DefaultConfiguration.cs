@@ -42,9 +42,10 @@
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new[] {"register_client"},
-                    GrantTypes = new[] {GrantTypes.ClientCredentials},
-                    ResponseTypes = new[] {ResponseTypeNames.Token},
-                    ApplicationType = ApplicationTypes.Native
+                    GrantTypes = new[] {GrantTypes.ClientCredentials, GrantTypes.Implicit, GrantTypes.AuthorizationCode},
+                    ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.Code},
+                    ApplicationType = ApplicationTypes.Native,
+                    RedirectionUrls = new []{new Uri("http://localhost:60000"), }
                 }
             };
         }

@@ -18,13 +18,14 @@ namespace SimpleAuth.Extensions
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
 
     internal static class ClientHelper
     {
-        public static async Task<string> GenerateIdToken(this IClientStore clientStore, IJwksStore jwksStore, string clientId, JwtPayload jwsPayload, CancellationToken cancellationToken)
+        public static async Task<string> GenerateIdToken(this IClientStore clientStore, string clientId, JwtPayload jwsPayload, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -42,10 +43,10 @@ namespace SimpleAuth.Extensions
                 return null;
             }
 
-            return await GenerateIdToken(client, jwksStore, jwsPayload, cancellationToken).ConfigureAwait(false);
+            return GenerateIdToken(client, jwsPayload);
         }
 
-        public static async Task<string> GenerateIdToken(this Client client, IJwksStore jwksStore, JwtPayload jwsPayload, CancellationToken cancellationToken)
+        public static string GenerateIdToken(this Client client, JwtPayload jwsPayload)
         {
             if (client == null)
             {
@@ -58,7 +59,7 @@ namespace SimpleAuth.Extensions
             }
 
             var handler = new JwtSecurityTokenHandler();
-            var signingCredentials = await jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg, cancellationToken);
+            var signingCredentials = client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First();
             var jwt = handler.CreateEncodedJwt(
                 jwsPayload.Iss,
                 client.ClientName,
@@ -67,13 +68,7 @@ namespace SimpleAuth.Extensions
                 DateTime.UtcNow.Add(client.TokenLifetime),
                 DateTime.UtcNow,
                 signingCredentials);
-            //client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First(),
-            //client.IdTokenEncryptedResponseAlg != null
-            //    ? new EncryptingCredentials(
-            //        client.JsonWebKeys.GetEncryptionKeys().First(),
-            //        client.IdTokenEncryptedResponseAlg,
-            //        client.IdTokenEncryptedResponseEnc)
-            //    : null);
+
             return jwt;
         }
     }

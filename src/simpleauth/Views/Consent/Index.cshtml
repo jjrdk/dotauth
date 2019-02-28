@@ -15,7 +15,7 @@
             <div class="card-image valign-wrapper center" style="padding:20px">
                 @if (string.IsNullOrWhiteSpace(Model.LogoUri))
                 {
-                    <img src="@Url.Content("~/img/OAuth2.png")" alt="logo" width="250" height="250" />
+                    <img src="@Url.Content("~/img/oauth2.png")" alt="logo" width="250" height="250" />
                 }
                 else
                 {
@@ -40,7 +40,7 @@
                         </ul>
                         </div>
                         }
-                
+
                         @if (Model.AllowedIndividualClaims.Any())
                         {
                         <div class="col s12">
@@ -55,14 +55,14 @@
                         </ul>
                         </div>
                         }
-                
+
                         @if (!string.IsNullOrWhiteSpace(Model.PolicyUri) ||
                             !string.IsNullOrWhiteSpace(Model.TosUri))
                         {
                                                 <div class="col s12">
                             @if (!string.IsNullOrWhiteSpace(Model.PolicyUri))
                             {
-                                <a href="@Model.PolicyUri" target="_blank">Policy &nbsp;</a>
+                                <a href="@Model.PolicyUri" target="_blank">Policy</a> <span>&nbsp;</span>
                             }
                             @if (!string.IsNullOrWhiteSpace(Model.TosUri))
                             {
@@ -106,7 +106,7 @@
                         </ul>
                     </div>
                     }
-            
+
                     @if (Model.AllowedIndividualClaims.Any())
                     {
                     <div class="col s12">
@@ -119,7 +119,7 @@
                         </ul>
                     </div>
                     }
-            
+
                     @if (!string.IsNullOrWhiteSpace(Model.PolicyUri) ||
                         !string.IsNullOrWhiteSpace(Model.TosUri))
                     {

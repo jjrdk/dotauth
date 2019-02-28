@@ -131,7 +131,12 @@ namespace SimpleAuth.AuthServer
             // 5. Configure ASP.NET MVC
 
             app.UseResponseCompression();
-            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}"); });
+            app.UseMvc(
+                routes =>
+                {
+                    routes.MapRoute("pwdauth", "pwd/{controller=Authenticate}/{action=Index}");
+                    routes.MapRoute("default", "{controller=Home}/{action=Index}");
+                });
         }
     }
 }

@@ -103,7 +103,7 @@ namespace SimpleAuth.Api.Token
                     ErrorCodes.InvalidRequestCode,
                     string.Format(
                         ErrorDescriptions.MissingParameter,
-                        CoreConstants.StandardTokenRequestParameterNames._userName));
+                        StandardTokenRequestParameterNames.UserName));
             }
 
             if (string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Password))
@@ -112,7 +112,7 @@ namespace SimpleAuth.Api.Token
                     ErrorCodes.InvalidRequestCode,
                     string.Format(
                         ErrorDescriptions.MissingParameter,
-                        CoreConstants.StandardTokenRequestParameterNames._passwordName));
+                        StandardTokenRequestParameterNames.PasswordName));
             }
 
             if (string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Scope))
@@ -121,7 +121,7 @@ namespace SimpleAuth.Api.Token
                     ErrorCodes.InvalidRequestCode,
                     string.Format(
                         ErrorDescriptions.MissingParameter,
-                        CoreConstants.StandardTokenRequestParameterNames._scopeName));
+                        StandardTokenRequestParameterNames.ScopeName));
             }
 
             var result = await _getTokenByResourceOwnerCredentialsGrantType.Execute(
@@ -131,9 +131,7 @@ namespace SimpleAuth.Api.Token
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
-            //var accessToken = result != null ? result.AccessToken : string.Empty;
-            //var identityToken = result != null ? result.IdToken : string.Empty;
-            //_oauthEventSource.EndGetTokenByResourceOwnerCredentials(accessToken, identityToken);
+
             await _eventPublisher.Publish(new TokenGranted(Id.Create(), processId, result.AccessToken, DateTime.UtcNow))
                 .ConfigureAwait(false);
             return result;
@@ -188,7 +186,7 @@ namespace SimpleAuth.Api.Token
                     ErrorCodes.InvalidRequestCode,
                     string.Format(
                         ErrorDescriptions.MissingParameter,
-                        CoreConstants.StandardTokenRequestParameterNames._refreshToken));
+                        StandardTokenRequestParameterNames.RefreshToken));
             }
 
             var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(
@@ -283,7 +281,7 @@ namespace SimpleAuth.Api.Token
                     ErrorCodes.InvalidRequestCode,
                     string.Format(
                         ErrorDescriptions.MissingParameter,
-                        CoreConstants.StandardTokenRequestParameterNames._scopeName));
+                        StandardTokenRequestParameterNames.ScopeName));
             }
 
             // 1. Authenticate the client
@@ -360,7 +358,7 @@ namespace SimpleAuth.Api.Token
                     ErrorCodes.InvalidRequestCode,
                     string.Format(
                         ErrorDescriptions.MissingParameter,
-                        CoreConstants.StandardTokenRequestParameterNames._authorizationCodeName));
+                        StandardTokenRequestParameterNames.AuthorizationCodeName));
             }
 
             // With this instruction

@@ -2,6 +2,7 @@
 {
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
+    using System.Net;
     using Xbehave;
     using Xunit;
 
@@ -19,7 +20,24 @@
                         .ConfigureAwait(false);
                 });
 
-            "then error is returned".x(() => { Assert.True(scope.ContainsError); });
+            "then error is returned".x(() => { Assert.Equal(HttpStatusCode.Forbidden, scope.HttpStatus); });
+        }
+
+        [Scenario]
+        public void RejectedAddScope()
+        {
+            GenericResponse<Scope> scope = null;
+
+            "When adding new scope".x(
+                async () =>
+                {
+                    scope = await _managerClient.AddScope(
+                        new Scope { Name = "test", Claims = new[] { "openid" } },
+                        _grantedToken.AccessToken)
+                    .ConfigureAwait(false);
+                });
+
+            "then error is returned".x(() => { Assert.Equal(HttpStatusCode.Forbidden, scope.HttpStatus); });
         }
     }
 }

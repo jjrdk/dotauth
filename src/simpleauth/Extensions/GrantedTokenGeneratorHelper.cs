@@ -14,6 +14,10 @@
 
 namespace SimpleAuth.Extensions
 {
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
@@ -21,10 +25,6 @@ namespace SimpleAuth.Extensions
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
 
     internal static class GrantedTokenGeneratorHelper
     {
@@ -88,19 +88,18 @@ namespace SimpleAuth.Extensions
                     {
                         new Claim(ClaimTypes.NameIdentifier, client.ClientName ?? client.ClientId),
                         new Claim(StandardClaimNames.Scopes, scope),
-                        new Claim("client_id", client.ClientId),
+                        new Claim(StandardClaimNames.Azp, client.ClientId),
                     }.Concat(client.Claims ?? Array.Empty<Claim>())
                     .Concat(additionalClaims ?? Array.Empty<Claim>())
                     .GroupBy(x => x.Type)
-                    .Select(x => x.First());
+                    .Select(x => new Claim(x.Key, string.Join(" ", x.Select(y => y.Value))));
 
             if (idTokenPayload != null && idTokenPayload.Iss == null)
             {
                 idTokenPayload.AddClaim(new Claim(StandardClaimNames.Issuer, issuerName));
             }
 
-            var signingCredentials = await jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg, cancellationToken);
-                //client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First();
+            var signingCredentials = await jwksStore.GetSigningKey(client.TokenEndPointAuthSigningAlg, cancellationToken).ConfigureAwait(false);
 
             var accessToken = handler.CreateEncodedJwt(
                 issuerName,
@@ -117,7 +116,7 @@ namespace SimpleAuth.Extensions
             {
                 AccessToken = accessToken,
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
-                ExpiresIn = (int) client.TokenLifetime.TotalSeconds,
+                ExpiresIn = (int)client.TokenLifetime.TotalSeconds,
                 TokenType = CoreConstants.StandardTokenTypes._bearer,
                 CreateDateTime = DateTime.UtcNow,
                 // IDS
