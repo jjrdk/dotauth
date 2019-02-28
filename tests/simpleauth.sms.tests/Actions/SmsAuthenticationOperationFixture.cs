@@ -1,17 +1,15 @@
-﻿namespace SimpleAuth.Twilio.Tests.Actions
+﻿namespace SimpleAuth.Sms.Tests.Actions
 {
-    using Moq;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Sms;
+    using Moq;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Sms.Actions;
-    using Twilio;
     using Xunit;
 
     public class SmsAuthenticationOperationFixture

@@ -15,9 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth", "src\simpleaut
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.sms", "src\simpleauth.sms\simpleauth.sms.csproj", "{7AD38A3E-4A8A-42D2-9D1C-975676036F52}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.twilio.client", "src\simpleauth.twilio.client\simpleauth.twilio.client.csproj", "{D6575015-95E4-41F9-9498-79C8F0102E4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.sms.client", "src\simpleauth.sms.client\simpleauth.sms.client.csproj", "{D6575015-95E4-41F9-9498-79C8F0102E4D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.twilio.tests", "tests\simpleauth.twilio.tests\simpleauth.twilio.tests.csproj", "{ABE7C90B-9016-4188-86E9-9A0041949CEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.sms.tests", "tests\simpleauth.sms.tests\simpleauth.sms.tests.csproj", "{ABE7C90B-9016-4188-86E9-9A0041949CEE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.userinfointrospection", "src\simpleauth.userinfointrospection\simpleauth.userinfointrospection.csproj", "{7E02195C-5656-43F4-AFC0-DADD6AFC9214}"
 EndProject

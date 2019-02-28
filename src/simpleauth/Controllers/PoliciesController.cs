@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleAuth.Api.PolicyController.Actions;
 using SimpleAuth.Repositories;
 
 namespace SimpleAuth.Controllers
@@ -28,6 +27,7 @@ namespace SimpleAuth.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Api.PolicyController;
     using SimpleAuth.Shared.Errors;
 
     /// <summary>

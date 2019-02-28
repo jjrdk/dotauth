@@ -14,5 +14,5 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("simpleauth.twilio.tests")]
+[assembly: InternalsVisibleTo("simpleauth.sms.tests")]
 [assembly: InternalsVisibleTo("simpleauth.server.tests")]

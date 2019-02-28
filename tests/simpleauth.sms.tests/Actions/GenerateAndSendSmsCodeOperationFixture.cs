@@ -1,14 +1,13 @@
-﻿namespace SimpleAuth.Twilio.Tests.Actions
+﻿namespace SimpleAuth.Sms.Tests.Actions
 {
-    using Moq;
-    using SimpleAuth;
     using System;
     using System.Threading.Tasks;
+    using Moq;
+    using SimpleAuth;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Sms;
     using SimpleAuth.Sms.Actions;
-    using Twilio;
     using Xunit;
 
     public class GenerateAndSendSmsCodeOperationFixture
@@ -46,8 +45,6 @@
                 .ThrowsAsync<SimpleAuthException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber"))
                 .ConfigureAwait(false);
 
-            //_eventSourceStub.Verify(e => e.Failure(It.Is<Exception>((f) => f.Message == "problem")));
-            Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
             Assert.Equal("The SMS account is not properly configured", exception.Message);
         }

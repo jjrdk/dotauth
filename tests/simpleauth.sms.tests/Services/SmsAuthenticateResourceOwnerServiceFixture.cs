@@ -1,13 +1,13 @@
-﻿namespace SimpleAuth.Twilio.Tests.Services
+﻿namespace SimpleAuth.Sms.Tests.Services
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Moq;
     using SimpleAuth;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
     using SimpleAuth.Sms.Services;
     using Xunit;
 
