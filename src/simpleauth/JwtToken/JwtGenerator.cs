@@ -63,14 +63,14 @@ namespace SimpleAuth.JwtToken
             _jwksStore = jwksStore;
         }
 
-        public JwtPayload UpdatePayloadDate(JwtPayload jwsPayload, Client client)
+        public JwtPayload UpdatePayloadDate(JwtPayload jwsPayload, TimeSpan? duration)
         {
             if (jwsPayload == null)
             {
                 throw new ArgumentNullException(nameof(jwsPayload));
             }
 
-            var timeKeyValuePair = GetExpirationAndIssuedTime(client);
+            var timeKeyValuePair = GetExpirationAndIssuedTime(duration);
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
             jwsPayload.Remove(StandardClaimNames.Iat);
@@ -105,7 +105,7 @@ namespace SimpleAuth.JwtToken
                 throw new ArgumentNullException(nameof(scopes));
             }
 
-            var timeKeyValuePair = GetExpirationAndIssuedTime(client);
+            var timeKeyValuePair = GetExpirationAndIssuedTime(client?.TokenLifetime);
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
 
@@ -403,7 +403,7 @@ namespace SimpleAuth.JwtToken
             var amrParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Amr);
             var azpParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Azp);
 
-            var timeKeyValuePair = GetExpirationAndIssuedTime(cl);
+            var timeKeyValuePair = GetExpirationAndIssuedTime(cl?.TokenLifetime);
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
             var acrValues = CoreConstants.StandardArcParameterNames._openIdCustomAuthLevel + ".password=1";
@@ -649,10 +649,10 @@ namespace SimpleAuth.JwtToken
                     claim.Value));
         }
 
-        private KeyValuePair<double, double> GetExpirationAndIssuedTime(Client client)
+        private KeyValuePair<double, double> GetExpirationAndIssuedTime(TimeSpan? duration)
         {
             var currentDateTime = DateTimeOffset.UtcNow;
-            var expiredDateTime = currentDateTime.Add(client?.TokenLifetime ?? TimeSpan.Zero);
+            var expiredDateTime = currentDateTime.Add(duration ?? TimeSpan.Zero);
             var expirationInSeconds = expiredDateTime.ConvertToUnixTimestamp();
             var iatInSeconds = currentDateTime.ConvertToUnixTimestamp();
             return new KeyValuePair<double, double>(expirationInSeconds, iatInSeconds);

@@ -224,19 +224,6 @@ namespace SimpleAuth
             public const string ClientAssertionType = "client_assertion_type";
         }
 
-        /// <summary>
-        /// Parameter names of a token request
-        /// </summary>
-        internal static class StandardTokenRequestParameterNames
-        {
-            public static string _clientIdName = "client_id";
-            public static string _userName = "username";
-            public static string _passwordName = "password";
-            public static string _authorizationCodeName = "code";
-            public static string _refreshToken = "refresh_token";
-            public static string _scopeName = "scope";
-        }
-
         internal static readonly Dictionary<string[], AuthorizationFlow> MappingResponseTypesToAuthorizationFlows =
             new Dictionary<string[], AuthorizationFlow>
             {

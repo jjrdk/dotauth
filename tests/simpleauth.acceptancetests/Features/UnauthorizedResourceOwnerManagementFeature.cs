@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.AcceptanceTests.Features
 {
+    using System.Net;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
@@ -26,7 +27,7 @@
             "Then response has error.".x(
                 () =>
                 {
-                    Assert.True(response.ContainsError);
+                    Assert.Equal(HttpStatusCode.Forbidden, response.HttpStatus);
                 });
         }
 
@@ -47,7 +48,7 @@
             "Then response has error.".x(
                 () =>
                 {
-                    Assert.True(response.ContainsError);
+                    Assert.Equal(HttpStatusCode.Forbidden, response.HttpStatus);
                 });
         }
 
@@ -72,7 +73,7 @@
             "Then response has error.".x(
                 () =>
                 {
-                    Assert.True(response.ContainsError);
+                    Assert.Equal(HttpStatusCode.Forbidden, response.HttpStatus);
                 });
         }
 
@@ -93,7 +94,7 @@
             "Then response has error.".x(
                 () =>
                 {
-                    Assert.True(response.ContainsError);
+                    Assert.Equal(HttpStatusCode.Forbidden, response.HttpStatus);
                 });
         }
 
@@ -112,7 +113,7 @@
             "Then response has error.".x(
                 () =>
                 {
-                    Assert.True(response.ContainsError);
+                    Assert.Equal(HttpStatusCode.Forbidden, response.HttpStatus);
                 });
         }
     }

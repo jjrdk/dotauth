@@ -25,13 +25,13 @@ namespace SimpleAuth.Controllers
     using Shared;
     using Shared.Repositories;
     using Shared.Requests;
+    using SimpleAuth.Shared.Errors;
     using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Errors;
 
     /// <summary>
     /// Defines the authorization controller.

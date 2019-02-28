@@ -68,11 +68,6 @@ namespace SimpleAuth.Api.Token.Actions
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (resourceOwnerGrantTypeParameter == null)
-            {
-                throw new ArgumentNullException(nameof(resourceOwnerGrantTypeParameter));
-            }
-
             // 1. Try to authenticate the client
             var instruction = authenticationHeaderValue.GetAuthenticateInstruction(
                 resourceOwnerGrantTypeParameter,
@@ -165,12 +160,8 @@ namespace SimpleAuth.Api.Token.Actions
                     .ConfigureAwait(false);
                 if (generatedToken.IdTokenPayLoad != null)
                 {
-                    _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, client);
-                    generatedToken.IdToken = await client.GenerateIdToken(
-                            _jwksStore,
-                            generatedToken.IdTokenPayLoad,
-                            cancellationToken)
-                        .ConfigureAwait(false);
+                    _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, client?.TokenLifetime);
+                    generatedToken.IdToken = client.GenerateIdToken(generatedToken.IdTokenPayLoad);
                 }
 
                 await _tokenStore.AddToken(generatedToken, cancellationToken).ConfigureAwait(false);

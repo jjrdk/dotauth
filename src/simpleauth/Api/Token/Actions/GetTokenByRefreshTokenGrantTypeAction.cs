@@ -113,9 +113,8 @@ namespace SimpleAuth.Api.Token.Actions
             // 5. Fill-in the idtoken
             if (generatedToken.IdTokenPayLoad != null)
             {
-                _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, authResult.Client);
+                _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, authResult.Client?.TokenLifetime);
                 generatedToken.IdToken = await _clientStore.GenerateIdToken(
-                        _jwksRepository,
                         generatedToken.ClientId,
                         generatedToken.IdTokenPayLoad,
                         cancellationToken)

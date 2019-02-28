@@ -18,6 +18,7 @@ namespace SimpleAuth.Extensions
     using Microsoft.AspNetCore.Routing;
     using Results;
     using Shared.Requests;
+    using SimpleAuth.Shared;
     using System;
     using System.IO;
     using System.Linq;
@@ -34,13 +35,8 @@ namespace SimpleAuth.Extensions
                 return string.Empty;
             }
 
-            var claim = controller.User.Claims.FirstOrDefault(c => c.Type == "client_id");
-            if (claim == null)
-            {
-                return string.Empty;
-            }
-
-            return claim.Value;
+            var claim = controller.User.Claims.FirstOrDefault(c => c.Type == StandardClaimNames.Azp);// || c.Type == StandardTokenRequestParameterNames.ClientIdName);
+            return claim == null ? string.Empty : claim.Value;
         }
 
         public static string GetOriginUrl(this Controller controller)

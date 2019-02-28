@@ -13,6 +13,7 @@
 
     public class ManagementClient
     {
+        private readonly AddScopeOperation _addScopeOperation;
         private readonly GetAllClientsOperation _getAllClientsOperation;
         private readonly DeleteClientOperation _deleteClientOperation;
         private readonly GetClientOperation _getClientOperation;
@@ -42,6 +43,7 @@
             _deleteClientOperation = new DeleteClientOperation(client);
             _getClientOperation = new GetClientOperation(client);
             _searchClientOperation = new SearchClientOperation(client);
+            _addScopeOperation = new AddScopeOperation(client);
         }
 
         public static async Task<ManagementClient> Create(HttpClient client, Uri discoveryDocumentationUri)
@@ -77,7 +79,7 @@
                 throw new ArgumentNullException(nameof(client));
             }
 
-            var serializedJson = JsonConvert.SerializeObject(client);
+            var serializedJson = Serializer.Default.Serialize(client);
             var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
             var request = new HttpRequestMessage
             {
@@ -128,7 +130,7 @@
                 throw new ArgumentNullException(nameof(client));
             }
 
-            var serializedJson = JsonConvert.SerializeObject(client);
+            var serializedJson = Serializer.Default.Serialize(client);
             var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
             var request = new HttpRequestMessage
             {
@@ -213,15 +215,21 @@
             return new GenericResponse<Scope> { Content = JsonConvert.DeserializeObject<Scope>(content) };
         }
 
-        public async Task<GenericResponse<object>> AddResourceOwner(
+        public Task<GenericResponse<Scope>> AddScope(
+            Scope scope,
+            string authorizationHeaderValue = null)
+        {
+            return _addScopeOperation.Execute(new Uri(_discoveryInformation.Scopes), scope, authorizationHeaderValue);
+        }
+
+        public Task<GenericResponse<object>> AddResourceOwner(
             AddResourceOwnerRequest request,
             string authorizationHeaderValue = null)
         {
-            return await _addResourceOwnerOperation.Execute(
+            return _addResourceOwnerOperation.Execute(
                     new Uri(_discoveryInformation.ResourceOwners),
                     request,
-                    authorizationHeaderValue)
-                .ConfigureAwait(false);
+                    authorizationHeaderValue);
         }
 
         public async Task<GenericResponse<ResourceOwner>> GetResourceOwner(

@@ -180,7 +180,6 @@ namespace SimpleAuth.Common
             if (responses.Contains(ResponseTypeNames.IdToken))
             {
                 var idToken = await _clientStore.GenerateIdToken(
-                        _jwksStore,
                         authorizationParameter.ClientId,
                         idTokenPayload,
                         cancellationToken)

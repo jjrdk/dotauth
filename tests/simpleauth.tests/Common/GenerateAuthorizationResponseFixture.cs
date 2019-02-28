@@ -32,6 +32,7 @@ namespace SimpleAuth.Tests.Common
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Events.Logging;
+    using SimpleAuth.Tests.Helpers;
     using Xunit;
 
     public sealed class GenerateAuthorizationResponseFixture
@@ -114,9 +115,9 @@ namespace SimpleAuth.Tests.Common
             {
                 ClientId = clientId,
                 JsonWebKeys =
-                    "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
+                    TestKeys.SecretKey.CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
                         .ToSet(),
-                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256
+                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
             await _generateAuthorizationResponse.Generate(

@@ -30,6 +30,7 @@ namespace SimpleAuth.Tests.Api.Token
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Tests.Helpers;
     using Xunit;
 
     public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
@@ -176,9 +177,9 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ClientId = "id",
                 JsonWebKeys =
-                    "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
+                    TestKeys.SecretKey.CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
                         .ToSet(),
-                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
+                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                 Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
                 GrantTypes = new[] {GrantTypes.RefreshToken}
             };

@@ -7,10 +7,16 @@
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using SimpleAuth.Shared;
 
     internal class UmaAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        public UmaAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+        public UmaAuthenticationHandler(
+            IOptionsMonitor<AuthenticationSchemeOptions> options,
+            ILoggerFactory logger,
+            UrlEncoder encoder,
+            ISystemClock clock)
+            : base(options, logger, encoder, clock)
         {
         }
 
@@ -24,7 +30,7 @@
             var claims = new List<Claim>();
             if (!string.IsNullOrWhiteSpace(UmaUserStore.Instance().ClientId))
             {
-                claims.Add(new Claim("client_id", UmaUserStore.Instance().ClientId));
+                claims.Add(new Claim(StandardClaimNames.Azp, UmaUserStore.Instance().ClientId));
             }
 
             claims.Add(new Claim("scope", "uma_protection"));
