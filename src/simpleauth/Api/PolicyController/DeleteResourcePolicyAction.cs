@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.PolicyController.Actions
+namespace SimpleAuth.Api.PolicyController
 {
-    using Repositories;
-    using Shared.Models;
-    using SimpleAuth.Shared.Repositories;
     using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     internal class DeleteResourcePolicyAction
     {

@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <AssemblyName>simpleauth.twilio.tests</AssemblyName>
+    <AssemblyName>simpleauth.sms.tests</AssemblyName>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <RootNamespace>SimpleAuth.Twilio.Tests</RootNamespace>
+    <RootNamespace>SimpleAuth.Sms.Tests</RootNamespace>
   </PropertyGroup>
   <Import Project="../../shared.proj" />
 

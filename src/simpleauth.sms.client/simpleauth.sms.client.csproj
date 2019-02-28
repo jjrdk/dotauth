@@ -2,9 +2,9 @@
   <PropertyGroup>
     <Description>SimpleAuth Twilio authentication client</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>simpleauth.twilio.client</AssemblyName>
-    <PackageId>simpleauth.twilio.client</PackageId>
-    <RootNamespace>SimpleAuth.Twilio.Client</RootNamespace>
+    <AssemblyName>simpleauth.sms.client</AssemblyName>
+    <PackageId>simpleauth.sms.client</PackageId>
+    <RootNamespace>SimpleAuth.Sms.Client</RootNamespace>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>

@@ -1,12 +1,12 @@
-﻿namespace SimpleAuth.Twilio.Client
+﻿namespace SimpleAuth.Sms.Client
 {
-    using Newtonsoft.Json;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Responses;
     using System;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
+    using Newtonsoft.Json;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
 
     /// <summary>
     /// Defines the sid sms authentication client.
