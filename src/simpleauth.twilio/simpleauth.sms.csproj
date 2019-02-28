@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleAuth Twilio Library</Description>
+    <Description>SimpleAuth SMS Authentication Library</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>simpleauth.twilio</AssemblyName>
-    <PackageId>simpleauth.twilio</PackageId>
-    <RootNamespace>SimpleAuth.Twilio</RootNamespace>
+    <AssemblyName>simpleauth.sms</AssemblyName>
+    <PackageId>simpleauth.sms</PackageId>
+    <RootNamespace>SimpleAuth.Sms</RootNamespace>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>
@@ -20,6 +20,7 @@
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.3.3.23" />
     <PackageReference Include="microsoft.extensions.fileproviders.embedded" Version="2.2.0" />
     <PackageReference Include="microsoft.aspnetcore.mvc.razor" Version="2.2.0" />
   </ItemGroup>

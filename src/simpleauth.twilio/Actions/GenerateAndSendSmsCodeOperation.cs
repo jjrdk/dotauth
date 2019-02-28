@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Twilio.Actions
+﻿namespace SimpleAuth.Sms.Actions
 {
-    using SimpleAuth;
     using System;
     using System.Threading.Tasks;
+    using SimpleAuth;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
 
@@ -10,17 +10,14 @@
     {
         private readonly Random _random = new Random(DateTime.UtcNow.Second);
         private readonly IConfirmationCodeStore _confirmationCodeStore;
-        private readonly SmsAuthenticationOptions _smsAuthenticationOptions;
-        private readonly ITwilioClient _twilioClient;
+        private readonly ISmsClient _smsClient;
 
         public GenerateAndSendSmsCodeOperation(
-            ITwilioClient twilioClient,
-            IConfirmationCodeStore confirmationCodeStore,
-            SmsAuthenticationOptions smsAuthenticationOptions)
+            ISmsClient smsClient,
+            IConfirmationCodeStore confirmationCodeStore)
         {
             _confirmationCodeStore = confirmationCodeStore;
-            _smsAuthenticationOptions = smsAuthenticationOptions;
-            _twilioClient = twilioClient;
+            _smsClient = smsClient;
         }
 
         public async Task<string> Execute(string phoneNumber)
@@ -38,17 +35,16 @@
                 Subject = phoneNumber
             };
 
-            var message = string.Format(_smsAuthenticationOptions.Message, confirmationCode.Value);
+            var message = "The confirmation code is " + confirmationCode.Value;
             try
             {
-                await _twilioClient.SendMessage(_smsAuthenticationOptions.TwilioSmsCredentials, phoneNumber, message)
-                    .ConfigureAwait(false);
+                await _smsClient.SendMessage(phoneNumber, message).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 throw new SimpleAuthException(
                     ErrorCodes.UnhandledExceptionCode,
-                    "the twilio account is not properly configured",
+                    "The SMS account is not properly configured",
                     ex);
             }
 

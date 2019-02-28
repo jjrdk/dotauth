@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\simpleauth.twilio\simpleauth.twilio.csproj" />
+    <ProjectReference Include="..\..\src\simpleauth.twilio\simpleauth.sms.csproj" />
   </ItemGroup>
 
 </Project>

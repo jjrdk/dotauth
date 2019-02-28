@@ -1,19 +1,18 @@
-﻿namespace SimpleAuth.Twilio
+﻿namespace SimpleAuth.Sms
 {
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Defines the Twilio client interface.
+    /// Defines the SMS client interface.
     /// </summary>
-    public interface ITwilioClient
+    public interface ISmsClient
     {
         /// <summary>
         /// Sends the message.
         /// </summary>
-        /// <param name="credentials">The credentials.</param>
         /// <param name="toPhoneNumber">To phone number.</param>
         /// <param name="message">The message.</param>
         /// <returns></returns>
-        Task<bool> SendMessage(TwilioSmsCredentials credentials, string toPhoneNumber, string message);
+        Task<bool> SendMessage(string toPhoneNumber, string message);
     }
 }

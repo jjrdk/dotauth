@@ -8,7 +8,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Twilio.Services;
+    using SimpleAuth.Sms.Services;
     using Xunit;
 
     public class SmsAuthenticateResourceOwnerServiceFixture

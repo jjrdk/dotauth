@@ -1,16 +1,16 @@
-namespace SimpleAuth.Twilio.Controllers
+namespace SimpleAuth.Sms.Controllers
 {
-    using Actions;
-    using Microsoft.AspNetCore.Mvc;
-    using Shared;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Responses;
     using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Responses;
+    using SimpleAuth.Sms.Actions;
 
     /// <summary>
     /// Defines the code controller.
@@ -24,7 +24,7 @@ namespace SimpleAuth.Twilio.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="CodeController"/> class.
         /// </summary>
-        /// <param name="twilioClient">The twilio client.</param>
+        /// <param name="smsClient">The SMS client.</param>
         /// <param name="confirmationCodeStore">The confirmation code store.</param>
         /// <param name="resourceOwnerRepository">The resource owner repository.</param>
         /// <param name="subjectBuilder">The subject builder.</param>
@@ -32,22 +32,20 @@ namespace SimpleAuth.Twilio.Controllers
         /// <param name="eventPublisher">The event publisher.</param>
         /// <param name="smsOptions">The SMS options.</param>
         public CodeController(
-            ITwilioClient twilioClient,
+            ISmsClient smsClient,
             IConfirmationCodeStore confirmationCodeStore,
             IResourceOwnerRepository resourceOwnerRepository,
             ISubjectBuilder subjectBuilder,
             IEnumerable<IAccountFilter> accountFilters,
-            IEventPublisher eventPublisher,
-            SmsAuthenticationOptions smsOptions)
+            IEventPublisher eventPublisher)
         {
             _smsAuthenticationOperation = new SmsAuthenticationOperation(
-                twilioClient,
+                smsClient,
                 confirmationCodeStore,
                 resourceOwnerRepository,
                 subjectBuilder,
                 accountFilters,
-                eventPublisher,
-                smsOptions);
+                eventPublisher);
         }
 
         /// <summary>

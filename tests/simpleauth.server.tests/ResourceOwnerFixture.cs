@@ -5,7 +5,6 @@
     using SimpleAuth.Manager.Client;
     using SimpleAuth.Shared.Errors;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.DTOs;

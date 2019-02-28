@@ -5,7 +5,7 @@
 [assembly:InternalsVisibleTo("simpleauth.awslambda")]
 [assembly:InternalsVisibleTo("simpleauth.client")]
 [assembly:InternalsVisibleTo("simpleauth.manager.client")]
-[assembly:InternalsVisibleTo("simpleauth.twilio")]
+[assembly:InternalsVisibleTo("simpleauth.sms")]
 [assembly:InternalsVisibleTo("simpleauth.twilio.tests")]
 [assembly:InternalsVisibleTo("simpleauth.tests")]
 [assembly:InternalsVisibleTo("simpleauth.acceptancetests")]

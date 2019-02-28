@@ -6,7 +6,6 @@
     using SimpleAuth.Manager.Client;
     using SimpleAuth.Shared.Errors;
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Xunit;
 

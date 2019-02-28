@@ -12,26 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Twilio
+namespace SimpleAuth.Sms
 {
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
-    internal class DefaultTwilioSmsService : ITwoFactorAuthenticationService
+    internal class DefaultSmsService : ITwoFactorAuthenticationService
     {
-        private readonly TwoFactorTwilioOptions _options;
-        private readonly ITwilioClient _twilioClient;
+        private readonly TwoFactorSmsOptions _options;
+        private readonly ISmsClient _smsClient;
 
-        public DefaultTwilioSmsService(ITwilioClient twilioClient, TwoFactorTwilioOptions options)
+        public DefaultSmsService(ISmsClient smsClient, TwoFactorSmsOptions options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
-            _twilioClient = twilioClient;
+            _smsClient = smsClient;
         }
 
         public string RequiredClaim => OpenIdClaimTypes.PhoneNumber;
+
         public string Name => "SMS";
 
         public async Task Send(string code, ResourceOwner user)
@@ -52,15 +53,9 @@ namespace SimpleAuth.Twilio
                 throw new ArgumentException("the phone number is missing");
             }
 
-            await _twilioClient.SendMessage(
-                    new TwilioSmsCredentials
-                    {
-                        AccountSid = _options.TwilioAccountSid,
-                        AuthToken = _options.TwilioAuthToken,
-                        FromNumber = _options.TwilioFromNumber,
-                    },
+            await _smsClient.SendMessage(
                     phoneNumberClaim.Value,
-                    string.Format(_options.TwilioMessage, code))
+                    string.Format(_options.SmsMessage, code))
                 .ConfigureAwait(false);
         }
     }

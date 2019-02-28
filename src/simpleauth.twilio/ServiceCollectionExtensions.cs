@@ -1,12 +1,12 @@
-﻿namespace SimpleAuth.Twilio
+﻿namespace SimpleAuth.Sms
 {
-    using Controllers;
+    using System;
     using Microsoft.AspNetCore.Mvc.Razor;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.FileProviders;
-    using Services;
     using SimpleAuth.Shared;
-    using System;
+    using SimpleAuth.Sms.Controllers;
+    using SimpleAuth.Sms.Services;
 
     /// <summary>
     /// Defines the service collection extensions.
@@ -17,36 +17,42 @@
         /// Adds the two factor SMS authentication.
         /// </summary>
         /// <param name="services">The services.</param>
-        /// <param name="twilioOptions">The twilio options.</param>
+        /// <param name="smsOptions">The SMS options.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">
         /// services
         /// or
-        /// twilioOptions
+        /// smsOptions
         /// </exception>
-        public static IServiceCollection AddTwoFactorSmsAuthentication(this IServiceCollection services, TwoFactorTwilioOptions twilioOptions)
+        public static IServiceCollection AddTwoFactorSmsAuthentication(
+            this IServiceCollection services,
+            TwoFactorSmsOptions smsOptions)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (twilioOptions == null)
+            if (smsOptions == null)
             {
-                throw new ArgumentNullException(nameof(twilioOptions));
+                throw new ArgumentNullException(nameof(smsOptions));
             }
 
-            services.AddSingleton(twilioOptions);
-            services.AddTransient<ITwoFactorAuthenticationService, DefaultTwilioSmsService>();
+            services.AddSingleton(smsOptions);
+            services.AddTransient<ITwoFactorAuthenticationService, DefaultSmsService>();
             return services;
+        }
+
+        public static IServiceCollection AddSmsAuthentication(this IMvcBuilder mvcBuilder, ISmsClient smsClient)
+        {
+            return AddSmsAuthentication(mvcBuilder, sp => smsClient);
         }
 
         /// <summary>
         /// Adds the SMS authentication.
         /// </summary>
-        /// <param name="services">The services.</param>
         /// <param name="mvcBuilder">The MVC builder.</param>
-        /// <param name="smsAuthenticationOptions">The SMS authentication options.</param>
+        /// <param name="smsClientFactory">The SMS authentication options.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">
         /// services
@@ -55,30 +61,20 @@
         /// or
         /// smsAuthenticationOptions
         /// </exception>
-        public static IServiceCollection AddSmsAuthentication(this IServiceCollection services, IMvcBuilder mvcBuilder, SmsAuthenticationOptions smsAuthenticationOptions)
+        public static IServiceCollection AddSmsAuthentication(
+            this IMvcBuilder mvcBuilder,
+            Func<ServiceProvider, ISmsClient> smsClientFactory)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
             if (mvcBuilder == null)
             {
                 throw new ArgumentNullException(nameof(mvcBuilder));
             }
 
-            if (smsAuthenticationOptions == null)
-            {
-                throw new ArgumentNullException(nameof(smsAuthenticationOptions));
-            }
-
             var assembly = typeof(AuthenticateController).Assembly;
             var embeddedFileProvider = new EmbeddedFileProvider(assembly);
-            services.Configure<RazorViewEngineOptions>(opts =>
-            {
-                opts.FileProviders.Add(embeddedFileProvider);
-            });
-            services.AddSingleton(smsAuthenticationOptions);
+            var services = mvcBuilder.Services;
+            services.Configure<RazorViewEngineOptions>(opts => { opts.FileProviders.Add(embeddedFileProvider); });
+            services.AddSingleton(smsClientFactory);
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
             mvcBuilder.AddApplicationPart(assembly);
             return services;

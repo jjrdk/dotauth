@@ -1,23 +1,5 @@
-﻿namespace SimpleAuth.Twilio.Controllers
+﻿namespace SimpleAuth.Sms.Controllers
 {
-    using Actions;
-    using Exceptions;
-    using Extensions;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.DataProtection;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Infrastructure;
-    using Microsoft.AspNetCore.Mvc.Routing;
-    using SimpleAuth;
-    using SimpleAuth.Controllers;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Events.Logging;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.ViewModels;
-    using SimpleAuth.WebSite.Authenticate;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -25,8 +7,26 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using ViewModels;
-    using WebSite.User.Actions;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.DataProtection;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.AspNetCore.Mvc.Routing;
+    using SimpleAuth;
+    using SimpleAuth.Controllers;
+    using SimpleAuth.Exceptions;
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Events.Logging;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Sms.Actions;
+    using SimpleAuth.Sms.ViewModels;
+    using SimpleAuth.ViewModels;
+    using SimpleAuth.WebSite.Authenticate;
+    using SimpleAuth.WebSite.User.Actions;
 
     /// <summary>
     /// Defines the authenticate controller.
@@ -45,7 +45,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticateController"/> class.
         /// </summary>
-        /// <param name="twilioClient">The twilio client.</param>
+        /// <param name="smsClient">The SMS client.</param>
         /// <param name="dataProtectionProvider">The data protection provider.</param>
         /// <param name="urlHelperFactory">The URL helper factory.</param>
         /// <param name="actionContextAccessor">The action context accessor.</param>
@@ -66,7 +66,7 @@
         /// <param name="runtimeSettings">The runtime settings.</param>
         /// <param name="smsOptions">The SMS options.</param>
         public AuthenticateController(
-            ITwilioClient twilioClient,
+            ISmsClient smsClient,
             IDataProtectionProvider dataProtectionProvider,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
@@ -84,8 +84,7 @@
             IClientStore clientStore,
             IJwksStore jwksStore,
             IEnumerable<IAccountFilter> accountFilters,
-            RuntimeSettings runtimeSettings,
-            SmsAuthenticationOptions smsOptions)
+            RuntimeSettings runtimeSettings)
             : base(
                 dataProtectionProvider,
                 urlHelperFactory,
@@ -108,15 +107,14 @@
         {
             _eventPublisher = eventPublisher;
             _getUserOperation = new GetUserOperation(resourceOwnerRepository);
-            var generateSms = new GenerateAndSendSmsCodeOperation(twilioClient, confirmationCodeStore, smsOptions);
+            var generateSms = new GenerateAndSendSmsCodeOperation(smsClient, confirmationCodeStore);
             _smsAuthenticationOperation = new SmsAuthenticationOperation(
-                twilioClient,
+                smsClient,
                 confirmationCodeStore,
                 resourceOwnerRepository,
                 subjectBuilder,
                 accountFilters,
-                eventPublisher,
-                smsOptions);
+                eventPublisher);
             _validateConfirmationCode = new ValidateConfirmationCodeAction(confirmationCodeStore);
             _authenticateHelper = new AuthenticateHelper(
                 authorizationCodeStore,
@@ -203,7 +201,7 @@
                     {
                         await _eventPublisher.Publish(new ExceptionMessage(Id.Create(), ex, DateTime.UtcNow))
                             .ConfigureAwait(false);
-                        ModelState.AddModelError("message_error", "TWILIO account is not valid");
+                        ModelState.AddModelError("message_error", "SMS account is not valid");
                     }
                 }
             }
@@ -266,8 +264,7 @@
                 return RedirectToAction("Index", "User");
             }
 
-            var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, CookieNames.PasswordLessCookieName)
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.PasswordLessCookieName)
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
@@ -406,7 +403,7 @@
                     {
                         await _eventPublisher.Publish(new ExceptionMessage(Id.Create(), ex, DateTime.UtcNow))
                             .ConfigureAwait(false);
-                        ModelState.AddModelError("message_error", "TWILIO account is not valid");
+                        ModelState.AddModelError("message_error", "SMS account is not valid");
                     }
                 }
             }
