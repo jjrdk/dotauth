@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.client", "src\si
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth", "src\simpleauth\simpleauth.csproj", "{C23BD3A1-78CE-4531-9649-19BB87C93F53}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.sms", "src\simpleauth.twilio\simpleauth.sms.csproj", "{7AD38A3E-4A8A-42D2-9D1C-975676036F52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.sms", "src\simpleauth.sms\simpleauth.sms.csproj", "{7AD38A3E-4A8A-42D2-9D1C-975676036F52}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.twilio.client", "src\simpleauth.twilio.client\simpleauth.twilio.client.csproj", "{D6575015-95E4-41F9-9498-79C8F0102E4D}"
 EndProject
