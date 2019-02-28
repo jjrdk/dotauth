@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Twilio.ViewModels
+﻿namespace SimpleAuth.Sms.ViewModels
 {
     /// <summary>
     /// Defines the confirm code view model.

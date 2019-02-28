@@ -3,7 +3,6 @@
     using Shared.Models;
     using SimpleAuth.Authenticate;
     using System;
-    using System.Collections.Generic;
     using Xunit;
 
     public sealed class ClientSecretBasicAuthenticationFixture

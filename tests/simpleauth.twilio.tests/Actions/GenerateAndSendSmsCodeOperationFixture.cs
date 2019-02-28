@@ -6,26 +6,24 @@
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Sms;
+    using SimpleAuth.Sms.Actions;
     using Twilio;
-    using Twilio.Actions;
     using Xunit;
 
     public class GenerateAndSendSmsCodeOperationFixture
     {
-        private readonly Mock<ITwilioClient> _twilioClientStub;
-        private const string Message = "Message {0}";
+        private readonly Mock<ISmsClient> _twilioClientStub;
         private readonly Mock<IConfirmationCodeStore> _confirmationCodeStoreStub;
         private readonly GenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
 
         public GenerateAndSendSmsCodeOperationFixture()
         {
-            _twilioClientStub = new Mock<ITwilioClient>();
+            _twilioClientStub = new Mock<ISmsClient>();
             _confirmationCodeStoreStub = new Mock<IConfirmationCodeStore>();
-            var smsAuthenticationOptions = new SmsAuthenticationOptions { Message = Message };
             _generateAndSendSmsCodeOperation = new GenerateAndSendSmsCodeOperation(
                 _twilioClientStub.Object,
-                _confirmationCodeStoreStub.Object,
-                smsAuthenticationOptions);
+                _confirmationCodeStoreStub.Object);
         }
 
         [Fact]
@@ -41,8 +39,8 @@
         public async Task When_TwilioSendException_Then_Exception_Is_Thrown()
         {
             _twilioClientStub.Setup(s =>
-                    s.SendMessage(It.IsAny<TwilioSmsCredentials>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback(() => throw new TwilioException("problem", null));
+                    s.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
+                .Callback(() => throw new SmsException("problem", null));
 
             var exception = await Assert
                 .ThrowsAsync<SimpleAuthException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber"))
@@ -51,7 +49,7 @@
             //_eventSourceStub.Verify(e => e.Failure(It.Is<Exception>((f) => f.Message == "problem")));
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal("the twilio account is not properly configured", exception.Message);
+            Assert.Equal("The SMS account is not properly configured", exception.Message);
         }
 
         [Fact]

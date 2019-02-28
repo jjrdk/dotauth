@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Twilio.Services
+﻿namespace SimpleAuth.Sms.Services
 {
     using System;
     using System.Threading;

@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Twilio
+﻿namespace SimpleAuth.Sms
 {
     /// <summary>
     /// Defines the Twilio SMS credential content.

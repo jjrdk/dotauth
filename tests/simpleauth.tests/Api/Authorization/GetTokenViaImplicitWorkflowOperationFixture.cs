@@ -4,7 +4,6 @@
     using Moq;
     using Parameters;
     using Shared;
-    using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth;
     using SimpleAuth.Api.Authorization;

@@ -33,9 +33,10 @@ namespace SimpleAuth.Server.Tests
     using System.Security.Claims;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
+    using SimpleAuth.Sms;
+    using SimpleAuth.Sms.Controllers;
+    using SimpleAuth.Sms.Services;
     using Twilio;
-    using Twilio.Controllers;
-    using Twilio.Services;
 
     public class FakeStartup : IStartup
     {
@@ -142,8 +143,7 @@ namespace SimpleAuth.Server.Tests
 
         private void ConfigureIdServer(IServiceCollection services)
         {
-            services.AddSingleton(new SmsAuthenticationOptions())
-                .AddSingleton(_context.TwilioClient.Object)
+            services.AddSingleton(_context.TwilioClient.Object)
                 .AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>()
                 .AddSimpleAuth(options =>
                 {

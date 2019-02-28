@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Shared.Requests
 {
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
     using SimpleAuth.Shared.DTOs;
 

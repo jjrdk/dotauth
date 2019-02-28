@@ -9,8 +9,9 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Sms;
+    using SimpleAuth.Sms.Actions;
     using Twilio;
-    using Twilio.Actions;
     using Xunit;
 
     public class SmsAuthenticationOperationFixture
@@ -25,15 +26,13 @@
             var subjectBuilderStub = new Mock<ISubjectBuilder>();
             subjectBuilderStub.Setup(x => x.BuildSubject(It.IsAny<IEnumerable<Claim>>()))
                 .ReturnsAsync(DateTime.UtcNow.Ticks.ToString);
-            var smsAuthenticationOptions = new SmsAuthenticationOptions();
             _smsAuthenticationOperation = new SmsAuthenticationOperation(
                 null,
                 generateAndSendSmsCodeOperationStub.Object,
                 _resourceOwnerRepositoryStub.Object,
                 subjectBuilderStub.Object,
                 new IAccountFilter[0],
-                new Mock<IEventPublisher>().Object,
-                smsAuthenticationOptions);
+                new Mock<IEventPublisher>().Object);
         }
 
         [Fact]

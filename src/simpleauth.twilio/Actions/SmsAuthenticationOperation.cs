@@ -1,15 +1,15 @@
-﻿namespace SimpleAuth.Twilio.Actions
+﻿namespace SimpleAuth.Sms.Actions
 {
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Extensions;
-    using WebSite.User.Actions;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.WebSite.User.Actions;
 
     internal sealed class SmsAuthenticationOperation
     {
@@ -19,18 +19,16 @@
         private readonly ISubjectBuilder _subjectBuilder;
 
         public SmsAuthenticationOperation(
-            ITwilioClient twilioClient,
+            ISmsClient smsClient,
             IConfirmationCodeStore confirmationCodeStore,
             IResourceOwnerRepository resourceOwnerRepository,
             ISubjectBuilder subjectBuilder,
             IEnumerable<IAccountFilter> accountFilters,
-            IEventPublisher eventPublisher,
-            SmsAuthenticationOptions smsAuthenticationOptions)
+            IEventPublisher eventPublisher)
         {
             _generateAndSendSmsCodeOperation = new GenerateAndSendSmsCodeOperation(
-                twilioClient,
-                confirmationCodeStore,
-                smsAuthenticationOptions);
+                smsClient,
+                confirmationCodeStore);
             _resourceOwnerRepository = resourceOwnerRepository;
             _addUser = new AddUserOperation(resourceOwnerRepository, accountFilters, eventPublisher);
             _subjectBuilder = subjectBuilder;
@@ -55,7 +53,7 @@
             {
                 return resourceOwner;
             }
-
+            
             // 3. CreateJwk a new resource owner.
             var claims = new[]
             {

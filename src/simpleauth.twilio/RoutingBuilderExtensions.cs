@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Twilio
+﻿namespace SimpleAuth.Sms
 {
+    using System;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Routing;
-    using System;
 
     /// <summary>
     /// Defines the route builder extensions

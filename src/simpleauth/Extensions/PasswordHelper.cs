@@ -5,7 +5,7 @@
     using System.Text;
     using SimpleAuth.Shared;
 
-    internal static class PasswordHelper
+    public static class PasswordHelper
     {
         public static string ToSha256Hash(this string entry)
         {

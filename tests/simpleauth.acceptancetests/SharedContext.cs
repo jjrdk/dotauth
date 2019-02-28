@@ -18,7 +18,6 @@ namespace SimpleAuth.AcceptanceTests
     using System.Security.Cryptography;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth;
-    using SimpleAuth.Shared;
 
     public class SharedContext
     {

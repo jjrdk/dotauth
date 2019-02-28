@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Twilio.ViewModels
+﻿namespace SimpleAuth.Sms.ViewModels
 {
     using System.ComponentModel.DataAnnotations;
 

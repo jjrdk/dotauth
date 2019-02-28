@@ -49,7 +49,7 @@
                 .Callback<ConfirmationCode>(r => { confirmationCode = r; })
                 .Returns(() => Task.FromResult(true));
             _server.SharedCtx.TwilioClient
-                .Setup(h => h.SendMessage(It.IsAny<TwilioSmsCredentials>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(
                     () => throw new SimpleAuthException(
                         ErrorCodes.UnhandledExceptionCode,
@@ -73,7 +73,7 @@
                 // .Callback<ConfirmationCode>(r => { confirmationCode = r; })
                 .Returns(() => Task.FromResult(false));
             _server.SharedCtx.TwilioClient
-                .Setup(h => h.SendMessage(It.IsAny<TwilioSmsCredentials>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(() => { })
                 .ReturnsAsync(true);
             var cannotInsertConfirmationCode = await _sidSmsAuthenticateClient
@@ -116,7 +116,7 @@
                 //.Callback<ConfirmationCode>(r => { confirmationCode = r; })
                 .Returns(() => Task.FromResult(true));
             _server.SharedCtx.TwilioClient
-                .Setup(h => h.SendMessage(It.IsAny<TwilioSmsCredentials>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(() => { })
                 .ReturnsAsync(true);
             var happyPath = await _sidSmsAuthenticateClient
