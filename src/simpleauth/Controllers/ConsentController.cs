@@ -22,7 +22,6 @@ namespace SimpleAuth.Controllers
     using Results;
     using Shared;
     using Shared.Events.Openid;
-    using Shared.Models;
     using Shared.Requests;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.WebSite.Consent.Actions;
@@ -43,6 +42,7 @@ namespace SimpleAuth.Controllers
         private readonly DisplayConsentAction _displayConsent;
         private readonly ConfirmConsentAction _confirmConsent;
         private readonly IDataProtector _dataProtector;
+        private readonly IClientStore _clientStore;
         private readonly IEventPublisher _eventPublisher;
 
         /// <summary>
@@ -72,6 +72,7 @@ namespace SimpleAuth.Controllers
             : base(authenticationService)
         {
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
+            _clientStore = clientStore;
             _eventPublisher = eventPublisher;
             _displayConsent = new DisplayConsentAction(
                 scopeRepository,
@@ -101,7 +102,7 @@ namespace SimpleAuth.Controllers
         public async Task<IActionResult> Index(string code, CancellationToken cancellationToken)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            var client = new Client();
+            var client = await _clientStore.GetById(request.client_id, cancellationToken).ConfigureAwait(false);
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _displayConsent.Execute(request.ToParameter(), authenticatedUser, issuerName, cancellationToken)
@@ -121,7 +122,7 @@ namespace SimpleAuth.Controllers
                         ? new List<string>()
                         : actionResult.Scopes.Select(s => s.Description).ToList(),
                 AllowedIndividualClaims = actionResult.AllowedClaims ?? new List<string>(),
-                //LogoUri = client?.LogoUri?.AbsoluteUri,
+                LogoUri = client?.LogoUri?.AbsoluteUri,
                 PolicyUri = client.PolicyUri?.AbsoluteUri,
                 TosUri = client.TosUri?.AbsoluteUri,
                 Code = code
