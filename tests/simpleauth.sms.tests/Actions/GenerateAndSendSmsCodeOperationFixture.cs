@@ -31,6 +31,7 @@
             var exception = await Assert
                 .ThrowsAsync<ArgumentNullException>(() => _generateAndSendSmsCodeOperation.Execute(null))
                 .ConfigureAwait(false);
+
             Assert.NotNull(exception);
         }
 

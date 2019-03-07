@@ -55,7 +55,6 @@ namespace SimpleAuth.Tests.WebSite.User
                     () => _getUserOperation.Execute(emptyClaimsPrincipal, CancellationToken.None))
                 .ConfigureAwait(false);
 
-            Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
             Assert.Equal(ErrorDescriptions.TheUserNeedsToBeAuthenticated, exception.Message);
         }
@@ -72,7 +71,6 @@ namespace SimpleAuth.Tests.WebSite.User
                     () => _getUserOperation.Execute(claimsPrincipal, CancellationToken.None))
                 .ConfigureAwait(false);
 
-            Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
             Assert.Equal(ErrorDescriptions.TheSubjectCannotBeRetrieved, exception.Message);
         }

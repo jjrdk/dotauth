@@ -43,6 +43,12 @@
             return services;
         }
 
+        /// <summary>
+        /// Adds the SMS authentication.
+        /// </summary>
+        /// <param name="mvcBuilder">The MVC builder.</param>
+        /// <param name="smsClient">The SMS client.</param>
+        /// <returns></returns>
         public static IServiceCollection AddSmsAuthentication(this IMvcBuilder mvcBuilder, ISmsClient smsClient)
         {
             return AddSmsAuthentication(mvcBuilder, sp => smsClient);

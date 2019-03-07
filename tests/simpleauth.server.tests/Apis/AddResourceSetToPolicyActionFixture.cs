@@ -18,7 +18,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Threading;
     using System.Threading.Tasks;
     using Moq;
-    using SimpleAuth.Api.PolicyController.Actions;
+    using SimpleAuth.Api.PolicyController;
     using SimpleAuth.Parameters;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
@@ -51,7 +51,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _addResourceSetAction.Execute(new AddResourceSetParameter(), CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.NotNull(exception);
+            
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.Equal(
                 string.Format(
@@ -70,7 +70,7 @@ namespace SimpleAuth.Server.Tests.Apis
                         new AddResourceSetParameter { PolicyId = "policy_id" },
                         CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.NotNull(exception);
+            
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.Equal(
                 string.Format(

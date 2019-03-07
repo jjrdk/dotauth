@@ -48,10 +48,7 @@
                     var tokenHandler = new JwtSecurityTokenHandler();
                     var validationParameters = new TokenValidationParameters
                     {
-                        IssuerSigningKey = TestKeys.SecretKey.CreateJwk(
-                            JsonWebKeyUseNames.Sig,
-                            KeyOperations.Sign,
-                            KeyOperations.Verify),
+                        IssuerSigningKeys = jwks.GetSigningKeys(),
                         ValidAudience = "client",
                         ValidIssuer = "https://localhost"
                     };

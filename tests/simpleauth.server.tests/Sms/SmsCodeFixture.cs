@@ -7,8 +7,7 @@
     using System;
     using System.Net;
     using System.Threading.Tasks;
-    using Twilio;
-    using Twilio.Client;
+    using SimpleAuth.Sms.Client;
     using Xunit;
 
     public class SmsCodeFixture : IDisposable
@@ -60,7 +59,7 @@
 
             Assert.True(twilioNotConfigured.ContainsError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, twilioNotConfigured.Error.Error);
-            Assert.Equal("the twilio account is not properly configured", twilioNotConfigured.Error.ErrorDescription);
+            Assert.Equal("The SMS account is not properly configured", twilioNotConfigured.Error.ErrorDescription);
             Assert.Equal(HttpStatusCode.InternalServerError, twilioNotConfigured.HttpStatus);
         }
 

@@ -454,7 +454,6 @@ namespace SimpleAuth.Server.Tests.Apis
                     { prompt = PromptNames.Login })
                 .ConfigureAwait(false);
 
-            Assert.NotNull(result);
             Assert.Equal("/pwd/Authenticate/OpenId", result.Location.LocalPath);
         }
 
@@ -473,7 +472,6 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
             UserStore.Instance().IsInactive = false;
 
-            Assert.NotNull(result);
             Assert.Equal("/pwd/Authenticate/OpenId", result.Location.LocalPath);
         }
 
@@ -490,7 +488,6 @@ namespace SimpleAuth.Server.Tests.Apis
                     { prompt = PromptNames.Consent })
                 .ConfigureAwait(false);
 
-            Assert.NotNull(result);
             Assert.Equal("/Consent", result.Location.LocalPath);
         }
 

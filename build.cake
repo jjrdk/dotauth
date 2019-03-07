@@ -1,5 +1,5 @@
 #tool nuget:?package=GitVersion.CommandLine&version=4.0.0
-#addin nuget:?package=Cake.Docker
+#addin nuget:?package=Cake.Docker&version=0.9.9
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -90,7 +90,7 @@ Task("Run-Unit-Tests")
     foreach(var project in projects)
     {
         Information("Testing: " + project.FullPath);
-        var reportName = buildDir + "/artifacts/testreports/" + DateTime.UtcNow.ToString("yyyyMMddHHmmss") + "_" + System.IO.Path.GetFileNameWithoutExtension(project.FullPath).Replace('.', '_') + ".xml";
+        var reportName = buildDir + "/artifacts/testreports/" + versionInfo.FullSemVer + "_" + System.IO.Path.GetFileNameWithoutExtension(project.FullPath).Replace('.', '_') + ".xml";
         reportName = System.IO.Path.GetFullPath(reportName);
 
         Information(reportName);
@@ -103,11 +103,11 @@ Task("Run-Unit-Tests")
             Configuration = configuration,
             ArgumentCustomization = x => x.Append("--logger \"trx;LogFileName=" + reportName + "\"")
           };
-          
+
           DotNetCoreTest(
           project.FullPath,
           coreTestSettings);
-    
+
           DotNetCoreBuildServerShutdown();
     }
 });
@@ -139,8 +139,8 @@ Task("Pack")
         DotNetCorePack("./src/simpleauth.client/simpleauth.client.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.manager.client/simpleauth.manager.client.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.stores.marten/simpleauth.stores.marten.csproj", packSettings);
-        DotNetCorePack("./src/simpleauth.twilio/simpleauth.twilio.csproj", packSettings);
-        DotNetCorePack("./src/simpleauth.twilio.client/simpleauth.twilio.client.csproj", packSettings);
+        DotNetCorePack("./src/simpleauth.sms/simpleauth.sms.csproj", packSettings);
+        DotNetCorePack("./src/simpleauth.sms.client/simpleauth.sms.client.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.uma.client/simpleauth.uma.client.csproj", packSettings);
     });
 
@@ -148,7 +148,7 @@ Task("Pack")
 Task("Docker-Build")
 .IsDependentOn("Pack")
 .Does(() => {
-    var settings = new DockerImageBuildSettings { Tag = new[] {"simpleauth:" + versionInfo.MajorMinorPatch }};
+    var settings = new DockerImageBuildSettings { Tag = new[] {"jjrdk/simpleauth:" + versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded }};
     DockerBuild(settings, "./");
 });
 
@@ -180,7 +180,7 @@ Task("Warp")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Docker-Build");
+    .IsDependentOn("Pack");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION

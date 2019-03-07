@@ -20,7 +20,6 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth;
     using System.Net.Http;
     using SimpleAuth.Sms;
-    using Twilio;
 
     public class SharedContext
     {

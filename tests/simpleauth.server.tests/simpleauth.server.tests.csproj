@@ -27,7 +27,7 @@
     <ProjectReference Include="..\..\src\simpleauth.sms\simpleauth.sms.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.uma.client\simpleauth.uma.client.csproj" />
     <ProjectReference Include="..\..\src\simpleauth\simpleauth.csproj" />
-    <ProjectReference Include="..\..\src\simpleauth.sms.client\simpleauth.twilio.client.csproj" />
+    <ProjectReference Include="..\..\src\simpleauth.sms.client\simpleauth.sms.client.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.client\simpleauth.client.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.manager.client\simpleauth.manager.client.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.userinfointrospection\simpleauth.userinfointrospection.csproj" />
