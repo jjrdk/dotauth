@@ -33,7 +33,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Errors;
-    using Twilio.Client;
+    using SimpleAuth.Sms.Client;
     using Xunit;
 
     public class TokenClientFixture
@@ -746,7 +746,6 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
             var firstToken = await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-            //Assert.NotNull(firstToken);
             Assert.False(firstToken.ContainsError);
             Assert.NotEmpty(firstToken.Content.AccessToken);
         }
@@ -786,7 +785,6 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
             var token = await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-            Assert.NotNull(token);
             Assert.False(token.ContainsError);
         }
 

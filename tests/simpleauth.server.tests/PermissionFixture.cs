@@ -130,7 +130,6 @@ namespace SimpleAuth.Server.Tests
                     "header")
                 .ConfigureAwait(false);
 
-            Assert.NotNull(ticket);
             Assert.NotEmpty(ticket.Content.TicketId);
         }
 

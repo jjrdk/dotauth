@@ -165,7 +165,6 @@
             var result = await _accountFilter.Check(new List<Claim> {new Claim("key", "val")}, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.NotNull(result);
             Assert.True(result.IsValid);
         }
 

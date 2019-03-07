@@ -52,10 +52,12 @@ namespace SimpleAuth.Tests.JwtToken
         public async Task When_Passing_Null_Parameters_To_GenerateAccessToken_Then_Exception_Is_Thrown()
         {
             await Assert.ThrowsAsync<ArgumentNullException>(
-                () => _jwtGenerator.GenerateAccessToken(null, null, null, default, null)).ConfigureAwait(false);
+                    () => _jwtGenerator.GenerateAccessToken(null, null, null, default, null))
+                .ConfigureAwait(false);
 
             await Assert.ThrowsAsync<ArgumentNullException>(
-                () => _jwtGenerator.GenerateAccessToken(new Client(), null, null, default, null)).ConfigureAwait(false);
+                    () => _jwtGenerator.GenerateAccessToken(new Client(), null, null, default, null))
+                .ConfigureAwait(false);
         }
 
         [Fact]
@@ -106,7 +108,7 @@ namespace SimpleAuth.Tests.JwtToken
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var authorizationParameter = new AuthorizationParameter { ClientId = "test", MaxAge = 2 };
+            var authorizationParameter = new AuthorizationParameter {ClientId = "test", MaxAge = 2};
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients().First());
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
@@ -132,10 +134,10 @@ namespace SimpleAuth.Tests.JwtToken
             const string issuerName = "IssuerName";
             var clientId = FakeOpenIdAssets.GetClients().First().ClientId;
             const string subject = "john.doe@email.com";
-            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var authorizationParameter = new AuthorizationParameter { ClientId = clientId };
+            var authorizationParameter = new AuthorizationParameter {ClientId = clientId};
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients().First());
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
@@ -159,12 +161,12 @@ namespace SimpleAuth.Tests.JwtToken
             const string issuerName = "IssuerName";
             const string clientId = "clientId";
             const string subject = "john.doe@email.com";
-            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var authorizationParameter = new AuthorizationParameter { ClientId = clientId };
+            var authorizationParameter = new AuthorizationParameter {ClientId = clientId};
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Client)null);
+                .ReturnsAsync((Client) null);
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Array.Empty<Client>());
 
@@ -186,7 +188,7 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "john.doe@email.com";
             var authorizationParameter = new AuthorizationParameter();
-            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -239,7 +241,7 @@ namespace SimpleAuth.Tests.JwtToken
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var authorizationParameter = new AuthorizationParameter { State = state };
+            var authorizationParameter = new AuthorizationParameter {State = state};
             var claimsParameter = new List<ClaimParameter>
             {
                 new ClaimParameter
@@ -286,7 +288,7 @@ namespace SimpleAuth.Tests.JwtToken
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var authorizationParameter = new AuthorizationParameter { State = state };
+            var authorizationParameter = new AuthorizationParameter {State = state};
             var claimsParameter = new List<ClaimParameter>
             {
                 new ClaimParameter
@@ -333,7 +335,7 @@ namespace SimpleAuth.Tests.JwtToken
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var authorizationParameter = new AuthorizationParameter { State = state };
+            var authorizationParameter = new AuthorizationParameter {State = state};
             var claimsParameter = new List<ClaimParameter>
             {
                 new ClaimParameter
@@ -373,7 +375,7 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "john.doe@email.com";
             const string notValidSubject = "jane.doe@email.com";
-            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
             var authorizationParameter = new AuthorizationParameter();
 
             var claimIdentity = new ClaimsIdentity(claims, "fake");
@@ -414,7 +416,7 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "john.doe@email.com";
             const string nonce = "nonce";
-            var currentDateTimeOffset = (double)DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
+            var currentDateTimeOffset = (double) DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
             var claims = new List<Claim>
             {
                 new Claim(
@@ -423,7 +425,7 @@ namespace SimpleAuth.Tests.JwtToken
                 new Claim(OpenIdClaimTypes.Subject, subject),
                 new Claim(OpenIdClaimTypes.Role, "['role1', 'role2']", ClaimValueTypes.String)
             };
-            var authorizationParameter = new AuthorizationParameter { Nonce = nonce };
+            var authorizationParameter = new AuthorizationParameter {Nonce = nonce};
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var claimsParameter = new List<ClaimParameter>
@@ -515,7 +517,7 @@ namespace SimpleAuth.Tests.JwtToken
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var authorizationParameter = new AuthorizationParameter { Scope = "profile" };
+            var authorizationParameter = new AuthorizationParameter {Scope = "profile"};
             var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
@@ -547,7 +549,7 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "";
             const string state = "state";
-            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var claimsParameter = new List<ClaimParameter>
@@ -562,7 +564,7 @@ namespace SimpleAuth.Tests.JwtToken
                 }
             };
 
-            var authorizationParameter = new AuthorizationParameter { Scope = "profile", State = state };
+            var authorizationParameter = new AuthorizationParameter {Scope = "profile", State = state};
             var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
@@ -588,7 +590,7 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "invalid@loki.be";
             const string state = "state";
-            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var claimsParameter = new List<ClaimParameter>
@@ -603,7 +605,7 @@ namespace SimpleAuth.Tests.JwtToken
                 }
             };
 
-            var authorizationParameter = new AuthorizationParameter { Scope = "profile", State = state };
+            var authorizationParameter = new AuthorizationParameter {Scope = "profile", State = state};
             var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
@@ -627,7 +629,7 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "john.doe@email.com";
             const string state = "state";
-            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var claimsParameter = new List<ClaimParameter>
@@ -642,7 +644,7 @@ namespace SimpleAuth.Tests.JwtToken
                 }
             };
 
-            var authorizationParameter = new AuthorizationParameter { Scope = "profile", State = state };
+            var authorizationParameter = new AuthorizationParameter {Scope = "profile", State = state};
             var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
@@ -692,7 +694,7 @@ namespace SimpleAuth.Tests.JwtToken
                 }
             };
 
-            var authorizationParameter = new AuthorizationParameter { Scope = "profile", State = state };
+            var authorizationParameter = new AuthorizationParameter {Scope = "profile", State = state};
             var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
@@ -743,7 +745,7 @@ namespace SimpleAuth.Tests.JwtToken
                 }
             };
 
-            var authorizationParameter = new AuthorizationParameter { Scope = "profile" };
+            var authorizationParameter = new AuthorizationParameter {Scope = "profile"};
             var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());

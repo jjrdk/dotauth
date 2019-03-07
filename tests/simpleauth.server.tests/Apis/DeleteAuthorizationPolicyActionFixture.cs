@@ -14,13 +14,13 @@
 
 namespace SimpleAuth.Server.Tests.Apis
 {
+    using Moq;
+    using SimpleAuth.Api.PolicyController;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Moq;
-    using SimpleAuth.Api.PolicyController.Actions;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
     using Xunit;
 
     public class DeleteAuthorizationPolicyActionFixture
@@ -55,7 +55,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_AuthorizationPolicy_Exists_Then_True_Is_Returned()
         {
             const string policyId = "policy_id";
-            IntializeFakeObjects(new Policy {Id = policyId});
+            IntializeFakeObjects(new Policy { Id = policyId });
 
             var isUpdated = await _deleteAuthorizationPolicyAction.Execute(policyId, CancellationToken.None)
                 .ConfigureAwait(false);

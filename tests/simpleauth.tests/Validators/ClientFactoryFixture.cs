@@ -101,7 +101,6 @@
 
             parameter = await _factory.Build(parameter).ConfigureAwait(false);
 
-            Assert.NotNull(parameter);
             Assert.Single(parameter.GrantTypes);
             Assert.Contains(GrantTypes.AuthorizationCode, parameter.GrantTypes);
         }
@@ -119,7 +118,6 @@
 
             parameter = await _factory.Build(parameter).ConfigureAwait(false);
 
-            Assert.NotNull(parameter);
             Assert.Equal(ApplicationTypes.Web, parameter.ApplicationType);
         }
 

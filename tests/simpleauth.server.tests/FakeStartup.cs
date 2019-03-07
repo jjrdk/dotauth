@@ -33,10 +33,8 @@ namespace SimpleAuth.Server.Tests
     using System.Security.Claims;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
-    using SimpleAuth.Sms;
     using SimpleAuth.Sms.Controllers;
     using SimpleAuth.Sms.Services;
-    using Twilio;
 
     public class FakeStartup : IStartup
     {

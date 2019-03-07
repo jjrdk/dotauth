@@ -64,7 +64,6 @@
         /// <param name="jwksStore">The JWKS store.</param>
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="runtimeSettings">The runtime settings.</param>
-        /// <param name="smsOptions">The SMS options.</param>
         public AuthenticateController(
             ISmsClient smsClient,
             IDataProtectionProvider dataProtectionProvider,

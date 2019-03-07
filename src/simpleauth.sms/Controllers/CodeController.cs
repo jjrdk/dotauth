@@ -30,7 +30,6 @@ namespace SimpleAuth.Sms.Controllers
         /// <param name="subjectBuilder">The subject builder.</param>
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="eventPublisher">The event publisher.</param>
-        /// <param name="smsOptions">The SMS options.</param>
         public CodeController(
             ISmsClient smsClient,
             IConfirmationCodeStore confirmationCodeStore,

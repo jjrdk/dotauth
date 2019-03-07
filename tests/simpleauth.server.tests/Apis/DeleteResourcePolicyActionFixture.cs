@@ -18,7 +18,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Threading;
     using System.Threading.Tasks;
     using Moq;
-    using SimpleAuth.Api.PolicyController.Actions;
+    using SimpleAuth.Api.PolicyController;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;

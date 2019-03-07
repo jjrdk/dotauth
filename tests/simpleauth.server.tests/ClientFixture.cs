@@ -86,7 +86,6 @@
             client.AllowedScopes = new[] {"not_valid"};
             var result = await _openidClients.UpdateClient(client).ConfigureAwait(false);
 
-            Assert.NotNull(result);
             Assert.True(result.ContainsError);
             Assert.Equal(ErrorCodes.InvalidScope, result.Error.Error);
             Assert.Equal("Unknown scopes: not_valid", result.Error.ErrorDescription);

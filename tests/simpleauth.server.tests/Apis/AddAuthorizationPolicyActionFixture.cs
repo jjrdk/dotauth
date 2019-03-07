@@ -18,7 +18,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Threading;
     using System.Threading.Tasks;
     using Moq;
-    using SimpleAuth.Api.PolicyController.Actions;
+    using SimpleAuth.Api.PolicyController;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
@@ -51,7 +51,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var exception = await Assert
                 .ThrowsAsync<SimpleAuthException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter, CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.NotNull(exception);
+            
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.Equal(
                 string.Format(

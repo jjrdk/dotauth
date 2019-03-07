@@ -109,7 +109,6 @@
 
             var jwtToken = handler.ReadJwtToken(token.Content.AccessToken);
             Assert.NotNull(jwtToken.Claims);
-            Assert.NotNull(token);
         }
 
         public void Dispose()
