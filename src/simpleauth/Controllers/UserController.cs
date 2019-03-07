@@ -23,7 +23,7 @@
     /// Handles user related requests.
     /// </summary>
     /// <seealso cref="SimpleAuth.Controllers.BaseController" />
-    [Authorize("Connected")]
+    [Authorize("connected_user")]
     public class UserController : BaseController
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
@@ -121,7 +121,7 @@
         [HttpPost]
         public async Task<IActionResult> Consent(string id, CancellationToken cancellationToken)
         {
-            var removed = await _consentRepository.Delete(new Consent { Id = id }, cancellationToken)
+            var removed = await _consentRepository.Delete(new Consent {Id = id}, cancellationToken)
                 .ConfigureAwait(false);
             if (!removed)
             {
@@ -231,7 +231,7 @@
             await _authenticationService.ChallengeAsync(
                     HttpContext,
                     provider,
-                    new AuthenticationProperties { RedirectUri = redirectUrl })
+                    new AuthenticationProperties {RedirectUri = redirectUrl})
                 .ConfigureAwait(false);
         }
 
@@ -288,8 +288,7 @@
         [HttpGet]
         public async Task<IActionResult> LinkProfileConfirmation()
         {
-            var externalClaims = await _authenticationService
-                .GetAuthenticatedUser(this, CookieNames.ExternalCookieName)
+            var externalClaims = await _authenticationService.GetAuthenticatedUser(this, CookieNames.ExternalCookieName)
                 .ConfigureAwait(false);
             if (externalClaims?.Identity == null
                 || !externalClaims.Identity.IsAuthenticated
@@ -299,7 +298,7 @@
             }
 
             await SetUser().ConfigureAwait(false);
-            var authenticationType = ((ClaimsIdentity)externalClaims.Identity).AuthenticationType;
+            var authenticationType = ((ClaimsIdentity) externalClaims.Identity).AuthenticationType;
             var viewModel = new LinkProfileConfirmationViewModel(authenticationType);
             return View(viewModel);
         }
@@ -311,8 +310,7 @@
         [HttpGet]
         public async Task<IActionResult> ConfirmProfileLinking(CancellationToken cancellationToken)
         {
-            var externalClaims = await _authenticationService
-                .GetAuthenticatedUser(this, CookieNames.ExternalCookieName)
+            var externalClaims = await _authenticationService.GetAuthenticatedUser(this, CookieNames.ExternalCookieName)
                 .ConfigureAwait(false);
             if (externalClaims?.Identity == null
                 || !externalClaims.Identity.IsAuthenticated
@@ -364,11 +362,11 @@
             }
             catch (SimpleAuthException ex)
             {
-                return RedirectToAction("Index", "Error", new { code = ex.Code, message = ex.Message });
+                return RedirectToAction("Index", "Error", new {code = ex.Code, message = ex.Message});
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Index", "Error", new { code = ErrorCodes.InternalError, message = ex.Message });
+                return RedirectToAction("Index", "Error", new {code = ErrorCodes.InternalError, message = ex.Message});
             }
 
             return await Index(cancellationToken).ConfigureAwait(false);
@@ -504,8 +502,7 @@
             }
 
             var unlink = resourceOwner.ExternalLogins.Where(
-                    x => x.Subject == externalSubject
-                         && (x.Issuer == issuer || issuer == CookieNames.CookieName))
+                    x => x.Subject == externalSubject && (x.Issuer == issuer || issuer == CookieNames.CookieName))
                 .ToArray();
             if (unlink.Length > 0)
             {

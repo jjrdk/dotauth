@@ -49,7 +49,7 @@ namespace SimpleAuth.Shared.Models
         /// Gets or sets the logo uri
         /// </summary>
         [DataMember(Name = "logo_uri")]
-        public string LogoUri { get; set; }
+        public Uri LogoUri { get; set; }
 
         /// <summary>
         /// Gets or sets the token lifetime.
