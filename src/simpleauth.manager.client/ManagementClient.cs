@@ -11,6 +11,9 @@
     using System.Text;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Defines the management client.
+    /// </summary>
     public class ManagementClient
     {
         private readonly AddScopeOperation _addScopeOperation;
@@ -46,6 +49,12 @@
             _addScopeOperation = new AddScopeOperation(client);
         }
 
+        /// <summary>
+        /// Creates an instance of a management client.
+        /// </summary>
+        /// <param name="client">The <see cref="HttpClient"/> to use.</param>
+        /// <param name="discoveryDocumentationUri">The <see cref="Uri"/> to the discovery document.</param>
+        /// <returns></returns>
         public static async Task<ManagementClient> Create(HttpClient client, Uri discoveryDocumentationUri)
         {
             if (!discoveryDocumentationUri.IsAbsoluteUri)
@@ -60,6 +69,12 @@
             return new ManagementClient(client, discoveryInformation);
         }
 
+        /// <summary>
+        /// Gets the specified <see cref="Client"/> information.
+        /// </summary>
+        /// <param name="clientId">The client id.</param>
+        /// <param name="authorizationHeaderValue">The authorization token.</param>
+        /// <returns></returns>
         public async Task<GenericResponse<Client>> GetClient(
             string clientId,
             string authorizationHeaderValue = null)
@@ -70,6 +85,12 @@
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Adds the passed client.
+        /// </summary>
+        /// <param name="client">The <see cref="Client"/> to add.</param>
+        /// <param name="authorizationHeaderValue">The authorization token.</param>
+        /// <returns></returns>
         public async Task<GenericResponse<Client>> AddClient(
             Client client,
             string authorizationHeaderValue = null)
@@ -111,6 +132,12 @@
             return new GenericResponse<Client> { Content = JsonConvert.DeserializeObject<Client>(content) };
         }
 
+        /// <summary>
+        /// Deletes the specified client.
+        /// </summary>
+        /// <param name="clientId">The client id.</param>
+        /// <param name="authorizationHeaderValue">The authorization token.</param>
+        /// <returns></returns>
         public async Task<GenericResponse<Client>> DeleteClient(
             string clientId,
             string authorizationHeaderValue = null)
@@ -121,6 +148,12 @@
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Updates an existing client.
+        /// </summary>
+        /// <param name="client">The updated <see cref="Client"/>.</param>
+        /// <param name="authorizationHeaderValue">The authorization token.</param>
+        /// <returns></returns>
         public async Task<GenericResponse<Client>> UpdateClient(
             Client client,
             string authorizationHeaderValue = null)
@@ -162,11 +195,22 @@
             return new GenericResponse<Client>();
         }
 
+        /// <summary>
+        /// Gets all clients.
+        /// </summary>
+        /// <param name="authorizationHeaderValue">The authorization token.</param>
+        /// <returns></returns>
         public Task<GenericResponse<Client[]>> GetAllClients(string authorizationHeaderValue)
         {
             return _getAllClientsOperation.Execute(new Uri(_discoveryInformation.Clients), authorizationHeaderValue);
         }
 
+        /// <summary>
+        /// Search for clients.
+        /// </summary>
+        /// <param name="searchClientParameter">The <see cref="SearchClientsRequest"/>.</param>
+        /// <param name="authorizationHeaderValue">The authorization token.</param>
+        /// <returns></returns>
         public async Task<GenericResponse<PagedResponse<Client>>> SearchClients(
             SearchClientsRequest searchClientParameter,
             string authorizationHeaderValue = null)
@@ -178,6 +222,12 @@
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Gets the specified scope information.
+        /// </summary>
+        /// <param name="id">The scope id.</param>
+        /// <param name="authorizationHeaderValue">The authorization token.</param>
+        /// <returns></returns>
         public async Task<GenericResponse<Scope>> GetScope(string id, string authorizationHeaderValue = null)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -215,6 +265,12 @@
             return new GenericResponse<Scope> { Content = JsonConvert.DeserializeObject<Scope>(content) };
         }
 
+        /// <summary>
+        /// Adds the passed scope.
+        /// </summary>
+        /// <param name="scope">The <see cref="Scope"/> to add.</param>
+        /// <param name="authorizationHeaderValue">The authorization token.</param>
+        /// <returns></returns>
         public Task<GenericResponse<Scope>> AddScope(
             Scope scope,
             string authorizationHeaderValue = null)
@@ -222,6 +278,12 @@
             return _addScopeOperation.Execute(new Uri(_discoveryInformation.Scopes), scope, authorizationHeaderValue);
         }
 
+        /// <summary>
+        /// Adds the passed resource owner.
+        /// </summary>
+        /// <param name="request">The <see cref="AddResourceOwnerRequest"/>.</param>
+        /// <param name="authorizationHeaderValue">The authorization token.</param>
+        /// <returns></returns>
         public Task<GenericResponse<object>> AddResourceOwner(
             AddResourceOwnerRequest request,
             string authorizationHeaderValue = null)
@@ -232,6 +294,12 @@
                     authorizationHeaderValue);
         }
 
+        /// <summary>
+        /// Gets the specified resource owner.
+        /// </summary>
+        /// <param name="resourceOwnerId"></param>
+        /// <param name="authorizationHeaderValue">The authorization token.</param>
+        /// <returns></returns>
         public async Task<GenericResponse<ResourceOwner>> GetResourceOwner(
             string resourceOwnerId,
             string authorizationHeaderValue = null)
@@ -242,6 +310,12 @@
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Deletes the specified resource owner.
+        /// </summary>
+        /// <param name="resourceOwnerId"></param>
+        /// <param name="authorizationHeaderValue">The authorization token.</param>
+        /// <returns></returns>
         public async Task<GenericResponse<object>> DeleteResourceOwner(
             string resourceOwnerId,
             string authorizationHeaderValue = null)
@@ -252,6 +326,12 @@
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Updates the password of the specified resource owner.
+        /// </summary>
+        /// <param name="request">The <see cref="UpdateResourceOwnerPasswordRequest"/>.</param>
+        /// <param name="authorizationHeaderValue">The authorization token.</param>
+        /// <returns></returns>
         public async Task<GenericResponse<object>> UpdateResourceOwnerPassword(
             UpdateResourceOwnerPasswordRequest request,
             string authorizationHeaderValue = null)
@@ -263,6 +343,12 @@
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Updates the resource owner claims.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="authorizationHeaderValue">The authorization token.</param>
+        /// <returns></returns>
         public async Task<GenericResponse<object>> UpdateResourceOwnerClaims(
             UpdateResourceOwnerClaimsRequest request,
             string authorizationHeaderValue = null)
@@ -274,12 +360,23 @@
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Gets all resource owners.
+        /// </summary>
+        /// <param name="authorizationHeaderValue">The authorization token.</param>
+        /// <returns></returns>
         public Task<GenericResponse<ResourceOwner[]>> GetAllResourceOwners(
             string authorizationHeaderValue = null)
         {
             return _getAllResourceOwnersOperation.Execute(new Uri(_discoveryInformation.ResourceOwners), authorizationHeaderValue);
         }
 
+        /// <summary>
+        /// Searches for resource owners.
+        /// </summary>
+        /// <param name="searchResourceOwnersRequest">The <see cref="SearchResourceOwnersRequest"/></param>
+        /// <param name="authorizationHeaderValue">The authorization token.</param>
+        /// <returns></returns>
         public async Task<GenericResponse<PagedResponse<ResourceOwner>>> SearchResourceOwners(
             SearchResourceOwnersRequest searchResourceOwnersRequest,
             string authorizationHeaderValue = null)
