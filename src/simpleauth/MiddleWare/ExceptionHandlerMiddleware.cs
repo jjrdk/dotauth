@@ -87,7 +87,6 @@ namespace SimpleAuth.MiddleWare
                 }
                 else
                 {
-                    //serverException = new SimpleAuthException(ErrorCodes.UnhandledExceptionCode, exception.Message);
                     await _publisher.Publish(new ExceptionMessage(
                         Id.Create(),
                         exception,
