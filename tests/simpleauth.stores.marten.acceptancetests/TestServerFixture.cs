@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.AcceptanceTests
+﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests
 {
     using System;
     using System.Net.Http;
@@ -12,10 +12,10 @@
         public HttpClient Client { get; }
         public SharedContext SharedCtx { get; }
 
-        public TestServerFixture(params string[] urls)
+        public TestServerFixture(string connectionString, params string[] urls)
         {
             SharedCtx = SharedContext.Instance;
-            var startup = new ServerStartup(SharedCtx);
+            var startup = new ServerStartup(SharedCtx, connectionString);
             Server = new TestServer(
                 new WebHostBuilder()
                     .UseUrls(urls)

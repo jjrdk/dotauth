@@ -83,7 +83,7 @@
             {
                 var hashed = password.ToSha256Hash();
                 var ro = await session.Query<ResourceOwner>()
-                    .FirstOrDefaultAsync(x => x.Subject == id && x.Password == hashed)
+                    .FirstOrDefaultAsync(x => x.Subject == id && x.Password == hashed, cancellationToken)
                     .ConfigureAwait(false);
 
                 return ro;

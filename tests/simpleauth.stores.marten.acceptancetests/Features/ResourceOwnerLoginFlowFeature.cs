@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features
+﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
 {
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
@@ -8,12 +8,6 @@
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Net;
-    using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Text;
-    using Newtonsoft.Json;
-    using SimpleAuth.Shared.DTOs;
-    using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
 
@@ -43,9 +37,11 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }))
                         .ConfigureAwait(false);
                     result = response.Content;
+
+                    Assert.NotNull(result);
                 });
 
             "then has valid access token".x(
@@ -76,70 +72,8 @@
                         ValidAudience = "client",
                         ValidIssuer = "https://localhost"
                     };
-                    tokenHandler.ValidateToken(result.IdToken, validationParameters, out var token);
+                    tokenHandler.ValidateToken(result.IdToken, validationParameters, out _);
                 });
-        }
-
-        [Scenario(DisplayName = "Successful claims update")]
-        public void SuccessfulResourceOwnerClaimsUpdate()
-        {
-            TokenClient client = null;
-            GrantedTokenResponse tokenResponse = null;
-            HttpResponseMessage updateResponse = null;
-
-            "and a properly configured token client".x(
-                async () => client = await TokenClient.Create(
-                        TokenCredentials.FromBasicAuthentication("client", "client"),
-                        _fixture.Client,
-                        new Uri(WellKnownOpenidConfiguration))
-                    .ConfigureAwait(false));
-
-            "when requesting token".x(
-                async () =>
-                {
-                    var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
-                        .ConfigureAwait(false);
-                    tokenResponse = response.Content;
-                });
-
-            "and valid access token is received".x(
-                () =>
-                {
-                    var tokenHandler = new JwtSecurityTokenHandler();
-                    var validationParameters = new TokenValidationParameters
-                    {
-                        IssuerSigningKeys = _jwks.GetSigningKeys(),
-                        ValidAudience = "client",
-                        ValidIssuer = "https://localhost"
-                    };
-                    tokenHandler.ValidateToken(tokenResponse.AccessToken, validationParameters, out var token);
-
-                    Assert.NotEmpty(((JwtSecurityToken)token).Claims);
-                });
-
-            "and updating own claims".x(
-                async () =>
-                {
-                    var updateRequest = new UpdateResourceOwnerClaimsRequest
-                    {
-                        Subject = "user",
-                        Claims = new[] { new PostClaim { Type = "test", Value = "something" } }
-                    };
-
-                    var json = JsonConvert.SerializeObject(updateRequest);
-
-                    var request = new HttpRequestMessage
-                    {
-                        Content = new StringContent(json, Encoding.UTF8, "application/json"),
-                        Method = HttpMethod.Post,
-                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
-                    };
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.AccessToken);
-                    updateResponse = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
-                });
-
-            "then update is successful".x(() => { Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode); });
         }
 
         [Scenario(DisplayName = "Successful token refresh")]
