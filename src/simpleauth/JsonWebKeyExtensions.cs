@@ -3,6 +3,7 @@
     using Microsoft.IdentityModel.Tokens;
     using Shared;
     using System;
+    using System.Collections.Generic;
     using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
@@ -89,6 +90,7 @@
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var jwk = JsonWebKeyConverter.ConvertFromSymmetricSecurityKey(securityKey);
+            jwk.Alg = SecurityAlgorithms.HmacSha256;
             jwk.Kty = JsonWebAlgorithmsKeyTypes.Octet;
             jwk.Use = use;
             jwk.Kid = securityKey.KeyId ?? Id.Create();

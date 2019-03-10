@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features
+﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
 {
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
@@ -11,6 +11,7 @@
         protected const string BaseUrl = "http://localhost:5000";
         protected TestServerFixture _fixture = null;
         protected JsonWebKeySet _jwks = null;
+        protected string _connectionString = null;
 
         public AuthFlowFeature()
         {
@@ -20,7 +21,20 @@
         [Background]
         public void Background()
         {
-            "Given a running auth server".x(() => _fixture = new TestServerFixture(BaseUrl))
+            "Given a configured database".x(
+                    async () =>
+                    {
+                        _connectionString = await DbInitializer.Init(
+                               TestData.ConnectionString,
+                               DefaultStores.Consents(),
+                               DefaultStores.Users(),
+                               DefaultStores.Clients(SharedContext.Instance),
+                               DefaultStores.Scopes())
+                           .ConfigureAwait(false);
+                    })
+                .Teardown(async () => { await DbInitializer.Drop(_connectionString).ConfigureAwait(false); });
+
+            "and a running auth server".x(() => _fixture = new TestServerFixture(_connectionString, BaseUrl))
                 .Teardown(() => _fixture.Dispose());
 
             "And the server signing keys".x(

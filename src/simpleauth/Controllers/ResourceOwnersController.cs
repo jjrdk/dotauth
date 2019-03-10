@@ -134,6 +134,7 @@ namespace SimpleAuth.Controllers
                     ErrorCodes.InvalidRequestCode,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
+
             }
 
             var resourceOwner =
@@ -177,6 +178,37 @@ namespace SimpleAuth.Controllers
             }
 
             return new OkResult();
+        }
+
+        [HttpPost("claims")]
+        [Authorize("connected_user")]
+        public async Task<IActionResult> UpdateMyClaims(
+            [FromBody] UpdateResourceOwnerClaimsRequest request,
+            CancellationToken cancellationToken)
+        {
+            if (request == null)
+            {
+                return BadRequest("No parameter in body request");
+
+            }
+
+            var sub = User?.Claims?.GetSubject();
+
+            if (sub == null || sub != request.Subject)
+            {
+                return BadRequest("Invalid user");
+            }
+
+            var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);
+
+            var newTypes = request.Claims.Select(x => x.Type).ToArray();
+            resourceOwner.Claims = resourceOwner.Claims.Where(x => newTypes.All(n => n != x.Type))
+                .Concat(request.Claims.Select(x => new Claim(x.Type, x.Value)))
+                .ToArray();
+
+            var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
+
+            return result ? Ok() : (IActionResult)BadRequest();
         }
 
         /// <summary>

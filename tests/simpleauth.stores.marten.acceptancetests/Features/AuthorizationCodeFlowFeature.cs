@@ -1,10 +1,10 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features
+﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
 {
+    using System;
     using SimpleAuth.Client;
     using SimpleAuth.Client.Results;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
-    using System;
     using Xbehave;
     using Xunit;
 

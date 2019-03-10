@@ -1,13 +1,12 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features
+﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
 {
-    using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth.Client;
-    using SimpleAuth.Client.Results;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Responses;
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Net;
+    using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.Client;
+    using SimpleAuth.Client.Results;
+    using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
 

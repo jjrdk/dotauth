@@ -9,6 +9,7 @@
 [assembly:InternalsVisibleTo("simpleauth.sms.tests")]
 [assembly:InternalsVisibleTo("simpleauth.tests")]
 [assembly:InternalsVisibleTo("simpleauth.acceptancetests")]
+[assembly:InternalsVisibleTo("simpleauth.stores.marten.acceptancetests")]
 [assembly:InternalsVisibleTo("simpleauth.uma.tests")]
 [assembly:InternalsVisibleTo("simpleauth.server.tests")]
 [assembly:InternalsVisibleTo("simpleauth.stores.marten")]

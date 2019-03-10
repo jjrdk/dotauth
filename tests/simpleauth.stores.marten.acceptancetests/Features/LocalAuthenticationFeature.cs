@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features
+﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
 {
     using System;
     using System.Collections.Generic;
@@ -9,7 +9,7 @@
 
     public class LocalAuthenticationFeature : AuthFlowFeature
     {
-        [Scenario]
+        [Scenario(DisplayName = "Successful logout")]
         public void SuccessfulLogout()
         {
             HttpResponseMessage result = null;
@@ -69,6 +69,8 @@
                     };
 
                     result = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+
+                    Assert.NotNull(result);
                 });
 
             "then receives auth cookie".x(() => { Assert.Equal(HttpStatusCode.OK, result.StatusCode); });

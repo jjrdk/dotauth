@@ -12,16 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.AcceptanceTests
+namespace SimpleAuth.Stores.Marten.AcceptanceTests
 {
     using System.Net.Http;
     using System.Security.Cryptography;
     using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth;
+    using SimpleAuth.Shared;
 
     public class SharedContext
     {
-        private static SharedContext ctx = null;
+        private static SharedContext Ctx;
+
+        public static SharedContext Instance => Ctx ?? (Ctx = new SharedContext());
 
         private SharedContext()
         {
@@ -33,8 +35,6 @@ namespace SimpleAuth.AcceptanceTests
                 ModelEncryptionKey = rsa.CreateEncryptionJwk("4", true);
             }
         }
-
-        public static SharedContext Instance => ctx ?? (ctx = new SharedContext());
 
         public JsonWebKey EncryptionKey { get; }
         public JsonWebKey ModelEncryptionKey { get; }

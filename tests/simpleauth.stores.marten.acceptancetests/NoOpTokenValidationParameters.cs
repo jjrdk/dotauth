@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.AcceptanceTests
+﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests
 {
     using Microsoft.IdentityModel.Tokens;
 
