@@ -1,13 +1,13 @@
-﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
+﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests
 {
-    using global::Marten;
-    using Npgsql;
-    using SimpleAuth.Shared.Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using global::Marten;
+    using Npgsql;
+    using SimpleAuth.Shared.Models;
 
     public static class DbInitializer
     {
