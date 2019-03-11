@@ -15,72 +15,25 @@
 namespace SimpleAuth.Stores.Marten.AcceptanceTests
 {
     using System.Net.Http;
+    using System.Security.Cryptography;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Shared;
 
     public class SharedContext
     {
-        public SharedContext()
+        private static SharedContext Ctx;
+
+        public static SharedContext Instance => Ctx ?? (Ctx = new SharedContext());
+
+        private SharedContext()
         {
-            SignatureKey = TestKeys.SecretKey.CreateSignatureJwk();
-            //new JsonWebKey
-            //{
-            //    Alg = SecurityAlgorithms.RsaSha256,
-            //    KeyOps = new[]
-            //    {
-            //        KeyOperations.Sign,
-            //        KeyOperations.Verify
-            //    },
-            //    Kid = "1",
-            //    Kty = KeyType.RSA,
-            //    Use = Use.Sig,
-            //    SerializedKey = serializedRsa,
-            //};
-            ModelSignatureKey = TestKeys.SecretKey.CreateSignatureJwk();
-            //    new JsonWebKey
-            //{
-            //    Alg = SecurityAlgorithms.RsaSha256,
-            //    KeyOps = new[]
-            //    {
-            //        KeyOperations.Encrypt,
-            //        KeyOperations.Decrypt
-            //    },
-            //    Kid = "2",
-            //    Kty = KeyType.RSA,
-            //    Use = Use.Sig,
-            //    SerializedKey = serializedRsa,
-            //};
-            EncryptionKey = TestKeys.SecretKey.CreateEncryptionJwk();
-            //    new JsonWebKey
-            //{
-            //    Alg = SecurityAlgorithms.RsaPKCS1,
-            //    KeyOps = new[]
-            //    {
-            //        KeyOperations.Decrypt,
-            //        KeyOperations.Encrypt
-            //    },
-            //    Kid = "3",
-            //    Kty = KeyType.RSA,
-            //    Use = Use.Enc,
-            //    SerializedKey = serializedRsa,
-            //};
-            ModelEncryptionKey = TestKeys.SuperSecretKey.CreateJwk(
-                JsonWebKeyUseNames.Enc,
-                KeyOperations.Decrypt,
-                KeyOperations.Encrypt);
-            //    new JsonWebKey
-            //{
-            //    Alg = SecurityAlgorithms.RsaPKCS1,
-            //    KeyOps = new[]
-            //    {
-            //        KeyOperations.Encrypt,
-            //        KeyOperations.Decrypt
-            //    },
-            //    Kid = "4",
-            //    Kty = KeyType.RSA,
-            //    Use = Use.Enc,
-            //    SerializedKey = serializedRsa,
-            //};
+            using (var rsa = new RSACryptoServiceProvider(2048))
+            {
+                SignatureKey = rsa.CreateSignatureJwk("1", true);
+                ModelSignatureKey = rsa.CreateSignatureJwk("2", true);
+                EncryptionKey = rsa.CreateEncryptionJwk("3", true);
+                ModelEncryptionKey = rsa.CreateEncryptionJwk("4", true);
+            }
         }
 
         public JsonWebKey EncryptionKey { get; }

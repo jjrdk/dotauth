@@ -2,10 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-
     <IsPackable>false</IsPackable>
-
-    <RootNamespace>SimpleAuth.AcceptanceTests</RootNamespace>
+    <RootNamespace>SimpleAuth.Stores.Marten.AcceptanceTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\simpleauth.client\simpleauth.client.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.manager.client\simpleauth.manager.client.csproj" />
+    <ProjectReference Include="..\..\src\simpleauth.stores.marten\simpleauth.stores.marten.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.uma.client\simpleauth.uma.client.csproj" />
     <ProjectReference Include="..\..\src\simpleauth\simpleauth.csproj" />
   </ItemGroup>

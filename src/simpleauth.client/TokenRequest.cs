@@ -178,6 +178,26 @@
             return new TokenRequest(dict);
         }
 
+        /// <summary>
+        /// Creates a request from the password.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">The password.</param>
+        /// <param name="scopes">The scopes.</param>
+        /// <param name="amrValues">The amr values.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// userName
+        /// or
+        /// password
+        /// or
+        /// scopes
+        /// </exception>
+        public static TokenRequest FromPassword(string userName, string password, string[] scopes, string amrValue = "pwd")
+        {
+            return FromPassword(userName, password, scopes, new[] {amrValue});
+        }
+
         /// <inheritdoc />
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {

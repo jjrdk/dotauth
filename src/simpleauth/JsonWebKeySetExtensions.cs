@@ -38,7 +38,7 @@
 
         public static IEnumerable<SigningCredentials> GetSigningCredentials(this JsonWebKeySet jwks, string alg)
         {
-            return jwks.Keys.Where(x => x.Use == JsonWebKeyUseNames.Sig && x.KeyOps.Contains(KeyOperations.Sign))
+            return jwks.Keys.Where(x => x.Alg == alg && x.Use == JsonWebKeyUseNames.Sig && x.KeyOps.Contains(KeyOperations.Sign))
                 .Select(webKey =>
                 {
                     if (webKey.X5c != null)

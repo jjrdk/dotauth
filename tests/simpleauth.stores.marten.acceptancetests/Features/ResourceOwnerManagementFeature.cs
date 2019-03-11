@@ -1,19 +1,13 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features
+﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
 {
-    using System;
     using System.Net;
     using System.Net.Http;
-    using System.Net.Http.Headers;
     using System.Text;
     using Newtonsoft.Json;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
 
-    // In order to manage resource owners in the system
-    // As a manager
-    // I want to perform management actions on resource owners.
     public class ResourceOwnerManagementFeature : AuthorizedManagementFeatureBase
     {
         [Scenario]
@@ -63,39 +57,6 @@
                         .ConfigureAwait(false);
 
                     Assert.False(response.ContainsError);
-                });
-        }
-
-        [Scenario]
-        public void CannotUpdateUserClaims()
-        {
-            HttpResponseMessage response = null;
-
-            "When updating user claims".x(
-                async () =>
-                {
-                    var updateRequest = new UpdateResourceOwnerClaimsRequest
-                    {
-                        Subject = "manager_client",
-                        Claims = new[] {new PostClaim {Type = "test", Value = "something"}}
-                    };
-
-                    var json = JsonConvert.SerializeObject(updateRequest);
-
-                    var request = new HttpRequestMessage
-                    {
-                        Content = new StringContent(json, Encoding.UTF8, "application/json"),
-                        Method = HttpMethod.Post,
-                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
-                    };
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _grantedToken.AccessToken);
-                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
-                });
-
-            "Then is bad request".x(
-                () =>
-                {
-                    Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
                 });
         }
     }

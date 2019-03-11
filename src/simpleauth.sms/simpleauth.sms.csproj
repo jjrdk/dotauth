@@ -20,7 +20,7 @@
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.3.3.23" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.3.3.25" />
     <PackageReference Include="microsoft.extensions.fileproviders.embedded" Version="2.2.0" />
     <PackageReference Include="microsoft.aspnetcore.mvc.razor" Version="2.2.0" />
   </ItemGroup>

@@ -1,50 +1,24 @@
 ﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
 {
-    using Microsoft.IdentityModel.Logging;
+    using System;
     using SimpleAuth.Client;
     using SimpleAuth.Client.Results;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
-    using System;
     using Xbehave;
     using Xunit;
 
-    public class AuthorizationCodeFlowFeature
+    public class AuthorizationCodeFlowFeature : AuthFlowFeature
     {
-        private const string BaseUrl = "http://localhost:5000";
-        private const string WellKnownOpenidConfiguration = "https://localhost/.well-known/openid-configuration";
-
-        public AuthorizationCodeFlowFeature()
-        {
-            IdentityModelEventSource.ShowPII = true;
-        }
-
         [Scenario]
         public void SuccessfulAuthorizationCodeGrant()
         {
-            string connectionString = null;
-            TestServerFixture fixture = null;
             AuthorizationClient client = null;
             Uri result = null;
 
-            "Given an initialized database".x(
-                    async () =>
-                    {
-                        connectionString = await DbInitializer.Init(
-                                TestData.ConnectionString,
-                                DefaultStores.Consents(),
-                                DefaultStores.Users(),
-                                DefaultStores.Clients(new SharedContext()))
-                            .ConfigureAwait(false);
-                    })
-                .Teardown(async () => await DbInitializer.Drop(connectionString).ConfigureAwait(false));
-
-            "and a running auth server".x(() => { fixture = new TestServerFixture(connectionString, BaseUrl); })
-                .Teardown(() => fixture.Dispose());
-
             "and a properly configured auth client".x(
                 async () => client = await AuthorizationClient.Create(
-                        fixture.Client,
+                        _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration))
                     .ConfigureAwait(false));
 
@@ -53,8 +27,8 @@
                 {
                     var response = await client.GetAuthorization(
                             new AuthorizationRequest(
-                                new[] { "api1" },
-                                new[] { ResponseTypeNames.Code },
+                                new[] {"api1"},
+                                new[] {ResponseTypeNames.Code},
                                 "authcode_client",
                                 new Uri("http://localhost:5000/callback"),
                                 "abc"))
@@ -71,29 +45,12 @@
         [Scenario(DisplayName = "Scope does not match client registration")]
         public void InvalidScope()
         {
-            TestServerFixture fixture = null;
             AuthorizationClient client = null;
             GetAuthorizationResult result = null;
-            string connectionString = null;
-
-            "Given an initialized database".x(
-                    async () =>
-                    {
-                        connectionString = await DbInitializer.Init(
-                                TestData.ConnectionString,
-                                DefaultStores.Consents(),
-                                DefaultStores.Users(),
-                                DefaultStores.Clients(new SharedContext()))
-                            .ConfigureAwait(false);
-                    })
-                .Teardown(async () => await DbInitializer.Drop(connectionString).ConfigureAwait(false));
-
-            "and a running auth server".x(() => fixture = new TestServerFixture(connectionString, BaseUrl))
-                .Teardown(() => fixture.Dispose());
 
             "and an improperly configured authorization client".x(
                 async () => client = await AuthorizationClient.Create(
-                        fixture.Client,
+                        _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration))
                     .ConfigureAwait(false));
 
@@ -102,8 +59,8 @@
                 {
                     result = await client.GetAuthorization(
                             new AuthorizationRequest(
-                                new[] { "cheese" },
-                                new[] { ResponseTypeNames.Code },
+                                new[] {"cheese"},
+                                new[] {ResponseTypeNames.Code},
                                 "authcode_client",
                                 new Uri("http://localhost:5000/callback"),
                                 "abc"))
@@ -116,29 +73,12 @@
         [Scenario(DisplayName = "Redirect uri does not match client registration")]
         public void InvalidRedirectUri()
         {
-            TestServerFixture fixture = null;
             AuthorizationClient client = null;
             GetAuthorizationResult result = null;
-            string connectionString = null;
-
-            "Given an initialized database".x(
-                    async () =>
-                    {
-                        connectionString = await DbInitializer.Init(
-                                TestData.ConnectionString,
-                                DefaultStores.Consents(),
-                                DefaultStores.Users(),
-                                DefaultStores.Clients(new SharedContext()))
-                            .ConfigureAwait(false);
-                    })
-                .Teardown(async () => await DbInitializer.Drop(connectionString).ConfigureAwait(false));
-
-            "and a running auth server".x(() => fixture = new TestServerFixture(connectionString, BaseUrl))
-                .Teardown(() => fixture.Dispose());
 
             "and an improperly configured authorization client".x(
                 async () => client = await AuthorizationClient.Create(
-                        fixture.Client,
+                        _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration))
                     .ConfigureAwait(false));
 
@@ -147,8 +87,8 @@
                 {
                     result = await client.GetAuthorization(
                             new AuthorizationRequest(
-                                new[] { "api1" },
-                                new[] { ResponseTypeNames.Code },
+                                new[] {"api1"},
+                                new[] {ResponseTypeNames.Code},
                                 "authcode_client",
                                 new Uri("http://localhost:1000/callback"),
                                 "abc"))

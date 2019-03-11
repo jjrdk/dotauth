@@ -21,68 +21,20 @@ namespace SimpleAuth.AcceptanceTests
 
     public class SharedContext
     {
-        public SharedContext()
+        private static SharedContext ctx = null;
+
+        private SharedContext()
         {
             using (var rsa = new RSACryptoServiceProvider(2048))
             {
                 SignatureKey = rsa.CreateSignatureJwk("1", true);
-                //new JsonWebKey
-                //{
-                //    Alg = SecurityAlgorithms.RsaSha256,
-                //    KeyOps = new[]
-                //    {
-                //        KeyOperations.Sign,
-                //        KeyOperations.Verify
-                //    },
-                //    Kid = "1",
-                //    Kty = KeyType.RSA,
-                //    Use = Use.Sig,
-                //    SerializedKey = serializedRsa,
-                //};
                 ModelSignatureKey = rsa.CreateSignatureJwk("2", true);
-                //    new JsonWebKey
-                //{
-                //    Alg = SecurityAlgorithms.RsaSha256,
-                //    KeyOps = new[]
-                //    {
-                //        KeyOperations.Encrypt,
-                //        KeyOperations.Decrypt
-                //    },
-                //    Kid = "2",
-                //    Kty = KeyType.RSA,
-                //    Use = Use.Sig,
-                //    SerializedKey = serializedRsa,
-                //};
                 EncryptionKey = rsa.CreateEncryptionJwk("3", true);
-                //    new JsonWebKey
-                //{
-                //    Alg = SecurityAlgorithms.RsaPKCS1,
-                //    KeyOps = new[]
-                //    {
-                //        KeyOperations.Decrypt,
-                //        KeyOperations.Encrypt
-                //    },
-                //    Kid = "3",
-                //    Kty = KeyType.RSA,
-                //    Use = Use.Enc,
-                //    SerializedKey = serializedRsa,
-                //};
                 ModelEncryptionKey = rsa.CreateEncryptionJwk("4", true);
-                //    new JsonWebKey
-                //{
-                //    Alg = SecurityAlgorithms.RsaPKCS1,
-                //    KeyOps = new[]
-                //    {
-                //        KeyOperations.Encrypt,
-                //        KeyOperations.Decrypt
-                //    },
-                //    Kid = "4",
-                //    Kty = KeyType.RSA,
-                //    Use = Use.Enc,
-                //    SerializedKey = serializedRsa,
-                //};
             }
         }
+
+        public static SharedContext Instance => ctx ?? (ctx = new SharedContext());
 
         public JsonWebKey EncryptionKey { get; }
         public JsonWebKey ModelEncryptionKey { get; }

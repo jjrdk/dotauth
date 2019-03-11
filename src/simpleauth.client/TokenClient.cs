@@ -78,9 +78,7 @@ namespace SimpleAuth.Client
             var body = new FormUrlEncodedContent(_form.Concat(tokenRequest));
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
-                Content = body,
-                RequestUri = new Uri(_discoveryInformation.TokenEndPoint)
+                Method = HttpMethod.Post, Content = body, RequestUri = new Uri(_discoveryInformation.TokenEndPoint)
             };
             if (_certificate != null)
             {
@@ -110,7 +108,10 @@ namespace SimpleAuth.Client
                 };
             }
 
-            return new BaseSidContentResult<GrantedTokenResponse> { Content = JsonConvert.DeserializeObject<GrantedTokenResponse>(content) };
+            return new BaseSidContentResult<GrantedTokenResponse>
+            {
+                Content = JsonConvert.DeserializeObject<GrantedTokenResponse>(content)
+            };
         }
 
         /// <summary>
@@ -155,7 +156,7 @@ namespace SimpleAuth.Client
                 };
             }
 
-            return new RevokeTokenResult { Status = result.StatusCode };
+            return new RevokeTokenResult {Status = result.StatusCode};
         }
     }
 }

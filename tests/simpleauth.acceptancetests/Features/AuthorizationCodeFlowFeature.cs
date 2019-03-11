@@ -18,7 +18,7 @@
 
             "and a properly configured auth client".x(
                 async () => client = await AuthorizationClient.Create(
-                        fixture.Client,
+                        _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration))
                     .ConfigureAwait(false));
 
@@ -50,7 +50,7 @@
 
             "and an improperly configured authorization client".x(
                 async () => client = await AuthorizationClient.Create(
-                        fixture.Client,
+                        _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration))
                     .ConfigureAwait(false));
 
@@ -78,7 +78,7 @@
 
             "and an improperly configured authorization client".x(
                 async () => client = await AuthorizationClient.Create(
-                        fixture.Client,
+                        _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration))
                     .ConfigureAwait(false));
 
