@@ -22,7 +22,7 @@
             "and a properly configured token client".x(
                 async () => client = await TokenClient.Create(
                         TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                        fixture.Client,
+                        _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration))
                     .ConfigureAwait(false));
 
@@ -42,7 +42,7 @@
                     var tokenHandler = new JwtSecurityTokenHandler();
                     var validationParameters = new TokenValidationParameters
                     {
-                        IssuerSigningKeys = jwks.GetSigningKeys(),
+                        IssuerSigningKeys = _jwks.GetSigningKeys(),
                         ValidAudience = "clientCredentials",
                         ValidIssuer = "https://localhost"
                     };
@@ -59,7 +59,7 @@
             "and a properly token client".x(
                 async () => client = await TokenClient.Create(
                         TokenCredentials.FromBasicAuthentication("clientCredentials", "clientCredentials"),
-                        fixture.Client,
+                        _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration))
                     .ConfigureAwait(false));
 
@@ -91,7 +91,7 @@
             "and a properly token client".x(
                 async () => client = await TokenClient.Create(
                         TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                        fixture.Client,
+                        _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration))
                     .ConfigureAwait(false));
 
@@ -122,7 +122,7 @@
             "and a token client with invalid client credentials".x(
                 async () => client = await TokenClient.Create(
                         TokenCredentials.FromClientCredentials("xxx", "xxx"),
-                        fixture.Client,
+                        _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration))
                     .ConfigureAwait(false));
 

@@ -1,14 +1,13 @@
 ﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
 {
-    using System;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Net;
-    using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
     using SimpleAuth.Client.Results;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
+    using System;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Net;
     using Xbehave;
     using Xunit;
 
@@ -19,43 +18,18 @@
     // In order to secure access to a resource
     // As a resource owner
     // I want to log in using resource owner flow
-    public class ResourceOwnerLoginFlowFeature
+    public class ResourceOwnerLoginFlowFeature : AuthFlowFeature
     {
-        private const string BaseUrl = "http://localhost:5000";
-        private const string WellKnownOpenidConfiguration = "https://localhost/.well-known/openid-configuration";
-
-        public ResourceOwnerLoginFlowFeature()
-        {
-            IdentityModelEventSource.ShowPII = true;
-        }
-
         [Scenario(DisplayName = "Successful authorization")]
         public void SuccessfulResourceOwnerAuthentication()
         {
-            string connectionString = null;
-            TestServerFixture fixture = null;
             TokenClient client = null;
             GrantedTokenResponse result = null;
-
-            "Given an initialized database".x(
-                    async () =>
-                    {
-                        connectionString = await DbInitializer.Init(
-                                TestData.ConnectionString,
-                                DefaultStores.Consents(),
-                                DefaultStores.Users(),
-                                DefaultStores.Clients(new SharedContext()))
-                            .ConfigureAwait(false);
-                    })
-                .Teardown(async () => await DbInitializer.Drop(connectionString).ConfigureAwait(false));
-
-            "and a running auth server".x(() => { fixture = new TestServerFixture(connectionString, BaseUrl); })
-                .Teardown(() => fixture.Dispose());
 
             "and a properly configured token client".x(
                 async () => client = await TokenClient.Create(
                         TokenCredentials.FromBasicAuthentication("client", "client"),
-                        fixture.Client,
+                        _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration))
                     .ConfigureAwait(false));
 
@@ -63,9 +37,11 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}, "pwd"))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }))
                         .ConfigureAwait(false);
                     result = response.Content;
+
+                    Assert.NotNull(result);
                 });
 
             "then has valid access token".x(
@@ -74,16 +50,13 @@
                     var tokenHandler = new JwtSecurityTokenHandler();
                     var validationParameters = new TokenValidationParameters
                     {
-                        IssuerSigningKey = TestKeys.SecretKey.CreateJwk(
-                            JsonWebKeyUseNames.Sig,
-                            KeyOperations.Sign,
-                            KeyOperations.Verify),
+                        IssuerSigningKeys = _jwks.GetSigningKeys(),
                         ValidAudience = "client",
                         ValidIssuer = "https://localhost"
                     };
                     tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
 
-                    Assert.NotEmpty(((JwtSecurityToken) token).Claims);
+                    Assert.NotEmpty(((JwtSecurityToken)token).Claims);
                 });
 
             "and has valid id token".x(
@@ -99,37 +72,20 @@
                         ValidAudience = "client",
                         ValidIssuer = "https://localhost"
                     };
-                    tokenHandler.ValidateToken(result.IdToken, validationParameters, out var token);
+                    tokenHandler.ValidateToken(result.IdToken, validationParameters, out _);
                 });
         }
 
         [Scenario(DisplayName = "Successful token refresh")]
         public void SuccessfulResourceOwnerRefresh()
         {
-            string connectionString = null;
-            TestServerFixture fixture = null;
             TokenClient client = null;
             GrantedTokenResponse result = null;
-
-            "Given an initialized database".x(
-                    async () =>
-                    {
-                        connectionString = await DbInitializer.Init(
-                                TestData.ConnectionString,
-                                DefaultStores.Consents(),
-                                DefaultStores.Users(),
-                                DefaultStores.Clients(new SharedContext()))
-                            .ConfigureAwait(false);
-                    })
-                .Teardown(async () => await DbInitializer.Drop(connectionString).ConfigureAwait(false));
-
-            "and a running auth server".x(() => { fixture = new TestServerFixture(connectionString, BaseUrl); })
-                .Teardown(() => fixture.Dispose());
 
             "and a properly token client".x(
                 async () => client = await TokenClient.Create(
                         TokenCredentials.FromBasicAuthentication("client", "client"),
-                        fixture.Client,
+                        _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration))
                     .ConfigureAwait(false));
 
@@ -137,7 +93,7 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}, "pwd"))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
                         .ConfigureAwait(false);
                     result = response.Content;
                 });
@@ -154,30 +110,13 @@
         [Scenario(DisplayName = "Successful token revocation")]
         public void SuccessfulResourceOwnerRevocation()
         {
-            string connectionString = null;
-            TestServerFixture fixture = null;
             TokenClient client = null;
             GrantedTokenResponse result = null;
-
-            "Given an initialized database".x(
-                    async () =>
-                    {
-                        connectionString = await DbInitializer.Init(
-                                TestData.ConnectionString,
-                                DefaultStores.Consents(),
-                                DefaultStores.Users(),
-                                DefaultStores.Clients(new SharedContext()))
-                            .ConfigureAwait(false);
-                    })
-                .Teardown(async () => await DbInitializer.Drop(connectionString).ConfigureAwait(false));
-
-            "and a running auth server".x(() => { fixture = new TestServerFixture(connectionString, BaseUrl); })
-                .Teardown(() => fixture.Dispose());
 
             "and a properly token client".x(
                 async () => client = await TokenClient.Create(
                         TokenCredentials.FromBasicAuthentication("client", "client"),
-                        fixture.Client,
+                        _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration))
                     .ConfigureAwait(false));
 
@@ -185,7 +124,7 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}, "pwd"))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
                         .ConfigureAwait(false);
                     result = response.Content;
                 });
@@ -193,7 +132,7 @@
             "then can revoke token".x(
                 async () =>
                 {
-                    var response = await client.RevokeToken(RevokeTokenRequest.RevokeToken(result))
+                    var response = await client.RevokeToken(RevokeTokenRequest.Create(result))
                         .ConfigureAwait(false);
                     Assert.Equal(HttpStatusCode.OK, response.Status);
                 });
@@ -202,30 +141,13 @@
         [Scenario(DisplayName = "Invalid client")]
         public void InvalidClientCredentials()
         {
-            string connectionString = null;
-            TestServerFixture fixture = null;
             TokenClient client = null;
             BaseSidContentResult<GrantedTokenResponse> result = null;
-
-            "Given an initialized database".x(
-                    async () =>
-                    {
-                        connectionString = await DbInitializer.Init(
-                                TestData.ConnectionString,
-                                DefaultStores.Consents(),
-                                DefaultStores.Users(),
-                                DefaultStores.Clients(new SharedContext()))
-                            .ConfigureAwait(false);
-                    })
-                .Teardown(async () => await DbInitializer.Drop(connectionString).ConfigureAwait(false));
-
-            "and a running auth server".x(() => { fixture = new TestServerFixture(connectionString, BaseUrl); })
-                .Teardown(() => fixture.Dispose());
 
             "and a token client with invalid client credentials".x(
                 async () => client = await TokenClient.Create(
                         TokenCredentials.FromBasicAuthentication("xxx", "xxx"),
-                        fixture.Client,
+                        _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration))
                     .ConfigureAwait(false));
 
@@ -233,7 +155,7 @@
                 async () =>
                 {
                     result = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}, "pwd"))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
                         .ConfigureAwait(false);
                 });
 
@@ -243,37 +165,20 @@
         [Scenario(DisplayName = "Invalid user credentials")]
         public void InvalidUserCredentials()
         {
-            string connectionString = null;
-            TestServerFixture fixture = null;
             TokenClient client = null;
             BaseSidContentResult<GrantedTokenResponse> result = null;
-
-            "Given an initialized database".x(
-                    async () =>
-                    {
-                        connectionString = await DbInitializer.Init(
-                                TestData.ConnectionString,
-                                DefaultStores.Consents(),
-                                DefaultStores.Users(),
-                                DefaultStores.Clients(new SharedContext()))
-                            .ConfigureAwait(false);
-                    })
-                .Teardown(async () => await DbInitializer.Drop(connectionString).ConfigureAwait(false));
-
-            "and a running auth server".x(() => { fixture = new TestServerFixture(connectionString, BaseUrl); })
-                .Teardown(() => fixture.Dispose());
 
             "and a token client with invalid client credentials".x(
                 async () => client = await TokenClient.Create(
                         TokenCredentials.FromBasicAuthentication("client", "client"),
-                        fixture.Client,
+                        _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration))
                     .ConfigureAwait(false));
 
             "when requesting auth token".x(
                 async () =>
                 {
-                    result = await client.GetToken(TokenRequest.FromPassword("someone", "xxx", new[] {"openid"}, "pwd"))
+                    result = await client.GetToken(TokenRequest.FromPassword("someone", "xxx", new[] { "openid" }, "pwd"))
                         .ConfigureAwait(false);
                 });
 

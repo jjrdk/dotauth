@@ -22,20 +22,28 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
     using System.Threading.Tasks;
     using Xunit;
 
-    public class EndpointFixture
+    public class EndpointFixture : IDisposable
     {
         private const string BaseUrl = "http://localhost:5000";
         private readonly TestServerFixture _server;
+        private readonly string _connectionString;
 
         public EndpointFixture()
         {
             IdentityModelEventSource.ShowPII = true;
+            _connectionString = DbInitializer.Init(
+                    TestData.ConnectionString,
+                    DefaultStores.Consents(),
+                    DefaultStores.Users(),
+                    DefaultStores.Clients(SharedContext.Instance),
+                    DefaultStores.Scopes())
+                .Result;
             _server = new TestServerFixture(TestData.ConnectionString, BaseUrl);
         }
 
         [Theory]
-        [InlineData("", HttpStatusCode.OK)]
-        [InlineData("home", HttpStatusCode.OK)]
+        [InlineData("", HttpStatusCode.Moved)]
+        [InlineData("home", HttpStatusCode.Moved)]
         [InlineData(".well-known/openid-configuration", HttpStatusCode.OK)]
         [InlineData("authenticate", HttpStatusCode.OK)]
         public async Task WhenRequestingEndpointThenReturnsExpectedStatus(string path, HttpStatusCode statusCode)
@@ -49,6 +57,12 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
 
             Assert.Equal(statusCode, httpResult.StatusCode);
+        }
+
+        public void Dispose()
+        {
+            _server?.Dispose();
+            DbInitializer.Drop(_connectionString).Wait();
         }
     }
 }

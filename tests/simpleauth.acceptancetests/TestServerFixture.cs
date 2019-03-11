@@ -14,7 +14,7 @@
 
         public TestServerFixture(params string[] urls)
         {
-            SharedCtx = new SharedContext();
+            SharedCtx = SharedContext.Instance;
             var startup = new ServerStartup(SharedCtx);
             Server = new TestServer(
                 new WebHostBuilder()

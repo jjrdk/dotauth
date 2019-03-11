@@ -22,7 +22,7 @@
             {
                 JsonWebKeys = sp =>
                 {
-                    var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
+                    var keyset = new[] {context.SignatureKey, context.EncryptionKey}.ToJwks();
                     return new InMemoryJwksRepository(keyset, keyset);
                 },
                 Clients =
@@ -30,10 +30,10 @@
                         context.Client,
                         new InMemoryScopeRepository(),
                         DefaultStores.Clients(context)),
-                Scopes = sp=>new InMemoryScopeRepository(DefaultStores.Scopes()),
+                Scopes = sp => new InMemoryScopeRepository(DefaultStores.Scopes()),
                 Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents()),
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultStores.Users()),
-                UserClaimsToIncludeInAuthToken = new[] { "sub", "role", "name" }
+                UserClaimsToIncludeInAuthToken = new[] {"sub", "role", "name"}
             };
             _context = context;
         }
@@ -44,10 +44,7 @@
             services.AddCors(
                 options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
             // 2. Configure server
-            services.AddSimpleAuth(_options)
-                .AddLogging()
-                .AddAccountFilter()
-                .AddSingleton(sp => _context.Client);
+            services.AddSimpleAuth(_options).AddLogging().AddAccountFilter().AddSingleton(sp => _context.Client);
             services.AddAuthentication(
                     cfg =>
                     {
@@ -57,7 +54,8 @@
                         cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                     })
                 .AddCookie(DefaultSchema)
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                .AddJwtBearer(
+                    JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
                         cfg.RequireHttpsMetadata = false;

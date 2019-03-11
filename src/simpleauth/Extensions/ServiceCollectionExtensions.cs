@@ -102,14 +102,6 @@ namespace SimpleAuth.Extensions
                 });
 
             options.AddPolicy(
-                "Connected",
-                policy => // User is connected
-                {
-                    policy.AddAuthenticationSchemes(authenticationSchemes);
-                    //policy.AddAuthenticationSchemes(cookieName);
-                    policy.RequireAuthenticatedUser();
-                });
-            options.AddPolicy(
                 "registration",
                 policy => // Access token with scope = register_client
                 {

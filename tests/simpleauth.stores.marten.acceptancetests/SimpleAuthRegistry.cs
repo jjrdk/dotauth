@@ -119,7 +119,7 @@
         {
             For<Scope>().Identity(x => x.Name).GinIndexJsonData();
             For<Filter>().Identity(x => x.Name).GinIndexJsonData();
-            For<ResourceOwner>().GinIndexJsonData();
+            For<ResourceOwner>().Identity(x => x.Subject).GinIndexJsonData();
             For<Consent>().GinIndexJsonData();
             For<Policy>().GinIndexJsonData();
             For<Client>().Identity(x => x.ClientId).GinIndexJsonData();
