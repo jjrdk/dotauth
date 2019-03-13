@@ -3,7 +3,6 @@
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
     using SimpleAuth.Client.Results;
-    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
     using System;
     using System.IdentityModel.Tokens.Jwt;

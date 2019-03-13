@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth
+﻿namespace SimpleAuth.Shared.DTOs
 {
     using System;
 

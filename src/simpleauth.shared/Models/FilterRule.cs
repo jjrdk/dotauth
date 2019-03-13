@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Shared.AccountFiltering
+﻿namespace SimpleAuth.Shared.Models
 {
     /// <summary>
     /// Defines the filter rule content.

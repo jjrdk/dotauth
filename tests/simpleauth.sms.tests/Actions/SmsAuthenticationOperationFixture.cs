@@ -22,7 +22,7 @@
             var generateAndSendSmsCodeOperationStub = new Mock<IConfirmationCodeStore>();
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             var subjectBuilderStub = new Mock<ISubjectBuilder>();
-            subjectBuilderStub.Setup(x => x.BuildSubject(It.IsAny<IEnumerable<Claim>>()))
+            subjectBuilderStub.Setup(x => x.BuildSubject(It.IsAny<IEnumerable<Claim>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(DateTime.UtcNow.Ticks.ToString);
             _smsAuthenticationOperation = new SmsAuthenticationOperation(
                 null,

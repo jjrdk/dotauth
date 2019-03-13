@@ -7,7 +7,6 @@ namespace SimpleAuth.Api.Token
     using Newtonsoft.Json.Linq;
     using Parameters;
     using Policies;
-    using Repositories;
     using Shared;
     using Shared.Events.Uma;
     using Shared.Models;

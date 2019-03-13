@@ -22,12 +22,12 @@ namespace SimpleAuth.Extensions
     using SimpleAuth.Repositories;
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.AccountFiltering;
     using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Linq;
     using System.Net.Http;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the service collection extensions.

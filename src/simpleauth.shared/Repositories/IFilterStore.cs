@@ -2,7 +2,7 @@
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using AccountFiltering;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the filter store interface.

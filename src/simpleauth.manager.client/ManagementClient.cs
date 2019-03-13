@@ -11,7 +11,6 @@
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
-    using JwtConstants = Microsoft.IdentityModel.JsonWebTokens.JwtConstants;
 
     /// <summary>
     /// Defines the management client.

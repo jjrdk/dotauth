@@ -16,12 +16,13 @@ namespace SimpleAuth.Api.ResourceSetController
 {
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Repositories;
     using Shared.Models;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Repositories;
 
     internal class UpdateResourceSetAction
     {
@@ -32,7 +33,7 @@ namespace SimpleAuth.Api.ResourceSetController
             _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<bool> Execute(PutResourceSet udpateResourceSetParameter)
+        public async Task<bool> Execute(PutResourceSet udpateResourceSetParameter, CancellationToken cancellationToken)
         {
             if (udpateResourceSetParameter == null)
             {
@@ -55,12 +56,12 @@ namespace SimpleAuth.Api.ResourceSetController
             }
 
             CheckResourceSetParameter(resourceSet);
-            if (await _resourceSetRepository.Get(udpateResourceSetParameter.Id).ConfigureAwait(false) == null)
+            if (await _resourceSetRepository.Get(udpateResourceSetParameter.Id, cancellationToken).ConfigureAwait(false) == null)
             {
                 return false;
             }
 
-            if (!await _resourceSetRepository.Update(resourceSet).ConfigureAwait(false))
+            if (!await _resourceSetRepository.Update(resourceSet, cancellationToken).ConfigureAwait(false))
             {
                 throw new SimpleAuthException(ErrorCodes.InternalError, string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, resourceSet.Id));
             }

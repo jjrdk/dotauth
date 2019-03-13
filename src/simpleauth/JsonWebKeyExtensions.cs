@@ -3,7 +3,6 @@
     using Microsoft.IdentityModel.Tokens;
     using Shared;
     using System;
-    using System.Collections.Generic;
     using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
@@ -154,11 +153,23 @@
                 KeyOperations.Verify);
         }
 
+        /// <summary>
+        /// Creates the encryption JWK.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
         public static JsonWebKey CreateEncryptionJwk(this string key)
         {
             return CreateJwk(key, JsonWebKeyUseNames.Enc, KeyOperations.Encrypt, KeyOperations.Decrypt);
         }
 
+        /// <summary>
+        /// Creates the encryption JWK.
+        /// </summary>
+        /// <param name="rsa">The RSA.</param>
+        /// <param name="keyid">The keyid.</param>
+        /// <param name="includePrivateParameters">if set to <c>true</c> [include private parameters].</param>
+        /// <returns></returns>
         public static JsonWebKey CreateEncryptionJwk(this RSA rsa, string keyid, bool includePrivateParameters)
         {
             return CreateJwk(
@@ -170,6 +181,11 @@
                 KeyOperations.Decrypt);
         }
 
+        /// <summary>
+        /// Reads the JWK.
+        /// </summary>
+        /// <param name="rsa">The RSA.</param>
+        /// <param name="jwk">The JWK.</param>
         public static void ReadJwk(this RSA rsa, JsonWebKey jwk)
         {
             var parameters = new RSAParameters
@@ -186,6 +202,15 @@
             rsa.ImportParameters(parameters);
         }
 
+        /// <summary>
+        /// Creates the JWK.
+        /// </summary>
+        /// <param name="rsa">The RSA.</param>
+        /// <param name="keyId">The key identifier.</param>
+        /// <param name="use">The use.</param>
+        /// <param name="includePrivateParameters">if set to <c>true</c> [include private parameters].</param>
+        /// <param name="keyops">The keyops.</param>
+        /// <returns></returns>
         public static JsonWebKey CreateJwk(
             this RSA rsa,
             string keyId,

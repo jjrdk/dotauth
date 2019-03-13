@@ -15,10 +15,11 @@
 namespace SimpleAuth.Api.ResourceSetController
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Repositories;
 
     internal class DeleteResourceSetAction
     {
@@ -30,20 +31,20 @@ namespace SimpleAuth.Api.ResourceSetController
             _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<bool> Execute(string resourceSetId)
+        public async Task<bool> Execute(string resourceSetId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(resourceSetId))
             {
                 throw new ArgumentNullException(nameof(resourceSetId));
             }
 
-            var result = await _resourceSetRepository.Get(resourceSetId).ConfigureAwait(false);
+            var result = await _resourceSetRepository.Get(resourceSetId, cancellationToken).ConfigureAwait(false);
             if (result == null)
             {
                 return false;
             }
 
-            if (!await _resourceSetRepository.Delete(resourceSetId).ConfigureAwait(false))
+            if (!await _resourceSetRepository.Remove(resourceSetId, cancellationToken).ConfigureAwait(false))
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InternalError,

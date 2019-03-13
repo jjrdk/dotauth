@@ -1,12 +1,13 @@
 ﻿namespace SimpleAuth.Server.Tests.Sms
 {
     using Moq;
-    using SimpleAuth;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using System;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Sms.Client;
     using Xunit;
 
@@ -42,10 +43,10 @@
         {
             // ACT : TWILIO NO CONFIGURED
             ConfirmationCode confirmationCode;
-            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>()))
+            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((ConfirmationCode)null));
-            _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>()))
-                .Callback<ConfirmationCode>(r => { confirmationCode = r; })
+            _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
+                .Callback<ConfirmationCode, CancellationToken>((r,c) => { confirmationCode = r; })
                 .Returns(() => Task.FromResult(true));
             _server.SharedCtx.TwilioClient
                 .Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
@@ -66,9 +67,9 @@
         [Fact]
         public async Task WhenNoConfirmationCodeThenReturnsError()
         {
-            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>()))
+            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((ConfirmationCode)null));
-            _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>()))
+            _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 // .Callback<ConfirmationCode>(r => { confirmationCode = r; })
                 .Returns(() => Task.FromResult(false));
             _server.SharedCtx.TwilioClient
@@ -89,9 +90,9 @@
         [Fact]
         public async Task WhenUnhandledExceptionOccursThenReturnsError()
         {
-            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>()))
+            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((ConfirmationCode)null));
-            _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>()))
+            _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 .Callback(() => throw new Exception())
                 .Returns(() => Task.FromResult(false));
             var unhandledException = await _sidSmsAuthenticateClient
@@ -109,9 +110,9 @@
         [Fact]
         public async Task When_Send_ConfirmationCode_Then_Json_Is_Returned()
         {
-            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>()))
+            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((ConfirmationCode)null));
-            _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>()))
+            _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 //.Callback<ConfirmationCode>(r => { confirmationCode = r; })
                 .Returns(() => Task.FromResult(true));
             _server.SharedCtx.TwilioClient

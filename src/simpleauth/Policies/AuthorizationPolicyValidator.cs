@@ -15,7 +15,6 @@
 namespace SimpleAuth.Policies
 {
     using Parameters;
-    using Repositories;
     using Shared;
     using Shared.Events.Uma;
     using Shared.Models;
@@ -65,7 +64,7 @@ namespace SimpleAuth.Policies
             }
 
             var resourceIds = validTicket.Lines.Select(l => l.ResourceSetId).ToArray();
-            var resources = await _resourceSetRepository.Get(resourceIds).ConfigureAwait(false);
+            var resources = await _resourceSetRepository.Get(cancellationToken, resourceIds).ConfigureAwait(false);
             if (resources == null || !resources.Any() || resources.Length != resourceIds.Length)
             {
                 throw new SimpleAuthException(ErrorCodes.InternalError, ErrorDescriptions.SomeResourcesDontExist);
@@ -102,7 +101,7 @@ namespace SimpleAuth.Policies
         {
             if (resource.Policies == null || !resource.Policies.Any())
             {
-                return new AuthorizationPolicyResult {Type = AuthorizationPolicyResultEnum.Authorized};
+                return new AuthorizationPolicyResult { Type = AuthorizationPolicyResultEnum.Authorized };
             }
 
             foreach (var authorizationPolicy in resource.Policies)
@@ -119,7 +118,7 @@ namespace SimpleAuth.Policies
                 }
             }
 
-            return new AuthorizationPolicyResult {Type = AuthorizationPolicyResultEnum.NotAuthorized};
+            return new AuthorizationPolicyResult { Type = AuthorizationPolicyResultEnum.NotAuthorized };
         }
     }
 }
