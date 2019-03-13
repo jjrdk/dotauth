@@ -11,6 +11,10 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Defines the marten based JWKS repository.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.Repositories.IJwksRepository" />
     public class MartenJwksRepository : IJwksRepository
     {
         private readonly Func<IDocumentSession> _sessionFactory;
