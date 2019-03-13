@@ -184,7 +184,7 @@
         /// <param name="userName">Name of the user.</param>
         /// <param name="password">The password.</param>
         /// <param name="scopes">The scopes.</param>
-        /// <param name="amrValues">The amr values.</param>
+        /// <param name="amrValue">The amr value.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">
         /// userName

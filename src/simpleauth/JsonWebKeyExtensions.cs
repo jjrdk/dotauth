@@ -8,8 +8,16 @@
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
 
-    internal static class JsonWebKeyExtensions
+    /// <summary>
+    /// Defines the JWK extension methods.
+    /// </summary>
+    public static class JsonWebKeyExtensions
     {
+        /// <summary>
+        /// Creates a <see cref="JsonWebKeySet"/> from the passed <see cref="JsonWebKey"/>.
+        /// </summary>
+        /// <param name="jwk"></param>
+        /// <returns></returns>
         public static JsonWebKeySet ToSet(this JsonWebKey jwk)
         {
             var jwks = new JsonWebKeySet();
@@ -17,6 +25,13 @@
             return jwks;
         }
 
+        /// <summary>
+        /// Creates a <see cref="JsonWebKey"/> from the passed <see cref="X509Certificate2"/>.
+        /// </summary>
+        /// <param name="certificate">The certificate.</param>
+        /// <param name="use">The key use.</param>
+        /// <param name="keyOperations">The key operations</param>
+        /// <returns></returns>
         public static JsonWebKey CreateJwk(this X509Certificate2 certificate, string use, params string[] keyOperations)
         {
             if (keyOperations == null)
@@ -80,7 +95,13 @@
 
             return jwk;
         }
-
+        
+        /// <summary>
+        /// Creates a <see cref="JsonWebKey"/> from the passed secret.
+        /// </summary>
+        /// <param name="key">The secret.</param>
+        /// <param name="use">The key use.</param>
+        /// <param name="keyOperations">The key operations</param>
         public static JsonWebKey CreateJwk(this string key, string use, params string[] keyOperations)
         {
             if (key.Length < 16)
@@ -105,11 +126,23 @@
             return jwk;
         }
 
+        /// <summary>
+        /// Creates a signature key from the passed secret.
+        /// </summary>
+        /// <param name="key">The secret</param>
+        /// <returns></returns>
         public static JsonWebKey CreateSignatureJwk(this string key)
         {
             return CreateJwk(key, JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify);
         }
 
+        /// <summary>
+        /// Creates a signature key from the passed <see cref="RSA"/>.
+        /// </summary>
+        /// <param name="rsa"></param>
+        /// <param name="keyid"></param>
+        /// <param name="includePrivateParameters"></param>
+        /// <returns></returns>
         public static JsonWebKey CreateSignatureJwk(this RSA rsa, string keyid, bool includePrivateParameters)
         {
             return CreateJwk(

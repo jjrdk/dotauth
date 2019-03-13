@@ -180,6 +180,12 @@ namespace SimpleAuth.Controllers
             return new OkResult();
         }
 
+        /// <summary>
+        /// Updates my claims.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         [HttpPost("claims")]
         [Authorize("connected_user")]
         public async Task<IActionResult> UpdateMyClaims(
