@@ -31,7 +31,9 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net.Http;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Sms.Client;
     using Xunit;
@@ -647,14 +649,15 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_Using_Password_Grant_Type_With_SMS_Then_Access_Token_Is_Returned()
         {
             var confirmationCode = new ConfirmationCode();
-            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>()))
+            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((ConfirmationCode) null));
-            _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>()))
+            _server.SharedCtx.ConfirmationCodeStore
+                .Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 .Callback<ConfirmationCode>(r => { confirmationCode = r; })
                 .Returns(() => Task.FromResult(true));
             await _sidSmsAuthenticateClient.Send(BaseUrl, new ConfirmationCodeRequest {PhoneNumber = "phone"})
                 .ConfigureAwait(false);
-            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>()))
+            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(confirmationCode);
             var tokenClient = await TokenClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),

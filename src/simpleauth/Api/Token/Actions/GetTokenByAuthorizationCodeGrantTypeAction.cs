@@ -84,7 +84,7 @@ namespace SimpleAuth.Api.Token.Actions
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
-            await _authorizationCodeStore.RemoveAuthorizationCode(result.AuthCode.Code)
+            await _authorizationCodeStore.Remove(result.AuthCode.Code, cancellationToken)
                 .ConfigureAwait(false); // 1. Invalidate the authorization code by removing it !
             var grantedToken = await _tokenStore.GetValidGrantedToken(
                     result.AuthCode.Scopes,
@@ -176,7 +176,7 @@ namespace SimpleAuth.Api.Token.Actions
             }
 
             var authorizationCode = await _authorizationCodeStore
-                .GetAuthorizationCode(authorizationCodeGrantTypeParameter.Code)
+                .Get(authorizationCodeGrantTypeParameter.Code, cancellationToken)
                 .ConfigureAwait(false);
             // 2. Check if the authorization code is valid
             if (authorizationCode == null)

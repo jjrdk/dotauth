@@ -28,6 +28,7 @@
             _sessionFactory = sessionFactory;
         }
 
+        /// <inheritdoc />
         public async Task<JsonWebKeySet> GetPublicKeys(CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())
@@ -41,6 +42,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<SigningCredentials> GetSigningKey(string alg, CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())
@@ -63,6 +65,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<bool> Add(JsonWebKey key, CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())
@@ -74,6 +77,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<bool> Rotate(JsonWebKeySet keySet, CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())

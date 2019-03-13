@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Shared
 {
-    using AccountFiltering;
     using Repositories;
     using System;
     using System.Collections.Generic;
@@ -9,6 +8,7 @@
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the account filtering.

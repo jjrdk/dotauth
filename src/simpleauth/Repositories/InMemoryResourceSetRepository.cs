@@ -5,7 +5,9 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Repositories;
 
     internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     {
@@ -17,7 +19,7 @@
         }
 
         /// <inheritdoc />
-        public Task<bool> Delete(string id)
+        public Task<bool> Remove(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -35,7 +37,7 @@
         }
 
         /// <inheritdoc />
-        public Task<ResourceSet> Get(string id)
+        public Task<ResourceSet> Get(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -45,14 +47,14 @@
             var rec = _resources.FirstOrDefault(p => p.Id == id);
             if (rec == null)
             {
-                return Task.FromResult((ResourceSet) null);
+                return Task.FromResult((ResourceSet)null);
             }
 
             return Task.FromResult(rec);
         }
 
         /// <inheritdoc />
-        public Task<ResourceSet[]> Get(params string[] ids)
+        public Task<ResourceSet[]> Get(CancellationToken cancellationToken, params string[] ids)
         {
             if (ids == null)
             {
@@ -63,15 +65,16 @@
             return Task.FromResult(result);
         }
 
+        /// <param name="cancellationToken"></param>
         /// <inheritdoc />
-        public Task<ResourceSet[]> GetAll()
+        public Task<ResourceSet[]> GetAll(CancellationToken cancellationToken)
         {
             var result = _resources.ToArray();
             return Task.FromResult(result);
         }
 
         /// <inheritdoc />
-        public Task<bool> Insert(ResourceSet resourceSet)
+        public Task<bool> Add(ResourceSet resourceSet, CancellationToken cancellationToken)
         {
             if (resourceSet == null)
             {
@@ -83,7 +86,7 @@
         }
 
         /// <inheritdoc />
-        public Task<GenericResult<ResourceSet>> Search(SearchResourceSet parameter)
+        public Task<GenericResult<ResourceSet>> Search(SearchResourceSet parameter, CancellationToken cancellationToken)
         {
             if (parameter == null)
             {
@@ -116,12 +119,14 @@
             return Task.FromResult(
                 new GenericResult<ResourceSet>
                 {
-                    Content = result.ToArray(), StartIndex = parameter.StartIndex, TotalResults = nbResult
+                    Content = result.ToArray(),
+                    StartIndex = parameter.StartIndex,
+                    TotalResults = nbResult
                 });
         }
 
         /// <inheritdoc />
-        public Task<bool> Update(ResourceSet resourceSet)
+        public Task<bool> Update(ResourceSet resourceSet, CancellationToken cancellationToken)
         {
             if (resourceSet == null)
             {

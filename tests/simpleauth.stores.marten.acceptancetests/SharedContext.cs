@@ -17,7 +17,6 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
     using System.Net.Http;
     using System.Security.Cryptography;
     using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth.Shared;
 
     public class SharedContext
     {

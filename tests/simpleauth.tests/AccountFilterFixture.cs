@@ -2,7 +2,6 @@
 {
     using Moq;
     using Shared;
-    using Shared.AccountFiltering;
     using Shared.Repositories;
     using System;
     using System.Collections.Generic;
@@ -10,6 +9,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Models;
     using Xunit;
 
     public class AccountFilterFixture

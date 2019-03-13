@@ -3,7 +3,6 @@
     using global::Marten;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-    using SimpleAuth.Shared.AccountFiltering;
     using SimpleAuth.Shared.Models;
     using System;
     using System.IO;

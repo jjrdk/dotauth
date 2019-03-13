@@ -1,10 +1,10 @@
 ﻿namespace SimpleAuth.Shared.Repositories
 {
-    using AccountFiltering;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Models;
 
     internal sealed class DefaultFilterStore : IFilterStore
     {

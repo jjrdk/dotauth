@@ -15,7 +15,9 @@
 namespace SimpleAuth.WebSite.Authenticate
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Repositories;
 
     internal class ValidateConfirmationCodeAction
     {
@@ -26,14 +28,14 @@ namespace SimpleAuth.WebSite.Authenticate
             _confirmationCodeStore = confirmationCodeStore;
         }
 
-        public async Task<bool> Execute(string code)
+        public async Task<bool> Execute(string code, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
                 throw new ArgumentNullException(nameof(code));
             }
 
-            var confirmationCode = await _confirmationCodeStore.Get(code).ConfigureAwait(false);
+            var confirmationCode = await _confirmationCodeStore.Get(code, cancellationToken).ConfigureAwait(false);
             if (confirmationCode == null)
             {
                 return false;

@@ -250,7 +250,7 @@ namespace SimpleAuth.Tests.Common
             Assert.Contains(
                 actionResult.RedirectInstruction.Parameters,
                 p => p.Name == CoreConstants.StandardAuthorizationResponseNames._authorizationCodeName);
-            _authorizationCodeRepositoryFake.Verify(a => a.AddAuthorizationCode(It.IsAny<AuthorizationCode>()));
+            _authorizationCodeRepositoryFake.Verify(a => a.Add(It.IsAny<AuthorizationCode>(), It.IsAny<CancellationToken>()));
             _eventPublisher.Verify(s => s.Publish(It.IsAny<AuthorizationCodeGranted>()));
         }
 

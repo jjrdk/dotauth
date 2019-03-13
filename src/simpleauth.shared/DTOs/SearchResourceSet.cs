@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Shared.DTOs
 {
+    using System;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -15,7 +16,7 @@
         /// The ids.
         /// </value>
         [DataMember(Name = "ids")]
-        public string[] Ids { get; set; }
+        public string[] Ids { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the names.
@@ -24,7 +25,7 @@
         /// The names.
         /// </value>
         [DataMember(Name = "names")]
-        public string[] Names { get; set; }
+        public string[] Names { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the types.
@@ -33,7 +34,7 @@
         /// The types.
         /// </value>
         [DataMember(Name = "types")]
-        public string[] Types { get; set; }
+        public string[] Types { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the start index.

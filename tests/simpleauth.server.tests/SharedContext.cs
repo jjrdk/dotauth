@@ -19,6 +19,7 @@ namespace SimpleAuth.Server.Tests
     using Shared;
     using SimpleAuth;
     using System.Net.Http;
+    using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Sms;
 
     public class SharedContext

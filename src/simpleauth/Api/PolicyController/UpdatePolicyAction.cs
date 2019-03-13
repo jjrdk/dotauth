@@ -19,7 +19,6 @@ namespace SimpleAuth.Api.PolicyController
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
@@ -86,7 +85,7 @@ namespace SimpleAuth.Api.PolicyController
             // Check all the scopes are valid.
             foreach (var resourceSetId in policy.ResourceSetIds)
             {
-                var resourceSet = await _resourceSetRepository.Get(resourceSetId).ConfigureAwait(false);
+                var resourceSet = await _resourceSetRepository.Get(resourceSetId, cancellationToken).ConfigureAwait(false);
                 if (updatePolicyParameter.Rules.Any(
                     r => r.Scopes != null && !r.Scopes.All(s => resourceSet.Scopes.Contains(s))))
                 {

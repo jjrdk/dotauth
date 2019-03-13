@@ -15,14 +15,15 @@
 namespace SimpleAuth.Server.Tests.Apis
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Moq;
     using SimpleAuth.Api.ResourceSetController;
-    using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
     using Xunit;
 
     public class UpdateResourceSetActionFixture
@@ -33,14 +34,17 @@ namespace SimpleAuth.Server.Tests.Apis
         public UpdateResourceSetActionFixture()
         {
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _resourceSetRepositoryStub.Setup(x => x.Update(It.IsAny<ResourceSet>())).ReturnsAsync(true);
+            _resourceSetRepositoryStub.Setup(x => x.Update(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
             _updateResourceSetAction = new UpdateResourceSetAction(_resourceSetRepositoryStub.Object);
         }
 
         [Fact]
         public async Task When_Passing_No_Parameter_Then_Exception_Is_Thrown()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateResourceSetAction.Execute(null))
+            await Assert
+                .ThrowsAsync<ArgumentNullException>(
+                    () => _updateResourceSetAction.Execute(null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
@@ -50,15 +54,17 @@ namespace SimpleAuth.Server.Tests.Apis
             const string id = "id";
             var udpateResourceSetParameter = new PutResourceSet
             {
-                Id = id, Name = "blah", Scopes = new [] {"scope"}
+                Id = id, Name = "blah", Scopes = new[] {"scope"}
             };
             var resourceSet = new ResourceSet {Id = id};
-            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>())).ReturnsAsync(resourceSet);
-            _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<ResourceSet>()))
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(resourceSet);
+            _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(false));
 
             var exception = await Assert
-                .ThrowsAsync<SimpleAuthException>(() => _updateResourceSetAction.Execute(udpateResourceSetParameter))
+                .ThrowsAsync<SimpleAuthException>(
+                    () => _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InternalError, exception.Code);
             Assert.Equal(
@@ -72,13 +78,16 @@ namespace SimpleAuth.Server.Tests.Apis
             const string id = "id";
             var udpateResourceSetParameter = new PutResourceSet
             {
-                Id = id, Name = "blah", Scopes = new [] {"scope"}
+                Id = id, Name = "blah", Scopes = new[] {"scope"}
             };
             var resourceSet = new ResourceSet {Id = id};
-            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>())).ReturnsAsync(resourceSet);
-            _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<ResourceSet>())).ReturnsAsync(true);
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(resourceSet);
+            _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
 
-            var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter).ConfigureAwait(false);
+            var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None)
+                .ConfigureAwait(false);
 
             Assert.True(result);
         }
