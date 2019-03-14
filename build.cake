@@ -113,7 +113,7 @@ Task("Run-Unit-Tests")
 });
 
 Task("Pack")
-    .IsDependentOn("Run-Unit-Tests")
+    .IsDependentOn("Build")
     .Does(()=>
     {
         var nugetVersion = versionInfo.MajorMinorPatch + "-" + versionInfo.BranchName + versionInfo.CommitsSinceVersionSourcePadded;
