@@ -44,7 +44,7 @@
                         GrantTypes = new[] {GrantTypes.ClientCredentials},
                         JsonWebKeys = TestKeys.SuperSecretKey.CreateSignatureJwk().ToSet()
                     };
-                    var response = await _managerClient.AddClient(client, _grantedToken.AccessToken);
+                    var response = await _managerClient.AddClient(client, _grantedToken.AccessToken).ConfigureAwait(false);
                 });
         }
     }
