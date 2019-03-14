@@ -6,18 +6,39 @@
     using System.Net.Http;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Defines the Twilio SMS client.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Sms.ISmsClient" />
     public class TwilioSmsClient : ISmsClient
     {
         private readonly HttpClient _client;
         private readonly TwilioSmsCredentials _credentials;
         private const string TwilioSmsEndpointFormat = "https://api.twilio.com/2010-04-01/Accounts/{0}/Messages.json";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TwilioSmsClient"/> class.
+        /// </summary>
+        /// <param name="client">The client.</param>
+        /// <param name="credentials">The credentials.</param>
         public TwilioSmsClient(HttpClient client, TwilioSmsCredentials credentials)
         {
             _client = client;
             _credentials = credentials;
         }
 
+        /// <summary>
+        /// Sends the message.
+        /// </summary>
+        /// <param name="toPhoneNumber">To phone number.</param>
+        /// <param name="message">The message.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">
+        /// toPhoneNumber
+        /// or
+        /// message
+        /// </exception>
+        /// <exception cref="SmsException"></exception>
         public async Task<bool> SendMessage(string toPhoneNumber, string message)
         {
             if (string.IsNullOrWhiteSpace(toPhoneNumber))
