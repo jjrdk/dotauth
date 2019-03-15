@@ -9,15 +9,24 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    internal sealed class InMemoryPolicyRepository : IPolicyRepository
+    /// <summary>
+    /// Defines the in-memory policy repository.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.Repositories.IPolicyRepository" />
+    public sealed class InMemoryPolicyRepository : IPolicyRepository
     {
         private readonly ICollection<Policy> _policies;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InMemoryPolicyRepository"/> class.
+        /// </summary>
+        /// <param name="policies">The policies.</param>
         public InMemoryPolicyRepository(IReadOnlyCollection<Policy> policies = null)
         {
             _policies = policies == null ? new List<Policy>() : policies.ToList();
         }
 
+        /// <inheritdoc />
         public Task<bool> Add(Policy policy, CancellationToken cancellationToken = default)
         {
             if (policy == null)
@@ -29,6 +38,7 @@
             return Task.FromResult(true);
         }
 
+        /// <inheritdoc />
         public Task<bool> Delete(string id, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -46,6 +56,7 @@
             return Task.FromResult(true);
         }
 
+        /// <inheritdoc />
         public Task<Policy> Get(string id, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -62,12 +73,14 @@
             return Task.FromResult(r);
         }
 
+        /// <inheritdoc />
         public Task<Policy[]> GetAll(CancellationToken cancellationToken = default)
         {
             var result = _policies.ToArray();
             return Task.FromResult(result);
         }
 
+        /// <inheritdoc />
         public Task<GenericResult<Policy>> Search(
             SearchAuthPolicies parameter,
             CancellationToken cancellationToken = default)
@@ -103,18 +116,7 @@
             });
         }
 
-        public Task<Policy[]> SearchByResourceId(string resourceSetId, CancellationToken cancellationToken = default)
-        {
-            if (string.IsNullOrWhiteSpace(resourceSetId))
-            {
-                throw new ArgumentNullException(nameof(resourceSetId));
-            }
-
-            var result = _policies.Where(p => p.ResourceSetIds.Contains(resourceSetId))
-                .ToArray();
-            return Task.FromResult(result);
-        }
-
+        /// <inheritdoc />
         public Task<bool> Update(Policy policy, CancellationToken cancellationToken = default)
         {
             if (policy == null)

@@ -8,15 +8,24 @@
     using Shared.Models;
     using Shared.Repositories;
 
-    internal sealed class InMemoryConsentRepository : IConsentRepository
+    /// <summary>
+    /// Defines the in-memory consent repository.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.Repositories.IConsentRepository" />
+    public sealed class InMemoryConsentRepository : IConsentRepository
     {
         private readonly ICollection<Consent> _consents;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InMemoryConsentRepository"/> class.
+        /// </summary>
+        /// <param name="consents">The consents.</param>
         public InMemoryConsentRepository(IReadOnlyCollection<Consent> consents = null)
         {
             _consents = consents == null ? new List<Consent>() : consents.ToList();
         }
 
+        /// <inheritdoc />
         public Task<bool> Delete(Consent record, CancellationToken cancellationToken = default)
         {
             if (record == null)
@@ -34,6 +43,7 @@
             return Task.FromResult(true);
         }
 
+        /// <inheritdoc />
         public Task<IReadOnlyCollection<Consent>> GetConsentsForGivenUser(
             string subject,
             CancellationToken cancellationToken = default)
@@ -47,6 +57,7 @@
                 _consents.Where(c => c.ResourceOwner.Subject == subject).ToList());
         }
 
+        /// <inheritdoc />
         public Task<bool> Insert(Consent record, CancellationToken cancellationToken = default)
         {
             if (record == null)
