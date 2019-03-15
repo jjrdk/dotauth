@@ -16,6 +16,7 @@
     using System.Reflection;
     using System.Runtime.Loader;
     using System.Security.Claims;
+    using SimpleAuth.Repositories;
 
     public class Startup
     {

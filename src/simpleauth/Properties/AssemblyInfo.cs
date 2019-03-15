@@ -14,13 +14,7 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("simpleauth.authserver")]
-[assembly: InternalsVisibleTo("simpleauth.awslambda")]
 [assembly: InternalsVisibleTo("simpleauth.sms")]
-[assembly: InternalsVisibleTo("simpleauth.oauth2introspection")]
-[assembly: InternalsVisibleTo("simpleauth.server")]
-[assembly: InternalsVisibleTo("simpleauth.uma")]
-[assembly: InternalsVisibleTo("simpleauth.uma.tests")]
 [assembly: InternalsVisibleTo("simpleauth.tests")]
 [assembly: InternalsVisibleTo("simpleauth.acceptancetests")]
 [assembly: InternalsVisibleTo("simpleauth.stores.marten")]

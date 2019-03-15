@@ -9,10 +9,18 @@
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Repositories;
 
-    internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
+    /// <summary>
+    /// Defines the in-memory resource set repository.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.Repositories.IResourceSetRepository" />
+    public sealed class InMemoryResourceSetRepository : IResourceSetRepository
     {
         private readonly ICollection<ResourceSet> _resources;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InMemoryResourceSetRepository"/> class.
+        /// </summary>
+        /// <param name="resources">The resources.</param>
         public InMemoryResourceSetRepository(IReadOnlyCollection<ResourceSet> resources = null)
         {
             _resources = resources?.ToList() ?? new List<ResourceSet>();

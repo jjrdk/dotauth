@@ -121,7 +121,7 @@
         [HttpPost]
         public async Task<IActionResult> Consent(string id, CancellationToken cancellationToken)
         {
-            var removed = await _consentRepository.Delete(new Consent {Id = id}, cancellationToken)
+            var removed = await _consentRepository.Delete(new Consent { Id = id }, cancellationToken)
                 .ConfigureAwait(false);
             if (!removed)
             {
@@ -231,7 +231,7 @@
             await _authenticationService.ChallengeAsync(
                     HttpContext,
                     provider,
-                    new AuthenticationProperties {RedirectUri = redirectUrl})
+                    new AuthenticationProperties { RedirectUri = redirectUrl })
                 .ConfigureAwait(false);
         }
 
@@ -294,13 +294,13 @@
                 || !externalClaims.Identity.IsAuthenticated
                 || !(externalClaims.Identity is ClaimsIdentity))
             {
-                return RedirectToAction("Profile", "User");
+                return RedirectToAction("Index", "User");
             }
 
             await SetUser().ConfigureAwait(false);
-            var authenticationType = ((ClaimsIdentity) externalClaims.Identity).AuthenticationType;
+            var authenticationType = ((ClaimsIdentity)externalClaims.Identity).AuthenticationType;
             var viewModel = new LinkProfileConfirmationViewModel(authenticationType);
-            return View(viewModel);
+            return View("Index", viewModel);
         }
 
         /// <summary>
@@ -362,11 +362,11 @@
             }
             catch (SimpleAuthException ex)
             {
-                return RedirectToAction("Index", "Error", new {code = ex.Code, message = ex.Message});
+                return RedirectToAction("Index", "Error", new { code = ex.Code, message = ex.Message });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Index", "Error", new {code = ErrorCodes.InternalError, message = ex.Message});
+                return RedirectToAction("Index", "Error", new { code = ErrorCodes.InternalError, message = ex.Message });
             }
 
             return await Index(cancellationToken).ConfigureAwait(false);

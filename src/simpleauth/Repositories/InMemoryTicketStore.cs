@@ -8,27 +8,30 @@
     using Shared.Models;
     using SimpleAuth.Shared.Repositories;
 
-    internal sealed class InMemoryTicketStore : ITicketStore
+    /// <summary>
+    /// Defines the in-memory ticket store.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.Repositories.ITicketStore" />
+    public sealed class InMemoryTicketStore : ITicketStore
     {
         private readonly List<Ticket> _tickets;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InMemoryTicketStore"/> class.
+        /// </summary>
         public InMemoryTicketStore()
         {
             _tickets = new List<Ticket>();
         }
 
-        public Task<bool> Add(params Ticket[] tickets)
-        {
-            _tickets.AddRange(tickets);
-            return Task.FromResult(true);
-        }
-
+        /// <inheritdoc />
         public Task<bool> Add(Ticket ticket, CancellationToken cancellationToken)
         {
             _tickets.Add(ticket);
             return Task.FromResult(true);
         }
 
+        /// <inheritdoc />
         public Task<Ticket> Get(string ticketId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(ticketId))
@@ -39,6 +42,7 @@
             return Task.FromResult(_tickets.FirstOrDefault(t => t.Id == ticketId));
         }
 
+        /// <inheritdoc />
         public Task<bool> Remove(string ticketId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(ticketId))

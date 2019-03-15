@@ -10,7 +10,11 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    internal sealed class InMemoryScopeRepository : IScopeRepository
+    /// <summary>
+    /// Defines the in-memory scope repository.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.Repositories.IScopeRepository" />
+    public sealed class InMemoryScopeRepository : IScopeRepository
     {
         private readonly ICollection<Scope> _scopes;
 
@@ -129,11 +133,16 @@
             }
         };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InMemoryScopeRepository"/> class.
+        /// </summary>
+        /// <param name="scopes">The scopes.</param>
         public InMemoryScopeRepository(IReadOnlyCollection<Scope> scopes = null)
         {
             _scopes = scopes == null || scopes.Count == 0 ? _defaultScopes : scopes.ToList();
         }
 
+        /// <inheritdoc />
         public Task<bool> Delete(Scope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
@@ -151,12 +160,14 @@
             return Task.FromResult(true);
         }
 
+        /// <inheritdoc />
         public Task<Scope[]> GetAll(CancellationToken cancellationToken = default)
         {
             var res = _scopes.ToArray();
             return Task.FromResult(res);
         }
 
+        /// <inheritdoc />
         public Task<Scope> Get(string name, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -169,6 +180,7 @@
             return Task.FromResult(scope);
         }
 
+        /// <inheritdoc />
         public Task<bool> Insert(Scope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
@@ -186,6 +198,7 @@
             return Task.FromResult(true);
         }
 
+        /// <inheritdoc />
         public Task<GenericResult<Scope>> Search(
             SearchScopesRequest parameter,
             CancellationToken cancellationToken = default)
@@ -226,6 +239,7 @@
                 });
         }
 
+        /// <inheritdoc />
         public Task<Scope[]> SearchByNames(CancellationToken cancellationToken = default, params string[] names)
         {
             if (names == null)
@@ -237,6 +251,7 @@
             return Task.FromResult(result);
         }
 
+        /// <inheritdoc />
         public Task<bool> Update(Scope scope, CancellationToken cancellationToken = default)
         {
             if (scope == null)

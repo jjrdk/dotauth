@@ -9,11 +9,20 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
 
-    internal sealed class InMemoryResourceOwnerRepository : IResourceOwnerRepository
+    /// <summary>
+    /// Defines the in-memory resource owner repository.
+    /// </summary>
+    /// <seealso cref="SimpleAuth.Shared.Repositories.IResourceOwnerRepository" />
+    public sealed class InMemoryResourceOwnerRepository : IResourceOwnerRepository
     {
         private readonly List<ResourceOwner> _users;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InMemoryResourceOwnerRepository"/> class.
+        /// </summary>
+        /// <param name="users">The users.</param>
         public InMemoryResourceOwnerRepository(IReadOnlyCollection<ResourceOwner> users = null)
         {
             _users = users == null
@@ -21,6 +30,7 @@
                 : users.ToList();
         }
 
+        /// <inheritdoc />
         public Task<bool> Delete(string subject, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(subject))
@@ -38,12 +48,14 @@
             return Task.FromResult(true);
         }
 
+        /// <inheritdoc />
         public Task<ResourceOwner[]> GetAll(CancellationToken cancellationToken)
         {
             var res = _users.ToArray();
             return Task.FromResult(res);
         }
 
+        /// <inheritdoc />
         public Task<ResourceOwner> Get(string id, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -55,6 +67,7 @@
             return Task.FromResult(user);
         }
 
+        /// <inheritdoc />
         public Task<ResourceOwner> Get(ExternalAccountLink externalAccount, CancellationToken cancellationToken)
         {
             if (externalAccount == null)
@@ -69,6 +82,7 @@
             return Task.FromResult(user);
         }
 
+        /// <inheritdoc />
         public Task<ResourceOwner> Get(string id, string password, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -84,12 +98,13 @@
             var user = _users.FirstOrDefault(u => u.Subject == id && u.Password == password.ToSha256Hash());
             if (user == null)
             {
-                return Task.FromResult((ResourceOwner)null);
+                return Task.FromResult((ResourceOwner) null);
             }
 
             return Task.FromResult(user);
         }
 
+        /// <inheritdoc />
         public Task<ResourceOwner> GetResourceOwnerByClaim(
             string key,
             string value,
@@ -108,12 +123,13 @@
             var user = _users.FirstOrDefault(u => u.Claims.Any(c => c.Type == key && c.Value == value));
             if (user == null)
             {
-                return Task.FromResult((ResourceOwner)null);
+                return Task.FromResult((ResourceOwner) null);
             }
 
             return Task.FromResult(user);
         }
 
+        /// <inheritdoc />
         public Task<bool> Insert(ResourceOwner resourceOwner, CancellationToken cancellationToken = default)
         {
             if (resourceOwner == null)
@@ -127,6 +143,7 @@
             return Task.FromResult(true);
         }
 
+        /// <inheritdoc />
         public Task<GenericResult<ResourceOwner>> Search(
             SearchResourceOwnersRequest parameter,
             CancellationToken cancellationToken = default)
@@ -162,6 +179,7 @@
                 });
         }
 
+        /// <inheritdoc />
         public Task<bool> Update(ResourceOwner resourceOwner, CancellationToken cancellationToken = default)
         {
             if (resourceOwner == null)
