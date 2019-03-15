@@ -18,7 +18,6 @@ namespace SimpleAuth.Controllers
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Repositories;
     using Shared.DTOs;
     using Shared.Responses;
     using System.Linq;

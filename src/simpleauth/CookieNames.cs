@@ -16,11 +16,29 @@ namespace SimpleAuth
 {
     using Microsoft.AspNetCore.Authentication.Cookies;
 
-    internal static class CookieNames
+    /// <summary>
+    /// Defines the cookie names.
+    /// </summary>
+    public static class CookieNames
     {
+        /// <summary>
+        /// Default cookie name
+        /// </summary>
         public const string CookieName = CookieAuthenticationDefaults.AuthenticationScheme;
+
+        /// <summary>
+        /// External cookie name
+        /// </summary>
         public const string ExternalCookieName = "saoie";
+
+        /// <summary>
+        /// Password less cookie name
+        /// </summary>
         public const string PasswordLessCookieName = "sapl";
+
+        /// <summary>
+        /// Two-factor cookie name
+        /// </summary>
         public const string TwoFactorCookieName = "sa2fa";
     }
 }

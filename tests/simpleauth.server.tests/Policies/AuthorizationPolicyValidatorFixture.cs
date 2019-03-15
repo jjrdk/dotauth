@@ -19,7 +19,6 @@ namespace SimpleAuth.Server.Tests.Policies
     using System.Threading.Tasks;
     using Moq;
     using SimpleAuth.Policies;
-    using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
@@ -57,7 +56,7 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_ResourceSet_Does_Not_Exist_Then_Exception_Is_Thrown()
         {
             var ticket = new Ticket {Lines = new [] {new TicketLine {ResourceSetId = "resource_set_id"}}};
-            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((ResourceSet) null));
 
             var exception = await Assert
@@ -73,7 +72,7 @@ namespace SimpleAuth.Server.Tests.Policies
         {
             var ticket = new Ticket {Lines = new [] {new TicketLine {ResourceSetId = "1"}}};
             var resourceSet = new [] {new ResourceSet {Id = "1"}};
-            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string[]>()))
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(resourceSet);
 
             var result = await _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null, CancellationToken.None)
@@ -95,7 +94,7 @@ namespace SimpleAuth.Server.Tests.Policies
                     Policies = new [] {new Policy()}
                 }
             };
-            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string[]>()))
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(resourceSet);
 
             var result = await _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null, CancellationToken.None)

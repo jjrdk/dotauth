@@ -195,7 +195,7 @@ namespace SimpleAuth.Tests.Api.Token
 
             //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
             //    .Returns(() => Task.FromResult(client));
-            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((AuthorizationCode)null));
             var authorizationHeader = new AuthenticationHeaderValue(
                 "Basic",
@@ -237,7 +237,7 @@ namespace SimpleAuth.Tests.Api.Token
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
-            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(authorizationCode));
 
             var authenticationHeader = new AuthenticationHeaderValue(
@@ -279,7 +279,7 @@ namespace SimpleAuth.Tests.Api.Token
             var authorizationCode = new AuthorizationCode { ClientId = "clientId" };
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
-            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(authorizationCode));
 
             var authenticationHeader = new AuthenticationHeaderValue(
@@ -330,7 +330,7 @@ namespace SimpleAuth.Tests.Api.Token
             };
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
-            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(authorizationCode);
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
@@ -376,12 +376,7 @@ namespace SimpleAuth.Tests.Api.Token
             };
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
-            //_clientValidatorFake.Setup(c =>
-            //        c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
-            //    .Returns(true);
-            //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //    .ReturnsAsync(result));
-            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(authorizationCode);
 
             var authenticationHeader = new AuthenticationHeaderValue(
@@ -428,8 +423,8 @@ namespace SimpleAuth.Tests.Api.Token
             };
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
-            _authorizationCodeStoreFake.Setup(a => a.RemoveAuthorizationCode(It.IsAny<string>())).ReturnsAsync(true);
-            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.Remove(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+            _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(authorizationCode);
 
             var authenticationHeader = new AuthenticationHeaderValue(
@@ -497,7 +492,7 @@ namespace SimpleAuth.Tests.Api.Token
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
-            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(authorizationCode);
 
             _tokenStoreFake
@@ -561,7 +556,7 @@ namespace SimpleAuth.Tests.Api.Token
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
-            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(authorizationCode);
             _simpleAuthOptions = new RuntimeSettings(authorizationCodeValidityPeriod: TimeSpan.FromSeconds(3000));
 

@@ -20,7 +20,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Threading.Tasks;
     using Moq;
     using SimpleAuth.Api.PermissionController;
-    using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
@@ -141,8 +140,8 @@ namespace SimpleAuth.Server.Tests.Apis
         private void InitializeFakeObjects(params ResourceSet[] resourceSets)
         {
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string>())).ReturnsAsync(resourceSets.FirstOrDefault);
-            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string[]>())).ReturnsAsync(resourceSets);
+            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(resourceSets.FirstOrDefault);
+            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>())).ReturnsAsync(resourceSets);
             _ticketStoreStub = new Mock<ITicketStore>();
             _configurationServiceStub = new RuntimeSettings(ticketLifeTime: TimeSpan.FromSeconds(2));
             _addPermissionAction = new AddPermissionAction(

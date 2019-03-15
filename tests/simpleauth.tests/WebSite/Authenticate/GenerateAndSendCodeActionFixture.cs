@@ -20,13 +20,13 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.WebSite.Authenticate;
     using System;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.DTOs;
     using Xunit;
 
     public class GenerateAndSendCodeActionFixture
@@ -59,7 +59,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         public async Task When_ResourceOwner_Does_Not_Exist_Then_Exception_Is_Thrown()
         {
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((ResourceOwner)null);
+                .ReturnsAsync((ResourceOwner) null);
 
             var exception = await Assert
                 .ThrowsAsync<SimpleAuthException>(
@@ -74,7 +74,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         public async Task When_Two_Factor_Auth_Is_Not_Enabled_Then_Exception_Is_Thrown()
         {
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ResourceOwner { TwoFactorAuthentication = string.Empty });
+                .ReturnsAsync(new ResourceOwner {TwoFactorAuthentication = string.Empty});
 
             var exception = await Assert
                 .ThrowsAsync<SimpleAuthException>(
@@ -94,7 +94,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                         new ResourceOwner
                         {
                             TwoFactorAuthentication = "email",
-                            Claims = new[] { new Claim("key", "value") },
+                            Claims = new[] {new Claim("key", "value")},
                             Subject = "subject"
                         }));
             var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
@@ -116,14 +116,16 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                         new ResourceOwner
                         {
                             TwoFactorAuthentication = "email",
-                            Claims = new[] { new Claim("key", "value") },
+                            Claims = new[] {new Claim("key", "value")},
                             Subject = "subject"
                         }));
             var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
             fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("key");
             _twoFactorAuthenticationHandlerStub.Setup(t => t.Get(It.IsAny<string>())).Returns(fakeAuthService.Object);
-            _confirmationCodeStoreStub.Setup(r => r.Get(It.IsAny<string>())).ReturnsAsync((ConfirmationCode)null);
-            _confirmationCodeStoreStub.Setup(r => r.Add(It.IsAny<ConfirmationCode>())).ReturnsAsync(false);
+            _confirmationCodeStoreStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((ConfirmationCode) null);
+            _confirmationCodeStoreStub.Setup(r => r.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(false);
 
             var exception = await Assert
                 .ThrowsAsync<SimpleAuthException>(
@@ -143,14 +145,16 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                         new ResourceOwner
                         {
                             TwoFactorAuthentication = "email",
-                            Claims = new[] { new Claim("key", "value") },
+                            Claims = new[] {new Claim("key", "value")},
                             Subject = "subject"
                         }));
             var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
             fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("key");
             _twoFactorAuthenticationHandlerStub.Setup(t => t.Get(It.IsAny<string>())).Returns(fakeAuthService.Object);
-            _confirmationCodeStoreStub.Setup(r => r.Get(It.IsAny<string>())).ReturnsAsync((ConfirmationCode)null);
-            _confirmationCodeStoreStub.Setup(r => r.Add(It.IsAny<ConfirmationCode>())).ReturnsAsync(true);
+            _confirmationCodeStoreStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((ConfirmationCode) null);
+            _confirmationCodeStoreStub.Setup(r => r.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
 
             await _generateAndSendCodeAction.Send("subject", CancellationToken.None).ConfigureAwait(false);
 

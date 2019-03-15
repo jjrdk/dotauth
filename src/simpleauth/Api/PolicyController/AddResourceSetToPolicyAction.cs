@@ -19,7 +19,6 @@ namespace SimpleAuth.Api.PolicyController
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Parameters;
-    using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
@@ -91,7 +90,7 @@ namespace SimpleAuth.Api.PolicyController
                 ResourceSet resourceSet;
                 try
                 {
-                    resourceSet = await _resourceSetRepository.Get(resourceSetId).ConfigureAwait(false);
+                    resourceSet = await _resourceSetRepository.Get(resourceSetId, cancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

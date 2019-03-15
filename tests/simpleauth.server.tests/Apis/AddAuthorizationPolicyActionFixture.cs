@@ -19,7 +19,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Threading.Tasks;
     using Moq;
     using SimpleAuth.Api.PolicyController;
-    using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
@@ -51,7 +50,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var exception = await Assert
                 .ThrowsAsync<SimpleAuthException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter, CancellationToken.None))
                 .ConfigureAwait(false);
-            
+
             Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
             Assert.Equal(
                 string.Format(
@@ -163,8 +162,8 @@ namespace SimpleAuth.Server.Tests.Apis
             _policyRepositoryStub.Setup(x => x.Add(It.IsAny<Policy>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string>())).ReturnsAsync(resourceSet);
-            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string[]>()))
+            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(resourceSet);
+            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(new[] { resourceSet });
 
             _addAuthorizationPolicyAction = new AddAuthorizationPolicyAction(

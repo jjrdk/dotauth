@@ -42,7 +42,7 @@
             }
 
             // 1. Send the confirmation code (SMS).
-            await _generateAndSendSmsCodeOperation.Execute(phoneNumber).ConfigureAwait(false);
+            await _generateAndSendSmsCodeOperation.Execute(phoneNumber, cancellationToken).ConfigureAwait(false);
             // 2. Try to get the resource owner.
             var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(
                     OpenIdClaimTypes.PhoneNumber,
@@ -60,7 +60,7 @@
                 new Claim(OpenIdClaimTypes.PhoneNumber, phoneNumber),
                 new Claim(OpenIdClaimTypes.PhoneNumberVerified, "false")
             };
-            var id = await _subjectBuilder.BuildSubject(claims).ConfigureAwait(false);
+            var id = await _subjectBuilder.BuildSubject(claims, cancellationToken).ConfigureAwait(false);
             var record = new ResourceOwner {Subject = id, Password = Id.Create().ToSha256Hash(), Claims = claims};
 
             // 3.2 Add user.

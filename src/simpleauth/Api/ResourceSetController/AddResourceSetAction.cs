@@ -16,12 +16,13 @@ namespace SimpleAuth.Api.ResourceSetController
 {
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Repositories;
     using Shared;
     using Shared.Models;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Repositories;
 
     internal class AddResourceSetAction
     {
@@ -32,7 +33,7 @@ namespace SimpleAuth.Api.ResourceSetController
             _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<string> Execute(PostResourceSet addResourceSetParameter)
+        public async Task<string> Execute(PostResourceSet addResourceSetParameter, CancellationToken cancellationToken)
         {
             if (addResourceSetParameter == null)
             {
@@ -50,9 +51,10 @@ namespace SimpleAuth.Api.ResourceSetController
             };
 
             CheckResourceSetParameter(resourceSet);
-            if (!await _resourceSetRepository.Insert(resourceSet).ConfigureAwait(false))
+            if (!await _resourceSetRepository.Add(resourceSet, cancellationToken).ConfigureAwait(false))
             {
-                throw new SimpleAuthException(ErrorCodes.InternalError,
+                throw new SimpleAuthException(
+                    ErrorCodes.InternalError,
                     ErrorDescriptions.TheResourceSetCannotBeInserted);
             }
 
@@ -63,27 +65,31 @@ namespace SimpleAuth.Api.ResourceSetController
         {
             if (string.IsNullOrWhiteSpace(resourceSet.Name))
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "name"));
             }
 
             if (resourceSet.Scopes == null || !resourceSet.Scopes.Any())
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"));
             }
 
-            if (!string.IsNullOrWhiteSpace(resourceSet.IconUri) &&
-                !Uri.IsWellFormedUriString(resourceSet.IconUri, UriKind.Absolute))
+            if (!string.IsNullOrWhiteSpace(resourceSet.IconUri)
+                && !Uri.IsWellFormedUriString(resourceSet.IconUri, UriKind.Absolute))
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, resourceSet.IconUri));
             }
 
-            if (!string.IsNullOrWhiteSpace(resourceSet.Uri) &&
-                !Uri.IsWellFormedUriString(resourceSet.Uri, UriKind.Absolute))
+            if (!string.IsNullOrWhiteSpace(resourceSet.Uri)
+                && !Uri.IsWellFormedUriString(resourceSet.Uri, UriKind.Absolute))
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, resourceSet.Uri));
             }
         }

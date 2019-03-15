@@ -1,7 +1,8 @@
-﻿namespace SimpleAuth
+﻿namespace SimpleAuth.Shared.Repositories
 {
+    using System.Threading;
     using System.Threading.Tasks;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the authorization code store interface.
@@ -12,21 +13,24 @@
         /// Gets the authorization code.
         /// </summary>
         /// <param name="code">The code.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<AuthorizationCode> GetAuthorizationCode(string code);
+        Task<AuthorizationCode> Get(string code, CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the authorization code.
         /// </summary>
         /// <param name="authorizationCode">The authorization code.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<bool> AddAuthorizationCode(AuthorizationCode authorizationCode);
+        Task<bool> Add(AuthorizationCode authorizationCode, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the authorization code.
         /// </summary>
         /// <param name="code">The code.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<bool> RemoveAuthorizationCode(string code);
+        Task<bool> Remove(string code, CancellationToken cancellationToken);
     }
 }

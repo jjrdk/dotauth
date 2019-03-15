@@ -20,6 +20,7 @@ namespace SimpleAuth.WebSite.Authenticate
     using System.Threading.Tasks;
     using SimpleAuth.Exceptions;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
 
@@ -62,18 +63,18 @@ namespace SimpleAuth.WebSite.Authenticate
 
             var confirmationCode = new ConfirmationCode
             {
-                Value = await GetCode().ConfigureAwait(false),
+                Value = await GetCode(cancellationToken).ConfigureAwait(false),
                 IssueAt = DateTime.UtcNow,
                 ExpiresIn = 300
             };
 
             var service = _twoFactorAuthenticationHandler.Get(resourceOwner.TwoFactorAuthentication);
-            if (!resourceOwner.Claims.Any(c => c.Type == service.RequiredClaim))
+            if (resourceOwner.Claims.All(c => c.Type != service.RequiredClaim))
             {
                 throw new ClaimRequiredException(service.RequiredClaim);
             }
 
-            if (!await _confirmationCodeStore.Add(confirmationCode).ConfigureAwait(false))
+            if (!await _confirmationCodeStore.Add(confirmationCode, cancellationToken).ConfigureAwait(false))
             {
                 throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
             }
@@ -82,13 +83,13 @@ namespace SimpleAuth.WebSite.Authenticate
             return confirmationCode.Value;
         }
 
-        private async Task<string> GetCode()
+        private async Task<string> GetCode(CancellationToken cancellationToken)
         {
             var random = new Random();
             var number = random.Next(100000, 999999);
-            if (await _confirmationCodeStore.Get(number.ToString()).ConfigureAwait(false) != null)
+            if (await _confirmationCodeStore.Get(number.ToString(), cancellationToken).ConfigureAwait(false) != null)
             {
-                return await GetCode().ConfigureAwait(false);
+                return await GetCode(cancellationToken).ConfigureAwait(false);
             }
 
             return number.ToString();

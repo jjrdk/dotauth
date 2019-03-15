@@ -2,8 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     internal sealed class InMemoryAuthorizationCodeStore : IAuthorizationCodeStore
     {
@@ -14,7 +16,7 @@
             _mappingStringToAuthCodes = new Dictionary<string, AuthorizationCode>();
         }
 
-        public Task<AuthorizationCode> GetAuthorizationCode(string code)
+        public Task<AuthorizationCode> Get(string code, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
@@ -29,7 +31,7 @@
             return Task.FromResult(_mappingStringToAuthCodes[code]);
         }
 
-        public Task<bool> AddAuthorizationCode(AuthorizationCode authorizationCode)
+        public Task<bool> Add(AuthorizationCode authorizationCode, CancellationToken cancellationToken)
         {
             if (authorizationCode == null)
             {
@@ -45,7 +47,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> RemoveAuthorizationCode(string authorizationCode)
+        public Task<bool> Remove(string authorizationCode, CancellationToken cancellationToken)
         {
             if (authorizationCode == null)
             {

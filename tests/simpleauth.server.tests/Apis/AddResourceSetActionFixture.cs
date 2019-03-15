@@ -15,14 +15,15 @@
 namespace SimpleAuth.Server.Tests.Apis
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Moq;
     using SimpleAuth.Api.ResourceSetController;
-    using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
     using Xunit;
 
     public class AddResourceSetActionFixture
@@ -39,7 +40,8 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceSetAction.Execute(null))
+            await Assert
+                .ThrowsAsync<ArgumentNullException>(() => _addResourceSetAction.Execute(null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
@@ -49,15 +51,16 @@ namespace SimpleAuth.Server.Tests.Apis
             var addResourceParameter = new PostResourceSet
             {
                 Name = "name",
-                Scopes = new [] { "scope" },
+                Scopes = new[] {"scope"},
                 IconUri = "http://localhost",
                 Uri = "http://localhost"
             };
-            _resourceSetRepositoryStub.Setup(r => r.Insert(It.IsAny<ResourceSet>()))
+            _resourceSetRepositoryStub.Setup(r => r.Add(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(false));
 
             var exception = await Assert
-                .ThrowsAsync<SimpleAuthException>(() => _addResourceSetAction.Execute(addResourceParameter))
+                .ThrowsAsync<SimpleAuthException>(
+                    () => _addResourceSetAction.Execute(addResourceParameter, CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InternalError, exception.Code);
             Assert.Equal(ErrorDescriptions.TheResourceSetCannotBeInserted, exception.Message);
@@ -69,13 +72,15 @@ namespace SimpleAuth.Server.Tests.Apis
             var addResourceParameter = new PostResourceSet
             {
                 Name = "name",
-                Scopes = new [] { "scope" },
+                Scopes = new[] {"scope"},
                 IconUri = "http://localhost",
                 Uri = "http://localhost"
             };
-            _resourceSetRepositoryStub.Setup(r => r.Insert(It.IsAny<ResourceSet>())).ReturnsAsync(true);
+            _resourceSetRepositoryStub.Setup(r => r.Add(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
 
-            var result = await _addResourceSetAction.Execute(addResourceParameter).ConfigureAwait(false);
+            var result = await _addResourceSetAction.Execute(addResourceParameter, CancellationToken.None)
+                .ConfigureAwait(false);
 
             Assert.NotNull(result);
         }

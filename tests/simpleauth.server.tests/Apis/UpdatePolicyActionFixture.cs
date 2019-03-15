@@ -19,7 +19,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Threading.Tasks;
     using Moq;
     using SimpleAuth.Api.PolicyController;
-    using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
@@ -102,7 +101,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var policy = new Policy { ResourceSetIds = new[] { "resource_id" } };
             InitializeFakeObjects(policy);
 
-            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ResourceSet { Scopes = new[] { "scope" } });
 
             var result = await Assert
@@ -132,7 +131,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var policy = new Policy { ResourceSetIds = new[] { "resource_id" } };
             InitializeFakeObjects(policy);
 
-            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ResourceSet { Scopes = new[] { "scope" } });
 
             var result = await _updatePolicyAction.Execute(updatePolicyParameter, CancellationToken.None)

@@ -358,7 +358,7 @@ namespace SimpleAuth.Controllers
             }
 
             // 3. Validate the confirmation code
-            if (!await _validateConfirmationCode.Execute(codeViewModel.Code).ConfigureAwait(false))
+            if (!await _validateConfirmationCode.Execute(codeViewModel.Code, cancellationToken).ConfigureAwait(false))
             {
                 ModelState.AddModelError("Code", "confirmation code is not valid");
                 return View(codeViewModel);
@@ -366,7 +366,7 @@ namespace SimpleAuth.Controllers
 
             // 4. Remove the code
             if (string.IsNullOrWhiteSpace(codeViewModel.Code)
-                || !await _confirmationCodeStore.Remove(codeViewModel.Code).ConfigureAwait(false))
+                || !await _confirmationCodeStore.Remove(codeViewModel.Code, cancellationToken).ConfigureAwait(false))
             {
                 ModelState.AddModelError("Code", "an error occured while trying to remove the code");
                 return View(codeViewModel);
@@ -700,7 +700,7 @@ namespace SimpleAuth.Controllers
                 .ToOpenidClaims()
                 .ToArray();
 
-            var subject = await _subjectBuilder.BuildSubject(openidClaims).ConfigureAwait(false);
+            var subject = await _subjectBuilder.BuildSubject(openidClaims, cancellationToken).ConfigureAwait(false);
             var record = new ResourceOwner //AddUserParameter(subject, ClientId.Create(), openidClaims)
             {
                 Subject = subject,
