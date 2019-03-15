@@ -8,7 +8,6 @@
     using Shared.Models;
     using Shared.Responses;
     using SimpleAuth.Common;
-    using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Collections.Generic;

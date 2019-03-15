@@ -4,8 +4,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Moq;
-    using SimpleAuth;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Sms.Services;
@@ -46,7 +46,7 @@
         [Fact]
         public async Task When_ConfirmationCode_Does_Not_Exist_Then_Null_Is_Returned()
         {
-            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>()))
+            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((ConfirmationCode) null));
 
             var result = await _authenticateResourceOwnerService
@@ -59,7 +59,7 @@
         [Fact]
         public async Task When_Subject_Is_Different_Then_Null_Is_Returned()
         {
-            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>()))
+            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(new ConfirmationCode {Subject = "sub"}));
 
             var result = await _authenticateResourceOwnerService
@@ -73,7 +73,7 @@
         public async Task When_ConfirmationCode_Is_Expired_Then_Null_Is_Returned()
         {
             const string login = "login";
-            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>()))
+            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(
                     () => Task.FromResult(
                         new ConfirmationCode
@@ -92,7 +92,7 @@
         public async Task When_ConfirmationCode_Is_Correct_And_PhoneNumber_Correct_Then_Operation_Is_Called()
         {
             const string login = "login";
-            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>()))
+            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(
                     () => Task.FromResult(
                         new ConfirmationCode {Subject = login, IssueAt = DateTime.UtcNow, ExpiresIn = 100}));
@@ -112,7 +112,7 @@
                     OpenIdClaimTypes.PhoneNumber,
                     login,
                     CancellationToken.None));
-            _confirmationCodeStoreStub.Verify(c => c.Remove("password"));
+            _confirmationCodeStoreStub.Verify(c => c.Remove("password", It.IsAny<CancellationToken>()));
         }
     }
 }

@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Repositories
+namespace SimpleAuth.Shared.Repositories
 {
+    using System.Threading;
     using System.Threading.Tasks;
-    using Shared.Models;
     using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the resource set repository interface.
@@ -27,48 +28,55 @@ namespace SimpleAuth.Repositories
         /// Searches the specified parameter.
         /// </summary>
         /// <param name="parameter">The parameter.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<GenericResult<ResourceSet>> Search(SearchResourceSet parameter);
+        Task<GenericResult<ResourceSet>> Search(SearchResourceSet parameter, CancellationToken cancellationToken);
 
         /// <summary>
         /// Inserts the specified resource set.
         /// </summary>
         /// <param name="resourceSet">The resource set.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<bool> Insert(ResourceSet resourceSet);
+        Task<bool> Add(ResourceSet resourceSet, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the specified identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ResourceSet> Get(string id);
+        Task<ResourceSet> Get(string id, CancellationToken cancellationToken);
 
         /// <summary>
         /// Updates the specified resource set.
         /// </summary>
         /// <param name="resourceSet">The resource set.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<bool> Update(ResourceSet resourceSet);
+        Task<bool> Update(ResourceSet resourceSet, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets all.
         /// </summary>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ResourceSet[]> GetAll();
+        Task<ResourceSet[]> GetAll(CancellationToken cancellationToken);
 
         /// <summary>
         /// Deletes the specified identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<bool> Delete(string id);
+        Task<bool> Remove(string id, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the specified ids.
         /// </summary>
         /// <param name="ids">The ids.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ResourceSet[]> Get(params string[] ids);
+        Task<ResourceSet[]> Get(CancellationToken cancellationToken, params string[] ids);
     }
 }

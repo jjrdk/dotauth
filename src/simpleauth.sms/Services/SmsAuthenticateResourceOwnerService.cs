@@ -3,7 +3,6 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -38,7 +37,7 @@
                 throw new ArgumentNullException(nameof(password));
             }
 
-            var confirmationCode = await _confirmationCodeStore.Get(password).ConfigureAwait(false);
+            var confirmationCode = await _confirmationCodeStore.Get(password, cancellationToken).ConfigureAwait(false);
             if (confirmationCode == null || confirmationCode.Subject != login)
             {
                 return null;
@@ -56,7 +55,7 @@
                 .ConfigureAwait(false);
             if (resourceOwner != null)
             {
-                await _confirmationCodeStore.Remove(password).ConfigureAwait(false);
+                await _confirmationCodeStore.Remove(password, cancellationToken).ConfigureAwait(false);
             }
 
             return resourceOwner;

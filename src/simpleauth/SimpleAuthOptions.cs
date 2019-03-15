@@ -15,7 +15,6 @@
 namespace SimpleAuth
 {
     using Shared;
-    using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Net.Http;

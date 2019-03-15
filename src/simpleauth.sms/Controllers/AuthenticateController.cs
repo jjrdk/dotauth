@@ -280,11 +280,11 @@
                 c => c.Type == OpenIdClaimTypes.PhoneNumber);
             if (confirmCodeViewModel.Action == "resend") // Resend the confirmation code.
             {
-                var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value).ConfigureAwait(false);
+                var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, cancellationToken).ConfigureAwait(false);
                 return View("ConfirmCode", confirmCodeViewModel);
             }
 
-            if (!await _validateConfirmationCode.Execute(confirmCodeViewModel.ConfirmationCode).ConfigureAwait(false)
+            if (!await _validateConfirmationCode.Execute(confirmCodeViewModel.ConfirmationCode, cancellationToken).ConfigureAwait(false)
             ) // Check the confirmation code.
             {
                 ModelState.AddModelError("message_error", "Confirmation code is not valid");
@@ -302,7 +302,7 @@
                 try
                 {
                     await SetTwoFactorCookie(authenticatedUserClaims).ConfigureAwait(false);
-                    await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value).ConfigureAwait(false);
+                    await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, cancellationToken).ConfigureAwait(false);
                     return RedirectToAction("SendCode", new { code = confirmCodeViewModel.Code });
                 }
                 catch (ClaimRequiredException)

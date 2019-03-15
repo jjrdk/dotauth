@@ -1,12 +1,12 @@
 ﻿namespace SimpleAuth.Stores.Marten
 {
     using System;
-    using SimpleAuth.Shared.AccountFiltering;
     using SimpleAuth.Shared.Repositories;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using global::Marten;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the Marten based filter repository.

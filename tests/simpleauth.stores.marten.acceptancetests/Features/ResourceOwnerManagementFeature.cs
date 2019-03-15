@@ -1,9 +1,5 @@
 ﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
 {
-    using System.Net;
-    using System.Net.Http;
-    using System.Text;
-    using Newtonsoft.Json;
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;

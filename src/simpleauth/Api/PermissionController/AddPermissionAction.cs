@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Api.PermissionController
 {
-    using Repositories;
     using Shared;
     using Shared.Models;
     using System;
@@ -42,7 +41,10 @@ namespace SimpleAuth.Api.PermissionController
             _configurationService = configurationService;
         }
 
-        public async Task<string> Execute(string clientId, CancellationToken cancellationToken, params PostPermission[] addPermissionParameters)
+        public async Task<string> Execute(
+            string clientId,
+            CancellationToken cancellationToken,
+            params PostPermission[] addPermissionParameters)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -54,23 +56,24 @@ namespace SimpleAuth.Api.PermissionController
                 throw new ArgumentNullException(nameof(addPermissionParameters));
             }
 
-            await CheckAddPermissionParameter(addPermissionParameters).ConfigureAwait(false);
+            await CheckAddPermissionParameter(addPermissionParameters, cancellationToken).ConfigureAwait(false);
             var ticketLifetimeInSeconds = _configurationService.TicketLifeTime;
             var ticket = new Ticket
             {
                 Id = Id.Create(),
                 ClientId = clientId,
                 CreateDateTime = DateTime.UtcNow,
-                ExpiresIn = (int)ticketLifetimeInSeconds.TotalSeconds,
+                ExpiresIn = (int) ticketLifetimeInSeconds.TotalSeconds,
                 ExpirationDateTime = DateTime.UtcNow.Add(ticketLifetimeInSeconds)
             };
             // TH : ONE TICKET FOR MULTIPLE PERMISSIONS.
-            var ticketLines = addPermissionParameters.Select(addPermissionParameter => new TicketLine
-            {
-                Id = Id.Create(),
-                Scopes = addPermissionParameter.Scopes,
-                ResourceSetId = addPermissionParameter.ResourceSetId
-            })
+            var ticketLines = addPermissionParameters.Select(
+                    addPermissionParameter => new TicketLine
+                    {
+                        Id = Id.Create(),
+                        Scopes = addPermissionParameter.Scopes,
+                        ResourceSetId = addPermissionParameter.ResourceSetId
+                    })
                 .ToArray();
 
             ticket.Lines = ticketLines;
@@ -82,14 +85,19 @@ namespace SimpleAuth.Api.PermissionController
             return ticket.Id;
         }
 
-        private async Task CheckAddPermissionParameter(PostPermission[] addPermissionParameters)
+        private async Task CheckAddPermissionParameter(
+            PostPermission[] addPermissionParameters,
+            CancellationToken cancellationToken)
         {
             // 1. Get resource sets.
 
             IEnumerable<ResourceSet> resourceSets;
             try
             {
-                resourceSets = await _resourceSetRepository.Get(addPermissionParameters.Select(p => p.ResourceSetId).ToArray()).ConfigureAwait(false);
+                resourceSets = await _resourceSetRepository.Get(
+                        cancellationToken,
+                        addPermissionParameters.Select(p => p.ResourceSetId).ToArray())
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -104,29 +112,34 @@ namespace SimpleAuth.Api.PermissionController
             {
                 if (string.IsNullOrWhiteSpace(addPermissionParameter.ResourceSetId))
                 {
-                    throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified,
+                    throw new SimpleAuthException(
+                        ErrorCodes.InvalidRequestCode,
+                        string.Format(
+                            ErrorDescriptions.TheParameterNeedsToBeSpecified,
                             UmaConstants.AddPermissionNames.ResourceSetId));
                 }
 
-                if (addPermissionParameter.Scopes == null ||
-                    !addPermissionParameter.Scopes.Any())
+                if (addPermissionParameter.Scopes == null || !addPermissionParameter.Scopes.Any())
                 {
-                    throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified,
+                    throw new SimpleAuthException(
+                        ErrorCodes.InvalidRequestCode,
+                        string.Format(
+                            ErrorDescriptions.TheParameterNeedsToBeSpecified,
                             UmaConstants.AddPermissionNames.Scopes));
                 }
 
                 var resourceSet = resourceSets.FirstOrDefault(r => addPermissionParameter.ResourceSetId == r.Id);
                 if (resourceSet == null)
                 {
-                    throw new SimpleAuthException(ErrorCodes.InvalidResourceSetId,
-                        string.Format(ErrorDescriptions.TheResourceSetDoesntExist,
+                    throw new SimpleAuthException(
+                        ErrorCodes.InvalidResourceSetId,
+                        string.Format(
+                            ErrorDescriptions.TheResourceSetDoesntExist,
                             addPermissionParameter.ResourceSetId));
                 }
 
-                if (resourceSet.Scopes == null ||
-                    addPermissionParameter.Scopes.Any(s => !resourceSet.Scopes.Contains(s)))
+                if (resourceSet.Scopes == null
+                    || addPermissionParameter.Scopes.Any(s => !resourceSet.Scopes.Contains(s)))
                 {
                     throw new SimpleAuthException(ErrorCodes.InvalidScope, ErrorDescriptions.TheScopeAreNotValid);
                 }

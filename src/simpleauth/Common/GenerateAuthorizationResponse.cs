@@ -168,7 +168,7 @@ namespace SimpleAuth.Common
                     authorizationCode.CodeChallengeMethod = authorizationParameter.CodeChallengeMethod;
                 }
 
-                await _authorizationCodeStore.AddAuthorizationCode(authorizationCode).ConfigureAwait(false);
+                await _authorizationCodeStore.Add(authorizationCode, cancellationToken).ConfigureAwait(false);
                 await _eventPublisher.Publish(
                         new AuthorizationCodeGranted(
                             authorizationParameter.ClientId,

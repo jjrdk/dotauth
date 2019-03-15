@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests
 {
     using global::Marten;
-    using SimpleAuth.Shared.AccountFiltering;
     using SimpleAuth.Shared.Models;
 
     public class SimpleAuthRegistry : MartenRegistry

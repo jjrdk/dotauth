@@ -16,16 +16,17 @@ namespace SimpleAuth.Controllers
 {
     using System.Linq;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using Api.ResourceSetController;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Repositories;
     using Shared.DTOs;
     using Shared.Responses;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     /// <summary>
     /// Defines the resource set controller.
@@ -55,10 +56,11 @@ namespace SimpleAuth.Controllers
         /// Searches the resource sets.
         /// </summary>
         /// <param name="searchResourceSet">The search resource set.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPost(".search")]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult<GenericResult<ResourceSet>>> SearchResourceSets([FromBody] SearchResourceSet searchResourceSet)
+        public async Task<ActionResult<GenericResult<ResourceSet>>> SearchResourceSets([FromBody] SearchResourceSet searchResourceSet, CancellationToken cancellationToken)
         {
             if (searchResourceSet == null)
             {
@@ -67,7 +69,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var result = await _resourceSetRepository.Search(searchResourceSet).ConfigureAwait(false);
+            var result = await _resourceSetRepository.Search(searchResourceSet, cancellationToken).ConfigureAwait(false);
             return new OkObjectResult(result);
         }
 
@@ -77,9 +79,9 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpGet]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> GetResourceSets()
+        public async Task<IActionResult> GetResourceSets(CancellationToken cancellationToken)
         {
-            var resourceSets = await _resourceSetRepository.GetAll().ConfigureAwait(false);
+            var resourceSets = await _resourceSetRepository.GetAll(cancellationToken).ConfigureAwait(false);
             var resourceSetIds = resourceSets.Select(x => x.Id).ToArray();
             return new OkObjectResult(resourceSetIds);
         }
@@ -88,10 +90,11 @@ namespace SimpleAuth.Controllers
         /// Gets the resource set.
         /// </summary>
         /// <param name="id">The identifier.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> GetResourceSet(string id)
+        public async Task<IActionResult> GetResourceSet(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -100,7 +103,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var result = await _resourceSetRepository.Get(id).ConfigureAwait(false);
+            var result = await _resourceSetRepository.Get(id, cancellationToken).ConfigureAwait(false);
             if (result == null)
             {
                 return GetNotFoundResourceSet();
@@ -114,10 +117,11 @@ namespace SimpleAuth.Controllers
         /// Adds the resource set.
         /// </summary>
         /// <param name="postResourceSet">The post resource set.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPost]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> AddResourceSet([FromBody] PostResourceSet postResourceSet)
+        public async Task<IActionResult> AddResourceSet([FromBody] PostResourceSet postResourceSet, CancellationToken cancellationToken)
         {
             if (postResourceSet == null)
             {
@@ -126,7 +130,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var result = await _addResourceSet.Execute(postResourceSet).ConfigureAwait(false);
+            var result = await _addResourceSet.Execute(postResourceSet, cancellationToken).ConfigureAwait(false);
             var response = new AddResourceSetResponse
             {
                 Id = result
@@ -141,10 +145,11 @@ namespace SimpleAuth.Controllers
         /// Updates the resource set.
         /// </summary>
         /// <param name="putResourceSet">The put resource set.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPut]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> UpdateResourceSet([FromBody] PutResourceSet putResourceSet)
+        public async Task<IActionResult> UpdateResourceSet([FromBody] PutResourceSet putResourceSet, CancellationToken cancellationToken)
         {
             if (putResourceSet == null)
             {
@@ -153,7 +158,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var resourceSetExists = await _updateResourceSet.Execute(putResourceSet).ConfigureAwait(false);
+            var resourceSetExists = await _updateResourceSet.Execute(putResourceSet, cancellationToken).ConfigureAwait(false);
             if (!resourceSetExists)
             {
                 return GetNotFoundResourceSet();
@@ -174,10 +179,11 @@ namespace SimpleAuth.Controllers
         /// Deletes the resource set.
         /// </summary>
         /// <param name="id">The identifier.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> DeleteResourceSet(string id)
+        public async Task<IActionResult> DeleteResourceSet(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -186,7 +192,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var resourceSetExists = await _removeResourceSet.Execute(id).ConfigureAwait(false);
+            var resourceSetExists = await _removeResourceSet.Execute(id, cancellationToken).ConfigureAwait(false);
             return !resourceSetExists
                 ? GetNotFoundResourceSet()
                 : new StatusCodeResult((int)HttpStatusCode.NoContent);

@@ -3,7 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Repositories;
 
     internal sealed class InMemoryConfirmationCodeStore : IConfirmationCodeStore
     {
@@ -14,7 +17,7 @@
             _confirmationCodes = new List<ConfirmationCode>();
         }
 
-        public Task<bool> Add(ConfirmationCode confirmationCode)
+        public Task<bool> Add(ConfirmationCode confirmationCode, CancellationToken cancellationToken)
         {
             if (confirmationCode == null)
             {
@@ -25,7 +28,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<ConfirmationCode> Get(string code)
+        public Task<ConfirmationCode> Get(string code, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
@@ -35,7 +38,7 @@
             return Task.FromResult(_confirmationCodes.FirstOrDefault(c => c.Value == code));
         }
 
-        public Task<bool> Remove(string code)
+        public Task<bool> Remove(string code, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(code))
             {

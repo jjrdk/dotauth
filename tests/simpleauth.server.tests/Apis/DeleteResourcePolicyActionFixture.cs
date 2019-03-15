@@ -19,7 +19,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Threading.Tasks;
     using Moq;
     using SimpleAuth.Api.PolicyController;
-    using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
@@ -119,7 +118,7 @@ namespace SimpleAuth.Server.Tests.Apis
             _policyRepositoryStub.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(policy);
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string>())).ReturnsAsync(resourceSet);
+            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(resourceSet);
             _deleteResourcePolicyAction = new DeleteResourcePolicyAction(
                 _policyRepositoryStub.Object,
                 _resourceSetRepositoryStub.Object);
