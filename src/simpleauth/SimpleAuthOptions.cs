@@ -18,6 +18,7 @@ namespace SimpleAuth
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Net.Http;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the SimpleAuth configuration options.
@@ -55,6 +56,8 @@ namespace SimpleAuth
         /// The HTTP client factory.
         /// </value>
         public Func<HttpClient> HttpClientFactory { get; set; }
+
+        public Action<ResourceOwner> OnResourceOwnerCreated { get; set; }
 
         /// <summary>
         /// Gets or sets the users.

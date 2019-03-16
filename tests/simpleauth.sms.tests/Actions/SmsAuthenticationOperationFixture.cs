@@ -25,6 +25,7 @@
             subjectBuilderStub.Setup(x => x.BuildSubject(It.IsAny<IEnumerable<Claim>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(DateTime.UtcNow.Ticks.ToString);
             _smsAuthenticationOperation = new SmsAuthenticationOperation(
+                new RuntimeSettings(),
                 null,
                 generateAndSendSmsCodeOperationStub.Object,
                 _resourceOwnerRepositoryStub.Object,

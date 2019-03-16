@@ -85,7 +85,6 @@
                 authenticationSchemeProvider,
                 twoFactorAuthenticationHandler,
                 authorizationCodeStore,
-                subjectBuilder,
                 consentRepository,
                 scopeRepository,
                 tokenStore,
@@ -93,6 +92,7 @@
                 confirmationCodeStore,
                 clientStore,
                 jwksStore,
+                subjectBuilder,
                 accountFilters,
                 runtimeSettings)
         {
