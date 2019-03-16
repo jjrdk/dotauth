@@ -18,11 +18,12 @@ namespace SimpleAuth.Tests.WebSite.User
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
+    using SimpleAuth.Services;
+    using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.WebSite.User.Actions;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Events.Logging;
     using Xunit;
 
     public class AddUserOperationFixture
@@ -37,8 +38,10 @@ namespace SimpleAuth.Tests.WebSite.User
             _eventPublisher.Setup(s => s.Publish(It.IsAny<ResourceOwnerAdded>())).Returns(Task.CompletedTask);
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             _addResourceOwnerAction = new AddUserOperation(
+                new RuntimeSettings(),
                 _resourceOwnerRepositoryStub.Object,
                 Array.Empty<IAccountFilter>(),
+                new DefaultSubjectBuilder(),
                 _eventPublisher.Object);
         }
 
@@ -48,22 +51,18 @@ namespace SimpleAuth.Tests.WebSite.User
             await Assert
                 .ThrowsAsync<NullReferenceException>(() => _addResourceOwnerAction.Execute(null, CancellationToken.None))
                 .ConfigureAwait(false);
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(
-                    () => _addResourceOwnerAction.Execute(new ResourceOwner(), CancellationToken.None))
-                .ConfigureAwait(false);
-        }
+       }
 
         [Fact]
         public async Task When_ResourceOwner_With_Same_Credentials_Exists_Then_Returns_False()
         {
-            var parameter = new ResourceOwner {Subject = "name", Password = "password"};
+            var parameter = new ResourceOwner { Subject = "name", Password = "password" };
 
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ResourceOwner());
 
-            var result = await _addResourceOwnerAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
-            Assert.False(result);
+            var (success, _) = await _addResourceOwnerAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
+            Assert.False(success);
         }
 
         [Fact]
@@ -71,19 +70,19 @@ namespace SimpleAuth.Tests.WebSite.User
         {
             _resourceOwnerRepositoryStub.Setup(r => r.Insert(It.IsAny<ResourceOwner>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
-            var parameter = new ResourceOwner {Subject = "name", Password = "password"};
+            var parameter = new ResourceOwner { Subject = "name", Password = "password" };
 
-            var result = await _addResourceOwnerAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
-            Assert.False(result);
+            var (success, _) = await _addResourceOwnerAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
+            Assert.False(success);
         }
 
         [Fact]
         public async Task When_Add_ResourceOwner_Then_Operation_Is_Called()
         {
-            var parameter = new ResourceOwner {Subject = "name", Password = "password"};
+            var parameter = new ResourceOwner { Subject = "name", Password = "password" };
 
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((ResourceOwner) null);
+                .ReturnsAsync((ResourceOwner)null);
             _resourceOwnerRepositoryStub.Setup(r => r.Insert(It.IsAny<ResourceOwner>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 

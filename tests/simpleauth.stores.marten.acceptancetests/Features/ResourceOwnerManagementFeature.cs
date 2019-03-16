@@ -9,6 +9,8 @@
         [Scenario]
         public void SuccessAddResourceOwner()
         {
+            string subject = null;
+
             "When adding resource owner".x(
                 async () =>
                 {
@@ -18,12 +20,14 @@
                         .ConfigureAwait(false);
 
                     Assert.False(response.ContainsError);
+
+                    subject = response.Content;
                 });
 
             "Then resource owner is local account".x(
                 async () =>
                 {
-                    var response = await _managerClient.GetResourceOwner("test", _grantedToken.AccessToken)
+                    var response = await _managerClient.GetResourceOwner(subject, _grantedToken.AccessToken)
                         .ConfigureAwait(false);
 
                     Assert.True(response.Content.IsLocalAccount);

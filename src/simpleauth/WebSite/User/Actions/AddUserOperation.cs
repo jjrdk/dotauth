@@ -14,119 +14,111 @@
 
 namespace SimpleAuth.WebSite.User.Actions
 {
-    using Extensions;
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
+    using SimpleAuth.Shared.Events.Logging;
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Events.Logging;
 
     internal class AddUserOperation
     {
+        private readonly RuntimeSettings _settings;
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
+        private readonly ISubjectBuilder _subjectBuilder;
         private readonly IAccountFilter[] _accountFilters;
         private readonly IEventPublisher _eventPublisher;
 
         public AddUserOperation(
+            RuntimeSettings settings,
             IResourceOwnerRepository resourceOwnerRepository,
             IEnumerable<IAccountFilter> accountFilters,
+            ISubjectBuilder subjectBuilder,
             IEventPublisher eventPublisher)
         {
+            _settings = settings;
             _resourceOwnerRepository = resourceOwnerRepository;
+            _subjectBuilder = subjectBuilder;
             _accountFilters = accountFilters.ToArray();
             _eventPublisher = eventPublisher;
         }
 
-        public async Task<bool> Execute(ResourceOwner resourceOwner, CancellationToken cancellationToken)
+        public async Task<(bool Success, string Subject)> Execute(ResourceOwner resourceOwner, CancellationToken cancellationToken)
         {
+            if (!resourceOwner.IsLocalAccount || string.IsNullOrWhiteSpace(resourceOwner.Subject))
+            {
+                var subject = await _subjectBuilder.BuildSubject(resourceOwner.Claims, cancellationToken)
+                    .ConfigureAwait(false);
+                resourceOwner.Subject = subject;
+            }
+
             // 1. Check the resource owner already exists.
             if (await _resourceOwnerRepository.Get(resourceOwner.Subject, cancellationToken).ConfigureAwait(false) != null)
             {
-                return false;
+                return (false, null);
             }
 
-            var newClaims = new List<Claim>
-            {
-                new Claim(OpenIdClaimTypes.UpdatedAt,
-                    DateTime.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture)),
-                new Claim(OpenIdClaimTypes.Subject, resourceOwner.Subject)
-            };
+            resourceOwner.UpdateDateTime = DateTime.UtcNow;
+            var additionalClaims = _settings.ClaimsIncludedInUserCreation
+                .Except(resourceOwner.Claims.Select(x => x.Type))
+                .Select(x => new Claim(x, null));
+            resourceOwner.Claims = resourceOwner.Claims.Add(additionalClaims);
 
-            // 2. Populate the claims.
-            //var existedClaims = await _claimRepository.GetAll().ConfigureAwait(false);
-            if (resourceOwner.Claims != null)
-            {
-                foreach (var claim in resourceOwner.Claims)
-                {
-                    if (newClaims.All(nc => nc.Type != claim.Type))
-                    {
-                        newClaims.Add(claim);
-                    }
-                }
-            }
+            // Customize new resource owner.
+            _settings.OnResourceOwnerCreated(resourceOwner);
 
             if (_accountFilters != null)
             {
                 var isFilterValid = true;
                 foreach (var resourceOwnerFilter in _accountFilters)
                 {
-                    var userFilterResult = await resourceOwnerFilter.Check(newClaims, cancellationToken).ConfigureAwait(false);
-                    if (!userFilterResult.IsValid)
+                    var userFilterResult = await resourceOwnerFilter.Check(resourceOwner.Claims, cancellationToken).ConfigureAwait(false);
+                    if (userFilterResult.IsValid)
                     {
-                        isFilterValid = false;
-                        foreach (var ruleResult in userFilterResult.AccountFilterRules.Where(x => !x.IsValid))
-                        {
-                            await _eventPublisher.Publish(new FailureMessage(Id.Create(),
-                                    $"the filter rule '{ruleResult.RuleName}' failed",
+                        continue;
+                    }
+
+                    isFilterValid = false;
+                    foreach (var ruleResult in userFilterResult.AccountFilterRules.Where(x => !x.IsValid))
+                    {
+                        await _eventPublisher.Publish(
+                                new FailureMessage(
+                                    Id.Create(),
+                                    $"The filter rule '{ruleResult.RuleName}' failed",
                                     DateTime.UtcNow))
+                            .ConfigureAwait(false);
+                        foreach (var errorMessage in ruleResult.ErrorMessages)
+                        {
+                            await _eventPublisher
+                                .Publish(new FailureMessage(Id.Create(), errorMessage, DateTime.UtcNow))
                                 .ConfigureAwait(false);
-                            foreach (var errorMessage in ruleResult.ErrorMessages)
-                            {
-                                await _eventPublisher
-                                    .Publish(new FailureMessage(
-                                        Id.Create(),
-                                        errorMessage,
-                                        DateTime.UtcNow))
-                                    .ConfigureAwait(false);
-                            }
                         }
                     }
                 }
 
                 if (!isFilterValid)
                 {
-                    return false;
+                    return (false, null);
                 }
             }
 
-            // 4. Add the resource owner.
-            var newResourceOwner = new ResourceOwner
+            resourceOwner.CreateDateTime = DateTime.UtcNow;
+            if (!await _resourceOwnerRepository.Insert(resourceOwner, cancellationToken).ConfigureAwait(false))
             {
-                Subject = resourceOwner.Subject,
-                Claims = newClaims.ToArray(),
-                ExternalLogins = resourceOwner.ExternalLogins,
-                TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication,
-                IsLocalAccount = resourceOwner.IsLocalAccount,
-                Password = resourceOwner.Password,
-            };
-            if (!await _resourceOwnerRepository.Insert(newResourceOwner, cancellationToken).ConfigureAwait(false))
-            {
-                return false;
+                return (false, null);
             }
 
             await _eventPublisher.Publish(
                     new ResourceOwnerAdded(
                         Id.Create(),
-                        newResourceOwner.Subject,
+                        resourceOwner.Subject,
                         DateTime.UtcNow))
                 .ConfigureAwait(false);
-            return true;
+            return (true, resourceOwner.Subject);
         }
     }
 }
