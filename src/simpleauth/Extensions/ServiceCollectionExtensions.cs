@@ -23,11 +23,11 @@ namespace SimpleAuth.Extensions
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Events.Logging;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Linq;
     using System.Net.Http;
-    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the service collection extensions.
@@ -49,7 +49,6 @@ namespace SimpleAuth.Extensions
             {
                 throw new ArgumentNullException(nameof(options));
             }
-
 
             options.AddPolicy(
                 "UmaProtection",
@@ -257,6 +256,7 @@ namespace SimpleAuth.Extensions
         private static RuntimeSettings GetRuntimeConfig(SimpleAuthOptions options)
         {
             return new RuntimeSettings(
+                onResourceOwnerCreated: options.OnResourceOwnerCreated,
                 authorizationCodeValidityPeriod: options.AuthorizationCodeValidityPeriod,
                 userClaimsToIncludeInAuthToken: options.UserClaimsToIncludeInAuthToken,
                 claimsIncludedInUserCreation: options.ClaimsIncludedInUserCreation,

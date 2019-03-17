@@ -15,6 +15,7 @@
 namespace SimpleAuth.Shared.Models
 {
     using System;
+    using System.Linq;
     using System.Security.Claims;
 
     /// <summary>
@@ -25,31 +26,68 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Get or sets the subject-identifier for the End-User at the issuer.
         /// </summary>
-        public string Subject { get; set; }
+        public string Subject
+        {
+            get => Claims?.FirstOrDefault(x => x.Type == OpenIdClaimTypes.Subject)?.Value;
+            set
+            {
+                var claim = new Claim(OpenIdClaimTypes.Subject, value);
+                if (Claims == null)
+                {
+                    Claims = new[] { claim };
+                }
+
+                Claims = Claims.Where(x => x.Type != OpenIdClaimTypes.Subject).Concat(new[] { claim }).ToArray();
+            }
+        }
+
         /// <summary>
         /// Gets or sets the password
         /// </summary>
         public string Password { get; set; }
+
         /// <summary>
         /// Gets or sets the list of claims.
         /// </summary>
         public Claim[] Claims { get; set; } = Array.Empty<Claim>();
+
         /// <summary>
         /// Gets or sets the two factor authentications
         /// </summary>
         public string TwoFactorAuthentication { get; set; }
+
         /// <summary>
         /// Gets or sets if the resource owner is local or external
         /// </summary>
         public bool IsLocalAccount { get; set; }
+
         /// <summary>
         /// Gets or sets the create datetime.
         /// </summary>
         public DateTime CreateDateTime { get; set; }
+
         /// <summary>
         /// Gets or sets the update datetime.
         /// </summary>
-        public DateTime UpdateDateTime { get; set; }
+        public DateTime UpdateDateTime
+        {
+            get
+            {
+                var unix = Claims?.FirstOrDefault(x => x.Type == OpenIdClaimTypes.UpdatedAt)?.Value;
+                return unix?.ConvertFromUnixTimestamp() ?? DateTime.MinValue;
+            }
+            set
+            {
+                var unix = value.ConvertToUnixTimestamp();
+                var claim = new Claim(OpenIdClaimTypes.UpdatedAt, unix.ToString());
+                if (Claims == null)
+                {
+                    Claims = new[] { claim };
+                }
+
+                Claims = Claims.Where(x => x.Type != OpenIdClaimTypes.UpdatedAt).Concat(new[] { claim }).ToArray();
+            }
+        }
 
         /// <summary>
         /// Gets or sets the external logins.

@@ -27,10 +27,12 @@ namespace SimpleAuth.Shared.Events.OAuth
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <param name="processId">The process identifier.</param>
+        /// <param name="token">The revoked token</param>
         /// <param name="timestamp">The timestamp.</param>
-        public TokenRevoked(string id, string processId, DateTime timestamp) : base(id, timestamp)
+        public TokenRevoked(string id, string processId, string token, DateTime timestamp) : base(id, timestamp)
         {
             ProcessId = processId;
+            Token = token;
         }
 
         /// <summary>
@@ -40,5 +42,13 @@ namespace SimpleAuth.Shared.Events.OAuth
         /// The process identifier.
         /// </value>
         public string ProcessId { get; }
+
+        /// <summary>
+        /// Gets the token.
+        /// </summary>
+        /// <value>
+        /// The token.
+        /// </value>
+        public string Token { get; }
     }
 }

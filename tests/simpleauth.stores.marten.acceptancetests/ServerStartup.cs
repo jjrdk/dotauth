@@ -11,6 +11,7 @@
     using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Repositories;
     using System;
+    using Microsoft.Extensions.Configuration;
 
     public class ServerStartup : IStartup
     {
@@ -20,8 +21,9 @@
         private readonly string _connectionString;
         private readonly string _schemaName;
 
-        public ServerStartup(SharedContext context, string connectionString)
+        public ServerStartup(SharedContext context, IConfiguration configuration)
         {
+            TestData.ConnectionString = configuration["Db:ConnectionString"];
             _martenOptions = new SimpleAuthOptions
             {
                 Clients =
@@ -41,8 +43,8 @@
                 UserClaimsToIncludeInAuthToken = new[] { "sub", "role", "name" }
             };
             _context = context;
-            _connectionString = connectionString;
-            var builder = new NpgsqlConnectionStringBuilder { ConnectionString = connectionString };
+            _connectionString = TestData.ConnectionString;
+            var builder = new NpgsqlConnectionStringBuilder { ConnectionString = TestData.ConnectionString };
             _schemaName = builder.SearchPath ?? "public";
         }
 

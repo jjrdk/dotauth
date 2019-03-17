@@ -1,12 +1,12 @@
 ﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
 {
-    using System;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Responses;
     using SimpleAuth.Uma.Client;
+    using System;
     using Xbehave;
     using Xunit;
 
@@ -38,7 +38,7 @@
                     })
                 .Teardown(async () => { await DbInitializer.Drop(_connectionString).ConfigureAwait(false); });
 
-            "and a running auth server".x(() => _fixture = new TestServerFixture(_connectionString, BaseUrl))
+            "and a running auth server".x(() => _fixture = new TestServerFixture(BaseUrl))
                 .Teardown(() => _fixture.Dispose());
         }
 
@@ -81,7 +81,7 @@
                 async () =>
                 {
                     var resource = await client.AddResource(
-                            new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                            new PostResourceSet { Name = "picture", Scopes = new[] { "read" } },
                             grantedToken.AccessToken)
                         .ConfigureAwait(false);
                     resourceId = resource.Content.Id;
@@ -91,7 +91,7 @@
                 async () =>
                 {
                     var response = await client.AddPermission(
-                            new PostPermission {ResourceSetId = resourceId, Scopes = new[] {"read"}},
+                            new PostPermission { ResourceSetId = resourceId, Scopes = new[] { "read" } },
                             grantedToken.AccessToken)
                         .ConfigureAwait(false);
 
@@ -135,7 +135,7 @@
                 async () =>
                 {
                     var resource = await client.AddResource(
-                            new PostResourceSet {Name = "picture", Scopes = new[] {"read", "write"}},
+                            new PostResourceSet { Name = "picture", Scopes = new[] { "read", "write" } },
                             grantedToken.AccessToken)
                         .ConfigureAwait(false);
                     resourceId = resource.Content.Id;
@@ -148,8 +148,8 @@
                 {
                     var response = await client.AddPermissions(
                             grantedToken.AccessToken,
-                            new PostPermission {ResourceSetId = resourceId, Scopes = new[] {"write"}},
-                            new PostPermission {ResourceSetId = resourceId, Scopes = new[] {"read"}})
+                            new PostPermission { ResourceSetId = resourceId, Scopes = new[] { "write" } },
+                            new PostPermission { ResourceSetId = resourceId, Scopes = new[] { "read" } })
                         .ConfigureAwait(false);
 
                     Assert.False(response.ContainsError);

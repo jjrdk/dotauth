@@ -36,8 +36,8 @@ namespace SimpleAuth.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.WebSite.User;
     using ViewModels;
-    using WebSite.User.Actions;
 
     /// <summary>
     /// Defines the base authentication controller.
@@ -61,7 +61,6 @@ namespace SimpleAuth.Controllers
         //protected readonly IUserActions _addUser;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
         private readonly RuntimeSettings _runtimeSettings;
-        private readonly ISubjectBuilder _subjectBuilder;
         private readonly IResourceOwnerStore _resourceOwnerRepository;
         private readonly IConfirmationCodeStore _confirmationCodeStore;
         private readonly AddUserOperation _addUser;
@@ -79,7 +78,6 @@ namespace SimpleAuth.Controllers
         /// <param name="authenticationSchemeProvider">The authentication scheme provider.</param>
         /// <param name="twoFactorAuthenticationHandler">The two factor authentication handler.</param>
         /// <param name="authorizationCodeStore">The authorization code store.</param>
-        /// <param name="subjectBuilder">The subject builder.</param>
         /// <param name="consentRepository">The consent repository.</param>
         /// <param name="scopeRepository">The scope repository.</param>
         /// <param name="tokenStore">The token store.</param>
@@ -87,6 +85,7 @@ namespace SimpleAuth.Controllers
         /// <param name="confirmationCodeStore">The confirmation code store.</param>
         /// <param name="clientStore">The client store.</param>
         /// <param name="jwksStore"></param>
+        /// <param name="subjectBuilder"></param>
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="runtimeSettings">The runtime settings.</param>
         public BaseAuthenticateController(
@@ -98,7 +97,6 @@ namespace SimpleAuth.Controllers
             IAuthenticationSchemeProvider authenticationSchemeProvider,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             IAuthorizationCodeStore authorizationCodeStore,
-            ISubjectBuilder subjectBuilder,
             IConsentRepository consentRepository,
             IScopeRepository scopeRepository,
             ITokenStore tokenStore,
@@ -106,6 +104,7 @@ namespace SimpleAuth.Controllers
             IConfirmationCodeStore confirmationCodeStore,
             IClientStore clientStore,
             IJwksStore jwksStore,
+            ISubjectBuilder subjectBuilder,
             IEnumerable<IAccountFilter> accountFilters,
             RuntimeSettings runtimeSettings)
             : base(authenticationService)
@@ -135,12 +134,11 @@ namespace SimpleAuth.Controllers
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _eventPublisher = eventPublisher;
             _authenticationSchemeProvider = authenticationSchemeProvider;
-            _addUser = new AddUserOperation(resourceOwnerRepository, accountFilters, eventPublisher);
+            _addUser = new AddUserOperation(runtimeSettings, resourceOwnerRepository, accountFilters, subjectBuilder, eventPublisher);
             _getUserOperation = new GetUserOperation(resourceOwnerRepository);
             _updateUserClaimsOperation = new UpdateUserClaimsOperation(resourceOwnerRepository);
             _runtimeSettings = runtimeSettings;
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
-            _subjectBuilder = subjectBuilder;
             _resourceOwnerRepository = resourceOwnerRepository;
             _confirmationCodeStore = confirmationCodeStore;
         }
@@ -220,15 +218,15 @@ namespace SimpleAuth.Controllers
             else
             {
                 var result = await AddExternalUser(authenticatedUser, cancellationToken).ConfigureAwait(false);
-                if (string.IsNullOrWhiteSpace(result.Item1))
+                if (string.IsNullOrWhiteSpace(result.Subject))
                 {
-                    return RedirectToAction("Index", "Error", new { code = result.Item2.Value, message = result.Item3 });
+                    return RedirectToAction("Index", "Error", new { code = result.StatusCode.Value, message = result.Error });
                 }
 
                 var nameIdentifier = claims.First(c => c.Type == ClaimTypes.NameIdentifier);
                 claims.Remove(nameIdentifier);
-                claims.Add(new Claim(ClaimTypes.NameIdentifier, result.Item1));
-                resourceOwner = await _resourceOwnerRepository.Get(result.Item1, cancellationToken)
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, result.Subject));
+                resourceOwner = await _resourceOwnerRepository.Get(result.Subject, cancellationToken)
                     .ConfigureAwait(false);
             }
 
@@ -543,10 +541,10 @@ namespace SimpleAuth.Controllers
             var sub = string.Empty;
             if (resourceOwner == null)
             {
-                var result = await AddExternalUser(authenticatedUser, cancellationToken).ConfigureAwait(false);
-                if (string.IsNullOrWhiteSpace(result.Item1))
+                var (s, statusCode, error1) = await AddExternalUser(authenticatedUser, cancellationToken).ConfigureAwait(false);
+                if (string.IsNullOrWhiteSpace(s))
                 {
-                    return RedirectToAction("Index", "Error", new { code = result.Item2.Value, message = result.Item3 });
+                    return RedirectToAction("Index", "Error", new { code = statusCode.Value, message = error1 });
                 }
             }
 
@@ -691,7 +689,7 @@ namespace SimpleAuth.Controllers
         /// <param name="authenticatedUser"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private async Task<(string, int?, string)> AddExternalUser(
+        private async Task<(string Subject, int? StatusCode, string Error)> AddExternalUser(
             ClaimsPrincipal authenticatedUser,
             CancellationToken cancellationToken)
         {
@@ -700,27 +698,26 @@ namespace SimpleAuth.Controllers
                 .ToOpenidClaims()
                 .ToArray();
 
-            var subject = await _subjectBuilder.BuildSubject(openidClaims, cancellationToken).ConfigureAwait(false);
-            var record = new ResourceOwner //AddUserParameter(subject, ClientId.Create(), openidClaims)
+            var record = new ResourceOwner
             {
-                Subject = subject,
                 ExternalLogins =
                     new[]
                     {
                         new ExternalAccountLink
                         {
                             Subject = authenticatedUser.GetSubject(),
-                            Issuer = authenticatedUser.Identity.AuthenticationType
+                            Issuer = authenticatedUser.Identity.AuthenticationType,
+                            ExternalClaims = authenticatedUser.Claims.ToArray()
                         }
                     },
                 Password = Id.Create().ToSha256Hash(),
                 IsLocalAccount = false,
                 Claims = openidClaims,
-                TwoFactorAuthentication = null,
-                CreateDateTime = DateTime.UtcNow
+                TwoFactorAuthentication = null
             };
 
-            if (!await _addUser.Execute(record, cancellationToken).ConfigureAwait(false))
+            var (success, subject) = await _addUser.Execute(record, cancellationToken).ConfigureAwait(false);
+            if (!success)
             {
                 return (null, (int)HttpStatusCode.Conflict, "Failed to add user");
             }

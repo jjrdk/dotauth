@@ -285,7 +285,7 @@
         /// <param name="request">The <see cref="AddResourceOwnerRequest"/>.</param>
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <returns></returns>
-        public Task<GenericResponse<object>> AddResourceOwner(
+        public Task<GenericResponse<string>> AddResourceOwner(
             AddResourceOwnerRequest request,
             string authorizationHeaderValue = null)
         {

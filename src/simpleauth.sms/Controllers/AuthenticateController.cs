@@ -1,12 +1,5 @@
 ﻿namespace SimpleAuth.Sms.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Mvc;
@@ -26,7 +19,14 @@
     using SimpleAuth.Sms.ViewModels;
     using SimpleAuth.ViewModels;
     using SimpleAuth.WebSite.Authenticate;
-    using SimpleAuth.WebSite.User.Actions;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using SimpleAuth.WebSite.User;
 
     /// <summary>
     /// Defines the authenticate controller.
@@ -93,7 +93,6 @@
                 authenticationSchemeProvider,
                 twoFactorAuthenticationHandler,
                 authorizationCodeStore,
-                subjectBuilder,
                 consentRepository,
                 scopeRepository,
                 tokenStore,
@@ -101,6 +100,7 @@
                 confirmationCodeStore,
                 clientStore,
                 jwksStore,
+                subjectBuilder,
                 accountFilters,
                 runtimeSettings)
         {
@@ -108,6 +108,7 @@
             _getUserOperation = new GetUserOperation(resourceOwnerRepository);
             var generateSms = new GenerateAndSendSmsCodeOperation(smsClient, confirmationCodeStore);
             _smsAuthenticationOperation = new SmsAuthenticationOperation(
+                runtimeSettings,
                 smsClient,
                 confirmationCodeStore,
                 resourceOwnerRepository,

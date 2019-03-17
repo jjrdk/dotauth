@@ -19,7 +19,7 @@
             _httpClient = httpClientFactory;
         }
 
-        public async Task<GenericResponse<object>> Execute(
+        public async Task<GenericResponse<string>> Execute(
             Uri resourceOwnerUri,
             AddResourceOwnerRequest resourceOwner,
             string authorizationHeaderValue = null)
@@ -53,7 +53,7 @@
             }
             catch (Exception)
             {
-                return new GenericResponse<object>()
+                return new GenericResponse<string>()
                 {
                     ContainsError = true,
                     Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
@@ -61,7 +61,10 @@
                 };
             }
 
-            return new GenericResponse<object>();
+            return new GenericResponse<string>
+            {
+                Content = content
+            };
         }
     }
 }

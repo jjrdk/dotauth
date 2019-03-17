@@ -13,7 +13,7 @@
         [Scenario]
         public void RejectAddResourceOwner()
         {
-            GenericResponse<object> response = null;
+            GenericResponse<string> response = null;
 
             "When adding resource owner".x(
                 async () =>
