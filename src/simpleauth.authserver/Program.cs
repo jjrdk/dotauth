@@ -28,14 +28,14 @@ namespace SimpleAuth.AuthServer
                     o =>
                     {
                         o.AddServerHeader = false;
-                        o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2);
+                        o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http2);
                     })
                 .ConfigureAppConfiguration(
                     c => c.AddUserSecrets<Startup>()
                         .AddEnvironmentVariables()
                         .AddCommandLine(args)
                         .AddJsonFile("appsettings.json"))
-                .UseUrls("http://*:60000")
+                .UseUrls("http://*:5000", "https://*:5001")
                 .UseStartup<Startup>()
                 .Build()
                 .RunAsync()

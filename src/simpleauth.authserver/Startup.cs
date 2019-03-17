@@ -18,6 +18,7 @@ namespace SimpleAuth.AuthServer
     using Extensions;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.Extensions.Configuration;
@@ -52,7 +53,7 @@ namespace SimpleAuth.AuthServer
                         DefaultConfiguration.GetClients()),
                 Scopes = sp => new InMemoryScopeRepository(),
                 EventPublisher = sp => new ConsolePublisher(),
-                UserClaimsToIncludeInAuthToken = new[] { OpenIdClaimTypes.Subject, OpenIdClaimTypes.Role },
+                UserClaimsToIncludeInAuthToken = new[] {OpenIdClaimTypes.Subject, OpenIdClaimTypes.Role},
                 ClaimsIncludedInUserCreation = new[]
                 {
                     ClaimTypes.Name,
@@ -75,20 +76,20 @@ namespace SimpleAuth.AuthServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddResponseCompression(
-                x =>
-                {
-                    //x.EnableForHttps = true;
-                    x.Providers.Add(
-                        new GzipCompressionProvider(
-                            new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
-                    x.Providers.Add(
-                        new BrotliCompressionProvider(
-                            new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
-                });
-            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddCors(
-                options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
-            services.AddLogging(log => { log.AddConsole(); });
+                    x =>
+                    {
+                        x.EnableForHttps = true;
+                        x.Providers.Add(
+                            new GzipCompressionProvider(
+                                new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                        x.Providers.Add(
+                            new BrotliCompressionProvider(
+                                new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                    })
+                .AddHttpContextAccessor()
+                .AddCors(
+                    options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
+                .AddLogging(log => { log.AddConsole(); });
             services.AddAuthentication(CookieNames.CookieName)
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; });
 
@@ -105,38 +106,37 @@ namespace SimpleAuth.AuthServer
                         opts.Scope.Add("profile");
                         opts.Scope.Add("email");
                     });
-            services.AddAuthorization(opts => { opts.AddAuthPolicies(CookieNames.CookieName); });
-            // 5. Configure MVC
-            services.AddMvc(options => { })
+            services.AddAuthorization(opts => { opts.AddAuthPolicies(CookieNames.CookieName); })
+                .AddMvc(options => { })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddApplicationPart(_assembly);
-            services.AddSimpleAuth(_options);
+            services.AddSimpleAuth(_options)
+                .AddHttpsRedirection(
+                    options =>
+                    {
+                        options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+                        options.HttpsPort = 5001;
+                    });
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            //app.UseHttpsRedirection()
-            //.UseHsts()
-            app.UseAuthentication();
-            //1 . Enable CORS.
-            app.UseCors("AllowAll");
-            // 2. Use static files.
-            app.UseStaticFiles(
-                new StaticFileOptions { FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot") });
-            app.UseSimpleAuthExceptionHandler();
-            // 3. Redirect error to custom pages.
-            app.UseStatusCodePagesWithRedirects("/Error/{0}");
-            // 4. Enable SimpleAuth
-            //app.AddSimpleAuth(_options, loggerFactory);
-            // 5. Configure ASP.NET MVC
-
-            app.UseResponseCompression();
-            app.UseMvc(
-                routes =>
-                {
-                    routes.MapRoute("pwdauth", "pwd/{controller=Authenticate}/{action=Index}");
-                    routes.MapRoute("default", "{controller=Home}/{action=Index}");
-                });
+            app.UseForwardedHeaders(new ForwardedHeadersOptions {ForwardedHeaders = ForwardedHeaders.All})
+                .UseHttpsRedirection()
+                .UseHsts()
+                .UseAuthentication()
+                .UseCors("AllowAll")
+                .UseStaticFiles(
+                    new StaticFileOptions {FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot")})
+                .UseSimpleAuthExceptionHandler()
+                .UseStatusCodePagesWithRedirects("/Error/{0}")
+                .UseResponseCompression()
+                .UseMvc(
+                    routes =>
+                    {
+                        routes.MapRoute("pwdauth", "pwd/{controller=Authenticate}/{action=Index}");
+                        routes.MapRoute("default", "{controller=Home}/{action=Index}");
+                    });
         }
     }
 }
