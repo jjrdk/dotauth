@@ -8,8 +8,6 @@
     /// </summary>
     public class RuntimeSettings
     {
-        public Action<ResourceOwner> OnResourceOwnerCreated { get; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="RuntimeSettings"/> class.
         /// </summary>
@@ -36,6 +34,14 @@
             TicketLifeTime = ticketLifeTime == default ? TimeSpan.FromHours(1) : ticketLifeTime;
             ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? Array.Empty<string>();
         }
+
+        /// <summary>
+        /// Gets the delegate to run when resource owner created.
+        /// </summary>
+        /// <value>
+        /// The on resource owner created.
+        /// </value>
+        public Action<ResourceOwner> OnResourceOwnerCreated { get; }
 
         /// <summary>
         /// Gets the authorization code validity period.

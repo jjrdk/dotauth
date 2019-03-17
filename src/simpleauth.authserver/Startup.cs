@@ -34,13 +34,13 @@ namespace SimpleAuth.AuthServer
 
     public class Startup
     {
-        private readonly IConfigurationRoot _configuration;
+        private readonly IConfiguration _configuration;
         private readonly SimpleAuthOptions _options;
         private readonly Assembly _assembly = typeof(HomeController).Assembly;
 
-        public Startup()
+        public Startup(IConfiguration configuration)
         {
-            _configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            _configuration = configuration;
             _options = new SimpleAuthOptions
             {
                 ApplicationName = _configuration["ApplicationName"],

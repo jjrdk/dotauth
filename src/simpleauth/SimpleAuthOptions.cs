@@ -57,6 +57,12 @@ namespace SimpleAuth
         /// </value>
         public Func<HttpClient> HttpClientFactory { get; set; }
 
+        /// <summary>
+        /// Gets or sets the delegate to run when resource owner created.
+        /// </summary>
+        /// <value>
+        /// The on resource owner created.
+        /// </value>
         public Action<ResourceOwner> OnResourceOwnerCreated { get; set; }
 
         /// <summary>

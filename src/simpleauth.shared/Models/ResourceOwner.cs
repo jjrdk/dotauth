@@ -23,10 +23,6 @@ namespace SimpleAuth.Shared.Models
     /// </summary>
     public class ResourceOwner
     {
-        public ResourceOwner()
-        {
-
-        }
         /// <summary>
         /// Get or sets the subject-identifier for the End-User at the issuer.
         /// </summary>

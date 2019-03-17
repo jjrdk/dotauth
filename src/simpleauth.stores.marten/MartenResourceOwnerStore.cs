@@ -140,6 +140,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<bool> SetPassword(string subject, string password, CancellationToken cancellationToken)
         {
             using (var session = _sessionFactory())
