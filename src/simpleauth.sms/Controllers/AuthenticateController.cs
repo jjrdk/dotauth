@@ -19,7 +19,6 @@
     using SimpleAuth.Sms.ViewModels;
     using SimpleAuth.ViewModels;
     using SimpleAuth.WebSite.Authenticate;
-    using SimpleAuth.WebSite.User.Actions;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -27,6 +26,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.WebSite.User;
 
     /// <summary>
     /// Defines the authenticate controller.

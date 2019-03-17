@@ -5,8 +5,8 @@
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.WebSite.User.Actions;
     using System.Threading;
+    using SimpleAuth.WebSite.User;
     using Xbehave;
     using Xunit;
 

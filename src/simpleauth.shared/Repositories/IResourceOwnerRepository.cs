@@ -49,6 +49,15 @@ namespace SimpleAuth.Shared.Repositories
         Task<bool> Update(ResourceOwner resourceOwner, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Sets the password.
+        /// </summary>
+        /// <param name="subject"></param>
+        /// <param name="password">The password.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<bool> SetPassword(string subject, string password, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Deletes the specified subject.
         /// </summary>
         /// <param name="subject">The subject.</param>

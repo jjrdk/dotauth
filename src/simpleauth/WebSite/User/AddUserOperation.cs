@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.WebSite.User.Actions
+namespace SimpleAuth.WebSite.User
 {
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
-    using SimpleAuth.Shared.Events.Logging;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Events.Logging;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     internal class AddUserOperation
     {

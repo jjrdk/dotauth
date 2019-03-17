@@ -11,13 +11,13 @@
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.ViewModels;
-    using SimpleAuth.WebSite.User.Actions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.WebSite.User;
 
     /// <summary>
     /// Handles user related requests.
@@ -29,7 +29,6 @@
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly GetUserOperation _getUserOperation;
         private readonly UpdateUserTwoFactorAuthenticatorOperation _updateUserTwoFactorAuthenticatorOperation;
-        private readonly UpdateUserCredentialsOperation _updateUserCredentialsOperation;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
         private readonly IConsentRepository _consentRepository;
         private readonly IScopeRepository _scopeRepository;
@@ -62,7 +61,6 @@
             _getUserOperation = new GetUserOperation(resourceOwnerRepository);
             _updateUserTwoFactorAuthenticatorOperation =
                 new UpdateUserTwoFactorAuthenticatorOperation(resourceOwnerRepository);
-            _updateUserCredentialsOperation = new UpdateUserCredentialsOperation(resourceOwnerRepository);
             _authenticationSchemeProvider = authenticationSchemeProvider;
             _consentRepository = consentRepository;
             _scopeRepository = scopeRepository;
@@ -178,7 +176,7 @@
             // 2. CreateJwk a new user if he doesn't exist or update the credentials.
             //var resourceOwner = await _getUserOperation.Execute(authenticatedUser).ConfigureAwait(false);
             var subject = authenticatedUser.GetSubject();
-            await _updateUserCredentialsOperation.Execute(subject, viewModel.Password, cancellationToken)
+            await _resourceOwnerRepository.SetPassword(subject, viewModel.Password, cancellationToken)
                 .ConfigureAwait(false);
             ViewBag.IsUpdated = true;
             return await GetEditView(authenticatedUser, cancellationToken).ConfigureAwait(false);

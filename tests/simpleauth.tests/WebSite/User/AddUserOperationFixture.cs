@@ -20,10 +20,10 @@ namespace SimpleAuth.Tests.WebSite.User
     using Shared.Repositories;
     using SimpleAuth.Services;
     using SimpleAuth.Shared.Events.Logging;
-    using SimpleAuth.WebSite.User.Actions;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.WebSite.User;
     using Xunit;
 
     public class AddUserOperationFixture

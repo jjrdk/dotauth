@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.WebSite.User.Actions
+namespace SimpleAuth.WebSite.User
 {
-    using Shared;
-    using Shared.Repositories;
-    using SimpleAuth.Shared.Errors;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Repositories;
 
     internal class UpdateUserClaimsOperation
     {
