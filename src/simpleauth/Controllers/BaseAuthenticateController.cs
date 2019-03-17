@@ -36,8 +36,8 @@ namespace SimpleAuth.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.WebSite.User;
     using ViewModels;
-    using WebSite.User.Actions;
 
     /// <summary>
     /// Defines the base authentication controller.
@@ -698,7 +698,7 @@ namespace SimpleAuth.Controllers
                 .ToOpenidClaims()
                 .ToArray();
 
-            var record = new ResourceOwner //AddUserParameter(subject, ClientId.Create(), openidClaims)
+            var record = new ResourceOwner
             {
                 ExternalLogins =
                     new[]

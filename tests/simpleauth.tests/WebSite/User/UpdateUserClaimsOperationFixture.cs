@@ -3,7 +3,6 @@
     using Moq;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth.WebSite.User.Actions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -12,6 +11,7 @@
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.WebSite.User;
     using Xunit;
 
     public class UpdateUserClaimsOperationFixture

@@ -30,7 +30,7 @@ namespace SimpleAuth.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using WebSite.User.Actions;
+    using SimpleAuth.WebSite.User;
 
     /// <summary>
     /// Defines the resource owner controller.

@@ -4,12 +4,12 @@
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.WebSite.User.Actions;
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.WebSite.User;
 
     internal sealed class SmsAuthenticationOperation
     {

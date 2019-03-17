@@ -115,7 +115,9 @@
         }
 
         /// <inheritdoc />
-        public async Task<bool> Update(ResourceOwner resourceOwner, CancellationToken cancellationToken = default)
+        public async Task<bool> Update(
+            ResourceOwner resourceOwner,
+            CancellationToken cancellationToken)
         {
             using (var session = _sessionFactory())
             {
@@ -128,11 +130,29 @@
 
                 user.IsLocalAccount = resourceOwner.IsLocalAccount;
                 user.ExternalLogins = resourceOwner.ExternalLogins;
-                user.Password = resourceOwner.Password.ToSha256Hash();
+                //user.Password = resourceOwner.Password.ToSha256Hash();
                 user.TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication;
                 user.UpdateDateTime = DateTime.UtcNow;
                 user.Claims = resourceOwner.Claims;
                 session.Update(resourceOwner);
+                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                return true;
+            }
+        }
+
+        public async Task<bool> SetPassword(string subject, string password, CancellationToken cancellationToken)
+        {
+            using (var session = _sessionFactory())
+            {
+                var user = await session.LoadAsync<ResourceOwner>(subject, cancellationToken)
+                    .ConfigureAwait(false);
+                if (user == null)
+                {
+                    return false;
+                }
+
+                user.Password = password.ToSha256Hash();
+                session.Update(subject);
                 await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
                 return true;
             }
