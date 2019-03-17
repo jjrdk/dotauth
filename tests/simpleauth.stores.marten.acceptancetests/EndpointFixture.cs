@@ -31,6 +31,7 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
         public EndpointFixture()
         {
             IdentityModelEventSource.ShowPII = true;
+            _server = new TestServerFixture(BaseUrl);
             _connectionString = DbInitializer.Init(
                     TestData.ConnectionString,
                     DefaultStores.Consents(),
@@ -38,7 +39,6 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
                     DefaultStores.Clients(SharedContext.Instance),
                     DefaultStores.Scopes())
                 .Result;
-            _server = new TestServerFixture(TestData.ConnectionString, BaseUrl);
         }
 
         [Theory]

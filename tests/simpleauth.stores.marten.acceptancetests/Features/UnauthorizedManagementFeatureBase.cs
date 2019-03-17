@@ -33,7 +33,7 @@
                     })
                 .Teardown(async () => { await DbInitializer.Drop(ConnectionString).ConfigureAwait(false); });
 
-            "and a running auth server".x(() => _fixture = new TestServerFixture(ConnectionString, BaseUrl))
+            "and a running auth server".x(() => _fixture = new TestServerFixture(BaseUrl))
                 .Teardown(() => _fixture.Dispose());
 
             "and a manager client".x(
