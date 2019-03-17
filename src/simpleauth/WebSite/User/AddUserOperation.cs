@@ -65,7 +65,7 @@ namespace SimpleAuth.WebSite.User
             resourceOwner.UpdateDateTime = DateTime.UtcNow;
             var additionalClaims = _settings.ClaimsIncludedInUserCreation
                 .Except(resourceOwner.Claims.Select(x => x.Type))
-                .Select(x => new Claim(x, null));
+                .Select(x => new Claim(x, string.Empty));
             resourceOwner.Claims = resourceOwner.Claims.Add(additionalClaims);
 
             // Customize new resource owner.
