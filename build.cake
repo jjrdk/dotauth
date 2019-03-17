@@ -81,12 +81,15 @@ Task("Build")
     DotNetCoreBuildServerShutdown();
 });
 
-Task("Run-Unit-Tests")
+Task("Tests")
     .IsDependentOn("Build")
     .Does(() =>
 {
     var projects = GetFiles(buildDir + "/tests/**/*.tests.csproj");
-    projects.Add(new FilePath("./tests/simpleauth.acceptancetests/simpleauth.acceptancetests.csproj"));
+
+	// Uncomment this to run integration tests against a PostgreSql server.
+	//projects.Add(new FilePath("./tests/simpleauth.acceptancetests/simpleauth.acceptancetests.csproj"));
+
     foreach(var project in projects)
     {
         Information("Testing: " + project.FullPath);
@@ -113,7 +116,7 @@ Task("Run-Unit-Tests")
 });
 
 Task("Pack")
-    .IsDependentOn("Build")
+    .IsDependentOn("Tests")
     .Does(()=>
     {
         var nugetVersion = versionInfo.MajorMinorPatch + "-" + versionInfo.BranchName + versionInfo.CommitsSinceVersionSourcePadded;

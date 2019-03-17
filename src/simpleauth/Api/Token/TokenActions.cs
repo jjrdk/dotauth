@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleAuth.Shared.Repositories;
-using System.Collections.Generic;
-
 namespace SimpleAuth.Api.Token
 {
     using Actions;
@@ -26,7 +23,9 @@ namespace SimpleAuth.Api.Token
     using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Events.Logging;
+    using SimpleAuth.Shared.Repositories;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
@@ -258,12 +257,12 @@ namespace SimpleAuth.Api.Token
                     cancellationToken)
                 .ConfigureAwait(false);
 
-            await _eventPublisher.Publish(new TokenRevoked(Id.Create(), processId, DateTime.UtcNow))
+            await _eventPublisher.Publish(new TokenRevoked(Id.Create(), processId, revokeTokenParameter.Token, DateTime.UtcNow))
                 .ConfigureAwait(false);
             return result;
         }
 
-        public async Task<GrantedToken> GetTokenByClientCredentials(
+        private async Task<GrantedToken> GetTokenByClientCredentials(
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
