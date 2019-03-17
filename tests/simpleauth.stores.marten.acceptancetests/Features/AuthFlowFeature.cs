@@ -34,7 +34,7 @@
                     })
                 .Teardown(async () => { await DbInitializer.Drop(_connectionString).ConfigureAwait(false); });
 
-            "and a running auth server".x(() => _fixture = new TestServerFixture(_connectionString, BaseUrl))
+            "and a running auth server".x(() => _fixture = new TestServerFixture(BaseUrl))
                 .Teardown(() => _fixture.Dispose());
 
             "And the server signing keys".x(

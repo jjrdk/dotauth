@@ -30,7 +30,7 @@ namespace SimpleAuth.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using WebSite.User.Actions;
+    using SimpleAuth.WebSite.User;
 
     /// <summary>
     /// Defines the resource owner controller.
@@ -45,16 +45,20 @@ namespace SimpleAuth.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceOwnersController"/> class.
         /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="subjectBuilder"></param>
         /// <param name="resourceOwnerRepository">The resource owner repository.</param>
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="eventPublisher">The event publisher.</param>
         public ResourceOwnersController(
+            RuntimeSettings settings,
+            ISubjectBuilder subjectBuilder,
             IResourceOwnerRepository resourceOwnerRepository,
             IEnumerable<AccountFilter> accountFilters,
             IEventPublisher eventPublisher)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _addUserOperation = new AddUserOperation(resourceOwnerRepository, accountFilters, eventPublisher);
+            _addUserOperation = new AddUserOperation(settings, resourceOwnerRepository, accountFilters, subjectBuilder, eventPublisher);
         }
 
         /// <summary>
@@ -271,17 +275,19 @@ namespace SimpleAuth.Controllers
                 return BadRequest("Parameter in request body not valid");
             }
 
-            if (await _addUserOperation.Execute(
-                    new ResourceOwner
-                    {
-                        Subject = addResourceOwnerRequest.Subject,
-                        Password = addResourceOwnerRequest.Password,
-                        IsLocalAccount = true,
-                    },
-                    cancellationToken)
-                .ConfigureAwait(false))
+            var resourceOwner = new ResourceOwner
             {
-                return NoContent();
+                Subject = addResourceOwnerRequest.Subject,
+                Password = addResourceOwnerRequest.Password,
+                IsLocalAccount = true,
+            };
+            var (success, subject) = await _addUserOperation.Execute(
+                    resourceOwner,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (success)
+            {
+                return Content(subject);
             }
 
             return BadRequest(

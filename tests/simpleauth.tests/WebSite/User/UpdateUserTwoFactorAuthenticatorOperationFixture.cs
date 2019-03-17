@@ -3,12 +3,12 @@
     using Moq;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth.WebSite.User.Actions;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.WebSite.User;
     using Xunit;
 
     public class UpdateUserTwoFactorAuthenticatorOperationFixture

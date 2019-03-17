@@ -52,7 +52,8 @@
 
             Assert.True(result.ContainsError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Error);
-            Assert.Equal($"The parameter login is missing{Environment.NewLine}Parameter name: id", result.Error.ErrorDescription);
+            Assert.Equal($"Value cannot be null.{Environment.NewLine}Parameter name: value", result.Error.ErrorDescription);
+//            Assert.Equal($"The parameter login is missing{Environment.NewLine}Parameter name: id", result.Error.ErrorDescription);
         }
 
         [Fact]

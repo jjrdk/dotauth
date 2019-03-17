@@ -24,6 +24,7 @@ namespace SimpleAuth.Sms.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="CodeController"/> class.
         /// </summary>
+        /// <param name="settings"></param>
         /// <param name="smsClient">The SMS client.</param>
         /// <param name="confirmationCodeStore">The confirmation code store.</param>
         /// <param name="resourceOwnerRepository">The resource owner repository.</param>
@@ -31,6 +32,7 @@ namespace SimpleAuth.Sms.Controllers
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="eventPublisher">The event publisher.</param>
         public CodeController(
+            RuntimeSettings settings,
             ISmsClient smsClient,
             IConfirmationCodeStore confirmationCodeStore,
             IResourceOwnerRepository resourceOwnerRepository,
@@ -39,6 +41,7 @@ namespace SimpleAuth.Sms.Controllers
             IEventPublisher eventPublisher)
         {
             _smsAuthenticationOperation = new SmsAuthenticationOperation(
+                settings,
                 smsClient,
                 confirmationCodeStore,
                 resourceOwnerRepository,

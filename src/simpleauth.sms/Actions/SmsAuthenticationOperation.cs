@@ -1,15 +1,15 @@
 ﻿namespace SimpleAuth.Sms.Actions
 {
+    using SimpleAuth.Extensions;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.WebSite.User.Actions;
+    using SimpleAuth.WebSite.User;
 
     internal sealed class SmsAuthenticationOperation
     {
@@ -19,6 +19,7 @@
         private readonly ISubjectBuilder _subjectBuilder;
 
         public SmsAuthenticationOperation(
+            RuntimeSettings settings,
             ISmsClient smsClient,
             IConfirmationCodeStore confirmationCodeStore,
             IResourceOwnerRepository resourceOwnerRepository,
@@ -30,7 +31,7 @@
                 smsClient,
                 confirmationCodeStore);
             _resourceOwnerRepository = resourceOwnerRepository;
-            _addUser = new AddUserOperation(resourceOwnerRepository, accountFilters, eventPublisher);
+            _addUser = new AddUserOperation(settings, resourceOwnerRepository, accountFilters, subjectBuilder, eventPublisher);
             _subjectBuilder = subjectBuilder;
         }
 
@@ -53,7 +54,7 @@
             {
                 return resourceOwner;
             }
-            
+
             // 3. CreateJwk a new resource owner.
             var claims = new[]
             {
@@ -61,7 +62,7 @@
                 new Claim(OpenIdClaimTypes.PhoneNumberVerified, "false")
             };
             var id = await _subjectBuilder.BuildSubject(claims, cancellationToken).ConfigureAwait(false);
-            var record = new ResourceOwner {Subject = id, Password = Id.Create().ToSha256Hash(), Claims = claims};
+            var record = new ResourceOwner { Subject = id, Password = Id.Create().ToSha256Hash(), Claims = claims };
 
             // 3.2 Add user.
             await _addUser.Execute(record, cancellationToken).ConfigureAwait(false);

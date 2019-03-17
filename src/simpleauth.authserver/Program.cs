@@ -17,18 +17,25 @@ namespace SimpleAuth.AuthServer
     using Microsoft.AspNetCore.Hosting;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Server.Kestrel.Core;
+    using Microsoft.Extensions.Configuration;
 
     public class Program
     {
-        public static async Task Main()
+        public static async Task Main(params string[] args)
         {
-            await new WebHostBuilder().UseKestrel(
+            await new WebHostBuilder()
+                .UseKestrel(
                     o =>
                     {
                         o.AddServerHeader = false;
-                        o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2);
+                        o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http2);
                     })
-                .UseUrls("http://*:60000")
+                .ConfigureAppConfiguration(
+                    c => c.AddUserSecrets<Startup>()
+                        .AddEnvironmentVariables()
+                        .AddCommandLine(args)
+                        .AddJsonFile("appsettings.json"))
+                .UseUrls("http://*:5000", "https://*:5001")
                 .UseStartup<Startup>()
                 .Build()
                 .RunAsync()

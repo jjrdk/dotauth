@@ -9,6 +9,7 @@
     using System.Security.Claims;
     using System.Text.Encodings.Web;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
 
     public class TestAuthenticationHandler : AuthenticationHandler<TestAuthenticationOptions>
     {

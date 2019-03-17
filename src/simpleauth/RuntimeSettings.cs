@@ -1,6 +1,7 @@
 ﻿namespace SimpleAuth
 {
     using System;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the runtime settings.
@@ -10,18 +11,21 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="RuntimeSettings"/> class.
         /// </summary>
+        /// <param name="onResourceOwnerCreated"></param>
         /// <param name="authorizationCodeValidityPeriod">The authorization code validity period.</param>
         /// <param name="userClaimsToIncludeInAuthToken">The user claims to include in authentication token.</param>
         /// <param name="claimsIncludedInUserCreation">The claims included in user creation.</param>
         /// <param name="rptLifeTime">The RPT life time.</param>
         /// <param name="ticketLifeTime">The ticket life time.</param>
         public RuntimeSettings(
+            Action<ResourceOwner> onResourceOwnerCreated = null,
             TimeSpan authorizationCodeValidityPeriod = default,
             string[] userClaimsToIncludeInAuthToken = null,
             string[] claimsIncludedInUserCreation = null,
             TimeSpan rptLifeTime = default,
             TimeSpan ticketLifeTime = default)
         {
+            OnResourceOwnerCreated = onResourceOwnerCreated ?? (r => { });
             AuthorizationCodeValidityPeriod = authorizationCodeValidityPeriod == default
                 ? TimeSpan.FromHours(1)
                 : authorizationCodeValidityPeriod;
@@ -30,6 +34,14 @@
             TicketLifeTime = ticketLifeTime == default ? TimeSpan.FromHours(1) : ticketLifeTime;
             ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? Array.Empty<string>();
         }
+
+        /// <summary>
+        /// Gets the delegate to run when resource owner created.
+        /// </summary>
+        /// <value>
+        /// The on resource owner created.
+        /// </value>
+        public Action<ResourceOwner> OnResourceOwnerCreated { get; }
 
         /// <summary>
         /// Gets the authorization code validity period.

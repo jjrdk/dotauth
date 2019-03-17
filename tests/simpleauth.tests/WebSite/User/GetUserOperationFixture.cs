@@ -19,11 +19,11 @@ namespace SimpleAuth.Tests.WebSite.User
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth.Shared.Errors;
-    using SimpleAuth.WebSite.User.Actions;
     using System;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.WebSite.User;
     using Xunit;
 
     public class GetUserOperationFixture
