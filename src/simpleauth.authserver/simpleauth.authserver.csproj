@@ -30,7 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\simpleauth\simpleauth.csproj" />
+    <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
+    <ProjectReference Include="..\simpleauth.sms\simpleauth.sms.csproj" />
   </ItemGroup>
 
   <ItemGroup>

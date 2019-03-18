@@ -79,8 +79,8 @@
             var actualScheme = authenticatedUser.Identity.AuthenticationType;
             var ro = await GetUserProfile(authenticatedUser.GetSubject(), cancellationToken).ConfigureAwait(false);
             var authenticationSchemes =
-                (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false)).Where(
-                    a => !string.IsNullOrWhiteSpace(a.DisplayName));
+                (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false))
+                .Where(a => !string.IsNullOrWhiteSpace(a.DisplayName));
             var viewModel = new ProfileViewModel(ro.Claims);
             //if (profiles != null && profiles.Any())
             {
@@ -119,7 +119,7 @@
         [HttpPost]
         public async Task<IActionResult> Consent(string id, CancellationToken cancellationToken)
         {
-            var removed = await _consentRepository.Delete(new Consent { Id = id }, cancellationToken)
+            var removed = await _consentRepository.Delete(new Consent {Id = id}, cancellationToken)
                 .ConfigureAwait(false);
             if (!removed)
             {
@@ -229,7 +229,7 @@
             await _authenticationService.ChallengeAsync(
                     HttpContext,
                     provider,
-                    new AuthenticationProperties { RedirectUri = redirectUrl })
+                    new AuthenticationProperties {RedirectUri = redirectUrl})
                 .ConfigureAwait(false);
         }
 
@@ -296,7 +296,7 @@
             }
 
             await SetUser().ConfigureAwait(false);
-            var authenticationType = ((ClaimsIdentity)externalClaims.Identity).AuthenticationType;
+            var authenticationType = ((ClaimsIdentity) externalClaims.Identity).AuthenticationType;
             var viewModel = new LinkProfileConfirmationViewModel(authenticationType);
             return View("Index", viewModel);
         }
@@ -360,11 +360,11 @@
             }
             catch (SimpleAuthException ex)
             {
-                return RedirectToAction("Index", "Error", new { code = ex.Code, message = ex.Message });
+                return RedirectToAction("Index", "Error", new {code = ex.Code, message = ex.Message});
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Index", "Error", new { code = ErrorCodes.InternalError, message = ex.Message });
+                return RedirectToAction("Index", "Error", new {code = ErrorCodes.InternalError, message = ex.Message});
             }
 
             return await Index(cancellationToken).ConfigureAwait(false);

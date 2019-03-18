@@ -142,7 +142,7 @@
                 return View(viewModel);
             }
 
-            return RedirectToAction("Index", "User");
+            return RedirectToAction("Index", "User", new { area = "pwd" });
         }
 
         /// <summary>
@@ -160,7 +160,7 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "User");
+                return RedirectToAction("Index", "User", new { Area = "pwd" });
             }
 
             if (localAuthenticationViewModel == null)
@@ -223,7 +223,7 @@
             var user = await SetUser().ConfigureAwait(false);
             if (user?.Identity != null && user.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "User");
+                return RedirectToAction("Index", "User", new { Area = "pwd" });
             }
 
             var authenticatedUser = await _authenticationService
@@ -261,7 +261,7 @@
             var user = await SetUser().ConfigureAwait(false);
             if (user?.Identity != null && user.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "User");
+                return RedirectToAction("Index", "User", new { Area = "pwd" });
             }
 
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.PasswordLessCookieName)
@@ -340,7 +340,7 @@
 
             await SetLocalCookie(authenticatedUserClaims, Id.Create())
                 .ConfigureAwait(false); // Authenticate the resource owner
-            return RedirectToAction("Index", "User");
+            return RedirectToAction("Index", "User", new { Area = "pwd" });
         }
 
         /// <summary>

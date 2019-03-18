@@ -13,35 +13,35 @@
     /// </summary>
     public static class ServiceCollectionExtensions
     {
-        /// <summary>
-        /// Adds the two factor SMS authentication.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        /// <param name="smsOptions">The SMS options.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// services
-        /// or
-        /// smsOptions
-        /// </exception>
-        public static IServiceCollection AddTwoFactorSmsAuthentication(
-            this IServiceCollection services,
-            TwoFactorSmsOptions smsOptions)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+        ///// <summary>
+        ///// Adds the two factor SMS authentication.
+        ///// </summary>
+        ///// <param name="services">The services.</param>
+        ///// <param name="smsOptions">The SMS options.</param>
+        ///// <returns></returns>
+        ///// <exception cref="ArgumentNullException">
+        ///// services
+        ///// or
+        ///// smsOptions
+        ///// </exception>
+        //public static IServiceCollection AddTwoFactorSmsAuthentication(
+        //    this IServiceCollection services,
+        //    TwoFactorSmsOptions smsOptions)
+        //{
+        //    if (services == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(services));
+        //    }
 
-            if (smsOptions == null)
-            {
-                throw new ArgumentNullException(nameof(smsOptions));
-            }
+        //    if (smsOptions == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(smsOptions));
+        //    }
 
-            services.AddSingleton(smsOptions);
-            services.AddTransient<ITwoFactorAuthenticationService, DefaultSmsService>();
-            return services;
-        }
+        //    services.AddSingleton(smsOptions);
+        //    services.AddTransient<ITwoFactorAuthenticationService, DefaultSmsService>();
+        //    return services;
+        //}
 
         /// <summary>
         /// Adds the SMS authentication.
@@ -76,10 +76,11 @@
                 throw new ArgumentNullException(nameof(mvcBuilder));
             }
 
-            var assembly = typeof(AuthenticateController).Assembly;
-            var embeddedFileProvider = new EmbeddedFileProvider(assembly);
+            var assembly = typeof(ISmsClient).Assembly;
             var services = mvcBuilder.Services;
-            services.Configure<RazorViewEngineOptions>(opts => { opts.FileProviders.Add(embeddedFileProvider); });
+            services.AddAuthentication(CookieNames.PasswordLessCookieName)
+                .AddCookie(CookieNames.PasswordLessCookieName, opts => { opts.LoginPath = $"/{SmsConstants.Amr}/Authenticate"; });
+
             services.AddTransient<Func<ISmsClient>>(sp => () => smsClientFactory(sp));
             services.AddTransient<ISmsClient>(smsClientFactory);
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
