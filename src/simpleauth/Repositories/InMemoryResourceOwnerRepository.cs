@@ -30,6 +30,7 @@
                 : users.ToList();
         }
 
+        /// <inheritdoc />
         public Task<bool> SetPassword(string subject, string password, CancellationToken cancellationToken)
         {
             var user = _users.FirstOrDefault(x => x.Subject == subject);
@@ -42,6 +43,7 @@
             return Task.FromResult(true);
         }
 
+        /// <inheritdoc />
         public Task<bool> Delete(string subject, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(subject))
