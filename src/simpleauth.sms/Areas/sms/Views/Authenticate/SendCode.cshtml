@@ -2,42 +2,58 @@
     ViewBag.Title = "Send code";
 }
 
-@model  SimpleAuth.ViewModels.CodeViewModel
-
-@section PageTitle
+@model SimpleAuth.ViewModels.CodeViewModel
+@section Scripts
 {
-    <h1>Send Code</h1>
+    <script>
+        const fields = document.querySelectorAll(".input-field");
+        fields.forEach((field, index) => {
+            const input = field.querySelector("input");
+            const label = field.querySelector("label");
+            input.addEventListener("focus", () => { label.classList.add("active") });
+            input.addEventListener("blur", () => { if (!input.value) label.classList.remove("active") });
+        });
+    </script>
 }
-
 <div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">Confirmation code</div>
-            <div class="panel-body">
-                @using (Html.BeginForm("SendCode", "Authenticate", null, FormMethod.Post))
-                {
-                    @Html.AntiForgeryToken()
-                    <!-- Authorization request code -->
-                    @Html.TextBoxFor(i => i.AuthRequestCode, new { type = "hidden" })
-                    <!-- Claim -->
-                    @Html.TextBoxFor(i => i.ClaimName, new { type = "hidden" })
-                    <fieldset class="form-group">
-                        <label class="control-label">@Model.ClaimName</label>
-                        @Html.TextBoxFor(i => i.ClaimValue, new { type = "text", @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.ClaimValue, "", new { @class = "text-danger" })
-                    </fieldset>
-                    <!-- Confirmation code -->
-                    <fieldset class="form-group">
-                        <label class="control-label">Code</label>
-                        @Html.TextBoxFor(i => i.Code, new { type = "number", @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
-                    </fieldset>
-                    <!-- Submit buttons code -->
-                    <fieldset class="form-group">
-                        <button type="submit" class="btn btn-primary" name="Action" value="submit">Validate confirmation code</button>
-                        <button type="submit" class="btn btn-primary" name="Action" value="resend">Resent confirmation code</button>
-                    </fieldset>
-                }
+    <div class="col s12 m6 offset-m3">
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <h5>Confirmation code</h5>
+                </div>
+                <div class="card-action">
+                    <div class="row">
+                        @using (Html.BeginForm("SendCode", "Authenticate", null, FormMethod.Post))
+                        {
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    @Html.AntiForgeryToken()
+                                    <!-- Authorization request code -->
+                                    @Html.HiddenFor(i => i.AuthRequestCode)
+                                    <!-- Claim -->
+                                    @Html.HiddenFor(i => i.ClaimName)
+                                    <i class="material-icons prefix">call</i>
+                                    @Html.TextBoxFor(i => i.ClaimValue)
+                                    <label for="claimname">@Model.ClaimName</label>
+                                    @Html.ValidationMessageFor(m => m.ClaimValue, "")
+                                </div>
+                                <!-- Confirmation code -->
+                                <div class="input-field col s12">
+                                    <i class="material-icons prefix">call</i>
+                                    <input id="confcode" name="Code" type="number" />
+                                    <label for="confcode">Confirmation Code</label>
+                                    @Html.ValidationMessageFor(m => m.Code, "")
+                                </div>
+                                <!-- Submit buttons code -->
+                                <div class="col s12">
+                                    <button type="submit" name="Action" value="submit" class="waves-effect waves-light btn blue darken-3 right">Validate code</button>
+                                    <button type="submit" name="Action" value="resend" class="waves-effect waves-light btn red darken-3 left">Resend code</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     </div>

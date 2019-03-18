@@ -32,6 +32,9 @@ namespace SimpleAuth.AuthServer
     using System.IO.Compression;
     using System.Reflection;
     using System.Security.Claims;
+    using Amazon;
+    using Amazon.Runtime;
+    using SimpleAuth.Sms;
 
     public class Startup
     {
@@ -92,8 +95,7 @@ namespace SimpleAuth.AuthServer
                 .AddLogging(log => { log.AddConsole(); });
             services.AddAuthentication(CookieNames.CookieName)
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; });
-
-            services.AddAuthentication(CookieNames.ExternalCookieName)
+           services.AddAuthentication(CookieNames.ExternalCookieName)
                 .AddCookie(CookieNames.ExternalCookieName)
                 .AddGoogle(
                     opts =>
@@ -109,7 +111,12 @@ namespace SimpleAuth.AuthServer
             services.AddAuthorization(opts => { opts.AddAuthPolicies(CookieNames.CookieName); })
                 .AddMvc(options => { })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddApplicationPart(_assembly);
+                .AddApplicationPart(_assembly)
+                .AddSmsAuthentication(
+                    new AwsSmsClient(
+                        new BasicAWSCredentials(_configuration["Aws:AccessKey"], _configuration["Aws:Secret"]),
+                        RegionEndpoint.EUWest1,
+                        _configuration["ApplicationName"]));
             services.AddSimpleAuth(_options)
                 .AddHttpsRedirection(
                     options =>
@@ -129,13 +136,15 @@ namespace SimpleAuth.AuthServer
                 .UseStaticFiles(
                     new StaticFileOptions {FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot")})
                 .UseSimpleAuthExceptionHandler()
-                .UseStatusCodePagesWithRedirects("/Error/{0}")
+                //.UseStatusCodePagesWithRedirects("/Error/{0}")
                 .UseResponseCompression()
                 .UseMvc(
                     routes =>
                     {
+                        routes.MapRoute("areaexists", "{area:exists}/{controller=Authenticate}/{action=Index}");
                         routes.MapRoute("pwdauth", "pwd/{controller=Authenticate}/{action=Index}");
-                        routes.MapRoute("default", "{controller=Home}/{action=Index}");
+                        //routes.MapRoute("areaauth", "{area=pwd}/{controller=Authenticate}/{action=Index}");
+                        routes.MapRoute("default", "{controller=Authenticate}/{action=Index}");
                     });
         }
     }

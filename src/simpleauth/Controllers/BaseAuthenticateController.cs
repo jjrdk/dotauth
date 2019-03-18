@@ -155,7 +155,7 @@ namespace SimpleAuth.Controllers
                     CookieNames.CookieName,
                     new AuthenticationProperties())
                 .ConfigureAwait(false);
-            return RedirectToAction("Index", "Authenticate");
+            return RedirectToAction("Index", "Authenticate", new { area = "pwd" });
         }
 
         /// <summary>
@@ -415,7 +415,10 @@ namespace SimpleAuth.Controllers
         {
             if (string.IsNullOrWhiteSpace(code))
             {
-                throw new ArgumentNullException(nameof(code));
+                var vm = new AuthorizeOpenIdViewModel { Code = code };
+
+                await SetIdProviders(vm).ConfigureAwait(false);
+                return View(vm);
             }
 
             var authenticatedUser = await SetUser().ConfigureAwait(false);

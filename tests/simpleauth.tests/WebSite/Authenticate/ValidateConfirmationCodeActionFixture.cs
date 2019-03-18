@@ -35,17 +35,21 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         }
 
         [Fact]
-        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Returns_False()
         {
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(
-                    () => _validateConfirmationCodeAction.Execute(null, CancellationToken.None))
-                .ConfigureAwait(false);
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(
-                    () => _validateConfirmationCodeAction.Execute(string.Empty, CancellationToken.None))
-                .ConfigureAwait(false);
+            var result = await _validateConfirmationCodeAction.Execute(null, CancellationToken.None).ConfigureAwait(false);
+
+            Assert.False(result);
         }
+
+        [Fact]
+        public async Task When_Passing_Empty_Parameter_Then_Returns_False()
+        {
+            var result = await _validateConfirmationCodeAction.Execute(string.Empty, CancellationToken.None).ConfigureAwait(false);
+
+            Assert.False(result);
+        }
+
 
         [Fact]
         public async Task When_Code_Does_Not_Exist_Then_False_Is_Returned()

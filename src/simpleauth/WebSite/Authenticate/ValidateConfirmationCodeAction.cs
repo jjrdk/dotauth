@@ -32,7 +32,7 @@ namespace SimpleAuth.WebSite.Authenticate
         {
             if (string.IsNullOrWhiteSpace(code))
             {
-                throw new ArgumentNullException(nameof(code));
+                return false;
             }
 
             var confirmationCode = await _confirmationCodeStore.Get(code, cancellationToken).ConfigureAwait(false);
