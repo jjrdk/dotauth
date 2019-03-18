@@ -69,7 +69,7 @@
         /// </exception>
         public static IServiceCollection AddSmsAuthentication(
             this IMvcBuilder mvcBuilder,
-            Func<ServiceProvider, ISmsClient> smsClientFactory)
+            Func<IServiceProvider, ISmsClient> smsClientFactory)
         {
             if (mvcBuilder == null)
             {
@@ -80,7 +80,8 @@
             var embeddedFileProvider = new EmbeddedFileProvider(assembly);
             var services = mvcBuilder.Services;
             services.Configure<RazorViewEngineOptions>(opts => { opts.FileProviders.Add(embeddedFileProvider); });
-            services.AddSingleton(smsClientFactory);
+            services.AddTransient<Func<ISmsClient>>(sp => () => smsClientFactory(sp));
+            services.AddTransient<ISmsClient>(smsClientFactory);
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
             mvcBuilder.AddApplicationPart(assembly);
             return services;
