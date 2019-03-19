@@ -62,10 +62,9 @@
                 }
             };
 
-            return true;
-            //var pubResponse = await _client.PublishAsync(pubRequest).ConfigureAwait(false);
+            var pubResponse = await _client.PublishAsync(pubRequest).ConfigureAwait(false);
 
-            //return (int)pubResponse.HttpStatusCode < 400;
+            return (int)pubResponse.HttpStatusCode < 400;
         }
     }
 }
