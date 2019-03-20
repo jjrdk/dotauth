@@ -15,10 +15,10 @@
 
         public static async Task<string> Init(
             string connectionString,
-            IEnumerable<Consent> consents,
-            IEnumerable<ResourceOwner> users,
-            IEnumerable<Client> clients,
-            IEnumerable<Scope> scopes)
+            IEnumerable<Consent> consents = null,
+            IEnumerable<ResourceOwner> users = null,
+            IEnumerable<Client> clients = null,
+            IEnumerable<Scope> scopes = null)
         {
             var builder = new NpgsqlConnectionStringBuilder(connectionString);
             using (var connection = new NpgsqlConnection(connectionString))
@@ -56,10 +56,10 @@
             {
                 using (var session = store.LightweightSession())
                 {
-                    session.Store(consents.ToArray());
-                    session.Store(users.ToArray());
-                    session.Store(clients.ToArray());
-                    session.Store(scopes.ToArray());
+                    if (consents != null) session.Store(consents.ToArray());
+                    if (users != null) session.Store(users.ToArray());
+                    if (clients != null) session.Store(clients.ToArray());
+                    if (scopes != null) session.Store(scopes.ToArray());
                     await session.SaveChangesAsync().ConfigureAwait(false);
                 }
             }
