@@ -22,7 +22,8 @@ namespace SimpleAuth.Server.Tests.Apis
     using Shared;
     using Shared.Responses;
     using SimpleAuth;
-    using SimpleAuth.Extensions;
+    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Errors;
     using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
@@ -33,9 +34,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.DTOs;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Sms.Client;
     using Xunit;
 
     public class TokenClientFixture
@@ -44,13 +42,11 @@ namespace SimpleAuth.Server.Tests.Apis
         private const string WellKnownOpenidConfiguration = "/.well-known/openid-configuration";
         private const string WellKnownOpenidConfigurationUrl = BaseUrl + WellKnownOpenidConfiguration;
         private readonly TestOauthServerFixture _server;
-        private readonly SidSmsAuthenticateClient _sidSmsAuthenticateClient;
 
         public TokenClientFixture()
         {
             IdentityModelEventSource.ShowPII = true;
             _server = new TestOauthServerFixture();
-            _sidSmsAuthenticateClient = new SidSmsAuthenticateClient(_server.Client);
         }
 
         [Fact]
@@ -63,7 +59,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -85,7 +83,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -108,7 +108,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -132,7 +134,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -158,7 +162,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -185,7 +191,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -213,7 +221,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -240,7 +250,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -262,7 +274,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -287,7 +301,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -313,7 +329,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -340,7 +358,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -362,7 +382,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -386,7 +408,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -411,7 +435,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -454,7 +480,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -477,7 +505,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -502,7 +532,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -529,7 +561,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -555,7 +589,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -583,7 +619,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -620,7 +658,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     new Uri(WellKnownOpenidConfigurationUrl))
                 .ConfigureAwait(false);
             var result = await tokenClient.GetToken(
-                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
 
             Assert.False(result.ContainsError);
@@ -635,7 +673,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     _server.Client,
                     new Uri(WellKnownOpenidConfigurationUrl))
                 .ConfigureAwait(false);
-            var result = await tokenClient.GetToken(TokenRequest.FromPassword("superuser", "password", new[] {"role"}))
+            var result = await tokenClient.GetToken(TokenRequest.FromPassword("superuser", "password", new[] { "role" }))
                 .ConfigureAwait(false);
 
             Assert.False(result.ContainsError);
@@ -645,32 +683,33 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.Equal("administrator", roles[0].Value.Split(' ')[0]);
         }
 
-        [Fact(Skip = "Integration test")]
-        public async Task When_Using_Password_Grant_Type_With_SMS_Then_Access_Token_Is_Returned()
-        {
-            var confirmationCode = new ConfirmationCode();
-            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((ConfirmationCode) null));
-            _server.SharedCtx.ConfirmationCodeStore
-                .Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
-                .Callback<ConfirmationCode>(r => { confirmationCode = r; })
-                .Returns(() => Task.FromResult(true));
-            await _sidSmsAuthenticateClient.Send(BaseUrl, new ConfirmationCodeRequest {PhoneNumber = "phone"})
-                .ConfigureAwait(false);
-            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(confirmationCode);
-            var tokenClient = await TokenClient.Create(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    _server.Client,
-                    new Uri(WellKnownOpenidConfigurationUrl))
-                .ConfigureAwait(false);
-            var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("phone", confirmationCode.Value, new[] {"scim"}, "sms"))
-                .ConfigureAwait(false);
+        //[Fact(Skip = "Integration test")]
+        //public async Task When_Using_Password_Grant_Type_With_SMS_Then_Access_Token_Is_Returned()
+        //{
+        //    var confirmationCode = new ConfirmationCode();
+        //    _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        //        .Returns(() => Task.FromResult((ConfirmationCode)null));
+        //    _server.SharedCtx.ConfirmationCodeStore
+        //        .Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
+        //        .Callback<ConfirmationCode>(r => { confirmationCode = r; })
+        //        .Returns(() => Task.FromResult(true));
 
-            Assert.False(result.ContainsError);
-            Assert.NotEmpty(result.Content.AccessToken);
-        }
+        //    _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        //        .ReturnsAsync(confirmationCode);
+        //    var tokenClient = await TokenClient.Create(
+        //            TokenCredentials.FromClientCredentials("client", "client"),
+        //            _server.Client,
+        //            new Uri(WellKnownOpenidConfigurationUrl))
+        //        .ConfigureAwait(false);
+        //    _ = await tokenClient.RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
+        //             .ConfigureAwait(false);
+        //    var result = await tokenClient
+        //        .GetToken(TokenRequest.FromPassword("phone", confirmationCode.Value, new[] { "scim" }, "sms"))
+        //        .ConfigureAwait(false);
+
+        //    Assert.False(result.ContainsError);
+        //    Assert.NotEmpty(result.Content.AccessToken);
+        //}
 
         [Fact(Skip = "solve certificate problem")]
         public async Task When_Using_Client_Certificate_Then_AccessToken_Is_Returned()
@@ -683,7 +722,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     new Uri(WellKnownOpenidConfigurationUrl))
                 .ConfigureAwait(false);
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"openid"}))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "openid" }))
                 .ConfigureAwait(false);
 
             Assert.False(result.ContainsError);
@@ -699,7 +738,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     new Uri(WellKnownOpenidConfigurationUrl))
                 .ConfigureAwait(false);
             var result = await tokenClient.GetToken(
-                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
 
             Assert.False(result.ContainsError);
@@ -716,7 +755,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     new Uri(WellKnownOpenidConfigurationUrl))
                 .ConfigureAwait(false);
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
             // TODO: Look into this
             //var jwks = await _jwksClient.GetToken(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);

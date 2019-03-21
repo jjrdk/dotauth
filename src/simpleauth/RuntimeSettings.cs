@@ -1,6 +1,7 @@
 ﻿namespace SimpleAuth
 {
     using System;
+    using System.Text.RegularExpressions;
     using SimpleAuth.Shared.Models;
 
     /// <summary>
@@ -20,7 +21,7 @@
         public RuntimeSettings(
             Action<ResourceOwner> onResourceOwnerCreated = null,
             TimeSpan authorizationCodeValidityPeriod = default,
-            string[] userClaimsToIncludeInAuthToken = null,
+            Regex[] userClaimsToIncludeInAuthToken = null,
             string[] claimsIncludedInUserCreation = null,
             TimeSpan rptLifeTime = default,
             TimeSpan ticketLifeTime = default)
@@ -29,7 +30,7 @@
             AuthorizationCodeValidityPeriod = authorizationCodeValidityPeriod == default
                 ? TimeSpan.FromHours(1)
                 : authorizationCodeValidityPeriod;
-            UserClaimsToIncludeInAuthToken = userClaimsToIncludeInAuthToken ?? Array.Empty<string>();
+            UserClaimsToIncludeInAuthToken = userClaimsToIncludeInAuthToken ?? Array.Empty<Regex>();
             RptLifeTime = rptLifeTime == default ? TimeSpan.FromHours(1) : rptLifeTime;
             TicketLifeTime = ticketLifeTime == default ? TimeSpan.FromHours(1) : ticketLifeTime;
             ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? Array.Empty<string>();
@@ -57,7 +58,7 @@
         /// <value>
         /// The user claims to include in authentication token.
         /// </value>
-        public string[] UserClaimsToIncludeInAuthToken { get; }
+        public Regex[] UserClaimsToIncludeInAuthToken { get; }
 
         /// <summary>
         /// Gets a list of claims include when the resource owner is created.
