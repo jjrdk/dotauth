@@ -155,7 +155,7 @@ namespace SimpleAuth.Api.Token.Actions
                         payload,
                         cancellationToken,
                         claimsIdentity.Claims
-                            .Where(c => _oauthConfiguration.UserClaimsToIncludeInAuthToken.Contains(c.Type))
+                            .Where(c => _oauthConfiguration.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
                             .ToArray())
                     .ConfigureAwait(false);
                 if (generatedToken.IdTokenPayLoad != null)

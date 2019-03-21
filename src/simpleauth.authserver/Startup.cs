@@ -14,6 +14,8 @@
 
 namespace SimpleAuth.AuthServer
 {
+    using Amazon;
+    using Amazon.Runtime;
     using Controllers;
     using Extensions;
     using Microsoft.AspNetCore.Builder;
@@ -29,12 +31,11 @@ namespace SimpleAuth.AuthServer
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Sms;
     using System.IO.Compression;
     using System.Reflection;
     using System.Security.Claims;
-    using Amazon;
-    using Amazon.Runtime;
-    using SimpleAuth.Sms;
+    using System.Text.RegularExpressions;
 
     public class Startup
     {
@@ -56,7 +57,12 @@ namespace SimpleAuth.AuthServer
                         DefaultConfiguration.GetClients()),
                 Scopes = sp => new InMemoryScopeRepository(),
                 EventPublisher = sp => new ConsolePublisher(),
-                UserClaimsToIncludeInAuthToken = new[] {OpenIdClaimTypes.Subject, OpenIdClaimTypes.Role},
+                UserClaimsToIncludeInAuthToken =
+                    new[]
+                    {
+                        new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
+                        new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled)
+                    },
                 ClaimsIncludedInUserCreation = new[]
                 {
                     ClaimTypes.Name,
@@ -95,7 +101,7 @@ namespace SimpleAuth.AuthServer
                 .AddLogging(log => { log.AddConsole(); });
             services.AddAuthentication(CookieNames.CookieName)
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; });
-           services.AddAuthentication(CookieNames.ExternalCookieName)
+            services.AddAuthentication(CookieNames.ExternalCookieName)
                 .AddCookie(CookieNames.ExternalCookieName)
                 .AddGoogle(
                     opts =>

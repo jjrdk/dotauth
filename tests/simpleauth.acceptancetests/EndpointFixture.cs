@@ -33,7 +33,7 @@ namespace SimpleAuth.AcceptanceTests
         }
 
         [Theory]
-        [InlineData("", HttpStatusCode.MovedPermanently)]
+        [InlineData("", HttpStatusCode.OK)]
         [InlineData("home", HttpStatusCode.MovedPermanently)]
         [InlineData(".well-known/openid-configuration", HttpStatusCode.OK)]
         [InlineData("authenticate", HttpStatusCode.OK)]

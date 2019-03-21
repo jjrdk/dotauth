@@ -15,6 +15,7 @@
 namespace SimpleAuth.Extensions
 {
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
@@ -251,6 +252,18 @@ namespace SimpleAuth.Extensions
                 .AddTransient<IBasicAuthorizationPolicy, BasicAuthorizationPolicy>();
             services.AddDataProtection();
             return s;
+        }
+
+        public static IApplicationBuilder UseSimpleAuthMvc(this IApplicationBuilder app)
+        {
+            return app.UseMvc(
+                routes =>
+                {
+                    routes.MapRoute("areaexists", "{area:exists}/{controller=Authenticate}/{action=Index}");
+                    routes.MapRoute("pwdauth", "pwd/{controller=Authenticate}/{action=Index}");
+                    //routes.MapRoute("areaauth", "{area=pwd}/{controller=Authenticate}/{action=Index}");
+                    routes.MapRoute("default", "{controller=Authenticate}/{action=Index}");
+                });
         }
 
         private static RuntimeSettings GetRuntimeConfig(SimpleAuthOptions options)

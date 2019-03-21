@@ -17,12 +17,13 @@ namespace SimpleAuth.Client
     using Newtonsoft.Json;
     using Results;
     using Shared.Responses;
+    using SimpleAuth.Shared;
     using System;
     using System.Linq;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared;
 
     /// <summary>
     /// Defines the token client.
@@ -78,7 +79,9 @@ namespace SimpleAuth.Client
             var body = new FormUrlEncodedContent(_form.Concat(tokenRequest));
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri(_discoveryInformation.TokenEndPoint)
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri(_discoveryInformation.TokenEndPoint)
             };
             if (_certificate != null)
             {
@@ -112,6 +115,50 @@ namespace SimpleAuth.Client
             {
                 Content = JsonConvert.DeserializeObject<GrantedTokenResponse>(content)
             };
+        }
+
+
+        /// <summary>
+        /// Sends the specified request URL.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="authorizationValue">The authorization value.</param>
+        /// <returns></returns>
+        public async Task<GenericResponse<object>> RequestSms(
+            ConfirmationCodeRequest request)
+        {
+            var requestUri = new Uri(_discoveryInformation.Issuer + "/code");
+
+            var json = JsonConvert.SerializeObject(request);
+            var req = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = new StringContent(json),
+                RequestUri = requestUri
+            };
+            req.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            if (!string.IsNullOrWhiteSpace(_authorizationValue))
+            {
+                req.Headers.Authorization = new AuthenticationHeaderValue("Basic", _authorizationValue);
+            }
+
+            var result = await _client.SendAsync(req).ConfigureAwait(false);
+            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
+            {
+                result.EnsureSuccessStatusCode();
+            }
+            catch
+            {
+                return new GenericResponse<object>
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    HttpStatus = result.StatusCode
+                };
+            }
+
+            return new GenericResponse<object>();
         }
 
         /// <summary>
@@ -156,7 +203,7 @@ namespace SimpleAuth.Client
                 };
             }
 
-            return new RevokeTokenResult {Status = result.StatusCode};
+            return new RevokeTokenResult { Status = result.StatusCode };
         }
     }
 }

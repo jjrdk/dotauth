@@ -31,6 +31,7 @@ namespace SimpleAuth.Server.Tests
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Sms.Controllers;
@@ -63,7 +64,8 @@ namespace SimpleAuth.Server.Tests
                         opts.DefaultAuthenticateScheme = DefaultSchema;
                         opts.DefaultChallengeScheme = DefaultSchema;
                     })
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                .AddJwtBearer(
+                    JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
                         cfg.RequireHttpsMetadata = false;
@@ -84,22 +86,22 @@ namespace SimpleAuth.Server.Tests
                                     token = authorization.Substring(StartIndex).Trim();
                                 }
 
-                                var jwt = (JwtSecurityToken)_handler.ReadToken(token);
-                                var claimsIdentity = new ClaimsIdentity(jwt.Claims, JwtBearerDefaults.AuthenticationScheme);
+                                var jwt = (JwtSecurityToken) _handler.ReadToken(token);
+                                var claimsIdentity = new ClaimsIdentity(
+                                    jwt.Claims,
+                                    JwtBearerDefaults.AuthenticationScheme);
                                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                                 ctx.Principal = claimsPrincipal;
                                 ctx.Success();
                                 return Task.CompletedTask;
                             }
                         };
-                        cfg.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateAudience = false,
-                        };
+                        cfg.TokenValidationParameters = new TokenValidationParameters {ValidateAudience = false,};
                     })
                 .AddFakeCustomAuth(o => { });
 
-            services.AddAuthorization(opt => { opt.AddAuthPolicies(DefaultSchema, JwtBearerDefaults.AuthenticationScheme); });
+            services.AddAuthorization(
+                opt => { opt.AddAuthPolicies(DefaultSchema, JwtBearerDefaults.AuthenticationScheme); });
             // 3. Configure MVC
             var mvc = services.AddMvc();
             var parts = mvc.PartManager.ApplicationParts;
@@ -143,16 +145,22 @@ namespace SimpleAuth.Server.Tests
         {
             services.AddSingleton(_context.TwilioClient.Object)
                 .AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>()
-                .AddSimpleAuth(options =>
-                {
-                    options.Clients = sp => new InMemoryClientRepository(
-                        _context.Client,
-                        sp.GetService<IScopeStore>(),
-                        DefaultStores.Clients(_context));
-                    options.Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents());
-                    options.Users = sp => new InMemoryResourceOwnerRepository(DefaultStores.Users());
-                    options.UserClaimsToIncludeInAuthToken = new[] { "sub", "role", "name" };
-                })
+                .AddSimpleAuth(
+                    options =>
+                    {
+                        options.Clients = sp => new InMemoryClientRepository(
+                            _context.Client,
+                            sp.GetService<IScopeStore>(),
+                            DefaultStores.Clients(_context));
+                        options.Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents());
+                        options.Users = sp => new InMemoryResourceOwnerRepository(DefaultStores.Users());
+                        options.UserClaimsToIncludeInAuthToken = new[]
+                        {
+                            new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
+                            new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled),
+                            new Regex($"^{OpenIdClaimTypes.Name}$", RegexOptions.Compiled)
+                        };
+                    })
                 .AddLogging()
                 .AddAccountFilter()
                 .AddSingleton(_context.ConfirmationCodeStore.Object)

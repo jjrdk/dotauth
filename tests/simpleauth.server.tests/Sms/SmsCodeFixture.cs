@@ -1,34 +1,31 @@
 ﻿namespace SimpleAuth.Server.Tests.Sms
 {
     using Moq;
+    using SimpleAuth.Client;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using System;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.DTOs;
-    using SimpleAuth.Sms.Client;
     using Xunit;
 
     public class SmsCodeFixture : IDisposable
     {
-        private readonly SidSmsAuthenticateClient _sidSmsAuthenticateClient;
         private const string BaseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
 
         public SmsCodeFixture()
         {
             _server = new TestOauthServerFixture();
-            _sidSmsAuthenticateClient = new SidSmsAuthenticateClient(_server.Client);
         }
 
         [Fact]
         public async Task WhenNoPhoneNumberConfiguredThenReturnsError()
         {
-            // ACT : NO PHONE NUMBER
-            var noPhoneNumberResult = await _sidSmsAuthenticateClient
-                .Send(BaseUrl, new ConfirmationCodeRequest { PhoneNumber = string.Empty })
+            var client = await CreateTokenClient().ConfigureAwait(false);
+            var noPhoneNumberResult = await client.RequestSms(new ConfirmationCodeRequest {PhoneNumber = string.Empty})
                 .ConfigureAwait(false);
 
             // ASSERT : NO PHONE NUMBER
@@ -36,6 +33,14 @@
             Assert.Equal(HttpStatusCode.BadRequest, noPhoneNumberResult.HttpStatus);
             Assert.Equal(ErrorCodes.InvalidRequestCode, noPhoneNumberResult.Error.Error);
             Assert.Equal("parameter phone_number is missing", noPhoneNumberResult.Error.ErrorDescription);
+        }
+
+        private Task<TokenClient> CreateTokenClient()
+        {
+            return TokenClient.Create(
+                TokenCredentials.FromClientCredentials("client", "client"),
+                _server.Client,
+                new Uri(BaseUrl + "/.well-known/openid-configuration"));
         }
 
         [Fact]
@@ -46,7 +51,7 @@
             _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((ConfirmationCode)null));
             _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
-                .Callback<ConfirmationCode, CancellationToken>((r,c) => { confirmationCode = r; })
+                .Callback<ConfirmationCode, CancellationToken>((r, c) => { confirmationCode = r; })
                 .Returns(() => Task.FromResult(true));
             _server.SharedCtx.TwilioClient
                 .Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
@@ -54,8 +59,9 @@
                     () => throw new SimpleAuthException(
                         ErrorCodes.UnhandledExceptionCode,
                         "the twilio account is not properly configured"));
-            var twilioNotConfigured = await _sidSmsAuthenticateClient
-                .Send(BaseUrl, new ConfirmationCodeRequest { PhoneNumber = "phone" })
+            var client = await CreateTokenClient().ConfigureAwait(false);
+            var twilioNotConfigured = await client
+                .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
                 .ConfigureAwait(false);
 
             Assert.True(twilioNotConfigured.ContainsError);
@@ -76,8 +82,9 @@
                 .Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(() => { })
                 .ReturnsAsync(true);
-            var cannotInsertConfirmationCode = await _sidSmsAuthenticateClient
-                .Send(BaseUrl, new ConfirmationCodeRequest { PhoneNumber = "phone" })
+            var client = await CreateTokenClient().ConfigureAwait(false);
+            var cannotInsertConfirmationCode = await client
+                .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
                 .ConfigureAwait(false);
 
             // ASSERT : CANNOT INSERT CONFIRMATION CODE
@@ -95,8 +102,9 @@
             _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 .Callback(() => throw new Exception())
                 .Returns(() => Task.FromResult(false));
-            var unhandledException = await _sidSmsAuthenticateClient
-                .Send(BaseUrl, new ConfirmationCodeRequest { PhoneNumber = "phone" })
+            var client = await CreateTokenClient().ConfigureAwait(false);
+            var unhandledException = await client
+                .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
                 .ConfigureAwait(false);
 
             Assert.True(unhandledException.ContainsError);
@@ -119,8 +127,9 @@
                 .Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(() => { })
                 .ReturnsAsync(true);
-            var happyPath = await _sidSmsAuthenticateClient
-                .Send(BaseUrl, new ConfirmationCodeRequest { PhoneNumber = "phone" })
+            var client = await CreateTokenClient().ConfigureAwait(false);
+            var happyPath = await client
+                .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
                 .ConfigureAwait(false);
 
             Assert.False(happyPath.ContainsError);
