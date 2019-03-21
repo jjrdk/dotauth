@@ -36,7 +36,7 @@
             using (var session = _sessionFactory())
             {
                 var ro = await session.Query<ResourceOwner>()
-                    .FirstOrDefaultAsync(r => r.Claims.Any(x => x.Type == key && x.Value == value))
+                    .FirstOrDefaultAsync(r => r.Claims.Any(x => x.Type == key && x.Value == value), token: cancellationToken)
                     .ConfigureAwait(false);
 
                 return ro;
