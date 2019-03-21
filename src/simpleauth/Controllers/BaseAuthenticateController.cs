@@ -697,8 +697,8 @@ namespace SimpleAuth.Controllers
             CancellationToken cancellationToken)
         {
             var openidClaims = authenticatedUser.Claims
-                .Where(oc => _runtimeSettings.ClaimsIncludedInUserCreation.Contains(oc.Type))
                 .ToOpenidClaims()
+                .Where(oc => _runtimeSettings.ClaimsIncludedInUserCreation.Contains(oc.Type))
                 .ToArray();
 
             var record = new ResourceOwner
