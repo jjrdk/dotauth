@@ -36,6 +36,7 @@
     public class AuthenticateController : BaseAuthenticateController
     {
         private readonly IEventPublisher _eventPublisher;
+        private readonly IConfirmationCodeStore _confirmationCodeStore;
         private readonly GetUserOperation _getUserOperation;
         private readonly SmsAuthenticationOperation _smsAuthenticationOperation;
         private readonly GenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
@@ -105,6 +106,7 @@
                 runtimeSettings)
         {
             _eventPublisher = eventPublisher;
+            _confirmationCodeStore = confirmationCodeStore;
             _getUserOperation = new GetUserOperation(resourceOwnerRepository);
             var generateSms = new GenerateAndSendSmsCodeOperation(smsClient, confirmationCodeStore);
             _smsAuthenticationOperation = new SmsAuthenticationOperation(
@@ -277,8 +279,7 @@
             var subject = authenticatedUserClaims
                 .First(c => c.Type == OpenIdClaimTypes.Subject)
                 .Value;
-            var phoneNumber = authenticatedUserClaims.First(
-                c => c.Type == OpenIdClaimTypes.PhoneNumber);
+            var phoneNumber = authenticatedUserClaims.First(c => c.Type == OpenIdClaimTypes.PhoneNumber);
             if (confirmCodeViewModel.Action == "resend") // Resend the confirmation code.
             {
                 var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, cancellationToken).ConfigureAwait(false);
@@ -340,6 +341,11 @@
 
             await SetLocalCookie(authenticatedUserClaims, Id.Create())
                 .ConfigureAwait(false); // Authenticate the resource owner
+            try
+            {
+                await _confirmationCodeStore.Remove(confirmCodeViewModel.Code, cancellationToken).ConfigureAwait(false);
+            }
+            finally { }
             return RedirectToAction("Index", "User", new { Area = "pwd" });
         }
 
