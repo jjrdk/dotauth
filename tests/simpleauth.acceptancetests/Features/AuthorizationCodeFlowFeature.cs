@@ -67,7 +67,7 @@
                         .ConfigureAwait(false);
                 });
 
-            "then has expected error message".x(() => { Assert.Equal("invalid_scope", result.Error.Error); });
+            "then has expected error message".x(() => { Assert.Equal("invalid_scope", result.Error.Title); });
         }
 
         [Scenario(DisplayName = "Redirect uri does not match client registration")]
@@ -95,7 +95,7 @@
                         .ConfigureAwait(false);
                 });
 
-            "then has expected error message".x(() => { Assert.Equal("invalid_request", result.Error.Error); });
+            "then has expected error message".x(() => { Assert.Equal("invalid_request", result.Error.Title); });
         }
     }
 }

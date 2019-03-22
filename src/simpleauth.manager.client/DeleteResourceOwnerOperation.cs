@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Responses;
 
     internal sealed class DeleteResourceOwnerOperation
@@ -44,7 +45,7 @@
                 return new GenericResponse<object>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }

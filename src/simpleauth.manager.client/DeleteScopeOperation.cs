@@ -45,7 +45,7 @@
                 return new GenericResponse<Scope>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }

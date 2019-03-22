@@ -42,8 +42,8 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Error);
-            Assert.Equal("the parameter resource_set_ids needs to be specified", response.Error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Title);
+            Assert.Equal("the parameter resource_set_ids needs to be specified", response.Error.Detail);
         }
 
         [Fact]
@@ -53,8 +53,8 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Error);
-            Assert.Equal("the parameter rules needs to be specified", response.Error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Title);
+            Assert.Equal("the parameter rules needs to be specified", response.Error.Detail);
         }
 
         [Fact]
@@ -66,8 +66,8 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal("invalid_resource_set_id", response.Error.Error);
-            Assert.Equal("resource set resource_id doesn't exist", response.Error.ErrorDescription);
+            Assert.Equal("invalid_resource_set_id", response.Error.Title);
+            Assert.Equal("resource set resource_id doesn't exist", response.Error.Detail);
         }
 
         [Fact]
@@ -88,8 +88,8 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal("invalid_scope", response.Error.Error);
-            Assert.Equal("one or more scopes don't belong to a resource set", response.Error.ErrorDescription);
+            Assert.Equal("invalid_scope", response.Error.Title);
+            Assert.Equal("one or more scopes don't belong to a resource set", response.Error.Detail);
         }
 
         [Fact]
@@ -98,8 +98,8 @@ namespace SimpleAuth.Server.Tests
             var response = await _umaClient.GetPolicy("unknown", "header").ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal("not_found", response.Error.Error);
-            Assert.Equal("policy cannot be found", response.Error.ErrorDescription);
+            Assert.Equal("not_found", response.Error.Title);
+            Assert.Equal("policy cannot be found", response.Error.Detail);
         }
 
         [Fact]
@@ -108,8 +108,8 @@ namespace SimpleAuth.Server.Tests
             var response = await _umaClient.UpdatePolicy(new PutPolicy { }, "header").ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Error);
-            Assert.Equal("the parameter id needs to be specified", response.Error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Title);
+            Assert.Equal("the parameter id needs to be specified", response.Error.Detail);
         }
 
         [Fact]
@@ -119,8 +119,8 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Error);
-            Assert.Equal("the parameter rules needs to be specified", response.Error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Title);
+            Assert.Equal("the parameter rules needs to be specified", response.Error.Detail);
         }
 
         [Fact]
@@ -132,8 +132,8 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal("not_found", response.Error.Error);
-            Assert.Equal("policy cannot be found", response.Error.ErrorDescription);
+            Assert.Equal("not_found", response.Error.Title);
+            Assert.Equal("policy cannot be found", response.Error.Detail);
         }
 
         [Fact]
@@ -170,8 +170,8 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal("invalid_scope", response.Error.Error);
-            Assert.Equal("one or more scopes don't belong to a resource set", response.Error.ErrorDescription);
+            Assert.Equal("invalid_scope", response.Error.Title);
+            Assert.Equal("one or more scopes don't belong to a resource set", response.Error.Detail);
         }
 
         [Fact]
@@ -180,8 +180,8 @@ namespace SimpleAuth.Server.Tests
             var response = await _umaClient.DeletePolicy("unknown", "header").ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal("not_found", response.Error.Error);
-            Assert.Equal("policy cannot be found", response.Error.ErrorDescription);
+            Assert.Equal("not_found", response.Error.Title);
+            Assert.Equal("policy cannot be found", response.Error.Detail);
         }
 
         [Fact]
@@ -191,8 +191,8 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Error);
-            Assert.Equal("the parameter resources needs to be specified", response.Error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Title);
+            Assert.Equal("the parameter resources needs to be specified", response.Error.Detail);
         }
 
         [Fact]
@@ -205,8 +205,8 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal("not_found", response.Error.Error);
-            Assert.Equal("policy cannot be found", response.Error.ErrorDescription);
+            Assert.Equal("not_found", response.Error.Title);
+            Assert.Equal("policy cannot be found", response.Error.Detail);
         }
 
         [Fact]
@@ -235,8 +235,8 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal("invalid_resource_set_id", response.Error.Error);
-            Assert.Equal("resource set resource doesn't exist", response.Error.ErrorDescription);
+            Assert.Equal("invalid_resource_set_id", response.Error.Title);
+            Assert.Equal("resource set resource doesn't exist", response.Error.Detail);
         }
 
         [Fact]
@@ -245,8 +245,8 @@ namespace SimpleAuth.Server.Tests
             var response = await _umaClient.DeletePolicyResource("unknown", "resource_id", "header").ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal("not_found", response.Error.Error);
-            Assert.Equal("policy cannot be found", response.Error.ErrorDescription);
+            Assert.Equal("not_found", response.Error.Title);
+            Assert.Equal("policy cannot be found", response.Error.Detail);
         }
 
         [Fact]
@@ -272,8 +272,8 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal("invalid_resource_set_id", response.Error.Error);
-            Assert.Equal("resource set resource_id doesn't exist", response.Error.ErrorDescription);
+            Assert.Equal("invalid_resource_set_id", response.Error.Title);
+            Assert.Equal("resource set resource_id doesn't exist", response.Error.Detail);
         }
 
         [Fact]

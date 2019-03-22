@@ -17,14 +17,14 @@ namespace SimpleAuth.Server.Tests.Apis
     using Client;
     using Newtonsoft.Json;
     using Shared;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Errors;
     using Xunit;
 
     public class IntrospectClientFixture
@@ -50,9 +50,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
-            Assert.Equal("no parameter in body request", error.ErrorDescription);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal("no parameter in body request", error.Detail);
         }
 
         [Fact]
@@ -71,9 +71,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
-            Assert.Equal("no parameter in body request", error.ErrorDescription);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal("no parameter in body request", error.Detail);
         }
 
         [Fact]
@@ -89,8 +89,8 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
 
             Assert.True(introspection.ContainsError);
-            Assert.Equal("invalid_client", introspection.Error.Error);
-            Assert.Equal("the client doesn't exist", introspection.Error.ErrorDescription);
+            Assert.Equal("invalid_client", introspection.Error.Title);
+            Assert.Equal("the client doesn't exist", introspection.Error.Detail);
         }
 
         [Fact]
@@ -106,8 +106,8 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
 
             Assert.True(introspection.ContainsError);
-            Assert.Equal("invalid_token", introspection.Error.Error);
-            Assert.Equal("the token is not valid", introspection.Error.ErrorDescription);
+            Assert.Equal("invalid_token", introspection.Error.Title);
+            Assert.Equal("the token is not valid", introspection.Error.Detail);
         }
 
         [Fact]

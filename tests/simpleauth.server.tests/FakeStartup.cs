@@ -116,7 +116,6 @@ namespace SimpleAuth.Server.Tests
         {
             //1 . Enable CORS.
             app.UseCors("AllowAll");
-            // 4. Use simple identity server.
             app.UseSimpleAuthExceptionHandler();
             //// 5. Client JWKS endpoint
             //app.Map("/jwks_client", a =>

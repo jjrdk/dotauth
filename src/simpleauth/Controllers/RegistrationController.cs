@@ -70,10 +70,11 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorResponse
+            var error = new ErrorDetails
             {
-                Error = code,
-                ErrorDescription = message
+                Title = code,
+                Detail = message,
+                Status = statusCode
             };
             return new JsonResult(error)
             {

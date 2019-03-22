@@ -101,7 +101,7 @@
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseAuthentication().UseCors("AllowAll").UseSimpleAuthExceptionHandler().UseSimpleAuthMvc();
+        app.UseAuthentication().UseCors("AllowAll").UseSimpleAuthExceptionHandler().UseSimpleAuthExceptionHandler().UseSimpleAuthMvc();
     }
 }
 }

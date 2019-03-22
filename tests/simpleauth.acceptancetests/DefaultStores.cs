@@ -16,7 +16,6 @@ namespace SimpleAuth.AcceptanceTests
 {
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth;
-    using SimpleAuth.Extensions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using System;

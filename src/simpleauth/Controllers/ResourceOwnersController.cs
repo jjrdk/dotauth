@@ -21,8 +21,8 @@ namespace SimpleAuth.Controllers
     using Shared.Models;
     using Shared.Repositories;
     using Shared.Requests;
-    using Shared.Responses;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.WebSite.User;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -30,7 +30,6 @@ namespace SimpleAuth.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.WebSite.User;
 
     /// <summary>
     /// Defines the resource owner controller.
@@ -109,10 +108,11 @@ namespace SimpleAuth.Controllers
             if (!await _resourceOwnerRepository.Delete(id, cancellationToken).ConfigureAwait(false))
             {
                 return BadRequest(
-                    new ErrorResponse
+                    new ErrorDetails
                     {
-                        Error = ErrorCodes.UnhandledExceptionCode,
-                        ErrorDescription = ErrorDescriptions.TheResourceOwnerCannotBeRemoved
+                        Title = ErrorCodes.UnhandledExceptionCode,
+                        Detail = ErrorDescriptions.TheResourceOwnerCannotBeRemoved,
+                        Status = HttpStatusCode.BadRequest
                     });
             }
 
@@ -291,10 +291,11 @@ namespace SimpleAuth.Controllers
             }
 
             return BadRequest(
-                new ErrorResponse
+                new ErrorDetails
                 {
-                    Error = ErrorCodes.UnhandledExceptionCode,
-                    ErrorDescription = "a resource owner with same credentials already exists"
+                    Title = ErrorCodes.UnhandledExceptionCode,
+                    Detail = "a resource owner with same credentials already exists",
+                    Status = HttpStatusCode.BadRequest
                 });
         }
 
@@ -325,7 +326,7 @@ namespace SimpleAuth.Controllers
 
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorResponse { Error = code, ErrorDescription = message };
+            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
             return new JsonResult(error) { StatusCode = (int)statusCode };
         }
     }

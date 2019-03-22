@@ -1,16 +1,16 @@
 namespace SimpleAuth.Sms.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Sms.Actions;
     using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Mvc;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Responses;
-    using SimpleAuth.Sms.Actions;
 
     /// <summary>
     /// Defines the code controller.
@@ -97,8 +97,8 @@ namespace SimpleAuth.Sms.Controllers
         /// <returns></returns>
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorResponse {Error = code, ErrorDescription = message};
-            return new JsonResult(error) {StatusCode = (int) statusCode};
+            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
+            return new JsonResult(error) { StatusCode = (int)statusCode };
         }
     }
 }
