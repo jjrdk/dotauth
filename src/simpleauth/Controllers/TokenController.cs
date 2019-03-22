@@ -6,8 +6,8 @@
     using Microsoft.Extensions.Primitives;
     using Shared;
     using Shared.Models;
-    using Shared.Responses;
     using SimpleAuth.Common;
+    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Collections.Generic;
@@ -17,7 +17,6 @@
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Errors;
 
     /// <summary>
     /// Defines the token controller.
@@ -90,10 +89,11 @@
             if (tokenRequest.grant_type == null)
             {
                 return BadRequest(
-                    new ErrorResponse
+                    new ErrorDetails
                     {
-                        Error = ErrorCodes.InvalidRequestCode,
-                        ErrorDescription = string.Format(
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidRequestCode,
+                        Detail = string.Format(
                             ErrorDescriptions.MissingParameter,
                             RequestTokenNames.GrantType)
                     });
@@ -228,7 +228,7 @@
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
-            return result ? new OkResult() : StatusCode((int) HttpStatusCode.BadRequest);
+            return result ? new OkResult() : StatusCode((int)HttpStatusCode.BadRequest);
         }
 
         private X509Certificate2 GetCertificate()

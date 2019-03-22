@@ -98,13 +98,10 @@
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseAuthentication();
-            //1 . Enable CORS.
-            app.UseCors("AllowAll");
-            // 4. Use simple identity server.
-            app.UseSimpleAuthExceptionHandler();
-            // 5. Use MVC.
-            app.UseMvcWithDefaultRoute();
+            app.UseAuthentication()
+                .UseCors("AllowAll")
+                .UseSimpleAuthExceptionHandler()
+                .UseMvcWithDefaultRoute();
         }
     }
 }

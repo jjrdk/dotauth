@@ -23,6 +23,7 @@ namespace SimpleAuth.Client
     using System.Net.Http;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the user info client.
@@ -107,7 +108,7 @@ namespace SimpleAuth.Client
                 return new GetUserInfoResult
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(json),
                     Status = serializedContent.StatusCode
                 };
             }
@@ -133,10 +134,10 @@ namespace SimpleAuth.Client
             return new GetUserInfoResult
             {
                 ContainsError = true,
-                Error = new ErrorResponseWithState
+                Error = new ErrorDetails
                 {
-                    Error = "invalid_token",
-                    ErrorDescription = "Not a valid resource owner token"
+                    Title = "invalid_token",
+                    Detail = "Not a valid resource owner token"
                 }
             };
         }

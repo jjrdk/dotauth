@@ -26,8 +26,8 @@
                 .ConfigureAwait(false);
 
             Assert.True(getUserInfoResult.ContainsError);
-            Assert.Equal("invalid_token", getUserInfoResult.Error.Error);
-            Assert.Equal("the token is not valid", getUserInfoResult.Error.ErrorDescription);
+            Assert.Equal("invalid_token", getUserInfoResult.Error.Title);
+            Assert.Equal("the token is not valid", getUserInfoResult.Error.Detail);
         }
 
         [Fact]
@@ -44,8 +44,8 @@
                 .ConfigureAwait(false);
 
             Assert.True(getUserInfoResult.ContainsError);
-            Assert.Equal("invalid_token", getUserInfoResult.Error.Error);
-            Assert.Equal("Not a valid resource owner token", getUserInfoResult.Error.ErrorDescription);
+            Assert.Equal("invalid_token", getUserInfoResult.Error.Title);
+            Assert.Equal("Not a valid resource owner token", getUserInfoResult.Error.Detail);
         }
 
         [Fact]

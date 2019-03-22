@@ -17,13 +17,11 @@ namespace SimpleAuth.Server.Tests.Apis
     using Client;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
-    using Moq;
     using Newtonsoft.Json;
     using Shared;
-    using Shared.Responses;
     using SimpleAuth;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
     using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
@@ -32,7 +30,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net.Http;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
-    using System.Threading;
     using System.Threading.Tasks;
     using Xunit;
 
@@ -66,11 +63,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
-            Assert.Equal("the parameter grant_type is missing", error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal("the parameter grant_type is missing", error.Detail);
         }
 
         [Fact]
@@ -90,11 +87,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
-            Assert.Equal("the parameter username is missing", error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal("the parameter username is missing", error.Detail);
         }
 
         [Fact]
@@ -115,11 +112,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
-            Assert.Equal("the parameter password is missing", error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal("the parameter password is missing", error.Detail);
         }
 
         [Fact]
@@ -141,11 +138,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
-            Assert.Equal("the parameter scope is missing", error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal("the parameter scope is missing", error.Detail);
         }
 
         [Fact]
@@ -169,11 +166,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_client", error.Error);
-            Assert.Equal("the client doesn't exist", error.ErrorDescription);
+            Assert.Equal("invalid_client", error.Title);
+            Assert.Equal("the client doesn't exist", error.Detail);
         }
 
         [Fact]
@@ -198,11 +195,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_client", error.Error);
-            Assert.Equal("the client cannot be authenticated with secret basic", error.ErrorDescription);
+            Assert.Equal("invalid_client", error.Title);
+            Assert.Equal("the client cannot be authenticated with secret basic", error.Detail);
         }
 
         [Fact]
@@ -228,11 +225,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_grant", error.Error);
-            Assert.Equal("resource owner credentials are not valid", error.ErrorDescription);
+            Assert.Equal("invalid_grant", error.Title);
+            Assert.Equal("resource owner credentials are not valid", error.Detail);
         }
 
         [Fact]
@@ -257,11 +254,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_scope", error.Error);
-            Assert.Equal("the scopes invalid are not allowed or invalid", error.ErrorDescription);
+            Assert.Equal("invalid_scope", error.Title);
+            Assert.Equal("the scopes invalid are not allowed or invalid", error.Detail);
         }
 
         [Fact]
@@ -281,11 +278,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
-            Assert.Equal("the parameter scope is missing", error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal("the parameter scope is missing", error.Detail);
         }
 
         [Fact]
@@ -308,11 +305,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_client", error.Error);
-            Assert.Equal("the client client doesn't support the grant type client_credentials", error.ErrorDescription);
+            Assert.Equal("invalid_client", error.Title);
+            Assert.Equal("the client client doesn't support the grant type client_credentials", error.Detail);
         }
 
         [Fact]
@@ -336,13 +333,13 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_client", error.Error);
+            Assert.Equal("invalid_client", error.Title);
             Assert.Equal(
                 "the client 'clientWithWrongResponseType' doesn't support the response type: 'token'",
-                error.ErrorDescription);
+                error.Detail);
         }
 
         [Fact]
@@ -365,11 +362,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_scope", error.Error);
-            Assert.Equal("the scopes invalid are not allowed or invalid", error.ErrorDescription);
+            Assert.Equal("invalid_scope", error.Title);
+            Assert.Equal("the scopes invalid are not allowed or invalid", error.Detail);
         }
 
         [Fact]
@@ -389,11 +386,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
-            Assert.Equal("the parameter refresh_token is missing", error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal("the parameter refresh_token is missing", error.Detail);
         }
 
         [Fact]
@@ -415,11 +412,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_client", error.Error);
-            Assert.Equal("the client doesn't exist", error.ErrorDescription);
+            Assert.Equal("invalid_client", error.Title);
+            Assert.Equal("the client doesn't exist", error.Detail);
         }
 
         [Fact]
@@ -442,11 +439,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_grant", error.Error);
-            Assert.Equal("the refresh token is not valid", error.ErrorDescription);
+            Assert.Equal("invalid_grant", error.Title);
+            Assert.Equal("the refresh token is not valid", error.Detail);
         }
 
         [Fact]
@@ -466,8 +463,8 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.BadRequest, refreshToken.Status);
-            Assert.Equal("invalid_grant", refreshToken.Error.Error);
-            Assert.Equal("the refresh token can be used only by the same issuer", refreshToken.Error.ErrorDescription);
+            Assert.Equal("invalid_grant", refreshToken.Error.Title);
+            Assert.Equal("the refresh token can be used only by the same issuer", refreshToken.Error.Detail);
         }
 
         [Fact]
@@ -487,11 +484,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
-            Assert.Equal("the parameter code is missing", error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal("the parameter code is missing", error.Detail);
         }
 
         [Fact]
@@ -512,11 +509,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
-            Assert.Equal("Based on the RFC-3986 the redirection-uri is not well formed", error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal("Based on the RFC-3986 the redirection-uri is not well formed", error.Detail);
         }
 
         [Fact]
@@ -539,11 +536,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_client", error.Error);
-            Assert.Equal("the client doesn't exist", error.ErrorDescription);
+            Assert.Equal("invalid_client", error.Title);
+            Assert.Equal("the client doesn't exist", error.Detail);
         }
 
         [Fact]
@@ -568,11 +565,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_client", error.Error);
-            Assert.Equal("the client client doesn't support the grant type authorization_code", error.ErrorDescription);
+            Assert.Equal("invalid_client", error.Title);
+            Assert.Equal("the client client doesn't support the grant type authorization_code", error.Detail);
         }
 
         [Fact]
@@ -596,13 +593,13 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_client", error.Error);
+            Assert.Equal("invalid_client", error.Title);
             Assert.Equal(
                 "the client 'incomplete_authcode_client' doesn't support the response type: 'code'",
-                error.ErrorDescription);
+                error.Detail);
         }
 
         [Fact]
@@ -626,11 +623,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_grant", error.Error);
-            Assert.Equal("the authorization code is not correct", error.ErrorDescription);
+            Assert.Equal("invalid_grant", error.Title);
+            Assert.Equal("the authorization code is not correct", error.Detail);
         }
 
         // TH : CONTINUE TO WRITE UTS

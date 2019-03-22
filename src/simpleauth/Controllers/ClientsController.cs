@@ -14,18 +14,17 @@
 
 namespace SimpleAuth.Controllers
 {
-    using System.Net;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Shared.Models;
     using Shared.Repositories;
     using Shared.Requests;
-    using Shared.Responses;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Defines the client controller.
@@ -158,11 +157,12 @@ namespace SimpleAuth.Controllers
                 var result = await _clientRepository.Update(updateClientRequest, cancellationToken)
                     .ConfigureAwait(false);
                 return result == null
-                    ? (IActionResult) BadRequest(
-                        new ErrorResponse
+                    ? (IActionResult)BadRequest(
+                        new ErrorDetails
                         {
-                            Error = ErrorCodes.UnhandledExceptionCode,
-                            ErrorDescription = ErrorDescriptions.RequestIsNotValid
+                            Status = HttpStatusCode.BadRequest,
+                            Title = ErrorCodes.UnhandledExceptionCode,
+                            Detail = ErrorDescriptions.RequestIsNotValid
                         })
                     : Ok(result);
             }
@@ -207,8 +207,8 @@ namespace SimpleAuth.Controllers
 
         private IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorResponse {Error = code, ErrorDescription = message};
-            return StatusCode((int) statusCode, error);
+            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
+            return StatusCode((int)statusCode, error);
         }
     }
 }

@@ -7,7 +7,6 @@
     using System.Threading.Tasks;
     using Moq;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Sms.Actions;
     using Xunit;

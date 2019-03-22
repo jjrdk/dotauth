@@ -2,7 +2,6 @@
 {
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Requests;
     using System;
     using System.Collections.Generic;

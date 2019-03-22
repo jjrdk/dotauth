@@ -17,12 +17,13 @@ namespace SimpleAuth.MiddleWare
     using Exceptions;
     using Microsoft.AspNetCore.Http;
     using Shared;
-    using Shared.Responses;
-    using System;
-    using System.Net;
-    using System.Threading.Tasks;
-    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Events.Logging;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http.Internal;
+    using Microsoft.Extensions.Primitives;
+    using SimpleAuth.Shared.Errors;
 
     internal class ExceptionHandlerMiddleware
     {
@@ -47,12 +48,11 @@ namespace SimpleAuth.MiddleWare
             {
                 context.Response.Clear();
 
-                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                context.Response.ContentType = "application/json";
+                //context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                //context.Response.ContentType = "application/json";
                 if (exception is SimpleAuthException serverException)
                 {
-                    var exceptionWithState = exception as SimpleAuthExceptionWithState;
-                    var state = exceptionWithState == null
+                    var state = !(exception is SimpleAuthExceptionWithState exceptionWithState)
                         ? string.Empty
                         : exceptionWithState.State;
                     await _publisher.Publish(new SimpleAuthError(Id.Create(),
@@ -61,29 +61,11 @@ namespace SimpleAuth.MiddleWare
                         state,
                         DateTime.UtcNow)).ConfigureAwait(false);
 
-                    if (exceptionWithState != null)
-                    {
-                        ErrorResponse errorResponseWithState = new ErrorResponseWithState
-                        {
-                            ErrorDescription = serverException.Message,
-                            Error = serverException.Code,
-                            State = exceptionWithState.State
-                        };
-
-                        var serializedError = errorResponseWithState.SerializeWithJavascript();
-                        await context.Response.WriteAsync(serializedError).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        var error = new ErrorResponse
-                        {
-                            ErrorDescription = serverException.Message,
-                            Error = serverException.Code
-                        };
-
-                        var serializedError = error.SerializeWithJavascript();
-                        await context.Response.WriteAsync(serializedError).ConfigureAwait(false);
-                    }
+                    context.Request.Path = "/error";
+                    context.Request.QueryString = new QueryString()
+                        .Add("code", "400")
+                        .Add("title", serverException.Code)
+                        .Add("message", exception.Message);
                 }
                 else
                 {
@@ -91,14 +73,22 @@ namespace SimpleAuth.MiddleWare
                         Id.Create(),
                         exception,
                         DateTime.UtcNow)).ConfigureAwait(false);
-                    var error = new ErrorResponse
-                    {
-                        Error = ErrorCodes.UnhandledExceptionCode,
-                        ErrorDescription = exception.Message
-                    };
 
-                    var serializedError = error.SerializeWithJavascript();
-                    await context.Response.WriteAsync(serializedError).ConfigureAwait(false);
+                    context.Request.Path = "/error";
+                    context.Request.QueryString = new QueryString()
+                        .Add("code", "500")
+                        .Add("title", ErrorCodes.UnhandledExceptionCode)
+                        .Add("message", exception.Message);
+                }
+
+                try
+                {
+                    await Invoke(context).ConfigureAwait(false);
+                }
+                catch
+                {
+                    context.Response.Clear();
+                    context.Response.StatusCode = 500;
                 }
             }
         }

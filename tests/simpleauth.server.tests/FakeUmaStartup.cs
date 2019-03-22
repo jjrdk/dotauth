@@ -96,11 +96,7 @@ namespace SimpleAuth.Server.Tests
                 });
 
             // 3. Enable CORS
-            app.UseCors("AllowAll");
-            // 4. Display exception
-            app.UseSimpleAuthExceptionHandler();
-            // 5. Launch ASP.NET MVC
-            app.UseMvcWithDefaultRoute();
+            app.UseCors("AllowAll").UseSimpleAuthExceptionHandler().UseMvcWithDefaultRoute();
             //(routes => { routes.MapRoute(name: "default", template: "{controller}/{action}/{id?}"); });
         }
 

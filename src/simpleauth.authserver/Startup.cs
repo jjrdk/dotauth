@@ -142,16 +142,9 @@ namespace SimpleAuth.AuthServer
                 .UseStaticFiles(
                     new StaticFileOptions {FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot")})
                 .UseSimpleAuthExceptionHandler()
-                //.UseStatusCodePagesWithRedirects("/Error/{0}")
+                .UseSimpleAuthExceptionHandler()
                 .UseResponseCompression()
-                .UseMvc(
-                    routes =>
-                    {
-                        routes.MapRoute("areaexists", "{area:exists}/{controller=Authenticate}/{action=Index}");
-                        routes.MapRoute("pwdauth", "pwd/{controller=Authenticate}/{action=Index}");
-                        //routes.MapRoute("areaauth", "{area=pwd}/{controller=Authenticate}/{action=Index}");
-                        routes.MapRoute("default", "{controller=Authenticate}/{action=Index}");
-                    });
+                .UseSimpleAuthMvc();
         }
     }
 }

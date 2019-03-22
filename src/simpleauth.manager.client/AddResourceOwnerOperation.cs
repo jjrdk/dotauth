@@ -7,6 +7,7 @@
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
 
@@ -56,7 +57,7 @@
                 return new GenericResponse<string>()
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }

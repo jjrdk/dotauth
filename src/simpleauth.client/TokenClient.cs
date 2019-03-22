@@ -24,6 +24,7 @@ namespace SimpleAuth.Client
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the token client.
@@ -106,7 +107,7 @@ namespace SimpleAuth.Client
                 return new BaseSidContentResult<GrantedTokenResponse>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(content),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     Status = result.StatusCode
                 };
             }
@@ -153,7 +154,7 @@ namespace SimpleAuth.Client
                 return new GenericResponse<object>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = result.StatusCode
                 };
             }
@@ -198,7 +199,7 @@ namespace SimpleAuth.Client
                 return new RevokeTokenResult
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(json),
                     Status = result.StatusCode
                 };
             }
