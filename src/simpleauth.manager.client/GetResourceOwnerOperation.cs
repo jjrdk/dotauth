@@ -43,7 +43,7 @@
                 return new GenericResponse<ResourceOwner>
                 {
                     ContainsError = true,
-                    Error = Serializer.Default.Deserialize<ErrorResponse>(content),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }

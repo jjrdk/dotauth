@@ -1,11 +1,8 @@
 ﻿namespace SimpleAuth.Sms
 {
     using System;
-    using Microsoft.AspNetCore.Mvc.Razor;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.FileProviders;
     using SimpleAuth.Shared;
-    using SimpleAuth.Sms.Controllers;
     using SimpleAuth.Sms.Services;
 
     /// <summary>

@@ -55,7 +55,7 @@
                 };
                 if (!string.IsNullOrWhiteSpace(content))
                 {
-                    result.Error = Serializer.Default.Deserialize<ErrorResponseWithState>(content);
+                    result.Error = Serializer.Default.Deserialize<ErrorDetails>(content);
                 }
 
                 return result;

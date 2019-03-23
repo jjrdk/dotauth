@@ -20,13 +20,14 @@ namespace SimpleAuth.Controllers
     using Parameters;
     using Shared.DTOs;
     using Shared.Responses;
+    using SimpleAuth.Api.PolicyController;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using System.Linq;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Api.PolicyController;
-    using SimpleAuth.Shared.Errors;
 
     /// <summary>
     /// Defines the policies controller
@@ -142,7 +143,7 @@ namespace SimpleAuth.Controllers
             }
 
             var isPolicyExists = await _updatePolicy.Execute(putPolicy, cancellationToken).ConfigureAwait(false);
-            return !isPolicyExists ? GetNotFoundPolicy() : new StatusCodeResult((int) HttpStatusCode.NoContent);
+            return !isPolicyExists ? GetNotFoundPolicy() : new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         /// <summary>
@@ -176,7 +177,7 @@ namespace SimpleAuth.Controllers
             }
 
             var isPolicyExists = await _addResourceSet.Execute(
-                    new AddResourceSetParameter {PolicyId = id, ResourceSets = postAddResourceSet.ResourceSets},
+                    new AddResourceSetParameter { PolicyId = id, ResourceSets = postAddResourceSet.ResourceSets },
                     cancellationToken)
                 .ConfigureAwait(false);
             if (!isPolicyExists)
@@ -184,7 +185,7 @@ namespace SimpleAuth.Controllers
                 return GetNotFoundPolicy();
             }
 
-            return new StatusCodeResult((int) HttpStatusCode.NoContent);
+            return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         /// <summary>
@@ -220,7 +221,7 @@ namespace SimpleAuth.Controllers
                 return GetNotFoundPolicy();
             }
 
-            return new StatusCodeResult((int) HttpStatusCode.NoContent);
+            return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         /// <summary>
@@ -244,9 +245,9 @@ namespace SimpleAuth.Controllers
             }
 
             var policyId = await _addpolicy.Execute(postPolicy, cancellationToken).ConfigureAwait(false);
-            var content = new AddPolicyResponse {PolicyId = policyId};
+            var content = new AddPolicyResponse { PolicyId = policyId };
 
-            return new ObjectResult(content) {StatusCode = (int) HttpStatusCode.Created};
+            return new ObjectResult(content) { StatusCode = (int)HttpStatusCode.Created };
         }
 
         /// <summary>
@@ -273,20 +274,20 @@ namespace SimpleAuth.Controllers
                 return GetNotFoundPolicy();
             }
 
-            return new StatusCodeResult((int) HttpStatusCode.NoContent);
+            return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         private static ActionResult GetNotFoundPolicy()
         {
-            var errorResponse = new ErrorResponse {Error = "not_found", ErrorDescription = "policy cannot be found"};
+            var errorResponse = new ErrorDetails { Title = "not_found", Detail = "policy cannot be found" };
 
-            return new ObjectResult(errorResponse) {StatusCode = (int) HttpStatusCode.NotFound};
+            return new ObjectResult(errorResponse) { StatusCode = (int)HttpStatusCode.NotFound };
         }
 
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorResponse {Error = code, ErrorDescription = message};
-            return new JsonResult(error) {StatusCode = (int) statusCode};
+            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
+            return new JsonResult(error) { StatusCode = (int)statusCode };
         }
     }
 }

@@ -40,93 +40,85 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Client_Is_Not_Authenticated_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.AddResource(
-                    new PostResourceSet { Name = "picture", Scopes = new [] { "read" } },
+                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
 
             UmaUserStore.Instance().ClientId = null;
             var ticket = await _umaClient.AddPermission(
-                    new PostPermission { ResourceSetId = resource.Content.Id, Scopes = new [] { "read" } },
+                    new PostPermission {ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
             UmaUserStore.Instance().ClientId = "client";
 
             Assert.True(ticket.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, ticket.Error.Error);
-            Assert.Equal("the client_id cannot be extracted", ticket.Error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, ticket.Error.Title);
+            Assert.Equal("the client_id cannot be extracted", ticket.Error.Detail);
         }
 
         [Fact]
         public async Task When_ResourceSetId_Is_Null_Then_Error_Is_Returned()
         {
-            var ticket = await _umaClient.AddPermission(
-                    new PostPermission { ResourceSetId = string.Empty },
-                    "header")
+            var ticket = await _umaClient.AddPermission(new PostPermission {ResourceSetId = string.Empty}, "header")
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, ticket.Error.Error);
-            Assert.Equal("the parameter resource_set_id needs to be specified", ticket.Error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, ticket.Error.Title);
+            Assert.Equal("the parameter resource_set_id needs to be specified", ticket.Error.Detail);
         }
 
         [Fact]
         public async Task When_Scopes_Is_Null_Then_Error_Is_Returned()
         {
-            var ticket = await _umaClient.AddPermission(
-                    new PostPermission { ResourceSetId = "resource" },
-                    "header")
+            var ticket = await _umaClient.AddPermission(new PostPermission {ResourceSetId = "resource"}, "header")
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, ticket.Error.Error);
-            Assert.Equal("the parameter scopes needs to be specified", ticket.Error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, ticket.Error.Title);
+            Assert.Equal("the parameter scopes needs to be specified", ticket.Error.Detail);
         }
 
         [Fact]
         public async Task When_Resource_Does_Not_Exist_Then_Error_Is_Returned()
         {
             var ticket = await _umaClient.AddPermission(
-                    new PostPermission { ResourceSetId = "resource", Scopes = new[] { "scope" } },
+                    new PostPermission {ResourceSetId = "resource", Scopes = new[] {"scope"}},
                     "header")
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
-            Assert.Equal("invalid_resource_set_id", ticket.Error.Error);
-            Assert.Equal("resource set resource doesn't exist", ticket.Error.ErrorDescription);
+            Assert.Equal("invalid_resource_set_id", ticket.Error.Title);
+            Assert.Equal("resource set resource doesn't exist", ticket.Error.Detail);
         }
 
         [Fact]
         public async Task When_Scopes_Does_Not_Exist_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.AddResource(
-                    new PostResourceSet { Name = "picture", Scopes = new [] { "read" } },
+                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
 
             var ticket = await _umaClient.AddPermission(
-                    new PostPermission
-                    {
-                        ResourceSetId = resource.Content.Id,
-                        Scopes = new[] { "scopescopescope" }
-                    },
+                    new PostPermission {ResourceSetId = resource.Content.Id, Scopes = new[] {"scopescopescope"}},
                     "header")
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
-            Assert.Equal("invalid_scope", ticket.Error.Error);
-            Assert.Equal("one or more scopes are not valid", ticket.Error.ErrorDescription);
+            Assert.Equal("invalid_scope", ticket.Error.Title);
+            Assert.Equal("one or more scopes are not valid", ticket.Error.Detail);
         }
 
         [Fact]
         public async Task When_Adding_Permission_Then_TicketId_Is_Returned()
         {
             var resource = await _umaClient.AddResource(
-                    new PostResourceSet { Name = "picture", Scopes = new [] { "read" } },
+                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
 
             var ticket = await _umaClient.AddPermission(
-                    new PostPermission { ResourceSetId = resource.Content.Id, Scopes = new [] { "read" } },
+                    new PostPermission {ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
 
@@ -137,18 +129,16 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Adding_Permissions_Then_TicketIds_Is_Returned()
         {
             var resource = await _umaClient.AddResource(
-                    new PostResourceSet { Name = "picture", Scopes = new[] { "read" } },
+                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
-            var permissions = new []
+            var permissions = new[]
             {
-                new PostPermission {ResourceSetId = resource.Content.Id, Scopes = new [] {"read"}},
-                new PostPermission {ResourceSetId = resource.Content.Id, Scopes = new [] {"read"}}
+                new PostPermission {ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}},
+                new PostPermission {ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}}
             };
 
-            var ticket = await _umaClient
-                .AddPermissions("header", permissions)
-                .ConfigureAwait(false);
+            var ticket = await _umaClient.AddPermissions("header", permissions).ConfigureAwait(false);
 
             Assert.NotNull(ticket);
         }

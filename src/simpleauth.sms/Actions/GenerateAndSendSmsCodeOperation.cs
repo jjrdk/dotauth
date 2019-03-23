@@ -61,13 +61,13 @@
 
         private async Task<string> GetCode(CancellationToken cancellationToken)
         {
-            var number = _random.Next(100000, 999999);
-            if (await _confirmationCodeStore.Get(number.ToString(), cancellationToken).ConfigureAwait(false) != null)
+            var number = _random.Next(100000, 999999).ToString();
+            if ((await _confirmationCodeStore.Get(number, cancellationToken).ConfigureAwait(false))?.Value == number)
             {
                 return await GetCode(cancellationToken).ConfigureAwait(false);
             }
 
-            return number.ToString();
+            return number;
         }
     }
 }

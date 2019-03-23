@@ -15,10 +15,11 @@
 namespace SimpleAuth
 {
     using Shared;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Net.Http;
-    using SimpleAuth.Shared.Models;
+    using System.Text.RegularExpressions;
 
     /// <summary>
     /// Defines the SimpleAuth configuration options.
@@ -38,7 +39,7 @@ namespace SimpleAuth
             TimeSpan rptLifetime = default,
             TimeSpan ticketLifetime = default,
             string[] claimsIncludedInUserCreation = null,
-            params string[] userClaimsToIncludeInAuthToken)
+            params Regex[] userClaimsToIncludeInAuthToken)
         {
             RptLifeTime = rptLifetime == default ? TimeSpan.FromSeconds(3600) : rptLifetime;
             TicketLifeTime = ticketLifetime == default ? TimeSpan.FromSeconds(3600) : ticketLifetime;
@@ -46,7 +47,7 @@ namespace SimpleAuth
                 ? TimeSpan.FromSeconds(3600)
                 : authorizationCodeValidity;
             ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? Array.Empty<string>();
-            UserClaimsToIncludeInAuthToken = userClaimsToIncludeInAuthToken ?? Array.Empty<string>();
+            UserClaimsToIncludeInAuthToken = userClaimsToIncludeInAuthToken ?? Array.Empty<Regex>();
         }
 
         /// <summary>
@@ -195,7 +196,7 @@ namespace SimpleAuth
         /// <value>
         /// The user claims to include in authentication token.
         /// </value>
-        public string[] UserClaimsToIncludeInAuthToken { get; set; }
+        public Regex[] UserClaimsToIncludeInAuthToken { get; set; }
 
         /// <summary>
         /// Gets or sets the RPT lifetime (seconds).

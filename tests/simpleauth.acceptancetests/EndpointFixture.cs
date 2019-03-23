@@ -14,11 +14,11 @@
 
 namespace SimpleAuth.AcceptanceTests
 {
+    using Microsoft.IdentityModel.Logging;
     using System;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Microsoft.IdentityModel.Logging;
     using Xunit;
 
     public class EndpointFixture
@@ -33,7 +33,9 @@ namespace SimpleAuth.AcceptanceTests
         }
 
         [Theory]
-        [InlineData("", HttpStatusCode.MovedPermanently)]
+        [InlineData("", HttpStatusCode.OK)]
+        [InlineData("error?code=404", HttpStatusCode.NotFound)]
+        [InlineData("error/404", HttpStatusCode.NotFound)]
         [InlineData("home", HttpStatusCode.MovedPermanently)]
         [InlineData(".well-known/openid-configuration", HttpStatusCode.OK)]
         [InlineData("authenticate", HttpStatusCode.OK)]
