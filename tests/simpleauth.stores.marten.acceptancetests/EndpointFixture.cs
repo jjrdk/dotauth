@@ -15,7 +15,6 @@
 namespace SimpleAuth.Stores.Marten.AcceptanceTests
 {
     using Microsoft.IdentityModel.Logging;
-    using SimpleAuth.Stores.Marten.AcceptanceTests.Features;
     using System;
     using System.Net;
     using System.Net.Http;

@@ -25,6 +25,7 @@ namespace SimpleAuth.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 
     /// <summary>
@@ -123,7 +124,7 @@ namespace SimpleAuth.Controllers
 
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorResponse {Error = code, ErrorDescription = message};
+            var error = new ErrorDetails {Title = code, Detail = message};
             return new JsonResult(error) {StatusCode = (int) statusCode};
         }
     }

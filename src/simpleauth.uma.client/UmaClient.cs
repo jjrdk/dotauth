@@ -101,7 +101,7 @@ namespace SimpleAuth.Uma.Client
                 {
                     ContainsError = true,
                     HttpStatus = result.StatusCode,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content)
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content)
                 };
             }
 
@@ -160,7 +160,7 @@ namespace SimpleAuth.Uma.Client
                 {
                     ContainsError = true,
                     HttpStatus = result.StatusCode,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content)
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content)
                 };
             }
 
@@ -215,7 +215,7 @@ namespace SimpleAuth.Uma.Client
                 return new GenericResponse<AddPolicyResponse>
                 {
                     ContainsError = true,
-                    Error = Serializer.Default.Deserialize<ErrorResponse>(content),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -266,7 +266,7 @@ namespace SimpleAuth.Uma.Client
                 return new GenericResponse<PolicyResponse>
                 {
                     ContainsError = true,
-                    Error = Serializer.Default.Deserialize<ErrorResponse>(content),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -303,7 +303,7 @@ namespace SimpleAuth.Uma.Client
                 return new GenericResponse<string[]>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -351,7 +351,7 @@ namespace SimpleAuth.Uma.Client
                 return new GenericResponse<object>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -402,7 +402,7 @@ namespace SimpleAuth.Uma.Client
                 return new GenericResponse<object>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -445,7 +445,7 @@ namespace SimpleAuth.Uma.Client
                 return new GenericResponse<object>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -503,7 +503,7 @@ namespace SimpleAuth.Uma.Client
                 return new GenericResponse<object>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -554,7 +554,7 @@ namespace SimpleAuth.Uma.Client
                 return new GenericResponse<object>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -592,7 +592,7 @@ namespace SimpleAuth.Uma.Client
                 return new GenericResponse<SearchAuthPoliciesResponse>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -646,7 +646,7 @@ namespace SimpleAuth.Uma.Client
                 return new GenericResponse<UpdateResourceSetResponse>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -700,7 +700,7 @@ namespace SimpleAuth.Uma.Client
                 return new GenericResponse<AddResourceSetResponse>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -741,7 +741,7 @@ namespace SimpleAuth.Uma.Client
                 return new GenericResponse<string[]>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(json),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(json),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -796,7 +796,7 @@ namespace SimpleAuth.Uma.Client
                 return new GenericResponse<ResourceSetResponse>()
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(json),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(json),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -841,7 +841,7 @@ namespace SimpleAuth.Uma.Client
                 return new GenericResponse<GenericResult<ResourceSet>>()
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }

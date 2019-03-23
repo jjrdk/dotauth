@@ -1,21 +1,21 @@
 namespace SimpleAuth.Sms.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Sms.Actions;
     using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Mvc;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Responses;
-    using SimpleAuth.Sms.Actions;
 
     /// <summary>
     /// Defines the code controller.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="Controller" />
     [Route(SmsConstants.CodeController)]
     public class CodeController : Controller
     {
@@ -61,47 +61,7 @@ namespace SimpleAuth.Sms.Controllers
             [FromBody] ConfirmationCodeRequest confirmationCodeRequest,
             CancellationToken cancellationToken)
         {
-            var checkResult = Check(confirmationCodeRequest);
-            if (checkResult != null)
-            {
-                return checkResult;
-            }
-
-            IActionResult result;
-            try
-            {
-                await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber, cancellationToken)
-                    .ConfigureAwait(false);
-                result = new OkResult();
-            }
-            catch (SimpleAuthException ex)
-            {
-                result = BuildError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
-            }
-            catch (Exception)
-            {
-                result = BuildError(
-                    ErrorCodes.UnhandledExceptionCode,
-                    "unhandled exception occured please contact the administrator",
-                    HttpStatusCode.InternalServerError);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Check the parameter.
-        /// </summary>
-        /// <param name="confirmationCodeRequest"></param>
-        /// <returns></returns>
-        private IActionResult Check(ConfirmationCodeRequest confirmationCodeRequest)
-        {
-            if (confirmationCodeRequest == null)
-            {
-                return BuildError(ErrorCodes.InvalidRequestCode, "no request", HttpStatusCode.BadRequest);
-            }
-
-            if (string.IsNullOrWhiteSpace(confirmationCodeRequest.PhoneNumber))
+            if (string.IsNullOrWhiteSpace(confirmationCodeRequest?.PhoneNumber))
             {
                 return BuildError(
                     ErrorCodes.InvalidRequestCode,
@@ -109,7 +69,23 @@ namespace SimpleAuth.Sms.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            return null;
+            try
+            {
+                await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber, cancellationToken)
+                    .ConfigureAwait(false);
+                return new OkResult();
+            }
+            catch (SimpleAuthException ex)
+            {
+                return BuildError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
+            }
+            catch (Exception)
+            {
+                return BuildError(
+                    ErrorCodes.UnhandledExceptionCode,
+                    "unhandled exception occured please contact the administrator",
+                    HttpStatusCode.InternalServerError);
+            }
         }
 
         /// <summary>
@@ -121,8 +97,8 @@ namespace SimpleAuth.Sms.Controllers
         /// <returns></returns>
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorResponse {Error = code, ErrorDescription = message};
-            return new JsonResult(error) {StatusCode = (int) statusCode};
+            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
+            return new JsonResult(error) { StatusCode = (int)statusCode };
         }
     }
 }

@@ -20,7 +20,6 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
     using System.Security.Cryptography.X509Certificates;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth;
-    using SimpleAuth.Extensions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 
