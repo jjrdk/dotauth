@@ -33,25 +33,13 @@ namespace SimpleAuth.Api.ResourceSetController
 
         public async Task<bool> Execute(string resourceSetId, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(resourceSetId))
-            {
-                throw new ArgumentNullException(nameof(resourceSetId));
-            }
-
             var result = await _resourceSetRepository.Get(resourceSetId, cancellationToken).ConfigureAwait(false);
             if (result == null)
             {
                 return false;
             }
 
-            if (!await _resourceSetRepository.Remove(resourceSetId, cancellationToken).ConfigureAwait(false))
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InternalError,
-                    string.Format(ErrorDescriptions.TheResourceSetCannotBeRemoved, resourceSetId));
-            }
-
-            return true;
+            return await _resourceSetRepository.Remove(resourceSetId, cancellationToken).ConfigureAwait(false);
         }
     }
 }

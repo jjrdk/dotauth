@@ -44,16 +44,6 @@ namespace SimpleAuth.Api.Token.Actions
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (revokeTokenParameter == null)
-            {
-                throw new ArgumentNullException(nameof(revokeTokenParameter));
-            }
-
-            if (string.IsNullOrWhiteSpace(revokeTokenParameter.Token))
-            {
-                throw new ArgumentNullException(nameof(revokeTokenParameter.Token));
-            }
-
             // 1. Check the client credentials
             var instruction = authenticationHeaderValue.GetAuthenticateInstruction(revokeTokenParameter, certificate);
             var authResult = await _authenticateClient.Authenticate(instruction, issuerName, cancellationToken)

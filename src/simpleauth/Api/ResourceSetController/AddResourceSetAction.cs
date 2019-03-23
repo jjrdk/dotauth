@@ -35,11 +35,6 @@ namespace SimpleAuth.Api.ResourceSetController
 
         public async Task<string> Execute(PostResourceSet addResourceSetParameter, CancellationToken cancellationToken)
         {
-            if (addResourceSetParameter == null)
-            {
-                throw new ArgumentNullException(nameof(addResourceSetParameter));
-            }
-
             var resourceSet = new ResourceSet
             {
                 Id = Id.Create(),

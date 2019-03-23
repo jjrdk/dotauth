@@ -76,16 +76,6 @@ namespace SimpleAuth.Extensions
 
         public static bool CheckPkce(this Client client, string codeVerifier, AuthorizationCode code)
         {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            if (code == null)
-            {
-                throw new ArgumentNullException(nameof(code));
-            }
-
             if (!client.RequirePkce)
             {
                 return true;

@@ -70,11 +70,6 @@ namespace SimpleAuth.Authenticate
             string expectedIssuer,
             CancellationToken cancellationToken)
         {
-            if (instruction == null)
-            {
-                throw new ArgumentNullException(nameof(instruction));
-            }
-
             var isJwsToken = instruction.ClientAssertion.IsJwsToken();
             if (!isJwsToken)
             {

@@ -59,7 +59,7 @@ namespace SimpleAuth.Controllers
         {
             if (request == null)
             {
-                throw new ArgumentNullException(nameof(request));
+                BadRequest();
             }
 
             var result = await _scopeRepository.Search(request, cancellationToken).ConfigureAwait(false);
