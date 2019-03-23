@@ -26,21 +26,6 @@
         /// </exception>
         public static async Task<ClaimsPrincipal> GetAuthenticatedUser(this IAuthenticationService authenticateService, ControllerBase controller, string scheme)
         {
-            if (authenticateService == null)
-            {
-                throw new ArgumentNullException(nameof(authenticateService));
-            }
-
-            if (controller == null)
-            {
-                throw new ArgumentNullException(nameof(controller));
-            }
-
-            if (string.IsNullOrWhiteSpace(scheme))
-            {
-                throw new ArgumentNullException(scheme);
-            }
-
             var authResult = await authenticateService.AuthenticateAsync(controller.HttpContext, scheme).ConfigureAwait(false);
             return authResult?.Principal ?? new ClaimsPrincipal(new ClaimsIdentity());
         }

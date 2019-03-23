@@ -27,37 +27,12 @@ namespace SimpleAuth.Extensions
     {
         public static async Task<string> GenerateIdToken(this IClientStore clientStore, string clientId, JwtPayload jwsPayload, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(clientId))
-            {
-                throw new ArgumentNullException(nameof(clientId));
-            }
-
-            if (jwsPayload == null)
-            {
-                throw new ArgumentNullException(nameof(jwsPayload));
-            }
-
             var client = await clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
-            if (client == null)
-            {
-                return null;
-            }
-
-            return GenerateIdToken(client, jwsPayload);
+            return client == null ? null : GenerateIdToken(client, jwsPayload);
         }
 
         public static string GenerateIdToken(this Client client, JwtPayload jwsPayload)
         {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            if (jwsPayload == null)
-            {
-                throw new ArgumentNullException(nameof(jwsPayload));
-            }
-
             var handler = new JwtSecurityTokenHandler();
             var signingCredentials = client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First();
             var jwt = handler.CreateEncodedJwt(

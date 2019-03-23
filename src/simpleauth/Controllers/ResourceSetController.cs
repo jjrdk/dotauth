@@ -194,8 +194,8 @@ namespace SimpleAuth.Controllers
 
             var resourceSetExists = await _removeResourceSet.Execute(id, cancellationToken).ConfigureAwait(false);
             return !resourceSetExists
-                ? GetNotFoundResourceSet()
-                : new StatusCodeResult((int)HttpStatusCode.NoContent);
+                ? (IActionResult)BadRequest()
+                : NoContent();
         }
 
         private static ActionResult GetNotFoundResourceSet()

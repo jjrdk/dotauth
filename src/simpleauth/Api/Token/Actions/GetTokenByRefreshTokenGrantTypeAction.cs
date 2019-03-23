@@ -61,11 +61,6 @@ namespace SimpleAuth.Api.Token.Actions
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (refreshTokenGrantTypeParameter == null)
-            {
-                throw new ArgumentNullException(nameof(refreshTokenGrantTypeParameter));
-            }
-
             // 1. Try to authenticate the client
             var instruction = authenticationHeaderValue.GetAuthenticateInstruction(
                 refreshTokenGrantTypeParameter,

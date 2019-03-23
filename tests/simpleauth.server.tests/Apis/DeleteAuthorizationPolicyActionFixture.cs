@@ -29,14 +29,12 @@ namespace SimpleAuth.Server.Tests.Apis
         private DeleteAuthorizationPolicyAction _deleteAuthorizationPolicyAction;
 
         [Fact]
-        public async Task When_Passing_Empty_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Empty_Parameter_Then_Returns_False()
         {
             IntializeFakeObjects();
+            var result = await _deleteAuthorizationPolicyAction.Execute(null, CancellationToken.None);
 
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(
-                    () => _deleteAuthorizationPolicyAction.Execute(null, CancellationToken.None))
-                .ConfigureAwait(false);
+            Assert.False(result);
         }
 
         [Fact]

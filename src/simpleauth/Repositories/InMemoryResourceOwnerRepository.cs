@@ -109,11 +109,6 @@
             }
 
             var user = _users.FirstOrDefault(u => u.Subject == id && u.Password == password.ToSha256Hash());
-            if (user == null)
-            {
-                return Task.FromResult((ResourceOwner) null);
-            }
-
             return Task.FromResult(user);
         }
 
@@ -136,7 +131,7 @@
             var user = _users.FirstOrDefault(u => u.Claims.Any(c => c.Type == key && c.Value == value));
             if (user == null)
             {
-                return Task.FromResult((ResourceOwner) null);
+                return Task.FromResult((ResourceOwner)null);
             }
 
             return Task.FromResult(user);
