@@ -14,15 +14,15 @@
 
 namespace SimpleAuth.Server.Tests.Apis
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Moq;
     using SimpleAuth.Api.PolicyController;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class DeleteResourcePolicyActionFixture
@@ -32,23 +32,47 @@ namespace SimpleAuth.Server.Tests.Apis
         private DeleteResourcePolicyAction _deleteResourcePolicyAction;
 
         [Fact]
-        public async Task When_Passing_NullOrEmpty_Parameters_Then_Exceptions_Are_Thrown()
+        public async Task WhenPassingNullIdAndNullResourceIdThenReturnsFalse()
         {
             InitializeFakeObjects();
 
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(
-                    () => _deleteResourcePolicyAction.Execute(null, null, CancellationToken.None))
+            var result = await _deleteResourcePolicyAction.Execute(null, null, CancellationToken.None)
                 .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _deleteResourcePolicyAction.Execute(string.Empty, null, CancellationToken.None))
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task WhenPassingEmptyIdAndNullResourceIdThenReturnsFalse()
+        {
+            InitializeFakeObjects();
+
+            var result = await _deleteResourcePolicyAction.Execute(string.Empty, null, CancellationToken.None)
                 .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _deleteResourcePolicyAction.Execute("policy_id", null, CancellationToken.None))
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task WhenPassingValidIdAndNullResourceIdThenReturnsFalse()
+        {
+            InitializeFakeObjects();
+
+            var result = await _deleteResourcePolicyAction.Execute("policy_id", null, CancellationToken.None)
                 .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _deleteResourcePolicyAction.Execute("policy_id", string.Empty, CancellationToken.None))
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task WhenPassingValidIdAndEmptyResourceIdThenReturnsFalse()
+        {
+            InitializeFakeObjects();
+
+            var result = await _deleteResourcePolicyAction.Execute("policy_id", string.Empty, CancellationToken.None)
                 .ConfigureAwait(false);
+
+            Assert.False(result);
         }
 
         [Fact]
@@ -71,7 +95,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             const string policyId = "policy_id";
             const string resourceId = "invalid_resource_id";
-            var policy = new Policy {ResourceSetIds = new[] {"resource_id"}};
+            var policy = new Policy { ResourceSetIds = new[] { "resource_id" } };
             InitializeFakeObjects(policy, new ResourceSet());
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(

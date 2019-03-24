@@ -99,11 +99,7 @@ namespace SimpleAuth.Client
 
             var serializedContent = await _client.SendAsync(request).ConfigureAwait(false);
             var json = await serializedContent.Content.ReadAsStringAsync().ConfigureAwait(false);
-            try
-            {
-                serializedContent.EnsureSuccessStatusCode();
-            }
-            catch (Exception)
+            if(!serializedContent.IsSuccessStatusCode)
             {
                 return new GetUserInfoResult
                 {

@@ -34,10 +34,7 @@
             ValidateNotMandatoryUri(newClient.ClientUri, "client_uri");
             ValidateNotMandatoryUri(newClient.TosUri, "tos_uri");
             //ValidateNotMandatoryUri(newClient.JwksUri, "jwks_uri");
-            ValidateNotMandatoryUri(
-                newClient.SectorIdentifierUri,
-                "sector_identifier_uri",
-                true);
+            ValidateNotMandatoryUri(newClient.SectorIdentifierUri, "sector_identifier_uri", true);
 
             // Based on the RFC : http://openid.net/specs/openid-connect-registration-1_0.html#SectorIdentifierValidation validate the sector_identifier_uri
             if (newClient.SectorIdentifierUri != null)
@@ -177,9 +174,7 @@
                     string.Format(ErrorDescriptions.MissingParameter, "allowed_scopes"));
             }
 
-            var scopes = await _scopeRepository.SearchByNames(
-                    CancellationToken.None,
-                    newClient.AllowedScopes)
+            var scopes = await _scopeRepository.SearchByNames(CancellationToken.None, newClient.AllowedScopes)
                 .ConfigureAwait(false);
             if (scopes.Length != newClient.AllowedScopes.Length)
             {
@@ -331,10 +326,7 @@
             }
         }
 
-        private static void ValidateNotMandatoryUri(
-            Uri uri,
-            string newClientName,
-            bool checkSchemeIsHttps = false)
+        private static void ValidateNotMandatoryUri(Uri uri, string newClientName, bool checkSchemeIsHttps = false)
         {
             if (uri == null)
             {
