@@ -8,12 +8,17 @@
     public sealed class ClientSecretPostAuthenticationFixture
     {
         [Fact]
+        public void When_Trying_To_Authenticate_The_Client_And_BothParametersAre_Null_Then_Exception_Is_Thrown()
+        {
+            Assert.Throws<NullReferenceException>(() => ClientSecretPostAuthentication.AuthenticateClient(null, null));
+        }
+
+        [Fact]
         public void When_Trying_To_Authenticate_The_Client_And_OneParameter_Is_Null_Then_Exception_Is_Thrown()
         {
             var authenticateInstruction = new AuthenticateInstruction();
 
-            Assert.Throws<ArgumentNullException>(() => ClientSecretPostAuthentication.AuthenticateClient(null, null));
-            Assert.Throws<ArgumentNullException>(() => ClientSecretPostAuthentication.AuthenticateClient(authenticateInstruction, null));
+            Assert.Throws<NullReferenceException>(() => ClientSecretPostAuthentication.AuthenticateClient(authenticateInstruction, null));
         }
 
         [Fact]

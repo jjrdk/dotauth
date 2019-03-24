@@ -34,11 +34,6 @@ namespace SimpleAuth.Api.PolicyController
 
         public async Task<bool> Execute(string policyId, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(policyId))
-            {
-                throw new ArgumentNullException(nameof(policyId));
-            }
-
             Policy policy;
             try
             {

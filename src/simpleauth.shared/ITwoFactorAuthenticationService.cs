@@ -14,7 +14,7 @@
         /// <param name="code">The code.</param>
         /// <param name="user">The user.</param>
         /// <returns></returns>
-        Task Send(string code, ResourceOwner user);
+        Task<(bool, string)> Send(string code, ResourceOwner user);
 
         /// <summary>
         /// Gets the required claim.

@@ -19,7 +19,10 @@
             _httpClient = httpClientFactory;
         }
 
-        public async Task<GenericResponse<PagedResponse<Client>>> Execute(Uri clientsUri, SearchClientsRequest parameter, string authorizationHeaderValue = null)
+        public async Task<GenericResponse<PagedResponse<Client>>> Execute(
+            Uri clientsUri,
+            SearchClientsRequest parameter,
+            string authorizationHeaderValue = null)
         {
             if (clientsUri == null)
             {
@@ -28,12 +31,7 @@
 
             var serializedPostPermission = JsonConvert.SerializeObject(parameter);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                RequestUri = clientsUri,
-                Content = body
-            };
+            var request = new HttpRequestMessage {Method = HttpMethod.Post, RequestUri = clientsUri, Content = body};
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
                 request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
@@ -42,29 +40,22 @@
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            try
-            {
-                httpResult.EnsureSuccessStatusCode();
-            }
-            catch (Exception)
-            {
-                var result = new GenericResponse<PagedResponse<Client>>
+            if (httpResult.IsSuccessStatusCode)
+                return new GenericResponse<PagedResponse<Client>>
                 {
-                    ContainsError = true,
-                    HttpStatus = httpResult.StatusCode
+                    Content = JsonConvert.DeserializeObject<PagedResponse<Client>>(content)
                 };
-                if (!string.IsNullOrWhiteSpace(content))
-                {
-                    result.Error = JsonConvert.DeserializeObject<ErrorDetails>(content);
-                }
-
-                return result;
+            var result = new GenericResponse<PagedResponse<Client>>
+            {
+                ContainsError = true, HttpStatus = httpResult.StatusCode
+            };
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                result.Error = JsonConvert.DeserializeObject<ErrorDetails>(content);
             }
 
-            return new GenericResponse<PagedResponse<Client>>
-            {
-                Content = JsonConvert.DeserializeObject<PagedResponse<Client>>(content)
-            };
+            return result;
+
         }
     }
 }

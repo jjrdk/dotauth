@@ -58,23 +58,12 @@ namespace SimpleAuth.Api.Token
             string issuerName,
             CancellationToken cancellationToken)
         {
-            // 1. Check parameters.
-            if (parameter == null)
-            {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-
             if (string.IsNullOrWhiteSpace(parameter.Ticket))
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
                     string.Format(
                         ErrorDescriptions.TheParameterNeedsToBeSpecified,
                         "ticket"));
-            }
-
-            if (string.IsNullOrWhiteSpace(parameter.Ticket))
-            {
-                throw new ArgumentNullException(nameof(parameter.Ticket));
             }
 
             // 2. Try to authenticate the client.

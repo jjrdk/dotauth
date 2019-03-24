@@ -161,7 +161,7 @@
         {
             if (viewModel == null)
             {
-                throw new ArgumentNullException(nameof(viewModel));
+                BadRequest();
             }
 
             // 1. Validate the view model.
@@ -197,7 +197,7 @@
         {
             if (viewModel == null)
             {
-                throw new ArgumentNullException(nameof(viewModel));
+                BadRequest();
             }
 
             var authenticatedUser = await SetUser().ConfigureAwait(false);
@@ -222,7 +222,7 @@
         {
             if (string.IsNullOrWhiteSpace(provider))
             {
-                throw new ArgumentNullException(nameof(provider));
+                BadRequest();
             }
 
             var redirectUrl = _urlHelper.Action("LinkCallback", "User", null, Request.Scheme);
@@ -345,7 +345,7 @@
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentNullException(nameof(id));
+                BadRequest();
             }
 
             var authenticatedUser = await SetUser().ConfigureAwait(false);

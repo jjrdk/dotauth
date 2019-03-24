@@ -22,21 +22,6 @@ namespace SimpleAuth.Authenticate
     {
         public static Client AuthenticateClient(AuthenticateInstruction instruction, Client client)
         {
-            if (instruction == null)
-            {
-                throw new ArgumentNullException(nameof(instruction));
-            }
-
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            if (instruction.Certificate == null || client.Secrets == null)
-            {
-                return null;
-            }
-
             var thumbPrint = client.Secrets.FirstOrDefault(s => s.Type == ClientSecretTypes.X509Thumbprint);
             var name = client.Secrets.FirstOrDefault(s => s.Type == ClientSecretTypes.X509Name);
             if (thumbPrint == null || name == null)

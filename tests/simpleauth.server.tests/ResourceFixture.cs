@@ -16,6 +16,7 @@ namespace SimpleAuth.Server.Tests
 {
     using System;
     using System.Linq;
+    using System.Net;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
@@ -86,8 +87,7 @@ namespace SimpleAuth.Server.Tests
             var resource = await _umaClient.DeleteResource("unknown", "header").ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal("not_found", resource.Error.Title);
-            Assert.Equal("resource cannot be found", resource.Error.Detail);
+            Assert.Equal(HttpStatusCode.BadRequest, resource.Error.Status);
         }
 
         [Fact]

@@ -35,11 +35,6 @@ namespace SimpleAuth.Api.ResourceSetController
 
         public async Task<bool> Execute(PutResourceSet udpateResourceSetParameter, CancellationToken cancellationToken)
         {
-            if (udpateResourceSetParameter == null)
-            {
-                throw new ArgumentNullException(nameof(udpateResourceSetParameter));
-            }
-
             var resourceSet = new ResourceSet
             {
                 Id = udpateResourceSetParameter.Id,

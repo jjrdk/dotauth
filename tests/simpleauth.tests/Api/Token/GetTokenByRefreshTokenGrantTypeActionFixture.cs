@@ -55,7 +55,7 @@ namespace SimpleAuth.Tests.Api.Token
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _getTokenByRefreshTokenGrantTypeAction.Execute(
                         null,
                         null,

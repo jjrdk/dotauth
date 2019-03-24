@@ -41,27 +41,9 @@ namespace SimpleAuth.Api.PolicyController
             AddResourceSetParameter addResourceSetParameter,
             CancellationToken cancellationToken)
         {
-            if (addResourceSetParameter == null)
+            if (addResourceSetParameter.ResourceSets == null || addResourceSetParameter.ResourceSets.Length == 0)
             {
-                throw new ArgumentNullException(nameof(addResourceSetParameter));
-            }
-
-            if (string.IsNullOrWhiteSpace(addResourceSetParameter.PolicyId))
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(
-                        ErrorDescriptions.TheParameterNeedsToBeSpecified,
-                        UmaConstants.AddResourceSetParameterNames.PolicyId));
-            }
-
-            if (addResourceSetParameter.ResourceSets == null || !addResourceSetParameter.ResourceSets.Any())
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(
-                        ErrorDescriptions.TheParameterNeedsToBeSpecified,
-                        UmaConstants.AddResourceSetParameterNames.ResourceSet));
+                return false;
             }
 
             Policy policy;

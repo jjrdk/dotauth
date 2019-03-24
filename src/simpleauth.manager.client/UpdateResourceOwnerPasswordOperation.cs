@@ -19,7 +19,10 @@
             _httpClient = httpClientFactory;
         }
 
-        public async Task<GenericResponse<object>> Execute(Uri resourceOwnerUri, UpdateResourceOwnerPasswordRequest updateResourceOwnerPasswordRequest, string authorizationHeaderValue = null)
+        public async Task<GenericResponse<object>> Execute(
+            Uri resourceOwnerUri,
+            UpdateResourceOwnerPasswordRequest updateResourceOwnerPasswordRequest,
+            string authorizationHeaderValue = null)
         {
             if (resourceOwnerUri == null)
             {
@@ -35,9 +38,7 @@
             var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Put,
-                RequestUri = resourceOwnerUri,
-                Content = body
+                Method = HttpMethod.Put, RequestUri = resourceOwnerUri, Content = body
             };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
@@ -46,21 +47,14 @@
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            try
-            {
-                httpResult.EnsureSuccessStatusCode();
-            }
-            catch (Exception)
-            {
-                return new GenericResponse<object>
+            return !httpResult.IsSuccessStatusCode
+                ? new GenericResponse<object>
                 {
                     ContainsError = true,
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
-                };
-            }
-
-            return new GenericResponse<object>();
+                }
+                : new GenericResponse<object>();
         }
     }
 }

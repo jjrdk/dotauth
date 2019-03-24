@@ -116,7 +116,7 @@ Task("Tests")
 });
 
 Task("Pack")
-    .IsDependentOn("Tests")
+    .IsDependentOn("Build")
     .Does(()=>
     {
         var nugetVersion = versionInfo.MajorMinorPatch + "-" + versionInfo.BranchName + versionInfo.CommitsSinceVersionSourcePadded;
