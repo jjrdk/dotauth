@@ -87,11 +87,7 @@ namespace SimpleAuth.Client
 
             var result = await _client.SendAsync(request).ConfigureAwait(false);
             var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-            try
-            {
-                result.EnsureSuccessStatusCode();
-            }
-            catch (Exception)
+            if (!result.IsSuccessStatusCode)
             {
                 return new BaseSidContentResult<IntrospectionResponse>
                 {

@@ -43,7 +43,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_Passing_No_Parameter_Then_Exception_Is_Thrown()
         {
             await Assert
-                .ThrowsAsync<ArgumentNullException>(
+                .ThrowsAsync<NullReferenceException>(
                     () => _updateResourceSetAction.Execute(null, CancellationToken.None))
                 .ConfigureAwait(false);
         }

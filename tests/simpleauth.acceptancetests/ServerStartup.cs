@@ -43,15 +43,15 @@
             {
                 JsonWebKeys = sp =>
                 {
-                    var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
+                    var keyset = new[] {context.SignatureKey, context.EncryptionKey}.ToJwks();
                     return new InMemoryJwksRepository(keyset, keyset);
                 },
                 ConfirmationCodes = sp => mockConfirmationCodeStore.Object,
-            Clients =
-                sp => new InMemoryClientRepository(
-                    context.Client,
-                    new InMemoryScopeRepository(),
-                    DefaultStores.Clients(context)),
+                Clients =
+                    sp => new InMemoryClientRepository(
+                        context.Client,
+                        new InMemoryScopeRepository(),
+                        DefaultStores.Clients(context)),
                 Scopes = sp => new InMemoryScopeRepository(DefaultStores.Scopes()),
                 Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents()),
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultStores.Users()),
@@ -62,46 +62,51 @@
                     new Regex($"^{OpenIdClaimTypes.Name}$", RegexOptions.Compiled)
                 }
             };
-        _context = context;
+            _context = context;
         }
 
-    public IServiceProvider ConfigureServices(IServiceCollection services)
-    {
-        // 1. Add the dependencies needed to enable CORS
-        services.AddCors(
-            options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
-        // 2. Configure server
-        services.AddSimpleAuth(_options).AddLogging().AddAccountFilter().AddSingleton(sp => _context.Client);
-        services.AddAuthentication(
-                cfg =>
-                {
-                    cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    cfg.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-                    cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-            .AddCookie(DefaultSchema)
-            .AddJwtBearer(
-                JwtBearerDefaults.AuthenticationScheme,
-                cfg =>
-                {
-                    cfg.RequireHttpsMetadata = false;
-                    cfg.TokenValidationParameters = new NoOpTokenValidationParameters(_context);
-                });
+        public IServiceProvider ConfigureServices(IServiceCollection services)
+        {
+            // 1. Add the dependencies needed to enable CORS
+            services.AddCors(
+                options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+            // 2. Configure server
+            services.AddSimpleAuth(_options).AddLogging().AddAccountFilter().AddSingleton(sp => _context.Client);
+            services.AddAuthentication(
+                    cfg =>
+                    {
+                        cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                        cfg.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                        cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    })
+                .AddCookie(DefaultSchema)
+                .AddJwtBearer(
+                    JwtBearerDefaults.AuthenticationScheme,
+                    cfg =>
+                    {
+                        cfg.RequireHttpsMetadata = false;
+                        cfg.TokenValidationParameters = new NoOpTokenValidationParameters(_context);
+                    });
 
-        services.AddAuthorization(
-            opt => { opt.AddAuthPolicies(DefaultSchema, JwtBearerDefaults.AuthenticationScheme); });
+            services.AddAuthorization(
+                opt => { opt.AddAuthPolicies(DefaultSchema, JwtBearerDefaults.AuthenticationScheme); });
 
-        var mockSmsClient = new Mock<ISmsClient>();
-        mockSmsClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
-        var mvc = services.AddMvc().AddSmsAuthentication(mockSmsClient.Object);
+            var mockSmsClient = new Mock<ISmsClient>();
+            mockSmsClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync((true, null));
+            var mvc = services.AddMvc().AddSmsAuthentication(mockSmsClient.Object);
 
-        return services.BuildServiceProvider();
+            return services.BuildServiceProvider();
+        }
+
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseAuthentication()
+                .UseCors("AllowAll")
+                .UseSimpleAuthExceptionHandler()
+                .UseSimpleAuthExceptionHandler()
+                .UseSimpleAuthMvc();
+        }
     }
-
-    public void Configure(IApplicationBuilder app)
-    {
-        app.UseAuthentication().UseCors("AllowAll").UseSimpleAuthExceptionHandler().UseSimpleAuthExceptionHandler().UseSimpleAuthMvc();
-    }
-}
 }

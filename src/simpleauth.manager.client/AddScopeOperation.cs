@@ -19,7 +19,10 @@
             _httpClient = httpClientFactory;
         }
 
-        public async Task<GenericResponse<Scope>> Execute(Uri scopesUri, Scope scope, string authorizationHeaderValue = null)
+        public async Task<GenericResponse<Scope>> Execute(
+            Uri scopesUri,
+            Scope scope,
+            string authorizationHeaderValue = null)
         {
             if (scopesUri == null)
             {
@@ -33,12 +36,7 @@
 
             var serializedJson = JObject.FromObject(scope).ToString();
             var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                RequestUri = scopesUri,
-                Content = body
-            };
+            var request = new HttpRequestMessage {Method = HttpMethod.Post, RequestUri = scopesUri, Content = body};
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
                 request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
@@ -46,11 +44,7 @@
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            try
-            {
-                httpResult.EnsureSuccessStatusCode();
-            }
-            catch (Exception)
+            if (!httpResult.IsSuccessStatusCode)
             {
                 return new GenericResponse<Scope>
                 {

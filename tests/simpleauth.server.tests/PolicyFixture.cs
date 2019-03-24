@@ -192,7 +192,7 @@ namespace SimpleAuth.Server.Tests
 
             Assert.True(response.ContainsError);
             Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Title);
-            Assert.Equal("the parameter resources needs to be specified", response.Error.Detail);
+            Assert.Equal("The parameter resources needs to be specified", response.Error.Detail);
         }
 
         [Fact]

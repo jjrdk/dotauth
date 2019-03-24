@@ -46,7 +46,7 @@ namespace SimpleAuth.Tests.Api.Token
         {
             InitializeFakeObjects();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(
                         null,
                         null,
