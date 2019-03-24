@@ -119,7 +119,6 @@ namespace SimpleAuth.Client
         /// Sends the specified request URL.
         /// </summary>
         /// <param name="request">The request.</param>
-        /// <param name="authorizationValue">The authorization value.</param>
         /// <returns></returns>
         public async Task<GenericResponse<object>> RequestSms(
             ConfirmationCodeRequest request)

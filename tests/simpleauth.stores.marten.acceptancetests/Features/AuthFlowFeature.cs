@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
 {
+    using Microsoft.Extensions.Configuration;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using Xbehave;
@@ -21,11 +22,20 @@
         [Background]
         public void Background()
         {
+            "Given loaded configuration values".x(
+                () =>
+                {
+                    var configuration = new ConfigurationBuilder().AddUserSecrets<ServerStartup>().Build();
+                    _connectionString = configuration["Db:ConnectionString"];
+
+                    Assert.NotNull(_connectionString);
+                });
+
             "Given a configured database".x(
                     async () =>
                     {
                         _connectionString = await DbInitializer.Init(
-                               TestData.ConnectionString,
+                               _connectionString,
                                DefaultStores.Consents(),
                                DefaultStores.Users(),
                                DefaultStores.Clients(SharedContext.Instance),
@@ -34,7 +44,7 @@
                     })
                 .Teardown(async () => { await DbInitializer.Drop(_connectionString).ConfigureAwait(false); });
 
-            "and a running auth server".x(() => _fixture = new TestServerFixture(BaseUrl))
+            "and a running auth server".x(() => _fixture = new TestServerFixture(_connectionString, BaseUrl))
                 .Teardown(() => _fixture.Dispose());
 
             "And the server signing keys".x(
