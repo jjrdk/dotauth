@@ -33,11 +33,7 @@
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            try
-            {
-                httpResult.EnsureSuccessStatusCode();
-            }
-            catch (Exception)
+            if (!httpResult.IsSuccessStatusCode)
             {
                 return new GenericResponse<ResourceOwner[]>
                 {

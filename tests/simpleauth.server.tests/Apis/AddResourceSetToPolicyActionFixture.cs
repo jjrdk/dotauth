@@ -38,44 +38,21 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects();
 
             await Assert
-                .ThrowsAsync<ArgumentNullException>(() => _addResourceSetAction.Execute(null, CancellationToken.None))
+                .ThrowsAsync<NullReferenceException>(() => _addResourceSetAction.Execute(null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task When_Passing_NoPolicyId_Then_Exception_Is_Thrown()
+        public async Task When_Passing_NoResourceSetIds_Then_Returns_False()
         {
             InitializeFakeObjects();
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _addResourceSetAction.Execute(new AddResourceSetParameter(), CancellationToken.None))
-                .ConfigureAwait(false);
-            
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
-            Assert.Equal(
-                string.Format(
-                    ErrorDescriptions.TheParameterNeedsToBeSpecified,
-                    UmaConstants.AddResourceSetParameterNames.PolicyId),
-                exception.Message);
-        }
-
-        [Fact]
-        public async Task When_Passing_NoResourceSetIds_Then_Exception_Is_Thrown()
-        {
-            InitializeFakeObjects();
-
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _addResourceSetAction.Execute(
+            var result = await _addResourceSetAction.Execute(
                         new AddResourceSetParameter { PolicyId = "policy_id" },
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
             
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
-            Assert.Equal(
-                string.Format(
-                    ErrorDescriptions.TheParameterNeedsToBeSpecified,
-                    UmaConstants.AddResourceSetParameterNames.ResourceSet),
-                exception.Message);
+            Assert.False(result);
         }
 
         [Fact]

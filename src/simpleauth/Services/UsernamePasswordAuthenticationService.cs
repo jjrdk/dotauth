@@ -34,16 +34,6 @@ namespace SimpleAuth.Services
 
         public async Task<ResourceOwner> AuthenticateResourceOwner(string login, string password, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(login))
-            {
-                throw new ArgumentNullException(nameof(login));
-            }
-
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                throw new ArgumentNullException(nameof(password));
-            }
-
             return await _resourceOwnerRepository.Get(login, password, cancellationToken).ConfigureAwait(false);
         }
     }

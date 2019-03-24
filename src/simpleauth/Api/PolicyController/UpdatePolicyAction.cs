@@ -38,26 +38,11 @@ namespace SimpleAuth.Api.PolicyController
 
         public async Task<bool> Execute(PutPolicy updatePolicyParameter, CancellationToken cancellationToken)
         {
-            // Check the parameters
-            if (updatePolicyParameter == null)
+            if (string.IsNullOrWhiteSpace(updatePolicyParameter.PolicyId)
+                || updatePolicyParameter.Rules == null
+                || updatePolicyParameter.Rules.Length == 0)
             {
-                throw new ArgumentNullException(nameof(updatePolicyParameter));
-            }
-
-            if (string.IsNullOrWhiteSpace(updatePolicyParameter.PolicyId))
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
-            }
-
-            if (updatePolicyParameter.Rules == null || !updatePolicyParameter.Rules.Any())
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(
-                        ErrorDescriptions.TheParameterNeedsToBeSpecified,
-                        UmaConstants.AddPolicyParameterNames.Rules));
+                return false;
             }
 
             // Check the authorization policy exists.

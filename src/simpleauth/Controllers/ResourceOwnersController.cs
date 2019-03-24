@@ -87,9 +87,13 @@ namespace SimpleAuth.Controllers
             var resourceOwner = await _resourceOwnerRepository.Get(id, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, id));
+                return BadRequest(
+                    new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Detail = string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, id),
+                        Title = ErrorCodes.InvalidRequestCode
+                    });
             }
 
             return Ok(resourceOwner);

@@ -94,8 +94,6 @@ namespace SimpleAuth.Api.Token
                 throw new ArgumentNullException(nameof(resourceOwnerGrantTypeParameter));
             }
 
-            var processId = Id.Create();
-
             if (string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.UserName))
             {
                 throw new SimpleAuthException(
@@ -131,7 +129,7 @@ namespace SimpleAuth.Api.Token
                     cancellationToken)
                 .ConfigureAwait(false);
 
-            await _eventPublisher.Publish(new TokenGranted(Id.Create(), processId, result.AccessToken, DateTime.UtcNow))
+            await _eventPublisher.Publish(new TokenGranted(Id.Create(), Id.Create(), result.AccessToken, DateTime.UtcNow))
                 .ConfigureAwait(false);
             return result;
         }

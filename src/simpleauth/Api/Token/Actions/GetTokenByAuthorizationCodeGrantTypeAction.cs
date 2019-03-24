@@ -72,11 +72,6 @@ namespace SimpleAuth.Api.Token.Actions
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (authorizationCodeGrantTypeParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationCodeGrantTypeParameter));
-            }
-
             var result = await ValidateParameter(
                     authorizationCodeGrantTypeParameter,
                     authenticationHeaderValue,
@@ -84,8 +79,9 @@ namespace SimpleAuth.Api.Token.Actions
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
+            // 1. Invalidate the authorization code by removing it !
             await _authorizationCodeStore.Remove(result.AuthCode.Code, cancellationToken)
-                .ConfigureAwait(false); // 1. Invalidate the authorization code by removing it !
+                .ConfigureAwait(false); 
             var grantedToken = await _tokenStore.GetValidGrantedToken(
                     result.AuthCode.Scopes,
                     result.AuthCode.ClientId,

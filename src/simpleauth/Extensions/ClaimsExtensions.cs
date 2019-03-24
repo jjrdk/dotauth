@@ -22,12 +22,7 @@
 
         public static Claim[] ToOpenidClaims(this IEnumerable<Claim> claims)
         {
-            if (claims == null)
-            {
-                throw new ArgumentNullException(nameof(claims));
-            }
-
-            return claims.Select(claim => MappingToOpenidClaims.ContainsKey(claim.Type)
+            return claims?.Select(claim => MappingToOpenidClaims.ContainsKey(claim.Type)
                     ? new Claim(MappingToOpenidClaims[claim.Type], claim.Value)
                     : claim)
                 .ToArray();

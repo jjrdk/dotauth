@@ -227,34 +227,31 @@ namespace SimpleAuth.Controllers
             {
                 if (!authorizationRequest.request_uri.IsAbsoluteUri)
                 {
-                    try
-                    {
-                        var httpResult = await _httpClient.GetAsync(authorizationRequest.request_uri)
+                    var httpResult = await _httpClient.GetAsync(authorizationRequest.request_uri)
                             .ConfigureAwait(false);
-                        httpResult.EnsureSuccessStatusCode();
-                        var token = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        var result = await GetAuthorizationRequestFromJwt(
-                                token,
-                                authorizationRequest.client_id,
-                                cancellationToken)
-                            .ConfigureAwait(false);
-                        if (result == null)
-                        {
-                            throw new SimpleAuthExceptionWithState(
-                                ErrorCodes.InvalidRequestCode,
-                                ErrorDescriptions.TheRequestDownloadedFromRequestUriIsNotValid,
-                                authorizationRequest.state);
-                        }
-
-                        return result;
-                    }
-                    catch (Exception)
+                    if (!httpResult.IsSuccessStatusCode)
                     {
                         throw new SimpleAuthExceptionWithState(
                             ErrorCodes.InvalidRequestCode,
                             ErrorDescriptions.TheRequestDownloadedFromRequestUriIsNotValid,
                             authorizationRequest.state);
                     }
+
+                    var token = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var result = await GetAuthorizationRequestFromJwt(
+                            token,
+                            authorizationRequest.client_id,
+                            cancellationToken)
+                        .ConfigureAwait(false);
+                    if (result == null)
+                    {
+                        throw new SimpleAuthExceptionWithState(
+                            ErrorCodes.InvalidRequestCode,
+                            ErrorDescriptions.TheRequestDownloadedFromRequestUriIsNotValid,
+                            authorizationRequest.state);
+                    }
+
+                    return result;
                 }
 
                 throw new SimpleAuthExceptionWithState(

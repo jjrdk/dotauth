@@ -53,11 +53,6 @@ namespace SimpleAuth.Authenticate
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (instruction == null)
-            {
-                throw new ArgumentNullException(nameof(instruction));
-            }
-
             Client client = null;
             // First we try to fetch the client_id
             // The different client authentication mechanisms are described here : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication

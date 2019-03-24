@@ -23,11 +23,7 @@
                 throw new ArgumentNullException(nameof(clientsUri));
             }
 
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = clientsUri
-            };
+            var request = new HttpRequestMessage {Method = HttpMethod.Get, RequestUri = clientsUri};
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
                 request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
@@ -35,11 +31,7 @@
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            try
-            {
-                httpResult.EnsureSuccessStatusCode();
-            }
-            catch (Exception)
+            if (!httpResult.IsSuccessStatusCode)
             {
                 return new GenericResponse<Client[]>
                 {
@@ -49,10 +41,7 @@
                 };
             }
 
-            return new GenericResponse<Client[]>
-            {
-                Content = Serializer.Default.Deserialize<Client[]>(content)
-            };
+            return new GenericResponse<Client[]> {Content = Serializer.Default.Deserialize<Client[]>(content)};
         }
     }
 }

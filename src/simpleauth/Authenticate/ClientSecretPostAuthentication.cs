@@ -22,16 +22,6 @@ namespace SimpleAuth.Authenticate
     {
         public static Client AuthenticateClient(AuthenticateInstruction instruction, Client client)
         {
-            if (instruction == null)
-            {
-                throw new ArgumentNullException(nameof(instruction), "The instruction parameter cannot be null");
-            }
-
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client), "The client parameter cannot be null");
-            }
-
             var clientSecret = client.Secrets?.FirstOrDefault(s => s.Type == ClientSecretTypes.SharedSecret);
             if (clientSecret == null)
             {
