@@ -254,6 +254,11 @@ namespace SimpleAuth.Extensions
             return s;
         }
 
+        /// <summary>
+        /// Registers the mvc routes for a SimpleAuth server.
+        /// </summary>
+        /// <param name="app">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns></returns>
         public static IApplicationBuilder UseSimpleAuthMvc(this IApplicationBuilder app)
         {
             return app.UseMvc(

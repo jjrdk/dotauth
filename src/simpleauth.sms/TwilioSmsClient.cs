@@ -38,7 +38,6 @@
         /// or
         /// message
         /// </exception>
-        /// <exception cref="SmsException"></exception>
         public async Task<(bool,string)> SendMessage(string toPhoneNumber, string message)
         {
             if (string.IsNullOrWhiteSpace(toPhoneNumber))
