@@ -4,6 +4,7 @@
     using SimpleAuth.Manager.Client;
     using SimpleAuth.Shared.Responses;
     using System;
+    using Microsoft.Extensions.Configuration;
     using Xbehave;
     using Xunit;
 
@@ -15,25 +16,34 @@
         protected ManagementClient _managerClient = null;
         protected TokenClient _tokenClient = null;
         protected GrantedTokenResponse _grantedToken = null;
-        protected string ConnectionString = null;
+        protected string _connectionString = null;
 
         [Background]
         public void Background()
         {
+            "Given loaded configuration values".x(
+                () =>
+                {
+                    var configuration = new ConfigurationBuilder().AddUserSecrets<ServerStartup>().Build();
+                    _connectionString = configuration["Db:ConnectionString"];
+
+                    Assert.NotNull(_connectionString);
+                });
+
             "Given a configured database".x(
                     async () =>
                     {
-                        ConnectionString = await DbInitializer.Init(
-                                TestData.ConnectionString,
+                        _connectionString = await DbInitializer.Init(
+                                _connectionString,
                                 DefaultStores.Consents(),
                                 DefaultStores.Users(),
                                 DefaultStores.Clients(SharedContext.Instance),
                                 DefaultStores.Scopes())
                             .ConfigureAwait(false);
                     })
-                .Teardown(async () => { await DbInitializer.Drop(ConnectionString).ConfigureAwait(false); });
+                .Teardown(async () => { await DbInitializer.Drop(_connectionString).ConfigureAwait(false); });
 
-            "and a running auth server".x(() => _fixture = new TestServerFixture(BaseUrl))
+            "and a running auth server".x(() => _fixture = new TestServerFixture(_connectionString, BaseUrl))
                 .Teardown(() => _fixture.Dispose());
 
             "and a manager client".x(

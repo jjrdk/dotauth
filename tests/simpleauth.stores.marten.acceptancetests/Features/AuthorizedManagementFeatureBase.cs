@@ -1,15 +1,16 @@
 ﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
 {
-    using System;
+    using Microsoft.Extensions.Configuration;
     using SimpleAuth.Client;
     using SimpleAuth.Manager.Client;
     using SimpleAuth.Shared.Responses;
+    using System;
     using Xbehave;
     using Xunit;
 
     public abstract class AuthorizedManagementFeatureBase
     {
-        private const string BaseUrl = "http://localhost";
+        protected const string BaseUrl = "http://localhost";
         private static readonly Uri WellKnownUmaConfiguration = new Uri(BaseUrl + "/.well-known/openid-configuration");
         private string _connectionString = null;
         protected TestServerFixture _fixture = null;
@@ -20,20 +21,31 @@
         [Background]
         public void Background()
         {
-            "Given a configured database".x(
+            "Given loaded configuration values".x(
+                () =>
+                {
+                    var configuration = new ConfigurationBuilder().AddUserSecrets<ServerStartup>().Build();
+                    _connectionString = configuration["Db:ConnectionString"];
+
+                    Assert.NotNull(_connectionString);
+                });
+
+            "and a configured database".x(
                     async () =>
                     {
                         _connectionString = await DbInitializer.Init(
-                                TestData.ConnectionString,
+                                _connectionString,
                                 DefaultStores.Consents(),
                                 DefaultStores.Users(),
                                 DefaultStores.Clients(SharedContext.Instance),
                                 DefaultStores.Scopes())
                             .ConfigureAwait(false);
+
+                        Assert.NotNull(_connectionString);
                     })
                 .Teardown(async () => { await DbInitializer.Drop(_connectionString).ConfigureAwait(false); });
 
-            "and a running auth server".x(() => _fixture = new TestServerFixture(BaseUrl))
+            "and a running auth server".x(() => _fixture = new TestServerFixture(_connectionString, BaseUrl))
                 .Teardown(() => _fixture.Dispose());
 
             "and a manager client".x(

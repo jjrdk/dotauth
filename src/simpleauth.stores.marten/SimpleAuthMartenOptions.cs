@@ -7,14 +7,23 @@
     using System.Security.Claims;
     using System.Text;
 
+    /// <summary>
+    /// Defines the marten options for SimpleAuth.
+    /// </summary>
     public class SimpleAuthMartenOptions : StoreOptions
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimpleAuthMartenOptions"/> class.
+        /// </summary>
+        /// <param name="connectionString">The connection string</param>
+        /// <param name="searchPath">The schema name</param>
+        /// <param name="autoCreate">Schema creation options</param>
         public SimpleAuthMartenOptions(string connectionString, string searchPath = null, AutoCreate autoCreate = AutoCreate.All)
         {
             Serializer<CustomJsonSerializer>();
             Connection(connectionString);
             Schema.Include<SimpleAuthRegistry>();
-            if (string.IsNullOrWhiteSpace(searchPath))
+            if (!string.IsNullOrWhiteSpace(searchPath))
             {
                 DatabaseSchemaName = searchPath;
             }

@@ -10,36 +10,13 @@
     using Xbehave;
     using Xunit;
 
-    public class AddPermissionFeature
+    public class AddPermissionFeature : AuthorizedManagementFeatureBase
     {
-        private const string BaseUrl = "http://localhost:5000";
         private const string WellKnownUmaConfiguration = "https://localhost/.well-known/uma2-configuration";
-        private TestServerFixture _fixture = null;
-        private string _connectionString = null;
 
         public AddPermissionFeature()
         {
             IdentityModelEventSource.ShowPII = true;
-        }
-
-        [Background]
-        public void Background()
-        {
-            "Given a configured database".x(
-                    async () =>
-                    {
-                        _connectionString = await DbInitializer.Init(
-                                TestData.ConnectionString,
-                                DefaultStores.Consents(),
-                                DefaultStores.Users(),
-                                DefaultStores.Clients(SharedContext.Instance),
-                                DefaultStores.Scopes())
-                            .ConfigureAwait(false);
-                    })
-                .Teardown(async () => { await DbInitializer.Drop(_connectionString).ConfigureAwait(false); });
-
-            "and a running auth server".x(() => _fixture = new TestServerFixture(BaseUrl))
-                .Teardown(() => _fixture.Dispose());
         }
 
         [Scenario(DisplayName = "Successful Permission Creation")]
