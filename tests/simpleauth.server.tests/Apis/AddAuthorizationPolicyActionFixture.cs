@@ -37,7 +37,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             InitializeFakeObjects();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addAuthorizationPolicyAction.Execute(null, CancellationToken.None))
+            await Assert.ThrowsAsync<NullReferenceException>(() => _addAuthorizationPolicyAction.Execute(null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 

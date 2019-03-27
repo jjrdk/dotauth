@@ -33,10 +33,15 @@
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<NullReferenceException>(
                     () => _getAuthorizationCodeOperation.Execute(null, null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(
+        }
+
+        [Fact]
+        public async Task When_Passing_Empty_Parameters_Then_Exceptions_Are_Thrown()
+        {
+            await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _getAuthorizationCodeOperation.Execute(
                         new AuthorizationParameter(),
                         null,

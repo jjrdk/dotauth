@@ -18,17 +18,9 @@
 
         public Task<AuthorizationCode> Get(string code, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                throw new ArgumentNullException(nameof(code));
-            }
-
-            if (!_mappingStringToAuthCodes.ContainsKey(code))
-            {
-                return Task.FromResult((AuthorizationCode)null);
-            }
-
-            return Task.FromResult(_mappingStringToAuthCodes[code]);
+            return !_mappingStringToAuthCodes.ContainsKey(code)
+                ? Task.FromResult((AuthorizationCode) null)
+                : Task.FromResult(_mappingStringToAuthCodes[code]);
         }
 
         public Task<bool> Add(AuthorizationCode authorizationCode, CancellationToken cancellationToken)

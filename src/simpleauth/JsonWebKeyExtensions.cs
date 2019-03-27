@@ -33,11 +33,6 @@
         /// <returns></returns>
         public static JsonWebKey CreateJwk(this X509Certificate2 certificate, string use, params string[] keyOperations)
         {
-            if (keyOperations == null)
-            {
-                throw new ArgumentNullException(nameof(keyOperations));
-            }
-
             JsonWebKey jwk = null;
             if (certificate.HasPrivateKey)
             {

@@ -50,7 +50,15 @@ namespace SimpleAuth.Tests.JwtToken
         [Fact]
         public async Task When_Passing_Null_Parameters_To_GenerateAccessToken_Then_Exception_Is_Thrown()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<NullReferenceException>(
+                    () => _jwtGenerator.GenerateAccessToken(null, null, null, default, null))
+                .ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task When_Passing_Empty_Parameters_To_GenerateAccessToken_Then_Exception_Is_Thrown()
+        {
+            await Assert.ThrowsAsync<NullReferenceException>(
                     () => _jwtGenerator.GenerateAccessToken(null, null, null, default, null))
                 .ConfigureAwait(false);
 
@@ -763,9 +771,14 @@ namespace SimpleAuth.Tests.JwtToken
         [Fact]
         public void When_Passing_Null_Parameters_To_FillInOtherClaimsIdentityTokenPayload_Then_Exceptions_Are_Thrown()
         {
-            Assert.Throws<ArgumentNullException>(
+            Assert.Throws<NullReferenceException>(
                 () => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(null, null, null, null));
-            Assert.Throws<ArgumentNullException>(
+        }
+
+        [Fact]
+        public void When_Passing_Empty_Parameters_To_FillInOtherClaimsIdentityTokenPayload_Then_Exceptions_Are_Thrown()
+        {
+            Assert.Throws<NullReferenceException>(
                 () => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(new JwtPayload(), null, null, null));
         }
 

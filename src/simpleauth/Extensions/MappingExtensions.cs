@@ -31,11 +31,6 @@ namespace SimpleAuth.Extensions
     {
         public static SearchAuthPoliciesResponse ToResponse(this GenericResult<Policy> searchAuthPoliciesResult)
         {
-            if (searchAuthPoliciesResult == null)
-            {
-                throw new ArgumentNullException(nameof(searchAuthPoliciesResult));
-            }
-
             return new SearchAuthPoliciesResponse
             {
                 StartIndex = searchAuthPoliciesResult.StartIndex,
@@ -89,11 +84,6 @@ namespace SimpleAuth.Extensions
 
         public static GrantedTokenResponse ToDto(this GrantedToken grantedToken)
         {
-            if (grantedToken == null)
-            {
-                throw new ArgumentNullException(nameof(grantedToken));
-            }
-
             return new GrantedTokenResponse
             {
                 AccessToken = grantedToken.AccessToken,
@@ -202,11 +192,6 @@ namespace SimpleAuth.Extensions
 
         public static PagedResponse<ResourceOwner> ToDto(this GenericResult<ResourceOwner> parameter)
         {
-            if (parameter == null)
-            {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-
             return new PagedResponse<ResourceOwner>
             {
                 StartIndex = parameter.StartIndex,

@@ -37,21 +37,24 @@
                 _clientRepositoryFake.Object,
                 _scopeRepositoryFake.Object,
                 _resourceOwnerRepositoryFake.Object,
-                new InMemoryJwksRepository(), 
+                new InMemoryJwksRepository(),
                 new NoOpPublisher());
         }
 
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
-            var authorizationParameter = new AuthorizationParameter();
-
             await Assert
-                .ThrowsAsync<ArgumentNullException>(
+                .ThrowsAsync<NullReferenceException>(
                     () => _confirmConsentAction.Execute(null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _confirmConsentAction.Execute(authorizationParameter, null, null, CancellationToken.None))
+        }
+
+        [Fact]
+        public async Task When_Passing_Empty_Parameter_Then_Exception_Is_Thrown()
+        {
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                    () => _confirmConsentAction.Execute(new AuthorizationParameter(), null, null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 

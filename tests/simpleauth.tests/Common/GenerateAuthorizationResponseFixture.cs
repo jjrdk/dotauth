@@ -89,7 +89,7 @@ namespace SimpleAuth.Tests.Common
             var redirectInstruction = new EndpointResult {RedirectInstruction = new RedirectInstruction()};
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
 
-            await Assert.ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<NullReferenceException>(
                     () => _generateAuthorizationResponse.Generate(
                         redirectInstruction,
                         new AuthorizationParameter(),

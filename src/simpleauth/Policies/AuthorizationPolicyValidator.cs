@@ -48,16 +48,6 @@ namespace SimpleAuth.Policies
             ClaimTokenParameter claimTokenParameter,
             CancellationToken cancellationToken)
         {
-            if (validTicket == null)
-            {
-                throw new ArgumentNullException(nameof(validTicket));
-            }
-
-            if (string.IsNullOrWhiteSpace(clientId))
-            {
-                throw new ArgumentNullException(nameof(clientId));
-            }
-
             if (validTicket.Lines == null || !validTicket.Lines.Any())
             {
                 throw new ArgumentNullException(nameof(validTicket.Lines));

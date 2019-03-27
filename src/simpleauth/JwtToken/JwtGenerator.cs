@@ -95,16 +95,6 @@ namespace SimpleAuth.JwtToken
             CancellationToken cancellationToken = default,
             params Claim[] additionalClaims)
         {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            if (scopes == null)
-            {
-                throw new ArgumentNullException(nameof(scopes));
-            }
-
             var timeKeyValuePair = GetExpirationAndIssuedTime(client?.TokenLifetime);
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
@@ -144,11 +134,6 @@ namespace SimpleAuth.JwtToken
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (authorizationParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationParameter));
-            }
-
             if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
             {
                 throw new ArgumentNullException(nameof(claimsPrincipal));
@@ -184,11 +169,6 @@ namespace SimpleAuth.JwtToken
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            if (authorizationParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationParameter));
-            }
-
             var result = new JwtPayload();
             await FillInIdentityTokenClaims(
                     result,
@@ -216,11 +196,6 @@ namespace SimpleAuth.JwtToken
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            if (authorizationParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationParameter));
-            }
-
             var result = new JwtPayload();
             await FillInResourceOwnerClaimsFromScopes(
                     result,
@@ -241,11 +216,6 @@ namespace SimpleAuth.JwtToken
                 throw new ArgumentNullException(nameof(claimParameters));
             }
 
-            if (authorizationParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationParameter));
-            }
-
             var result = new JwtPayload();
             FillInResourceOwnerClaimsByClaimsParameter(
                 result,
@@ -261,16 +231,6 @@ namespace SimpleAuth.JwtToken
             string accessToken,
             Client client)
         {
-            if (jwsPayload == null)
-            {
-                throw new ArgumentNullException(nameof(jwsPayload));
-            }
-
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
             var signedAlg = client.IdTokenSignedResponseAlg;
             if (signedAlg == null || signedAlg == SecurityAlgorithms.None)
             {

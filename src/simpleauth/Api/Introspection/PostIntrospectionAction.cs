@@ -45,12 +45,6 @@ namespace SimpleAuth.Api.Introspection
             string issuerName,
             CancellationToken cancellationToken)
         {
-            // 1. Validate the parameters
-            if (introspectionParameter == null)
-            {
-                throw new ArgumentNullException(nameof(introspectionParameter));
-            }
-
             // Read this RFC for more information
             if (string.IsNullOrWhiteSpace(introspectionParameter.Token))
             {

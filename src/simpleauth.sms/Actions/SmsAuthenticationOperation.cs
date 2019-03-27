@@ -36,11 +36,6 @@
 
         public async Task<ResourceOwner> Execute(string phoneNumber, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(phoneNumber))
-            {
-                throw new ArgumentNullException(nameof(phoneNumber));
-            }
-
             // 1. Send the confirmation code (SMS).
             await _generateAndSendSmsCodeOperation.Execute(phoneNumber, cancellationToken).ConfigureAwait(false);
             // 2. Try to get the resource owner.

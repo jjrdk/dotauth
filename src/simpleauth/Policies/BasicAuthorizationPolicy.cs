@@ -41,16 +41,6 @@ namespace SimpleAuth.Policies
             ClaimTokenParameter claimTokenParameter,
             CancellationToken cancellationToken)
         {
-            if (ticketLineParameter == null)
-            {
-                throw new ArgumentNullException(nameof(ticketLineParameter));
-            }
-
-            if (authorizationPolicy == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationPolicy));
-            }
-
             if (authorizationPolicy.Rules == null ||
                 !authorizationPolicy.Rules.Any())
             {

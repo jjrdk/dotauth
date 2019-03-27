@@ -30,11 +30,9 @@
         [Fact]
         public async Task When_Pass_Null_Parameter_Then_Exception_Is_Thrown()
         {
-            var exception = await Assert
-                .ThrowsAsync<ArgumentNullException>(() => _generateAndSendSmsCodeOperation.Execute(null, CancellationToken.None))
+            await Assert
+                .ThrowsAsync<SimpleAuthException>(() => _generateAndSendSmsCodeOperation.Execute(null, CancellationToken.None))
                 .ConfigureAwait(false);
-
-            Assert.NotNull(exception);
         }
 
         [Fact]

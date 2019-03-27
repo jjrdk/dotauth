@@ -72,7 +72,7 @@ namespace SimpleAuth.Tests.Api.Token
         [Fact]
         public async Task When_Passing_No_Request_To_AuthorizationCode_Grant_Type_Then_Exception_Is_Thrown()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<NullReferenceException>(
                     () => _tokenActions.GetTokenByAuthorizationCodeGrantType(
                         null,
                         null,
@@ -85,7 +85,7 @@ namespace SimpleAuth.Tests.Api.Token
         [Fact]
         public async Task When_Passing_No_Request_To_Refresh_Token_Grant_Type_Then_Exception_Is_Thrown()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<NullReferenceException>(
                     () => _tokenActions.GetTokenByRefreshTokenGrantType(null, null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
@@ -93,7 +93,7 @@ namespace SimpleAuth.Tests.Api.Token
         [Fact]
         public async Task When_Passing_Null_Parameter_To_ClientCredentials_GrantType_Then_Exception_Is_Thrown()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<NullReferenceException>(
                     () => _tokenActions.GetTokenByClientCredentialsGrantType(
                         null,
                         null,
@@ -128,7 +128,7 @@ namespace SimpleAuth.Tests.Api.Token
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             await Assert
-                .ThrowsAsync<ArgumentNullException>(
+                .ThrowsAsync<NullReferenceException>(
                     () => _tokenActions.RevokeToken(null, null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
