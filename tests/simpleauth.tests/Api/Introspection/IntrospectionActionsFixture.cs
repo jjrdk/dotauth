@@ -41,7 +41,7 @@ namespace SimpleAuth.Tests.Api.Introspection
         public async Task When_Passing_Null_Parameter_To_PostIntrospection_Then_Exception_Is_Thrown()
         {
             await Assert
-                .ThrowsAsync<ArgumentNullException>(
+                .ThrowsAsync<NullReferenceException>(
                     () => _introspectionActions.Execute(null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
         }

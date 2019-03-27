@@ -66,11 +66,6 @@ namespace SimpleAuth.WebSite.Authenticate
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (authorizationParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationParameter));
-            }
-
             var resourceOwnerIsAuthenticated = resourceOwnerPrincipal.IsAuthenticated();
             var promptParameters = authorizationParameter.Prompt.ParsePrompts();
 

@@ -76,16 +76,6 @@ namespace SimpleAuth.WebSite.Consent.Actions
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (authorizationParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationParameter));
-            }
-
-            if (claimsPrincipal?.Identity == null)
-            {
-                throw new ArgumentNullException(nameof(claimsPrincipal));
-            }
-
             var client = await _clientRepository.GetById(authorizationParameter.ClientId, cancellationToken).ConfigureAwait(false);
             if (client == null)
             {

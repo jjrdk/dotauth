@@ -180,11 +180,6 @@ namespace SimpleAuth.Extensions
         /// <exception cref="ArgumentNullException">services</exception>
         public static IServiceCollection AddAccountFilter(this IServiceCollection services, params Filter[] filters)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
             services.AddTransient<IAccountFilter, AccountFilter>();
             services.AddSingleton<IFilterStore>(new DefaultFilterStore(filters));
             return services;

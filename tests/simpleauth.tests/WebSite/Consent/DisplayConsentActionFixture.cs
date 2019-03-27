@@ -43,13 +43,18 @@ namespace SimpleAuth.Tests.WebSite.Consent
         [Fact]
         public async Task When_Parameter_Is_Null_Then_Exception_Is_Thrown()
         {
-            var authorizationParameter = new AuthorizationParameter();
-
             await Assert
-                .ThrowsAsync<ArgumentNullException>(
+                .ThrowsAsync<NullReferenceException>(
                     () => _displayConsentAction.Execute(null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(
+        }
+
+        [Fact]
+        public async Task When_Parameter_Is_Empty_Then_Exception_Is_Thrown()
+        {
+            var authorizationParameter = new AuthorizationParameter();
+
+            await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _displayConsentAction.Execute(authorizationParameter, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
         }

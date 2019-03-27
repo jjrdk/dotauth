@@ -24,11 +24,6 @@
 
         public async Task<string> Execute(string phoneNumber, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(phoneNumber))
-            {
-                throw new ArgumentNullException(nameof(phoneNumber));
-            }
-
             var confirmationCode = new ConfirmationCode
             {
                 Value = await GetCode(cancellationToken).ConfigureAwait(false),

@@ -22,14 +22,6 @@
         }
 
         [Fact]
-        public async Task When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
-        {
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _consentRepositoryFake.Object.GetConfirmedConsents("subject", null, CancellationToken.None))
-                .ConfigureAwait(false);
-        }
-
-        [Fact]
         public async Task When_No_Consent_Has_Been_Given_By_The_Resource_Owner_Then_Null_Is_Returned()
         {
             const string subject = "subject";

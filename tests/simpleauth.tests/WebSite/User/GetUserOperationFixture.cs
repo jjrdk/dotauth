@@ -41,7 +41,7 @@ namespace SimpleAuth.Tests.WebSite.User
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             await Assert
-                .ThrowsAsync<ArgumentNullException>(() => _getUserOperation.Execute(null, CancellationToken.None))
+                .ThrowsAsync<SimpleAuthException>(() => _getUserOperation.Execute(null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 

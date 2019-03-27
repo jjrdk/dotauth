@@ -43,7 +43,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                 new Mock<IScopeRepository>().Object,
                 new Mock<IConsentRepository>().Object,
                 mock.Object,
-                new InMemoryJwksRepository(), 
+                new InMemoryJwksRepository(),
                 new NoOpPublisher());
         }
 
@@ -51,7 +51,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             await Assert
-                .ThrowsAsync<ArgumentNullException>(
+                .ThrowsAsync<NullReferenceException>(
                     () => _authenticateResourceOwnerOpenIdAction.Execute(null, null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
