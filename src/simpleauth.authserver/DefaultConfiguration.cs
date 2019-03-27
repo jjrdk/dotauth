@@ -29,14 +29,9 @@
                     JsonWebKeys =
                         new[]
                         {
-                            certificate.CreateJwk(
-                                JsonWebKeyUseNames.Sig,
-                                KeyOperations.Sign,
-                                KeyOperations.Verify),
-                            certificate.CreateJwk(
-                                JsonWebKeyUseNames.Enc,
-                                KeyOperations.Encrypt,
-                                KeyOperations.Decrypt)
+                            "supersecretkey".CreateSignatureJwk(),
+                            "supersecretkey".CreateEncryptionJwk()
+                            
                         }.ToJwks(),
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     PolicyUri = new Uri("http://openid.net"),
@@ -46,6 +41,47 @@
                     ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.Code},
                     ApplicationType = ApplicationTypes.Native,
                     RedirectionUrls = new []{new Uri("http://localhost:60000"), }
+                },
+                new Client
+                {
+                    ClientId = "mobileapp",
+                    ClientName = "Admin client",
+                    Secrets =
+                        new[]
+                        {
+                            new ClientSecret
+                            {
+                                Type = ClientSecretTypes.SharedSecret,
+                                Value = "Secret"
+                            }
+                        },
+                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
+                    //LogoUri = null,
+                    AllowedScopes = new[] {"openid", "profile", "role"},
+                    GrantTypes = new[]
+                    {
+                        GrantTypes.AuthorizationCode,
+                        GrantTypes.ClientCredentials,
+                        GrantTypes.Implicit,
+                        GrantTypes.Password,
+                        GrantTypes.RefreshToken,
+                        GrantTypes.UmaTicket,
+                        GrantTypes.ValidateBearer
+                    },
+                    JsonWebKeys =
+                        new[]
+                        {
+                            "supersecretkey".CreateSignatureJwk(),
+                            "supersecretkey".CreateEncryptionJwk()
+
+                        }.ToJwks(),
+                    ResponseTypes = new[]
+                    {
+                        ResponseTypeNames.Token,
+                        ResponseTypeNames.IdToken
+                    },
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
+                    ApplicationType = ApplicationTypes.Native
                 }
             };
         }
@@ -65,6 +101,19 @@
                     Password = "password".ToSha256Hash(),
                     IsLocalAccount = true,
                     CreateDateTime = DateTime.UtcNow,
+                },
+                new ResourceOwner
+                {
+                    Subject = "Doctor",
+                    Password = "password".ToSha256Hash(),
+                    Claims = new[]
+                    {
+                        new Claim(OpenIdClaimTypes.Subject, "Doctor"),
+                        //new Claim(OpenIdClaimTypes.Role, "administrator"),
+                        //new Claim(OpenIdClaimTypes.Role, "role"),
+                        new Claim(OpenIdClaimTypes.Role, "Doctor"),
+                        new Claim(OpenIdClaimTypes.Profile, "Doctor")
+                    }
                 }
             };
         }
