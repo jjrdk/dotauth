@@ -35,7 +35,7 @@
             {
                 return new GenericResponse<Client>
                 {
-                    ContainsError = true, Error = JsonConvert.DeserializeObject<ErrorResponse>(content)
+                    ContainsError = true, Error = JsonConvert.DeserializeObject<ErrorDetails>(content)
                 };
             }
 

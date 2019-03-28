@@ -6,7 +6,6 @@
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth.Authenticate;
-    using SimpleAuth.Extensions;
     using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;

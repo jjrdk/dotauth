@@ -22,6 +22,7 @@ namespace SimpleAuth.Client
     using System.Net.Http;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the authorization client.
@@ -74,7 +75,7 @@ namespace SimpleAuth.Client
             return new GetAuthorizationResult
             {
                 ContainsError = true,
-                Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(content),
+                Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                 Status = response.StatusCode
             };
 

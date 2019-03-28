@@ -19,10 +19,10 @@ namespace SimpleAuth.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Shared.Repositories;
     using Shared.Requests;
-    using Shared.Responses;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using System;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -112,22 +112,24 @@ namespace SimpleAuth.Controllers
             if (scope == null)
             {
                 return BadRequest(
-                    new ErrorResponse
+                    new ErrorDetails
                     {
-                        Error = ErrorCodes.InvalidRequestCode,
-                        ErrorDescription = string.Format(ErrorDescriptions.TheScopeDoesntExist, id)
+                        Title = ErrorCodes.InvalidRequestCode,
+                        Detail = string.Format(ErrorDescriptions.TheScopeDoesntExist, id),
+                        Status = HttpStatusCode.BadRequest
                     });
             }
 
             var deleted = await _scopeRepository.Delete(scope, CancellationToken.None).ConfigureAwait(false);
 
             return deleted
-                ? NoContent()
-                : (IActionResult)BadRequest(
-                    new ErrorResponse
+                ? (IActionResult)NoContent()
+                : BadRequest(
+                    new ErrorDetails
                     {
-                        Error = ErrorCodes.InvalidRequestCode,
-                        ErrorDescription = string.Format(ErrorDescriptions.TheScopeDoesntExist, id)
+                        Title = ErrorCodes.InvalidRequestCode,
+                        Detail = string.Format(ErrorDescriptions.TheScopeDoesntExist, id),
+                        Status = HttpStatusCode.BadRequest
                     });
         }
 

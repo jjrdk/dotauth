@@ -25,6 +25,7 @@ namespace SimpleAuth.Controllers
     using Microsoft.Extensions.Primitives;
     using Shared.Responses;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 
     /// <summary>
@@ -77,10 +78,10 @@ namespace SimpleAuth.Controllers
 
             var grantedToken = await _tokenStore.GetAccessToken(accessToken, cancellationToken).ConfigureAwait(false);
             return grantedToken == null
-                ? BadRequest(new ErrorResponseWithState
+                ? BadRequest(new ErrorDetails
                 {
-                    ErrorDescription = ErrorDescriptions.TheTokenIsNotValid,
-                    Error = ErrorCodes.InvalidToken
+                    Detail = ErrorDescriptions.TheTokenIsNotValid,
+                    Title = ErrorCodes.InvalidToken
                 })
                 : new ObjectResult(grantedToken.IdTokenPayLoad);
             //var result = await _userInfoActions.GetUserInformation(accessToken).ConfigureAwait(false);

@@ -22,6 +22,7 @@ namespace SimpleAuth.Client
     using System.Net.Http;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the introspection client.
@@ -95,7 +96,7 @@ namespace SimpleAuth.Client
                 return new BaseSidContentResult<IntrospectionResponse>
                 {
                     ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json),
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(json),
                     Status = result.StatusCode
                 };
             }

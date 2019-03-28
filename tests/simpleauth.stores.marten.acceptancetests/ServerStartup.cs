@@ -11,7 +11,9 @@
     using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Repositories;
     using System;
+    using System.Text.RegularExpressions;
     using Microsoft.Extensions.Configuration;
+    using SimpleAuth.Shared;
 
     public class ServerStartup : IStartup
     {
@@ -26,25 +28,29 @@
             TestData.ConnectionString = configuration["Db:ConnectionString"];
             _martenOptions = new SimpleAuthOptions
             {
-                Clients =
-                    sp => new MartenClientStore(
-                        sp.GetService<Func<IDocumentSession>>(),
-                        sp.GetService<IScopeStore>(),
-                        context.Client,
-                        JsonConvert.DeserializeObject<Uri[]>),
+                Clients = sp => new MartenClientStore(
+                    sp.GetService<Func<IDocumentSession>>(),
+                    sp.GetService<IScopeStore>(),
+                    context.Client,
+                    JsonConvert.DeserializeObject<Uri[]>),
                 JsonWebKeys = sp =>
                 {
-                    var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
+                    var keyset = new[] {context.SignatureKey, context.EncryptionKey}.ToJwks();
                     return new InMemoryJwksRepository(keyset, keyset);
                 },
                 Scopes = sp => new MartenScopeRepository(sp.GetService<Func<IDocumentSession>>()),
                 Consents = sp => new MartenConsentRepository(sp.GetService<Func<IDocumentSession>>()),
                 Users = sp => new MartenResourceOwnerStore(sp.GetService<Func<IDocumentSession>>()),
-                UserClaimsToIncludeInAuthToken = new[] { "sub", "role", "name" }
+                UserClaimsToIncludeInAuthToken = new[]
+                {
+                    new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
+                    new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled),
+                    new Regex($"^{OpenIdClaimTypes.Name}$", RegexOptions.Compiled)
+                }
             };
             _context = context;
             _connectionString = TestData.ConnectionString;
-            var builder = new NpgsqlConnectionStringBuilder { ConnectionString = TestData.ConnectionString };
+            var builder = new NpgsqlConnectionStringBuilder {ConnectionString = TestData.ConnectionString};
             _schemaName = builder.SearchPath ?? "public";
         }
 
@@ -92,13 +98,10 @@
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseAuthentication();
-            //1 . Enable CORS.
-            app.UseCors("AllowAll");
-            // 4. Use simple identity server.
-            app.UseSimpleAuthExceptionHandler();
-            // 5. Use MVC.
-            app.UseMvcWithDefaultRoute();
+            app.UseAuthentication()
+                .UseCors("AllowAll")
+                .UseSimpleAuthExceptionHandler()
+                .UseMvcWithDefaultRoute();
         }
     }
 }
