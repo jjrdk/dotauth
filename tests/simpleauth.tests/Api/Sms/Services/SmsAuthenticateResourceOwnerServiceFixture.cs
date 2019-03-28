@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Sms.Tests.Services
+﻿namespace SimpleAuth.Tests.Api.Sms.Services
 {
     using System;
     using System.Threading;

@@ -14,10 +14,6 @@
 
 namespace SimpleAuth.Controllers
 {
-    using System.Linq;
-    using System.Net;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Api.ResourceSetController;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
@@ -27,6 +23,10 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using System.Linq;
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Defines the resource set controller.
@@ -200,10 +200,11 @@ namespace SimpleAuth.Controllers
 
         private static ActionResult GetNotFoundResourceSet()
         {
-            var errorResponse = new ErrorResponse
+            var errorResponse = new ErrorDetails
             {
-                Error = "not_found",
-                ErrorDescription = "resource cannot be found"
+                Status = HttpStatusCode.NotFound,
+                Title = "not_found",
+                Detail = "resource cannot be found"
             };
 
             return new ObjectResult(errorResponse)
@@ -214,10 +215,11 @@ namespace SimpleAuth.Controllers
 
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorResponse
+            var error = new ErrorDetails
             {
-                Error = code,
-                ErrorDescription = message
+                Title = code,
+                Detail = message,
+                Status = statusCode
             };
             return new JsonResult(error)
             {

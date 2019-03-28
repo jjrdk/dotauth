@@ -79,7 +79,7 @@ namespace SimpleAuth
             public const string Value = "value";
         }
 
-        public static class ErrorResponseNames
+        public static class ErrorDetailsNames
         {
             public const string Error = "error";
             public const string ErrorDescription = "error_description";

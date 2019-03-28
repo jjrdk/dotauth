@@ -3,7 +3,6 @@
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using SimpleAuth.Extensions;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Security.Claims;

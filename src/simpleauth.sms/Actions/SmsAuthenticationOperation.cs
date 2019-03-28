@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Sms.Actions
 {
-    using SimpleAuth.Extensions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;

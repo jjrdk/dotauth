@@ -20,12 +20,12 @@ namespace SimpleAuth.Controllers
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Shared.Requests;
-    using Shared.Responses;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
     using System.Net;
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Errors;
 
     /// <summary>
     /// Defines the introspection controller.
@@ -90,8 +90,8 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorResponse {Error = code, ErrorDescription = message};
-            return new JsonResult(error) {StatusCode = (int) statusCode};
+            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
+            return new JsonResult(error) { StatusCode = (int)statusCode };
         }
     }
 }

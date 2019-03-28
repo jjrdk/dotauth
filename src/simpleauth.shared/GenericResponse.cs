@@ -2,6 +2,7 @@
 {
     using System.Net;
     using Responses;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the generic response.
@@ -39,6 +40,6 @@
         /// <value>
         /// The error.
         /// </value>
-        public ErrorResponse Error { get; set; }
+        public ErrorDetails Error { get; set; }
     }
 }

@@ -25,6 +25,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Models;
     using Xunit;
 
     public class RevokeTokenClientFixture
@@ -44,18 +45,17 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri($"{BaseUrl}/token/revoke")
+                Method = HttpMethod.Post, RequestUri = new Uri($"{BaseUrl}/token/revoke")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
-            Assert.Equal("the parameter token is missing", error.ErrorDescription);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal("the parameter token is missing", error.Detail);
         }
 
         [Fact]
@@ -68,18 +68,16 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
-                Content = body,
-                RequestUri = new Uri($"{BaseUrl}/token/revoke")
+                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token/revoke")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
-            
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Error);
-            Assert.Equal("the parameter token is missing", error.ErrorDescription);
+            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+
+            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal("the parameter token is missing", error.Detail);
         }
 
         [Fact]
@@ -90,13 +88,12 @@ namespace SimpleAuth.Server.Tests.Apis
                     _server.Client,
                     new Uri(BaseUrl + WellKnownOpenidConfiguration))
                 .ConfigureAwait(false);
-            var ex = await tokenClient
-                .RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
+            var ex = await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
             Assert.True(ex.ContainsError);
-            Assert.Equal("invalid_client", ex.Error.Error);
-            Assert.Equal("the client doesn't exist", ex.Error.ErrorDescription);
+            Assert.Equal("invalid_client", ex.Error.Title);
+            Assert.Equal("the client doesn't exist", ex.Error.Detail);
         }
 
         [Fact]
@@ -107,13 +104,12 @@ namespace SimpleAuth.Server.Tests.Apis
                     _server.Client,
                     new Uri(BaseUrl + WellKnownOpenidConfiguration))
                 .ConfigureAwait(false);
-            var ex = await tokenClient
-                .RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
+            var ex = await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
             Assert.True(ex.ContainsError);
-            Assert.Equal("invalid_token", ex.Error.Error);
-            Assert.Equal("the token doesn't exist", ex.Error.ErrorDescription);
+            Assert.Equal("invalid_token", ex.Error.Title);
+            Assert.Equal("the token doesn't exist", ex.Error.Detail);
         }
 
         [Fact]
@@ -125,7 +121,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     new Uri(BaseUrl + WellKnownOpenidConfiguration))
                 .ConfigureAwait(false);
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
                 .ConfigureAwait(false);
             var revokeClient = await TokenClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),
@@ -137,8 +133,8 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
 
             Assert.True(ex.ContainsError);
-            Assert.Equal("invalid_token", ex.Error.Error);
-            Assert.Equal("the token has not been issued for the given client id 'client'", ex.Error.ErrorDescription);
+            Assert.Equal("invalid_token", ex.Error.Title);
+            Assert.Equal("the token has not been issued for the given client id 'client'", ex.Error.Detail);
         }
 
         [Fact]
@@ -150,7 +146,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     new Uri(BaseUrl + WellKnownOpenidConfiguration))
                 .ConfigureAwait(false);
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
                 .ConfigureAwait(false);
             var revoke = await tokenClient
                 .RevokeToken(RevokeTokenRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken))
@@ -177,7 +173,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     new Uri(BaseUrl + WellKnownOpenidConfiguration))
                 .ConfigureAwait(false);
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
                 .ConfigureAwait(false);
             var revoke = await tokenClient
                 .RevokeToken(RevokeTokenRequest.Create(result.Content.RefreshToken, TokenTypes.RefreshToken))

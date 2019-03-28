@@ -2,6 +2,7 @@
 {
     using System.Net;
     using Shared.Responses;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the abstract base sid result.
@@ -22,7 +23,7 @@
         /// <value>
         /// The error.
         /// </value>
-        public ErrorResponseWithState Error { get; set;}
+        public ErrorDetails Error { get; set;}
 
         /// <summary>
         /// Gets or sets the status.

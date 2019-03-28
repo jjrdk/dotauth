@@ -55,7 +55,7 @@
                 };
                 if (!string.IsNullOrWhiteSpace(content))
                 {
-                    result.Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(content);
+                    result.Error = JsonConvert.DeserializeObject<ErrorDetails>(content);
                 }
 
                 return result;
