@@ -1,18 +1,22 @@
 ﻿namespace SimpleAuth.Shared.Repositories
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Models;
 
-    internal sealed class DefaultFilterStore : IFilterStore
+    /// <summary>
+    /// Defines the in-memory filter store.
+    /// </summary>
+    public sealed class InMemoryFilterStore : IFilterStore
     {
-        private readonly List<Filter> _filters;
+        private readonly Filter[] _filters;
 
-        public DefaultFilterStore(params Filter[] filters)
+        public InMemoryFilterStore(params Filter[] filters)
         {
-            _filters = filters == null ? new List<Filter>() : filters.ToList();
+            _filters = filters ?? Array.Empty<Filter>();
         }
 
         public Task<Filter[]> GetAll(CancellationToken cancellationToken = default)
