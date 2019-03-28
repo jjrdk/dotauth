@@ -98,11 +98,7 @@ namespace SimpleAuth.Client
 
             var result = await _client.SendAsync(request).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-            try
-            {
-                result.EnsureSuccessStatusCode();
-            }
-            catch (Exception)
+            if (!result.IsSuccessStatusCode)
             {
                 return new BaseSidContentResult<GrantedTokenResponse>
                 {
@@ -123,7 +119,6 @@ namespace SimpleAuth.Client
         /// Sends the specified request URL.
         /// </summary>
         /// <param name="request">The request.</param>
-        /// <param name="authorizationValue">The authorization value.</param>
         /// <returns></returns>
         public async Task<GenericResponse<object>> RequestSms(
             ConfirmationCodeRequest request)
@@ -145,11 +140,7 @@ namespace SimpleAuth.Client
 
             var result = await _client.SendAsync(req).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-            try
-            {
-                result.EnsureSuccessStatusCode();
-            }
-            catch
+            if (!result.IsSuccessStatusCode)
             {
                 return new GenericResponse<object>
                 {
@@ -190,11 +181,7 @@ namespace SimpleAuth.Client
 
             var result = await _client.SendAsync(request).ConfigureAwait(false);
             var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-            try
-            {
-                result.EnsureSuccessStatusCode();
-            }
-            catch (Exception)
+            if (!result.IsSuccessStatusCode)
             {
                 return new RevokeTokenResult
                 {

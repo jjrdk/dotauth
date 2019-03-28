@@ -23,9 +23,9 @@
         private readonly string _connectionString;
         private readonly string _schemaName;
 
-        public ServerStartup(SharedContext context, IConfiguration configuration)
+        public ServerStartup(SharedContext context, string connectionString)
         {
-            TestData.ConnectionString = configuration["Db:ConnectionString"];
+            //TestData.ConnectionString = configuration["Db:ConnectionString"];
             _martenOptions = new SimpleAuthOptions
             {
                 Clients = sp => new MartenClientStore(
@@ -49,8 +49,8 @@
                 }
             };
             _context = context;
-            _connectionString = TestData.ConnectionString;
-            var builder = new NpgsqlConnectionStringBuilder {ConnectionString = TestData.ConnectionString};
+            _connectionString = connectionString;
+            var builder = new NpgsqlConnectionStringBuilder {ConnectionString = _connectionString};
             _schemaName = builder.SearchPath ?? "public";
         }
 

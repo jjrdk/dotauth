@@ -72,16 +72,6 @@ namespace SimpleAuth.Extensions
             CancellationToken cancellationToken = default,
             params Claim[] additionalClaims)
         {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            if (string.IsNullOrWhiteSpace(scope))
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
-
             var handler = new JwtSecurityTokenHandler();
             var enumerable =
                 new[]

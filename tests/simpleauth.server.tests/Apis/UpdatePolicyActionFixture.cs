@@ -14,9 +14,6 @@
 
 namespace SimpleAuth.Server.Tests.Apis
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Moq;
     using SimpleAuth.Api.PolicyController;
     using SimpleAuth.Shared;
@@ -24,6 +21,9 @@ namespace SimpleAuth.Server.Tests.Apis
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class UpdatePolicyActionFixture
@@ -38,40 +38,32 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects();
 
             await Assert
-                .ThrowsAsync<ArgumentNullException>(() => _updatePolicyAction.Execute(null, CancellationToken.None))
+                .ThrowsAsync<NullReferenceException>(() => _updatePolicyAction.Execute(null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task When_Id_Is_Not_Passed_Then_Exception_Is_Thrown()
+        public async Task WhenIdIsNotPassedThenReturnsFalse()
         {
             var updatePolicyParameter = new PutPolicy { };
             InitializeFakeObjects();
 
-            var exception = await Assert
-                .ThrowsAsync<SimpleAuthException>(
-                    () => _updatePolicyAction.Execute(updatePolicyParameter, CancellationToken.None))
+            var result = await _updatePolicyAction.Execute(updatePolicyParameter, CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
-            Assert.Equal(string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"), exception.Message);
+
+            Assert.False(result);
         }
 
         [Fact]
-        public async Task When_Rules_Are_Not_Passed_Then_Exception_Is_Thrown()
+        public async Task WhenRulesAreNotPassedThenReturnsFalse()
         {
-            var updatePolicyParameter = new PutPolicy { PolicyId = "not_valid_policy_id" };
+            var updatePolicyParameter = new PutPolicy {PolicyId = "not_valid_policy_id"};
             InitializeFakeObjects();
 
-            var exception = await Assert
-                .ThrowsAsync<SimpleAuthException>(
-                    () => _updatePolicyAction.Execute(updatePolicyParameter, CancellationToken.None))
+            var results = await _updatePolicyAction.Execute(updatePolicyParameter, CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
-            Assert.True(
-                exception.Message
-                == string.Format(
-                    ErrorDescriptions.TheParameterNeedsToBeSpecified,
-                    UmaConstants.AddPolicyParameterNames.Rules));
+
+            Assert.False(results);
         }
 
         [Fact]

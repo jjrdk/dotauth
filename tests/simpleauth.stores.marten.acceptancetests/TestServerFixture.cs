@@ -2,10 +2,10 @@
 {
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Net.Http;
-    using Microsoft.Extensions.Configuration;
 
     public class TestServerFixture : IDisposable
     {
@@ -13,26 +13,22 @@
         public HttpClient Client { get; }
         public SharedContext SharedCtx { get; }
 
-        public TestServerFixture(params string[] urls)
+        public TestServerFixture(string connectionString, params string[] urls)
         {
             SharedCtx = SharedContext.Instance;
             //var startup = new ServerStartup(SharedCtx, connectionString);
             Server = new TestServer(
-                new WebHostBuilder()
-                    .UseUrls(urls)
+                new WebHostBuilder().UseUrls(urls)
+                    .UseConfiguration(
+                        new ConfigurationBuilder().AddUserSecrets<ServerStartup>().AddEnvironmentVariables().Build())
                     .ConfigureServices(
                         services =>
                         {
-                            var configuration = new ConfigurationBuilder().AddUserSecrets<ServerStartup>()
-                                .AddEnvironmentVariables()
-                                .Build();
-                            services.AddSingleton<IConfigurationRoot>(configuration);
-                            services.AddSingleton<IConfiguration>(configuration);
                             services.AddSingleton(SharedCtx);
+                            services.AddSingleton<IStartup>(new ServerStartup(SharedCtx, connectionString));
                             //services.AddSingleton<IStartup>(startup);
                         })
-                    .UseSetting(WebHostDefaults.ApplicationKey, typeof(ServerStartup).Assembly.FullName)
-                    .UseStartup<ServerStartup>());
+                    .UseSetting(WebHostDefaults.ApplicationKey, typeof(ServerStartup).Assembly.FullName));
             Client = Server.CreateClient();
             SharedCtx.Client = Client;
         }

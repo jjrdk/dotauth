@@ -61,16 +61,6 @@ namespace SimpleAuth.Api.Authorization
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (authorizationParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationParameter));
-            }
-
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
             var claimsPrincipal = principal as ClaimsPrincipal;
 
             var result = await _processAuthorizationRequest.Process(

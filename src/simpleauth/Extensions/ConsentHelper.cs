@@ -30,16 +30,6 @@ namespace SimpleAuth.Extensions
             AuthorizationParameter authorizationParameter,
             CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(subject))
-            {
-                throw new ArgumentNullException(nameof(subject));
-            }
-
-            if (authorizationParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationParameter));
-            }
-
             var consents =
                 (await consentRepository.GetConsentsForGivenUser(subject, cancellationToken).ConfigureAwait(false))
                 ?.ToArray()

@@ -78,11 +78,6 @@ namespace SimpleAuth.ViewModels
         /// <exception cref="ArgumentNullException">modelState</exception>
         public void Validate(ModelStateDictionary modelState)
         {
-            if (modelState == null)
-            {
-                throw new ArgumentNullException(nameof(modelState));
-            }
-
             if (Action == ResendAction)
             {
                 if (string.IsNullOrWhiteSpace(ClaimValue))

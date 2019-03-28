@@ -38,13 +38,18 @@ namespace SimpleAuth.Server.Tests.Policies
         }
 
         [Fact]
-        public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
+        public async Task WhenPassingNullTicketLineParameterThenExceptionsAreThrown()
         {
             await Assert
-                .ThrowsAsync<ArgumentNullException>(
+                .ThrowsAsync<NullReferenceException>(
                     () => _basicAuthorizationPolicy.Execute(null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(
+        }
+
+        [Fact]
+        public async Task WhenPassingNullPolicyParameterThenExceptionsAreThrown()
+        {
+            await Assert.ThrowsAsync<NullReferenceException>(
                     () => _basicAuthorizationPolicy.Execute(
                         new TicketLineParameter("client_id"),
                         null,

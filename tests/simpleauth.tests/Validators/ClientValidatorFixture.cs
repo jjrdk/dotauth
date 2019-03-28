@@ -106,10 +106,15 @@ namespace SimpleAuth.Tests.Validators
         }
 
         [Fact]
-        public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
+        public void WhenPassingNullNullClientThenThrows()
         {
-            Assert.Throws<ArgumentNullException>(() => ((Client)null).CheckPkce(null, null));
-            Assert.Throws<ArgumentNullException>(() => new Client().CheckPkce(null, null));
+            Assert.Throws<NullReferenceException>(() => ((Client)null).CheckPkce(null, null));
+        }
+
+        [Fact]
+        public void WhenPassingNullParametersThenReturnsFalse()
+        {
+            Assert.Throws<NullReferenceException>(() => new Client {RequirePkce = true}.CheckPkce(null, null));
         }
 
         [Fact]

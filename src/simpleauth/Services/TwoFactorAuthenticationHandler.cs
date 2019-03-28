@@ -49,21 +49,6 @@ namespace SimpleAuth.Services
 
         public async Task<bool> SendCode(string code, string twoFactorAuthType, ResourceOwner user)
         {
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                throw new ArgumentNullException(nameof(code));
-            }
-
-            if (string.IsNullOrWhiteSpace(twoFactorAuthType))
-            {
-                throw new ArgumentNullException(nameof(twoFactorAuthType));
-            }
-
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
             var service = Get(twoFactorAuthType);
             if (service == null)
             {

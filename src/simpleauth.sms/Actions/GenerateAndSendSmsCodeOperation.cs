@@ -1,12 +1,12 @@
 ﻿namespace SimpleAuth.Sms.Actions
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     internal sealed class GenerateAndSendSmsCodeOperation
     {
@@ -24,11 +24,6 @@
 
         public async Task<string> Execute(string phoneNumber, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(phoneNumber))
-            {
-                throw new ArgumentNullException(nameof(phoneNumber));
-            }
-
             var confirmationCode = new ConfirmationCode
             {
                 Value = await GetCode(cancellationToken).ConfigureAwait(false),
@@ -38,16 +33,13 @@
             };
 
             var message = "The confirmation code is " + confirmationCode.Value;
-            try
-            {
-                await _smsClient.SendMessage(phoneNumber, message).ConfigureAwait(false);
-            }
-            catch (Exception ex)
+            var sendResult = await _smsClient.SendMessage(phoneNumber, message).ConfigureAwait(false);
+
+            if (!sendResult.Item1)
             {
                 throw new SimpleAuthException(
                     ErrorCodes.UnhandledExceptionCode,
-                    "The SMS account is not properly configured",
-                    ex);
+                    "The SMS account is not properly configured");
             }
 
             if (!await _confirmationCodeStore.Add(confirmationCode, cancellationToken).ConfigureAwait(false))

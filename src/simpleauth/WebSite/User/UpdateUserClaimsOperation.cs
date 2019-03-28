@@ -35,16 +35,6 @@ namespace SimpleAuth.WebSite.User
 
         public async Task<bool> Execute(string subject, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(subject))
-            {
-                throw new ArgumentNullException(nameof(subject));
-            }
-
-            if (claims == null)
-            {
-                throw new ArgumentNullException(nameof(claims));
-            }
-
             var resourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {

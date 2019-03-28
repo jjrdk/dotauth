@@ -48,8 +48,6 @@ namespace SimpleAuth.MiddleWare
             {
                 context.Response.Clear();
 
-                //context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                //context.Response.ContentType = "application/json";
                 if (exception is SimpleAuthException serverException)
                 {
                     var state = !(exception is SimpleAuthExceptionWithState exceptionWithState)

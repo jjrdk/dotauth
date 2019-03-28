@@ -51,11 +51,6 @@
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (authorizationParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationParameter));
-            }
-
             var client = await _clientRepository.GetById(authorizationParameter.ClientId, cancellationToken).ConfigureAwait(false);
             if (client == null)
             {

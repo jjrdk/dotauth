@@ -39,7 +39,7 @@
         /// or
         /// message
         /// </exception>
-        public async Task<bool> SendMessage(string toPhoneNumber, string message)
+        public async Task<(bool, string)> SendMessage(string toPhoneNumber, string message)
         {
             if (string.IsNullOrWhiteSpace(toPhoneNumber))
             {
@@ -64,7 +64,7 @@
 
             var pubResponse = await _client.PublishAsync(pubRequest).ConfigureAwait(false);
 
-            return (int)pubResponse.HttpStatusCode < 400;
+            return ((int)pubResponse.HttpStatusCode < 400, pubResponse.MessageId);
         }
     }
 }

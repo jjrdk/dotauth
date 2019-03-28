@@ -24,11 +24,7 @@
                 throw new ArgumentNullException(nameof(resourceOwnerUri));
             }
 
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Delete,
-                RequestUri = resourceOwnerUri
-            };
+            var request = new HttpRequestMessage {Method = HttpMethod.Delete, RequestUri = resourceOwnerUri};
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
                 request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
@@ -36,11 +32,7 @@
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            try
-            {
-                httpResult.EnsureSuccessStatusCode();
-            }
-            catch (Exception)
+            if (!httpResult.IsSuccessStatusCode)
             {
                 return new GenericResponse<object>
                 {

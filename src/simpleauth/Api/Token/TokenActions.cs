@@ -141,11 +141,6 @@ namespace SimpleAuth.Api.Token
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (authorizationCodeGrantTypeParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationCodeGrantTypeParameter));
-            }
-
             var processId = Id.Create();
 
             Validate(authorizationCodeGrantTypeParameter);
@@ -169,11 +164,6 @@ namespace SimpleAuth.Api.Token
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (refreshTokenGrantTypeParameter == null)
-            {
-                throw new ArgumentNullException(nameof(refreshTokenGrantTypeParameter));
-            }
-
             var processId = Id.Create();
 
             // Read this RFC for more information
@@ -206,11 +196,6 @@ namespace SimpleAuth.Api.Token
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (clientCredentialsGrantTypeParameter == null)
-            {
-                throw new ArgumentNullException(nameof(clientCredentialsGrantTypeParameter));
-            }
-
             var processId = Id.Create();
 
             var result = await GetTokenByClientCredentials(
@@ -232,11 +217,6 @@ namespace SimpleAuth.Api.Token
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (revokeTokenParameter == null)
-            {
-                throw new ArgumentNullException(nameof(revokeTokenParameter));
-            }
-
             var processId = Id.Create();
 
             // Read this RFC for more information
@@ -267,11 +247,6 @@ namespace SimpleAuth.Api.Token
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (clientCredentialsGrantTypeParameter == null)
-            {
-                throw new ArgumentNullException(nameof(clientCredentialsGrantTypeParameter));
-            }
-
             if (string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
             {
                 throw new SimpleAuthException(
