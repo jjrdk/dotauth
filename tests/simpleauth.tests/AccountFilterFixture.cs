@@ -35,16 +35,7 @@
         {
             var filters = new[]
             {
-                new Filter
-                {
-                    Rules = new []
-                    {
-                        new FilterRule
-                        {
-                            ClaimType = "key", ClaimValue = "val", Operation = ComparisonOperations.Equal
-                        }
-                    }
-                }
+                new Filter("name", new FilterRule("key", "val", ComparisonOperations.Equal))
             };
             _filterRepositoryStub.Setup(f => f.GetAll(It.IsAny<CancellationToken>())).ReturnsAsync(filters);
 
@@ -61,16 +52,7 @@
         {
             var filters = new[]
             {
-                new Filter
-                {
-                    Rules = new []
-                    {
-                        new FilterRule
-                        {
-                            ClaimType = "key", ClaimValue = "val", Operation = ComparisonOperations.Equal
-                        }
-                    }
-                }
+                new Filter("name", new FilterRule("key", "val", ComparisonOperations.Equal))
             };
             _filterRepositoryStub.Setup(f => f.GetAll(It.IsAny<CancellationToken>())).ReturnsAsync(filters);
 
@@ -89,18 +71,7 @@
         {
             var filters = new[]
             {
-                new Filter
-                {
-                    Rules = new []
-                    {
-                        new FilterRule
-                        {
-                            ClaimType = "key",
-                            ClaimValue = "val",
-                            Operation = ComparisonOperations.NotEqual
-                        }
-                    }
-                }
+                new Filter("name", new FilterRule("key", "val", ComparisonOperations.NotEqual))
             };
             _filterRepositoryStub.Setup(f => f.GetAll(It.IsAny<CancellationToken>())).ReturnsAsync(filters);
 
@@ -119,18 +90,7 @@
         {
             var filters = new[]
             {
-                new Filter
-                {
-                    Rules = new []
-                    {
-                        new FilterRule
-                        {
-                            ClaimType = "key",
-                            ClaimValue = "^[0-9]{1}$",
-                            Operation = ComparisonOperations.RegularExpression
-                        }
-                    }
-                }
+                new Filter("name", new FilterRule("key", "^[0-9]{1}$", ComparisonOperations.RegularExpression))
             };
             _filterRepositoryStub.Setup(f => f.GetAll(It.IsAny<CancellationToken>())).ReturnsAsync(filters);
 
@@ -149,16 +109,7 @@
         {
             var filters = new[]
             {
-                new Filter
-                {
-                    Rules = new []
-                    {
-                        new FilterRule
-                        {
-                            ClaimType = "key", ClaimValue = "val", Operation = ComparisonOperations.Equal
-                        }
-                    }
-                }
+                new Filter("name", new FilterRule("key", "val", ComparisonOperations.Equal))
             };
             _filterRepositoryStub.Setup(f => f.GetAll(It.IsAny<CancellationToken>())).ReturnsAsync(filters);
 
@@ -174,28 +125,8 @@
         {
             var filters = new[]
             {
-                new Filter
-                {
-                    Rules = new []
-                    {
-                        new FilterRule
-                        {
-                            ClaimType = "key", ClaimValue = "val", Operation = ComparisonOperations.Equal
-                        }
-                    }
-                },
-                new Filter
-                {
-                    Rules = new []
-                    {
-                        new FilterRule
-                        {
-                            ClaimType = "key",
-                            ClaimValue = "val",
-                            Operation = ComparisonOperations.NotEqual
-                        }
-                    }
-                }
+                new Filter("1", new FilterRule("key", "val", ComparisonOperations.Equal)),
+                new Filter("2", new FilterRule("key", "val", ComparisonOperations.NotEqual))
             };
             _filterRepositoryStub.Setup(f => f.GetAll(It.IsAny<CancellationToken>())).ReturnsAsync(filters);
 
