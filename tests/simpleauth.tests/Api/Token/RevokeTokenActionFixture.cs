@@ -44,10 +44,15 @@ namespace SimpleAuth.Tests.Api.Token
         public async Task When_Passing_Null_Parameter_Then_Exceptions_Are_Thrown()
         {
             await Assert
-                .ThrowsAsync<ArgumentNullException>(
+                .ThrowsAsync<SimpleAuthException>(
                     () => _revokeTokenAction.Execute(null, null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(
+        }
+
+        [Fact]
+        public async Task When_Passing_Empty_Parameter_Then_Thrown()
+        {
+            await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _revokeTokenAction.Execute(
                         new RevokeTokenParameter(),
                         null,

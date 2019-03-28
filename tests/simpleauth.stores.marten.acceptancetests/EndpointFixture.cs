@@ -19,6 +19,7 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Configuration;
     using Xunit;
 
     public class EndpointFixture : IDisposable
@@ -29,15 +30,18 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
 
         public EndpointFixture()
         {
+            var configuration = new ConfigurationBuilder().AddUserSecrets<ServerStartup>().Build();
+
             IdentityModelEventSource.ShowPII = true;
-            _server = new TestServerFixture(BaseUrl);
             _connectionString = DbInitializer.Init(
-                    TestData.ConnectionString,
+                    configuration["Db:ConnectionString"],
                     DefaultStores.Consents(),
                     DefaultStores.Users(),
                     DefaultStores.Clients(SharedContext.Instance),
                     DefaultStores.Scopes())
                 .Result;
+
+            _server = new TestServerFixture(_connectionString, BaseUrl);
         }
 
         [Theory]

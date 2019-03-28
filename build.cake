@@ -86,9 +86,7 @@ Task("Tests")
     .Does(() =>
 {
     var projects = GetFiles(buildDir + "/tests/**/*.tests.csproj");
-
-	// Uncomment this to run integration tests against a PostgreSql server.
-	//projects.Add(new FilePath("./tests/simpleauth.acceptancetests/simpleauth.acceptancetests.csproj"));
+    //projects.Add(new FilePath("./tests/simpleauth.acceptancetests/simpleauth.acceptancetests.csproj"));
 
     foreach(var project in projects)
     {
@@ -116,11 +114,12 @@ Task("Tests")
 });
 
 Task("Pack")
-    .IsDependentOn("Build")
+    .IsDependentOn("Tests")
     .Does(()=>
     {
         var nugetVersion = versionInfo.MajorMinorPatch + "-" + versionInfo.BranchName + versionInfo.CommitsSinceVersionSourcePadded;
-        if(versionInfo.BranchName == "master")
+        Information(versionInfo.CommitsSinceVersionSourcePadded);
+        if(versionInfo.BranchName == "master" && versionInfo.CommitsSinceVersionSourcePadded.Replace("0", "") == "")
         {
             nugetVersion = versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded;
         }
@@ -143,7 +142,6 @@ Task("Pack")
         DotNetCorePack("./src/simpleauth.manager.client/simpleauth.manager.client.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.stores.marten/simpleauth.stores.marten.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.sms/simpleauth.sms.csproj", packSettings);
-        DotNetCorePack("./src/simpleauth.sms.client/simpleauth.sms.client.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.uma.client/simpleauth.uma.client.csproj", packSettings);
     });
 

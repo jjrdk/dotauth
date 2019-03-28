@@ -133,21 +133,6 @@ namespace SimpleAuth.Api.Token
             string scope,
             string issuerName)
         {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            if (ticketLines == null)
-            {
-                throw new ArgumentNullException(nameof(ticketLines));
-            }
-
-            if (string.IsNullOrWhiteSpace(scope))
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
-
             var expiresIn = _configurationService.RptLifeTime; // 1. Retrieve the expiration time of the granted token.
             var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName).ConfigureAwait(false);
             // 2. Construct the JWT token (client).

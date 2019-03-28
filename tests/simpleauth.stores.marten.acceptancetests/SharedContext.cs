@@ -20,9 +20,9 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
 
     public class SharedContext
     {
-        private static SharedContext Ctx;
+        private static SharedContext _ctx;
 
-        public static SharedContext Instance => Ctx ?? (Ctx = new SharedContext());
+        public static SharedContext Instance => _ctx ?? (_ctx = new SharedContext());
 
         private SharedContext()
         {

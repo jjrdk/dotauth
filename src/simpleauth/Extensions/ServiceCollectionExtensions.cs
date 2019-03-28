@@ -180,11 +180,6 @@ namespace SimpleAuth.Extensions
         /// <exception cref="ArgumentNullException">services</exception>
         public static IServiceCollection AddAccountFilter(this IServiceCollection services, params Filter[] filters)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
             services.AddTransient<IAccountFilter, AccountFilter>();
             services.AddSingleton<IFilterStore>(new DefaultFilterStore(filters));
             return services;
@@ -254,6 +249,11 @@ namespace SimpleAuth.Extensions
             return s;
         }
 
+        /// <summary>
+        /// Registers the mvc routes for a SimpleAuth server.
+        /// </summary>
+        /// <param name="app">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns></returns>
         public static IApplicationBuilder UseSimpleAuthMvc(this IApplicationBuilder app)
         {
             return app.UseMvc(

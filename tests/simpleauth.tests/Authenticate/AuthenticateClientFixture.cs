@@ -25,7 +25,7 @@
         public async Task When_Passing_No_Authentication_Instruction_Then_Exception_Is_Thrown()
         {
             await Assert
-                .ThrowsAsync<ArgumentNullException>(
+                .ThrowsAsync<NullReferenceException>(
                     () => _authenticateClient.Authenticate(null, null, CancellationToken.None))
                 .ConfigureAwait(false);
         }

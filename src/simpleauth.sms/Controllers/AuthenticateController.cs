@@ -183,7 +183,6 @@
                 {
                     await _eventPublisher.Publish(new ExceptionMessage(Id.Create(), ex, DateTime.UtcNow))
                         .ConfigureAwait(false);
-                    // _openIdEventSource.Failure(ex.Message);
                     ModelState.AddModelError("message_error", ex.Message);
                 }
 

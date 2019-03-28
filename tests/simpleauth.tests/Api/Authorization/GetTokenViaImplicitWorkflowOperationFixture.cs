@@ -34,10 +34,15 @@
         [Fact]
         public async Task When_Passing_No_Authorization_Request_Then_Exception_Is_Thrown()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<NullReferenceException>(
                     () => _getTokenViaImplicitWorkflowOperation.Execute(null, null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(
+        }
+
+        [Fact]
+        public async Task When_Passing_Empty_Authorization_Request_Then_Exception_Is_Thrown()
+        {
+            await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _getTokenViaImplicitWorkflowOperation.Execute(
                         new AuthorizationParameter(),
                         null,

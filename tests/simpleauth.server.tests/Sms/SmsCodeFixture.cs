@@ -55,10 +55,7 @@
                 .Callback<ConfirmationCode, CancellationToken>((r, c) => { confirmationCode = r; })
                 .Returns(() => Task.FromResult(true));
             _server.SharedCtx.TwilioClient.Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
-                .Callback(
-                    () => throw new SimpleAuthException(
-                        ErrorCodes.UnhandledExceptionCode,
-                        "the twilio account is not properly configured"));
+                .ReturnsAsync((false, ""));
             var client = await CreateTokenClient().ConfigureAwait(false);
             var twilioNotConfigured = await client.RequestSms(new ConfirmationCodeRequest {PhoneNumber = "phone"})
                 .ConfigureAwait(false);
@@ -80,7 +77,7 @@
                 .Returns(() => Task.FromResult(false));
             _server.SharedCtx.TwilioClient.Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(() => { })
-                .ReturnsAsync(true);
+                .ReturnsAsync((true, null));
             var client = await CreateTokenClient().ConfigureAwait(false);
             var cannotInsertConfirmationCode = await client
                 .RequestSms(new ConfirmationCodeRequest {PhoneNumber = "phone"})
@@ -96,6 +93,8 @@
         [Fact]
         public async Task WhenUnhandledExceptionOccursThenReturnsError()
         {
+            _server.SharedCtx.TwilioClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync((true, ""));
             _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((ConfirmationCode) null));
             _server.SharedCtx.ConfirmationCodeStore
@@ -125,7 +124,7 @@
                 .Returns(() => Task.FromResult(true));
             _server.SharedCtx.TwilioClient.Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(() => { })
-                .ReturnsAsync(true);
+                .ReturnsAsync((true, null));
             var client = await CreateTokenClient().ConfigureAwait(false);
             var happyPath = await client.RequestSms(new ConfirmationCodeRequest {PhoneNumber = "phone"})
                 .ConfigureAwait(false);

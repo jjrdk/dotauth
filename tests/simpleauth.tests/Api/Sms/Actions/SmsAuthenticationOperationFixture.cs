@@ -36,7 +36,7 @@
         public async Task When_Null_Parameter_Is_Passed_Then_Exception_Is_Thrown()
         {
             await Assert
-                .ThrowsAsync<ArgumentNullException>(
+                .ThrowsAsync<NullReferenceException>(
                     () => _smsAuthenticationOperation.Execute(null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
@@ -45,7 +45,7 @@
         public async Task When_Empty_Parameter_Is_Passed_Then_Exception_Is_Thrown()
         {
             await Assert
-                .ThrowsAsync<ArgumentNullException>(
+                .ThrowsAsync<NullReferenceException>(
                     () => _smsAuthenticationOperation.Execute(string.Empty, CancellationToken.None))
                 .ConfigureAwait(false);
         }

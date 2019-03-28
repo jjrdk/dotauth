@@ -24,14 +24,17 @@
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Exceptions_Are_Thrown()
         {
-            var localAuthenticationParameter = new LocalAuthenticationParameter();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<NullReferenceException>(
                     () => _localUserAuthenticationAction.Execute(null, null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(
+        }
+
+        [Fact]
+        public async Task When_Passing_Empty_Parameter_Then_Exceptions_Are_Thrown()
+        {
+            await Assert.ThrowsAsync<NullReferenceException>(
                     () => _localUserAuthenticationAction.Execute(
-                        localAuthenticationParameter,
+                        new LocalAuthenticationParameter(),
                         null,
                         null,
                         null,
@@ -110,7 +113,7 @@
                 new Mock<ITokenStore>().Object,
                 new Mock<IScopeRepository>().Object,
                 mock.Object,
-                new InMemoryJwksRepository(), 
+                new InMemoryJwksRepository(),
                 new NoOpPublisher());
         }
     }

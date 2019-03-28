@@ -41,11 +41,6 @@ namespace SimpleAuth.Extensions
 
         public static string GetOriginUrl(this Controller controller)
         {
-            if (controller == null)
-            {
-                throw new ArgumentNullException(nameof(controller));
-            }
-
             if (!controller.Request.Headers.ContainsKey("Referer"))
             {
                 return null;
@@ -58,11 +53,6 @@ namespace SimpleAuth.Extensions
 
         public static Task DisplayInternalHtml(this Controller controller, string resourceName, Func<string, string> manipulateHtmlCallback = null)
         {
-            if (controller == null)
-            {
-                throw new ArgumentNullException(nameof(controller));
-            }
-
             if (string.IsNullOrWhiteSpace(resourceName))
             {
                 throw new ArgumentNullException(nameof(resourceName));

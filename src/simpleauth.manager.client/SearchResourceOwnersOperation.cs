@@ -42,29 +42,26 @@
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            try
+            if (httpResult.IsSuccessStatusCode)
             {
-                httpResult.EnsureSuccessStatusCode();
-            }
-            catch
-            {
-                var result = new GenericResponse<PagedResponse<ResourceOwner>>
+                return new GenericResponse<PagedResponse<ResourceOwner>>
                 {
-                    ContainsError = true,
-                    HttpStatus = httpResult.StatusCode
+                    Content = Serializer.Default.Deserialize<PagedResponse<ResourceOwner>>(content)
                 };
-                if (!string.IsNullOrWhiteSpace(content))
-                {
-                    result.Error = Serializer.Default.Deserialize<ErrorDetails>(content);
-                }
-
-                return result;
             }
 
-            return new GenericResponse<PagedResponse<ResourceOwner>>
+            var result = new GenericResponse<PagedResponse<ResourceOwner>>
             {
-                Content = Serializer.Default.Deserialize<PagedResponse<ResourceOwner>>(content)
+                ContainsError = true,
+                HttpStatus = httpResult.StatusCode
             };
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                result.Error = Serializer.Default.Deserialize<ErrorDetails>(content);
+            }
+
+            return result;
+
         }
     }
 }

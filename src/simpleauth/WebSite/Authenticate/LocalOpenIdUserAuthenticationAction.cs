@@ -69,16 +69,6 @@ namespace SimpleAuth.WebSite.Authenticate
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (localAuthenticationParameter == null)
-            {
-                throw new ArgumentNullException(nameof(localAuthenticationParameter));
-            }
-
-            if (authorizationParameter == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationParameter));
-            }
-
             var resourceOwner = await _resourceOwnerServices.Authenticate(
                     localAuthenticationParameter.UserName,
                     localAuthenticationParameter.Password,

@@ -1,8 +1,5 @@
 ﻿namespace SimpleAuth.Tests.Api.Sms.Actions
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Moq;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
@@ -10,6 +7,9 @@
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Sms;
     using SimpleAuth.Sms.Actions;
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class GenerateAndSendSmsCodeOperationFixture
@@ -30,19 +30,16 @@
         [Fact]
         public async Task When_Pass_Null_Parameter_Then_Exception_Is_Thrown()
         {
-            var exception = await Assert
-                .ThrowsAsync<ArgumentNullException>(() => _generateAndSendSmsCodeOperation.Execute(null, CancellationToken.None))
+            await Assert
+                .ThrowsAsync<SimpleAuthException>(() => _generateAndSendSmsCodeOperation.Execute(null, CancellationToken.None))
                 .ConfigureAwait(false);
-
-            Assert.NotNull(exception);
         }
 
         [Fact]
         public async Task When_TwilioSendException_Then_Exception_Is_Thrown()
         {
-            _twilioClientStub.Setup(s =>
-                    s.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
-                .Callback(() => throw new SmsException("problem", null));
+            _twilioClientStub.Setup(s => s.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync((false, ""));
 
             var exception = await Assert
                 .ThrowsAsync<SimpleAuthException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None))
@@ -55,6 +52,8 @@
         [Fact]
         public async Task When_CannotInsert_ConfirmationCode_Then_Exception_Is_Thrown()
         {
+            _twilioClientStub.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync((true, ""));
             _confirmationCodeStoreStub.Setup(c => c.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(false));
 
@@ -69,6 +68,8 @@
         [Fact]
         public async Task When_GenerateAndSendConfirmationCode_Then_Code_Is_Returned()
         {
+            _twilioClientStub.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync((true, ""));
             _confirmationCodeStoreStub.Setup(c => c.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(true));
 

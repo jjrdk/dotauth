@@ -29,11 +29,16 @@
         public async Task When_Pass_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
             await Assert
-                .ThrowsAsync<ArgumentNullException>(
+                .ThrowsAsync<SimpleAuthException>(
                     () => _updateUserClaimsOperation.Execute(null, null, CancellationToken.None))
                 .ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task When_Pass_Bad_Parameters_Then_Exceptions_Are_Thrown()
+        {
             await Assert
-                .ThrowsAsync<ArgumentNullException>(
+                .ThrowsAsync<SimpleAuthException>(
                     () => _updateUserClaimsOperation.Execute("subject", null, CancellationToken.None))
                 .ConfigureAwait(false);
         }

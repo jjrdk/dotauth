@@ -142,6 +142,22 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
+            if (string.IsNullOrWhiteSpace(putPolicy.PolicyId))
+            {
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "the parameter id needs to be specified",
+                    HttpStatusCode.BadRequest);
+            }
+
+            if (putPolicy.Rules == null)
+            {
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "the parameter rules needs to be specified",
+                    HttpStatusCode.BadRequest);
+            }
+
             var isPolicyExists = await _updatePolicy.Execute(putPolicy, cancellationToken).ConfigureAwait(false);
             return !isPolicyExists ? GetNotFoundPolicy() : new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
@@ -173,6 +189,14 @@ namespace SimpleAuth.Controllers
                 return BuildError(
                     ErrorCodes.InvalidRequestCode,
                     "no parameter in body request",
+                    HttpStatusCode.BadRequest);
+            }
+
+            if (postAddResourceSet.ResourceSets == null)
+            {
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
+                    "The parameter resources needs to be specified",
                     HttpStatusCode.BadRequest);
             }
 

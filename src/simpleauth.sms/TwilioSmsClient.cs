@@ -38,8 +38,7 @@
         /// or
         /// message
         /// </exception>
-        /// <exception cref="SmsException"></exception>
-        public async Task<bool> SendMessage(string toPhoneNumber, string message)
+        public async Task<(bool,string)> SendMessage(string toPhoneNumber, string message)
         {
             if (string.IsNullOrWhiteSpace(toPhoneNumber))
             {
@@ -71,17 +70,13 @@
             httpRequest.Headers.Add("Authorization",
                 "Basic " + CreateBasicAuthenticationHeader(_credentials.AccountSid, _credentials.AuthToken));
             var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
-            try
-            {
-                response.EnsureSuccessStatusCode();
-
-                return true;
-            }
-            catch (Exception ex)
+            if (!response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new SmsException(json, ex);
+                return (false, json);
             }
+
+            return (true, response.ReasonPhrase);
         }
 
         private string CreateBasicAuthenticationHeader(string username, string password)
