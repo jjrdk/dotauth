@@ -42,7 +42,7 @@
             "and a manager token".x(
                 async () =>
                 {
-                    var result = await _tokenClient.GetToken(TokenRequest.FromScopes("manager")).ConfigureAwait(false);
+                    var result = await _tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager" })).ConfigureAwait(false);
 
                     Assert.NotNull(result.Content);
 
