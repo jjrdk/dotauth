@@ -46,10 +46,6 @@ namespace SimpleAuth.Tests.TwoFactors
                 .ThrowsAsync<ArgumentNullException>(
                     () => _twoFactorAuthenticationHandler.SendCode("code", string.Empty, null))
                 .ConfigureAwait(false);
-            //await Assert
-            //    .ThrowsAsync<ArgumentNullException>(
-            //        () => _twoFactorAuthenticationHandler.SendCode("code", "service", null))
-            //    .ConfigureAwait(false);
         }
     }
 }

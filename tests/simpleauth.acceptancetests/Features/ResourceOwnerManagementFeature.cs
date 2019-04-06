@@ -67,7 +67,7 @@
         }
 
         [Scenario]
-        public void CannotUpdateUserClaims()
+        public void CanUpdateOwnClaims()
         {
             HttpResponseMessage response = null;
 
@@ -76,7 +76,40 @@
                 {
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
-                        Subject = "manager_client",
+                        Subject = "administrator",
+                        Claims = new[] {new PostClaim {Type = "test", Value = "something"}}
+                    };
+
+                    var json = JsonConvert.SerializeObject(updateRequest);
+
+                    var request = new HttpRequestMessage
+                    {
+                        Content = new StringContent(json, Encoding.UTF8, "application/json"),
+                        Method = HttpMethod.Post,
+                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                    };
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _grantedToken.AccessToken);
+                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                });
+
+            "Then is ok request".x(
+                () =>
+                {
+                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                });
+        }
+
+        [Scenario]
+        public void CannotUpdateOtherUsersClaims()
+        {
+            HttpResponseMessage response = null;
+
+            "When updating user claims".x(
+                async () =>
+                {
+                    var updateRequest = new UpdateResourceOwnerClaimsRequest
+                    {
+                        Subject = "user",
                         Claims = new[] {new PostClaim {Type = "test", Value = "something"}}
                     };
 

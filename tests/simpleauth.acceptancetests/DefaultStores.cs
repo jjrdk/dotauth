@@ -474,14 +474,14 @@ namespace SimpleAuth.AcceptanceTests
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     //LogoUri = null,
                     AllowedScopes = new[] {"manager"},
-                    GrantTypes = new[] {GrantTypes.ClientCredentials},
+                    GrantTypes = new[] {GrantTypes.ClientCredentials, GrantTypes.Password},
                     JsonWebKeys =
                         new JsonWebKeySet().AddKey(
                             TestKeys.SecretKey.CreateJwk(
                                 JsonWebKeyUseNames.Sig,
                                 KeyOperations.Sign,
                                 KeyOperations.Verify)),
-                    ResponseTypes = new[] {ResponseTypeNames.Token},
+                    ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Native
                 },
