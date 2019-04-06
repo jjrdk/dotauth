@@ -119,9 +119,9 @@ Task("Pack")
     {
         var nugetVersion = versionInfo.MajorMinorPatch + "-" + versionInfo.BranchName + versionInfo.CommitsSinceVersionSourcePadded;
         Information(versionInfo.CommitsSinceVersionSourcePadded);
-        if(versionInfo.BranchName == "master" && versionInfo.CommitsSinceVersionSourcePadded.Replace("0", "") == "")
+        if(versionInfo.BranchName == "master")
         {
-            nugetVersion = versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded;
+            nugetVersion = versionInfo.MajorMinorPatch;
         }
 
         Information("Package version: " + nugetVersion);
