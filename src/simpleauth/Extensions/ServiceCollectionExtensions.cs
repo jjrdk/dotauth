@@ -181,7 +181,7 @@ namespace SimpleAuth.Extensions
         public static IServiceCollection AddAccountFilter(this IServiceCollection services, params Filter[] filters)
         {
             services.AddTransient<IAccountFilter, AccountFilter>();
-            services.AddSingleton<IFilterStore>(new DefaultFilterStore(filters));
+            services.AddSingleton<IFilterStore>(new InMemoryFilterStore(filters));
             return services;
         }
 
@@ -241,7 +241,7 @@ namespace SimpleAuth.Extensions
                 .AddSingleton(sp => options.AuthorizationCodes?.Invoke(sp) ?? new InMemoryAuthorizationCodeStore())
                 .AddSingleton(sp => options.Tokens?.Invoke(sp) ?? new InMemoryTokenStore())
                 .AddSingleton(sp => options.ConfirmationCodes?.Invoke(sp) ?? new InMemoryConfirmationCodeStore())
-                .AddSingleton(sp => options.AccountFilters?.Invoke(sp) ?? new DefaultFilterStore())
+                .AddSingleton(sp => options.AccountFilters?.Invoke(sp) ?? new InMemoryFilterStore())
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
                 .AddTransient<IBasicAuthorizationPolicy, BasicAuthorizationPolicy>();
