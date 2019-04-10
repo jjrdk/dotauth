@@ -26,6 +26,7 @@
                     .UseSetting(WebHostDefaults.ApplicationKey, typeof(ServerStartup).Assembly.FullName));
             Client = Server.CreateClient();
             SharedCtx.Client = Client;
+            SharedCtx.Handler = Server.CreateHandler();
         }
 
         public void Dispose()

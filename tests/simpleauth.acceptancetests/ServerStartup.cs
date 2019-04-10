@@ -13,8 +13,13 @@
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Sms;
     using System;
+    using System.Diagnostics;
+    using System.Diagnostics.Tracing;
+    using System.Net.Http;
     using System.Text.RegularExpressions;
     using System.Threading;
+    using Microsoft.IdentityModel.Logging;
+    using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Shared.Repositories;
 
     public class ServerStartup : IStartup
@@ -25,6 +30,7 @@
 
         public ServerStartup(SharedContext context)
         {
+            IdentityModelEventSource.ShowPII = true;
             var mockConfirmationCodeStore = new Mock<IConfirmationCodeStore>();
             mockConfirmationCodeStore.Setup(x => x.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
@@ -43,7 +49,7 @@
             {
                 JsonWebKeys = sp =>
                 {
-                    var keyset = new[] {context.SignatureKey, context.EncryptionKey}.ToJwks();
+                    var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
                     return new InMemoryJwksRepository(keyset, keyset);
                 },
                 ConfirmationCodes = sp => mockConfirmationCodeStore.Object,
@@ -85,8 +91,14 @@
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
+                        cfg.BackchannelHttpHandler = _context.Handler;
                         cfg.RequireHttpsMetadata = false;
-                        cfg.TokenValidationParameters = new NoOpTokenValidationParameters(_context);
+                        cfg.Authority = _context.Client.BaseAddress.AbsoluteUri;
+                        cfg.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateAudience = false
+                        };
+                        //cfg.TokenValidationParameters = new NoOpTokenValidationParameters(_context);
                     });
 
             services.AddAuthorization(
@@ -95,7 +107,9 @@
             var mockSmsClient = new Mock<ISmsClient>();
             mockSmsClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync((true, null));
-            var mvc = services.AddMvc().AddSmsAuthentication(mockSmsClient.Object);
+            var mvc = services.AddMvc()
+                //.AddApplicationPart(typeof(TestController).Assembly)
+                .AddSmsAuthentication(mockSmsClient.Object);
 
             return services.BuildServiceProvider();
         }
