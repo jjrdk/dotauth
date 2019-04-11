@@ -81,7 +81,7 @@ namespace SimpleAuth.Api.Token.Actions
                 .ConfigureAwait(false);
             // 1. Invalidate the authorization code by removing it !
             await _authorizationCodeStore.Remove(result.AuthCode.Code, cancellationToken)
-                .ConfigureAwait(false); 
+                .ConfigureAwait(false);
             var grantedToken = await _tokenStore.GetValidGrantedToken(
                     result.AuthCode.Scopes,
                     result.AuthCode.ClientId,
@@ -113,7 +113,9 @@ namespace SimpleAuth.Api.Token.Actions
                 if (grantedToken.IdTokenPayLoad != null)
                 {
                     _jwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad, result.Client?.TokenLifetime);
-                    grantedToken.IdToken = result.Client.GenerateIdToken(grantedToken.IdTokenPayLoad);
+                    grantedToken.IdToken = await result.Client
+                        .GenerateIdToken(grantedToken.IdTokenPayLoad, _jwksStore, cancellationToken)
+                        .ConfigureAwait(false);
                 }
 
                 await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);

@@ -69,6 +69,7 @@ namespace SimpleAuth.Extensions
         public static string GetName(this ClaimsPrincipal principal)
         {
             return GetClaimValue(principal, OpenIdClaimTypes.Name)
+                   ?? GetClaimValue(principal, StandardClaimNames.Subject)
                    ?? GetClaimValue(principal, ClaimTypes.Name)
                 ?? GetClaimValue(principal, ClaimTypes.NameIdentifier);
         }

@@ -112,6 +112,7 @@ namespace SimpleAuth.Api.Token.Actions
                 generatedToken.IdToken = await _clientStore.GenerateIdToken(
                         generatedToken.ClientId,
                         generatedToken.IdTokenPayLoad,
+                        _jwksRepository,
                         cancellationToken)
                     .ConfigureAwait(false);
             }
