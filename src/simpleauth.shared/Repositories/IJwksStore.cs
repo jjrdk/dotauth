@@ -23,5 +23,7 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task<SigningCredentials> GetSigningKey(string alg, CancellationToken cancellationToken = default);
+
+        Task<SigningCredentials> GetDefaultSigningKey(CancellationToken cancellationToken = default);
     }
 }

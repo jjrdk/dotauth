@@ -65,6 +65,28 @@
             }
         }
 
+        public async Task<SigningCredentials> GetDefaultSigningKey(CancellationToken cancellationToken = default)
+        {
+            using (var session = _sessionFactory())
+            {
+                var webKey = await session.Query<JsonWebKey>()
+                    .FirstOrDefaultAsync(
+                        x => x.Use == JsonWebKeyUseNames.Sig && x.KeyOps.Contains(KeyOperations.Sign),
+                        cancellationToken)
+                    .ConfigureAwait(false);
+
+                if (webKey.X5c != null)
+                {
+                    foreach (var certString in webKey.X5c)
+                    {
+                        return new X509SigningCredentials(new X509Certificate2(Convert.FromBase64String(certString)));
+                    }
+                }
+
+                return new SigningCredentials(webKey, webKey.Alg);
+            }
+        }
+
         /// <inheritdoc />
         public async Task<bool> Add(JsonWebKey key, CancellationToken cancellationToken = default)
         {

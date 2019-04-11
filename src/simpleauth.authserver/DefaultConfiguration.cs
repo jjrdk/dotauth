@@ -28,8 +28,8 @@
                     JsonWebKeys =
                         new[]
                         {
-                            "supersecretkey".CreateSignatureJwk(),
-                            "supersecretkey".CreateEncryptionJwk()
+                            "longsupersecretkey".CreateSignatureJwk(),
+                            "longsupersecretkey".CreateEncryptionJwk()
                             
                         }.ToJwks(),
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
@@ -70,8 +70,8 @@
                     JsonWebKeys =
                         new[]
                         {
-                            "supersecretkey".CreateSignatureJwk(),
-                            "supersecretkey".CreateEncryptionJwk()
+                            "longsupersecretkey".CreateSignatureJwk(),
+                            "longsupersecretkey".CreateEncryptionJwk()
 
                         }.ToJwks(),
                     ResponseTypes = new[]

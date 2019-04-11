@@ -182,6 +182,7 @@ namespace SimpleAuth.Common
                 var idToken = await _clientStore.GenerateIdToken(
                         authorizationParameter.ClientId,
                         idTokenPayload,
+                        _jwksStore,
                         cancellationToken)
                     .ConfigureAwait(false);
                 endpointResult.RedirectInstruction.AddParameter(

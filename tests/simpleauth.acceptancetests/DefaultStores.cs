@@ -60,21 +60,6 @@ namespace SimpleAuth.AcceptanceTests
             };
         }
 
-        //public static List<JsonWebKey> JsonWebKeys(SharedContext sharedContext)
-        //{
-        //    var serializedRsa = string.Empty;
-        //    using (var provider = new RSACryptoServiceProvider())
-        //    {
-        //        serializedRsa = RsaExtensions.ToXml(provider, true);
-        //    }
-
-        //    return new List<JsonWebKey>
-        //    {
-        //        sharedContext.SignatureKey,
-        //        sharedContext.EncryptionKey
-        //    };
-        //}
-
         public static List<ResourceOwner> Users()
         {
             return new List<ResourceOwner>
@@ -504,6 +489,19 @@ namespace SimpleAuth.AcceptanceTests
                     ResponseTypes = new[] {ResponseTypeNames.Token},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Native
+                },
+                new Client
+                {
+                    ClientId = "no_key",
+                    ClientName = "No Key client",
+                    Secrets =
+                        new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "no_key" } },
+                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
+                    //LogoUri = null,
+                    AllowedScopes = new[] {"api"},
+                    GrantTypes = new[] {GrantTypes.ClientCredentials, GrantTypes.Password},
+                    ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.IdToken},
+                    ApplicationType = ApplicationTypes.Web
                 }
             };
         }

@@ -25,16 +25,24 @@ namespace SimpleAuth.Extensions
 
     internal static class ClientHelper
     {
-        public static async Task<string> GenerateIdToken(this IClientStore clientStore, string clientId, JwtPayload jwsPayload, CancellationToken cancellationToken)
+        public static async Task<string> GenerateIdToken(
+            this IClientStore clientStore, string clientId, JwtPayload jwsPayload, IJwksStore jwksStore,
+            CancellationToken cancellationToken)
         {
             var client = await clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
-            return client == null ? null : GenerateIdToken(client, jwsPayload);
+            return client == null
+                ? null
+                : await GenerateIdToken(client, jwsPayload, jwksStore, cancellationToken).ConfigureAwait(false);
         }
 
-        public static string GenerateIdToken(this Client client, JwtPayload jwsPayload)
+        public static async Task<string> GenerateIdToken(
+            this Client client, JwtPayload jwsPayload, IJwksStore jwksStore, CancellationToken cancellationToken)
         {
             var handler = new JwtSecurityTokenHandler();
-            var signingCredentials = client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First();
+            var signingCredentials = client.JsonWebKeys?.Keys?.Count > 0
+                ? client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First()
+                : await jwksStore.GetDefaultSigningKey(cancellationToken).ConfigureAwait(false);
+
             var jwt = handler.CreateEncodedJwt(
                 jwsPayload.Iss,
                 client.ClientName,
