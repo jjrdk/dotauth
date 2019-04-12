@@ -65,6 +65,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<SigningCredentials> GetDefaultSigningKey(CancellationToken cancellationToken = default)
         {
             using (var session = _sessionFactory())

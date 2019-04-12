@@ -24,6 +24,11 @@
         /// <returns></returns>
         Task<SigningCredentials> GetSigningKey(string alg, CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Gets the default signing key
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
+        /// <returns>The default <see cref="SigningCredentials"/>.</returns>
         Task<SigningCredentials> GetDefaultSigningKey(CancellationToken cancellationToken = default);
     }
 }
