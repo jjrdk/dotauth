@@ -195,7 +195,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost("claims")]
-        [Authorize("connected_user")]
+        [Authorize]
         public async Task<IActionResult> UpdateMyClaims(
             [FromBody] UpdateResourceOwnerClaimsRequest request,
             CancellationToken cancellationToken)

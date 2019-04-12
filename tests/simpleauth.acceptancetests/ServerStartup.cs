@@ -65,8 +65,10 @@
                 {
                     new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
                     new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled),
-                    new Regex($"^{OpenIdClaimTypes.Name}$", RegexOptions.Compiled)
-                }
+                    new Regex($"^{OpenIdClaimTypes.Name}$", RegexOptions.Compiled),
+                    new Regex($"^acceptance_test$", RegexOptions.Compiled)
+                },
+                ClaimsIncludedInUserCreation = new[] { "acceptance_test" }
             };
             _context = context;
         }

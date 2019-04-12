@@ -23,7 +23,7 @@
     /// Handles user related requests.
     /// </summary>
     /// <seealso cref="SimpleAuth.Controllers.BaseController" />
-    [Authorize("connected_user")]
+    [Authorize("authenticated")]
     public class UserController : BaseController
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

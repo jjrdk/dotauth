@@ -110,14 +110,6 @@ namespace SimpleAuth.Extensions
                     policy.RequireClaim("scope", "register_client");
                 });
             options.AddPolicy(
-                "connected_user",
-                policy => // Introspect the identity token.
-                {
-                    policy.AddAuthenticationSchemes(authenticationSchemes);
-                    //policy.AddAuthenticationSchemes("UserInfoIntrospection");
-                    policy.RequireAuthenticatedUser();
-                });
-            options.AddPolicy(
                 "manage_profile",
                 policy => // Access token with scope = manage_profile or with role = administrator
                 {
