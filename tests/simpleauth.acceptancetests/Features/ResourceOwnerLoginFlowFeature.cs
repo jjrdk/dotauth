@@ -11,6 +11,7 @@
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Newtonsoft.Json;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Requests;
@@ -124,7 +125,7 @@
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
                         Subject = "user",
-                        Claims = new[] { new PostClaim { Type = "test", Value = "something" } }
+                        Claims = new[] {new PostClaim {Type = "test", Value = "something"}}
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);
@@ -135,7 +136,10 @@
                         Method = HttpMethod.Post,
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.AccessToken);
+                    request.Headers.Authorization =
+                        new AuthenticationHeaderValue(
+                            JwtBearerDefaults.AuthenticationScheme,
+                            tokenResponse.AccessToken);
                     updateResponse = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
                 });
 

@@ -36,7 +36,7 @@ namespace SimpleAuth.Controllers
     /// Defines the consent controller.
     /// </summary>
     /// <seealso cref="SimpleAuth.Controllers.BaseController" />
-    [Authorize("connected_user")]
+    [Authorize("authenticated")]
     public class ConsentController : BaseController
     {
         private readonly DisplayConsentAction _displayConsent;

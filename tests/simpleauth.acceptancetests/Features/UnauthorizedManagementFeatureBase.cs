@@ -3,6 +3,7 @@
     using System;
     using SimpleAuth.Client;
     using SimpleAuth.Manager.Client;
+    using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
@@ -43,7 +44,7 @@
                 async () =>
                 {
                     var result = await _tokenClient.GetToken(TokenRequest.FromScopes("admin")).ConfigureAwait(false);
-
+                    
                     Assert.NotNull(result.Content);
 
                     _grantedToken = result.Content;

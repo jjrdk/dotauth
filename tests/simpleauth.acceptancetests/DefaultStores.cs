@@ -71,7 +71,6 @@ namespace SimpleAuth.AcceptanceTests
                     {
                         new Claim(OpenIdClaimTypes.Subject, "administrator"),
                         new Claim(OpenIdClaimTypes.Role, "administrator"),
-                        new Claim(OpenIdClaimTypes.Address, "{ country : 'france' }")
                     },
                     Password = "password".ToSha256Hash(),
                     IsLocalAccount = true
@@ -458,7 +457,7 @@ namespace SimpleAuth.AcceptanceTests
                         new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "manager_client"}},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     //LogoUri = null,
-                    AllowedScopes = new[] {"manager"},
+                    AllowedScopes = new[] {"manager", "openid"},
                     GrantTypes = new[] {GrantTypes.ClientCredentials, GrantTypes.Password},
                     JsonWebKeys =
                         new JsonWebKeySet().AddKey(

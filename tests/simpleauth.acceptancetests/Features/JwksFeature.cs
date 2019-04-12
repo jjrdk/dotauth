@@ -68,7 +68,9 @@
                 {
                     var validationParameters = new TokenValidationParameters
                     {
-                        IssuerSigningKeys = jwks.Keys, ValidIssuer = "https://localhost", ValidAudience = "clientCredentials"
+                        IssuerSigningKeys = jwks.Keys,
+                        ValidIssuer = "https://localhost",
+                        ValidAudience = "clientCredentials"
                     };
 
                     var handler = new JwtSecurityTokenHandler();
