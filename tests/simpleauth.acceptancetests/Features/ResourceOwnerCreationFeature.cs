@@ -48,7 +48,7 @@
                     new NoOpTokenValidationParameters(SharedContext.Instance),
                     out var token);
 
-                Assert.True((token as JwtSecurityToken).Claims.Any(c => c.Type == "acceptance_test"));
+                Assert.Contains((token as JwtSecurityToken).Claims, c => c.Type == "acceptance_test");
             });
         }
     }
