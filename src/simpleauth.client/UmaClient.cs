@@ -49,10 +49,10 @@ namespace SimpleAuth.Uma.Client
         /// <returns></returns>
         public static async Task<UmaClient> Create(HttpClient client, Uri configurationUri)
         {
-            var discoveryOperation = new GetConfigurationOperation(client);
-            var configurationResponse = await discoveryOperation.Execute(configurationUri).ConfigureAwait(false);
+            var result = await client.GetStringAsync(configurationUri).ConfigureAwait(false);
+            var response = JsonConvert.DeserializeObject<UmaConfigurationResponse>(result);
 
-            return new UmaClient(client, configurationResponse);
+            return new UmaClient(client, response);
         }
 
         /// <summary>
@@ -138,7 +138,9 @@ namespace SimpleAuth.Uma.Client
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri(url)
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri(url)
             };
             httpRequest.Headers.Add(AuthorizationHeader, Bearer + token);
             var result = await _client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -238,7 +240,7 @@ namespace SimpleAuth.Uma.Client
 
             url += url.EndsWith("/") ? id : "/" + id;
 
-            var request = new HttpRequestMessage {Method = HttpMethod.Get, RequestUri = new Uri(url)};
+            var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(url) };
             request.Headers.Add(AuthorizationHeader, Bearer + token);
             var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -273,7 +275,8 @@ namespace SimpleAuth.Uma.Client
 
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Get, RequestUri = new Uri(_configurationResponse.PoliciesEndpoint)
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(_configurationResponse.PoliciesEndpoint)
             };
             request.Headers.Add(AuthorizationHeader, Bearer + token);
             var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
@@ -288,7 +291,7 @@ namespace SimpleAuth.Uma.Client
                 };
             }
 
-            return new GenericResponse<string[]> {Content = JsonConvert.DeserializeObject<string[]>(content)};
+            return new GenericResponse<string[]> { Content = JsonConvert.DeserializeObject<string[]>(content) };
         }
 
         /// <summary>
@@ -318,7 +321,7 @@ namespace SimpleAuth.Uma.Client
 
             url += url.EndsWith("/") ? id : "/" + id;
 
-            var request = new HttpRequestMessage {Method = HttpMethod.Delete, RequestUri = new Uri(url)};
+            var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(url) };
             request.Headers.Add(AuthorizationHeader, Bearer + token);
             var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -398,7 +401,9 @@ namespace SimpleAuth.Uma.Client
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
             var httpRequest = new HttpRequestMessage
             {
-                Content = body, Method = HttpMethod.Post, RequestUri = new Uri(url)
+                Content = body,
+                Method = HttpMethod.Post,
+                RequestUri = new Uri(url)
             };
             httpRequest.Headers.Add(AuthorizationHeader, Bearer + token);
             var httpResult = await _client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -450,7 +455,7 @@ namespace SimpleAuth.Uma.Client
             var url = _configurationResponse.PoliciesEndpoint;
             url += url.EndsWith("/") ? id + "/resources/" + resourceId : "/" + id + "/resources/" + resourceId;
 
-            var httpRequest = new HttpRequestMessage {Method = HttpMethod.Delete, RequestUri = new Uri(url)};
+            var httpRequest = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(url) };
             httpRequest.Headers.Add(AuthorizationHeader, Bearer + token);
             var httpResult = await _client.SendAsync(httpRequest).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -493,7 +498,7 @@ namespace SimpleAuth.Uma.Client
             var resourceSetUrl = _configurationResponse.ResourceRegistrationEndpoint;
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
-            var request = new HttpRequestMessage {Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl)};
+            var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl) };
             request.Headers.Add(AuthorizationHeader, Bearer + authorizationHeaderValue);
             var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -524,7 +529,7 @@ namespace SimpleAuth.Uma.Client
             var url = _configurationResponse.PoliciesEndpoint + "/.search";
             var serializedPostPermission = JsonConvert.SerializeObject(parameter);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
-            var request = new HttpRequestMessage {Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body};
+            var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
                 request.Headers.Add(AuthorizationHeader, Bearer + authorizationHeaderValue);
@@ -665,7 +670,8 @@ namespace SimpleAuth.Uma.Client
 
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Get, RequestUri = new Uri(_configurationResponse.ResourceRegistrationEndpoint)
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(_configurationResponse.ResourceRegistrationEndpoint)
             };
             request.Headers.Add(AuthorizationHeader, Bearer + authorizationHeaderValue);
             var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
@@ -680,7 +686,7 @@ namespace SimpleAuth.Uma.Client
                 };
             }
 
-            return new GenericResponse<string[]> {Content = JsonConvert.DeserializeObject<string[]>(json)};
+            return new GenericResponse<string[]> { Content = JsonConvert.DeserializeObject<string[]>(json) };
         }
 
         /// <summary>
@@ -712,7 +718,7 @@ namespace SimpleAuth.Uma.Client
 
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
-            var request = new HttpRequestMessage {Method = HttpMethod.Get, RequestUri = new Uri(resourceSetUrl)};
+            var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(resourceSetUrl) };
             request.Headers.Add(AuthorizationHeader, Bearer + authorizationHeaderValue);
             var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -746,7 +752,7 @@ namespace SimpleAuth.Uma.Client
 
             var serializedPostPermission = JsonConvert.SerializeObject(parameter);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
-            var request = new HttpRequestMessage {Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body};
+            var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
                 request.Headers.Add(AuthorizationHeader, Bearer + authorizationHeaderValue);
