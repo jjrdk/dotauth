@@ -130,7 +130,7 @@ namespace SimpleAuth.Tests.Common
 
             Assert.Contains(
                 actionResult.RedirectInstruction.Parameters,
-                p => p.Name == CoreConstants.StandardAuthorizationResponseNames._idTokenName);
+                p => p.Name == StandardAuthorizationResponseNames.IdTokenName);
         }
 
         [Fact]
@@ -168,7 +168,7 @@ namespace SimpleAuth.Tests.Common
 
             Assert.Contains(
                 actionResult.RedirectInstruction.Parameters,
-                p => p.Name == CoreConstants.StandardAuthorizationResponseNames._accessTokenName);
+                p => p.Name == StandardAuthorizationResponseNames.AccessTokenName);
             _tokenStore.Verify(g => g.AddToken(It.IsAny<GrantedToken>(), It.IsAny<CancellationToken>()));
             _eventPublisher.Verify(e => e.Publish(It.IsAny<AccessToClientGranted>()));
         }
@@ -211,7 +211,7 @@ namespace SimpleAuth.Tests.Common
 
             Assert.Contains(
                 actionResult.RedirectInstruction.Parameters,
-                p => p.Name == CoreConstants.StandardAuthorizationResponseNames._accessTokenName);
+                p => p.Name == StandardAuthorizationResponseNames.AccessTokenName);
             Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Value == grantedToken.AccessToken);
         }
 
@@ -249,7 +249,7 @@ namespace SimpleAuth.Tests.Common
 
             Assert.Contains(
                 actionResult.RedirectInstruction.Parameters,
-                p => p.Name == CoreConstants.StandardAuthorizationResponseNames._authorizationCodeName);
+                p => p.Name == StandardAuthorizationResponseNames.AuthorizationCodeName);
             _authorizationCodeRepositoryFake.Verify(a => a.Add(It.IsAny<AuthorizationCode>(), It.IsAny<CancellationToken>()));
             _eventPublisher.Verify(s => s.Publish(It.IsAny<AuthorizationCodeGranted>()));
         }

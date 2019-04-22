@@ -16,6 +16,7 @@ namespace SimpleAuth.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Net.Http.Headers;
     using System.Threading;
@@ -52,23 +53,8 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get(CancellationToken cancellationToken)
-        {
-            return await ProcessRequest(cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Handles the user info introspection request.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Post(CancellationToken cancellationToken)
-        {
-            return await ProcessRequest(cancellationToken).ConfigureAwait(false);
-        }
-
-        private async Task<IActionResult> ProcessRequest(CancellationToken cancellationToken)
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
             var accessToken = await TryToGetTheAccessToken().ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(accessToken))
@@ -84,8 +70,6 @@ namespace SimpleAuth.Controllers
                     Title = ErrorCodes.InvalidToken
                 })
                 : new ObjectResult(grantedToken.IdTokenPayLoad);
-            //var result = await _userInfoActions.GetUserInformation(accessToken).ConfigureAwait(false);
-            //return result;
         }
 
         private async Task<string> TryToGetTheAccessToken()
@@ -136,7 +120,7 @@ namespace SimpleAuth.Controllers
         {
             const string contentTypeName = "Content-Type";
             const string contentTypeValue = "application/x-www-form-urlencoded";
-            var accessTokenName = CoreConstants.StandardAuthorizationResponseNames._accessTokenName;
+            var accessTokenName = StandardAuthorizationResponseNames.AccessTokenName;
             var emptyResult = string.Empty;
             if (Request.Headers == null
                 || !Request.Headers.TryGetValue(contentTypeName, out var values))
@@ -167,7 +151,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         private string GetAccessTokenFromQueryString()
         {
-            var accessTokenName = CoreConstants.StandardAuthorizationResponseNames._accessTokenName;
+            var accessTokenName = StandardAuthorizationResponseNames.AccessTokenName;
             var query = Request.Query;
             var record = query.FirstOrDefault(q => q.Key == accessTokenName);
             if (record.Equals(default(KeyValuePair<string, StringValues>)))

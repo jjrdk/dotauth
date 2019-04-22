@@ -142,7 +142,7 @@ namespace SimpleAuth.Controllers
                             // Add the encoded request into the query string
                             var encryptedRequest = _dataProtector.Protect(authorizationRequest);
                             actionResult.RedirectInstruction.AddParameter(
-                                CoreConstants.StandardAuthorizationResponseNames._authorizationCodeName,
+                                StandardAuthorizationResponseNames.AuthorizationCodeName,
                                 encryptedRequest);
                         }
 

@@ -21,6 +21,7 @@ namespace SimpleAuth.Uma.Client
     using SimpleAuth.Shared.Responses;
     using System;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
 
@@ -636,7 +637,8 @@ namespace SimpleAuth.Uma.Client
                 Method = HttpMethod.Post,
                 RequestUri = new Uri(_configurationResponse.ResourceRegistrationEndpoint)
             };
-            httpRequest.Headers.Add(AuthorizationHeader, Bearer + token);
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            //.Add(AuthorizationHeader, Bearer + token);
             var httpResult = await _client.SendAsync(httpRequest).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!httpResult.IsSuccessStatusCode)

@@ -21,6 +21,7 @@ namespace SimpleAuth.Client
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
@@ -94,12 +95,12 @@ namespace SimpleAuth.Client
             else
             {
                 request.Method = HttpMethod.Get;
-                request.Headers.Add("Authorization", $"Bearer {accessToken}");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             }
 
             var serializedContent = await _client.SendAsync(request).ConfigureAwait(false);
             var json = await serializedContent.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if(!serializedContent.IsSuccessStatusCode)
+            if (!serializedContent.IsSuccessStatusCode)
             {
                 return new GetUserInfoResult
                 {
