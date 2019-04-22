@@ -20,6 +20,15 @@ namespace SimpleAuth
     using SimpleAuth.Shared.Requests;
     using System.Collections.Generic;
 
+    internal static class StandardAuthorizationResponseNames
+    {
+        public static string IdTokenName = "id_token";
+        public static string AccessTokenName = "access_token";
+        public static string AuthorizationCodeName = "code";
+        public static string StateName = "state";
+        public static string SessionState = "session_state";
+    }
+
     internal static class CoreConstants
     {
         public const string SessionId = "session_id";
@@ -38,15 +47,6 @@ namespace SimpleAuth
             public static string _openIdCustomAuthLevel = "openid.pape.auth_level.ns";
 
             public static string _openIdPreferredCustomAuthLevel = "openid.pape.preferred_auth_levels";
-        }
-
-        public static class StandardAuthorizationResponseNames
-        {
-            public static string _idTokenName = "id_token";
-            public static string _accessTokenName = "access_token";
-            public static string _authorizationCodeName = "code";
-            public static string _stateName = "state";
-            public static string _sessionState = "session_state";
         }
 
         //// Standard authentication policies.

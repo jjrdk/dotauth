@@ -30,7 +30,7 @@
                         {
                             "longsupersecretkey".CreateSignatureJwk(),
                             "longsupersecretkey".CreateEncryptionJwk()
-                            
+
                         }.ToJwks(),
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     PolicyUri = new Uri("http://openid.net"),
@@ -81,6 +81,17 @@
                     },
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Native
+                },
+                new Client
+                {
+                    ClientId = "web",
+                    ClientName = "web",
+                    AllowedScopes = new []{"openid", "role", "manager"},
+                    ApplicationType = ApplicationTypes.Web,
+                    GrantTypes = new []{GrantTypes.Password, GrantTypes.Implicit, GrantTypes.AuthorizationCode, GrantTypes.RefreshToken},
+                    RedirectionUrls = new []{new Uri("http://localhost:4200/callback"), },
+                    ResponseTypes = new []{ResponseTypeNames.IdToken, ResponseTypeNames.Token, ResponseTypeNames.Code},
+                    Secrets = new []{new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret"} },
                 }
             };
         }
@@ -100,19 +111,6 @@
                     Password = "password".ToSha256Hash(),
                     IsLocalAccount = true,
                     CreateDateTime = DateTime.UtcNow,
-                },
-                new ResourceOwner
-                {
-                    Subject = "Doctor",
-                    Password = "password".ToSha256Hash(),
-                    Claims = new[]
-                    {
-                        new Claim(OpenIdClaimTypes.Subject, "Doctor"),
-                        //new Claim(OpenIdClaimTypes.Role, "administrator"),
-                        //new Claim(OpenIdClaimTypes.Role, "role"),
-                        new Claim(OpenIdClaimTypes.Role, "Doctor"),
-                        new Claim(OpenIdClaimTypes.Profile, "Doctor")
-                    }
                 }
             };
         }

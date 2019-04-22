@@ -103,13 +103,14 @@ namespace SimpleAuth.Common
                             allowedTokenScopes,
                             issuerName,
                             userInformationPayload,
-                            idTokenPayload)
+                            idTokenPayload,
+                            cancellationToken: cancellationToken)
                         .ConfigureAwait(false);
                     newAccessTokenGranted = true;
                 }
 
                 endpointResult.RedirectInstruction.AddParameter(
-                    CoreConstants.StandardAuthorizationResponseNames._accessTokenName,
+                    StandardAuthorizationResponseNames.AccessTokenName,
                     grantedToken.AccessToken);
             }
 
@@ -136,7 +137,7 @@ namespace SimpleAuth.Common
 
                     newAuthorizationCodeGranted = true;
                     endpointResult.RedirectInstruction.AddParameter(
-                        CoreConstants.StandardAuthorizationResponseNames._authorizationCodeName,
+                        StandardAuthorizationResponseNames.AuthorizationCodeName,
                         authorizationCode.Code);
                 }
             }
@@ -186,14 +187,14 @@ namespace SimpleAuth.Common
                         cancellationToken)
                     .ConfigureAwait(false);
                 endpointResult.RedirectInstruction.AddParameter(
-                    CoreConstants.StandardAuthorizationResponseNames._idTokenName,
+                    StandardAuthorizationResponseNames.IdTokenName,
                     idToken);
             }
 
             if (!string.IsNullOrWhiteSpace(authorizationParameter.State))
             {
                 endpointResult.RedirectInstruction.AddParameter(
-                    CoreConstants.StandardAuthorizationResponseNames._stateName,
+                    StandardAuthorizationResponseNames.StateName,
                     authorizationParameter.State);
             }
 
@@ -204,7 +205,7 @@ namespace SimpleAuth.Common
             if (sessionState != null)
             {
                 endpointResult.RedirectInstruction.AddParameter(
-                    CoreConstants.StandardAuthorizationResponseNames._sessionState,
+                    StandardAuthorizationResponseNames.SessionState,
                     sessionState);
             }
 
