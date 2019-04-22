@@ -1,6 +1,8 @@
 ﻿namespace SimpleAuth.AcceptanceTests.Features
 {
     using System;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
@@ -52,6 +54,9 @@
                         .ConfigureAwait(false);
                     var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
                         .ConfigureAwait(false);
+                    var handler = new JwtSecurityTokenHandler();
+                    var principal = handler.ReadJwtToken(token.Content.AccessToken);
+                    Assert.NotNull(principal.Issuer);
                     grantedToken = token.Content;
                 });
 

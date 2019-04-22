@@ -98,9 +98,9 @@
                         cfg.Authority = _context.Client.BaseAddress.AbsoluteUri;
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
-                            ValidateAudience = false
+                            ValidateAudience = false,
+                            ValidIssuer = "https://localhost"
                         };
-                        //cfg.TokenValidationParameters = new NoOpTokenValidationParameters(_context);
                     });
 
             services.AddAuthorization(
