@@ -193,10 +193,10 @@ namespace SimpleAuth.Shared.Errors
         public const string TheCodeVerifierIsNotCorrect = "the code verifier is not correct";
         //public const string TheBulkPublicClaimsIsNotWorking = "the bulk operation is not working ...";
         public const string TheResourceOwnerDoesntExist = "The resource owner {0} doesn't exist";
-        public const string TheProfileAlreadyLinked = "the profile is already linked to your account";
-        public const string NotAuthorizedToRemoveTheProfile = "not authorized to remove the profile";
+        //public const string TheProfileAlreadyLinked = "the profile is already linked to your account";
+        //public const string NotAuthorizedToRemoveTheProfile = "not authorized to remove the profile";
         //public const string TheScimConfigurationMustBeSpecified = "the scim configuration is not correct";
-        public const string TheExternalAccountAccountCannotBeUnlinked = "the external account cannot be unlinked";
+        //public const string TheExternalAccountAccountCannotBeUnlinked = "the external account cannot be unlinked";
         public const string TheAmrDoesntExist = "the amr {0} doesn't exist";
         public const string NoActiveAmr = "no active AMR";
         //public const string TheUserIsNotAuthorized = "the user is not authorized";

@@ -90,12 +90,18 @@ namespace SimpleAuth.AuthServer
                         x.EnableForHttps = true;
                         x.Providers.Add(
                             new GzipCompressionProvider(
-                                new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                                new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                         x.Providers.Add(
                             new BrotliCompressionProvider(
-                                new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                                new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                     })
                 .AddHttpContextAccessor()
+                .AddAntiforgery(options =>
+                {
+                    options.FormFieldName = "XrsfField";
+                    options.HeaderName = "XSRF-TOKEN";
+                    options.SuppressXFrameOptionsHeader = false;
+                })
                 .AddCors(
                     options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
                 .AddLogging(log => { log.AddConsole(); });
@@ -134,13 +140,13 @@ namespace SimpleAuth.AuthServer
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseForwardedHeaders(new ForwardedHeadersOptions {ForwardedHeaders = ForwardedHeaders.All})
+            app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All })
                 .UseHttpsRedirection()
                 .UseHsts()
                 .UseAuthentication()
                 .UseCors("AllowAll")
                 .UseStaticFiles(
-                    new StaticFileOptions {FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot")})
+                    new StaticFileOptions { FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot") })
                 .UseSimpleAuthExceptionHandler()
                 .UseSimpleAuthExceptionHandler()
                 .UseResponseCompression()
