@@ -14,7 +14,7 @@
         protected TestServerFixture _fixture = null;
         protected ManagementClient _managerClient = null;
         protected TokenClient _tokenClient = null;
-        protected GrantedTokenResponse _grantedToken = null;
+        protected GrantedTokenResponse _administratorToken = null;
 
         [Background]
         public void Background()
@@ -46,7 +46,7 @@
 
                     Assert.NotNull(result.Content);
 
-                    _grantedToken = result.Content;
+                    _administratorToken = result.Content;
                 });
         }
     }

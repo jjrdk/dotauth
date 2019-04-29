@@ -14,7 +14,7 @@
             "When requesting existing scope".x(
                 async () =>
                 {
-                    var response = await _managerClient.GetScope("test", _grantedToken.AccessToken)
+                    var response = await _managerClient.GetScope("test", _administratorToken.AccessToken)
                         .ConfigureAwait(false);
 
                     Assert.False(response.ContainsError);

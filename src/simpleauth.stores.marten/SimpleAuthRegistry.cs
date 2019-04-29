@@ -15,16 +15,32 @@
         /// </summary>
         public SimpleAuthRegistry()
         {
-            For<Scope>().Identity(x => x.Name).GinIndexJsonData();
+            For<Scope>().Identity(x => x.Name)
+                .Index(x => x.Name)
+                .Index(x => x.IsDisplayedInConsent)
+                .Index(x => x.Type)
+                .GinIndexJsonData();
             For<Filter>().Identity(x => x.Name).GinIndexJsonData();
-            For<ResourceOwner>().Identity(x => x.Subject).GinIndexJsonData();
+            For<ResourceOwner>().Identity(x => x.Subject)
+                .Index(x => x.Claims)
+                .Index(x => x.ExternalLogins)
+                .GinIndexJsonData();
             For<Consent>().GinIndexJsonData();
             For<Policy>().GinIndexJsonData();
-            For<Client>().Identity(x => x.ClientId).GinIndexJsonData();
+            For<Client>().Identity(x => x.ClientId)
+                .Index(x => x.AllowedScopes)
+                .Index(x => x.GrantTypes)
+                .Index(x => x.IdTokenEncryptedResponseAlg)
+                .Index(x => x.ResponseTypes)
+                .Index(x => x.Claims)
+                .GinIndexJsonData();
             For<ResourceSet>().GinIndexJsonData();
             For<Ticket>().GinIndexJsonData();
-            For<AuthorizationCode>().Identity(x => x.Code).GinIndexJsonData();
-            For<ConfirmationCode>().Identity(x => x.Value).GinIndexJsonData();
+            For<AuthorizationCode>().Identity(x => x.Code)
+                .Index(x => x.ClientId)
+                .GinIndexJsonData();
+            For<ConfirmationCode>().Identity(x => x.Value)
+                .GinIndexJsonData();
             For<GrantedToken>().GinIndexJsonData();
         }
     }
