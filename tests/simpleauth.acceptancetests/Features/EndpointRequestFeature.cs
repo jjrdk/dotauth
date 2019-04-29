@@ -15,7 +15,7 @@
             "When calling controller endpoint".x(async () =>
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/test");
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _grantedToken.AccessToken);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
                 var responseMessage = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
                 response = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
             });
