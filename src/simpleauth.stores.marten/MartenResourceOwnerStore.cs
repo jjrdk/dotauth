@@ -130,7 +130,6 @@
 
                 user.IsLocalAccount = resourceOwner.IsLocalAccount;
                 user.ExternalLogins = resourceOwner.ExternalLogins;
-                //user.Password = resourceOwner.Password.ToSha256Hash();
                 user.TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication;
                 user.UpdateDateTime = DateTime.UtcNow;
                 user.Claims = resourceOwner.Claims;
