@@ -243,8 +243,7 @@ namespace SimpleAuth.Controllers
                 return BadRequest("Parameter in request body not valid");
             }
 
-            var resourceOwner =
-                await _resourceOwnerRepository.Get(request.Subject, cancellationToken).ConfigureAwait(false);
+            var resourceOwner = await _resourceOwnerRepository.Get(request.Subject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new SimpleAuthException(
@@ -252,8 +251,7 @@ namespace SimpleAuth.Controllers
                     string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Subject));
             }
 
-            resourceOwner.Password = request.Password;
-            var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
+            var result = await _resourceOwnerRepository.SetPassword(request.Subject, request.Password, cancellationToken).ConfigureAwait(false);
             if (!result)
             {
                 return BadRequest(ErrorDescriptions.ThePasswordCannotBeUpdated);
