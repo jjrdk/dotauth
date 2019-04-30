@@ -116,7 +116,7 @@
 
                     var handler = new JwtSecurityTokenHandler();
                     var token = handler.ReadToken(result.Content.AccessToken) as JwtSecurityToken;
-                    Assert.True(token.Claims.Any(c => c.Type == "added_claim_test" && c.Value == "something"));
+                    Assert.Contains(token.Claims, c => c.Type == "added_claim_test" && c.Value == "something");
                 });
         }
 
@@ -131,7 +131,7 @@
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
                         Subject = "user",
-                        Claims = new[] {new PostClaim {Type = "test", Value = "something"}}
+                        Claims = new[] { new PostClaim { Type = "test", Value = "something" } }
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);

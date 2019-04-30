@@ -520,18 +520,6 @@ namespace SimpleAuth.AcceptanceTests
                     Name = "test",
                     Type = ScopeTypes.ProtectedApi,
                     UpdateDateTime = DateTime.UtcNow
-                },
-                new Scope
-                {
-                    Claims = new [] { "added_claim_test" },
-                    CreateDateTime = DateTime.UtcNow,
-                    Description = "manager scope",
-                    IsDisplayedInConsent = true,
-                    IsExposed = true,
-                    IsOpenIdScope = false,
-                    Name = "manager",
-                    Type = ScopeTypes.ProtectedApi,
-                    UpdateDateTime = DateTime.UtcNow
                 }
             };
         }
