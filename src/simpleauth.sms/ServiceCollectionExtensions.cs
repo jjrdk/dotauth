@@ -45,16 +45,19 @@
         /// </summary>
         /// <param name="mvcBuilder">The MVC builder.</param>
         /// <param name="smsClient">The SMS client.</param>
+        /// <param name="rateLimiter">The rate limiter.</param>
         /// <returns></returns>
-        public static IServiceCollection AddSmsAuthentication(this IMvcBuilder mvcBuilder, ISmsClient smsClient)
+        public static IServiceCollection AddSmsAuthentication(this IMvcBuilder mvcBuilder, ISmsClient smsClient, IRateLimiter rateLimiter = null)
         {
-            return AddSmsAuthentication(mvcBuilder, sp => smsClient);
+            var limiter = rateLimiter ?? new NoopLimiter();
+            return AddSmsAuthentication(mvcBuilder, sp => limiter, sp => smsClient);
         }
 
         /// <summary>
         /// Adds the SMS authentication.
         /// </summary>
         /// <param name="mvcBuilder">The MVC builder.</param>
+        /// <param name="rateLimiterFactory">The <see cref="IRateLimiter"/>.</param>
         /// <param name="smsClientFactory">The SMS authentication options.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">
@@ -66,6 +69,7 @@
         /// </exception>
         public static IServiceCollection AddSmsAuthentication(
             this IMvcBuilder mvcBuilder,
+            Func<IServiceProvider, IRateLimiter> rateLimiterFactory,
             Func<IServiceProvider, ISmsClient> smsClientFactory)
         {
             if (mvcBuilder == null)
@@ -80,6 +84,9 @@
 
             services.AddTransient<Func<ISmsClient>>(sp => () => smsClientFactory(sp));
             services.AddTransient<ISmsClient>(smsClientFactory);
+
+            services.AddTransient<Func<IRateLimiter>>(sp => () => rateLimiterFactory(sp));
+            services.AddTransient<IRateLimiter>(rateLimiterFactory);
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
             mvcBuilder.AddApplicationPart(assembly);
             return services;
