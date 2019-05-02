@@ -16,7 +16,7 @@
             "When getting all clients".x(
                 async () =>
                 {
-                    var response = await _managerClient.GetAllClients(_grantedToken.AccessToken).ConfigureAwait(false);
+                    var response = await _managerClient.GetAllClients(_administratorToken.AccessToken).ConfigureAwait(false);
 
                     Assert.False(response.ContainsError);
 
@@ -44,7 +44,7 @@
                         GrantTypes = new[] {GrantTypes.ClientCredentials},
                         JsonWebKeys = TestKeys.SuperSecretKey.CreateSignatureJwk().ToSet()
                     };
-                    var response = await _managerClient.AddClient(client, _grantedToken.AccessToken).ConfigureAwait(false);
+                    var response = await _managerClient.AddClient(client, _administratorToken.AccessToken).ConfigureAwait(false);
                 });
         }
     }
