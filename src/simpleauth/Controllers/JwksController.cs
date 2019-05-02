@@ -30,6 +30,7 @@
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [ResponseCache(Location = ResponseCacheLocation.Client, Duration = 300)]
         public async Task<ActionResult<JsonWebKeySet>> Get(CancellationToken cancellationToken)
         {
             var jwks = await _jwksStore.GetPublicKeys(cancellationToken).ConfigureAwait(false);
