@@ -17,6 +17,8 @@
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc.Authorization;
+    using Microsoft.AspNetCore.Mvc.Filters;
 
     /// <summary>
     /// Defines the token controller.
@@ -81,6 +83,7 @@
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         [HttpPost]
+        [ThrottleFilter]
         public async Task<IActionResult> PostToken(
             [FromForm] TokenRequest tokenRequest,
             CancellationToken cancellationToken)

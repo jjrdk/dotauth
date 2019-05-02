@@ -11,6 +11,7 @@ namespace SimpleAuth.Sms.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Controllers;
 
     /// <summary>
     /// Defines the code controller.
@@ -19,7 +20,6 @@ namespace SimpleAuth.Sms.Controllers
     [Route(SmsConstants.CodeController)]
     public class CodeController : Controller
     {
-        private readonly IRateLimiter _rateLimiter;
         private readonly SmsAuthenticationOperation _smsAuthenticationOperation;
 
         /// <summary>
@@ -34,7 +34,6 @@ namespace SimpleAuth.Sms.Controllers
         /// <param name="eventPublisher">The event publisher.</param>
         public CodeController(
             RuntimeSettings settings,
-            IRateLimiter rateLimiter,
             ISmsClient smsClient,
             IConfirmationCodeStore confirmationCodeStore,
             IResourceOwnerRepository resourceOwnerRepository,
@@ -42,7 +41,6 @@ namespace SimpleAuth.Sms.Controllers
             IEnumerable<IAccountFilter> accountFilters,
             IEventPublisher eventPublisher)
         {
-            _rateLimiter = rateLimiter;
             _smsAuthenticationOperation = new SmsAuthenticationOperation(
                 settings,
                 smsClient,
@@ -60,14 +58,11 @@ namespace SimpleAuth.Sms.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPost]
+        [ThrottleFilter]
         public async Task<IActionResult> Send(
             [FromBody] ConfirmationCodeRequest confirmationCodeRequest,
             CancellationToken cancellationToken)
         {
-            if (!await _rateLimiter.Allow(Request))
-            {
-                return StatusCode(429);
-            }
             if (string.IsNullOrWhiteSpace(confirmationCodeRequest?.PhoneNumber))
             {
                 return BuildError(

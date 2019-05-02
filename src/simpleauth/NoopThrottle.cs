@@ -1,15 +1,17 @@
-﻿namespace SimpleAuth.Sms
+﻿namespace SimpleAuth
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
 
     /// <inheritdoc />
-    public class NoopLimiter : IRateLimiter
+    public class NoopThrottle : IRequestThrottle
     {
+        private NoopThrottle() { }
+
         /// <summary>
-        /// Returns the default instance of the <see cref="NoopLimiter"/>.
+        /// Returns the default instance of the <see cref="NoopThrottle"/>.
         /// </summary>
-        public static IRateLimiter Default { get; } = new NoopLimiter();
+        public static IRequestThrottle Default { get; } = new NoopThrottle();
 
         /// <inheritdoc />
         public Task<bool> Allow(HttpRequest request)
