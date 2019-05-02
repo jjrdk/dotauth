@@ -12,16 +12,7 @@
 
     internal sealed class InMemoryTokenStore : ITokenStore
     {
-        private readonly Dictionary<string, GrantedToken> _tokens;
-        private readonly Dictionary<string, string> _mappingStrToRefreshTokens;
-        private readonly Dictionary<string, string> _mappingStrToAccessTokens;
-
-        public InMemoryTokenStore()
-        {
-            _tokens = new Dictionary<string, GrantedToken>();
-            _mappingStrToRefreshTokens = new Dictionary<string, string>();
-            _mappingStrToAccessTokens = new Dictionary<string, string>();
-        }
+        private readonly List<GrantedToken> _tokens = new List<GrantedToken>();
 
         public Task<GrantedToken> GetToken(
             string scopes,
@@ -35,7 +26,7 @@
                 return Task.FromResult((GrantedToken)null);
             }
 
-            var grantedTokens = _tokens.Values
+            var grantedTokens = _tokens
                 .Where(g => g.Scope == scopes && g.ClientId == clientId)
                 .OrderByDescending(g => g.CreateDateTime);
             if (!_tokens.Any())
@@ -84,12 +75,9 @@
                 throw new ArgumentNullException(nameof(refreshToken));
             }
 
-            if (!_mappingStrToRefreshTokens.ContainsKey(refreshToken))
-            {
-                return Task.FromResult((GrantedToken)null);
-            }
+            var grantedToken = _tokens.FirstOrDefault(x => x.RefreshToken == refreshToken);
 
-            return Task.FromResult(_tokens[_mappingStrToRefreshTokens[refreshToken]]);
+            return Task.FromResult(grantedToken);
         }
 
         public Task<GrantedToken> GetAccessToken(string accessToken, CancellationToken cancellationToken)
@@ -99,12 +87,9 @@
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
-            if (!_mappingStrToAccessTokens.ContainsKey(accessToken))
-            {
-                return Task.FromResult((GrantedToken)null);
-            }
+            var grantedToken = _tokens.FirstOrDefault(x => x.AccessToken == accessToken);
 
-            return Task.FromResult(_tokens[_mappingStrToAccessTokens[accessToken]]);
+            return Task.FromResult(grantedToken);
         }
 
         public Task<bool> AddToken(GrantedToken grantedToken, CancellationToken cancellationToken)
@@ -114,16 +99,7 @@
                 throw new ArgumentNullException(nameof(grantedToken));
             }
 
-            if (_mappingStrToRefreshTokens.ContainsKey(grantedToken.RefreshToken)
-                || _mappingStrToAccessTokens.ContainsKey(grantedToken.AccessToken))
-            {
-                return Task.FromResult(false);
-            }
-
-            var id = Id.Create();
-            _tokens.Add(id, grantedToken);
-            _mappingStrToRefreshTokens.Add(grantedToken.RefreshToken, id);
-            _mappingStrToAccessTokens.Add(grantedToken.AccessToken, id);
+            _tokens.Add(grantedToken);
             return Task.FromResult(true);
         }
 
@@ -134,13 +110,8 @@
                 throw new ArgumentNullException(nameof(refreshToken));
             }
 
-            if (!_mappingStrToRefreshTokens.ContainsKey(refreshToken))
-            {
-                return Task.FromResult(false);
-            }
-
-            _mappingStrToRefreshTokens.Remove(refreshToken);
-            return Task.FromResult(true);
+            var removed = _tokens.RemoveAll(x => x.RefreshToken == refreshToken);
+            return Task.FromResult(removed > 0);
         }
 
         public Task<bool> RemoveAccessToken(string accessToken, CancellationToken cancellationToken)
@@ -150,20 +121,13 @@
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
-            if (!_mappingStrToAccessTokens.ContainsKey(accessToken))
-            {
-                return Task.FromResult(false);
-            }
-
-            _mappingStrToAccessTokens.Remove(accessToken);
-            return Task.FromResult(true);
+            var removed = _tokens.RemoveAll(x => x.AccessToken == accessToken);
+            return Task.FromResult(removed > 0);
         }
 
         public Task<bool> Clean()
         {
             _tokens.Clear();
-            _mappingStrToAccessTokens.Clear();
-            _mappingStrToRefreshTokens.Clear();
             return Task.FromResult(true);
         }
 

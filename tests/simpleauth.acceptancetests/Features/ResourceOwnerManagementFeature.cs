@@ -1,11 +1,14 @@
 ﻿namespace SimpleAuth.AcceptanceTests.Features
 {
     using System;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
     using Newtonsoft.Json;
+    using SimpleAuth.Client;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Requests;
     using Xbehave;
@@ -64,6 +67,13 @@
 
                     Assert.False(response.ContainsError);
                 });
+
+            "Then user can login with new password".x(
+                async () =>
+                {
+                    var result = await _tokenClient.GetToken(TokenRequest.FromPassword("test", "test2", new[] { "manager" })).ConfigureAwait(false);
+                    Assert.NotNull(result.Content);
+                });
         }
 
         [Scenario]
@@ -77,7 +87,7 @@
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
                         Subject = "administrator",
-                        Claims = new[] {new PostClaim {Type = "test", Value = "something"}}
+                        Claims = new[] { new PostClaim { Type = "added_claim_test", Value = "something" } }
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);
@@ -97,6 +107,17 @@
                 {
                     Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 });
+
+            "Then resource owner has new claim".x(
+                async () =>
+                {
+                    var result = await _tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager" })).ConfigureAwait(false);
+                    Assert.NotNull(result.Content);
+
+                    var handler = new JwtSecurityTokenHandler();
+                    var token = handler.ReadToken(result.Content.AccessToken) as JwtSecurityToken;
+                    Assert.Contains(token.Claims, c => c.Type == "added_claim_test" && c.Value == "something");
+                });
         }
 
         [Scenario]
@@ -110,7 +131,7 @@
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
                         Subject = "user",
-                        Claims = new[] {new PostClaim {Type = "test", Value = "something"}}
+                        Claims = new[] { new PostClaim { Type = "test", Value = "something" } }
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);

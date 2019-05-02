@@ -34,11 +34,12 @@ namespace SimpleAuth.Controllers
     /// <summary>
     /// Defines the resource owner controller.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="Controller" />
     [Route(CoreConstants.EndPoints.ResourceOwners)]
     public class ResourceOwnersController : Controller
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
+        private readonly ITokenStore _tokenStore;
         private readonly AddUserOperation _addUserOperation;
 
         /// <summary>
@@ -53,10 +54,12 @@ namespace SimpleAuth.Controllers
             RuntimeSettings settings,
             ISubjectBuilder subjectBuilder,
             IResourceOwnerRepository resourceOwnerRepository,
+            ITokenStore tokenStore,
             IEnumerable<AccountFilter> accountFilters,
             IEventPublisher eventPublisher)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
+            _tokenStore = tokenStore;
             _addUserOperation = new AddUserOperation(settings, resourceOwnerRepository, accountFilters, subjectBuilder, eventPublisher);
         }
 
@@ -221,8 +224,13 @@ namespace SimpleAuth.Controllers
                 .ToArray();
 
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
+            foreach (var value in Request.Headers[HttpRequestHeader.Authorization.ToString()])
+            {
+                await _tokenStore.RemoveAccessToken(value.Split(' ').Last(), cancellationToken)
+                    .ConfigureAwait(false);
+            }
 
-            return result ? Ok() : (IActionResult)BadRequest();
+            return result ? Ok() : (IActionResult) BadRequest();
         }
 
         /// <summary>
@@ -243,8 +251,7 @@ namespace SimpleAuth.Controllers
                 return BadRequest("Parameter in request body not valid");
             }
 
-            var resourceOwner =
-                await _resourceOwnerRepository.Get(request.Subject, cancellationToken).ConfigureAwait(false);
+            var resourceOwner = await _resourceOwnerRepository.Get(request.Subject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new SimpleAuthException(
@@ -252,8 +259,7 @@ namespace SimpleAuth.Controllers
                     string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Subject));
             }
 
-            resourceOwner.Password = request.Password;
-            var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
+            var result = await _resourceOwnerRepository.SetPassword(request.Subject, request.Password, cancellationToken).ConfigureAwait(false);
             if (!result)
             {
                 return BadRequest(ErrorDescriptions.ThePasswordCannotBeUpdated);

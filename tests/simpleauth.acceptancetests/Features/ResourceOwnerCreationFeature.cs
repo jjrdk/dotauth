@@ -23,7 +23,7 @@
                         Subject = "tester",
                         Password = "tester"
                     },
-                    _grantedToken.AccessToken).ConfigureAwait(false);
+                    _administratorToken.AccessToken).ConfigureAwait(false);
 
                 Assert.Equal("tester", created.Content);
             });

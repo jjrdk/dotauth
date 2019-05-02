@@ -520,7 +520,7 @@ namespace SimpleAuth.AcceptanceTests
                     Name = "test",
                     Type = ScopeTypes.ProtectedApi,
                     UpdateDateTime = DateTime.UtcNow
-                },
+                }
             };
         }
     }
