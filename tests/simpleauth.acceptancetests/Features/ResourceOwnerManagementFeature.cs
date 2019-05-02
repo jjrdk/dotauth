@@ -24,7 +24,7 @@
                 {
                     var response = await _managerClient.AddResourceOwner(
                             new AddResourceOwnerRequest { Password = "test", Subject = "test" },
-                            _grantedToken.AccessToken)
+                            _administratorToken.AccessToken)
                         .ConfigureAwait(false);
 
                     Assert.False(response.ContainsError);
@@ -33,7 +33,7 @@
             "Then resource owner is local account".x(
                 async () =>
                 {
-                    var response = await _managerClient.GetResourceOwner("test", _grantedToken.AccessToken)
+                    var response = await _managerClient.GetResourceOwner("test", _administratorToken.AccessToken)
                         .ConfigureAwait(false);
 
                     Assert.True(response.Content.IsLocalAccount);
@@ -48,7 +48,7 @@
                 {
                     var response = await _managerClient.AddResourceOwner(
                             new AddResourceOwnerRequest { Password = "test", Subject = "test" },
-                            _grantedToken.AccessToken)
+                            _administratorToken.AccessToken)
                         .ConfigureAwait(false);
 
                     Assert.False(response.ContainsError);
@@ -59,7 +59,7 @@
                 {
                     var response = await _managerClient.UpdateResourceOwnerPassword(
                             new UpdateResourceOwnerPasswordRequest { Subject = "test", Password = "test2" },
-                            _grantedToken.AccessToken)
+                            _administratorToken.AccessToken)
                         .ConfigureAwait(false);
 
                     Assert.False(response.ContainsError);
@@ -88,7 +88,7 @@
                         Method = HttpMethod.Post,
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _grantedToken.AccessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
                     response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
                 });
 
@@ -121,7 +121,7 @@
                         Method = HttpMethod.Post,
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _grantedToken.AccessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
                     response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
                 });
 

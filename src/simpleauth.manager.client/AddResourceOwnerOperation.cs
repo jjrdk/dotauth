@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
@@ -35,15 +36,17 @@
                 throw new ArgumentNullException(nameof(resourceOwner));
             }
 
-            var serializedJson = JObject.FromObject(resourceOwner).ToString();
+            var serializedJson = JsonConvert.SerializeObject(resourceOwner);
             var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, RequestUri = resourceOwnerUri, Content = body
+                Method = HttpMethod.Post,
+                RequestUri = resourceOwnerUri,
+                Content = body
             };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authorizationHeaderValue);
             }
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);
@@ -58,7 +61,7 @@
                 };
             }
 
-            return new GenericResponse<string> {Content = content};
+            return new GenericResponse<string> { Content = content };
         }
     }
 }

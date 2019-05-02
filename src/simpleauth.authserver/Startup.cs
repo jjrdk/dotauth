@@ -33,6 +33,7 @@ namespace SimpleAuth.AuthServer
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Sms;
     using System.IO.Compression;
+    using System.Net.Http;
     using System.Reflection;
     using System.Security.Claims;
     using System.Text.RegularExpressions;
@@ -52,7 +53,7 @@ namespace SimpleAuth.AuthServer
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultConfiguration.GetUsers()),
                 Clients =
                     sp => new InMemoryClientRepository(
-                        null,
+                        sp.GetService<HttpClient>(),
                         sp.GetService<IScopeStore>(),
                         DefaultConfiguration.GetClients()),
                 Scopes = sp => new InMemoryScopeRepository(),
