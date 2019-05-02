@@ -182,10 +182,12 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="configuration">The configuration.</param>
+        /// <param name="requestThrottle">The rate limiter.</param>
         /// <returns></returns>
         public static IServiceCollection AddSimpleAuth(
             this IServiceCollection services,
-            Action<SimpleAuthOptions> configuration)
+            Action<SimpleAuthOptions> configuration,
+            IRequestThrottle requestThrottle = null)
         {
             var options = new SimpleAuthOptions();
             configuration(options);
@@ -200,7 +202,7 @@ namespace SimpleAuth.Extensions
         /// <param name="options">The options.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">options</exception>
-        public static IServiceCollection AddSimpleAuth(this IServiceCollection services, SimpleAuthOptions options)
+        public static IServiceCollection AddSimpleAuth(this IServiceCollection services, SimpleAuthOptions options, IRequestThrottle requestThrottle = null)
         {
             if (options == null)
             {
@@ -212,6 +214,7 @@ namespace SimpleAuth.Extensions
             var s = services.AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>()
                 .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
                 .AddSingleton(runtimeConfig)
+                .AddSingleton(requestThrottle ?? NoopThrottle.Default)
                 .AddSingleton(options.HttpClientFactory?.Invoke() ?? new HttpClient())
                 .AddSingleton(sp => options.EventPublisher?.Invoke(sp) ?? new DefaultEventPublisher())
                 .AddSingleton(sp => options.SubjectBuilder?.Invoke(sp) ?? new DefaultSubjectBuilder())

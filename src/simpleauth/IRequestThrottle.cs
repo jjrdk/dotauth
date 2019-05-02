@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Sms
+﻿namespace SimpleAuth
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
@@ -6,7 +6,7 @@
     /// <summary>
     /// Defines the rate limiter interface.
     /// </summary>
-    public interface IRateLimiter
+    public interface IRequestThrottle
     {
         /// <summary>
         /// Checks whether the <see cref="HttpRequest"/> should be processed.
