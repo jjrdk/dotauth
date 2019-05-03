@@ -11,6 +11,7 @@ namespace SimpleAuth.Sms.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Controllers;
 
     /// <summary>
     /// Defines the code controller.
@@ -57,6 +58,7 @@ namespace SimpleAuth.Sms.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPost]
+        [ThrottleFilter]
         public async Task<IActionResult> Send(
             [FromBody] ConfirmationCodeRequest confirmationCodeRequest,
             CancellationToken cancellationToken)
