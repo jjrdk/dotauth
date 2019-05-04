@@ -16,7 +16,6 @@ namespace SimpleAuth.Services
 {
     using Shared.Models;
     using Shared.Repositories;
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;

@@ -3,7 +3,6 @@
     using Api.Token;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Primitives;
     using Shared;
     using Shared.Models;
     using SimpleAuth.Common;
@@ -17,8 +16,6 @@
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Mvc.Authorization;
-    using Microsoft.AspNetCore.Mvc.Filters;
 
     /// <summary>
     /// Defines the token controller.
@@ -48,6 +45,7 @@
             IAuthorizationCodeStore authorizationCodeStore,
             IClientStore clientStore,
             IScopeRepository scopeRepository,
+            IResourceOwnerRepository resourceOwnerRepository,
             IEnumerable<IAuthenticateResourceOwnerService> authenticateResourceOwnerServices,
             ITokenStore tokenStore,
             ITicketStore ticketStore,
@@ -61,6 +59,7 @@
                 clientStore,
                 scopeRepository,
                 jwksStore,
+                resourceOwnerRepository,
                 authenticateResourceOwnerServices,
                 eventPublisher,
                 tokenStore);
@@ -88,7 +87,7 @@
             [FromForm] TokenRequest tokenRequest,
             CancellationToken cancellationToken)
         {
-            var certificate = GetCertificate();
+            var certificate = Request.GetCertificate();
             if (tokenRequest.grant_type == null)
             {
                 return BadRequest(
@@ -227,31 +226,11 @@
             var result = await _tokenActions.RevokeToken(
                     revocationRequest.ToParameter(),
                     authenticationHeaderValue,
-                    GetCertificate(),
+                    Request.GetCertificate(),
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
             return result ? new OkResult() : StatusCode((int)HttpStatusCode.BadRequest);
-        }
-
-        private X509Certificate2 GetCertificate()
-        {
-            const string headerName = "X-ARR-ClientCert";
-            var header = Request.Headers.FirstOrDefault(h => h.Key == headerName);
-            if (header.Equals(default(KeyValuePair<string, StringValues>)))
-            {
-                return null;
-            }
-
-            try
-            {
-                var encoded = Convert.FromBase64String(header.Value);
-                return new X509Certificate2(encoded);
-            }
-            catch
-            {
-                return null;
-            }
         }
     }
 }

@@ -18,7 +18,6 @@ namespace SimpleAuth.Tests.Api.Token
     using Parameters;
     using Shared.Models;
     using SimpleAuth.Api.Token.Actions;
-    using System;
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;

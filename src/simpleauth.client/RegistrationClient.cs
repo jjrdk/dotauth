@@ -17,7 +17,6 @@ namespace SimpleAuth.Client
     using Newtonsoft.Json;
     using Results;
     using Shared.Models;
-    using Shared.Responses;
     using System;
     using System.Net.Http;
     using System.Net.Http.Headers;

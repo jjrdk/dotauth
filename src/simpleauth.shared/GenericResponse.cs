@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Shared
 {
     using System.Net;
-    using Responses;
     using SimpleAuth.Shared.Models;
 
     /// <summary>
