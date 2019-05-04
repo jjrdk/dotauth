@@ -80,6 +80,7 @@
 
             services.AddTransient<Func<ISmsClient>>(sp => () => smsClientFactory(sp));
             services.AddTransient<ISmsClient>(smsClientFactory);
+
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
             mvcBuilder.AddApplicationPart(assembly);
             return services;

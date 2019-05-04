@@ -33,6 +33,7 @@ namespace SimpleAuth.AuthServer
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Sms;
     using System.IO.Compression;
+    using System.Net.Http;
     using System.Reflection;
     using System.Security.Claims;
     using System.Text.RegularExpressions;
@@ -52,7 +53,7 @@ namespace SimpleAuth.AuthServer
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultConfiguration.GetUsers()),
                 Clients =
                     sp => new InMemoryClientRepository(
-                        null,
+                        sp.GetService<HttpClient>(),
                         sp.GetService<IScopeStore>(),
                         DefaultConfiguration.GetClients()),
                 Scopes = sp => new InMemoryScopeRepository(),
@@ -123,19 +124,14 @@ namespace SimpleAuth.AuthServer
             services.AddAuthorization(opts => { opts.AddAuthPolicies(CookieNames.CookieName); })
                 .AddMvc(options => { })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddApplicationPart(_assembly)
-                .AddSmsAuthentication(
-                    new AwsSmsClient(
-                        new BasicAWSCredentials(_configuration["Aws:AccessKey"], _configuration["Aws:Secret"]),
-                        RegionEndpoint.EUWest1,
-                        _configuration["ApplicationName"]));
+                .AddApplicationPart(_assembly);
             services.AddSimpleAuth(_options)
-                .AddHttpsRedirection(
-                    options =>
-                    {
-                        options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-                        options.HttpsPort = 5001;
-                    });
+            .AddHttpsRedirection(
+                options =>
+                {
+                    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+                    options.HttpsPort = 5001;
+                });
         }
 
         public void Configure(IApplicationBuilder app)

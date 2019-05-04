@@ -1,6 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Models
 {
-    internal static class ScopeTypes
+    public static class ScopeTypes
     {
         public static string ProtectedApi => "ProtectedApi";
 
