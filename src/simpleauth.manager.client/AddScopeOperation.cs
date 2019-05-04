@@ -8,7 +8,6 @@
     using Newtonsoft.Json.Linq;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Responses;
 
     internal sealed class AddScopeOperation
     {

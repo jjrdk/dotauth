@@ -13,6 +13,7 @@ namespace SimpleAuth.Tests.Api.Token
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Repositories;
     using Xunit;
 
     public sealed class TokenActionsFixture
@@ -39,10 +40,10 @@ namespace SimpleAuth.Tests.Api.Token
                         IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                         ClientId = ClientId,
                         Secrets =
-                            new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = Clientsecret}},
-                        AllowedScopes = new[] {scope},
-                        ResponseTypes = new[] {ResponseTypeNames.Token},
-                        GrantTypes = new[] {GrantTypes.ClientCredentials}
+                            new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = Clientsecret } },
+                        AllowedScopes = new[] { scope },
+                        ResponseTypes = new[] { ResponseTypeNames.Token },
+                        GrantTypes = new[] { GrantTypes.ClientCredentials }
                     });
 
             _tokenActions = new TokenActions(
@@ -51,6 +52,7 @@ namespace SimpleAuth.Tests.Api.Token
                 mock.Object,
                 new Mock<IScopeRepository>().Object,
                 new InMemoryJwksRepository(),
+                new InMemoryResourceOwnerRepository(),
                 new IAuthenticateResourceOwnerService[0],
                 eventPublisher.Object,
                 new Mock<ITokenStore>().Object);
@@ -108,7 +110,7 @@ namespace SimpleAuth.Tests.Api.Token
         {
             const string scope = "valid_scope";
             const string clientId = "valid_client_id";
-            var parameter = new ClientCredentialsGrantTypeParameter {Scope = scope};
+            var parameter = new ClientCredentialsGrantTypeParameter { Scope = scope };
 
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",

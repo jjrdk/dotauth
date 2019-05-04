@@ -26,29 +26,36 @@ namespace SimpleAuth.Api.Token.Actions
     using System;
     using System.Linq;
     using System.Net.Http.Headers;
+    using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
 
     internal sealed class GetTokenByRefreshTokenGrantTypeAction
     {
+        private readonly RuntimeSettings _settings;
         private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;
         private readonly IJwksStore _jwksRepository;
+        private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly JwtGenerator _jwtGenerator;
         private readonly IClientStore _clientStore;
         private readonly AuthenticateClient _authenticateClient;
 
         public GetTokenByRefreshTokenGrantTypeAction(
+            RuntimeSettings settings,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
             IScopeRepository scopeRepository,
             IJwksStore jwksRepository,
+            IResourceOwnerRepository resourceOwnerRepository,
             IClientStore clientStore)
         {
+            _settings = settings;
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
             _jwksRepository = jwksRepository;
+            _resourceOwnerRepository = resourceOwnerRepository;
             _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksRepository);
             _clientStore = clientStore;
             _authenticateClient = new AuthenticateClient(clientStore);
@@ -94,6 +101,16 @@ namespace SimpleAuth.Api.Token.Actions
                     ErrorDescriptions.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer);
             }
 
+            var sub = grantedToken.UserInfoPayLoad?.Sub;
+            Claim[] additionalClaims = Array.Empty<Claim>();
+            if (sub != null)
+            {
+                var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);
+                additionalClaims = resourceOwner.Claims
+                    .Where(c => _settings.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
+                    .ToArray();
+            }
+
             // 4. Generate a new access token & insert it
             var generatedToken = await _clientStore.GenerateToken(
                     _jwksRepository,
@@ -102,7 +119,8 @@ namespace SimpleAuth.Api.Token.Actions
                     issuerName,
                     cancellationToken,
                     userInformationPayload: grantedToken.UserInfoPayLoad,
-                    idTokenPayload: grantedToken.IdTokenPayLoad)
+                    idTokenPayload: grantedToken.IdTokenPayLoad,
+                    additionalClaims)
                 .ConfigureAwait(false);
             generatedToken.ParentTokenId = grantedToken.Id;
             // 5. Fill-in the idtoken

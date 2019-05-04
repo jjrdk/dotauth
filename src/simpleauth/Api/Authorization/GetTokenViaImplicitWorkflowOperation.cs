@@ -22,7 +22,6 @@ namespace SimpleAuth.Api.Authorization
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
-    using System;
     using System.Security.Claims;
     using System.Security.Principal;
     using System.Threading;

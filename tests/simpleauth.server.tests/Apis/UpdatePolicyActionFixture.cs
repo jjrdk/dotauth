@@ -18,7 +18,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using SimpleAuth.Api.PolicyController;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
-    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using System;

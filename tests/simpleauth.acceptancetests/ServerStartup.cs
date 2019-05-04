@@ -13,9 +13,6 @@
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Sms;
     using System;
-    using System.Diagnostics;
-    using System.Diagnostics.Tracing;
-    using System.Net.Http;
     using System.Text.RegularExpressions;
     using System.Threading;
     using Microsoft.IdentityModel.Logging;
