@@ -49,6 +49,7 @@ namespace SimpleAuth.Api.Token
             IClientStore clientStore,
             IScopeRepository scopeRepository,
             IJwksStore jwksStore,
+            IResourceOwnerRepository resourceOwnerRepository,
             IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore)
@@ -70,10 +71,12 @@ namespace SimpleAuth.Api.Token
                 scopeRepository,
                 jwksStore);
             _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
+                simpleAuthOptions,
                 eventPublisher,
                 tokenStore,
                 scopeRepository,
                 jwksStore,
+                resourceOwnerRepository,
                 clientStore);
             _authenticateClient = new AuthenticateClient(clientStore);
             _revokeTokenAction = new RevokeTokenAction(clientStore, tokenStore);

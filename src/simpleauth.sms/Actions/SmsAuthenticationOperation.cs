@@ -3,7 +3,6 @@
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using System;
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading;

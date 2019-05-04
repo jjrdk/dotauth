@@ -18,7 +18,6 @@ namespace SimpleAuth.Api.Token.Actions
 {
     using Authenticate;
     using Parameters;
-    using System;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;

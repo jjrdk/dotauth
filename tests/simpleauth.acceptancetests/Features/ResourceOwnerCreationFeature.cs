@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.AcceptanceTests.Features
 {
     using System.IdentityModel.Tokens.Jwt;
-    using System.Linq;
     using SimpleAuth.Client;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;

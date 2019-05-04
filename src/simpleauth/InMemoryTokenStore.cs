@@ -6,7 +6,6 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Shared;
     using Shared.Models;
     using SimpleAuth.Shared.Repositories;
 
