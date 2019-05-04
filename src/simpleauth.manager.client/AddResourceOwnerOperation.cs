@@ -6,11 +6,9 @@
     using System.Text;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
 
     internal sealed class AddResourceOwnerOperation
     {

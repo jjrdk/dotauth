@@ -18,7 +18,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using SimpleAuth.Api.PolicyController;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Xunit;
@@ -32,7 +31,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_Passing_Empty_Parameter_Then_Returns_False()
         {
             IntializeFakeObjects();
-            var result = await _deleteAuthorizationPolicyAction.Execute(null, CancellationToken.None);
+            var result = await _deleteAuthorizationPolicyAction.Execute(null, CancellationToken.None).ConfigureAwait(false);
 
             Assert.False(result);
         }

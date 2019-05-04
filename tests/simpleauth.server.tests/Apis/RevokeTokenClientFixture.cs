@@ -18,7 +18,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using Microsoft.IdentityModel.Logging;
     using Newtonsoft.Json;
     using Shared;
-    using Shared.Responses;
     using SimpleAuth.Shared.Errors;
     using System;
     using System.Collections.Generic;

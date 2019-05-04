@@ -20,7 +20,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Xunit;

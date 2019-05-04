@@ -12,7 +12,6 @@
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Text.RegularExpressions;
-    using Microsoft.Extensions.Configuration;
     using SimpleAuth.Shared;
 
     public class ServerStartup : IStartup
