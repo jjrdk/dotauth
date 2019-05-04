@@ -37,6 +37,8 @@ namespace SimpleAuth.AuthServer
     using System.Reflection;
     using System.Security.Claims;
     using System.Text.RegularExpressions;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.IdentityModel.Tokens;
 
     public class Startup
     {
@@ -56,7 +58,7 @@ namespace SimpleAuth.AuthServer
                         sp.GetService<HttpClient>(),
                         sp.GetService<IScopeStore>(),
                         DefaultConfiguration.GetClients()),
-                Scopes = sp => new InMemoryScopeRepository(),
+                Scopes = sp => new InMemoryScopeRepository(DefaultConfiguration.GetScopes()),
                 EventPublisher = sp => new ConsolePublisher(),
                 UserClaimsToIncludeInAuthToken =
                     new[]
@@ -120,8 +122,16 @@ namespace SimpleAuth.AuthServer
                         opts.Scope.Add("openid");
                         opts.Scope.Add("profile");
                         opts.Scope.Add("email");
-                    });
-            services.AddAuthorization(opts => { opts.AddAuthPolicies(CookieNames.CookieName); })
+                    })
+                .AddJwtBearer(
+                    JwtBearerDefaults.AuthenticationScheme,
+                    cfg =>
+                    {
+                        cfg.RequireHttpsMetadata = true;
+                        cfg.Authority = _configuration["Endpoint"];
+                        cfg.TokenValidationParameters = new TokenValidationParameters { ValidateAudience = false };
+                    }); ;
+            services.AddAuthorization(opts => { opts.AddAuthPolicies(CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme); })
                 .AddMvc(options => { })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddApplicationPart(_assembly);

@@ -96,6 +96,23 @@
             };
         }
 
+        public static List<Scope> GetScopes()
+        {
+            return new List<Scope>
+            {
+                new Scope
+                {
+                    Claims = new []{"role"},
+                    Description = "Manage server resources.",
+                    IsDisplayedInConsent = true,
+                    IsExposed = true,
+                    Name = "manager",
+                    IsOpenIdScope = false,
+                    Type = ScopeTypes.ProtectedApi
+                }
+            };
+        }
+
         public static List<ResourceOwner> GetUsers()
         {
             return new List<ResourceOwner>

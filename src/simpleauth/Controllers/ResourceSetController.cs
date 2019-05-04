@@ -59,17 +59,21 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPost(".search")]
-        [Authorize("UmaProtection")]
-        public async Task<ActionResult<GenericResult<ResourceSet>>> SearchResourceSets([FromBody] SearchResourceSet searchResourceSet, CancellationToken cancellationToken)
+        [Authorize(Policy = "UmaProtection")]
+        public async Task<ActionResult<GenericResult<ResourceSet>>> SearchResourceSets(
+            [FromBody] SearchResourceSet searchResourceSet,
+            CancellationToken cancellationToken)
         {
             if (searchResourceSet == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode,
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
 
-            var result = await _resourceSetRepository.Search(searchResourceSet, cancellationToken).ConfigureAwait(false);
+            var result = await _resourceSetRepository.Search(searchResourceSet, cancellationToken)
+                .ConfigureAwait(false);
             return new OkObjectResult(result);
         }
 
@@ -78,7 +82,7 @@ namespace SimpleAuth.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> GetResourceSets(CancellationToken cancellationToken)
         {
             var resourceSets = await _resourceSetRepository.GetAll(cancellationToken).ConfigureAwait(false);
@@ -93,12 +97,13 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> GetResourceSet(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode,
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
                     "the identifier must be specified",
                     HttpStatusCode.BadRequest);
             }
@@ -120,25 +125,22 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize("UmaProtection")]
-        public async Task<IActionResult> AddResourceSet([FromBody] PostResourceSet postResourceSet, CancellationToken cancellationToken)
+        [Authorize(Policy = "UmaProtection")]
+        public async Task<IActionResult> AddResourceSet(
+            [FromBody] PostResourceSet postResourceSet,
+            CancellationToken cancellationToken)
         {
             if (postResourceSet == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode,
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
 
             var result = await _addResourceSet.Execute(postResourceSet, cancellationToken).ConfigureAwait(false);
-            var response = new AddResourceSetResponse
-            {
-                Id = result
-            };
-            return new ObjectResult(response)
-            {
-                StatusCode = (int)HttpStatusCode.Created
-            };
+            var response = new AddResourceSetResponse {Id = result};
+            return new ObjectResult(response) {StatusCode = (int) HttpStatusCode.Created};
         }
 
         /// <summary>
@@ -148,31 +150,29 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPut]
-        [Authorize("UmaProtection")]
-        public async Task<IActionResult> UpdateResourceSet([FromBody] PutResourceSet putResourceSet, CancellationToken cancellationToken)
+        [Authorize(Policy = "UmaProtection")]
+        public async Task<IActionResult> UpdateResourceSet(
+            [FromBody] PutResourceSet putResourceSet,
+            CancellationToken cancellationToken)
         {
             if (putResourceSet == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode,
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
 
-            var resourceSetExists = await _updateResourceSet.Execute(putResourceSet, cancellationToken).ConfigureAwait(false);
+            var resourceSetExists =
+                await _updateResourceSet.Execute(putResourceSet, cancellationToken).ConfigureAwait(false);
             if (!resourceSetExists)
             {
                 return GetNotFoundResourceSet();
             }
 
-            var response = new UpdateResourceSetResponse
-            {
-                Id = putResourceSet.Id
-            };
+            var response = new UpdateResourceSetResponse {Id = putResourceSet.Id};
 
-            return new ObjectResult(response)
-            {
-                StatusCode = (int)HttpStatusCode.OK
-            };
+            return new ObjectResult(response) {StatusCode = (int) HttpStatusCode.OK};
         }
 
         /// <summary>
@@ -182,19 +182,20 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> DeleteResourceSet(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode,
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
                     "the identifier must be specified",
                     HttpStatusCode.BadRequest);
             }
 
             var resourceSetExists = await _removeResourceSet.Execute(id, cancellationToken).ConfigureAwait(false);
             return !resourceSetExists
-                ? (IActionResult)BadRequest(new ErrorDetails { Status = HttpStatusCode.BadRequest })
+                ? (IActionResult) BadRequest(new ErrorDetails {Status = HttpStatusCode.BadRequest})
                 : NoContent();
         }
 
@@ -202,29 +203,16 @@ namespace SimpleAuth.Controllers
         {
             var errorResponse = new ErrorDetails
             {
-                Status = HttpStatusCode.NotFound,
-                Title = "not_found",
-                Detail = "resource cannot be found"
+                Status = HttpStatusCode.NotFound, Title = "not_found", Detail = "resource cannot be found"
             };
 
-            return new ObjectResult(errorResponse)
-            {
-                StatusCode = (int)HttpStatusCode.NotFound
-            };
+            return new ObjectResult(errorResponse) {StatusCode = (int) HttpStatusCode.NotFound};
         }
 
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorDetails
-            {
-                Title = code,
-                Detail = message,
-                Status = statusCode
-            };
-            return new JsonResult(error)
-            {
-                StatusCode = (int)statusCode
-            };
+            var error = new ErrorDetails {Title = code, Detail = message, Status = statusCode};
+            return new JsonResult(error) {StatusCode = (int) statusCode};
         }
     }
 }

@@ -50,39 +50,33 @@ namespace SimpleAuth.Extensions
             {
                 throw new ArgumentNullException(nameof(options));
             }
-
+            options.AddPolicy(
+                "authenticated",
+                policy =>
+                {
+                    policy.AddAuthenticationSchemes(authenticationSchemes);
+                    policy.RequireAuthenticatedUser();
+                });
             options.AddPolicy(
                 "UmaProtection",
                 policy =>
                 {
                     policy.AddAuthenticationSchemes(authenticationSchemes);
                     policy.RequireAuthenticatedUser();
-                    //policy.RequireRole("administrator");
-                    //policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
                     policy.RequireAssertion(
                         p =>
                         {
-                            var claimScopes = p.User.Claims.FirstOrDefault(c => c.Type == "scope");
-                            return claimScopes != null && claimScopes.Value.Split(' ').Any(s => s == "uma_protection");
+                            return p.User?.Claims?.Where(c => c.Type == "scope")?.Any(c => c.HasClaimValue("uma_protection")) == true;
 
-                            //return claimRole.Value.Split(separator, StringSplitOptions.RemoveEmptyEntries)
                             //           .Any(role => role == "administrator")
                         });
-                });
-            options.AddPolicy(
-                "authenticated",
-                policy =>
-                {
-                    policy.AddAuthenticationSchemes(authenticationSchemes);
-                    //policy.AddAuthenticationSchemes(cookieName);
-                    policy.RequireAuthenticatedUser();
                 });
             options.AddPolicy(
                 "manager",
                 policy =>
                 {
                     policy.AddAuthenticationSchemes(authenticationSchemes);
-                    //policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                    policy.RequireAuthenticatedUser();
                     policy.RequireAssertion(
                         p =>
                         {
@@ -91,13 +85,9 @@ namespace SimpleAuth.Extensions
                                 return false;
                             }
 
-                            var claimsScope = p.User.Claims.Where(c => c.Type == "scope");
-                            if (!claimsScope.Any())
-                            {
-                                return false;
-                            }
+                            var result = p.User?.Claims?.Where(c => c.Type == "scope").Any(c => c.HasClaimValue("manager"));
 
-                            return claimsScope.Any(c => c.Value == "manager");
+                            return result == true;
                         });
                 });
 
@@ -106,15 +96,27 @@ namespace SimpleAuth.Extensions
                 policy => // Access token with scope = register_client
                 {
                     policy.AddAuthenticationSchemes(authenticationSchemes);
-                    //policy.AddAuthenticationSchemes("OAuth2Introspection");
+                    policy.RequireAuthenticatedUser();
                     policy.RequireClaim("scope", "register_client");
+                    policy.RequireAssertion(
+                        p =>
+                        {
+                            if (p.User?.Identity?.IsAuthenticated != true)
+                            {
+                                return false;
+                            }
+
+                            var result = p.User?.Claims?.Where(c => c.Type == "scope").Any(c => c.Value == "register_client");
+
+                            return result == true;
+                        });
                 });
             options.AddPolicy(
                 "manage_profile",
                 policy => // Access token with scope = manage_profile or with role = administrator
                 {
                     policy.AddAuthenticationSchemes(authenticationSchemes);
-                    //policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                    policy.RequireAuthenticatedUser();
                     policy.RequireAssertion(
                         p =>
                         {
@@ -139,7 +141,7 @@ namespace SimpleAuth.Extensions
                 policy => // Access token with scope = manage_account_filtering or role = administrator
                 {
                     policy.AddAuthenticationSchemes(authenticationSchemes);
-                    //policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                    policy.RequireAuthenticatedUser();
                     policy.RequireAssertion(
                         p =>
                         {

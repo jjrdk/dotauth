@@ -53,7 +53,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<ActionResult<Client[]>> GetAll(CancellationToken cancellationToken)
         {
             var result = await _clientStore.GetAll(cancellationToken).ConfigureAwait(false);
@@ -67,7 +67,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost(".search")]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> Search(
             [FromBody] SearchClientsRequest request,
             CancellationToken cancellationToken)
@@ -91,7 +91,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> Get(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -118,7 +118,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> Delete(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -141,7 +141,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPut]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> Put([FromBody] Client updateClientRequest, CancellationToken cancellationToken)
         {
             if (updateClientRequest == null)
@@ -157,7 +157,7 @@ namespace SimpleAuth.Controllers
                 var result = await _clientRepository.Update(updateClientRequest, cancellationToken)
                     .ConfigureAwait(false);
                 return result == null
-                    ? (IActionResult)BadRequest(
+                    ? (IActionResult) BadRequest(
                         new ErrorDetails
                         {
                             Status = HttpStatusCode.BadRequest,
@@ -183,7 +183,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> Add([FromBody] Client client, CancellationToken cancellationToken)
         {
             if (client == null)
@@ -207,8 +207,8 @@ namespace SimpleAuth.Controllers
 
         private IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
-            return StatusCode((int)statusCode, error);
+            var error = new ErrorDetails {Title = code, Detail = message, Status = statusCode};
+            return StatusCode((int) statusCode, error);
         }
     }
 }

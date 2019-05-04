@@ -137,9 +137,13 @@
         /// Initializes a new instance of the <see cref="InMemoryScopeRepository"/> class.
         /// </summary>
         /// <param name="scopes">The scopes.</param>
-        public InMemoryScopeRepository(IReadOnlyCollection<Scope> scopes = null)
+        public InMemoryScopeRepository(IReadOnlyCollection<Scope> scopes = null, bool includeDefaultScopes = true)
         {
-            _scopes = scopes == null || scopes.Count == 0 ? _defaultScopes : scopes.ToList();
+            _scopes = scopes == null || scopes.Count == 0
+                ? _defaultScopes
+                : scopes.Concat(includeDefaultScopes ? _defaultScopes.AsEnumerable() : Array.Empty<Scope>())
+                    .Distinct()
+                    .ToList();
         }
 
         /// <inheritdoc />
