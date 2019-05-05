@@ -48,6 +48,7 @@ namespace SimpleAuth.Controllers
         /// <param name="settings"></param>
         /// <param name="subjectBuilder"></param>
         /// <param name="resourceOwnerRepository">The resource owner repository.</param>
+        /// <param name="tokenStore">The token cache</param>
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="eventPublisher">The event publisher.</param>
         public ResourceOwnersController(
@@ -146,11 +147,13 @@ namespace SimpleAuth.Controllers
         {
             if (request == null)
             {
-                return BuildError(
-                    ErrorCodes.InvalidRequestCode,
-                    "no parameter in body request",
-                    HttpStatusCode.BadRequest);
-
+                return BadRequest(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequestCode,
+                        Detail = "Parameter in request body not valid",
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
 
             var resourceOwner =
@@ -229,7 +232,7 @@ namespace SimpleAuth.Controllers
                 await _tokenStore.RemoveAccessToken(value.Split(' ').Last(), cancellationToken).ConfigureAwait(false);
             }
 
-            return result ? Ok() : (IActionResult) BadRequest();
+            return result ? Ok() : (IActionResult)BadRequest();
         }
 
         /// <summary>
@@ -323,21 +326,13 @@ namespace SimpleAuth.Controllers
         {
             if (searchResourceOwnersRequest == null)
             {
-                return BuildError(
-                    ErrorCodes.InvalidRequestCode,
-                    "Parameter in request body not valid",
-                    HttpStatusCode.BadRequest);
+                searchResourceOwnersRequest = new SearchResourceOwnersRequest { Descending = true, NbResults = 50, StartIndex = 0 };
+                //return BadRequest(new ErrorDetails {Title = ErrorCodes.InvalidRequestCode, Detail = "Parameter in request body not valid", Status = HttpStatusCode.BadRequest});
             }
 
             var result = await _resourceOwnerRepository.Search(searchResourceOwnersRequest, cancellationToken)
                 .ConfigureAwait(false);
-            return new OkObjectResult(result.ToDto());
-        }
-
-        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
-        {
-            var error = new ErrorDetails {Title = code, Detail = message, Status = statusCode};
-            return new JsonResult(error) {StatusCode = (int) statusCode};
+            return Ok(result);
         }
     }
 }

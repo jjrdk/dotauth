@@ -190,16 +190,6 @@ namespace SimpleAuth.Extensions
             };
         }
 
-        public static PagedResponse<ResourceOwner> ToDto(this GenericResult<ResourceOwner> parameter)
-        {
-            return new PagedResponse<ResourceOwner>
-            {
-                StartIndex = parameter.StartIndex,
-                TotalResults = parameter.TotalResults,
-                Content = parameter.Content ?? Array.Empty<ResourceOwner>()
-            };
-        }
-
         public static AuthorizationParameter ToParameter(this AuthorizationRequest request)
         {
             var result = new AuthorizationParameter
