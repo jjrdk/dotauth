@@ -30,6 +30,8 @@ namespace SimpleAuth.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Api.Token.Actions;
+    using SimpleAuth.Parameters;
 
     /// <summary>
     /// Defines the resource owner controller.
@@ -40,7 +42,9 @@ namespace SimpleAuth.Controllers
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly ITokenStore _tokenStore;
+        private readonly IClientRepository _clientRepository;
         private readonly AddUserOperation _addUserOperation;
+        private readonly GetTokenByRefreshTokenGrantTypeAction _refreshOperation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceOwnersController"/> class.
@@ -49,24 +53,35 @@ namespace SimpleAuth.Controllers
         /// <param name="subjectBuilder"></param>
         /// <param name="resourceOwnerRepository">The resource owner repository.</param>
         /// <param name="tokenStore">The token cache</param>
+        /// <param name="clientRepository"></param>
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="eventPublisher">The event publisher.</param>
+        /// <param name="tokenStore"></param>
+        /// <param name="scopeRepository"></param>
+        /// <param name="jwksRepository"></param>
         public ResourceOwnersController(
             RuntimeSettings settings,
             ISubjectBuilder subjectBuilder,
             IResourceOwnerRepository resourceOwnerRepository,
             ITokenStore tokenStore,
+            IScopeRepository scopeRepository,
+            IJwksStore jwksRepository,
+            IClientRepository clientRepository,
             IEnumerable<AccountFilter> accountFilters,
             IEventPublisher eventPublisher)
         {
+            _refreshOperation = new GetTokenByRefreshTokenGrantTypeAction(
+                settings,
+                eventPublisher,
+                tokenStore,
+                scopeRepository,
+                jwksRepository,
+                resourceOwnerRepository,
+                clientRepository);
             _resourceOwnerRepository = resourceOwnerRepository;
             _tokenStore = tokenStore;
-            _addUserOperation = new AddUserOperation(
-                settings,
-                resourceOwnerRepository,
-                accountFilters,
-                subjectBuilder,
-                eventPublisher);
+            _clientRepository = clientRepository;
+            _addUserOperation = new AddUserOperation(settings, resourceOwnerRepository, accountFilters, subjectBuilder, eventPublisher);
         }
 
         /// <summary>
@@ -227,12 +242,38 @@ namespace SimpleAuth.Controllers
                 .ToArray();
 
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
-            foreach (var value in Request.Headers[HttpRequestHeader.Authorization.ToString()])
+            var value = Request.Headers[HttpRequestHeader.Authorization.ToString()].FirstOrDefault();
+
+            if (value == null)
             {
-                await _tokenStore.RemoveAccessToken(value.Split(' ').Last(), cancellationToken).ConfigureAwait(false);
+                return BadRequest();
             }
 
-            return result ? Ok() : (IActionResult)BadRequest();
+            var accessToken = value.Split(' ').Last();
+
+            var existingToken = await _tokenStore.GetAccessToken(accessToken, cancellationToken).ConfigureAwait(false);
+
+            var client = await _clientRepository.GetById(existingToken.ClientId, cancellationToken)
+                .ConfigureAwait(false);
+            var refreshedToken = await _refreshOperation.Execute(
+                    new RefreshTokenGrantTypeParameter
+                    {
+                        ClientId = existingToken.ClientId,
+                        ClientSecret = client.Secrets[0].Value,
+                        RefreshToken = existingToken.RefreshToken
+                    },
+                    null,
+                    Request.GetCertificate(),
+                    Request.GetAbsoluteUriWithVirtualPath(),
+                    cancellationToken)
+                .ConfigureAwait(false);
+            refreshedToken.ParentTokenId = existingToken.ParentTokenId;
+            refreshedToken.RefreshToken = existingToken.RefreshToken;
+            await _tokenStore.RemoveAccessToken(accessToken, cancellationToken).ConfigureAwait(false);
+            await _tokenStore.RemoveAccessToken(refreshedToken.AccessToken, cancellationToken).ConfigureAwait(false);
+            await _tokenStore.AddToken(refreshedToken, cancellationToken).ConfigureAwait(false);
+
+            return result ? Ok(refreshedToken) : (IActionResult)BadRequest();
         }
 
         /// <summary>

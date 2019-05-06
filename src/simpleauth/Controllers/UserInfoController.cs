@@ -16,7 +16,6 @@ namespace SimpleAuth.Controllers
 {
     using System;
     using System.Collections.Generic;
-    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Net.Http.Headers;
     using System.Threading;
@@ -24,7 +23,6 @@ namespace SimpleAuth.Controllers
     using Exceptions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Primitives;
-    using Shared.Responses;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;

@@ -18,7 +18,6 @@ namespace SimpleAuth.Policies
     using Shared.Models;
     using Shared.Repositories;
     using Shared.Responses;
-    using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;

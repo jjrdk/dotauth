@@ -2,7 +2,6 @@
 {
     using System;
     using System.IdentityModel.Tokens.Jwt;
-    using System.Linq;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;

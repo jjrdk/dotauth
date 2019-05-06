@@ -33,13 +33,13 @@
             /// <inheritdoc />
             public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
             {
-                if (!await _requestThrottle.Allow(context.HttpContext.Request))
+                if (!await _requestThrottle.Allow(context.HttpContext.Request).ConfigureAwait(false))
                 {
                     context.Result = new StatusCodeResult(429);
                     return;
                 }
 
-                await next();
+                await next().ConfigureAwait(false);
             }
         }
     }

@@ -151,6 +151,7 @@
         {
             TokenClient client = null;
             GrantedTokenResponse result = null;
+            GrantedTokenResponse refreshed = null;
 
             "and a properly token client".x(
                 async () => client = await TokenClient.Create(
@@ -174,6 +175,17 @@
                     var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken))
                         .ConfigureAwait(false);
                     Assert.False(response.ContainsError);
+
+                    refreshed = response.Content;
+                });
+
+            "and token has custom custom claims".x(
+                () =>
+                {
+                    var handler = new JwtSecurityTokenHandler();
+                    var refreshedClaims = handler.ReadJwtToken(refreshed.AccessToken).Claims;
+
+                    Assert.Contains(refreshedClaims, c => c.Type == "acceptance_test");
                 });
         }
 

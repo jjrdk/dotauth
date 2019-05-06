@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Authenticate
 {
-    using System;
     using System.Linq;
     using Shared.Models;
 

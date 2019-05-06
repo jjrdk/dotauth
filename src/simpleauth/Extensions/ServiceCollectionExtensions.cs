@@ -66,10 +66,21 @@ namespace SimpleAuth.Extensions
                     policy.RequireAssertion(
                         p =>
                         {
-                            return p.User?.Claims?.Where(c => c.Type == "scope")?.Any(c => c.HasClaimValue("uma_protection")) == true;
+                            if (p.User?.Identity?.IsAuthenticated != true)
+                            {
+                                return false;
+                            }
 
-                            //           .Any(role => role == "administrator")
+                            var claimScopes = p.User.Claims.FirstOrDefault(c => c.Type == "scope");
+                            return claimScopes != null && claimScopes.Value.Split(' ').Any(s => s == "uma_protection");
                         });
+                });
+            options.AddPolicy(
+                "manager",
+                policy =>
+                {
+                    policy.AddAuthenticationSchemes(authenticationSchemes);
+                    policy.RequireAuthenticatedUser();
                 });
             options.AddPolicy(
                 "manager",
@@ -97,7 +108,18 @@ namespace SimpleAuth.Extensions
                 {
                     policy.AddAuthenticationSchemes(authenticationSchemes);
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("scope", "register_client");
+                    policy.RequireAssertion(
+                        p =>
+                        {
+                            if (p.User?.Identity?.IsAuthenticated != true)
+                            {
+                                return false;
+                            }
+
+                            var claimsScopes = p.User.Claims.Where(c => c.Type == "scope");
+
+                            return claimsScopes.SelectMany(c => c.Value.Split(' ')).Any(v => v == "register_client");
+                        });
                     policy.RequireAssertion(
                         p =>
                         {
@@ -120,7 +142,7 @@ namespace SimpleAuth.Extensions
                     policy.RequireAssertion(
                         p =>
                         {
-                            if (p.User?.Identity == null || !p.User.Identity.IsAuthenticated)
+                            if (p.User?.Identity?.IsAuthenticated != true)
                             {
                                 return false;
                             }
@@ -157,7 +179,7 @@ namespace SimpleAuth.Extensions
                                 return false;
                             }
 
-                            return claimRole != null && claimRole.Value == "administrator"
+                            return claimRole != null && claimRole.Value.Split(' ', ',').Any(v => v == "administrator")
                                    || claimScopes.SelectMany(s => s.Value.Split(' '))
                                        .Any(s => s == "manage_account_filtering");
                         });

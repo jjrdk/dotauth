@@ -19,7 +19,6 @@ namespace SimpleAuth.WebSite.Authenticate
     using SimpleAuth.Results;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
-    using System;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;

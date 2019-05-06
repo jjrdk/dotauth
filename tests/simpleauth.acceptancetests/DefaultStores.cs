@@ -82,7 +82,8 @@ namespace SimpleAuth.AcceptanceTests
                     Claims = new[]
                     {
                         new Claim(OpenIdClaimTypes.Subject, "user"),
-                        new Claim(OpenIdClaimTypes.Name, "John Doe")
+                        new Claim(OpenIdClaimTypes.Name, "John Doe"),
+                        new Claim("acceptance_test", "test"),
                     },
                     IsLocalAccount = true
                 },
@@ -458,7 +459,7 @@ namespace SimpleAuth.AcceptanceTests
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     //LogoUri = null,
                     AllowedScopes = new[] {"manager", "openid"},
-                    GrantTypes = new[] {GrantTypes.ClientCredentials, GrantTypes.Password},
+                    GrantTypes = new[] {GrantTypes.ClientCredentials, GrantTypes.Password, GrantTypes.RefreshToken},
                     JsonWebKeys =
                         new JsonWebKeySet().AddKey(
                             TestKeys.SecretKey.CreateJwk(

@@ -5,7 +5,6 @@
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Responses;
 
     internal sealed class GetAllResourceOwnersOperation
     {
