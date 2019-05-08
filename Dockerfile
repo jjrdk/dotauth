@@ -4,6 +4,7 @@ WORKDIR /app
 COPY src/ ./src/
 COPY tests/ ./tests/
 COPY simpleauth.sln ./
+COPY shared.proj ./
 RUN dotnet restore ./simpleauth.sln
 RUN dotnet publish -c Release -o out src/simpleauth.authserver/simpleauth.authserver.csproj
 

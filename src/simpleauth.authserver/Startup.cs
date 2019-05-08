@@ -91,10 +91,10 @@ namespace SimpleAuth.AuthServer
                         x.EnableForHttps = true;
                         x.Providers.Add(
                             new GzipCompressionProvider(
-                                new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                                new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                         x.Providers.Add(
                             new BrotliCompressionProvider(
-                                new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                                new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                     })
                 .AddHttpContextAccessor()
                 .AddCors(
@@ -118,30 +118,25 @@ namespace SimpleAuth.AuthServer
             services.AddAuthorization(opts => { opts.AddAuthPolicies(CookieNames.CookieName); })
                 .AddMvc(options => { })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddApplicationPart(_assembly)
-                .AddSmsAuthentication(
-                    new AwsSmsClient(
-                        new BasicAWSCredentials(_configuration["Aws:AccessKey"], _configuration["Aws:Secret"]),
-                        RegionEndpoint.EUWest1,
-                        _configuration["ApplicationName"]));
+                .AddApplicationPart(_assembly);
             services.AddSimpleAuth(_options)
-                .AddHttpsRedirection(
-                    options =>
-                    {
-                        options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-                        options.HttpsPort = 5001;
-                    });
+            .AddHttpsRedirection(
+                options =>
+                {
+                    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+                    options.HttpsPort = 5001;
+                });
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseForwardedHeaders(new ForwardedHeadersOptions {ForwardedHeaders = ForwardedHeaders.All})
+            app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All })
                 .UseHttpsRedirection()
                 .UseHsts()
                 .UseAuthentication()
                 .UseCors("AllowAll")
                 .UseStaticFiles(
-                    new StaticFileOptions {FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot")})
+                    new StaticFileOptions { FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot") })
                 .UseSimpleAuthExceptionHandler()
                 .UseSimpleAuthExceptionHandler()
                 .UseResponseCompression()

@@ -32,9 +32,9 @@ namespace SimpleAuth.AuthServer
                     })
                 .ConfigureAppConfiguration(
                     c => c.AddUserSecrets<Startup>()
-                        .AddEnvironmentVariables()
                         .AddCommandLine(args)
-                        .AddJsonFile("appsettings.json"))
+                        .AddJsonFile("appsettings.json")
+                        .AddEnvironmentVariables())
                 .UseUrls("http://*:5000", "https://*:5001")
                 .UseStartup<Startup>()
                 .Build()
