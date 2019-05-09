@@ -18,7 +18,7 @@ namespace SimpleAuth.Sms.Controllers
     /// </summary>
     /// <seealso cref="Controller" />
     [Route(SmsConstants.CodeController)]
-    public class CodeController : Controller
+    public class CodeController : ControllerBase
     {
         private readonly SmsAuthenticationOperation _smsAuthenticationOperation;
 

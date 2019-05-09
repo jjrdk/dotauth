@@ -31,7 +31,7 @@ namespace SimpleAuth.Controllers
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(CoreConstants.EndPoints.Scopes)]
-    public class ScopesController : Controller
+    public class ScopesController : ControllerBase
     {
         private readonly IScopeRepository _scopeRepository;
 

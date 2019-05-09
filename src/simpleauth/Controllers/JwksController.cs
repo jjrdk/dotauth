@@ -12,7 +12,7 @@
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(CoreConstants.EndPoints.Jwks)]
-    public class JwksController : Controller
+    public class JwksController : ControllerBase
     {
         private readonly IJwksRepository _jwksStore;
 

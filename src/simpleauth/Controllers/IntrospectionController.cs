@@ -32,7 +32,7 @@ namespace SimpleAuth.Controllers
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(CoreConstants.EndPoints.Introspection)]
-    public class IntrospectionController : Controller
+    public class IntrospectionController : ControllerBase
     {
         private readonly PostIntrospectionAction _introspectionActions;
 

@@ -39,7 +39,7 @@ namespace SimpleAuth.Controllers
     /// </summary>
     /// <seealso cref="Controller" />
     [Route(CoreConstants.EndPoints.ResourceOwners)]
-    public class ResourceOwnersController : Controller
+    public class ResourceOwnersController : ControllerBase
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly ITokenStore _tokenStore;
@@ -353,7 +353,7 @@ namespace SimpleAuth.Controllers
                 .ConfigureAwait(false);
             if (success)
             {
-                return Content(subject);
+                return Ok(new { subject = subject });
             }
 
             return BadRequest(

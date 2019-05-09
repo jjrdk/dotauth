@@ -31,7 +31,7 @@ namespace SimpleAuth.Controllers
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(CoreConstants.EndPoints.Clients)]
-    public class ClientsController : Controller
+    public class ClientsController : ControllerBase
     {
         private readonly IClientStore _clientStore;
         private readonly IClientRepository _clientRepository;
@@ -186,7 +186,7 @@ namespace SimpleAuth.Controllers
         [Authorize("manager")]
         public async Task<IActionResult> Add([FromBody] Client client, CancellationToken cancellationToken)
         {
-            if (client == null)
+            if (string.IsNullOrWhiteSpace(client?.ClientId))
             {
                 return BuildError(
                     ErrorCodes.InvalidRequestCode,
@@ -194,7 +194,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var existing = await _clientStore.GetById(client.ClientName, cancellationToken).ConfigureAwait(false);
+            var existing = await _clientStore.GetById(client.ClientId, cancellationToken).ConfigureAwait(false);
             if (existing != null)
             {
                 return BadRequest();
@@ -202,7 +202,7 @@ namespace SimpleAuth.Controllers
 
             var result = await _clientRepository.Insert(client, cancellationToken).ConfigureAwait(false);
 
-            return new OkObjectResult(result);
+            return Ok(result);
         }
 
         private IActionResult BuildError(string code, string message, HttpStatusCode statusCode)

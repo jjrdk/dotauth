@@ -25,7 +25,7 @@ namespace SimpleAuth.Controllers
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(UmaConstants.RouteValues.Configuration)]
-    public class UmaConfigurationController : Controller
+    public class UmaConfigurationController : ControllerBase
     {
         private readonly List<string> _umaProfilesSupported = new List<string>
         {
