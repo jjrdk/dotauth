@@ -32,6 +32,7 @@ namespace SimpleAuth.Controllers
     using System.Threading.Tasks;
     using SimpleAuth.Api.Token.Actions;
     using SimpleAuth.Parameters;
+    using SimpleAuth.Shared.Responses;
 
     /// <summary>
     /// Defines the resource owner controller.
@@ -275,7 +276,17 @@ namespace SimpleAuth.Controllers
             await _tokenStore.RemoveAccessToken(refreshedToken.AccessToken, cancellationToken).ConfigureAwait(false);
             await _tokenStore.AddToken(refreshedToken, cancellationToken).ConfigureAwait(false);
 
-            return result ? Ok(refreshedToken) : (IActionResult)BadRequest();
+            return result 
+                ? Json(new GrantedTokenResponse
+                {
+                    AccessToken = refreshedToken.AccessToken,
+                    ExpiresIn = refreshedToken.ExpiresIn,
+                    IdToken = refreshedToken.IdToken,
+                    RefreshToken = refreshedToken.RefreshToken,
+                    Scope = refreshedToken.Scope.Split(' '),
+                    TokenType = refreshedToken.TokenType
+                }) 
+                : (IActionResult)BadRequest();
         }
 
         /// <summary>
