@@ -26,7 +26,7 @@
                 IsExposed = true,
                 IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
-                Description = "access to the openid scope",
+                Description = "Access to the OpenId scope.",
                 Type = ScopeTypes.ProtectedApi,
                 Claims = Array.Empty<string>()
             },
@@ -35,8 +35,8 @@
                 Name = "profile",
                 IsExposed = true,
                 IsOpenIdScope = true,
-                Description = "Access to the profile",
-                Claims = new []
+                Description = "Access to the profile information.",
+                Claims = new[]
                 {
                     OpenIdClaimTypes.Name,
                     OpenIdClaimTypes.FamilyName,
@@ -62,12 +62,8 @@
                 IsExposed = true,
                 IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
-                Description = "Access to the email",
-                Claims = new []
-                {
-                    OpenIdClaimTypes.Email,
-                    OpenIdClaimTypes.EmailVerified
-                },
+                Description = "Access to email addresses.",
+                Claims = new[] {OpenIdClaimTypes.Email, OpenIdClaimTypes.EmailVerified},
                 Type = ScopeTypes.ResourceOwner
             },
             new Scope
@@ -76,8 +72,8 @@
                 IsExposed = true,
                 IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
-                Description = "Access to the address",
-                Claims = new [] {OpenIdClaimTypes.Address},
+                Description = "Access to address information.",
+                Claims = new[] {OpenIdClaimTypes.Address},
                 Type = ScopeTypes.ResourceOwner
             },
             new Scope
@@ -86,12 +82,8 @@
                 IsExposed = true,
                 IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
-                Description = "Access to the phone",
-                Claims = new []
-                {
-                    OpenIdClaimTypes.PhoneNumber,
-                    OpenIdClaimTypes.PhoneNumberVerified
-                },
+                Description = "Access to phone information.",
+                Claims = new[] {OpenIdClaimTypes.PhoneNumber, OpenIdClaimTypes.PhoneNumberVerified},
                 Type = ScopeTypes.ResourceOwner
             },
             new Scope
@@ -100,12 +92,13 @@
                 IsExposed = true,
                 IsOpenIdScope = false,
                 IsDisplayedInConsent = true,
-                Description = "Access to your roles",
-                Claims = new [] {OpenIdClaimTypes.Role},
+                Description = "Access to your roles.",
+                Claims = new[] {OpenIdClaimTypes.Role},
                 Type = ScopeTypes.ResourceOwner
             },
             new Scope
             {
+                Claims = new[] {OpenIdClaimTypes.Role},
                 Name = "register_client",
                 IsExposed = false,
                 IsOpenIdScope = false,
@@ -115,6 +108,7 @@
             },
             new Scope
             {
+                Claims = new[] {OpenIdClaimTypes.Role},
                 Name = "manage_profile",
                 IsExposed = false,
                 IsOpenIdScope = false,
@@ -124,11 +118,22 @@
             },
             new Scope
             {
+                Claims = new[] {OpenIdClaimTypes.Role},
                 Name = "manage_account_filtering",
                 IsExposed = false,
                 IsOpenIdScope = false,
                 IsDisplayedInConsent = true,
-                Description = "Manage the account filtering",
+                Description = "Manage the account filtering.",
+                Type = ScopeTypes.ProtectedApi
+            },
+            new Scope
+            {
+                Claims = new[] {OpenIdClaimTypes.Role},
+                Description = "Manage server resources.",
+                IsDisplayedInConsent = true,
+                IsExposed = true,
+                Name = "manager",
+                IsOpenIdScope = false,
                 Type = ScopeTypes.ProtectedApi
             }
         };
@@ -233,9 +238,7 @@
             return Task.FromResult(
                 new GenericResult<Scope>
                 {
-                    Content = result.ToArray(),
-                    StartIndex = parameter.StartIndex,
-                    TotalResults = nbResult
+                    Content = result.ToArray(), StartIndex = parameter.StartIndex, TotalResults = nbResult
                 });
         }
 

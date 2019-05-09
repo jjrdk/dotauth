@@ -32,7 +32,7 @@ namespace SimpleAuth.Controllers
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(CoreConstants.EndPoints.UserInfo)]
-    public class UserInfoController : Controller
+    public class UserInfoController : ControllerBase
     {
         private readonly ITokenStore _tokenStore;
 

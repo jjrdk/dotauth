@@ -96,6 +96,13 @@
             };
         }
 
+        public static List<Scope> GetScopes()
+        {
+            return new List<Scope>
+            {
+            };
+        }
+
         public static List<ResourceOwner> GetUsers()
         {
             return new List<ResourceOwner>

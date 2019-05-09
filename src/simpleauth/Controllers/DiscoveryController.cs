@@ -26,7 +26,7 @@ namespace SimpleAuth.Controllers
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(CoreConstants.EndPoints.DiscoveryAction)]
-    public class DiscoveryController : Controller
+    public class DiscoveryController : ControllerBase
     {
         private readonly DiscoveryActions _discoveryActions;
 
