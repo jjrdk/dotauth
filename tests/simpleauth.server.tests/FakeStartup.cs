@@ -153,12 +153,12 @@ namespace SimpleAuth.Server.Tests
                             DefaultStores.Clients(_context));
                         options.Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents());
                         options.Users = sp => new InMemoryResourceOwnerRepository(DefaultStores.Users());
-                        options.UserClaimsToIncludeInAuthToken = new[]
-                        {
-                            new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
-                            new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled),
-                            new Regex($"^{OpenIdClaimTypes.Name}$", RegexOptions.Compiled)
-                        };
+                        //options.UserClaimsToIncludeInAuthToken = new[]
+                        //{
+                        //    new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
+                        //    new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled),
+                        //    new Regex($"^{OpenIdClaimTypes.Name}$", RegexOptions.Compiled)
+                        //};
                     })
                 .AddLogging()
                 .AddAccountFilter()

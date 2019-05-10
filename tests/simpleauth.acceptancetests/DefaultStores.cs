@@ -22,6 +22,7 @@ namespace SimpleAuth.AcceptanceTests
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
+    using System.Text.RegularExpressions;
 
     public static class DefaultStores
     {
@@ -468,7 +469,15 @@ namespace SimpleAuth.AcceptanceTests
                                 KeyOperations.Verify)),
                     ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
-                    ApplicationType = ApplicationTypes.Native
+                    ApplicationType = ApplicationTypes.Native,
+                    UserClaimsToIncludeInAuthToken = new[]
+                    {
+                        new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
+                        new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled),
+                        new Regex($"^{OpenIdClaimTypes.Name}$", RegexOptions.Compiled),
+                        new Regex("^acceptance_test$", RegexOptions.Compiled),
+                        new Regex("^added_claim_test$", RegexOptions.Compiled)
+                    }
                 },
                 new Client
                 {

@@ -9,6 +9,7 @@
     using System.IO;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
+    using System.Text.RegularExpressions;
 
     public static class DefaultConfiguration
     {
@@ -30,55 +31,40 @@
                         {
                             "longsupersecretkey".CreateSignatureJwk(),
                             "longsupersecretkey".CreateEncryptionJwk()
-
                         }.ToJwks(),
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new[] {"register_client"},
-                    GrantTypes = new[] {GrantTypes.ClientCredentials, GrantTypes.Implicit, GrantTypes.AuthorizationCode},
+                    GrantTypes =
+                        new[] {GrantTypes.ClientCredentials, GrantTypes.Implicit, GrantTypes.AuthorizationCode},
                     ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.Code},
                     ApplicationType = ApplicationTypes.Native,
-                    RedirectionUrls = new []{new Uri("http://localhost:60000"), }
+                    RedirectionUrls = new[] {new Uri("http://localhost:60000"),}
                 },
                 new Client
                 {
                     ClientId = "mobileapp",
                     ClientName = "Admin client",
-                    Secrets =
-                        new[]
-                        {
-                            new ClientSecret
-                            {
-                                Type = ClientSecretTypes.SharedSecret,
-                                Value = "Secret"
-                            }
-                        },
+                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "Secret"}},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     //LogoUri = null,
                     AllowedScopes = new[] {"openid", "profile", "role"},
-                    GrantTypes = new[]
-                    {
-                        GrantTypes.AuthorizationCode,
-                        GrantTypes.ClientCredentials,
-                        GrantTypes.Implicit,
-                        GrantTypes.Password,
-                        GrantTypes.RefreshToken,
-                        GrantTypes.UmaTicket,
-                        GrantTypes.ValidateBearer
-                    },
-                    JsonWebKeys =
+                    GrantTypes =
                         new[]
                         {
-                            "longsupersecretkey".CreateSignatureJwk(),
-                            "longsupersecretkey".CreateEncryptionJwk()
-
-                        }.ToJwks(),
-                    ResponseTypes = new[]
-                    {
-                        ResponseTypeNames.Token,
-                        ResponseTypeNames.IdToken
-                    },
+                            GrantTypes.AuthorizationCode,
+                            GrantTypes.ClientCredentials,
+                            GrantTypes.Implicit,
+                            GrantTypes.Password,
+                            GrantTypes.RefreshToken,
+                            GrantTypes.UmaTicket,
+                            GrantTypes.ValidateBearer
+                        },
+                    JsonWebKeys =
+                        new[] {"longsupersecretkey".CreateSignatureJwk(), "longsupersecretkey".CreateEncryptionJwk()}
+                            .ToJwks(),
+                    ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Native
                 },
@@ -86,12 +72,25 @@
                 {
                     ClientId = "web",
                     ClientName = "web",
-                    AllowedScopes = new []{"openid", "role", "manager"},
+                    AllowedScopes = new[] {"openid", "role", "manager"},
                     ApplicationType = ApplicationTypes.Web,
-                    GrantTypes = new []{GrantTypes.Password, GrantTypes.Implicit, GrantTypes.AuthorizationCode, GrantTypes.RefreshToken},
-                    RedirectionUrls = new []{new Uri("http://localhost:4200/callback"), },
-                    ResponseTypes = new []{ResponseTypeNames.IdToken, ResponseTypeNames.Token, ResponseTypeNames.Code},
-                    Secrets = new []{new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret"} },
+                    GrantTypes =
+                        new[]
+                        {
+                            GrantTypes.Password,
+                            GrantTypes.Implicit,
+                            GrantTypes.AuthorizationCode,
+                            GrantTypes.RefreshToken
+                        },
+                    RedirectionUrls = new[] {new Uri("http://localhost:4200/callback"),},
+                    ResponseTypes =
+                        new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token, ResponseTypeNames.Code},
+                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
+                    UserClaimsToIncludeInAuthToken = new[]
+                    {
+                        new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
+                        new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled)
+                    },
                 }
             };
         }

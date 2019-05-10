@@ -36,7 +36,6 @@ namespace SimpleAuth.Api.Token.Actions
     internal class GetTokenByResourceOwnerCredentialsGrantTypeAction
     {
         private readonly AuthenticateClient _authenticateClient;
-        private readonly RuntimeSettings _oauthConfiguration;
         private readonly JwtGenerator _jwtGenerator;
         private readonly ITokenStore _tokenStore;
         private readonly IJwksStore _jwksStore;
@@ -44,7 +43,6 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly IEventPublisher _eventPublisher;
 
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
-            RuntimeSettings oauthConfiguration,
             IClientStore clientStore,
             IScopeRepository scopeRepository,
             ITokenStore tokenStore,
@@ -53,7 +51,6 @@ namespace SimpleAuth.Api.Token.Actions
             IEventPublisher eventPublisher)
         {
             _authenticateClient = new AuthenticateClient(clientStore);
-            _oauthConfiguration = oauthConfiguration;
             _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore);
             _tokenStore = tokenStore;
             _jwksStore = jwksStore;
@@ -155,7 +152,7 @@ namespace SimpleAuth.Api.Token.Actions
                         payload,
                         cancellationToken,
                         claimsIdentity.Claims
-                            .Where(c => _oauthConfiguration.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
+                            .Where(c => client.UserClaimsToIncludeInAuthToken?.Any(r => r.IsMatch(c.Type)) == true)
                             .ToArray())
                     .ConfigureAwait(false);
                 if (generatedToken.IdTokenPayLoad != null)

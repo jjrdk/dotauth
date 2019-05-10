@@ -21,7 +21,6 @@
         public RuntimeSettings(
             Action<ResourceOwner> onResourceOwnerCreated = null,
             TimeSpan authorizationCodeValidityPeriod = default,
-            Regex[] userClaimsToIncludeInAuthToken = null,
             string[] claimsIncludedInUserCreation = null,
             TimeSpan rptLifeTime = default,
             TimeSpan ticketLifeTime = default)
@@ -30,7 +29,6 @@
             AuthorizationCodeValidityPeriod = authorizationCodeValidityPeriod == default
                 ? TimeSpan.FromHours(1)
                 : authorizationCodeValidityPeriod;
-            UserClaimsToIncludeInAuthToken = userClaimsToIncludeInAuthToken ?? Array.Empty<Regex>();
             RptLifeTime = rptLifeTime == default ? TimeSpan.FromHours(1) : rptLifeTime;
             TicketLifeTime = ticketLifeTime == default ? TimeSpan.FromHours(1) : ticketLifeTime;
             ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? Array.Empty<string>();
@@ -51,14 +49,6 @@
         /// The authorization code validity period.
         /// </value>
         public TimeSpan AuthorizationCodeValidityPeriod { get; }
-
-        /// <summary>
-        /// Gets the user claims to include in authentication token.
-        /// </summary>
-        /// <value>
-        /// The user claims to include in authentication token.
-        /// </value>
-        public Regex[] UserClaimsToIncludeInAuthToken { get; }
 
         /// <summary>
         /// Gets a list of claims include when the resource owner is created.

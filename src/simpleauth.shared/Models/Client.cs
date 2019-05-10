@@ -18,6 +18,7 @@ namespace SimpleAuth.Shared.Models
     using System;
     using System.Runtime.Serialization;
     using System.Security.Claims;
+    using System.Text.RegularExpressions;
 
     /// <summary>
     /// Defines the client.
@@ -45,6 +46,13 @@ namespace SimpleAuth.Shared.Models
         [DataMember(Name = "client_name")]
         public string ClientName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the user claims to include in authentication token.
+        /// </summary>
+        /// <value>
+        /// The user claims to include in authentication token.
+        /// </value>
+        public Regex[] UserClaimsToIncludeInAuthToken { get; set; }
         /// <summary>
         /// Gets or sets the logo uri
         /// </summary>

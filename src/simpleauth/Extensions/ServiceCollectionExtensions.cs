@@ -272,7 +272,6 @@ namespace SimpleAuth.Extensions
             return new RuntimeSettings(
                 onResourceOwnerCreated: options.OnResourceOwnerCreated,
                 authorizationCodeValidityPeriod: options.AuthorizationCodeValidityPeriod,
-                userClaimsToIncludeInAuthToken: options.UserClaimsToIncludeInAuthToken,
                 claimsIncludedInUserCreation: options.ClaimsIncludedInUserCreation,
                 rptLifeTime: options.RptLifeTime,
                 ticketLifeTime: options.TicketLifeTime);
