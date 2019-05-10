@@ -276,8 +276,8 @@ namespace SimpleAuth.Controllers
             await _tokenStore.RemoveAccessToken(refreshedToken.AccessToken, cancellationToken).ConfigureAwait(false);
             await _tokenStore.AddToken(refreshedToken, cancellationToken).ConfigureAwait(false);
 
-            return result 
-                ? Json(new GrantedTokenResponse
+            return result
+                ? new JsonResult(new GrantedTokenResponse
                 {
                     AccessToken = refreshedToken.AccessToken,
                     ExpiresIn = refreshedToken.ExpiresIn,
@@ -285,7 +285,7 @@ namespace SimpleAuth.Controllers
                     RefreshToken = refreshedToken.RefreshToken,
                     Scope = refreshedToken.Scope.Split(' '),
                     TokenType = refreshedToken.TokenType
-                }) 
+                })
                 : (IActionResult)BadRequest();
         }
 

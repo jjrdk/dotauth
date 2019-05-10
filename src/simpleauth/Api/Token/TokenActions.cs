@@ -55,7 +55,6 @@ namespace SimpleAuth.Api.Token
             ITokenStore tokenStore)
         {
             _getTokenByResourceOwnerCredentialsGrantType = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
-                simpleAuthOptions,
                 clientStore,
                 scopeRepository,
                 tokenStore,

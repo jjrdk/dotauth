@@ -99,7 +99,7 @@ namespace SimpleAuth.Api.Token.Actions
                         result.AuthCode.IdTokenPayload,
                         cancellationToken,
                         result.AuthCode.IdTokenPayload?.Claims.Where(
-                                c => _configurationService.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
+                                c => result.Client.UserClaimsToIncludeInAuthToken?.Any(r => r.IsMatch(c.Type)) == true)
                             .ToArray())
                     .ConfigureAwait(false);
                 await _eventPublisher.Publish(

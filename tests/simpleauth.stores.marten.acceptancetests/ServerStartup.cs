@@ -11,8 +11,6 @@
     using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Repositories;
     using System;
-    using System.Text.RegularExpressions;
-    using SimpleAuth.Shared;
 
     public class ServerStartup : IStartup
     {
@@ -24,7 +22,6 @@
 
         public ServerStartup(SharedContext context, string connectionString)
         {
-            //TestData.ConnectionString = configuration["Db:ConnectionString"];
             _martenOptions = new SimpleAuthOptions
             {
                 Clients = sp => new MartenClientStore(
@@ -39,13 +36,7 @@
                 },
                 Scopes = sp => new MartenScopeRepository(sp.GetService<Func<IDocumentSession>>()),
                 Consents = sp => new MartenConsentRepository(sp.GetService<Func<IDocumentSession>>()),
-                Users = sp => new MartenResourceOwnerStore(sp.GetService<Func<IDocumentSession>>()),
-                UserClaimsToIncludeInAuthToken = new[]
-                {
-                    new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
-                    new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled),
-                    new Regex($"^{OpenIdClaimTypes.Name}$", RegexOptions.Compiled)
-                }
+                Users = sp => new MartenResourceOwnerStore(sp.GetService<Func<IDocumentSession>>())
             };
             _context = context;
             _connectionString = connectionString;
