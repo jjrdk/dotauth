@@ -337,7 +337,6 @@ namespace SimpleAuth.Tests.Api.Token
             _tokenStoreStub = new Mock<ITokenStore>();
 
             _getTokenByResourceOwnerCredentialsGrantTypeAction = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
-                new RuntimeSettings(),
                 _clientStore.Object,
                 _scopeRepository.Object,
                 _tokenStoreStub.Object,

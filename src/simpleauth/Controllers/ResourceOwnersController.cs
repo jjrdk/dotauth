@@ -32,13 +32,14 @@ namespace SimpleAuth.Controllers
     using System.Threading.Tasks;
     using SimpleAuth.Api.Token.Actions;
     using SimpleAuth.Parameters;
+    using SimpleAuth.Shared.Responses;
 
     /// <summary>
     /// Defines the resource owner controller.
     /// </summary>
     /// <seealso cref="Controller" />
     [Route(CoreConstants.EndPoints.ResourceOwners)]
-    public class ResourceOwnersController : Controller
+    public class ResourceOwnersController : ControllerBase
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly ITokenStore _tokenStore;
@@ -56,7 +57,6 @@ namespace SimpleAuth.Controllers
         /// <param name="clientRepository"></param>
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="eventPublisher">The event publisher.</param>
-        /// <param name="tokenStore"></param>
         /// <param name="scopeRepository"></param>
         /// <param name="jwksRepository"></param>
         public ResourceOwnersController(
@@ -273,7 +273,17 @@ namespace SimpleAuth.Controllers
             await _tokenStore.RemoveAccessToken(refreshedToken.AccessToken, cancellationToken).ConfigureAwait(false);
             await _tokenStore.AddToken(refreshedToken, cancellationToken).ConfigureAwait(false);
 
-            return result ? Ok(refreshedToken) : (IActionResult)BadRequest();
+            return result
+                ? new JsonResult(new GrantedTokenResponse
+                {
+                    AccessToken = refreshedToken.AccessToken,
+                    ExpiresIn = refreshedToken.ExpiresIn,
+                    IdToken = refreshedToken.IdToken,
+                    RefreshToken = refreshedToken.RefreshToken,
+                    Scope = refreshedToken.Scope.Split(' '),
+                    TokenType = refreshedToken.TokenType
+                })
+                : (IActionResult)BadRequest();
         }
 
         /// <summary>
@@ -341,7 +351,7 @@ namespace SimpleAuth.Controllers
                 await _addUserOperation.Execute(resourceOwner, cancellationToken).ConfigureAwait(false);
             if (success)
             {
-                return Content(subject);
+                return Ok(new { subject = subject });
             }
 
             return BadRequest(

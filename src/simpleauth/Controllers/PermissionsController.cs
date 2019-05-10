@@ -33,7 +33,7 @@ namespace SimpleAuth.Controllers
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(UmaConstants.RouteValues.Permission)]
-    public class PermissionsController : Controller
+    public class PermissionsController : ControllerBase
     {
         private readonly AddPermissionAction _permissionControllerActions;
 

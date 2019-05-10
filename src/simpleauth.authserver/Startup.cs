@@ -60,12 +60,6 @@ namespace SimpleAuth.AuthServer
                         DefaultConfiguration.GetClients()),
                 Scopes = sp => new InMemoryScopeRepository(DefaultConfiguration.GetScopes()),
                 EventPublisher = sp => new ConsolePublisher(),
-                UserClaimsToIncludeInAuthToken =
-                    new[]
-                    {
-                        new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
-                        new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled)
-                    },
                 ClaimsIncludedInUserCreation = new[]
                 {
                     ClaimTypes.Name,

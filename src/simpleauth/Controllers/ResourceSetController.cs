@@ -33,7 +33,7 @@ namespace SimpleAuth.Controllers
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(UmaConstants.RouteValues.ResourceSet)]
-    public class ResourceSetController : Controller
+    public class ResourceSetController : ControllerBase
     {
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly AddResourceSetAction _addResourceSet;

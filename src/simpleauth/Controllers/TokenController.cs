@@ -22,7 +22,7 @@
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(UmaConstants.RouteValues.Token)]
-    public class TokenController : Controller
+    public class TokenController : ControllerBase
     {
         private readonly TokenActions _tokenActions;
         private readonly UmaTokenActions _umaTokenActions;
@@ -34,6 +34,7 @@
         /// <param name="authorizationCodeStore">The authorization code store.</param>
         /// <param name="clientStore">The client store.</param>
         /// <param name="scopeRepository">The scope repository.</param>
+        /// <param name="resourceOwnerRepository"></param>
         /// <param name="authenticateResourceOwnerServices">The authenticate resource owner services.</param>
         /// <param name="tokenStore">The token store.</param>
         /// <param name="ticketStore">The ticket store.</param>

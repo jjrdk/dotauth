@@ -10,6 +10,7 @@
     using SimpleAuth.Client;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
 
@@ -86,7 +87,7 @@
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
                         Subject = "administrator",
-                        Claims = new[] {new PostClaim {Type = "added_claim_test", Value = "something"}}
+                        Claims = new[] { new PostClaim { Type = "added_claim_test", Value = "something" } }
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);
@@ -108,6 +109,12 @@
                 {
                     Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 });
+
+            "and has new token".x(async () =>
+            {
+                var updatedToken = await response.Content.ReadAsStringAsync();
+                Assert.NotNull(updatedToken);
+            });
 
             "When refreshing token, then has updated claims".x(
                 async () =>
@@ -162,9 +169,70 @@
                     Assert.NotNull(result.Content);
 
                     var handler = new JwtSecurityTokenHandler();
-                    var token = handler.ReadToken(result.Content.AccessToken) as JwtSecurityToken;
+                    var token = (JwtSecurityToken)handler.ReadToken(result.Content.AccessToken);
                     Assert.Contains(token.Claims, c => c.Type == "added_claim_test" && c.Value == "something");
                 });
+        }
+
+        [Scenario]
+        public void CanUpdateOwnClaimsTwoTimes()
+        {
+            HttpResponseMessage response = null;
+
+            "When updating user claims".x(
+                async () =>
+                {
+                    var updateRequest = new UpdateResourceOwnerClaimsRequest
+                    {
+                        Subject = "administrator",
+                        Claims = new[] { new PostClaim { Type = "added_claim_test", Value = "something" } }
+                    };
+
+                    var json = JsonConvert.SerializeObject(updateRequest);
+
+                    var request = new HttpRequestMessage
+                    {
+                        Content = new StringContent(json, Encoding.UTF8, "application/json"),
+                        Method = HttpMethod.Post,
+                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                    };
+                    request.Headers.Authorization =
+                        new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
+                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                });
+
+            "Then is ok response".x(
+                async () =>
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    _administratorToken = JsonConvert.DeserializeObject<GrantedTokenResponse>(json);
+
+                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                });
+
+            "and when updating second time".x(async () =>
+            {
+                var updateRequest = new UpdateResourceOwnerClaimsRequest
+                {
+                    Subject = "administrator",
+                    Claims = new[] { new PostClaim { Type = "added_claim_test2", Value = "something" } }
+                };
+
+                var json = JsonConvert.SerializeObject(updateRequest);
+
+                var request = new HttpRequestMessage
+                {
+                    Content = new StringContent(json, Encoding.UTF8, "application/json"),
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                };
+                request.Headers.Authorization =
+                    new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
+                response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+            });
+
+            "Then is also ok response".x(
+                () => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
         }
 
         [Scenario]
