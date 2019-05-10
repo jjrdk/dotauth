@@ -56,7 +56,6 @@ namespace SimpleAuth.Controllers
         /// <param name="clientRepository"></param>
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="eventPublisher">The event publisher.</param>
-        /// <param name="tokenStore"></param>
         /// <param name="scopeRepository"></param>
         /// <param name="jwksRepository"></param>
         public ResourceOwnersController(

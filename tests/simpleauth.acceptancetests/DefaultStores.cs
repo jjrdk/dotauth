@@ -124,7 +124,12 @@ namespace SimpleAuth.AcceptanceTests
                             .ToSet(),
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
+                    RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")},
+                    UserClaimsToIncludeInAuthToken = new []
+                    {
+                        new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
+                        new Regex("^acceptance_test$", RegexOptions.Compiled),
+                    }
                 },
                 new Client
                 {
