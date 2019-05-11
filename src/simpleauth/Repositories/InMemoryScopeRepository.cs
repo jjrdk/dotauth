@@ -27,7 +27,7 @@
                 IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the OpenId scope.",
-                Type = ScopeTypes.ProtectedApi,
+                Type = ScopeTypes.ResourceOwner,
                 Claims = Array.Empty<string>()
             },
             new Scope
@@ -142,6 +142,7 @@
         /// Initializes a new instance of the <see cref="InMemoryScopeRepository"/> class.
         /// </summary>
         /// <param name="scopes">The scopes.</param>
+        /// <param name="includeDefaultScopes">Include default scope definitions during instantiation.</param>
         public InMemoryScopeRepository(IReadOnlyCollection<Scope> scopes = null, bool includeDefaultScopes = true)
         {
             _scopes = scopes == null || scopes.Count == 0

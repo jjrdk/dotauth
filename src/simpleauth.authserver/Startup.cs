@@ -14,8 +14,6 @@
 
 namespace SimpleAuth.AuthServer
 {
-    using Amazon;
-    using Amazon.Runtime;
     using Controllers;
     using Extensions;
     using Microsoft.AspNetCore.Builder;
@@ -29,14 +27,11 @@ namespace SimpleAuth.AuthServer
     using Microsoft.Extensions.Logging;
     using SimpleAuth;
     using SimpleAuth.Repositories;
-    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Sms;
     using System.IO.Compression;
     using System.Net.Http;
     using System.Reflection;
     using System.Security.Claims;
-    using System.Text.RegularExpressions;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.IdentityModel.Tokens;
 
@@ -146,7 +141,14 @@ namespace SimpleAuth.AuthServer
                 .UseAuthentication()
                 .UseCors("AllowAll")
                 .UseStaticFiles(
-                    new StaticFileOptions { FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot") })
+                    new StaticFileOptions
+                    {
+                        FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot"),
+                        OnPrepareResponse = context =>
+                        {
+                            context.Context.Response.Headers["Cache-Control"] = _configuration["StaticFiles:Headers:Cache-Control"];
+                        }
+                    })
                 .UseSimpleAuthExceptionHandler()
                 .UseSimpleAuthExceptionHandler()
                 .UseResponseCompression()

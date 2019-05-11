@@ -183,22 +183,22 @@ namespace SimpleAuth.Controllers
             resourceOwner.UpdateDateTime = DateTime.UtcNow;
             var claims = request.Claims.Select(claim => new Claim(claim.Type, claim.Value)).ToArray();
 
-            resourceOwner.Claims = claims;
+            resourceOwner.Claims = resourceOwner.Claims.Where(c => claims.All(x => x.Type != c.Type)).Concat(claims).ToArray();
             Claim updatedClaim;
             if ((updatedClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == OpenIdClaimTypes.UpdatedAt)) != null)
             {
-                resourceOwner.Claims.Remove(updatedClaim);
+                resourceOwner.Claims = resourceOwner.Claims.Remove(updatedClaim);
             }
 
             Claim subjectClaim;
             if ((subjectClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == OpenIdClaimTypes.Subject)) != null)
             {
-                resourceOwner.Claims.Remove(subjectClaim);
+                resourceOwner.Claims = resourceOwner.Claims.Remove(subjectClaim);
             }
 
             resourceOwner.Claims = resourceOwner.Claims.Add(
                 new Claim(OpenIdClaimTypes.Subject, request.Subject),
-                new Claim(OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ToString()));
+                new Claim(OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ConvertToUnixTimestamp().ToString()));
 
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
             if (!result)
