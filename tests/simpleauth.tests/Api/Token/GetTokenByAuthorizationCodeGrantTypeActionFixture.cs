@@ -30,6 +30,7 @@ namespace SimpleAuth.Tests.Api.Token
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Repositories;
     using Xunit;
 
     public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture

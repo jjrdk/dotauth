@@ -18,9 +18,9 @@ namespace SimpleAuth.Server.Tests
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
+    using SimpleAuth.Client;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Uma.Client;
     using Xunit;
 
     public class ResourceFixture

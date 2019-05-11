@@ -7,7 +7,6 @@
     using SimpleAuth.Client;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Responses;
-    using SimpleAuth.Uma.Client;
     using Xbehave;
     using Xunit;
 
