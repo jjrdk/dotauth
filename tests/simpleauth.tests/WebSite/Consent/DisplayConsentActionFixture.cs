@@ -15,6 +15,7 @@ namespace SimpleAuth.Tests.WebSite.Consent
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Errors;
     using Xunit;
 

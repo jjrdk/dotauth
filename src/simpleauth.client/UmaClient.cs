@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Uma.Client
+namespace SimpleAuth.Client
 {
-    using Newtonsoft.Json;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.DTOs;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Responses;
     using System;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
+    using Newtonsoft.Json;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Responses;
 
     /// <summary>
     /// Defines the UMA client.

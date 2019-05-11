@@ -12,6 +12,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Repositories;
     using Xunit;
 
     //using Client = Shared.Models.Client;

@@ -11,6 +11,7 @@
     using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Repositories;
     using System;
+    using SimpleAuth.Repositories;
 
     public class ServerStartup : IStartup
     {
