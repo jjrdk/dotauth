@@ -9,6 +9,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Errors;
     using Xunit;
     using Client = Shared.Models.Client;
