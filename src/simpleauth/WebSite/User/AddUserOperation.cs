@@ -86,7 +86,7 @@ namespace SimpleAuth.WebSite.User
                     foreach (var ruleResult in userFilterResult.AccountFilterRules.Where(x => !x.IsValid))
                     {
                         await _eventPublisher.Publish(
-                                new FailureMessage(
+                                new FilterValidationFailure(
                                     Id.Create(),
                                     $"The filter rule '{ruleResult.RuleName}' failed",
                                     DateTime.UtcNow))
@@ -94,7 +94,7 @@ namespace SimpleAuth.WebSite.User
                         foreach (var errorMessage in ruleResult.ErrorMessages)
                         {
                             await _eventPublisher
-                                .Publish(new FailureMessage(Id.Create(), errorMessage, DateTime.UtcNow))
+                                .Publish(new FilterValidationFailure(Id.Create(), errorMessage, DateTime.UtcNow))
                                 .ConfigureAwait(false);
                         }
                     }
