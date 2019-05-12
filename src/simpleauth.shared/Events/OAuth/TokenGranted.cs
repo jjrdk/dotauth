@@ -1,11 +1,11 @@
 ﻿// Copyright © 2018 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,30 +26,38 @@ namespace SimpleAuth.Shared.Events.OAuth
         /// Initializes a new instance of the <see cref="TokenGranted"/> class.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="processId">The process identifier.</param>
-        /// <param name="accessToken">The access token.</param>
+        /// <param name="subject">The subject of the token.</param>
+        /// <param name="clientId">The authorized client.</param>
+        /// <param name="scopes">The granted scopes</param>
+        /// <param name="grantType">The used grant type.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public TokenGranted(string id, string processId, string accessToken, DateTime timestamp)
-        :base(id, timestamp)
+        public TokenGranted(string id, string subject, string clientId, string scopes, string grantType, DateTime timestamp)
+        : base(id, timestamp)
         {
-            ProcessId = processId;
-            AccessToken = accessToken;
+            Subject = subject;
+            ClientId = clientId;
+            Scopes = scopes.Split(' ', ',');
+            GrantType = grantType;
         }
 
         /// <summary>
-        /// Gets the process identifier.
+        /// The subject of the token.
         /// </summary>
-        /// <value>
-        /// The process identifier.
-        /// </value>
-        public string ProcessId { get; }
+        public string Subject { get; }
 
         /// <summary>
-        /// Gets the access token.
+        /// The authorized client.
         /// </summary>
-        /// <value>
-        /// The access token.
-        /// </value>
-        public string AccessToken { get; }
+        public string ClientId { get; }
+
+        /// <summary>
+        /// The granted scopes.
+        /// </summary>
+        public string[] Scopes { get; }
+
+        /// <summary>
+        /// The grant type when issuing the token.
+        /// </summary>
+        public string GrantType { get; }
     }
 }

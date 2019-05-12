@@ -30,6 +30,7 @@ namespace SimpleAuth.Api.Token.Actions
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Events.OAuth;
 
     internal sealed class GetTokenByRefreshTokenGrantTypeAction
     {
@@ -137,10 +138,12 @@ namespace SimpleAuth.Api.Token.Actions
 
             await _tokenStore.AddToken(generatedToken, cancellationToken).ConfigureAwait(false);
             await _eventPublisher.Publish(
-                    new AccessToClientGranted(
+                    new TokenGranted(
                         Id.Create(),
+                        generatedToken?.UserInfoPayLoad?.Sub,
                         generatedToken.ClientId,
                         generatedToken.Scope,
+                        GrantTypes.RefreshToken,
                         DateTime.UtcNow))
                 .ConfigureAwait(false);
             return generatedToken;

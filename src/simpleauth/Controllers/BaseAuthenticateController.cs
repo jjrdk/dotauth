@@ -392,7 +392,7 @@ namespace SimpleAuth.Controllers
                         issuerName,
                         cancellationToken)
                     .ConfigureAwait(false);
-                await LogAuthenticateUser(authenticatedUser.GetSubject(), actionResult.Amr, request.aggregate_id).ConfigureAwait(false);
+                await LogAuthenticateUser(authenticatedUser.GetSubject(), actionResult.Amr).ConfigureAwait(false);
                 var result = this.CreateRedirectionFromActionResult(actionResult, request);
                 return result;
             }
@@ -434,7 +434,7 @@ namespace SimpleAuth.Controllers
             var result = this.CreateRedirectionFromActionResult(actionResult, request);
             if (result != null)
             {
-                await LogAuthenticateUser(authenticatedUser.GetSubject(), actionResult.Amr, request.aggregate_id).ConfigureAwait(false);
+                await LogAuthenticateUser(authenticatedUser.GetSubject(), actionResult.Amr).ConfigureAwait(false);
                 return result;
             }
 
@@ -592,7 +592,7 @@ namespace SimpleAuth.Controllers
                         CookieNames.ExternalCookieName,
                         new AuthenticationProperties())
                     .ConfigureAwait(false);
-                await LogAuthenticateUser(subject, actionResult.Amr, authorizationRequest.aggregate_id).ConfigureAwait(false);
+                await LogAuthenticateUser(subject, actionResult.Amr).ConfigureAwait(false);
                 return this.CreateRedirectionFromActionResult(actionResult, authorizationRequest);
             }
 
@@ -625,16 +625,10 @@ namespace SimpleAuth.Controllers
         /// </summary>
         /// <param name="resourceOwner">The resource owner.</param>
         /// <param name="amr">The amr.</param>
-        /// <param name="processId">The process identifier.</param>
         /// <returns></returns>
-        internal async Task LogAuthenticateUser(string resourceOwner, string amr, string processId)
+        internal async Task LogAuthenticateUser(string resourceOwner, string amr)
         {
-            if (string.IsNullOrWhiteSpace(processId))
-            {
-                return;
-            }
-
-            await _eventPublisher.Publish(new ResourceOwnerAuthenticated(Id.Create(), processId, resourceOwner, amr, DateTime.UtcNow))
+            await _eventPublisher.Publish(new ResourceOwnerAuthenticated(Id.Create(), resourceOwner, amr, DateTime.UtcNow))
                 .ConfigureAwait(false);
         }
 

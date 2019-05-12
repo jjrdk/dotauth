@@ -16,6 +16,13 @@ namespace SimpleAuth.Shared.Events.OAuth
 {
     using System;
 
+    public class ClaimsUpdated: Event {
+        public ClaimsUpdated(string id, DateTime timestamp)
+            : base(id, timestamp)
+        {
+        }
+    }
+
     /// <summary>
     /// Defines the token revoked event.
     /// </summary>
@@ -26,22 +33,12 @@ namespace SimpleAuth.Shared.Events.OAuth
         /// Initializes a new instance of the <see cref="TokenRevoked"/> class.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="processId">The process identifier.</param>
         /// <param name="token">The revoked token</param>
         /// <param name="timestamp">The timestamp.</param>
-        public TokenRevoked(string id, string processId, string token, DateTime timestamp) : base(id, timestamp)
+        public TokenRevoked(string id, string token, DateTime timestamp) : base(id, timestamp)
         {
-            ProcessId = processId;
             Token = token;
         }
-
-        /// <summary>
-        /// Gets the process identifier.
-        /// </summary>
-        /// <value>
-        /// The process identifier.
-        /// </value>
-        public string ProcessId { get; }
 
         /// <summary>
         /// Gets the token.
