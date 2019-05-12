@@ -24,7 +24,6 @@
             {
                 Name = "openid",
                 IsExposed = true,
-                IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the OpenId scope.",
                 Type = ScopeTypes.ResourceOwner,
@@ -34,7 +33,6 @@
             {
                 Name = "profile",
                 IsExposed = true,
-                IsOpenIdScope = true,
                 Description = "Access to the profile information.",
                 Claims = new[]
                 {
@@ -60,7 +58,6 @@
             {
                 Name = "email",
                 IsExposed = true,
-                IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to email addresses.",
                 Claims = new[] {OpenIdClaimTypes.Email, OpenIdClaimTypes.EmailVerified},
@@ -70,7 +67,6 @@
             {
                 Name = "address",
                 IsExposed = true,
-                IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to address information.",
                 Claims = new[] {OpenIdClaimTypes.Address},
@@ -80,7 +76,6 @@
             {
                 Name = "phone",
                 IsExposed = true,
-                IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to phone information.",
                 Claims = new[] {OpenIdClaimTypes.PhoneNumber, OpenIdClaimTypes.PhoneNumberVerified},
@@ -90,7 +85,6 @@
             {
                 Name = "role",
                 IsExposed = true,
-                IsOpenIdScope = false,
                 IsDisplayedInConsent = true,
                 Description = "Access to your roles.",
                 Claims = new[] {OpenIdClaimTypes.Role},
@@ -101,7 +95,6 @@
                 Claims = new[] {OpenIdClaimTypes.Role},
                 Name = "register_client",
                 IsExposed = false,
-                IsOpenIdScope = false,
                 IsDisplayedInConsent = true,
                 Description = "Register a client",
                 Type = ScopeTypes.ProtectedApi
@@ -111,7 +104,6 @@
                 Claims = new[] {OpenIdClaimTypes.Role},
                 Name = "manage_profile",
                 IsExposed = false,
-                IsOpenIdScope = false,
                 IsDisplayedInConsent = true,
                 Description = "Manage the user's profiles",
                 Type = ScopeTypes.ProtectedApi
@@ -121,7 +113,6 @@
                 Claims = new[] {OpenIdClaimTypes.Role},
                 Name = "manage_account_filtering",
                 IsExposed = false,
-                IsOpenIdScope = false,
                 IsDisplayedInConsent = true,
                 Description = "Manage the account filtering.",
                 Type = ScopeTypes.ProtectedApi
@@ -133,7 +124,6 @@
                 IsDisplayedInConsent = true,
                 IsExposed = true,
                 Name = "manager",
-                IsOpenIdScope = false,
                 Type = ScopeTypes.ProtectedApi
             }
         };
@@ -264,7 +254,7 @@
         {
             if (scope == null)
             {
-                throw new ArgumentNullException(nameof(scope));
+                return Task.FromResult(false);
             }
 
             var sc = _scopes.FirstOrDefault(s => s.Name == scope.Name);
@@ -277,7 +267,6 @@
             sc.Description = scope.Description;
             sc.IsDisplayedInConsent = scope.IsDisplayedInConsent;
             sc.IsExposed = scope.IsExposed;
-            sc.IsOpenIdScope = scope.IsOpenIdScope;
             sc.Type = scope.Type;
             sc.UpdateDateTime = DateTime.UtcNow;
             return Task.FromResult(true);

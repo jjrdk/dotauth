@@ -50,15 +50,6 @@ namespace SimpleAuth.Shared.Models
         public bool IsDisplayedInConsent { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is open identifier scope.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance is open identifier scope; otherwise, <c>false</c>.
-        /// </value>
-        [DataMember(Name = "is_openid_scope")]
-        public bool IsOpenIdScope { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether this instance is exposed.
         /// </summary>
         /// <value>
