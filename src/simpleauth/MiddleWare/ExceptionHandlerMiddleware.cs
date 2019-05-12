@@ -64,9 +64,11 @@ namespace SimpleAuth.MiddleWare
                 }
                 else
                 {
-                    await _publisher.Publish(new ExceptionMessage(
+                    await _publisher.Publish(new SimpleAuthError(
                         Id.Create(),
-                        exception,
+                        exception.GetType().Name,
+                        exception.Message,
+                        string.Empty,
                         DateTime.UtcNow)).ConfigureAwait(false);
 
                     context.Request.Path = "/error";

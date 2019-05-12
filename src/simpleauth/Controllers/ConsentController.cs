@@ -19,7 +19,6 @@ namespace SimpleAuth.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Mvc;
-    using Results;
     using Shared;
     using Shared.Events.Openid;
     using Shared.Requests;
@@ -146,7 +145,7 @@ namespace SimpleAuth.Controllers
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _confirmConsent.Execute(parameter, authenticatedUser, issuerName, cancellationToken)
                 .ConfigureAwait(false);
-            LogConsentAccepted(actionResult, parameter.ProcessId);
+            LogConsentAccepted(authenticatedUser.GetSubject(), request.client_id, request.scope);
             return this.CreateRedirectionFromActionResult(actionResult, request);
         }
 
@@ -159,30 +158,20 @@ namespace SimpleAuth.Controllers
         public Task<IActionResult> Cancel(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            LogConsentRejected(request.aggregate_id);
+            LogConsentRejected(request.client_id, request.scope);
             var result = Redirect(request.redirect_uri.AbsoluteUri);
 
             return Task.FromResult<IActionResult>(result);
         }
 
-        private void LogConsentAccepted(EndpointResult act, string processId)
+        private void LogConsentAccepted(string subject, string clientId, string scope)
         {
-            if (string.IsNullOrWhiteSpace(processId))
-            {
-                return;
-            }
-
-            _eventPublisher.Publish(new ConsentAccepted(Id.Create(), processId, act, DateTime.UtcNow));
+            _eventPublisher.Publish(new ConsentAccepted(Id.Create(), subject, clientId, scope, DateTime.UtcNow));
         }
 
-        private void LogConsentRejected(string processId)
+        private void LogConsentRejected(string clientId, string scope)
         {
-            if (string.IsNullOrWhiteSpace(processId))
-            {
-                return;
-            }
-
-            _eventPublisher.Publish(new ConsentRejected(Id.Create(), processId, DateTime.UtcNow));
+            _eventPublisher.Publish(new ConsentRejected(Id.Create(), clientId, scope.Trim().Split(' '), DateTime.UtcNow));
         }
     }
 }

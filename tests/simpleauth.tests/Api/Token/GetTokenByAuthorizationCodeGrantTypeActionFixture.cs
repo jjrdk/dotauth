@@ -25,12 +25,12 @@ namespace SimpleAuth.Tests.Api.Token
     using SimpleAuth;
     using SimpleAuth.Api.Token.Actions;
     using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Events.Logging;
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Repositories;
+    using SimpleAuth.Shared.Events.OAuth;
     using Xunit;
 
     public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
@@ -582,7 +582,7 @@ namespace SimpleAuth.Tests.Api.Token
                 .ConfigureAwait(false);
 
             _tokenStoreFake.Verify(g => g.AddToken(It.IsAny<GrantedToken>(), It.IsAny<CancellationToken>()));
-            _eventPublisher.Verify(s => s.Publish(It.IsAny<AccessToClientGranted>()));
+            _eventPublisher.Verify(s => s.Publish(It.IsAny<TokenGranted>()));
         }
 
         private void InitializeFakeObjects(TimeSpan authorizationCodeValidity = default)

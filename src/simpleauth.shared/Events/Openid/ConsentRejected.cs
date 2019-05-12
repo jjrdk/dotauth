@@ -26,20 +26,17 @@ namespace SimpleAuth.Shared.Events.Openid
         /// Initializes a new instance of the <see cref="ConsentRejected"/> class.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="processId">The process identifier.</param>
+        /// <param name="scopes">The rejected scopes.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public ConsentRejected(string id, string processId, DateTime timestamp)
+        /// <param name="clientId">The rejected client.</param>
+        public ConsentRejected(string id, string clientId, string[] scopes, DateTime timestamp)
             : base(id, timestamp)
         {
-            ProcessId = processId;
+            ClientId = clientId;
+            Scopes = scopes;
         }
 
-        /// <summary>
-        /// Gets the process identifier.
-        /// </summary>
-        /// <value>
-        /// The process identifier.
-        /// </value>
-        public string ProcessId { get; }
+        public string ClientId { get; }
+        public string[] Scopes { get; }
     }
 }

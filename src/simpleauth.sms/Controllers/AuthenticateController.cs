@@ -181,7 +181,8 @@
                 }
                 catch (Exception ex)
                 {
-                    await _eventPublisher.Publish(new ExceptionMessage(Id.Create(), ex, DateTime.UtcNow))
+                    var se = ex as SimpleAuthException;
+                    await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTime.UtcNow))
                         .ConfigureAwait(false);
                     ModelState.AddModelError("message_error", ex.Message);
                 }
@@ -200,7 +201,8 @@
                     }
                     catch (Exception ex)
                     {
-                        await _eventPublisher.Publish(new ExceptionMessage(Id.Create(), ex, DateTime.UtcNow))
+                        var se = ex as SimpleAuthException;
+                        await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTime.UtcNow))
                             .ConfigureAwait(false);
                         ModelState.AddModelError("message_error", "SMS account is not valid");
                     }
@@ -333,7 +335,7 @@
                 var result = this.CreateRedirectionFromActionResult(actionResult, request);
                 if (result != null)
                 {
-                    await LogAuthenticateUser(resourceOwner.Subject, actionResult.Amr, request.aggregate_id).ConfigureAwait(false);
+                    await LogAuthenticateUser(resourceOwner.Subject, actionResult.Amr).ConfigureAwait(false);
                     return result;
                 }
             }
@@ -387,7 +389,8 @@
                 }
                 catch (Exception ex)
                 {
-                    await _eventPublisher.Publish(new ExceptionMessage(Id.Create(), ex, DateTime.UtcNow))
+                    var se = ex as SimpleAuthException;
+                    await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTime.UtcNow))
                         .ConfigureAwait(false);
                     ModelState.AddModelError("message_error", ex.Message);
                 }
@@ -402,11 +405,13 @@
                     await SetPasswordLessCookie(resourceOwner.Claims).ConfigureAwait(false);
                     try
                     {
-                        return RedirectToAction("ConfirmCode", new { code = viewModel.Code });
+                        return RedirectToAction("ConfirmCode", new {code = viewModel.Code});
                     }
                     catch (Exception ex)
                     {
-                        await _eventPublisher.Publish(new ExceptionMessage(Id.Create(), ex, DateTime.UtcNow))
+                        var se = ex as SimpleAuthException;
+                        await _eventPublisher.Publish(
+                                new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTime.UtcNow))
                             .ConfigureAwait(false);
                         ModelState.AddModelError("message_error", "SMS account is not valid");
                     }
