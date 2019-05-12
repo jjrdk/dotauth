@@ -77,12 +77,6 @@ namespace SimpleAuth.Shared.Models
         public string[] Claims { get; set; } = Array.Empty<string>();
 
         /// <summary>
-        /// Gets or sets the create datetime.
-        /// </summary>
-        [DataMember(Name = "create_datetime")]
-        public DateTime CreateDateTime { get; set; }
-
-        /// <summary>
         /// Gets or sets the update datetime.
         /// </summary>
         [DataMember(Name = "update_datetime")]

@@ -185,7 +185,7 @@
         {
             if (scope == null)
             {
-                throw new ArgumentNullException(nameof(scope));
+                return Task.FromResult(false);
             }
 
             if (_scopes.Any(x => x.Name == scope.Name))
@@ -193,7 +193,6 @@
                 return Task.FromResult(false);
             }
 
-            scope.CreateDateTime = DateTime.UtcNow;
             _scopes.Add(scope);
             return Task.FromResult(true);
         }
@@ -205,7 +204,7 @@
         {
             if (parameter == null)
             {
-                throw new ArgumentNullException(nameof(parameter));
+                return null;
             }
 
             IEnumerable<Scope> result = _scopes;
@@ -220,7 +219,6 @@
                 result = result.Where(s => scopeTypes.Contains(s.Type));
             }
 
-            var nbResult = result.Count();
             result = parameter.Descending
                 ? result.OrderByDescending(c => c.UpdateDateTime)
                 : result.OrderBy(c => c.UpdateDateTime);
@@ -230,10 +228,15 @@
                 result = result.Skip(parameter.StartIndex).Take(parameter.NbResults);
             }
 
+            var content = result.ToArray();
+            var nbResult = content.Length;
+
             return Task.FromResult(
                 new GenericResult<Scope>
                 {
-                    Content = result.ToArray(), StartIndex = parameter.StartIndex, TotalResults = nbResult
+                    Content = content,
+                    StartIndex = parameter.StartIndex,
+                    TotalResults = nbResult
                 });
         }
 

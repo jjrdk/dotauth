@@ -214,4 +214,4 @@ SimpleIdentityServer/VNEXT/src/SimpleIdentityServer.Host/wwwroot/lib/*
 log-*.txt
 appsettings.json
 simpleauth.authserver.exe
-/src/simpleauth.authserver/simpleauth.authserver
+.vscode
