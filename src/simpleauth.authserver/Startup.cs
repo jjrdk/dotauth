@@ -34,6 +34,7 @@ namespace SimpleAuth.AuthServer
     using System.Security.Claims;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.Shared.Events;
 
     public class Startup
     {
@@ -54,7 +55,7 @@ namespace SimpleAuth.AuthServer
                         sp.GetService<IScopeStore>(),
                         DefaultConfiguration.GetClients()),
                 Scopes = sp => new InMemoryScopeRepository(DefaultConfiguration.GetScopes()),
-                EventPublisher = sp => new ConsolePublisher(),
+                EventPublisher = sp => new TraceEventPublisher(),
                 ClaimsIncludedInUserCreation = new[]
                 {
                     ClaimTypes.Name,

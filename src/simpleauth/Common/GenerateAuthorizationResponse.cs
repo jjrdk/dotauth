@@ -29,6 +29,7 @@ namespace SimpleAuth.Common
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Events.OAuth;
 
     internal class GenerateAuthorizationResponse
     {
@@ -153,10 +154,12 @@ namespace SimpleAuth.Common
             {
                 await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
                 await _eventPublisher.Publish(
-                        new AccessToClientGranted(
+                        new TokenGranted(
                             Id.Create(),
+                            claimsPrincipal.GetSubject(),
                             authorizationParameter.ClientId,
                             allowedTokenScopes,
+                            authorizationParameter.ResponseType,
                             DateTime.UtcNow))
                     .ConfigureAwait(false);
             }
@@ -171,10 +174,11 @@ namespace SimpleAuth.Common
 
                 await _authorizationCodeStore.Add(authorizationCode, cancellationToken).ConfigureAwait(false);
                 await _eventPublisher.Publish(
-                        new AuthorizationCodeGranted(
+                        new AuthorizationGranted(
+                            Id.Create(),
+                            claimsPrincipal.GetSubject(),
                             authorizationParameter.ClientId,
-                            authorizationCode.Code,
-                            authorizationParameter.Scope))
+                            DateTime.UtcNow))
                     .ConfigureAwait(false);
             }
 

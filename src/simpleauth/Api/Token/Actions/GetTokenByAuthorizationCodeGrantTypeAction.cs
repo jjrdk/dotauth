@@ -30,6 +30,7 @@ namespace SimpleAuth.Api.Token.Actions
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Events.OAuth;
 
     internal class GetTokenByAuthorizationCodeGrantTypeAction
     {
@@ -103,10 +104,12 @@ namespace SimpleAuth.Api.Token.Actions
                             .ToArray())
                     .ConfigureAwait(false);
                 await _eventPublisher.Publish(
-                        new AccessToClientGranted(
+                        new TokenGranted(
                             Id.Create(),
+                            grantedToken?.UserInfoPayLoad?.Sub,
                             result.AuthCode.ClientId,
-                            grantedToken.IdToken,
+                            result.AuthCode.Scopes,
+                            GrantTypes.AuthorizationCode,
                             DateTime.UtcNow))
                     .ConfigureAwait(false);
                 // Fill-in the id-token

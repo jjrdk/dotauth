@@ -32,6 +32,7 @@ namespace SimpleAuth.Controllers
     using System.Threading.Tasks;
     using SimpleAuth.Api.Token.Actions;
     using SimpleAuth.Parameters;
+    using SimpleAuth.Shared.Events.OAuth;
     using SimpleAuth.Shared.Responses;
 
     /// <summary>
@@ -44,6 +45,7 @@ namespace SimpleAuth.Controllers
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly ITokenStore _tokenStore;
         private readonly IClientRepository _clientRepository;
+        private readonly IEventPublisher _eventPublisher;
         private readonly AddUserOperation _addUserOperation;
         private readonly GetTokenByRefreshTokenGrantTypeAction _refreshOperation;
 
@@ -81,6 +83,7 @@ namespace SimpleAuth.Controllers
             _resourceOwnerRepository = resourceOwnerRepository;
             _tokenStore = tokenStore;
             _clientRepository = clientRepository;
+            _eventPublisher = eventPublisher;
             _addUserOperation = new AddUserOperation(settings, resourceOwnerRepository, accountFilters, subjectBuilder, eventPublisher);
         }
 
@@ -272,6 +275,8 @@ namespace SimpleAuth.Controllers
             await _tokenStore.RemoveAccessToken(accessToken, cancellationToken).ConfigureAwait(false);
             await _tokenStore.RemoveAccessToken(refreshedToken.AccessToken, cancellationToken).ConfigureAwait(false);
             await _tokenStore.AddToken(refreshedToken, cancellationToken).ConfigureAwait(false);
+
+            await _eventPublisher.Publish(new ClaimsUpdated(Id.Create(), DateTime.UtcNow)).ConfigureAwait(false);
 
             return result
                 ? new JsonResult(new GrantedTokenResponse

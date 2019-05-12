@@ -28,7 +28,7 @@ namespace SimpleAuth.Tests.Api.Token
     using System.Threading.Tasks;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Events.Logging;
+    using SimpleAuth.Shared.Events.OAuth;
     using SimpleAuth.Tests.Helpers;
     using Xunit;
 
@@ -327,13 +327,13 @@ namespace SimpleAuth.Tests.Api.Token
                 .ConfigureAwait(false);
 
             _tokenStoreStub.Verify(g => g.AddToken(It.IsAny<GrantedToken>(), It.IsAny<CancellationToken>()));
-            _eventPublisher.Verify(s => s.Publish(It.IsAny<AccessToClientGranted>()));
+            _eventPublisher.Verify(s => s.Publish(It.IsAny<TokenGranted>()));
         }
 
         private void InitializeFakeObjects(params IAuthenticateResourceOwnerService[] services)
         {
             _eventPublisher = new Mock<IEventPublisher>();
-            _eventPublisher.Setup(x => x.Publish(It.IsAny<AccessToClientGranted>())).Returns(Task.CompletedTask);
+            _eventPublisher.Setup(x => x.Publish(It.IsAny<TokenGranted>())).Returns(Task.CompletedTask);
             _clientStore = new Mock<IClientStore>();
             _tokenStoreStub = new Mock<ITokenStore>();
 

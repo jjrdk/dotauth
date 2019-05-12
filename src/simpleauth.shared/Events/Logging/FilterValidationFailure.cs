@@ -7,15 +7,15 @@
     /// Defines the failure message event.
     /// </summary>
     /// <seealso cref="SimpleAuth.Shared.Event" />
-    public class FailureMessage : Event
+    public class FilterValidationFailure : Event
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FailureMessage"/> class.
+        /// Initializes a new instance of the <see cref="FilterValidationFailure"/> class.
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <param name="message">The message.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public FailureMessage(string id, string message, DateTime timestamp)
+        public FilterValidationFailure(string id, string message, DateTime timestamp)
         : base(id, timestamp)
         {
             Message = message;
