@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.AuthServer
 {
+    using System.Diagnostics;
     using Microsoft.AspNetCore.Hosting;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -23,6 +24,8 @@ namespace SimpleAuth.AuthServer
     {
         public static async Task Main(params string[] args)
         {
+            Trace.Listeners.Clear();
+            Trace.Listeners.Add(new ConsoleTraceListener());
             await new WebHostBuilder()
                 .UseKestrel(
                     o =>

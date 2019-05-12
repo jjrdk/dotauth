@@ -37,6 +37,7 @@ namespace SimpleAuth.AuthServer
     using System.Reflection;
     using System.Security.Claims;
     using System.Text.RegularExpressions;
+    using SimpleAuth.Shared.Events;
 
     public class Startup
     {
@@ -57,7 +58,7 @@ namespace SimpleAuth.AuthServer
                         sp.GetService<IScopeStore>(),
                         DefaultConfiguration.GetClients()),
                 Scopes = sp => new InMemoryScopeRepository(),
-                EventPublisher = sp => new ConsolePublisher(),
+                EventPublisher = sp => new TraceEventPublisher(),
                 ClaimsIncludedInUserCreation = new[]
                 {
                     ClaimTypes.Name,

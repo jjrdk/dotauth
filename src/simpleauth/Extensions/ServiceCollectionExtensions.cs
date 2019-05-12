@@ -29,6 +29,7 @@ namespace SimpleAuth.Extensions
     using System;
     using System.Linq;
     using System.Net.Http;
+    using SimpleAuth.Shared.Events;
 
     /// <summary>
     /// Defines the service collection extensions.
@@ -222,7 +223,7 @@ namespace SimpleAuth.Extensions
                 .AddSingleton(runtimeConfig)
                 .AddSingleton(requestThrottle ?? NoopThrottle.Default)
                 .AddSingleton(options.HttpClientFactory?.Invoke() ?? new HttpClient())
-                .AddSingleton(sp => options.EventPublisher?.Invoke(sp) ?? new DefaultEventPublisher())
+                .AddSingleton(sp => options.EventPublisher?.Invoke(sp) ?? new NoopEventPublisher())
                 .AddSingleton(sp => options.SubjectBuilder?.Invoke(sp) ?? new DefaultSubjectBuilder())
                 .AddSingleton(sp => options.JsonWebKeys?.Invoke(sp) ?? new InMemoryJwksRepository())
                 .AddSingleton<IJwksStore>(sp => sp.GetService<IJwksRepository>())
