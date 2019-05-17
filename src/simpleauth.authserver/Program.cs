@@ -25,7 +25,7 @@ namespace SimpleAuth.AuthServer
         public static async Task Main(params string[] args)
         {
             Trace.Listeners.Clear();
-            Trace.Listeners.Add(new ConsoleTraceListener());
+            Trace.Listeners.Add(new ConsoleTraceListener { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
             await new WebHostBuilder()
                 .UseKestrel(
                     o =>
