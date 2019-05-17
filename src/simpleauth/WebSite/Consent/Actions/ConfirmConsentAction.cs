@@ -32,6 +32,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Events.Openid;
 
     internal class ConfirmConsentAction
     {
@@ -130,8 +131,13 @@ namespace SimpleAuth.WebSite.Consent.Actions
                 // A consent can be given to a set of claims
                 await _consentRepository.Insert(assignedConsent, cancellationToken).ConfigureAwait(false);
 
-                await _eventPublisher
-                    .Publish(new ConsentGiven(subject, authorizationParameter.ClientId, assignedConsent.Id))
+                await _eventPublisher.Publish(
+                        new ConsentAccepted(
+                            Id.Create(),
+                            subject,
+                            authorizationParameter.ClientId,
+                            assignedConsent.GrantedScopes,
+                            DateTime.UtcNow))
                     .ConfigureAwait(false);
             }
 

@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth
+﻿namespace SimpleAuth.Repositories
 {
     using System;
     using System.Collections.Generic;

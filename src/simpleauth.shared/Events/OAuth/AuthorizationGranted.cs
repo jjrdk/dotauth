@@ -26,30 +26,24 @@ namespace SimpleAuth.Shared.Events.OAuth
         /// Initializes a new instance of the <see cref="AuthorizationGranted"/> class.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="processId">The process identifier.</param>
-        /// <param name="payload">The payload.</param>
+        /// <param name="subject">The authorized subject.</param>
+        /// <param name="clientId">The authorized client.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public AuthorizationGranted(string id, string processId, object payload, DateTime timestamp)
+        public AuthorizationGranted(string id, string subject, string clientId, DateTime timestamp)
         : base(id, timestamp)
         {
-            ProcessId = processId;
-            Payload = payload;
+            Subject = subject;
+            ClientId = clientId;
         }
 
         /// <summary>
-        /// Gets the process identifier.
+        /// The authorized subject.
         /// </summary>
-        /// <value>
-        /// The process identifier.
-        /// </value>
-        public string ProcessId { get; }
+        public string Subject { get; }
 
         /// <summary>
-        /// Gets the payload.
+        /// The authorized client.
         /// </summary>
-        /// <value>
-        /// The payload.
-        /// </value>
-        public object Payload { get; }
+        public string ClientId { get; }
     }
 }

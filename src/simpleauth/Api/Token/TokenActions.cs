@@ -22,7 +22,6 @@ namespace SimpleAuth.Api.Token
     using Shared.Models;
     using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Collections.Generic;
@@ -55,7 +54,6 @@ namespace SimpleAuth.Api.Token
             ITokenStore tokenStore)
         {
             _getTokenByResourceOwnerCredentialsGrantType = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
-                simpleAuthOptions,
                 clientStore,
                 scopeRepository,
                 tokenStore,
@@ -85,7 +83,7 @@ namespace SimpleAuth.Api.Token
             _tokenStore = tokenStore;
         }
 
-        public async Task<GrantedToken> GetTokenByResourceOwnerCredentialsGrantType(
+        public Task<GrantedToken> GetTokenByResourceOwnerCredentialsGrantType(
             ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
@@ -101,149 +99,71 @@ namespace SimpleAuth.Api.Token
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(
-                        ErrorDescriptions.MissingParameter,
-                        StandardTokenRequestParameterNames.UserName));
+                    string.Format(ErrorDescriptions.MissingParameter, StandardTokenRequestParameterNames.UserName));
             }
 
             if (string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Password))
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(
-                        ErrorDescriptions.MissingParameter,
-                        StandardTokenRequestParameterNames.PasswordName));
+                    string.Format(ErrorDescriptions.MissingParameter, StandardTokenRequestParameterNames.PasswordName));
             }
 
             if (string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Scope))
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(
-                        ErrorDescriptions.MissingParameter,
-                        StandardTokenRequestParameterNames.ScopeName));
+                    string.Format(ErrorDescriptions.MissingParameter, StandardTokenRequestParameterNames.ScopeName));
             }
 
-            var result = await _getTokenByResourceOwnerCredentialsGrantType.Execute(
-                    resourceOwnerGrantTypeParameter,
-                    authenticationHeaderValue,
-                    certificate,
-                    issuerName,
-                    cancellationToken)
-                .ConfigureAwait(false);
-
-            await _eventPublisher.Publish(new TokenGranted(Id.Create(), Id.Create(), result.AccessToken, DateTime.UtcNow))
-                .ConfigureAwait(false);
-            return result;
+            return _getTokenByResourceOwnerCredentialsGrantType.Execute(
+                resourceOwnerGrantTypeParameter,
+                authenticationHeaderValue,
+                certificate,
+                issuerName,
+                cancellationToken);
         }
 
-        public async Task<GrantedToken> GetTokenByAuthorizationCodeGrantType(
+        public Task<GrantedToken> GetTokenByAuthorizationCodeGrantType(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
-            var processId = Id.Create();
-
             Validate(authorizationCodeGrantTypeParameter);
-            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+            return _getTokenByAuthorizationCodeGrantTypeAction.Execute(
                     authorizationCodeGrantTypeParameter,
                     authenticationHeaderValue,
                     certificate,
                     issuerName,
-                    cancellationToken)
-                .ConfigureAwait(false);
-
-            await _eventPublisher.Publish(new TokenGranted(Id.Create(), processId, result.AccessToken, DateTime.UtcNow))
-                .ConfigureAwait(false);
-            return result;
+                    cancellationToken);
         }
 
-        public async Task<GrantedToken> GetTokenByRefreshTokenGrantType(
+        public Task<GrantedToken> GetTokenByRefreshTokenGrantType(
             RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
-            var processId = Id.Create();
-
             // Read this RFC for more information
             if (string.IsNullOrWhiteSpace(refreshTokenGrantTypeParameter.RefreshToken))
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(
-                        ErrorDescriptions.MissingParameter,
-                        StandardTokenRequestParameterNames.RefreshToken));
+                    string.Format(ErrorDescriptions.MissingParameter, StandardTokenRequestParameterNames.RefreshToken));
             }
 
-            var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(
+            return _getTokenByRefreshTokenGrantTypeAction.Execute(
                     refreshTokenGrantTypeParameter,
                     authenticationHeaderValue,
                     certificate,
                     issuerName,
-                    cancellationToken)
-                .ConfigureAwait(false);
-
-            await _eventPublisher.Publish(new TokenGranted(Id.Create(), processId, result.AccessToken, DateTime.UtcNow))
-                .ConfigureAwait(false);
-            return result;
+                    cancellationToken);
         }
 
         public async Task<GrantedToken> GetTokenByClientCredentialsGrantType(
-            ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
-            string issuerName,
-            CancellationToken cancellationToken)
-        {
-            var processId = Id.Create();
-
-            var result = await GetTokenByClientCredentials(
-                    clientCredentialsGrantTypeParameter,
-                    authenticationHeaderValue,
-                    certificate,
-                    issuerName,
-                    cancellationToken)
-                .ConfigureAwait(false);
-            await _eventPublisher.Publish(new TokenGranted(Id.Create(), processId, result.AccessToken, DateTime.UtcNow))
-                .ConfigureAwait(false);
-            return result;
-        }
-
-        public async Task<bool> RevokeToken(
-            RevokeTokenParameter revokeTokenParameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
-            string issuerName,
-            CancellationToken cancellationToken)
-        {
-            var processId = Id.Create();
-
-            // Read this RFC for more information
-            if (string.IsNullOrWhiteSpace(revokeTokenParameter.Token))
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.IntrospectionRequestNames.Token));
-            }
-
-            var result = await _revokeTokenAction.Execute(
-                    revokeTokenParameter,
-                    authenticationHeaderValue,
-                    certificate,
-                    issuerName,
-                    cancellationToken)
-                .ConfigureAwait(false);
-
-            await _eventPublisher.Publish(new TokenRevoked(Id.Create(), processId, revokeTokenParameter.Token, DateTime.UtcNow))
-                .ConfigureAwait(false);
-            return result;
-        }
-
-        private async Task<GrantedToken> GetTokenByClientCredentials(
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
@@ -254,9 +174,7 @@ namespace SimpleAuth.Api.Token
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(
-                        ErrorDescriptions.MissingParameter,
-                        StandardTokenRequestParameterNames.ScopeName));
+                    string.Format(ErrorDescriptions.MissingParameter, StandardTokenRequestParameterNames.ScopeName));
             }
 
             // 1. Authenticate the client
@@ -311,18 +229,50 @@ namespace SimpleAuth.Api.Token
                 .ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await client.GenerateToken(_jwksStore, allowedTokenScopes, issuerName).ConfigureAwait(false);
+                grantedToken = await client.GenerateToken(_jwksStore, allowedTokenScopes, issuerName, cancellationToken: cancellationToken)
+                    .ConfigureAwait(false);
                 await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
                 await _eventPublisher.Publish(
-                        new AccessToClientGranted(
+                        new TokenGranted(
                             Id.Create(),
-                            client.ClientId,
-                            allowedTokenScopes,
+                            grantedToken?.UserInfoPayLoad?.Sub,
+                            grantedToken?.ClientId,
+                            grantedToken?.Scope,
+                            GrantTypes.ClientCredentials,
                             DateTime.UtcNow))
                     .ConfigureAwait(false);
             }
 
             return grantedToken;
+        }
+
+        public async Task<bool> RevokeToken(
+            RevokeTokenParameter revokeTokenParameter,
+            AuthenticationHeaderValue authenticationHeaderValue,
+            X509Certificate2 certificate,
+            string issuerName,
+            CancellationToken cancellationToken)
+        {
+            // Read this RFC for more information
+            if (string.IsNullOrWhiteSpace(revokeTokenParameter.Token))
+            {
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.IntrospectionRequestNames.Token));
+            }
+
+            var result = await _revokeTokenAction.Execute(
+                    revokeTokenParameter,
+                    authenticationHeaderValue,
+                    certificate,
+                    issuerName,
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            await _eventPublisher
+                .Publish(new TokenRevoked(Id.Create(), revokeTokenParameter.Token, DateTime.UtcNow))
+                .ConfigureAwait(false);
+            return result;
         }
 
         private static void Validate(AuthorizationCodeGrantTypeParameter parameter)

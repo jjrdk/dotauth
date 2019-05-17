@@ -5,7 +5,7 @@
     using SimpleAuth.Extensions;
 
     [Route("[controller]")]
-    public class TestController : Controller
+    public class TestController : ControllerBase
     {
         [Authorize]
         [HttpGet]

@@ -27,7 +27,7 @@
             var result = await _openidClients.AddClient(new Client()).ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequestCode, result.Error.Title);
         }
 
         [Fact]
@@ -37,11 +37,11 @@
                     new Client
                     {
                         JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                        AllowedScopes = new[] {"openid"},
+                        AllowedScopes = new[] { "openid" },
                         ClientId = "test",
                         ClientName = "name",
-                        RedirectionUrls = new[] {new Uri("http://localhost#fragment")},
-                        RequestUris = new[] {new Uri("https://localhost")}
+                        RedirectionUrls = new[] { new Uri("http://localhost#fragment") },
+                        RequestUris = new[] { new Uri("https://localhost") }
                     })
                 .ConfigureAwait(false);
 
@@ -65,23 +65,24 @@
         {
             var client = new Client
             {
+                ClientId = Guid.NewGuid().ToString("N"),
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                AllowedScopes = new[] {"openid"},
-                RequestUris = new[] {new Uri("https://localhost"),},
+                AllowedScopes = new[] { "openid" },
+                RequestUris = new[] { new Uri("https://localhost"), },
                 ApplicationType = ApplicationTypes.Web,
                 ClientName = "client_name",
                 ClientUri = new Uri("http://clienturi.com"),
-                Contacts = new[] {"contact"},
+                Contacts = new[] { "contact" },
                 DefaultAcrValues = "sms",
                 //DefaultMaxAge = 10,
-                GrantTypes = new[] {GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken},
-                RedirectionUrls = new[] {new Uri("http://localhost")},
-                PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback")},
+                GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
+                RedirectionUrls = new[] { new Uri("http://localhost") },
+                PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
                 //LogoUri = new Uri("http://logouri.com")
             };
             var addClientResult = await _openidClients.AddClient(client).ConfigureAwait(false);
             client = addClientResult.Content;
-            client.AllowedScopes = new[] {"not_valid"};
+            client.AllowedScopes = new[] { "not_valid" };
             var result = await _openidClients.UpdateClient(client).ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
@@ -112,8 +113,9 @@
         {
             var client = new Client
             {
+                ClientId = Guid.NewGuid().ToString("N"),
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                AllowedScopes = new[] {"openid"},
+                AllowedScopes = new[] { "openid" },
                 ApplicationType = ApplicationTypes.Web,
                 ClientName = "client_name",
                 IdTokenSignedResponseAlg = "RS256",
@@ -128,14 +130,14 @@
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                 InitiateLoginUri = new Uri("https://initloginuri"),
                 ClientUri = new Uri("http://clienturi.com"),
-                Contacts = new[] {"contact"},
+                Contacts = new[] { "contact" },
                 DefaultAcrValues = "sms",
                 //DefaultMaxAge = 10,
-                GrantTypes = new[] {GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken},
-                ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.IdToken, ResponseTypeNames.Token},
-                RequestUris = new[] {new Uri("https://localhost"),},
-                RedirectionUrls = new[] {new Uri("http://localhost"),},
-                PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback"),},
+                GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
+                ResponseTypes = new[] { ResponseTypeNames.Code, ResponseTypeNames.IdToken, ResponseTypeNames.Token },
+                RequestUris = new[] { new Uri("https://localhost"), },
+                RedirectionUrls = new[] { new Uri("http://localhost"), },
+                PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback"), },
                 //LogoUri = new Uri("http://logouri.com")
             };
             var result = await _openidClients.AddClient(client).ConfigureAwait(false);
@@ -163,18 +165,19 @@
         {
             var client = new Client
             {
+                ClientId = Guid.NewGuid().ToString("N"),
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                AllowedScopes = new[] {"openid"},
+                AllowedScopes = new[] { "openid" },
                 ApplicationType = ApplicationTypes.Web,
                 ClientName = "client_name",
                 ClientUri = new Uri("http://clienturi.com"),
-                Contacts = new[] {"contact"},
+                Contacts = new[] { "contact" },
                 DefaultAcrValues = "sms",
                 // DefaultMaxAge = 10,
-                GrantTypes = new[] {GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken},
-                RequestUris = new[] {new Uri("https://localhost")},
-                RedirectionUrls = new[] {new Uri("http://localhost")},
-                PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback")},
+                GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
+                RequestUris = new[] { new Uri("https://localhost") },
+                RedirectionUrls = new[] { new Uri("http://localhost") },
+                PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
                 //LogoUri = new Uri("http://logouri.com")
             };
 
@@ -184,7 +187,7 @@
             {
                 new Uri("http://localhost/callback"), new Uri("http://localhost/callback2"),
             };
-            client.GrantTypes = new[] {GrantTypes.AuthorizationCode, GrantTypes.Implicit,};
+            client.GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, };
             var result = await _openidClients.UpdateClient(client).ConfigureAwait(false);
             var newClient = await _openidClients.GetClient(addClientResult.Content.ClientId).ConfigureAwait(false);
 
@@ -200,18 +203,19 @@
             var addClientResult = await _openidClients.AddClient(
                     new Client
                     {
+                        ClientId = Guid.NewGuid().ToString("N"),
                         JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                        AllowedScopes = new[] {"openid"},
+                        AllowedScopes = new[] { "openid" },
                         ApplicationType = ApplicationTypes.Web,
                         ClientName = "client_name",
                         ClientUri = new Uri("http://clienturi.com"),
-                        Contacts = new[] {"contact"},
+                        Contacts = new[] { "contact" },
                         DefaultAcrValues = "sms",
                         //DefaultMaxAge = 10,
-                        GrantTypes = new[] {GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken},
-                        RequestUris = new[] {new Uri("https://localhost"),},
-                        RedirectionUrls = new[] {new Uri("http://localhost")},
-                        PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback")},
+                        GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
+                        RequestUris = new[] { new Uri("https://localhost"), },
+                        RedirectionUrls = new[] { new Uri("http://localhost") },
+                        PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
                         //LogoUri = new Uri("http://logouri.com")
                     })
                 .ConfigureAwait(false);
@@ -228,8 +232,9 @@
             var result = await _openidClients.AddClient(
                     new Client
                     {
-                        AllowedScopes = new[] {"openid"},
-                        RequestUris = new[] {new Uri("https://localhost"),},
+                        ClientId = Guid.NewGuid().ToString("N"),
+                        AllowedScopes = new[] { "openid" },
+                        RequestUris = new[] { new Uri("https://localhost"), },
                         ApplicationType = ApplicationTypes.Web,
                         ClientName = "client_name",
                         IdTokenSignedResponseAlg = "RS256",
@@ -244,23 +249,23 @@
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                         InitiateLoginUri = new Uri("https://initloginuri"),
                         ClientUri = new Uri("http://clienturi.com"),
-                        Contacts = new[] {"contact"},
+                        Contacts = new[] { "contact" },
                         DefaultAcrValues = "sms",
                         //DefaultMaxAge = 10,
-                        GrantTypes = new[] {GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken},
+                        GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
                         ResponseTypes = new[]
                             {
                                 ResponseTypeNames.Code, ResponseTypeNames.IdToken, ResponseTypeNames.Token
                             },
                         JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                        RedirectionUrls = new[] {new Uri("http://localhost")},
-                        PostLogoutRedirectUris = new[] {new Uri("http://localhost/callback")},
+                        RedirectionUrls = new[] { new Uri("http://localhost") },
+                        PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
                         //LogoUri = new Uri("http://logouri.com")
                     })
                 .ConfigureAwait(false);
 
             var searchResult = await _openidClients.SearchClients(
-                    new SearchClientsRequest {StartIndex = 0, NbResults = 1})
+                    new SearchClientsRequest { StartIndex = 0, NbResults = 1 })
                 .ConfigureAwait(false);
 
             Assert.False(searchResult.ContainsError);

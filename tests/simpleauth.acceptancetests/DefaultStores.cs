@@ -22,6 +22,7 @@ namespace SimpleAuth.AcceptanceTests
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
+    using System.Text.RegularExpressions;
 
     public static class DefaultStores
     {
@@ -115,7 +116,7 @@ namespace SimpleAuth.AcceptanceTests
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new[] {"openid", "role", "profile", "scim", "address"},
+                    AllowedScopes = new[] {"openid", "role", "profile", "address"},
                     GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.Password},
                     ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     JsonWebKeys =
@@ -123,7 +124,12 @@ namespace SimpleAuth.AcceptanceTests
                             .ToSet(),
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.Web,
-                    RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
+                    RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")},
+                    UserClaimsToIncludeInAuthToken = new []
+                    {
+                        new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
+                        new Regex("^acceptance_test$", RegexOptions.Compiled),
+                    }
                 },
                 new Client
                 {
@@ -140,7 +146,7 @@ namespace SimpleAuth.AcceptanceTests
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new[] {"openid", "role", "profile", "scim"},
+                    AllowedScopes = new[] {"openid", "role", "profile"},
                     GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.Password},
                     ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
@@ -164,7 +170,7 @@ namespace SimpleAuth.AcceptanceTests
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new[] {"openid", "role", "profile", "scim"},
+                    AllowedScopes = new[] {"openid", "role", "profile"},
                     GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.Password},
                     ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     JsonWebKeys =
@@ -192,7 +198,7 @@ namespace SimpleAuth.AcceptanceTests
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new[] {"openid", "role", "profile", "scim"},
+                    AllowedScopes = new[] {"openid", "role", "profile"},
                     GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.ClientCredentials},
                     ResponseTypes = new[] {ResponseTypeNames.IdToken},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
@@ -468,7 +474,15 @@ namespace SimpleAuth.AcceptanceTests
                                 KeyOperations.Verify)),
                     ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
-                    ApplicationType = ApplicationTypes.Native
+                    ApplicationType = ApplicationTypes.Native,
+                    UserClaimsToIncludeInAuthToken = new[]
+                    {
+                        new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
+                        new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled),
+                        new Regex($"^{OpenIdClaimTypes.Name}$", RegexOptions.Compiled),
+                        new Regex("^acceptance_test$", RegexOptions.Compiled),
+                        new Regex("^added_claim_test$", RegexOptions.Compiled)
+                    }
                 },
                 new Client
                 {

@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.Repositories;
     using Xunit;
 
     public class InMemoryJwksRepositoryFixture

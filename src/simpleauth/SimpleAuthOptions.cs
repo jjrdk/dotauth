@@ -19,7 +19,6 @@ namespace SimpleAuth
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Net.Http;
-    using System.Text.RegularExpressions;
 
     /// <summary>
     /// Defines the SimpleAuth configuration options.
@@ -33,13 +32,11 @@ namespace SimpleAuth
         /// <param name="rptLifetime">The RPT lifetime.</param>
         /// <param name="ticketLifetime">The ticket lifetime.</param>
         /// <param name="claimsIncludedInUserCreation">The claims included in user creation.</param>
-        /// <param name="userClaimsToIncludeInAuthToken">The user claims to include in authentication token.</param>
         public SimpleAuthOptions(
             TimeSpan authorizationCodeValidity = default,
             TimeSpan rptLifetime = default,
             TimeSpan ticketLifetime = default,
-            string[] claimsIncludedInUserCreation = null,
-            params Regex[] userClaimsToIncludeInAuthToken)
+            string[] claimsIncludedInUserCreation = null)
         {
             RptLifeTime = rptLifetime == default ? TimeSpan.FromSeconds(3600) : rptLifetime;
             TicketLifeTime = ticketLifetime == default ? TimeSpan.FromSeconds(3600) : ticketLifetime;
@@ -47,7 +44,6 @@ namespace SimpleAuth
                 ? TimeSpan.FromSeconds(3600)
                 : authorizationCodeValidity;
             ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? Array.Empty<string>();
-            UserClaimsToIncludeInAuthToken = userClaimsToIncludeInAuthToken ?? Array.Empty<Regex>();
         }
 
         /// <summary>
@@ -188,15 +184,6 @@ namespace SimpleAuth
         /// The authorization code validity period.
         /// </value>
         public TimeSpan AuthorizationCodeValidityPeriod { get; set; }
-
-
-        /// <summary>
-        /// Gets or sets the user claims to include in authentication token.
-        /// </summary>
-        /// <value>
-        /// The user claims to include in authentication token.
-        /// </value>
-        public Regex[] UserClaimsToIncludeInAuthToken { get; set; }
 
         /// <summary>
         /// Gets or sets the RPT lifetime (seconds).

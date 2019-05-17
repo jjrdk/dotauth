@@ -680,34 +680,6 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.Equal("administrator", roles[0].Value.Split(' ')[0]);
         }
 
-        //[Fact(Skip = "Integration test")]
-        //public async Task When_Using_Password_Grant_Type_With_SMS_Then_Access_Token_Is_Returned()
-        //{
-        //    var confirmationCode = new ConfirmationCode();
-        //    _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-        //        .Returns(() => Task.FromResult((ConfirmationCode)null));
-        //    _server.SharedCtx.ConfirmationCodeStore
-        //        .Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
-        //        .Callback<ConfirmationCode>(r => { confirmationCode = r; })
-        //        .Returns(() => Task.FromResult(true));
-
-        //    _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-        //        .ReturnsAsync(confirmationCode);
-        //    var tokenClient = await TokenClient.Create(
-        //            TokenCredentials.FromClientCredentials("client", "client"),
-        //            _server.Client,
-        //            new Uri(WellKnownOpenidConfigurationUrl))
-        //        .ConfigureAwait(false);
-        //    _ = await tokenClient.RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
-        //             .ConfigureAwait(false);
-        //    var result = await tokenClient
-        //        .GetToken(TokenRequest.FromPassword("phone", confirmationCode.Value, new[] { "scim" }, "sms"))
-        //        .ConfigureAwait(false);
-
-        //    Assert.False(result.ContainsError);
-        //    Assert.NotEmpty(result.Content.AccessToken);
-        //}
-
         [Fact(Skip = "solve certificate problem")]
         public async Task When_Using_Client_Certificate_Then_AccessToken_Is_Returned()
         {

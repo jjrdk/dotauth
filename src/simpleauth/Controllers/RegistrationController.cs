@@ -28,8 +28,8 @@ namespace SimpleAuth.Controllers
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(CoreConstants.EndPoints.Registration)]
-    [Authorize("registration")]
-    public class RegistrationController : Controller
+    [Authorize(Policy = "registration")]
+    public class RegistrationController : ControllerBase
     {
         private readonly IClientRepository _registerActions;
 
