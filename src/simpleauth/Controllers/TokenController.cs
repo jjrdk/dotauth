@@ -22,7 +22,7 @@
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route(UmaConstants.RouteValues.Token)]
-    public class TokenController : Controller
+    public class TokenController : ControllerBase
     {
         private readonly TokenActions _tokenActions;
         private readonly UmaTokenActions _umaTokenActions;

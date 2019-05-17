@@ -1,11 +1,11 @@
 ﻿// Copyright © 2018 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,7 @@
 namespace SimpleAuth.Shared.Events.Openid
 {
     using System;
+    using System.Linq;
 
     /// <summary>
     /// Defines the consent accepted event.
@@ -26,30 +27,44 @@ namespace SimpleAuth.Shared.Events.Openid
         /// Initializes a new instance of the <see cref="ConsentAccepted"/> class.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="processId">The process identifier.</param>
-        /// <param name="payload">The payload.</param>
+        /// <param name="scope">The accepted scope.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public ConsentAccepted(string id, string processId, object payload, DateTime timestamp)
-            : base(id, timestamp)
+        /// <param name="subject">The accepting subject.</param>
+        /// <param name="clientId">The accepted client.</param>
+        public ConsentAccepted(string id, string subject, string clientId, string scope, DateTime timestamp)
+            : this(id, subject, clientId, scope.Split(' ', ','), timestamp)
         {
-            ProcessId = processId;
-            Payload = payload;
         }
 
         /// <summary>
-        /// Gets the process identifier.
+        /// Initializes a new instance of the <see cref="ConsentAccepted"/> class.
         /// </summary>
-        /// <value>
-        /// The process identifier.
-        /// </value>
-        public string ProcessId { get; }
+        /// <param name="id">The identifier.</param>
+        /// <param name="scope">The accepted scope.</param>
+        /// <param name="timestamp">The timestamp.</param>
+        /// <param name="subject">The accepting subject.</param>
+        /// <param name="clientId">The accepted client.</param>
+        public ConsentAccepted(string id, string subject, string clientId, string[] scope, DateTime timestamp)
+            : base(id, timestamp)
+        {
+            Subject = subject;
+            ClientId = clientId;
+            Scope = scope.ToArray();
+        }
 
         /// <summary>
-        /// Gets the payload.
+        /// The accepting subject.
         /// </summary>
-        /// <value>
-        /// The payload.
-        /// </value>
-        public object Payload { get; }
+        public string Subject { get; }
+
+        /// <summary>
+        /// The consented client.
+        /// </summary>
+        public string ClientId { get; }
+
+        /// <summary>
+        /// The consented scope.
+        /// </summary>
+        public string[] Scope { get; }
     }
 }

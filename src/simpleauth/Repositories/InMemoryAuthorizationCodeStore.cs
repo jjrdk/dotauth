@@ -1,10 +1,10 @@
-﻿namespace SimpleAuth
+﻿namespace SimpleAuth.Repositories
 {
     using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Shared.Models;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 
     internal sealed class InMemoryAuthorizationCodeStore : IAuthorizationCodeStore

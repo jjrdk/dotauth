@@ -26,25 +26,15 @@ namespace SimpleAuth.Shared.Events.Openid
         /// Initializes a new instance of the <see cref="ResourceOwnerAuthenticated"/> class.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="aggregateId">The aggregate identifier.</param>
+        /// <param name="resourceOwnerId"></param>
         /// <param name="amr"></param>
         /// <param name="timestamp">The timestamp.</param>
-        /// <param name="resourceOwnerId"></param>
-        public ResourceOwnerAuthenticated(string id, string aggregateId, string resourceOwnerId, string amr, DateTime timestamp)
+        public ResourceOwnerAuthenticated(string id, string resourceOwnerId, string amr, DateTime timestamp)
             : base(id, timestamp)
         {
-            AggregateId = aggregateId;
             ResourceOwnerId = resourceOwnerId;
             Amr = amr;
         }
-
-        /// <summary>
-        /// Gets the aggregate identifier.
-        /// </summary>
-        /// <value>
-        /// The aggregate identifier.
-        /// </value>
-        public string AggregateId { get; }
 
         /// <summary>
         /// Gets the resource owner identifier.

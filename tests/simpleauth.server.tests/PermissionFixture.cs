@@ -16,10 +16,10 @@ namespace SimpleAuth.Server.Tests
 {
     using System;
     using System.Threading.Tasks;
+    using SimpleAuth.Client;
     using SimpleAuth.Server.Tests.MiddleWares;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Uma.Client;
     using Xunit;
 
     public class PermissionFixture

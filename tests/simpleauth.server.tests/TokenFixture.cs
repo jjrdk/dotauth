@@ -8,7 +8,6 @@
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
     using SimpleAuth.Shared.DTOs;
-    using SimpleAuth.Uma.Client;
     using Xunit;
 
     public class TokenFixture : IDisposable

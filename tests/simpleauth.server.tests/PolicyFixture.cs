@@ -17,9 +17,9 @@ namespace SimpleAuth.Server.Tests
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using SimpleAuth.Client;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Uma.Client;
     using Xunit;
 
     public class PolicyFixture

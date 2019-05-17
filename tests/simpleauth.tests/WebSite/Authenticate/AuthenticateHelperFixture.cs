@@ -12,6 +12,8 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Repositories;
+    using SimpleAuth.Shared.Events;
     using SimpleAuth.Shared.Events.Logging;
     using Xunit;
 
@@ -35,7 +37,7 @@
                 _consentRepository.Object,
                 _clientRepositoryStub.Object,
                 new InMemoryJwksRepository(),
-                new DefaultEventPublisher());
+                new NoopEventPublisher());
         }
 
         [Fact]
