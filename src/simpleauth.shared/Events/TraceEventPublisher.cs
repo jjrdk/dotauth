@@ -2,6 +2,7 @@
 {
     using System.Diagnostics;
     using System.Threading.Tasks;
+    using Newtonsoft.Json;
     using SimpleAuth.Shared.Events.Logging;
 
     /// <summary>
@@ -17,13 +18,15 @@
             {
                 return Task.CompletedTask;
             }
+
+            var json = JsonConvert.SerializeObject(evt);
             if (typeof(SimpleAuthError).IsAssignableFrom(typeof(T)))
             {
-                Trace.TraceError(evt.ToString());
+                Trace.TraceError(json);
             }
             else
             {
-                Trace.TraceInformation(evt.ToString());
+                Trace.TraceInformation(json);
             }
             return Task.CompletedTask;
         }
