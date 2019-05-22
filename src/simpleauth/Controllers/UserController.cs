@@ -22,7 +22,7 @@
     /// <summary>
     /// Handles user related requests.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Controllers.BaseController" />
+    /// <seealso cref="BaseController" />
     [Authorize("authenticated")]
     public class UserController : BaseController
     {
