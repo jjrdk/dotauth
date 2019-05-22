@@ -19,15 +19,15 @@
                 return Task.CompletedTask;
             }
 
-            var json = JsonConvert.SerializeObject(evt);
-            if (typeof(SimpleAuthError).IsAssignableFrom(typeof(T)))
-            {
-                Trace.TraceError(json);
-            }
-            else
-            {
-                Trace.TraceInformation(json);
-            }
+            //var json = JsonConvert.SerializeObject(evt);
+            //if (typeof(SimpleAuthError).IsAssignableFrom(typeof(T)))
+            //{
+            //    Trace.TraceError(json);
+            //}
+            //else
+            //{
+            //    Trace.TraceInformation(json);
+            //}
             return Task.CompletedTask;
         }
     }
