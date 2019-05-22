@@ -549,6 +549,8 @@ namespace SimpleAuth.Controllers
                 {
                     return RedirectToAction("Index", "Error", new { code = statusCode.Value, message = error1 });
                 }
+
+                sub = s;
             }
 
             if (resourceOwner != null)
