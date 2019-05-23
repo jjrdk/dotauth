@@ -24,6 +24,7 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.WebSite.User;
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
@@ -185,26 +186,23 @@ namespace SimpleAuth.Controllers
 
             resourceOwner.Claims = claims;
             Claim updatedClaim;
-            if ((updatedClaim = resourceOwner.Claims.FirstOrDefault(
-                    c => c.Type == OpenIdClaimTypes.UpdatedAt))
-                != null)
+            if ((updatedClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == OpenIdClaimTypes.UpdatedAt)) != null)
             {
-                resourceOwner.Claims.Remove(updatedClaim);
+                resourceOwner.Claims = resourceOwner.Claims.Where(c => !c.Equals(updatedClaim)).ToArray();
             }
 
             Claim subjectClaim;
-            if ((subjectClaim =
-                    resourceOwner.Claims.FirstOrDefault(
-                        c => c.Type == OpenIdClaimTypes.Subject))
-                != null)
+            if ((subjectClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == OpenIdClaimTypes.Subject)) != null)
             {
-                resourceOwner.Claims.Remove(subjectClaim);
+                resourceOwner.Claims = resourceOwner.Claims.Where(c => !c.Equals(subjectClaim)).ToArray();
             }
 
-            resourceOwner.Claims = resourceOwner.Claims.Add(
-                new Claim(OpenIdClaimTypes.Subject, request.Subject),
-                new Claim(OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ToString()));
+            var newClaims = resourceOwner.Claims.ToList();
+            newClaims.Insert(0, new Claim(OpenIdClaimTypes.Subject, request.Subject));
+            newClaims.Add(new Claim(OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ToString()));
 
+            resourceOwner.Claims = newClaims.ToArray();
+            
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
             if (!result)
             {
