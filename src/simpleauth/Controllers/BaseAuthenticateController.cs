@@ -692,9 +692,12 @@ namespace SimpleAuth.Controllers
             ClaimsPrincipal authenticatedUser,
             CancellationToken cancellationToken)
         {
-            var openidClaims = authenticatedUser.Claims
+            var externalClaims = authenticatedUser.Claims.ToArray();
+            var userClaims = _runtimeSettings.ClaimsIncludedInUserCreation.Except(externalClaims.Select(x => x.Type).ToOpenIdClaimType())
+                .Select(x => new Claim(x, string.Empty))
+                .Concat(externalClaims)
                 .ToOpenidClaims()
-                .Where(oc => _runtimeSettings.ClaimsIncludedInUserCreation.Contains(oc.Type))
+                .OrderBy(x => x.Type)
                 .ToArray();
 
             var record = new ResourceOwner
@@ -711,7 +714,7 @@ namespace SimpleAuth.Controllers
                     },
                 Password = Id.Create().ToSha256Hash(),
                 IsLocalAccount = false,
-                Claims = openidClaims,
+                Claims = userClaims,
                 TwoFactorAuthentication = null
             };
 
