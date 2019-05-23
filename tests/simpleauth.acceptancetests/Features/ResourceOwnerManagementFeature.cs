@@ -8,6 +8,7 @@
     using System.Text;
     using Newtonsoft.Json;
     using SimpleAuth.Client;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
@@ -265,6 +266,45 @@
                 () =>
                 {
                     Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+                });
+        }
+
+        [Scenario]
+        public void AdministratorsCanUpdateOtherUsersClaims()
+        {
+            HttpResponseMessage response = null;
+
+            "When updating user claims".x(
+                async () =>
+                {
+                    var updateRequest = new UpdateResourceOwnerClaimsRequest
+                    {
+                        Subject = "user",
+                        Claims = new[]
+                        {
+                            new PostClaim {Type = OpenIdClaimTypes.Subject, Value = "user"},
+                            new PostClaim {Type = OpenIdClaimTypes.Name, Value = "John Doe"},
+                            new PostClaim {Type = "acceptance_test", Value = "test"},
+                            new PostClaim {Type = "test", Value = "something"}
+                        }
+                    };
+
+                    var json = JsonConvert.SerializeObject(updateRequest);
+
+                    var request = new HttpRequestMessage
+                    {
+                        Content = new StringContent(json, Encoding.UTF8, "application/json"),
+                        Method = HttpMethod.Put,
+                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                    };
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
+                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                });
+
+            "Then is ok request".x(
+                () =>
+                {
+                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 });
         }
     }
