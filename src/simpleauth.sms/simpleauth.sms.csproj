@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <Description>SimpleAuth SMS Authentication Library</Description>
+    <Title>SimpleAuth SMS Authentication</Title>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>simpleauth.sms</AssemblyName>
     <PackageId>simpleauth.sms</PackageId>
