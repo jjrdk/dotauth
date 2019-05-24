@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <Description>SimpleAuth Data Management Client</Description>
+    <Title>SimpleAuth Management Client</Title>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>simpleauth.manager.client</AssemblyName>
     <PackageId>simpleauth.manager.client</PackageId>
