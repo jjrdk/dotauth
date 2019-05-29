@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <Description>SimpleAuth Marten Stores</Description>
+    <Title>SimpleAuth Marten Stores</Title>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>simpleauth.stores.marten</AssemblyName>
     <PackageId>simpleauth.stores.marten</PackageId>

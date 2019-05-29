@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <Description>SimpleAuth Server</Description>
+    <Title>SimpleAuth Server</Title>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>simpleauth</AssemblyName>
     <PackageId>simpleauth</PackageId>
