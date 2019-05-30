@@ -551,6 +551,7 @@ namespace SimpleAuth.Controllers
                 }
 
                 sub = s;
+                resourceOwner = await _resourceOwnerRepository.Get(s, cancellationToken).ConfigureAwait(false);
             }
 
             if (resourceOwner != null)
