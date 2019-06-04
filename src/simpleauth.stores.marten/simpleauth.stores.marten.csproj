@@ -7,6 +7,7 @@
     <AssemblyName>simpleauth.stores.marten</AssemblyName>
     <PackageId>simpleauth.stores.marten</PackageId>
     <RootNamespace>SimpleAuth.Stores.Marten</RootNamespace>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>

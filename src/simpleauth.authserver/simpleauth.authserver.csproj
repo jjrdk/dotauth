@@ -9,6 +9,7 @@
     <StartupObject>SimpleAuth.AuthServer.Program</StartupObject>
     <RootNamespace>SimpleAuth.AuthServer</RootNamespace>
     <UserSecretsId>simpleauth-authserver</UserSecretsId>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <Import Project="../../shared.proj" />
 

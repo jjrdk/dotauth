@@ -6,6 +6,7 @@
     <AssemblyName>simpleauth.shared</AssemblyName>
     <PackageId>simpleauth.shared</PackageId>
     <RootNamespace>SimpleAuth.Shared</RootNamespace>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>

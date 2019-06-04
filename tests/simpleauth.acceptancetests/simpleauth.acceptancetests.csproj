@@ -6,6 +6,7 @@
     <IsPackable>false</IsPackable>
 
     <RootNamespace>SimpleAuth.AcceptanceTests</RootNamespace>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
