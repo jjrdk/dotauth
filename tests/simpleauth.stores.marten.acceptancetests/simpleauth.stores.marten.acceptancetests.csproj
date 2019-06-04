@@ -5,6 +5,7 @@
     <IsPackable>false</IsPackable>
     <RootNamespace>SimpleAuth.Stores.Marten.AcceptanceTests</RootNamespace>
     <UserSecretsId>simpleauth-marten-acceptancetests</UserSecretsId>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

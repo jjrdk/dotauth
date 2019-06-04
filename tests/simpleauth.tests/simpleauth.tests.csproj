@@ -5,6 +5,7 @@
     <AssemblyName>simpleauth.tests</AssemblyName>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <RootNamespace>SimpleAuth.Tests</RootNamespace>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <Import Project="../../shared.proj" />
 
