@@ -5,9 +5,8 @@
     <AssemblyName>simpleauth.server.tests</AssemblyName>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <RootNamespace>SimpleAuth.Server.Tests</RootNamespace>
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
-  <Import Project="../../shared.proj" />
+  <Import Project="..\..\shared.proj" />
 
   <ItemGroup>
     <None Include="..\testCert.pfx" Link="testCert.pfx">
