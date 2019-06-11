@@ -28,7 +28,7 @@
             {
                 Value = await GetCode(cancellationToken).ConfigureAwait(false),
                 IssueAt = DateTime.UtcNow,
-                ExpiresIn = 300,
+                ExpiresIn = 120,
                 Subject = phoneNumber
             };
 
