@@ -5,9 +5,8 @@
     <IsPackable>false</IsPackable>
     <RootNamespace>SimpleAuth.Stores.Marten.AcceptanceTests</RootNamespace>
     <UserSecretsId>simpleauth-marten-acceptancetests</UserSecretsId>
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
-
+  <Import Project="..\..\shared.proj" />
   <ItemGroup>
     <None Include="..\mycert.pfx" Link="mycert.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

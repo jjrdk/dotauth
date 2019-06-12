@@ -7,17 +7,14 @@
     <AssemblyName>simpleauth.sms</AssemblyName>
     <PackageId>simpleauth.sms</PackageId>
     <RootNamespace>SimpleAuth.Sms</RootNamespace>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <EnableDefaultRazorGenerateItems>true</EnableDefaultRazorGenerateItems>
-    <WarningsAsErrors />
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
   </PropertyGroup>
 
-  <Import Project="../../shared.proj" />
+  <Import Project="..\..\shared.proj" />
   <ItemGroup>
     <None Remove="Areas\**\*.cshtml" />
   </ItemGroup>
