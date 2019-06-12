@@ -269,12 +269,10 @@ namespace SimpleAuth.JwtToken
             if (authorizationParameter != null && !string.IsNullOrWhiteSpace(authorizationParameter.Scope))
             {
                 var scopes = authorizationParameter.Scope.ParseScopes();
-                var claims = await GetClaimsFromRequestedScopes(claimsPrincipal, cancellationToken, scopes)
-                    .ConfigureAwait(false);
-                foreach (var claim in claims.GroupBy(c => c.Type)
-                    .Where(x => x.Key != Shared.OpenIdClaimTypes.Subject))
+                var claims = await GetClaimsFromRequestedScopes(claimsPrincipal, cancellationToken, scopes).ConfigureAwait(false);
+                foreach (var claim in claims.GroupBy(c => c.Type).Where(x => x.Key != Shared.OpenIdClaimTypes.Subject))
                 {
-                    jwsPayload.Add(claim.Key, string.Join(" ", claim.Select(c => c.Value)));
+                    jwsPayload.Add(claim.Key, string.Join(" ", claim.Select(c => c.Value).Distinct()));
                 }
             }
 
