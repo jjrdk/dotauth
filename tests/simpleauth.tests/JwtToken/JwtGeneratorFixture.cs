@@ -34,6 +34,9 @@ namespace SimpleAuth.Tests.JwtToken
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+
+    using Amazon.Runtime;
+
     using SimpleAuth.Repositories;
     using Xunit;
 
@@ -188,6 +191,72 @@ namespace SimpleAuth.Tests.JwtToken
             Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
             Assert.Single(result.Aud);
             Assert.Equal(clientId, result.Azp);
+        }
+
+        [Fact]
+        public async Task When_Requesting_IdentityToken_JwsPayload_And_Multiple_Scopes_With_Same_Claim_Defined_Then_Role_Should_Be_Returned_Without_Duplicates()
+        {
+            const string issuerName = "IssuerName";
+            const string clientId = "clientId";
+            const string subject = "john.doe@email.com";
+            const string role = "administrator";
+            const string scope = "role";
+            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject), new Claim(OpenIdClaimTypes.Role, role) };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
+            this._scopeRepositoryStub.Setup(sr => sr.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
+                .ReturnsAsync(
+                    new[]
+                        {
+                            new Scope { Type = "role", Claims = new[] { OpenIdClaimTypes.Role } },
+                            new Scope { Type = "manager", Claims = new[] { OpenIdClaimTypes.Role } }
+                        }.ToArray());
+
+            var result = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
+                             claimsPrincipal,
+                             authorizationParameter,
+                             issuerName,
+                             CancellationToken.None).ConfigureAwait(false);
+
+            Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Role);
+            Assert.Equal("administrator", result.Claims.Single(c => c.Type.Equals(OpenIdClaimTypes.Role)).Value);
+        }
+
+        [Fact]
+        public async Task When_Requesting_IdentityToken_JwsPayload_And_Multiple_Scopes_With_Multiple_Unique_Claims_Defined_Then_Role_Should_Be_Returned_With_All_Unique_Claims()
+        {
+            const string issuerName = "IssuerName";
+            const string clientId = "clientId";
+            const string subject = "john.doe@email.com";
+            const string role = "administrator";
+            const string anotherRole = "superadministrator";
+            const string scope = "role";
+            var claims = new List<Claim>
+                             {
+                                 new Claim(OpenIdClaimTypes.Subject, subject),
+                                 new Claim(OpenIdClaimTypes.Role, role),
+                                 new Claim(OpenIdClaimTypes.Role, anotherRole)
+                             };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
+            this._scopeRepositoryStub.Setup(sr => sr.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
+                .ReturnsAsync(
+                    new[]
+                        {
+                            new Scope { Type = "role", Claims = new[] { OpenIdClaimTypes.Role } },
+                            new Scope { Type = "manager", Claims = new[] { OpenIdClaimTypes.Role } }
+                        }.ToArray());
+
+            var result = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
+                             claimsPrincipal,
+                             authorizationParameter,
+                             issuerName,
+                             CancellationToken.None).ConfigureAwait(false);
+
+            Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Role);
+            Assert.Equal("administrator superadministrator", result.Claims.Single(c => c.Type.Equals(OpenIdClaimTypes.Role)).Value);
         }
 
         [Fact]
