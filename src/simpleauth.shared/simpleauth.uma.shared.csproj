@@ -7,6 +7,6 @@
     <PackageId>simpleauth.uma.shared</PackageId>
     <RootNamespace>SimpleAuth.Uma.Shared</RootNamespace>
   </PropertyGroup>
-  <Import Project="../../shared.proj"/>
+  <Import Project="..\..\shared.proj" />
 
 </Project>
