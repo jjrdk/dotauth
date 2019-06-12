@@ -35,8 +35,6 @@ namespace SimpleAuth.Tests.JwtToken
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Amazon.Runtime;
-
     using SimpleAuth.Repositories;
     using Xunit;
 
