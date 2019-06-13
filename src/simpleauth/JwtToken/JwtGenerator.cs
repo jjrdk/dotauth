@@ -269,10 +269,10 @@ namespace SimpleAuth.JwtToken
             if (authorizationParameter != null && !string.IsNullOrWhiteSpace(authorizationParameter.Scope))
             {
                 var scopes = authorizationParameter.Scope.ParseScopes();
-                var claims = await GetClaimsFromRequestedScopes(claimsPrincipal, cancellationToken, scopes).ConfigureAwait(false);
+                var claims = await this.GetClaimsFromRequestedScopes(claimsPrincipal, cancellationToken, scopes).ConfigureAwait(false);
                 foreach (var claim in claims.GroupBy(c => c.Type).Where(x => x.Key != Shared.OpenIdClaimTypes.Subject))
                 {
-                    jwsPayload.Add(claim.Key, string.Join(" ", claim.Select(c => c.Value).Distinct()));
+                    jwsPayload.Add(claim.Key, string.Join(" ", claim.Select(c => c.Value)));
                 }
             }
 
@@ -588,7 +588,24 @@ namespace SimpleAuth.JwtToken
             params string[] scopes)
         {
             var returnedScopes = await _scopeRepository.SearchByNames(cancellationToken, scopes).ConfigureAwait(false);
-            return returnedScopes.SelectMany(x => GetClaims(claimsPrincipal, x.Claims.ToArray())).ToList();
+            var claims = returnedScopes.SelectMany(x => GetClaims(claimsPrincipal, x.Claims.ToArray())).ToList();
+            var claimsFromRequestedScopes = GetUniqueClaimsFromRequestedScopes(claims);
+
+            return claimsFromRequestedScopes;
+        }
+
+        private static List<Claim> GetUniqueClaimsFromRequestedScopes(List<Claim> claims)
+        {
+            var uniqueClaims = new List<Claim>();
+            foreach (var claim in claims)
+            {
+                if (!uniqueClaims.Any(cfr => cfr.Type.Equals(claim.Type) && cfr.Value.Equals(claim.Value)))
+                {
+                    uniqueClaims.Add(claim);
+                }
+            }
+
+            return uniqueClaims;
         }
 
         private IList<Claim> GetClaims(ClaimsPrincipal claimsPrincipal, params string[] claims)
