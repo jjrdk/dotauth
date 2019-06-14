@@ -31,6 +31,8 @@ namespace SimpleAuth.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Shared.DTOs;
+    using Shared.Events.Logging;
     using SimpleAuth.Api.Token.Actions;
     using SimpleAuth.Parameters;
     using SimpleAuth.Shared.Events.OAuth;
@@ -151,6 +153,52 @@ namespace SimpleAuth.Controllers
         }
 
         /// <summary>
+        /// Deletes the specified identifier.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> DeleteMe(CancellationToken cancellationToken)
+        {
+            var sub = User?.Claims?.GetSubject();
+
+            if (sub == null)
+            {
+                return BadRequest("Invalid user");
+            }
+
+            var value = Request.Headers[HttpRequestHeader.Authorization.ToString()].FirstOrDefault();
+
+            if (value == null)
+            {
+                return BadRequest();
+            }
+
+            var accessToken = value.Split(' ').Last();
+
+            var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken);
+
+            if (await _resourceOwnerRepository.Delete(sub, cancellationToken).ConfigureAwait(false)
+                && await _tokenStore.RemoveAccessToken(accessToken, cancellationToken).ConfigureAwait(false))
+            {
+                await _eventPublisher.Publish(new ResourceOwnerDeleted(Id.Create(),
+                        resourceOwner.Claims.Select(x => new PostClaim {Type = x.Type, Value = x.Value}).ToArray(),
+                        DateTime.UtcNow))
+                    .ConfigureAwait(false);
+                return Ok();
+            }
+
+            return BadRequest(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.UnhandledExceptionCode,
+                    Detail = ErrorDescriptions.TheResourceOwnerCannotBeRemoved,
+                    Status = HttpStatusCode.BadRequest
+                });
+        }
+
+        /// <summary>
         /// Updates the claims.
         /// </summary>
         /// <param name="request">The request.</param>
@@ -193,7 +241,7 @@ namespace SimpleAuth.Controllers
                     new Claim(OpenIdClaimTypes.Subject, request.Subject),
                     new Claim(OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ToString())
                 });
-            
+
             resourceOwner.Claims = resourceOwnerClaims.ToArray();
 
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
@@ -220,7 +268,6 @@ namespace SimpleAuth.Controllers
             if (request == null)
             {
                 return BadRequest("No parameter in body request");
-
             }
 
             var sub = User?.Claims?.GetSubject();

@@ -270,6 +270,25 @@
         }
 
         [Scenario]
+        public void CanDeleteOwnAccount()
+        {
+            HttpResponseMessage response = null;
+
+            "When deleting own account".x(async () =>
+            {
+                var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Delete,
+                    RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners")
+                };
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
+                response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+            });
+
+            "Then response is OK".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
+        }
+
+        [Scenario]
         public void AdministratorsCanUpdateOtherUsersClaims()
         {
             HttpResponseMessage response = null;

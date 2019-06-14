@@ -1,23 +1,25 @@
 ﻿namespace SimpleAuth.Shared.Events.Logging
 {
     using System;
+    using DTOs;
 
     /// <summary>
     /// Defines the resource owner added event.
     /// </summary>
-    public class ResourceOwnerAdded : Event
+    /// <seealso cref="InfoMessage" />
+    public class ResourceOwnerDeleted : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceOwnerAdded"/> class.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="subject">The resource owner subject.</param>
+        /// <param name="claims">The claims of the deleted user.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public ResourceOwnerAdded(string id, string subject, DateTime timestamp) : base(id, timestamp)
+        public ResourceOwnerDeleted(string id, PostClaim[] claims, DateTime timestamp) : base(id, timestamp)
         {
-            Subject = subject;
+            Claims = claims;
         }
 
-        public string Subject { get; }
+        public PostClaim[] Claims { get; }
     }
 }
