@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>SimpleAuth Shared Library</Description>
+    <Title>SimpleAuth Shared</Title>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>simpleauth.shared</AssemblyName>
     <PackageId>simpleauth.shared</PackageId>

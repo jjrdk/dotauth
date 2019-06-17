@@ -24,6 +24,7 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.WebSite.User;
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
@@ -183,25 +184,20 @@ namespace SimpleAuth.Controllers
                     string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Subject));
             }
 
-            resourceOwner.UpdateDateTime = DateTime.UtcNow;
-            var claims = request.Claims.Select(claim => new Claim(claim.Type, claim.Value)).ToArray();
-
-            resourceOwner.Claims = resourceOwner.Claims.Where(c => claims.All(x => x.Type != c.Type)).Concat(claims).ToArray();
-            Claim updatedClaim;
-            if ((updatedClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == OpenIdClaimTypes.UpdatedAt)) != null)
-            {
-                resourceOwner.Claims = resourceOwner.Claims.Remove(updatedClaim);
-            }
-
-            Claim subjectClaim;
-            if ((subjectClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == OpenIdClaimTypes.Subject)) != null)
-            {
-                resourceOwner.Claims = resourceOwner.Claims.Remove(subjectClaim);
-            }
-
-            resourceOwner.Claims = resourceOwner.Claims.Add(
-                new Claim(OpenIdClaimTypes.Subject, request.Subject),
-                new Claim(OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ConvertToUnixTimestamp().ToString()));
+            //resourceOwner.UpdateDateTime = DateTime.UtcNow;
+            var claims = request.Claims.Select(claim => new Claim(claim.Type, claim.Value)).ToList();
+            var resourceOwnerClaims = resourceOwner.Claims
+                .Where(c => !claims.Exists(x => x.Type == c.Type))
+                .Concat(claims)
+                .Where(c => c.Type != OpenIdClaimTypes.Subject)
+                .Where(c => c.Type != OpenIdClaimTypes.UpdatedAt)
+                .Concat(new[]
+                {
+                    new Claim(OpenIdClaimTypes.Subject, request.Subject),
+                    new Claim(OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ToString())
+                });
+            
+            resourceOwner.Claims = resourceOwnerClaims.ToArray();
 
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
             if (!result)

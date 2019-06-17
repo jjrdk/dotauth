@@ -4,6 +4,8 @@
     <Authors>Thierry Habert, Jacob Reimers</Authors>
     <Company>Reimers.dk</Company>
     <Product>SimpleAuth</Product>
+    <PackageDescription>SimpleAuth provides support for OpenID, OAuth and UMA support for ASP.NET Core</PackageDescription>
+    <PackageTags>OpenID OAuth UMA Authentication Authorization Identity</PackageTags>
     <Copyright>Thierry Habart, Reimers.dk © 2018-2019</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>

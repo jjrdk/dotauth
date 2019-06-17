@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Extensions
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
@@ -16,14 +17,26 @@
             { ClaimTypes.GivenName, OpenIdClaimTypes.GivenName },
             { ClaimTypes.Surname, OpenIdClaimTypes.FamilyName },
             { ClaimTypes.Gender, OpenIdClaimTypes.Gender },
-            { ClaimTypes.Locality, OpenIdClaimTypes.Locale }
+            { ClaimTypes.Locality, OpenIdClaimTypes.Locale },
+            { ClaimTypes.Role, OpenIdClaimTypes.Role },
+            { ClaimTypes.HomePhone, OpenIdClaimTypes.PhoneNumber },
+            { ClaimTypes.Webpage, OpenIdClaimTypes.WebSite },
         };
+
+        public static IEnumerable<string> ToOpenIdClaimType(this IEnumerable<string> claimTypes)
+        {
+            return claimTypes?.SelectMany(claim =>
+                MappingToOpenidClaims.ContainsKey(claim)
+                    ? new[] {MappingToOpenidClaims[claim], claim}
+                    : new[] {claim});
+        }
 
         public static Claim[] ToOpenidClaims(this IEnumerable<Claim> claims)
         {
-            return claims?.Select(claim => MappingToOpenidClaims.ContainsKey(claim.Type)
-                    ? new Claim(MappingToOpenidClaims[claim.Type], claim.Value)
-                    : claim)
+            return claims?.Select(claim =>
+                    MappingToOpenidClaims.ContainsKey(claim.Type)
+                        ? new Claim(MappingToOpenidClaims[claim.Type], claim.Value)
+                        : claim)
                 .ToArray();
         }
 

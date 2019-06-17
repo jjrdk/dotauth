@@ -151,7 +151,6 @@ namespace SimpleAuth.AuthServer
                         }
                     })
                 .UseSimpleAuthExceptionHandler()
-                .UseSimpleAuthExceptionHandler()
                 .UseResponseCompression()
                 .UseSimpleAuthMvc();
         }
