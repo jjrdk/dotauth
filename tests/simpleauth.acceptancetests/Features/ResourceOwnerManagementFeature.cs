@@ -176,6 +176,50 @@
         }
 
         [Scenario]
+        public void CanDeleteOwnClaims()
+        {
+            HttpResponseMessage response = null;
+
+            "When deleting user claims".x(
+                async () =>
+                {
+                    var updateRequest = new UpdateResourceOwnerClaimsRequest
+                    {
+                        Subject = "administrator",
+                        Claims = new[] { new PostClaim { Type = "acceptance_test" } }
+                    };
+
+                    var json = JsonConvert.SerializeObject(updateRequest);
+
+                    var request = new HttpRequestMessage
+                    {
+                        Content = new StringContent(json, Encoding.UTF8, "application/json"),
+                        Method = HttpMethod.Delete,
+                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                    };
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
+                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                });
+
+            "Then is ok request".x(
+                () =>
+                {
+                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                });
+
+            "Then resource owner no longer has claim".x(
+                async () =>
+                {
+                    var result = await _tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager" })).ConfigureAwait(false);
+                    Assert.NotNull(result.Content);
+
+                    var handler = new JwtSecurityTokenHandler();
+                    var token = (JwtSecurityToken)handler.ReadToken(result.Content.AccessToken);
+                    Assert.DoesNotContain(token.Claims, c => c.Type == "acceptance_test");
+                });
+        }
+
+        [Scenario]
         public void CanUpdateOwnClaimsTwoTimes()
         {
             HttpResponseMessage response = null;

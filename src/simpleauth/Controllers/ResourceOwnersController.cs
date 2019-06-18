@@ -283,7 +283,46 @@ namespace SimpleAuth.Controllers
             resourceOwner.Claims = resourceOwner.Claims.Where(x => newTypes.All(n => n != x.Type))
                 .Concat(request.Claims.Select(x => new Claim(x.Type, x.Value)))
                 .ToArray();
+            return await UpdateMyResourceOwner(cancellationToken, resourceOwner);
+        }
 
+        /// <summary>
+        /// Updates my claims.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        [HttpDelete("claims")]
+        [Authorize]
+        public async Task<IActionResult> DeleteMyClaims(
+            [FromBody] UpdateResourceOwnerClaimsRequest request,
+            CancellationToken cancellationToken)
+        {
+            if (request == null)
+            {
+                return BadRequest("No parameter in body request");
+
+            }
+
+            var sub = User?.Claims?.GetSubject();
+
+            if (sub == null || sub != request.Subject)
+            {
+                return BadRequest("Invalid user");
+            }
+
+            var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);
+
+            var toDelete = request.Claims.Where(c => User.HasClaim(x => x.Type == c.Type)).Select(x => x.Type).ToArray();
+            resourceOwner.Claims = resourceOwner.Claims
+                .Where(x => !toDelete.Contains(x.Type))
+                .ToArray();
+
+            return await UpdateMyResourceOwner(cancellationToken, resourceOwner);
+        }
+
+        private async Task<IActionResult> UpdateMyResourceOwner(CancellationToken cancellationToken, ResourceOwner resourceOwner)
+        {
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
             var value = Request.Headers[HttpRequestHeader.Authorization.ToString()].FirstOrDefault();
 
@@ -328,7 +367,7 @@ namespace SimpleAuth.Controllers
                     Scope = refreshedToken.Scope.Split(' '),
                     TokenType = refreshedToken.TokenType
                 })
-                : (IActionResult)BadRequest();
+                : (IActionResult) BadRequest();
         }
 
         /// <summary>
