@@ -113,7 +113,7 @@
 
             "and has new token".x(async () =>
             {
-                var updatedToken = await response.Content.ReadAsStringAsync();
+                var updatedToken = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 Assert.NotNull(updatedToken);
             });
 
@@ -249,7 +249,7 @@
             "Then is ok response".x(
                 async () =>
                 {
-                    var json = await response.Content.ReadAsStringAsync();
+                    var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     _administratorToken = JsonConvert.DeserializeObject<GrantedTokenResponse>(json);
 
                     Assert.Equal(HttpStatusCode.OK, response.StatusCode);

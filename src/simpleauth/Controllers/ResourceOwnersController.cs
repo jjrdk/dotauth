@@ -177,7 +177,7 @@ namespace SimpleAuth.Controllers
 
             var accessToken = value.Split(' ').Last();
 
-            var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken);
+            var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);
 
             if (await _resourceOwnerRepository.Delete(sub, cancellationToken).ConfigureAwait(false)
                 && await _tokenStore.RemoveAccessToken(accessToken, cancellationToken).ConfigureAwait(false))
@@ -283,7 +283,7 @@ namespace SimpleAuth.Controllers
             resourceOwner.Claims = resourceOwner.Claims.Where(x => newTypes.All(n => n != x.Type))
                 .Concat(request.Claims.Select(x => new Claim(x.Type, x.Value)))
                 .ToArray();
-            return await UpdateMyResourceOwner(cancellationToken, resourceOwner);
+            return await UpdateMyResourceOwner(cancellationToken, resourceOwner).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -318,7 +318,7 @@ namespace SimpleAuth.Controllers
                 .Where(x => !toDelete.Contains(x.Type))
                 .ToArray();
 
-            return await UpdateMyResourceOwner(cancellationToken, resourceOwner);
+            return await UpdateMyResourceOwner(cancellationToken, resourceOwner).ConfigureAwait(false);
         }
 
         private async Task<IActionResult> UpdateMyResourceOwner(CancellationToken cancellationToken, ResourceOwner resourceOwner)
