@@ -6,7 +6,10 @@
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
+    using System.Threading;
     using Newtonsoft.Json;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth.Client;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
@@ -216,6 +219,52 @@
                     var handler = new JwtSecurityTokenHandler();
                     var token = (JwtSecurityToken)handler.ReadToken(result.Content.AccessToken);
                     Assert.DoesNotContain(token.Claims, c => c.Type == "acceptance_test");
+                });
+        }
+
+        [Scenario]
+        public void CannotDeleteClaimsNotPartOfScope()
+        {
+            HttpResponseMessage response = null;
+            ResourceOwner resourceOwner = null;
+
+            "When deleting user claims not in scope".x(
+                async () =>
+                {
+                    var updateRequest = new UpdateResourceOwnerClaimsRequest
+                    {
+                        Subject = "administrator",
+                        Claims = new[] { new PostClaim { Type = "some_other_claim" } }
+                    };
+
+                    var json = JsonConvert.SerializeObject(updateRequest);
+
+                    var request = new HttpRequestMessage
+                    {
+                        Content = new StringContent(json, Encoding.UTF8, "application/json"),
+                        Method = HttpMethod.Delete,
+                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                    };
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
+                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                });
+
+            "Then is ok request".x(
+                () =>
+                {
+                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                });
+
+            "And when getting resource owner from store".x(async () =>
+            {
+                var store = (IResourceOwnerStore)_fixture.Server.Host.Services.GetService(typeof(IResourceOwnerStore));
+                resourceOwner = await store.Get("administrator", CancellationToken.None).ConfigureAwait(false);
+            });
+
+            "Then resource owner still has claim".x(
+                () =>
+                {
+                    Assert.Contains(resourceOwner.Claims, c => c.Type == "some_other_claim");
                 });
         }
 
