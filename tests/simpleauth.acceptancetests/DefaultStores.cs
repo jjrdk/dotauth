@@ -73,6 +73,7 @@ namespace SimpleAuth.AcceptanceTests
                         new Claim(OpenIdClaimTypes.Subject, "administrator"),
                         new Claim(OpenIdClaimTypes.Role, "administrator"),
                         new Claim("acceptance_test", "test"),
+                        new Claim("some_other_claim", "test"),
                     },
                     Password = "password".ToSha256Hash(),
                     IsLocalAccount = true
