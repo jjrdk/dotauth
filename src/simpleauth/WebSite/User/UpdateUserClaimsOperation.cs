@@ -59,7 +59,7 @@ namespace SimpleAuth.WebSite.User
             }
 
             resourceOwner.Claims = resourceOwner.Claims.Add(
-                     new Claim(OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ToString()));
+                     new Claim(OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ConvertToUnixTimestamp().ToString()));
             return await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
         }
     }
