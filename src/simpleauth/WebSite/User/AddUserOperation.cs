@@ -20,6 +20,7 @@ namespace SimpleAuth.WebSite.User
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Shared.DTOs;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.Shared.Models;
@@ -116,6 +117,12 @@ namespace SimpleAuth.WebSite.User
                     new ResourceOwnerAdded(
                         Id.Create(),
                         resourceOwner.Subject,
+                        resourceOwner.Claims.Select(claim => new PostClaim
+                            {
+                                Type = claim.Type,
+                                Value = claim.Value
+                            })
+                            .ToArray(),
                         DateTime.UtcNow))
                 .ConfigureAwait(false);
             return (true, resourceOwner.Subject);
