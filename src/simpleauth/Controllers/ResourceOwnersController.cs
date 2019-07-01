@@ -299,26 +299,15 @@ namespace SimpleAuth.Controllers
         [HttpDelete("claims")]
         [Authorize]
         public async Task<IActionResult> DeleteMyClaims(
-            [FromBody] UpdateResourceOwnerClaimsRequest request,
+            [FromQuery]string[] type,
             CancellationToken cancellationToken)
         {
-            if (request == null)
-            {
-                return BadRequest("No parameter in body request");
-
-            }
-
             var sub = User?.Claims?.GetSubject();
-
-            if (sub == null || sub != request.Subject)
-            {
-                return BadRequest("Invalid user");
-            }
 
             var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);
             var previousClaims = resourceOwner.Claims
                 .Select(claim => new PostClaim { Type = claim.Type, Value = claim.Value }).ToArray();
-            var toDelete = request.Claims.Where(c => User.HasClaim(x => x.Type == c.Type)).Select(x => x.Type).ToArray();
+            var toDelete = type.Where(t => User.HasClaim(x => x.Type == t)).ToArray();
             resourceOwner.Claims = resourceOwner.Claims
                 .Where(x => !toDelete.Contains(x.Type))
                 .ToArray();
