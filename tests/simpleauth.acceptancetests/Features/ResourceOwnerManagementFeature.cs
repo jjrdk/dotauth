@@ -186,19 +186,10 @@
             "When deleting user claims".x(
                 async () =>
                 {
-                    var updateRequest = new UpdateResourceOwnerClaimsRequest
-                    {
-                        Subject = "administrator",
-                        Claims = new[] { new PostClaim { Type = "acceptance_test" } }
-                    };
-
-                    var json = JsonConvert.SerializeObject(updateRequest);
-
                     var request = new HttpRequestMessage
                     {
-                        Content = new StringContent(json, Encoding.UTF8, "application/json"),
                         Method = HttpMethod.Delete,
-                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims?type=acceptance_test")
                     };
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
                     response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
@@ -231,19 +222,10 @@
             "When deleting user claims not in scope".x(
                 async () =>
                 {
-                    var updateRequest = new UpdateResourceOwnerClaimsRequest
-                    {
-                        Subject = "administrator",
-                        Claims = new[] { new PostClaim { Type = "some_other_claim" } }
-                    };
-
-                    var json = JsonConvert.SerializeObject(updateRequest);
-
                     var request = new HttpRequestMessage
                     {
-                        Content = new StringContent(json, Encoding.UTF8, "application/json"),
                         Method = HttpMethod.Delete,
-                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims?type=some_other_claim")
                     };
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
                     response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
