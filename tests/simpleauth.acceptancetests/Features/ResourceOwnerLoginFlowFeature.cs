@@ -81,6 +81,58 @@
                 });
         }
 
+        [Scenario(DisplayName = "UserInfo after successful authorization")]
+        public void UserinfoAfterSuccessfulResourceOwnerAuthentication()
+        {
+            TokenClient client = null;
+            GrantedTokenResponse result = null;
+
+            "and a properly configured token client".x(
+                async () => client = await TokenClient.Create(
+                        TokenCredentials.FromBasicAuthentication("client", "client"),
+                        _fixture.Client,
+                        new Uri(WellKnownOpenidConfiguration))
+                    .ConfigureAwait(false));
+
+            "when requesting token".x(
+                async () =>
+                {
+                    var response = await client
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
+                        .ConfigureAwait(false);
+                    result = response.Content;
+                });
+
+            "then has valid access token".x(
+                () =>
+                {
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    var validationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKeys = _jwks.GetSigningKeys(),
+                        ValidAudience = "client",
+                        ValidIssuer = "https://localhost"
+                    };
+                    tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
+
+                    Assert.NotEmpty(((JwtSecurityToken)token).Claims);
+                });
+
+            "and can get user info".x(
+                async () =>
+                {
+                    var userinfoRequest = new HttpRequestMessage
+                    {
+                        Method = HttpMethod.Get,
+                        RequestUri = new Uri(BaseUrl + "/userinfo")
+                    };
+                    userinfoRequest.Headers.Authorization = new AuthenticationHeaderValue(result.TokenType, result.AccessToken);
+                    var userinfo = await _fixture.Client.SendAsync(userinfoRequest).ConfigureAwait(false);
+
+                    Assert.True(userinfo.IsSuccessStatusCode);
+                });
+        }
+
         [Scenario(DisplayName = "Successful claims update")]
         public void SuccessfulResourceOwnerClaimsUpdate()
         {
@@ -125,7 +177,7 @@
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
                         Subject = "user",
-                        Claims = new[] {new PostClaim {Type = "test", Value = "something"}}
+                        Claims = new[] { new PostClaim { Type = "test", Value = "something" } }
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);
