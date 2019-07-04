@@ -66,9 +66,15 @@
         }
 
         /// <inheritdoc />
-        public Task<GrantedToken> GetAccessToken(string accessToken, CancellationToken cancellationToken)
+        public async Task<GrantedToken> GetAccessToken(string accessToken, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            using (var session = _sessionFactory())
+            {
+                var grantedToken = await session.Query<GrantedToken>()
+                                       .FirstOrDefaultAsync(x => x.AccessToken == accessToken)
+                                       .ConfigureAwait(false);
+                return grantedToken;
+            }
         }
 
         /// <inheritdoc />
