@@ -35,6 +35,7 @@
         {
             using (var session = _sessionFactory())
             {
+                parameter.StartIndex++;
                 var results = await session.Query<Policy>()
                     .Where(x => x.Id.IsOneOf(parameter.Ids) || x.ResourceSetIds.Any(r => r.IsOneOf(parameter.ResourceIds)))
                     .ToPagedListAsync(parameter.StartIndex, parameter.TotalResults, cancellationToken)
