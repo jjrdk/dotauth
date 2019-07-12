@@ -65,6 +65,7 @@
         {
             using (var session = _sessionFactory())
             {
+                parameter.StartIndex++;
                 var take = parameter.NbResults == 0 ? int.MaxValue : parameter.NbResults;
                 var results = await session.Query<Client>()
                     .Where(x => x.ClientId.IsOneOf(parameter.ClientIds))
