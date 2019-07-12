@@ -10,6 +10,8 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using global::Marten.Pagination;
+
     /// <summary>
     /// Defines the Marten based resource owner repository.
     /// </summary>
@@ -179,14 +181,12 @@
                 var subjects = parameter.Subjects;
                 var results = await session.Query<ResourceOwner>()
                     .Where(r => r.Claims.Any(x => x.Type == OpenIdClaimTypes.Subject && x.Value.IsOneOf(subjects)))
-                    .Skip(parameter.StartIndex)
-                    .Take(parameter.NbResults)
-                    .ToListAsync(token: cancellationToken)
+                    .ToPagedListAsync(parameter.StartIndex, parameter.NbResults, cancellationToken)
                     .ConfigureAwait(false);
 
                 return new GenericResult<ResourceOwner>
                 {
-                    Content = results.ToArray(), TotalResults = results.Count, StartIndex = parameter.StartIndex
+                    Content = results.ToArray(), TotalResults = results.TotalItemCount, StartIndex = parameter.StartIndex
                 };
             }
         }
