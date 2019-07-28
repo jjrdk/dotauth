@@ -33,6 +33,7 @@
         {
             using (var session = _sessionFactory())
             {
+                parameter.StartIndex++;
                 var results = await session.Query<Scope>()
                     .Where(x => x.Name.IsOneOf(parameter.ScopeNames) && x.Type.IsOneOf(parameter.ScopeTypes))
                     .ToPagedListAsync(parameter.StartIndex, parameter.NbResults, cancellationToken)

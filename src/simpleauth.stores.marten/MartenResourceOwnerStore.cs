@@ -178,6 +178,7 @@
         {
             using (var session = _sessionFactory())
             {
+                parameter.StartIndex++;
                 var subjects = parameter.Subjects;
                 var results = await session.Query<ResourceOwner>()
                     .Where(r => r.Claims.Any(x => x.Type == OpenIdClaimTypes.Subject && x.Value.IsOneOf(subjects)))

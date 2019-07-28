@@ -35,6 +35,7 @@
         {
             using (var session = _sessionFactory())
             {
+                parameter.StartIndex++;
                 parameter.Ids = parameter.Ids ?? Array.Empty<string>();
                 parameter.Names = parameter.Names ?? Array.Empty<string>();
                 var results = await session.Query<ResourceSet>()
