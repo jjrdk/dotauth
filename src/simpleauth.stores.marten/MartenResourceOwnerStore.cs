@@ -154,7 +154,7 @@
                 }
 
                 user.Password = password.ToSha256Hash();
-                session.Update(subject);
+                session.Update(user);
                 await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
                 return true;
             }
