@@ -30,7 +30,7 @@
                     await connection.OpenAsync().ConfigureAwait(false);
                     var schema = $"test_{DateTime.UtcNow.Ticks.ToString()}";
                     var cmd = connection.CreateCommand();
-                    cmd.CommandText = $"CREATE SCHEMA {schema} AUTHORIZATION ithemba; ";
+                    cmd.CommandText = $"CREATE SCHEMA {schema}; ";
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                     builder.SearchPath = schema;
 
