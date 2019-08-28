@@ -12,4 +12,7 @@ jobs:
     - name: Dotnet version
       run: dotnet --version
     - name: Run build script
-      run: ./build.sh
+      run: |
+        export PATH="$PATH:~/.dotnet/tools"
+        dotnet tool install -g Cake.Tool
+        dotnet cake build.cake
