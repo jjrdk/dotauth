@@ -5,10 +5,12 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     
     steps:
     - uses: actions/checkout@v1
+    - name: Dotnet version
+      run: dotnet --version
     - name: Run build script
-      run: build.sh
+      run: ./build.sh
       if: github.event == 'push'
