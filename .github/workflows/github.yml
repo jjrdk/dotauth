@@ -13,4 +13,3 @@ jobs:
       run: dotnet --version
     - name: Run build script
       run: ./build.sh
-      if: github.event == 'push'
