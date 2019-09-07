@@ -29,7 +29,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.Extensions" Version="2.2.0" />
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.3.101.12" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.3.101.60" />
     <!--<PackageReference Include="microsoft.extensions.fileproviders.embedded" Version="2.2.0" />-->
   </ItemGroup>
 </Project>
