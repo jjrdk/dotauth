@@ -22,8 +22,14 @@
             Claims = claims;
         }
 
+        /// <summary>
+        /// Gets the subject of the removed resource owner.
+        /// </summary>
         public string Subject { get; }
 
+        /// <summary>
+        /// Gets the claims for the removed resource owner.
+        /// </summary>
         public PostClaim[] Claims { get; }
     }
 }

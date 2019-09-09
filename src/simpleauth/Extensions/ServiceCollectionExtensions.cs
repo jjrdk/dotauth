@@ -199,7 +199,7 @@ namespace SimpleAuth.Extensions
             var options = new SimpleAuthOptions();
             configuration(options);
 
-            return AddSimpleAuth(services, options);
+            return AddSimpleAuth(services, options, requestThrottle);
         }
 
         /// <summary>
@@ -207,6 +207,7 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="options">The options.</param>
+        /// <param name="requestThrottle">The rate limiter.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">options</exception>
         public static IServiceCollection AddSimpleAuth(this IServiceCollection services, SimpleAuthOptions options, IRequestThrottle requestThrottle = null)
