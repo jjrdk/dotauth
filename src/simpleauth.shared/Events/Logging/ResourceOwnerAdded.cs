@@ -21,8 +21,14 @@
             Claims = claims;
         }
 
+        /// <summary>
+        /// Gets the subject of the added resource owner.
+        /// </summary>
         public string Subject { get; }
 
+        /// <summary>
+        /// Gets the claims for the added resource owner.
+        /// </summary>
         public PostClaim[] Claims { get; }
     }
 }

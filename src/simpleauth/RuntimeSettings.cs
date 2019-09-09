@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth
 {
     using System;
-    using System.Text.RegularExpressions;
     using SimpleAuth.Shared.Models;
 
     /// <summary>
@@ -14,7 +13,6 @@
         /// </summary>
         /// <param name="onResourceOwnerCreated"></param>
         /// <param name="authorizationCodeValidityPeriod">The authorization code validity period.</param>
-        /// <param name="userClaimsToIncludeInAuthToken">The user claims to include in authentication token.</param>
         /// <param name="claimsIncludedInUserCreation">The claims included in user creation.</param>
         /// <param name="rptLifeTime">The RPT life time.</param>
         /// <param name="ticketLifeTime">The ticket life time.</param>

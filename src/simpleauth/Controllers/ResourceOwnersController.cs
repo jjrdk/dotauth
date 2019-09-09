@@ -293,7 +293,7 @@ namespace SimpleAuth.Controllers
         /// <summary>
         /// Updates my claims.
         /// </summary>
-        /// <param name="request">The request.</param>
+        /// <param name="type">The claims types to delete.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpDelete("claims")]

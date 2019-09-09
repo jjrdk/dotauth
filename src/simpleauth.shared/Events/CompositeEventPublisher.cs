@@ -18,6 +18,7 @@
             _publishers = publishers.ToArray();
         }
 
+        /// <inheritdoc />
         public Task Publish<T>(T evt)
             where T : Event
         {
