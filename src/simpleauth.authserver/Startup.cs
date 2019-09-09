@@ -112,22 +112,14 @@ namespace SimpleAuth.AuthServer
                     });
             services.AddAuthorization(opts => { opts.AddAuthPolicies(CookieNames.CookieName); })
                 .AddMvc(options => { })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddApplicationPart(_assembly);
-            services.AddSimpleAuth(_options)
-            .AddHttpsRedirection(
-                options =>
-                {
-                    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-                    options.HttpsPort = 5001;
-                });
+            services.AddSimpleAuth(_options);
         }
 
         public void Configure(IApplicationBuilder app)
         {
             app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All })
-                .UseHttpsRedirection()
-                .UseHsts()
                 .UseAuthentication()
                 .UseCors("AllowAll")
                 .UseStaticFiles(

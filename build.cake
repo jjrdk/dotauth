@@ -121,7 +121,7 @@ Task("Pack")
         Information(versionInfo.CommitsSinceVersionSourcePadded);
         if(versionInfo.BranchName == "master")
         {
-            nugetVersion = versionInfo.MajorMinorPatch;
+            nugetVersion = versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded;
         }
 
         Information("Package version: " + nugetVersion);
@@ -148,7 +148,19 @@ Task("Pack")
 Task("Docker-Build")
 .IsDependentOn("Pack")
 .Does(() => {
-    var settings = new DockerImageBuildSettings { Tag = new[] {"jjrdk/simpleauth:" + versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded }};
+	var publishSettings = new DotNetCorePublishSettings
+     {
+         Configuration = configuration,
+         OutputDirectory = "./artifacts/publish/"
+     };
+
+     DotNetCorePublish("./src/simpleauth.authserver/simpleauth.authserver.csproj", publishSettings);
+    var settings = new DockerImageBuildSettings {
+		Tag = new[] {
+			"jjrdk/simpleauth:latest-inmemory",
+			"jjrdk/simpleauth:" + versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded + "-inmemory"
+		}
+	};
     DockerBuild(settings, "./");
 });
 
@@ -180,7 +192,7 @@ Task("Warp")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Pack");
+    .IsDependentOn("Docker-Build");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
