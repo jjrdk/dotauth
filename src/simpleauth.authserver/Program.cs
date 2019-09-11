@@ -35,8 +35,8 @@ namespace SimpleAuth.AuthServer
                     })
                 .ConfigureAppConfiguration(
                     c => c.AddUserSecrets<Startup>()
-                        .AddCommandLine(args)
                         .AddJsonFile("appsettings.json")
+                        .AddCommandLine(args)
                         .AddEnvironmentVariables())
                 .UseStartup<Startup>()
                 .Build()

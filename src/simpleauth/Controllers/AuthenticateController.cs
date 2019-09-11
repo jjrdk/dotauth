@@ -118,6 +118,7 @@
         /// Indexes the specified cancellation token.
         /// </summary>
         /// <returns></returns>
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);

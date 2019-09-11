@@ -14,12 +14,10 @@
 
 namespace SimpleAuth.AuthServer
 {
-    using Amazon;
-    using Amazon.Runtime;
+    using System;
     using Controllers;
     using Extensions;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.ResponseCompression;
@@ -29,18 +27,17 @@ namespace SimpleAuth.AuthServer
     using Microsoft.Extensions.Logging;
     using SimpleAuth;
     using SimpleAuth.Repositories;
-    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Sms;
     using System.IO.Compression;
+    using System.Linq;
     using System.Net.Http;
     using System.Reflection;
     using System.Security.Claims;
-    using System.Text.RegularExpressions;
     using SimpleAuth.Shared.Events;
 
     public class Startup
     {
+        private static readonly string DefaultGoogleScopes = "openid,profile,email";
         private readonly IConfiguration _configuration;
         private readonly SimpleAuthOptions _options;
         private readonly Assembly _assembly = typeof(HomeController).Assembly;
@@ -97,19 +94,25 @@ namespace SimpleAuth.AuthServer
                 .AddLogging(log => { log.AddConsole(); });
             services.AddAuthentication(CookieNames.CookieName)
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; });
-            services.AddAuthentication(CookieNames.ExternalCookieName)
-                .AddCookie(CookieNames.ExternalCookieName)
-                .AddGoogle(
-                    opts =>
-                    {
-                        opts.AccessType = "offline";
-                        opts.ClientId = _configuration["Google:ClientId"];
-                        opts.ClientSecret = _configuration["Google:ClientSecret"];
-                        opts.SignInScheme = CookieNames.ExternalCookieName;
-                        opts.Scope.Add("openid");
-                        opts.Scope.Add("profile");
-                        opts.Scope.Add("email");
-                    });
+            if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
+            {
+                services.AddAuthentication(CookieNames.ExternalCookieName)
+                    .AddCookie(CookieNames.ExternalCookieName)
+                    .AddGoogle(
+                        opts =>
+                        {
+                            opts.AccessType = "offline";
+                            opts.ClientId = _configuration["Google:ClientId"];
+                            opts.ClientSecret = _configuration["Google:ClientSecret"];
+                            opts.SignInScheme = CookieNames.ExternalCookieName;
+                            var scopes = _configuration["Google:Scopes"] ?? DefaultGoogleScopes;
+                            foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()))
+                            {
+                                opts.Scope.Add(scope);
+                            }
+                        });
+            }
+
             services.AddAuthorization(opts => { opts.AddAuthPolicies(CookieNames.CookieName); })
                 .AddMvc(options => { })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
