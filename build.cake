@@ -149,16 +149,39 @@ Task("Docker-Build")
 .IsDependentOn("Pack")
 .Does(() => {
 	var publishSettings = new DotNetCorePublishSettings
-     {
-         Configuration = configuration,
-         OutputDirectory = "./artifacts/publish/"
-     };
+    {
+        Configuration = configuration,
+        OutputDirectory = "./artifacts/publish/inmemory/"
+    };
 
-     DotNetCorePublish("./src/simpleauth.authserver/simpleauth.authserver.csproj", publishSettings);
+    DotNetCorePublish("./src/simpleauth.authserver/simpleauth.authserver.csproj", publishSettings);
     var settings = new DockerImageBuildSettings {
+        Compress = true,
+        File = "./DockerfileInMemory",
+        ForceRm = true,
+        Rm = true,
 		Tag = new[] {
-			"jjrdk/simpleauth:latest-inmemory",
+			"jjrdk/simpleauth:inmemory",
 			"jjrdk/simpleauth:" + versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded + "-inmemory"
+		}
+	};
+    DockerBuild(settings, "./");
+
+	publishSettings = new DotNetCorePublishSettings
+    {
+        Configuration = configuration,
+        OutputDirectory = "./artifacts/publish/postgres/"
+    };
+
+    DotNetCorePublish("./src/simpleauth.authserverpg/simpleauth.authserverpg.csproj", publishSettings);
+    settings = new DockerImageBuildSettings {
+        Compress = true,
+        File = "./DockerfilePostgres",
+        ForceRm = true,
+        Rm = true,
+		Tag = new[] {
+			"jjrdk/simpleauth:postgres",
+			"jjrdk/simpleauth:" + versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded + "-postgres"
 		}
 	};
     DockerBuild(settings, "./");
