@@ -1,6 +1,7 @@
 ﻿namespace SimpleAuth.Stores.Marten
 {
     using global::Marten;
+    using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
 
@@ -15,19 +16,22 @@
         /// </summary>
         public SimpleAuthRegistry()
         {
-            For<Scope>().Identity(x => x.Name)
+            For<Scope>()
+                .Identity(x => x.Name)
                 .Index(x => x.Name)
                 .Index(x => x.IsDisplayedInConsent)
                 .Index(x => x.Type)
                 .GinIndexJsonData();
             For<Filter>().Identity(x => x.Name).GinIndexJsonData();
-            For<ResourceOwner>().Identity(x => x.Subject)
+            For<ResourceOwner>()
+                .Identity(x => x.Subject)
                 .Index(x => x.Claims)
                 .Index(x => x.ExternalLogins)
                 .GinIndexJsonData();
             For<Consent>().GinIndexJsonData();
             For<Policy>().GinIndexJsonData();
-            For<Client>().Identity(x => x.ClientId)
+            For<Client>()
+                .Identity(x => x.ClientId)
                 .Index(x => x.AllowedScopes)
                 .Index(x => x.GrantTypes)
                 .Index(x => x.IdTokenEncryptedResponseAlg)
@@ -36,12 +40,17 @@
                 .GinIndexJsonData();
             For<ResourceSet>().GinIndexJsonData();
             For<Ticket>().GinIndexJsonData();
-            For<AuthorizationCode>().Identity(x => x.Code)
-                .Index(x => x.ClientId)
-                .GinIndexJsonData();
-            For<ConfirmationCode>().Identity(x => x.Value)
-                .GinIndexJsonData();
+            For<AuthorizationCode>().Identity(x => x.Code).Index(x => x.ClientId).GinIndexJsonData();
+            For<ConfirmationCode>().Identity(x => x.Value).GinIndexJsonData();
             For<GrantedToken>().GinIndexJsonData();
+            For<JsonWebKey>()
+                .Identity(x => x.Kid)
+                .Duplicate(x => x.Use)
+                .Duplicate(x => x.HasPrivateKey)
+                .Index(x => x.Use)
+                .Index(x => x.HasPrivateKey)
+                .Index(x => x.KeyOps)
+                .GinIndexJsonData();
         }
     }
 }
