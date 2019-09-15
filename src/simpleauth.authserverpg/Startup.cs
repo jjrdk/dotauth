@@ -69,7 +69,7 @@ namespace SimpleAuth.AuthServerPg
                 Tickets = sp => new MartenTicketStore(sp.GetService<IDocumentSession>),
                 Tokens = sp => new MartenTokenStore(sp.GetService<IDocumentSession>),
                 ResourceSets = sp => new MartenResourceSetRepository(sp.GetService<IDocumentSession>),
-                EventPublisher = sp => new TraceEventPublisher(),
+                EventPublisher = sp => new LogEventPublisher(sp.GetService<ILogger<LogEventPublisher>>()),
                 ClaimsIncludedInUserCreation = new[]
                 {
                     ClaimTypes.Name,
@@ -152,7 +152,6 @@ namespace SimpleAuth.AuthServerPg
                 .UseCors("AllowAll")
                 .UseStaticFiles(
                     new StaticFileOptions { FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot") })
-                .UseSimpleAuthExceptionHandler()
                 .UseSimpleAuthExceptionHandler()
                 .UseResponseCompression()
                 .UseSimpleAuthMvc();
