@@ -5,7 +5,6 @@
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
@@ -37,7 +36,7 @@
                     .Where(x => !x.HasPrivateKey)
                     .ToListAsync(cancellationToken)
                     .ConfigureAwait(false);
-                var jwks = ToSet(keysets);
+                var jwks = keysets.ToSet();
                 return jwks;
             }
         }
@@ -105,23 +104,15 @@
         {
             using (var session = _sessionFactory())
             {
-                session.DeleteWhere<JsonWebKey>(x => true);
+                foreach (var key in keySet.Keys)
+                {
+                    session.Delete<JsonWebKey>(key.KeyId);
+                }
                 session.Store(keySet.Keys);
                 await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
                 return true;
             }
-        }
-
-        private static JsonWebKeySet ToSet(IEnumerable<JsonWebKey> keys)
-        {
-            var jwks = new JsonWebKeySet();
-            foreach (var key in keys)
-            {
-                jwks.Keys.Add(key);
-            }
-
-            return jwks;
         }
 
     }
