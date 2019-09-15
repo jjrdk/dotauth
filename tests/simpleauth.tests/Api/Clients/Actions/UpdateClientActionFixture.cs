@@ -25,6 +25,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Shared;
     using Xunit;
 
@@ -103,6 +104,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
             _clientRepositoryMock = new InMemoryClientRepository(
                 new HttpClient(),
                 new InMemoryScopeRepository(),
+                new Mock<ILogger<InMemoryClientRepository>>().Object,
                 clients ?? new Client[0]);
             _scopeRepositoryStub = new Mock<IScopeRepository>();
         }

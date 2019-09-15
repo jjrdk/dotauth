@@ -21,6 +21,8 @@ namespace SimpleAuth.Tests.Api.Introspection
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    using Moq;
     using Xunit;
 
     public class IntrospectionActionsFixture
@@ -33,6 +35,7 @@ namespace SimpleAuth.Tests.Api.Introspection
                 new InMemoryClientRepository(
                     new HttpClient(),
                     new InMemoryScopeRepository(new Scope[0]),
+                    new Mock<ILogger<InMemoryClientRepository>>().Object,
                     new Client[0]),
                 new InMemoryTokenStore());
         }
