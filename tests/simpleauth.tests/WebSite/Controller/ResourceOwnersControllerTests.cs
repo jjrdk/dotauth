@@ -8,6 +8,8 @@
     using Controllers;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using Moq;
     using Repositories;
     using Services;
     using Shared;
@@ -17,18 +19,22 @@
     {
         public class GivenAResourceOwnersController
         {
-            private ResourceOwnersController _controller;
+            private readonly ResourceOwnersController _controller;
 
             public GivenAResourceOwnersController()
             {
                 var inMemoryScopeRepository = new InMemoryScopeRepository();
-                _controller = new ResourceOwnersController(new RuntimeSettings(),
+                _controller = new ResourceOwnersController(
+                    new RuntimeSettings(),
                     new DefaultSubjectBuilder(),
                     new InMemoryResourceOwnerRepository(),
                     new InMemoryTokenStore(),
                     inMemoryScopeRepository,
                     new InMemoryJwksRepository(),
-                    new InMemoryClientRepository(new HttpClient(), inMemoryScopeRepository),
+                    new InMemoryClientRepository(
+                        new HttpClient(),
+                        inMemoryScopeRepository,
+                        new Mock<ILogger<InMemoryClientRepository>>().Object),
                     Array.Empty<AccountFilter>(),
                     new NoOpPublisher());
             }
