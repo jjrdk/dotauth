@@ -100,13 +100,8 @@ namespace SimpleAuth.AuthServerPg
                         AutoCreate.CreateOrUpdate);
                     return new DocumentStore(options);
                 });
-            services.AddTransient<IDocumentSession>(sp => sp.GetService<IDocumentStore>().LightweightSession());
-            //services.AddTransient<Func<IDocumentSession>>(
-            //    sp =>
-            //    {
-            //        var store = sp.GetService<IDocumentStore>();
-            //        return () => store.LightweightSession();
-            //    });
+            services.AddTransient(sp => sp.GetService<IDocumentStore>().LightweightSession());
+
             services.AddResponseCompression(
                     x =>
                     {
