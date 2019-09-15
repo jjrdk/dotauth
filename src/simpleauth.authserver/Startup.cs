@@ -33,7 +33,6 @@ namespace SimpleAuth.AuthServer
     using System.Net.Http;
     using System.Reflection;
     using System.Security.Claims;
-    using SimpleAuth.Shared.Events;
 
     public class Startup
     {
@@ -54,9 +53,10 @@ namespace SimpleAuth.AuthServer
                     sp => new InMemoryClientRepository(
                         sp.GetService<HttpClient>(),
                         sp.GetService<IScopeStore>(),
+                        sp.GetService<ILogger<InMemoryClientRepository>>(),
                         DefaultConfiguration.GetClients()),
                 Scopes = sp => new InMemoryScopeRepository(),
-                EventPublisher = sp => new TraceEventPublisher(),
+                EventPublisher = sp => new LogEventPublisher(sp.GetService<ILogger<LogEventPublisher>>()),
                 HttpClientFactory = () => client,
                 ClaimsIncludedInUserCreation = new[]
                 {
@@ -129,7 +129,6 @@ namespace SimpleAuth.AuthServer
                 .UseCors("AllowAll")
                 .UseStaticFiles(
                     new StaticFileOptions { FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot") })
-                .UseSimpleAuthExceptionHandler()
                 .UseSimpleAuthExceptionHandler()
                 .UseResponseCompression()
                 .UseSimpleAuthMvc();
