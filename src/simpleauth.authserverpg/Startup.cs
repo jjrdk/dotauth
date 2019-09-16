@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.AuthServer
+namespace SimpleAuth.AuthServerPg
 {
     using System;
     using Controllers;
@@ -26,13 +26,16 @@ namespace SimpleAuth.AuthServer
     using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Logging;
     using SimpleAuth;
-    using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Repositories;
     using System.IO.Compression;
     using System.Linq;
     using System.Net.Http;
     using System.Reflection;
     using System.Security.Claims;
+    using Marten;
+    using Newtonsoft.Json;
+    using SimpleAuth.Shared.Events;
+    using SimpleAuth.Stores.Marten;
 
     public class Startup
     {
@@ -48,16 +51,25 @@ namespace SimpleAuth.AuthServer
             _options = new SimpleAuthOptions
             {
                 ApplicationName = _configuration["ApplicationName"] ?? "SimpleAuth",
-                Users = sp => new InMemoryResourceOwnerRepository(DefaultConfiguration.GetUsers()),
+                Users = sp => new MartenResourceOwnerStore(sp.GetService<IDocumentSession>),
                 Clients =
-                    sp => new InMemoryClientRepository(
-                        sp.GetService<HttpClient>(),
+                    sp => new MartenClientStore(
+                        sp.GetService<IDocumentSession>,
                         sp.GetService<IScopeStore>(),
-                        sp.GetService<ILogger<InMemoryClientRepository>>(),
-                        DefaultConfiguration.GetClients()),
-                Scopes = sp => new InMemoryScopeRepository(),
-                EventPublisher = sp => new LogEventPublisher(sp.GetService<ILogger<LogEventPublisher>>()),
+                        sp.GetService<HttpClient>(),
+                        JsonConvert.DeserializeObject<Uri[]>),
+                Scopes = sp => new MartenScopeRepository(sp.GetService<IDocumentSession>),
+                AccountFilters = sp => new MartenFilterStore(sp.GetService<IDocumentSession>),
+                AuthorizationCodes = sp => new MartenAuthorizationCodeStore(sp.GetService<IDocumentSession>),
+                ConfirmationCodes = sp => new MartenConfirmationCodeStore(sp.GetService<IDocumentSession>),
+                Consents = sp => new MartenConsentRepository(sp.GetService<IDocumentSession>),
                 HttpClientFactory = () => client,
+                JsonWebKeys = sp => new MartenJwksRepository(sp.GetService<IDocumentSession>),
+                Policies = sp => new MartenPolicyRepository(sp.GetService<IDocumentSession>),
+                Tickets = sp => new MartenTicketStore(sp.GetService<IDocumentSession>),
+                Tokens = sp => new MartenTokenStore(sp.GetService<IDocumentSession>),
+                ResourceSets = sp => new MartenResourceSetRepository(sp.GetService<IDocumentSession>),
+                EventPublisher = sp => new LogEventPublisher(sp.GetService<ILogger<LogEventPublisher>>()),
                 ClaimsIncludedInUserCreation = new[]
                 {
                     ClaimTypes.Name,
@@ -79,6 +91,17 @@ namespace SimpleAuth.AuthServer
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IDocumentStore>(
+                provider =>
+                {
+                    var options = new SimpleAuthMartenOptions(
+                        _configuration["ConnectionString"],
+                        null,
+                        AutoCreate.CreateOrUpdate);
+                    return new DocumentStore(options);
+                });
+            services.AddTransient(sp => sp.GetService<IDocumentStore>().LightweightSession());
+
             services.AddResponseCompression(
                     x =>
                     {

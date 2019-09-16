@@ -29,6 +29,7 @@ namespace SimpleAuth.Extensions
     using System;
     using System.Linq;
     using System.Net.Http;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Shared.Events;
 
     /// <summary>
@@ -199,7 +200,7 @@ namespace SimpleAuth.Extensions
             var options = new SimpleAuthOptions();
             configuration(options);
 
-            return AddSimpleAuth(services, options);
+            return AddSimpleAuth(services, options, requestThrottle);
         }
 
         /// <summary>
@@ -207,9 +208,13 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="options">The options.</param>
+        /// <param name="requestThrottle">The rate limiter.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">options</exception>
-        public static IServiceCollection AddSimpleAuth(this IServiceCollection services, SimpleAuthOptions options, IRequestThrottle requestThrottle = null)
+        public static IServiceCollection AddSimpleAuth(
+            this IServiceCollection services,
+            SimpleAuthOptions options,
+            IRequestThrottle requestThrottle = null)
         {
             if (options == null)
             {
@@ -229,7 +234,10 @@ namespace SimpleAuth.Extensions
                 .AddSingleton<IJwksStore>(sp => sp.GetService<IJwksRepository>())
                 .AddSingleton(
                     sp => options.Clients?.Invoke(sp)
-                          ?? new InMemoryClientRepository(sp.GetService<HttpClient>(), sp.GetService<IScopeStore>()))
+                          ?? new InMemoryClientRepository(
+                              sp.GetService<HttpClient>(),
+                              sp.GetService<IScopeStore>(),
+                              sp.GetService<ILogger<InMemoryClientRepository>>()))
                 .AddSingleton<IClientStore>(sp => sp.GetService<IClientRepository>())
                 .AddSingleton(sp => options.Consents?.Invoke(sp) ?? new InMemoryConsentRepository())
                 .AddSingleton<IConsentStore>(sp => sp.GetService<IConsentRepository>())
@@ -263,7 +271,6 @@ namespace SimpleAuth.Extensions
                 {
                     routes.MapRoute("areaexists", "{area:exists}/{controller=Authenticate}/{action=Index}");
                     routes.MapRoute("pwdauth", "pwd/{controller=Authenticate}/{action=Index}");
-                    //routes.MapRoute("areaauth", "{area=pwd}/{controller=Authenticate}/{action=Index}");
                     routes.MapRoute("default", "{controller=Authenticate}/{action=Index}");
                 });
         }

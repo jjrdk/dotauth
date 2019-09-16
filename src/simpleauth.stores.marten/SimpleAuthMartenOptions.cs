@@ -6,6 +6,8 @@
     using System.IO;
     using System.Security.Claims;
     using System.Text;
+    using Microsoft.IdentityModel.Tokens;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Defines the marten options for SimpleAuth.
@@ -18,10 +20,11 @@
         /// <param name="connectionString">The connection string</param>
         /// <param name="searchPath">The schema name</param>
         /// <param name="autoCreate">Schema creation options</param>
-        public SimpleAuthMartenOptions(string connectionString, string searchPath = null, AutoCreate autoCreate = AutoCreate.All)
+        public SimpleAuthMartenOptions(string connectionString, IMartenLogger logger, string searchPath = null, AutoCreate autoCreate = AutoCreate.All)
         {
             Serializer<CustomJsonSerializer>();
             Connection(connectionString);
+            Logger(logger);
             Schema.Include<SimpleAuthRegistry>();
             if (!string.IsNullOrWhiteSpace(searchPath))
             {

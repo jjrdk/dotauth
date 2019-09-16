@@ -3,11 +3,10 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AssemblyName>simpleauth.authserver</AssemblyName>
+    <AssemblyName>simpleauth.authserverpg</AssemblyName>
     <OutputType>Exe</OutputType>
-    <PackageId>simpleauth.authserver</PackageId>
-    <StartupObject>SimpleAuth.AuthServer.Program</StartupObject>
-    <RootNamespace>SimpleAuth.AuthServer</RootNamespace>
+    <StartupObject>SimpleAuth.AuthServerPg.Program</StartupObject>
+    <RootNamespace>SimpleAuth.AuthServerPg</RootNamespace>
     <UserSecretsId>simpleauth-authserver</UserSecretsId>
   </PropertyGroup>
   <Import Project="..\..\shared.proj" />
@@ -33,12 +32,6 @@
     <ProjectReference Include="..\simpleauth.stores.marten\simpleauth.stores.marten.csproj" />
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
     <ProjectReference Include="..\simpleauth.sms\simpleauth.sms.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\tests\mycert.pfx" Link="mycert.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties Properties_4launchSettings_1json__JSONSchema="http://json.schemastore.org/phraseapp" /></VisualStudio></ProjectExtensions>

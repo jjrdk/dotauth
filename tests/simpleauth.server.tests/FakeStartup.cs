@@ -33,6 +33,8 @@ namespace SimpleAuth.Server.Tests
     using System.Security.Claims;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    using Moq;
     using SimpleAuth.Shared;
     using SimpleAuth.Sms.Controllers;
     using SimpleAuth.Sms.Services;
@@ -150,15 +152,10 @@ namespace SimpleAuth.Server.Tests
                         options.Clients = sp => new InMemoryClientRepository(
                             _context.Client,
                             sp.GetService<IScopeStore>(),
+                            new Mock<ILogger<InMemoryClientRepository>>().Object,
                             DefaultStores.Clients(_context));
                         options.Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents());
                         options.Users = sp => new InMemoryResourceOwnerRepository(DefaultStores.Users());
-                        //options.UserClaimsToIncludeInAuthToken = new[]
-                        //{
-                        //    new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
-                        //    new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled),
-                        //    new Regex($"^{OpenIdClaimTypes.Name}$", RegexOptions.Compiled)
-                        //};
                     })
                 .AddLogging()
                 .AddAccountFilter()
