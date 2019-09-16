@@ -52,7 +52,7 @@
             IEnumerable<Client> clients,
             IEnumerable<Scope> scopes)
         {
-            using (var store = new DocumentStore(new SimpleAuthMartenOptions(connectionString, searchPath)))
+            using (var store = new DocumentStore(new SimpleAuthMartenOptions(connectionString, new NulloMartenLogger(), searchPath)))
             {
                 using (var session = store.LightweightSession())
                 {
