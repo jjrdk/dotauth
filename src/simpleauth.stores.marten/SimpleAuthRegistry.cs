@@ -45,6 +45,7 @@
             For<GrantedToken>().GinIndexJsonData();
             For<JsonWebKey>()
                 .Identity(x => x.Kid)
+                .Duplicate(x => x.Alg)
                 .Duplicate(x => x.Use)
                 .Duplicate(x => x.HasPrivateKey)
                 .Index(x => x.KeyOps)
