@@ -47,9 +47,8 @@
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-
             services.AddSingleton<IDocumentStore>(
-                provider => new DocumentStore(new SimpleAuthMartenOptions(_connectionString, _schemaName)));
+                provider => new DocumentStore(new SimpleAuthMartenOptions(_connectionString, new NulloMartenLogger(), _schemaName)));
             services.AddTransient<Func<IDocumentSession>>(
                 sp =>
                 {

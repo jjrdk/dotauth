@@ -147,6 +147,7 @@ namespace SimpleAuth.Controllers
         /// Logouts this instance.
         /// </summary>
         /// <returns></returns>
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             HttpContext.Response.Cookies.Delete(CoreConstants.SessionId);
@@ -155,7 +156,7 @@ namespace SimpleAuth.Controllers
                     CookieNames.CookieName,
                     new AuthenticationProperties())
                 .ConfigureAwait(false);
-            return RedirectToAction("Index", "Authenticate", new { area = "pwd" });
+            return Redirect("/");
         }
 
         /// <summary>

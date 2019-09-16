@@ -1,0 +1,18 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-18.04
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Dotnet version
+      run: dotnet --version
+    - name: Run build script
+      run: |
+        export PATH="$PATH:~/.dotnet/tools"
+        dotnet tool install -g Cake.Tool
+        dotnet cake build.cake

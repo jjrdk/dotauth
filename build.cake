@@ -1,5 +1,5 @@
-#tool nuget:?package=GitVersion.CommandLine&version=4.0.0
-#addin nuget:?package=Cake.Docker&version=0.9.9
+#tool nuget:?package=GitVersion.CommandLine&version=5.0.1
+#addin nuget:?package=Cake.Docker&version=0.10.1
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -121,7 +121,7 @@ Task("Pack")
         Information(versionInfo.CommitsSinceVersionSourcePadded);
         if(versionInfo.BranchName == "master")
         {
-            nugetVersion = versionInfo.MajorMinorPatch;
+            nugetVersion = versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded;
         }
 
         Information("Package version: " + nugetVersion);
@@ -148,7 +148,42 @@ Task("Pack")
 Task("Docker-Build")
 .IsDependentOn("Pack")
 .Does(() => {
-    var settings = new DockerImageBuildSettings { Tag = new[] {"jjrdk/simpleauth:" + versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded }};
+	var publishSettings = new DotNetCorePublishSettings
+    {
+        Configuration = configuration,
+        OutputDirectory = "./artifacts/publish/inmemory/"
+    };
+
+    DotNetCorePublish("./src/simpleauth.authserver/simpleauth.authserver.csproj", publishSettings);
+    var settings = new DockerImageBuildSettings {
+        Compress = true,
+        File = "./DockerfileInMemory",
+        ForceRm = true,
+        Rm = true,
+		Tag = new[] {
+			"jjrdk/simpleauth:inmemory",
+			"jjrdk/simpleauth:" + versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded + "-inmemory"
+		}
+	};
+    DockerBuild(settings, "./");
+
+	publishSettings = new DotNetCorePublishSettings
+    {
+        Configuration = configuration,
+        OutputDirectory = "./artifacts/publish/postgres/"
+    };
+
+    DotNetCorePublish("./src/simpleauth.authserverpg/simpleauth.authserverpg.csproj", publishSettings);
+    settings = new DockerImageBuildSettings {
+        Compress = true,
+        File = "./DockerfilePostgres",
+        ForceRm = true,
+        Rm = true,
+		Tag = new[] {
+			"jjrdk/simpleauth:postgres",
+			"jjrdk/simpleauth:" + versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded + "-postgres"
+		}
+	};
     DockerBuild(settings, "./");
 });
 
@@ -180,7 +215,7 @@ Task("Warp")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Pack");
+    .IsDependentOn("Docker-Build");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION

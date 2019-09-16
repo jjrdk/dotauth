@@ -24,6 +24,8 @@ namespace SimpleAuth.Server.Tests
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using Moq;
     using SimpleAuth;
     using SimpleAuth.Controllers;
     using SimpleAuth.Extensions;
@@ -109,6 +111,7 @@ namespace SimpleAuth.Server.Tests
                     Clients = sp => new InMemoryClientRepository(
                         new HttpClient(),
                         sp.GetService<IScopeStore>(),
+                        new Mock<ILogger<InMemoryClientRepository>>().Object,
                         OAuthStores.GetClients()),
                     Scopes = sp => new InMemoryScopeRepository(OAuthStores.GetScopes()),
                     ResourceSets = sp => new InMemoryResourceSetRepository(UmaStores.GetResources())

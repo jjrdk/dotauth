@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "simpleauth.authserver": {
+      "commandName": "Project"
+    }
+  }
+}

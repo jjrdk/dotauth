@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.AuthServer
+namespace SimpleAuth.AuthServerPg
 {
     using System.Diagnostics;
     using Microsoft.AspNetCore.Hosting;
@@ -26,8 +26,7 @@ namespace SimpleAuth.AuthServer
         {
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new ConsoleTraceListener { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
-            await new WebHostBuilder()
-                .UseKestrel(
+            await new WebHostBuilder().UseKestrel(
                     o =>
                     {
                         o.AddServerHeader = false;

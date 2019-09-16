@@ -16,6 +16,6 @@
     <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="marten" Version="3.6.0" />
+    <PackageReference Include="marten" Version="3.7.1" />
   </ItemGroup>
 </Project>
