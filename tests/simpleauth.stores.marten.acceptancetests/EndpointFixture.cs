@@ -33,8 +33,11 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
             var configuration = new ConfigurationBuilder().AddUserSecrets<ServerStartup>().Build();
 
             IdentityModelEventSource.ShowPII = true;
+
+            var connectionString = "User ID=rmddteam;Password=rmddteam;Host=localhost;Port=5432;Database=auth;";
+
             _connectionString = DbInitializer.Init(
-                    configuration["Db:ConnectionString"],
+                    connectionString,
                     DefaultStores.Consents(),
                     DefaultStores.Users(),
                     DefaultStores.Clients(SharedContext.Instance),

@@ -26,7 +26,7 @@
                 () =>
                 {
                     var configuration = new ConfigurationBuilder().AddUserSecrets<ServerStartup>().Build();
-                    _connectionString = configuration["Db:ConnectionString"];
+                    _connectionString = "User ID=rmddteam;Password=rmddteam;Host=localhost;Port=5432;Database=auth;";
 
                     Assert.NotNull(_connectionString);
                 });
