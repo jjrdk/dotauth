@@ -28,8 +28,13 @@
                 .Index(x => x.Claims)
                 .Index(x => x.ExternalLogins)
                 .GinIndexJsonData();
-            For<Consent>().GinIndexJsonData();
-            For<Policy>().GinIndexJsonData();
+            For<Consent>()
+                .Index(x => x.ResourceOwner.Subject)
+                .GinIndexJsonData();
+            For<Policy>()
+                .Duplicate(x => x.Id)
+                .Duplicate(x => x.ResourceSetIds)
+                .GinIndexJsonData();
             For<Client>()
                 .Identity(x => x.ClientId)
                 .Index(x => x.AllowedScopes)
@@ -38,11 +43,23 @@
                 .Index(x => x.ResponseTypes)
                 .Index(x => x.Claims)
                 .GinIndexJsonData();
-            For<ResourceSet>().GinIndexJsonData();
+            For<ResourceSet>()
+                .Duplicate(x => x.Name)
+                .Duplicate(x => x.Type)
+                .GinIndexJsonData();
             For<Ticket>().GinIndexJsonData();
-            For<AuthorizationCode>().Identity(x => x.Code).Index(x => x.ClientId).GinIndexJsonData();
-            For<ConfirmationCode>().Identity(x => x.Value).GinIndexJsonData();
-            For<GrantedToken>().GinIndexJsonData();
+            For<AuthorizationCode>()
+                .Identity(x => x.Code)
+                .Duplicate(x => x.ClientId)
+                .GinIndexJsonData();
+            For<ConfirmationCode>()
+                .Identity(x => x.Value)
+                .GinIndexJsonData();
+            For<GrantedToken>()
+                .Duplicate(x => x.Scope)
+                .Duplicate(x => x.AccessToken)
+                .Duplicate(x => x.RefreshToken)
+                .GinIndexJsonData();
             For<JsonWebKey>()
                 .Identity(x => x.Kid)
                 .Duplicate(x => x.Alg)
