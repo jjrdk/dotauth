@@ -66,7 +66,6 @@ namespace SimpleAuth.Api.Discovery
             result.ClaimsLocalesSupported = new[] { "en" };
             result.UiLocalesSupported = new[] { "en" };
             result.Version = _version;
-            //var issuer = Request.GetAbsoluteUriWithVirtualPath();
 
             // default : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
 

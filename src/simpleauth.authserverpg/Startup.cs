@@ -34,7 +34,6 @@ namespace SimpleAuth.AuthServerPg
     using System.Security.Claims;
     using Marten;
     using Newtonsoft.Json;
-    using SimpleAuth.Shared.Events;
     using SimpleAuth.Stores.Marten;
 
     public class Startup
@@ -96,6 +95,7 @@ namespace SimpleAuth.AuthServerPg
                 {
                     var options = new SimpleAuthMartenOptions(
                         _configuration["ConnectionString"],
+                        new MartenLoggerFacade(provider.GetService<ILogger<MartenLoggerFacade>>()),
                         null,
                         AutoCreate.CreateOrUpdate);
                     return new DocumentStore(options);
@@ -116,7 +116,7 @@ namespace SimpleAuth.AuthServerPg
                 .AddHttpContextAccessor()
                 .AddCors(
                     options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
-                .AddLogging(log => { log.AddConsole(); });
+                .AddLogging(log => { log.AddConsole(o => { o.IncludeScopes = true; }); });
             services.AddAuthentication(CookieNames.CookieName)
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; });
             if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
