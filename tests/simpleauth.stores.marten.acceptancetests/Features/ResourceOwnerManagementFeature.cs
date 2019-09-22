@@ -27,9 +27,10 @@
             "Then resource owner is local account".x(
                 async () =>
                 {
-                    var response = await _managerClient.GetResourceOwner(subject, _grantedToken.AccessToken)
+                    var response = await _managerClient.GetResourceOwner("test", _grantedToken.AccessToken)
                         .ConfigureAwait(false);
 
+                    Assert.False(response.ContainsError);
                     Assert.True(response.Content.IsLocalAccount);
                 });
         }

@@ -28,8 +28,13 @@
                 .Index(x => x.Claims, configure: idx => { idx.IsConcurrent = true; })
                 .Index(x => x.ExternalLogins, configure: idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
-            For<Consent>().GinIndexJsonData();
-            For<Policy>().GinIndexJsonData();
+            For<Consent>()
+                .Duplicate(x => x.ResourceOwner.Subject)
+                .GinIndexJsonData();
+            For<Policy>()
+                .Duplicate(x => x.Id)
+                .Duplicate(x => x.ResourceSetIds)
+                .GinIndexJsonData();
             For<Client>()
                 .Identity(x => x.ClientId)
                 .Index(x => x.AllowedScopes, configure: idx => { idx.IsConcurrent = true; })
@@ -38,11 +43,14 @@
                 .Index(x => x.ResponseTypes, configure: idx => { idx.IsConcurrent = true; })
                 .Index(x => x.Claims, configure: idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
-            For<ResourceSet>().GinIndexJsonData();
+            For<ResourceSet>()
+                .Duplicate(x => x.Name)
+                .Duplicate(x => x.Type)
+                .GinIndexJsonData();
             For<Ticket>().GinIndexJsonData();
             For<AuthorizationCode>()
                 .Identity(x => x.Code)
-                .Index(x => x.ClientId, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.ClientId, configure: idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
             For<ConfirmationCode>().Identity(x => x.Value).GinIndexJsonData();
             For<GrantedToken>()
@@ -58,6 +66,7 @@
                 .GinIndexJsonData();
             For<JsonWebKey>()
                 .Identity(x => x.Kid)
+                .Duplicate(x => x.Alg, pgType: "char(20)", configure: idx => { idx.IsConcurrent = true; })
                 .Duplicate(x => x.Use, "char(3)", configure: idx => { idx.IsConcurrent = true; })
                 .Duplicate(x => x.HasPrivateKey, configure: idx => { idx.IsConcurrent = true; }, dbType: NpgsqlDbType.Boolean)
                 .Index(x => x.KeyOps, configure: idx => { idx.IsConcurrent = true; })
