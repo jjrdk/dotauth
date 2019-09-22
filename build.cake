@@ -14,6 +14,7 @@ var configuration = Argument("configuration", "Release");
 
 // Define directories.
 var buildDir = "."; //+ Directory(configuration);
+string buildVersion = "";
 
 //////////////////////////////////////////////////////////////////////
 // Version
@@ -66,11 +67,13 @@ Task("Build")
     .IsDependentOn("Restore-NuGet-Packages")
     .Does(() =>
 {
-    var buildVersion = versionInfo.FullSemVer;
+    buildVersion = versionInfo.MajorMinorPatch + "-" + versionInfo.BranchName.Replace("features/", "") + "." + versionInfo.CommitsSinceVersionSource;
+	Information("Build version: " + buildVersion);
     var informationalVersion = versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded;
-    if(versionInfo.BranchName == "master")
+	Information("CommitsSinceVersionSourcePadded: " + versionInfo.CommitsSinceVersionSourcePadded);
+    if(versionInfo.BranchName == "master" && versionInfo.CommitsSinceVersionSource == 0)
     {
-        buildVersion = informationalVersion;
+        buildVersion = versionInfo.MajorMinorPatch;
     }
     var buildSettings = new DotNetCoreMSBuildSettings()
         .SetConfiguration(configuration)
@@ -117,14 +120,7 @@ Task("Pack")
     .IsDependentOn("Tests")
     .Does(()=>
     {
-        var nugetVersion = versionInfo.MajorMinorPatch + "-" + versionInfo.BranchName + versionInfo.CommitsSinceVersionSourcePadded;
-        Information(versionInfo.CommitsSinceVersionSourcePadded);
-        if(versionInfo.BranchName == "master")
-        {
-            nugetVersion = versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded;
-        }
-
-        Information("Package version: " + nugetVersion);
+        Information("Package version: " + buildVersion);
 
         var packSettings = new DotNetCorePackSettings
         {
@@ -133,7 +129,7 @@ Task("Pack")
             NoRestore = true,
             OutputDirectory = "./artifacts/packages",
             IncludeSymbols = true,
-            MSBuildSettings = new DotNetCoreMSBuildSettings().SetConfiguration(configuration).SetVersion(nugetVersion)
+            MSBuildSettings = new DotNetCoreMSBuildSettings().SetConfiguration(configuration).SetVersion(buildVersion)
         };
 
         DotNetCorePack("./src/simpleauth.shared/simpleauth.shared.csproj", packSettings);
@@ -148,6 +144,7 @@ Task("Pack")
 Task("Docker-Build")
 .IsDependentOn("Pack")
 .Does(() => {
+
 	var publishSettings = new DotNetCorePublishSettings
     {
         Configuration = configuration,
@@ -162,7 +159,7 @@ Task("Docker-Build")
         Rm = true,
 		Tag = new[] {
 			"jjrdk/simpleauth:inmemory",
-			"jjrdk/simpleauth:" + versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded + "-inmemory"
+			"jjrdk/simpleauth:" + buildVersion + "-inmemory"
 		}
 	};
     DockerBuild(settings, "./");
@@ -181,7 +178,7 @@ Task("Docker-Build")
         Rm = true,
 		Tag = new[] {
 			"jjrdk/simpleauth:postgres",
-			"jjrdk/simpleauth:" + versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded + "-postgres"
+			"jjrdk/simpleauth:" + buildVersion + "-postgres"
 		}
 	};
     DockerBuild(settings, "./");

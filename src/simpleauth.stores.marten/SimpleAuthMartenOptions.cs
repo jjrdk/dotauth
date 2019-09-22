@@ -16,6 +16,7 @@
         /// Initializes a new instance of the <see cref="SimpleAuthMartenOptions"/> class.
         /// </summary>
         /// <param name="connectionString">The connection string</param>
+        /// <param name="logger">The logger.</param>
         /// <param name="searchPath">The schema name</param>
         /// <param name="autoCreate">Schema creation options</param>
         public SimpleAuthMartenOptions(
