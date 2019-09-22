@@ -23,7 +23,6 @@ namespace SimpleAuth.Extensions
     using SimpleAuth.Repositories;
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using System;

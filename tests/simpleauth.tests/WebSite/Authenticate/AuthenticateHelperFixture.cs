@@ -14,7 +14,6 @@
     using System.Threading.Tasks;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Events;
-    using SimpleAuth.Shared.Events.Logging;
     using Xunit;
 
     public sealed class AuthenticateHelperFixture

@@ -51,7 +51,7 @@
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!httpResult.IsSuccessStatusCode)
             {
-                return new GenericResponse<string>()
+                return new GenericResponse<string>
                 {
                     ContainsError = true,
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
@@ -59,7 +59,13 @@
                 };
             }
 
-            return new GenericResponse<string> { Content = content };
+            var response = JsonConvert.DeserializeObject<AddResourceOwnerResponse>(content);
+            return new GenericResponse<string> { Content = response.Subject };
+        }
+
+        private class AddResourceOwnerResponse
+        {
+            public string Subject { get; set; }
         }
     }
 }
