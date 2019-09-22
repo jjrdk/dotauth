@@ -20,7 +20,6 @@ namespace SimpleAuth.Common
     using Results;
     using Shared;
     using Shared.Models;
-    using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
     using System;
