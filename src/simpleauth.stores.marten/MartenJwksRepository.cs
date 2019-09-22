@@ -46,11 +46,13 @@
         {
             using (var session = _sessionFactory())
             {
-                var webKey = await session.Query<JsonWebKey>()
-                    .FirstOrDefaultAsync(
-                        x => x.Alg == alg && x.Use == JsonWebKeyUseNames.Sig && x.KeyOps.Contains(KeyOperations.Sign),
-                        cancellationToken)
+                var webKeys = await session.Query<JsonWebKey>()
+                    .Where(
+                        x => x.Alg == alg && x.Use == JsonWebKeyUseNames.Sig)
+                    .ToListAsync(cancellationToken)
                     .ConfigureAwait(false);
+
+                var webKey = webKeys.First(x => x.KeyOps.Contains(KeyOperations.Sign));
 
                 if (webKey.X5c != null)
                 {
@@ -69,11 +71,12 @@
         {
             using (var session = _sessionFactory())
             {
-                var webKey = await session.Query<JsonWebKey>()
-                    .FirstOrDefaultAsync(
-                        x => x.Use == JsonWebKeyUseNames.Sig && x.KeyOps.Contains(KeyOperations.Sign),
-                        cancellationToken)
+                var webKeys = await session.Query<JsonWebKey>()
+                    .Where(x => x.Use == JsonWebKeyUseNames.Sig)
+                    .ToListAsync(cancellationToken)
                     .ConfigureAwait(false);
+
+                var webKey = webKeys.First(x => x.KeyOps.Contains(KeyOperations.Sign));
 
                 if (webKey.X5c != null)
                 {
@@ -108,6 +111,7 @@
                 {
                     session.Delete<JsonWebKey>(key.KeyId);
                 }
+
                 session.Store(keySet.Keys);
                 await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 

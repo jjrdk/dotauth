@@ -27,7 +27,6 @@
                 {
                     var configuration = new ConfigurationBuilder().AddUserSecrets<ServerStartup>().Build();
                     _connectionString = configuration["Db:ConnectionString"];
-
                     Assert.NotNull(_connectionString);
                 });
 
