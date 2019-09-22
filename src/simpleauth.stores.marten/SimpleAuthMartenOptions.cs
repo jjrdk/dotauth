@@ -18,7 +18,7 @@
         /// <param name="connectionString">The connection string</param>
         /// <param name="searchPath">The schema name</param>
         /// <param name="autoCreate">Schema creation options</param>
-        public SimpleAuthMartenOptions(string connectionString, string searchPath = null, AutoCreate autoCreate = AutoCreate.All)
+        public SimpleAuthMartenOptions(string connectionString, string searchPath = null, AutoCreate autoCreate = AutoCreate.CreateOrUpdate)
         {
             Serializer<CustomJsonSerializer>();
             Connection(connectionString);

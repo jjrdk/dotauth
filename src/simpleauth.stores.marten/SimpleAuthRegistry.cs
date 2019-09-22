@@ -2,6 +2,7 @@
 {
     using global::Marten;
     using Microsoft.IdentityModel.Tokens;
+    using NpgsqlTypes;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
 
@@ -18,36 +19,48 @@
         {
             For<Scope>()
                 .Identity(x => x.Name)
-                .Index(x => x.Name)
-                .Index(x => x.IsDisplayedInConsent)
-                .Index(x => x.Type)
+                .Duplicate(x => x.IsDisplayedInConsent, configure: idx => { idx.IsConcurrent = true; }, dbType: NpgsqlDbType.Boolean)
+                .Duplicate(x => x.Type, "varchar(15)", configure: idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
             For<Filter>().Identity(x => x.Name).GinIndexJsonData();
             For<ResourceOwner>()
                 .Identity(x => x.Subject)
-                .Index(x => x.Claims)
-                .Index(x => x.ExternalLogins)
+                .Index(x => x.Claims, configure: idx => { idx.IsConcurrent = true; })
+                .Index(x => x.ExternalLogins, configure: idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
             For<Consent>().GinIndexJsonData();
             For<Policy>().GinIndexJsonData();
             For<Client>()
                 .Identity(x => x.ClientId)
-                .Index(x => x.AllowedScopes)
-                .Index(x => x.GrantTypes)
-                .Index(x => x.IdTokenEncryptedResponseAlg)
-                .Index(x => x.ResponseTypes)
-                .Index(x => x.Claims)
+                .Index(x => x.AllowedScopes, configure: idx => { idx.IsConcurrent = true; })
+                .Index(x => x.GrantTypes, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.IdTokenEncryptedResponseAlg, "varchar(10)", configure: idx => { idx.IsConcurrent = true; })
+                .Index(x => x.ResponseTypes, configure: idx => { idx.IsConcurrent = true; })
+                .Index(x => x.Claims, configure: idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
             For<ResourceSet>().GinIndexJsonData();
             For<Ticket>().GinIndexJsonData();
-            For<AuthorizationCode>().Identity(x => x.Code).Index(x => x.ClientId).GinIndexJsonData();
+            For<AuthorizationCode>()
+                .Identity(x => x.Code)
+                .Index(x => x.ClientId, configure: idx => { idx.IsConcurrent = true; })
+                .GinIndexJsonData();
             For<ConfirmationCode>().Identity(x => x.Value).GinIndexJsonData();
-            For<GrantedToken>().GinIndexJsonData();
+            For<GrantedToken>()
+                .Duplicate(x => x.Scope, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.AccessToken, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.ClientId, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.CreateDateTime, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.ExpiresIn, configure: idx => { idx.IsConcurrent = true; }, dbType: NpgsqlDbType.Integer)
+                .Duplicate(x => x.IdToken, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.ParentTokenId, configure: idx => { idx.IsConcurrent = true; }, dbType: NpgsqlDbType.Uuid)
+                .Duplicate(x => x.RefreshToken, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.TokenType, "char(10)", configure: idx => { idx.IsConcurrent = true; })
+                .GinIndexJsonData();
             For<JsonWebKey>()
                 .Identity(x => x.Kid)
-                .Duplicate(x => x.Use)
-                .Duplicate(x => x.HasPrivateKey)
-                .Index(x => x.KeyOps)
+                .Duplicate(x => x.Use, "char(3)", configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.HasPrivateKey, configure: idx => { idx.IsConcurrent = true; }, dbType: NpgsqlDbType.Boolean)
+                .Index(x => x.KeyOps, configure: idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
         }
     }
