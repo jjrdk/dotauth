@@ -9,11 +9,9 @@
     using SimpleAuth;
     using SimpleAuth.Extensions;
     using SimpleAuth.Repositories;
-    using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Sms;
     using System;
-    using System.Text.RegularExpressions;
     using System.Threading;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;

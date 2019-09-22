@@ -33,6 +33,7 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
             var configuration = new ConfigurationBuilder().AddUserSecrets<ServerStartup>().Build();
 
             IdentityModelEventSource.ShowPII = true;
+
             _connectionString = DbInitializer.Init(
                     configuration["Db:ConnectionString"],
                     DefaultStores.Consents(),

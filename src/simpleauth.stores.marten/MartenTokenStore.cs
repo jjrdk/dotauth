@@ -47,9 +47,11 @@
                              && x.Scope == scopes
                              && x.IdTokenPayLoad != null
                              && x.UserInfoPayLoad != null)
-                    .ToListAsync()
+                    .ToListAsync(token: cancellationToken)
                     .ConfigureAwait(false);
-                return options.FirstOrDefault(x => idTokenJwsPayload.All(x.IdTokenPayLoad.Contains) && userInfoJwsPayload.All(x.UserInfoPayLoad.Contains));
+                return options.FirstOrDefault(x =>
+                    idTokenJwsPayload.All(x.IdTokenPayLoad.Contains) &&
+                    userInfoJwsPayload.All(x.UserInfoPayLoad.Contains));
             }
         }
 
@@ -59,7 +61,7 @@
             using (var session = _sessionFactory())
             {
                 var grantedToken = await session.Query<GrantedToken>()
-                    .FirstOrDefaultAsync(x => x.RefreshToken == getRefreshToken)
+                    .FirstOrDefaultAsync(x => x.RefreshToken == getRefreshToken, token: cancellationToken)
                     .ConfigureAwait(false);
                 return grantedToken;
             }
@@ -71,8 +73,8 @@
             using (var session = _sessionFactory())
             {
                 var grantedToken = await session.Query<GrantedToken>()
-                                       .FirstOrDefaultAsync(x => x.AccessToken == accessToken)
-                                       .ConfigureAwait(false);
+                    .FirstOrDefaultAsync(x => x.AccessToken == accessToken, token: cancellationToken)
+                    .ConfigureAwait(false);
                 return grantedToken;
             }
         }
@@ -83,7 +85,7 @@
             using (var session = _sessionFactory())
             {
                 session.Store(grantedToken);
-                await session.SaveChangesAsync().ConfigureAwait(false);
+                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
                 return true;
             }
         }
