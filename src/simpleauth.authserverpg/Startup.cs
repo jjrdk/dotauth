@@ -139,20 +139,27 @@ namespace SimpleAuth.AuthServerPg
             }
 
             services.AddAuthorization(opts => { opts.AddAuthPolicies(CookieNames.CookieName); })
-                .AddMvc(options => { })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddControllersWithViews()
+                .AddRazorRuntimeCompilation()
+                .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddApplicationPart(_assembly);
+            services.AddRazorPages();
             services.AddSimpleAuth(_options);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All })
-                .UseAuthentication()
-                .UseCors("AllowAll")
+            app.UseSimpleAuthExceptionHandler()
                 .UseStaticFiles(
-                    new StaticFileOptions { FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot") })
-                .UseSimpleAuthExceptionHandler()
+                    new StaticFileOptions
+                    {
+                        FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot")
+                    })
+                .UseRouting()
+                .UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All })
+                .UseAuthentication()
+                .UseAuthorization()
+                .UseCors("AllowAll")
                 .UseResponseCompression()
                 .UseSimpleAuthMvc();
         }

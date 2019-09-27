@@ -265,12 +265,13 @@ namespace SimpleAuth.Extensions
         /// <returns></returns>
         public static IApplicationBuilder UseSimpleAuthMvc(this IApplicationBuilder app)
         {
-            return app.UseMvc(
-                routes =>
+            return app.UseEndpoints(
+                endpoint =>
                 {
-                    routes.MapRoute("areaexists", "{area:exists}/{controller=Authenticate}/{action=Index}");
-                    routes.MapRoute("pwdauth", "pwd/{controller=Authenticate}/{action=Index}");
-                    routes.MapRoute("default", "{controller=Authenticate}/{action=Index}");
+                    endpoint.MapRazorPages();
+                    endpoint.MapControllerRoute("areaexists", "{area:exists}/{controller=Authenticate}/{action=Index}");
+                    endpoint.MapControllerRoute("pwdauth", "pwd/{controller=Authenticate}/{action=Index}");
+                    endpoint.MapControllerRoute("default", "{controller=Authenticate}/{action=Index}");
                 });
         }
 

@@ -32,10 +32,7 @@ namespace SimpleAuth.Server.Tests
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             RegisterServices(services);
-            var mvc = services.AddMvcCore(o => { }).AddJsonFormatters();
-            var parts = mvc.PartManager.ApplicationParts;
-            parts.Clear();
-            parts.Add(new AssemblyPart(typeof(ClientsController).GetTypeInfo().Assembly));
+            services.AddControllers().AddApplicationPart(typeof(ClientsController).GetTypeInfo().Assembly);
             return services.BuildServiceProvider();
         }
 
