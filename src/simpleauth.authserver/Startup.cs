@@ -127,6 +127,7 @@ namespace SimpleAuth.AuthServer
         public void Configure(IApplicationBuilder app)
         {
             app.UseSimpleAuthExceptionHandler()
+                .UseResponseCompression()
                 .UseStaticFiles(
                     new StaticFileOptions
                     {
@@ -137,7 +138,6 @@ namespace SimpleAuth.AuthServer
                 .UseAuthentication()
                 .UseAuthorization()
                 .UseCors("AllowAll")
-                .UseResponseCompression()
                 .UseSimpleAuthMvc();
         }
     }

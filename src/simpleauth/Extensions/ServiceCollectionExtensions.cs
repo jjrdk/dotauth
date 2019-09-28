@@ -272,6 +272,7 @@ namespace SimpleAuth.Extensions
                     endpoint.MapControllerRoute("areaexists", "{area:exists}/{controller=Authenticate}/{action=Index}");
                     endpoint.MapControllerRoute("pwdauth", "pwd/{controller=Authenticate}/{action=Index}");
                     endpoint.MapControllerRoute("default", "{controller=Authenticate}/{action=Index}");
+                    endpoint.MapControllers();
                 });
         }
 
