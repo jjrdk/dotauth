@@ -150,6 +150,7 @@ namespace SimpleAuth.AuthServerPg
         public void Configure(IApplicationBuilder app)
         {
             app.UseSimpleAuthExceptionHandler()
+                .UseResponseCompression()
                 .UseStaticFiles(
                     new StaticFileOptions
                     {
@@ -160,7 +161,6 @@ namespace SimpleAuth.AuthServerPg
                 .UseAuthentication()
                 .UseAuthorization()
                 .UseCors("AllowAll")
-                .UseResponseCompression()
                 .UseSimpleAuthMvc();
         }
     }
