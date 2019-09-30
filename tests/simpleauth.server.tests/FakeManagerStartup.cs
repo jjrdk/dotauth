@@ -24,6 +24,7 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth.Repositories;
     using System;
     using System.Reflection;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
 
     public class FakeManagerStartup : IStartup
     {
@@ -38,13 +39,7 @@ namespace SimpleAuth.Server.Tests
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseAuthentication()
-                .UseSimpleAuthExceptionHandler()
-                .UseMvc(
-                    routes =>
-                    {
-                        routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
-                    });
+            app.UseSimpleAuthMvc();
         }
 
         private void RegisterServices(IServiceCollection serviceCollection)
@@ -52,7 +47,8 @@ namespace SimpleAuth.Server.Tests
             serviceCollection.AddSimpleAuth(new SimpleAuthOptions
             {
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultStorage.GetUsers())
-            });
+            },
+                new[] { JwtBearerDefaults.AuthenticationScheme });
             serviceCollection.AddAuthentication(opts =>
             {
                 opts.DefaultAuthenticateScheme = DefaultSchema;
