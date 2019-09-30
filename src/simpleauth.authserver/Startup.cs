@@ -18,12 +18,9 @@ namespace SimpleAuth.AuthServer
     using Controllers;
     using Extensions;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.HttpOverrides;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Logging;
     using SimpleAuth;
     using SimpleAuth.Repositories;
@@ -33,13 +30,14 @@ namespace SimpleAuth.AuthServer
     using System.Net.Http;
     using System.Reflection;
     using System.Security.Claims;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.IdentityModel.Tokens;
 
     public class Startup
     {
         private static readonly string DefaultGoogleScopes = "openid,profile,email";
         private readonly IConfiguration _configuration;
         private readonly SimpleAuthOptions _options;
-        private readonly Assembly _assembly = typeof(HomeController).Assembly;
 
         public Startup(IConfiguration configuration)
         {
@@ -95,7 +93,18 @@ namespace SimpleAuth.AuthServer
                     options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
                 .AddLogging(log => { log.AddConsole(); });
             services.AddAuthentication(CookieNames.CookieName)
-                .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; });
+                .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                    cfg =>
+                    {
+                        //cfg.Authority = _configuration.TokenService;
+                        cfg.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateAudience = false,
+                            //ValidIssuers = _configuration.ValidIssuers
+                        };
+                        cfg.RequireHttpsMetadata = false;
+                    });
             if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
             {
                 services.AddAuthentication(CookieNames.ExternalCookieName)
@@ -115,30 +124,14 @@ namespace SimpleAuth.AuthServer
                         });
             }
 
-            services.AddAuthorization(opts => { opts.AddAuthPolicies(CookieNames.CookieName); })
-                .AddControllersWithViews()
-                .AddRazorRuntimeCompilation()
-                .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                .AddApplicationPart(_assembly);
-            services.AddRazorPages();
-            services.AddSimpleAuth(_options);
+            services.AddSimpleAuth(
+                _options,
+                new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme});
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseSimpleAuthExceptionHandler()
-                .UseResponseCompression()
-                .UseStaticFiles(
-                    new StaticFileOptions
-                    {
-                        FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot")
-                    })
-                .UseRouting()
-                .UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All })
-                .UseAuthentication()
-                .UseAuthorization()
-                .UseCors("AllowAll")
-                .UseSimpleAuthMvc();
+            app.UseResponseCompression().UseSimpleAuthMvc();
         }
     }
 }

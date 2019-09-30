@@ -20,6 +20,7 @@ namespace SimpleAuth.MiddleWare
     using SimpleAuth.Shared.Events.Logging;
     using System;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http.Features;
     using SimpleAuth.Shared.Errors;
 
     internal class ExceptionHandlerMiddleware
@@ -47,9 +48,9 @@ namespace SimpleAuth.MiddleWare
 
                 if (exception is SimpleAuthException serverException)
                 {
-                    var state = !(exception is SimpleAuthExceptionWithState exceptionWithState)
-                        ? string.Empty
-                        : exceptionWithState.State;
+                    var state = exception is SimpleAuthExceptionWithState exceptionWithState
+                        ? exceptionWithState.State
+                        : string.Empty;
                     await _publisher.Publish(new SimpleAuthError(Id.Create(),
                         serverException.Code,
                         serverException.Message,
@@ -78,15 +79,16 @@ namespace SimpleAuth.MiddleWare
                         .Add("message", exception.Message);
                 }
 
-                try
-                {
-                    await Invoke(context).ConfigureAwait(false);
-                }
-                catch
+                //context.Response.Redirect(context.Request.Path+context.Request.QueryString);
+                if (!(context.Features[typeof(IEndpointFeature)] is IEndpointFeature endpointFeature))
                 {
                     context.Response.Clear();
                     context.Response.StatusCode = 500;
+                    return;
                 }
+
+                endpointFeature.Endpoint = null;
+                await Invoke(context).ConfigureAwait(false);
             }
         }
     }
