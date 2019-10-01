@@ -345,10 +345,12 @@
             var modelCode = string.IsNullOrWhiteSpace(confirmCodeViewModel.Code)
                 ? confirmCodeViewModel.ConfirmationCode
                 : confirmCodeViewModel.Code;
+
             if (!string.IsNullOrWhiteSpace(modelCode))
             {
                 await _confirmationCodeStore.Remove(modelCode, cancellationToken).ConfigureAwait(false);
             }
+
             return RedirectToAction("Index", "User", new { Area = "pwd" });
         }
 
