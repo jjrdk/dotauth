@@ -342,11 +342,13 @@
 
             await SetLocalCookie(authenticatedUserClaims, Id.Create())
                 .ConfigureAwait(false); // Authenticate the resource owner
-            try
+            var modelCode = string.IsNullOrWhiteSpace(confirmCodeViewModel.Code)
+                ? confirmCodeViewModel.ConfirmationCode
+                : confirmCodeViewModel.Code;
+            if (!string.IsNullOrWhiteSpace(modelCode))
             {
-                await _confirmationCodeStore.Remove(confirmCodeViewModel.Code, cancellationToken).ConfigureAwait(false);
+                await _confirmationCodeStore.Remove(modelCode, cancellationToken).ConfigureAwait(false);
             }
-            finally { }
             return RedirectToAction("Index", "User", new { Area = "pwd" });
         }
 
@@ -405,7 +407,7 @@
                     await SetPasswordLessCookie(resourceOwner.Claims).ConfigureAwait(false);
                     try
                     {
-                        return RedirectToAction("ConfirmCode", new {code = viewModel.Code});
+                        return RedirectToAction("ConfirmCode", new { code = viewModel.Code });
                     }
                     catch (Exception ex)
                     {
