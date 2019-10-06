@@ -5,6 +5,7 @@
     using NpgsqlTypes;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
+    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     /// <summary>
     /// Defines the default marten registry for stored SimpleAuth types.

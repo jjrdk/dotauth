@@ -257,8 +257,8 @@ namespace SimpleAuth.AcceptanceTests
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new[] {"api1", "uma_protection"},
-                    GrantTypes = new[] {GrantTypes.ClientCredentials},
-                    ResponseTypes = new[] {ResponseTypeNames.Token},
+                    GrantTypes = new[] {GrantTypes.ClientCredentials, GrantTypes.Password, GrantTypes.UmaTicket},
+                    ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}

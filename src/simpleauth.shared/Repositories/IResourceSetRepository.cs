@@ -18,6 +18,7 @@ namespace SimpleAuth.Shared.Repositories
     using System.Threading.Tasks;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
+    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     /// <summary>
     /// Defines the resource set repository interface.

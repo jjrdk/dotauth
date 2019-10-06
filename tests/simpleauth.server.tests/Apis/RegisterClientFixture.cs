@@ -60,7 +60,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Content = new StringContent(fakeJson)
             };
             httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
+            httpRequest.Headers.Add("Authorization", "JwtConstants.BearerScheme " + grantedToken.Content.AccessToken);
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -97,7 +97,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Content = new StringContent(fakeJson)
             };
             httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
+            httpRequest.Headers.Add("Authorization", "JwtConstants.BearerScheme " + grantedToken.Content.AccessToken);
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
 
@@ -181,7 +181,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Content = new StringContent(fakeJson, Encoding.UTF8, "application/json")
             };
 
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", grantedToken.Content.AccessToken);
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("JwtConstants.BearerScheme", grantedToken.Content.AccessToken);
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -220,7 +220,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Content = new StringContent(fakeJson)
             };
             httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
+            httpRequest.Headers.Add("Authorization", "JwtConstants.BearerScheme " + grantedToken.Content.AccessToken);
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);

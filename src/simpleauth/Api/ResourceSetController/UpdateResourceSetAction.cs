@@ -23,6 +23,7 @@ namespace SimpleAuth.Api.ResourceSetController
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
+    using ResourceSet = SimpleAuth.Shared.DTOs.ResourceSet;
 
     internal class UpdateResourceSetAction
     {
@@ -33,9 +34,9 @@ namespace SimpleAuth.Api.ResourceSetController
             _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<bool> Execute(PutResourceSet udpateResourceSetParameter, CancellationToken cancellationToken)
+        public async Task<bool> Execute(ResourceSet udpateResourceSetParameter, CancellationToken cancellationToken)
         {
-            var resourceSet = new ResourceSet
+            var resourceSet = new Shared.Models.ResourceSet
             {
                 Id = udpateResourceSetParameter.Id,
                 Name = udpateResourceSetParameter.Name,
@@ -64,7 +65,7 @@ namespace SimpleAuth.Api.ResourceSetController
             return true;
         }
 
-        private void CheckResourceSetParameter(ResourceSet resourceSet)
+        private void CheckResourceSetParameter(Shared.Models.ResourceSet resourceSet)
         {
             if (resourceSet == null)
             {

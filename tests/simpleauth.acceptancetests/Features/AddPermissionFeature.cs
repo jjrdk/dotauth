@@ -26,7 +26,6 @@
             TestServerFixture fixture = null;
             GrantedTokenResponse grantedToken = null;
             UmaClient client = null;
-            JsonWebKeySet jwks = null;
             string resourceId = null;
             string ticketId = null;
 
@@ -37,7 +36,7 @@
                 async () =>
                 {
                     var json = await fixture.Client.GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
-                    jwks = new JsonWebKeySet(json);
+                    var jwks = new JsonWebKeySet(json);
 
                     Assert.NotEmpty(jwks.Keys);
                 });
@@ -68,7 +67,7 @@
                 async () =>
                 {
                     var resource = await client.AddResource(
-                            new PostResourceSet { Name = "picture", Scopes = new[] { "read" } },
+                            new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
                             grantedToken.AccessToken)
                         .ConfigureAwait(false);
                     resourceId = resource.Content.Id;
@@ -126,7 +125,7 @@
                 async () =>
                 {
                     var resource = await client.AddResource(
-                            new PostResourceSet { Name = "picture", Scopes = new[] { "read", "write" } },
+                            new ResourceSet { Name = "picture", Scopes = new[] { "read", "write" } },
                             grantedToken.AccessToken)
                         .ConfigureAwait(false);
                     resourceId = resource.Content.Id;

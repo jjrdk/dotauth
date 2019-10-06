@@ -34,7 +34,7 @@ namespace SimpleAuth.Tests.Authenticate
         [Fact]
         public void When_Passing_Empty_AuthenticationHeaderParameter_Then_Empty_Result_Is_Returned()
         {
-            var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", string.Empty);
+            var authenticationHeaderValue = new AuthenticationHeaderValue("JwtConstants.BearerScheme", string.Empty);
 
             var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 
@@ -47,7 +47,7 @@ namespace SimpleAuth.Tests.Authenticate
         {
             var parameter = "parameter";
             var encodedParameter = parameter.Base64Encode();
-            var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", encodedParameter);
+            var authenticationHeaderValue = new AuthenticationHeaderValue("JwtConstants.BearerScheme", encodedParameter);
 
             var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 
@@ -62,7 +62,7 @@ namespace SimpleAuth.Tests.Authenticate
             const string clientSecret = "clientSecret";
             var parameter = $"{clientId}:{clientSecret}";
             var encodedParameter = parameter.Base64Encode();
-            var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", encodedParameter);
+            var authenticationHeaderValue = new AuthenticationHeaderValue("JwtConstants.BearerScheme", encodedParameter);
 
             var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 

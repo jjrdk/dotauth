@@ -38,7 +38,7 @@
             var request = new HttpRequestMessage {Method = HttpMethod.Post, RequestUri = scopesUri, Content = body};
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
+                request.Headers.Add("Authorization", "JwtConstants.BearerScheme " + authorizationHeaderValue);
             }
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);

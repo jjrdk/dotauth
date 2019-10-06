@@ -27,6 +27,7 @@ namespace SimpleAuth.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using ResourceSet = SimpleAuth.Shared.DTOs.ResourceSet;
 
     /// <summary>
     /// Defines the resource set controller.
@@ -60,7 +61,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpPost(".search")]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult<GenericResult<ResourceSet>>> SearchResourceSets([FromBody] SearchResourceSet searchResourceSet, CancellationToken cancellationToken)
+        public async Task<ActionResult<GenericResult<Shared.Models.ResourceSet>>> SearchResourceSets([FromBody] SearchResourceSet searchResourceSet, CancellationToken cancellationToken)
         {
             if (searchResourceSet == null)
             {
@@ -121,7 +122,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> AddResourceSet([FromBody] PostResourceSet postResourceSet, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddResourceSet([FromBody] ResourceSet postResourceSet, CancellationToken cancellationToken)
         {
             if (postResourceSet == null)
             {
@@ -144,21 +145,21 @@ namespace SimpleAuth.Controllers
         /// <summary>
         /// Updates the resource set.
         /// </summary>
-        /// <param name="putResourceSet">The put resource set.</param>
+        /// <param name="resourceSet">The put resource set.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPut]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> UpdateResourceSet([FromBody] PutResourceSet putResourceSet, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateResourceSet([FromBody] ResourceSet resourceSet, CancellationToken cancellationToken)
         {
-            if (putResourceSet == null)
+            if (resourceSet == null)
             {
                 return BuildError(ErrorCodes.InvalidRequestCode,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
 
-            var resourceSetExists = await _updateResourceSet.Execute(putResourceSet, cancellationToken).ConfigureAwait(false);
+            var resourceSetExists = await _updateResourceSet.Execute(resourceSet, cancellationToken).ConfigureAwait(false);
             if (!resourceSetExists)
             {
                 return GetNotFoundResourceSet();
@@ -166,13 +167,10 @@ namespace SimpleAuth.Controllers
 
             var response = new UpdateResourceSetResponse
             {
-                Id = putResourceSet.Id
+                Id = resourceSet.Id
             };
 
-            return new ObjectResult(response)
-            {
-                StatusCode = (int)HttpStatusCode.OK
-            };
+            return new OkObjectResult(response);
         }
 
         /// <summary>

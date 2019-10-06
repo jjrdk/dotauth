@@ -97,7 +97,6 @@ namespace SimpleAuth.AuthServer
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        //cfg.Authority = _configuration.TokenService;
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,

@@ -18,7 +18,6 @@ namespace SimpleAuth.Server.Tests
     using Extensions;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
     using SimpleAuth;
     using SimpleAuth.Repositories;

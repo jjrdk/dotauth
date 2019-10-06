@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Client.Results
 {
+    using System.IdentityModel.Tokens.Jwt;
     using Newtonsoft.Json.Linq;
 
     /// <summary>
@@ -14,7 +15,7 @@
         /// <value>
         /// The content.
         /// </value>
-        public JObject Content { get; set; }
+        public JwtPayload Content { get; set; }
 
         /// <summary>
         /// Gets or sets the JWT token.

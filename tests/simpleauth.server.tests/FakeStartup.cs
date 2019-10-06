@@ -15,7 +15,6 @@
 namespace SimpleAuth.Server.Tests
 {
     using Extensions;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +27,7 @@ namespace SimpleAuth.Server.Tests
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Logging;
     using Moq;
     using SimpleAuth.Server.Tests.MiddleWares;
@@ -82,18 +82,6 @@ namespace SimpleAuth.Server.Tests
                                     return Task.CompletedTask;
                                 }
 
-                                string token = null;
-                                if (authorization.StartsWith(Bearer, StringComparison.OrdinalIgnoreCase))
-                                {
-                                    token = authorization.Substring(Bearer.Length).Trim();
-                                }
-
-                                //var jwt = (JwtSecurityToken)_handler.ReadToken(token);
-                                //var claimsIdentity = new ClaimsIdentity(
-                                //    jwt.Claims,
-                                //    JwtBearerDefaults.AuthenticationScheme);
-                                //var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                                //ctx.Principal = claimsPrincipal;
                                 ctx.Success();
                                 return Task.CompletedTask;
                             }
@@ -123,7 +111,7 @@ namespace SimpleAuth.Server.Tests
                 .AddAccountFilter()
                 .AddSingleton(_context.ConfirmationCodeStore.Object)
                 .AddSingleton(sp => _context.Client);
-            // 3. Configure MVC
+
             return services.BuildServiceProvider();
         }
 

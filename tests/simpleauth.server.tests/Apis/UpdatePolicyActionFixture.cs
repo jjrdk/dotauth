@@ -24,6 +24,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Threading;
     using System.Threading.Tasks;
     using Xunit;
+    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     public class UpdatePolicyActionFixture
     {

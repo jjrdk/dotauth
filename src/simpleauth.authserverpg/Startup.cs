@@ -18,12 +18,9 @@ namespace SimpleAuth.AuthServerPg
     using Controllers;
     using Extensions;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.HttpOverrides;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Logging;
     using SimpleAuth;
     using SimpleAuth.Shared.Repositories;
@@ -97,9 +94,7 @@ namespace SimpleAuth.AuthServerPg
                 {
                     var options = new SimpleAuthMartenOptions(
                         _configuration["ConnectionString"],
-                        new MartenLoggerFacade(provider.GetService<ILogger<MartenLoggerFacade>>()),
-                        null,
-                        AutoCreate.CreateOrUpdate);
+                        new MartenLoggerFacade(provider.GetService<ILogger<MartenLoggerFacade>>()));
                     return new DocumentStore(options);
                 });
             services.AddTransient(sp => sp.GetService<IDocumentStore>().LightweightSession());
@@ -110,10 +105,10 @@ namespace SimpleAuth.AuthServerPg
                         x.EnableForHttps = true;
                         x.Providers.Add(
                             new GzipCompressionProvider(
-                                new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                                new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
                         x.Providers.Add(
                             new BrotliCompressionProvider(
-                                new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                                new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
                     })
                 .AddHttpContextAccessor()
                 .AddCors(
@@ -121,7 +116,8 @@ namespace SimpleAuth.AuthServerPg
                 .AddLogging(log => { log.AddConsole(o => { o.IncludeScopes = true; }); });
             services.AddAuthentication(CookieNames.CookieName)
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                .AddJwtBearer(
+                    JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
                         //cfg.Authority = _configuration.TokenService;
@@ -144,7 +140,8 @@ namespace SimpleAuth.AuthServerPg
                             opts.ClientSecret = _configuration["Google:ClientSecret"];
                             opts.SignInScheme = CookieNames.ExternalCookieName;
                             var scopes = _configuration["Google:Scopes"] ?? DefaultGoogleScopes;
-                            foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()))
+                            foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(x => x.Trim()))
                             {
                                 opts.Scope.Add(scope);
                             }

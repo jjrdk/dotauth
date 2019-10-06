@@ -2,7 +2,6 @@
 {
     using global::Marten;
     using Microsoft.AspNetCore.Authentication.Cookies;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +10,7 @@
     using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Repositories;
     using System;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using SimpleAuth.Repositories;
 
     public class ServerStartup : IStartup
@@ -55,10 +55,10 @@
                     var store = sp.GetService<IDocumentStore>();
                     return () => store.LightweightSession();
                 });
-            // 1. Add the dependencies needed to enable CORS
+
             services.AddCors(
                 options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
-            // 2. Configure server
+
             services.AddSimpleAuth(_martenOptions, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme });
             services.AddLogging().AddAccountFilter().AddSingleton(sp => _context.Client);
             services.AddAuthentication(

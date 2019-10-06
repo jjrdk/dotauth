@@ -39,7 +39,7 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Add_Resource_And_No_Name_Is_Specified_Then_Error_Is_Returned()
         {
-            var resource = await _umaClient.AddResource(new PostResourceSet {Name = string.Empty}, "header")
+            var resource = await _umaClient.AddResource(new ResourceSet {Name = string.Empty}, "header")
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
@@ -50,7 +50,7 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Add_Resource_And_No_Scopes_Is_Specified_Then_Error_Is_Returned()
         {
-            var resource = await _umaClient.AddResource(new PostResourceSet {Name = "name"}, "header")
+            var resource = await _umaClient.AddResource(new ResourceSet {Name = "name"}, "header")
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
@@ -62,7 +62,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Add_Resource_And_No_Invalid_IconUri_Is_Specified_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "name", Scopes = new[] {"scope"}, IconUri = "invalid"},
+                    new ResourceSet {Name = "name", Scopes = new[] {"scope"}, IconUri = "invalid"},
                     "header")
                 .ConfigureAwait(false);
 
@@ -93,7 +93,7 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Update_Resource_And_No_Id_Is_Specified_Then_Error_Is_Returned()
         {
-            var resource = await _umaClient.UpdateResource(new PutResourceSet(), "header").ConfigureAwait(false);
+            var resource = await _umaClient.UpdateResource(new ResourceSet(), "header").ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
             Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Title);
@@ -104,7 +104,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Update_Resource_And_No_Name_Is_Specified_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.UpdateResource(
-                    new PutResourceSet {Id = "invalid", Name = string.Empty},
+                    new ResourceSet {Id = "invalid", Name = string.Empty},
                     "header")
                 .ConfigureAwait(false);
 
@@ -116,7 +116,7 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Update_Resource_And_No_Scopes_Is_Specified_Then_Error_Is_Returned()
         {
-            var resource = await _umaClient.UpdateResource(new PutResourceSet {Id = "invalid", Name = "name"}, "header")
+            var resource = await _umaClient.UpdateResource(new ResourceSet {Id = "invalid", Name = "name"}, "header")
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
@@ -128,7 +128,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Update_Resource_And_No_Invalid_IconUri_Is_Specified_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.UpdateResource(
-                    new PutResourceSet {Id = "invalid", Name = "name", Scopes = new[] {"scope"}, IconUri = "invalid"},
+                    new ResourceSet {Id = "invalid", Name = "name", Scopes = new[] {"scope"}, IconUri = "invalid"},
                     "header")
                 .ConfigureAwait(false);
 
@@ -141,7 +141,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Update_Unknown_Resource_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.UpdateResource(
-                    new PutResourceSet {Id = "invalid", Name = "name", Scopes = new[] {"scope"}},
+                    new ResourceSet {Id = "invalid", Name = "name", Scopes = new[] {"scope"}},
                     "header")
                 .ConfigureAwait(false);
 
@@ -182,7 +182,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Adding_Resource_Then_Information_Can_Be_Retrieved()
         {
             var resource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "name", Scopes = new[] {"scope"}},
+                    new ResourceSet {Name = "name", Scopes = new[] {"scope"}},
                     "header")
                 .ConfigureAwait(false);
 
@@ -205,12 +205,12 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Updating_Resource_Then_Changes_Are_Persisted()
         {
             var resource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "name", Scopes = new[] {"scope"}},
+                    new ResourceSet {Name = "name", Scopes = new[] {"scope"}},
                     "header")
                 .ConfigureAwait(false);
 
             var updateResult = await _umaClient.UpdateResource(
-                    new PutResourceSet
+                    new ResourceSet
                         {
                             Id = resource.Content.Id, Name = "name2", Type = "type", Scopes = new[] {"scope2"}
                         },

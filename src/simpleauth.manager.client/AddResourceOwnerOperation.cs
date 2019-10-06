@@ -44,7 +44,7 @@
             };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authorizationHeaderValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue("JwtConstants.BearerScheme", authorizationHeaderValue);
             }
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);

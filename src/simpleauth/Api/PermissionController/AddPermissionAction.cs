@@ -24,6 +24,7 @@ namespace SimpleAuth.Api.PermissionController
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
+    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     internal class AddPermissionAction
     {

@@ -34,13 +34,12 @@ namespace SimpleAuth.Server.Tests.Introspection
                 .ConfigureAwait(false);
 
             var authResult = await new UserInfoIntrospectionHandler(
-                    new Mock<IOptionsMonitor<UserInfoIntrospectionOptions>>().Object,
+                    null,
+                    new Mock<IOptionsMonitor<AuthenticationSchemeOptions>>().Object,
                     new Mock<ILoggerFactory>().Object,
                     new UrlTestEncoder(),
-                    _server.Client,
-                    new Mock<ISystemClock>().Object).HandleAuthenticate(
-                    BaseUrl + WellKnownOpenidConfiguration,
-                    result.Content.AccessToken)
+                    new Mock<ISystemClock>().Object)
+                .AuthenticateAsync()
                 .ConfigureAwait(false);
 
             Assert.True(authResult.Succeeded);

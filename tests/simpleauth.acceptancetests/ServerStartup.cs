@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.AcceptanceTests
 {
     using Microsoft.AspNetCore.Authentication.Cookies;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +12,7 @@
     using SimpleAuth.Sms;
     using System;
     using System.Threading;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
@@ -67,12 +67,12 @@
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             var mockSmsClient = new Mock<ISmsClient>();
-            mockSmsClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync((true, null));
+            mockSmsClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((true, null));
 
             services.AddCors(
                 options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
-            services.AddSimpleAuth(_options, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme }).AddSmsAuthentication(mockSmsClient.Object);
+            services.AddSimpleAuth(_options, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme })
+                .AddSmsAuthentication(mockSmsClient.Object);
             services.AddLogging().AddAccountFilter();
             services.AddAuthentication(
                     cfg =>

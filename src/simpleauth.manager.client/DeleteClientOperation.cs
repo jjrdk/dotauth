@@ -21,7 +21,7 @@
             var request = new HttpRequestMessage {Method = HttpMethod.Delete, RequestUri = clientsUri};
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
+                request.Headers.Add("Authorization", "JwtConstants.BearerScheme " + authorizationHeaderValue);
             }
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);

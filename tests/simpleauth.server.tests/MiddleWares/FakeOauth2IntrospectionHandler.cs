@@ -32,9 +32,9 @@
             }
 
             string token = null;
-            if (authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            if (authorization.StartsWith("JwtConstants.BearerScheme ", StringComparison.OrdinalIgnoreCase))
             {
-                token = authorization.Substring("Bearer ".Length).Trim();
+                token = authorization.Substring("JwtConstants.BearerScheme ".Length).Trim();
             }
 
             if (string.IsNullOrEmpty(token))

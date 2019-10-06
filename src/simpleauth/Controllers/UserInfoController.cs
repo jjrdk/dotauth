@@ -102,7 +102,7 @@ namespace SimpleAuth.Controllers
             var authenticationHeader = values.First();
             var authorization = AuthenticationHeaderValue.Parse(authenticationHeader);
             var scheme = authorization.Scheme;
-            if (string.Compare(scheme, "Bearer", StringComparison.CurrentCultureIgnoreCase) != 0)
+            if (string.Compare(scheme, "JwtConstants.BearerScheme", StringComparison.CurrentCultureIgnoreCase) != 0)
             {
                 return string.Empty;
             }

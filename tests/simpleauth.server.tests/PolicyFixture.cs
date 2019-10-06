@@ -74,7 +74,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Add_Policy_And_Scope_Does_Not_Exists_Then_Error_Is_Returned()
         {
             var addResponse = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
 
@@ -140,7 +140,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Update_Policy_And_Scope_Does_Not_Exist_Then_Error_Is_Returned()
         {
             var addResource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
             var addResponse = await _umaClient.AddPolicy(
@@ -213,7 +213,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Add_Resource_And_ResourceSet_Is_Unknown_Then_Error_Is_Returned()
         {
             var addResource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _umaClient.AddPolicy(
@@ -253,7 +253,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Remove_Resource_And_Pass_Unknown_Resource_Then_Error_Is_Returned()
         {
             var addResponse = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _umaClient.AddPolicy(
@@ -280,7 +280,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Adding_Policy_Then_Information_Can_Be_Returned()
         {
             var addResponse = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
 
@@ -315,7 +315,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Getting_All_Policies_Then_Identifiers_Are_Returned()
         {
             var addResource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _umaClient.AddPolicy(
@@ -344,7 +344,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Removing_Policy_Then_Information_Does_Not_Exist()
         {
             var addResource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _umaClient.AddPolicy(
@@ -375,11 +375,11 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Adding_Resource_To_Policy_Then_Changes_Are_Persisted()
         {
             var firstResource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
             var secondResource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _umaClient.AddPolicy(
@@ -420,11 +420,11 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Removing_Resource_From_Policy_Then_Changes_Are_Persisted()
         {
             var firstResource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
             var secondResource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _umaClient.AddPolicy(
@@ -459,11 +459,11 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Updating_Policy_Then_Changes_Are_Persisted()
         {
             var firstResource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read", "write"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read", "write"}},
                     "header")
                 .ConfigureAwait(false);
             var secondResource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read", "write"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read", "write"}},
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _umaClient.AddPolicy(

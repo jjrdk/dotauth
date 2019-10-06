@@ -3,6 +3,7 @@
     using global::Marten;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
+    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     public class SimpleAuthRegistry : MartenRegistry
     {

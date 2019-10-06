@@ -24,6 +24,7 @@ namespace SimpleAuth.Api.PolicyController
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     internal class AddAuthorizationPolicyAction
     {

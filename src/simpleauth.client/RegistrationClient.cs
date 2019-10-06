@@ -60,7 +60,7 @@ namespace SimpleAuth.Client
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             if (!string.IsNullOrWhiteSpace(accessToken))
             {
-                request.Headers.Add("Authorization", "Bearer " + accessToken);
+                request.Headers.Add("Authorization", "JwtConstants.BearerScheme " + accessToken);
             }
 
             var result = await _client.SendAsync(request).ConfigureAwait(false);

@@ -26,6 +26,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using Xunit;
+    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     public class AddPermissionActionFixture
     {

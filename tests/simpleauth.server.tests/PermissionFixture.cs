@@ -40,7 +40,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Client_Is_Not_Authenticated_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
 
@@ -95,7 +95,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Scopes_Does_Not_Exist_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
 
@@ -113,7 +113,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Adding_Permission_Then_TicketId_Is_Returned()
         {
             var resource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
 
@@ -129,7 +129,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Adding_Permissions_Then_TicketIds_Is_Returned()
         {
             var resource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
                 .ConfigureAwait(false);
             var permissions = new[]

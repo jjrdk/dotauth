@@ -84,7 +84,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
                         Secrets = new[] { new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}}
                     });
 
-            var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", "test:test".Base64Encode());
+            var authenticationHeaderValue = new AuthenticationHeaderValue("JwtConstants.BearerScheme", "test:test".Base64Encode());
 
             _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((GrantedToken) null));
