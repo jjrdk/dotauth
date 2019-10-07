@@ -10,7 +10,7 @@
 
     internal sealed class GenerateAndSendSmsCodeOperation
     {
-        private readonly Random _random = new Random(DateTime.UtcNow.Second);
+        private readonly Random _random = new Random(DateTimeOffset.UtcNow.Second);
         private readonly IConfirmationCodeStore _confirmationCodeStore;
         private readonly ISmsClient _smsClient;
 
@@ -27,7 +27,7 @@
             var confirmationCode = new ConfirmationCode
             {
                 Value = await GetCode(cancellationToken).ConfigureAwait(false),
-                IssueAt = DateTime.UtcNow,
+                IssueAt = DateTimeOffset.UtcNow,
                 ExpiresIn = 120,
                 Subject = phoneNumber
             };

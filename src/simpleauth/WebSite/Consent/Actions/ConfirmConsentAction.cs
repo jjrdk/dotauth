@@ -136,7 +136,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                             subject,
                             authorizationParameter.ClientId,
                             assignedConsent.GrantedScopes,
-                            DateTime.UtcNow))
+                            DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
             }
 

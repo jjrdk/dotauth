@@ -15,7 +15,7 @@
         /// <param name="id">The identifier.</param>
         /// <param name="resourceOwner">The resource owner.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public ExternalUserCreated(string id, ResourceOwner resourceOwner, DateTime timestamp) : base(id, timestamp)
+        public ExternalUserCreated(string id, ResourceOwner resourceOwner, DateTimeOffset timestamp) : base(id, timestamp)
         {
             ResourceOwner = resourceOwner;
         }

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
@@ -24,10 +25,12 @@
                 throw new ArgumentNullException(nameof(clientsUri));
             }
 
-            var request = new HttpRequestMessage {Method = HttpMethod.Get, RequestUri = clientsUri};
+            var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = clientsUri };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Add("Authorization", "JwtConstants.BearerScheme " + authorizationHeaderValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue(
+                    JwtBearerConstants.BearerScheme,
+                    authorizationHeaderValue);
             }
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);

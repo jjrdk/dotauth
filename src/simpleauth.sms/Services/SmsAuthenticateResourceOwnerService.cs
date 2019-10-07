@@ -43,7 +43,7 @@
                 return null;
             }
 
-            if (confirmationCode.IssueAt.AddSeconds(confirmationCode.ExpiresIn) <= DateTime.UtcNow)
+            if (confirmationCode.IssueAt.AddSeconds(confirmationCode.ExpiresIn) <= DateTimeOffset.UtcNow)
             {
                 return null;
             }

@@ -239,7 +239,7 @@ namespace SimpleAuth.Api.Token
                             grantedToken?.ClientId,
                             grantedToken?.Scope,
                             GrantTypes.ClientCredentials,
-                            DateTime.UtcNow))
+                            DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
             }
 
@@ -270,7 +270,7 @@ namespace SimpleAuth.Api.Token
                 .ConfigureAwait(false);
 
             await _eventPublisher
-                .Publish(new TokenRevoked(Id.Create(), revokeTokenParameter.Token, DateTime.UtcNow))
+                .Publish(new TokenRevoked(Id.Create(), revokeTokenParameter.Token, DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             return result;
         }

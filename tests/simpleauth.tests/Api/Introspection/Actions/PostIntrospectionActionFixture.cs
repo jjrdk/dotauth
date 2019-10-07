@@ -131,7 +131,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             {
                 ClientId = clientId,
                 IdTokenPayLoad = idtp,
-                CreateDateTime = DateTime.UtcNow.AddDays(-2),
+                CreateDateTime = DateTimeOffset.UtcNow.AddDays(-2),
                 ExpiresIn = 2
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
@@ -178,7 +178,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
                     {OpenIdClaimTypes.Subject, subject},
                     {StandardClaimNames.Audiences, audiences}
                 },
-                CreateDateTime = DateTime.UtcNow,
+                CreateDateTime = DateTimeOffset.UtcNow,
                 ExpiresIn = 20000
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);

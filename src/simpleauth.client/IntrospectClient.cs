@@ -20,6 +20,7 @@ namespace SimpleAuth.Client
     using System;
     using System.Linq;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
@@ -82,7 +83,7 @@ namespace SimpleAuth.Client
             };
             if (!string.IsNullOrWhiteSpace(_authorizationValue))
             {
-                request.Headers.Add("Authorization", "Basic " + _authorizationValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Basic", _authorizationValue);
             }
 
             var result = await _client.SendAsync(request).ConfigureAwait(false);

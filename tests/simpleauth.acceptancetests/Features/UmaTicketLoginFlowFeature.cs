@@ -11,7 +11,7 @@
 
     public class UmaTicketLoginFlowFeature : AuthFlowFeature
     {
-        [Scenario(DisplayName = "Successful authorization")]
+        [Scenario(DisplayName = "Successful ticket authentication")]
         public void SuccessfulTicketAuthentication()
         {
             AddResourceSetResponse resourceSetResponse = null;
@@ -76,11 +76,37 @@
                     Assert.False(resourceResponse.ContainsError);
                 });
 
+            "and setting a policy".x(
+                async () =>
+                {
+                    var policy = new PostPolicy
+                    {
+                        ResourceSetIds = new[] { resourceSetResponse.Id },
+                        Rules = new[]
+                        {
+                            new PostPolicyRule
+                            {
+                                Scopes = new[] {"api1"},
+                                Claims = new[] {new PostClaim {Type = "sub", Value = "user"}},
+                                ClientIdsAllowed = new[] {"post_client"},
+                                IsResourceOwnerConsentNeeded = false
+                            }
+                        }
+                    };
+                    var policyResponse = await umaClient.AddPolicy(policy, result.AccessToken);
+                    Assert.False(policyResponse.ContainsError);
+
+                    await umaClient.AddResource(
+                                            policyResponse.Content.PolicyId,
+                                            new AddResourceSet { ResourceSets = new[] { resourceSetResponse.Id } },
+                                            result.AccessToken);
+                });
+
             "and setting permission".x(
                 async () =>
                 {
-                    var request = new PostPermission { ResourceSetId = resourceSetResponse.Id, Scopes = new[] { "api1" } };
-                    var permissionResponse = await umaClient.AddPermission(request, result.AccessToken);
+                    var permission = new PostPermission { ResourceSetId = resourceSetResponse.Id, Scopes = new[] { "api1" } };
+                    var permissionResponse = await umaClient.AddPermission(permission, result.AccessToken);
                     ticketId = permissionResponse.Content.TicketId;
 
                     Assert.Null(permissionResponse.Error);

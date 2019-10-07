@@ -198,7 +198,7 @@
                 return Task.FromResult(false);
             }
 
-            scope.CreateDateTime = DateTime.UtcNow;
+            scope.CreateDateTime = DateTimeOffset.UtcNow;
             _scopes.Add(scope);
             return Task.FromResult(true);
         }
@@ -274,7 +274,7 @@
             sc.IsExposed = scope.IsExposed;
             sc.IsOpenIdScope = scope.IsOpenIdScope;
             sc.Type = scope.Type;
-            sc.UpdateDateTime = DateTime.UtcNow;
+            sc.UpdateDateTime = DateTimeOffset.UtcNow;
             return Task.FromResult(true);
         }
     }

@@ -37,7 +37,7 @@
                     new ConfirmationCode
                     {
                         ExpiresIn = TimeSpan.FromDays(10).TotalSeconds,
-                        IssueAt = DateTime.UtcNow,
+                        IssueAt = DateTimeOffset.UtcNow,
                         Subject = "phone",
                         Value = "123"
                     });

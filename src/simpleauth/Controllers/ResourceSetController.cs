@@ -61,7 +61,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpPost(".search")]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult<GenericResult<Shared.Models.ResourceSet>>> SearchResourceSets([FromBody] SearchResourceSet searchResourceSet, CancellationToken cancellationToken)
+        public async Task<ActionResult<GenericResult<ResourceSet>>> SearchResourceSets([FromBody] SearchResourceSet searchResourceSet, CancellationToken cancellationToken)
         {
             if (searchResourceSet == null)
             {
@@ -71,7 +71,13 @@ namespace SimpleAuth.Controllers
             }
 
             var result = await _resourceSetRepository.Search(searchResourceSet, cancellationToken).ConfigureAwait(false);
-            return new OkObjectResult(result);
+            return new OkObjectResult(
+                new GenericResult<ResourceSet>
+                {
+                    Content = result.Content.Select(x => x.ToResponse()).ToArray(),
+                    StartIndex = result.StartIndex,
+                    TotalResults = result.TotalResults
+                });
         }
 
         /// <summary>
@@ -99,7 +105,8 @@ namespace SimpleAuth.Controllers
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode,
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
                     "the identifier must be specified",
                     HttpStatusCode.BadRequest);
             }

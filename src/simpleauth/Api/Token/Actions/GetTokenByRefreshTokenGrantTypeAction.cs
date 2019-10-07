@@ -143,7 +143,7 @@ namespace SimpleAuth.Api.Token.Actions
                         generatedToken.ClientId,
                         generatedToken.Scope,
                         GrantTypes.RefreshToken,
-                        DateTime.UtcNow))
+                        DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             return generatedToken;
         }

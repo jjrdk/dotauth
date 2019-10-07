@@ -54,7 +54,7 @@ namespace SimpleAuth.Policies
             }
 
             var resourceIds = validTicket.Lines.Select(l => l.ResourceSetId).ToArray();
-            var resources = await _resourceSetRepository.Get(cancellationToken, resourceIds).ConfigureAwait(false);
+            ResourceSet[] resources = await _resourceSetRepository.Get(cancellationToken, resourceIds).ConfigureAwait(false);
             if (resources == null || !resources.Any() || resources.Length != resourceIds.Length)
             {
                 throw new SimpleAuthException(ErrorCodes.InternalError, ErrorDescriptions.SomeResourcesDontExist);
@@ -73,7 +73,7 @@ namespace SimpleAuth.Policies
                 if (validationResult.Type != AuthorizationPolicyResultEnum.Authorized)
                 {
                     await _eventPublisher
-                        .Publish(new AuthorizationPolicyNotAuthorized(Id.Create(), validTicket.Id, DateTime.UtcNow))
+                        .Publish(new AuthorizationPolicyNotAuthorized(Id.Create(), validTicket.Id, DateTimeOffset.UtcNow))
                         .ConfigureAwait(false);
 
                     return validationResult;

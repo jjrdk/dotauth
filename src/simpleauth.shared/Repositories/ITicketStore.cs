@@ -7,7 +7,7 @@
     /// <summary>
     /// Defines the ticket store interface.
     /// </summary>
-    public interface ITicketStore
+    public interface ITicketStore : ICleanable
     {
         /// <summary>
         /// Adds the specified ticket.

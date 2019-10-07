@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using SimpleAuth.Shared;
@@ -23,10 +24,10 @@
                 throw new ArgumentNullException(nameof(scopesUri));
             }
 
-            var request = new HttpRequestMessage {Method = HttpMethod.Delete, RequestUri = scopesUri};
+            var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = scopesUri };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Add("Authorization", "JwtConstants.BearerScheme " + authorizationHeaderValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, authorizationHeaderValue);
             }
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);

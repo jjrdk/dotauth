@@ -166,14 +166,14 @@ namespace SimpleAuth.Controllers
         /// Adds the resource set.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="postAddResourceSet">The post add resource set.</param>
+        /// <param name="addResourceSet">The post add resource set.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost("{id}/resources")]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> PostAddResourceSet(
             string id,
-            [FromBody] PostAddResourceSet postAddResourceSet,
+            [FromBody] AddResourceSet addResourceSet,
             CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -184,7 +184,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            if (postAddResourceSet == null)
+            if (addResourceSet == null)
             {
                 return BuildError(
                     ErrorCodes.InvalidRequestCode,
@@ -192,7 +192,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            if (postAddResourceSet.ResourceSets == null)
+            if (addResourceSet.ResourceSets == null)
             {
                 return BuildError(
                     ErrorCodes.InvalidRequestCode,
@@ -201,7 +201,7 @@ namespace SimpleAuth.Controllers
             }
 
             var isPolicyExists = await _addResourceSet.Execute(
-                    new AddResourceSetParameter { PolicyId = id, ResourceSets = postAddResourceSet.ResourceSets },
+                    new AddResourceSetParameter { PolicyId = id, ResourceSets = addResourceSet.ResourceSets },
                     cancellationToken)
                 .ConfigureAwait(false);
             if (!isPolicyExists)

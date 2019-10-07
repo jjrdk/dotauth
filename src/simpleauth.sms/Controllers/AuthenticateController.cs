@@ -182,7 +182,7 @@
                 catch (Exception ex)
                 {
                     var se = ex as SimpleAuthException;
-                    await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTime.UtcNow))
+                    await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTimeOffset.UtcNow))
                         .ConfigureAwait(false);
                     ModelState.AddModelError("message_error", ex.Message);
                 }
@@ -202,7 +202,7 @@
                     catch (Exception ex)
                     {
                         var se = ex as SimpleAuthException;
-                        await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTime.UtcNow))
+                        await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
                         ModelState.AddModelError("message_error", "SMS account is not valid");
                     }
@@ -394,7 +394,7 @@
                 catch (Exception ex)
                 {
                     var se = ex as SimpleAuthException;
-                    await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTime.UtcNow))
+                    await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTimeOffset.UtcNow))
                         .ConfigureAwait(false);
                     ModelState.AddModelError("message_error", ex.Message);
                 }
@@ -415,7 +415,7 @@
                     {
                         var se = ex as SimpleAuthException;
                         await _eventPublisher.Publish(
-                                new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTime.UtcNow))
+                                new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
                         ModelState.AddModelError("message_error", "SMS account is not valid");
                     }
@@ -434,7 +434,7 @@
                     HttpContext,
                     CookieNames.PasswordLessCookieName,
                     principal,
-                    new AuthenticationProperties { ExpiresUtc = DateTime.UtcNow.AddMinutes(20), IsPersistent = false })
+                    new AuthenticationProperties { ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20), IsPersistent = false })
                 .ConfigureAwait(false);
         }
     }

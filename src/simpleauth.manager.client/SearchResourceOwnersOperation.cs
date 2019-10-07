@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
@@ -19,7 +20,10 @@
             _httpClient = httpClientFactory;
         }
 
-        public async Task<GenericResponse<PagedResponse<ResourceOwner>>> Execute(Uri resourceOwnerUri, SearchResourceOwnersRequest parameter, string authorizationHeaderValue = null)
+        public async Task<GenericResponse<PagedResponse<ResourceOwner>>> Execute(
+            Uri resourceOwnerUri,
+            SearchResourceOwnersRequest parameter,
+            string authorizationHeaderValue = null)
         {
             if (resourceOwnerUri == null)
             {
@@ -36,7 +40,9 @@
             };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Add("Authorization", "JwtConstants.BearerScheme " + authorizationHeaderValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue(
+                    JwtBearerConstants.BearerScheme,
+                    authorizationHeaderValue);
             }
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);

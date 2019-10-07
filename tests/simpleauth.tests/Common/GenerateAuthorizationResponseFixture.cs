@@ -191,7 +191,7 @@ namespace SimpleAuth.Tests.Common
             var grantedToken = new GrantedToken
             {
                 AccessToken = Id.Create(),
-                CreateDateTime = DateTime.UtcNow,
+                CreateDateTime = DateTimeOffset.UtcNow,
                 ExpiresIn = 10000
             };
             var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };

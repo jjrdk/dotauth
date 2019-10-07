@@ -129,7 +129,7 @@
                 {StandardClaimNames.Issuer, "issuer"},
                 {StandardClaimNames.Subject, "issuer"},
                 {StandardClaimNames.Audiences, "audience"},
-                {StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddDays(2).ConvertToUnixTimestamp()}
+                {StandardClaimNames.ExpirationTime, DateTimeOffset.UtcNow.AddDays(2).ConvertToUnixTimestamp()}
             };
             var jwks = CreateJwt(jwsPayload, out var jwt);
             var instruction = new AuthenticateInstruction

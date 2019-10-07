@@ -107,7 +107,7 @@ namespace SimpleAuth.Extensions
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
                 ExpiresIn = (int)client.TokenLifetime.TotalSeconds,
                 TokenType = CoreConstants.StandardTokenTypes._bearer,
-                CreateDateTime = DateTime.UtcNow,
+                CreateDateTime = DateTimeOffset.UtcNow,
                 // IDS
                 Scope = scope,
                 UserInfoPayLoad = userInformationPayload,

@@ -24,7 +24,6 @@ namespace SimpleAuth.Api.PolicyController
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     internal class AddAuthorizationPolicyAction
     {
@@ -57,18 +56,7 @@ namespace SimpleAuth.Api.PolicyController
 
             foreach (var resourceSetId in addPolicyParameter.ResourceSetIds)
             {
-                ResourceSet resourceSet;
-                try
-                {
-                    resourceSet = await _resourceSetRepository.Get(resourceSetId, cancellationToken).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    throw new SimpleAuthException(
-                        ErrorCodes.InternalError,
-                        string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId),
-                        ex);
-                }
+                var resourceSet = await _resourceSetRepository.Get(resourceSetId, cancellationToken).ConfigureAwait(false);
 
                 if (resourceSet == null)
                 {

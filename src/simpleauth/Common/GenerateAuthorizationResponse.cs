@@ -128,7 +128,7 @@ namespace SimpleAuth.Common
                     {
                         Code = Id.Create(),
                         RedirectUri = authorizationParameter.RedirectUrl,
-                        CreateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTimeOffset.UtcNow,
                         ClientId = authorizationParameter.ClientId,
                         Scopes = authorizationParameter.Scope,
                         IdTokenPayload = idTokenPayload,
@@ -159,7 +159,7 @@ namespace SimpleAuth.Common
                             authorizationParameter.ClientId,
                             allowedTokenScopes,
                             authorizationParameter.ResponseType,
-                            DateTime.UtcNow))
+                            DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
             }
 
@@ -177,7 +177,7 @@ namespace SimpleAuth.Common
                             Id.Create(),
                             claimsPrincipal.GetSubject(),
                             authorizationParameter.ClientId,
-                            DateTime.UtcNow))
+                            DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
             }
 

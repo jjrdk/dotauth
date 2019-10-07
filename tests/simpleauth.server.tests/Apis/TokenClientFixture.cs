@@ -772,7 +772,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     new Claim(StandardClaimNames.Audiences, "http://localhost:5000"),
                     new Claim(
                         StandardClaimNames.ExpirationTime,
-                        DateTime.UtcNow.AddHours(1).ConvertToUnixTimestamp().ToString())
+                        DateTimeOffset.UtcNow.AddHours(1).ConvertToUnixTimestamp().ToString())
                 });
             var handler = new JwtSecurityTokenHandler();
 
@@ -810,7 +810,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     new Claim(StandardClaimNames.Audiences, "http://localhost:5000"),
                     new Claim(
                         StandardClaimNames.ExpirationTime,
-                        DateTime.UtcNow.AddHours(1).ConvertToUnixTimestamp().ToString())
+                        DateTimeOffset.UtcNow.AddHours(1).ConvertToUnixTimestamp().ToString())
                 });
             var handler = new JwtSecurityTokenHandler();
 

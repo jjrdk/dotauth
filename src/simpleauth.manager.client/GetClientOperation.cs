@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using SimpleAuth.Shared;
@@ -23,10 +24,12 @@
                 throw new ArgumentNullException(nameof(clientsUri));
             }
 
-            var request = new HttpRequestMessage {Method = HttpMethod.Get, RequestUri = clientsUri};
+            var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = clientsUri };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Add("Authorization", "JwtConstants.BearerScheme " + authorizationHeaderValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue(
+                    JwtBearerConstants.BearerScheme,
+                    authorizationHeaderValue);
             }
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);
@@ -41,7 +44,7 @@
                 };
             }
 
-            return new GenericResponse<Client> {Content = JsonConvert.DeserializeObject<Client>(content)};
+            return new GenericResponse<Client> { Content = JsonConvert.DeserializeObject<Client>(content) };
         }
     }
 }

@@ -183,9 +183,7 @@
                         ClaimTypes.AuthenticationInstant,
                         DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                         ClaimValueTypes.Integer));
-                var subject = resourceOwner.Claims
-                    .First(c => c.Type == OpenIdClaimTypes.Subject)
-                    .Value;
+                var subject = resourceOwner.Claims.First(c => c.Type == OpenIdClaimTypes.Subject).Value;
                 if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
                 {
                     await SetLocalCookie(resourceOwner.Claims, Id.Create()).ConfigureAwait(false);
@@ -202,20 +200,38 @@
                 }
                 catch (ClaimRequiredException cre)
                 {
-                    await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), cre.Code, cre.Message, string.Empty, DateTime.UtcNow))
+                    await _eventPublisher.Publish(
+                            new SimpleAuthError(
+                                Id.Create(),
+                                cre.Code,
+                                cre.Message,
+                                string.Empty,
+                                DateTimeOffset.UtcNow))
                         .ConfigureAwait(false);
                     return RedirectToAction("SendCode");
                 }
                 catch (Exception ex)
                 {
-                    await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), "misconfigured_2fa", ex.Message, string.Empty, DateTime.UtcNow))
+                    await _eventPublisher.Publish(
+                            new SimpleAuthError(
+                                Id.Create(),
+                                "misconfigured_2fa",
+                                ex.Message,
+                                string.Empty,
+                                DateTimeOffset.UtcNow))
                         .ConfigureAwait(false);
                     throw new Exception("Two factor authenticator is not properly configured", ex);
                 }
             }
             catch (Exception exception)
             {
-                await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), "invalid_credentials", exception.Message, string.Empty, DateTime.UtcNow))
+                await _eventPublisher.Publish(
+                        new SimpleAuthError(
+                            Id.Create(),
+                            "invalid_credentials",
+                            exception.Message,
+                            string.Empty,
+                            DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
                 ModelState.AddModelError("invalid_credentials", exception.Message);
                 var viewModel = new AuthorizeViewModel();
@@ -267,15 +283,13 @@
                 var issuerName = Request.GetAbsoluteUriWithVirtualPath();
 
                 var actionResult = await _localOpenIdAuthentication.Execute(
-                        new LocalAuthenticationParameter { UserName = viewModel.Login, Password = viewModel.Password },
+                        new LocalAuthenticationParameter {UserName = viewModel.Login, Password = viewModel.Password},
                         request.ToParameter(),
                         viewModel.Code,
                         issuerName,
                         cancellationToken)
                     .ConfigureAwait(false);
-                var subject = actionResult.Claims
-                    .First(c => c.Type == OpenIdClaimTypes.Subject)
-                    .Value;
+                var subject = actionResult.Claims.First(c => c.Type == OpenIdClaimTypes.Subject).Value;
 
                 // 5. Two factor authentication.
                 if (!string.IsNullOrWhiteSpace(actionResult.TwoFactor))
@@ -284,18 +298,20 @@
                     {
                         await SetTwoFactorCookie(actionResult.Claims).ConfigureAwait(false);
                         await _generateAndSendCode.Send(subject, cancellationToken).ConfigureAwait(false);
-                        return RedirectToAction("SendCode", new { code = viewModel.Code });
+                        return RedirectToAction("SendCode", new {code = viewModel.Code});
                     }
                     catch (ClaimRequiredException cre)
                     {
-                        await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), cre.Code, cre.Message, string.Empty, DateTime.UtcNow))
+                        await _eventPublisher.Publish(
+                                new SimpleAuthError(Id.Create(), cre.Code, cre.Message, string.Empty, DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
-                        return RedirectToAction("SendCode", new { code = viewModel.Code });
+                        return RedirectToAction("SendCode", new {code = viewModel.Code});
                     }
                     catch (Exception ex)
                     {
                         var se = ex as SimpleAuthException;
-                        await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTime.UtcNow))
+                        await _eventPublisher.Publish(
+                                new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
                         ModelState.AddModelError(
                             "invalid_credentials",
@@ -311,8 +327,7 @@
                     var result = this.CreateRedirectionFromActionResult(actionResult.EndpointResult, request);
                     if (result != null)
                     {
-                        await LogAuthenticateUser(subject, actionResult?.EndpointResult?.Amr)
-                            .ConfigureAwait(false);
+                        await LogAuthenticateUser(subject, actionResult?.EndpointResult?.Amr).ConfigureAwait(false);
                         return result;
                     }
                 }
@@ -320,7 +335,8 @@
             catch (Exception ex)
             {
                 var se = ex as SimpleAuthException;
-                await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTime.UtcNow))
+                await _eventPublisher
+                    .Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
                 ModelState.AddModelError("invalid_credentials", ex.Message);
             }

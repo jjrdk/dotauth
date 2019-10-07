@@ -373,7 +373,7 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ClientId = clientId,
                 RedirectUri = new Uri("https://redirectUri"),
-                CreateDateTime = DateTime.UtcNow.AddSeconds(-30)
+                CreateDateTime = DateTimeOffset.UtcNow.AddSeconds(-30)
             };
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
@@ -420,7 +420,7 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ClientId = clientId,
                 RedirectUri = new Uri("https://redirectUri"),
-                CreateDateTime = DateTime.UtcNow
+                CreateDateTime = DateTimeOffset.UtcNow
             };
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
@@ -478,7 +478,7 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ClientId = clientId,
                 RedirectUri = new Uri("https://redirectUri"),
-                CreateDateTime = DateTime.UtcNow,
+                CreateDateTime = DateTimeOffset.UtcNow,
                 Scopes = "scope"
             };
             var grantedToken = new GrantedToken
@@ -487,7 +487,7 @@ namespace SimpleAuth.Tests.Api.Token
                 AccessToken = accessToken,
                 IdToken = identityToken,
                 IdTokenPayLoad = new JwtPayload(),
-                CreateDateTime = DateTime.UtcNow,
+                CreateDateTime = DateTimeOffset.UtcNow,
                 ExpiresIn = 100000
             };
 
@@ -552,7 +552,7 @@ namespace SimpleAuth.Tests.Api.Token
                 Scopes = "scope",
                 ClientId = clientId,
                 RedirectUri = new Uri("https://redirectUri"),
-                CreateDateTime = DateTime.UtcNow
+                CreateDateTime = DateTimeOffset.UtcNow
             };
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);

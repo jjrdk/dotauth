@@ -63,7 +63,7 @@ namespace SimpleAuth.WebSite.User
                 return (false, null);
             }
 
-            resourceOwner.UpdateDateTime = DateTime.UtcNow;
+            resourceOwner.UpdateDateTime = DateTimeOffset.UtcNow;
             var additionalClaims = _settings.ClaimsIncludedInUserCreation
                 .Except(resourceOwner.Claims.Select(x => x.Type))
                 .Select(x => new Claim(x, string.Empty));
@@ -90,12 +90,12 @@ namespace SimpleAuth.WebSite.User
                                 new FilterValidationFailure(
                                     Id.Create(),
                                     $"The filter rule '{ruleResult.RuleName}' failed",
-                                    DateTime.UtcNow))
+                                    DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
                         foreach (var errorMessage in ruleResult.ErrorMessages)
                         {
                             await _eventPublisher
-                                .Publish(new FilterValidationFailure(Id.Create(), errorMessage, DateTime.UtcNow))
+                                .Publish(new FilterValidationFailure(Id.Create(), errorMessage, DateTimeOffset.UtcNow))
                                 .ConfigureAwait(false);
                         }
                     }
@@ -107,7 +107,7 @@ namespace SimpleAuth.WebSite.User
                 }
             }
 
-            resourceOwner.CreateDateTime = DateTime.UtcNow;
+            resourceOwner.CreateDateTime = DateTimeOffset.UtcNow;
             if (!await _resourceOwnerRepository.Insert(resourceOwner, cancellationToken).ConfigureAwait(false))
             {
                 return (false, null);
@@ -123,7 +123,7 @@ namespace SimpleAuth.WebSite.User
                                 Value = claim.Value
                             })
                             .ToArray(),
-                        DateTime.UtcNow))
+                        DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             return (true, resourceOwner.Subject);
         }

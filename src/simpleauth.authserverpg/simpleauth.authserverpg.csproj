@@ -24,6 +24,10 @@
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
   <ProjectExtensions>
     <VisualStudio>
       <UserProperties Properties_4launchSettings_1json__JSONSchema="http://json.schemastore.org/phraseapp" />

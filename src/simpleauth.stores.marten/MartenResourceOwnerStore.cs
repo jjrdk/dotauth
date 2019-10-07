@@ -133,7 +133,7 @@
                 user.IsLocalAccount = resourceOwner.IsLocalAccount;
                 user.ExternalLogins = resourceOwner.ExternalLogins;
                 user.TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication;
-                user.UpdateDateTime = DateTime.UtcNow;
+                user.UpdateDateTime = DateTimeOffset.UtcNow;
                 user.Claims = resourceOwner.Claims;
                 session.Update(resourceOwner);
                 await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

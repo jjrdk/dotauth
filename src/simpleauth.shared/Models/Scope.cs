@@ -89,12 +89,12 @@ namespace SimpleAuth.Shared.Models
         /// Gets or sets the create datetime.
         /// </summary>
         [DataMember(Name = "create_datetime")]
-        public DateTime CreateDateTime { get; set; }
+        public DateTimeOffset CreateDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the update datetime.
         /// </summary>
         [DataMember(Name = "update_datetime")]
-        public DateTime UpdateDateTime { get; set; }
+        public DateTimeOffset UpdateDateTime { get; set; }
     }
 }

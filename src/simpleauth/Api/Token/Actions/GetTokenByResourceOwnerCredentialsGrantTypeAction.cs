@@ -171,7 +171,7 @@ namespace SimpleAuth.Api.Token.Actions
                             client.ClientId,
                             allowedTokenScopes,
                             GrantTypes.Password,
-                            DateTime.UtcNow))
+                            DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
             }
 

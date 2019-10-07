@@ -105,14 +105,7 @@
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
             {
-                var authorizationHeaderValue = authorizationHeader[0];
-                var splitAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
-                if (splitAuthorizationHeaderValue.Length == 2)
-                {
-                    authenticationHeaderValue = new AuthenticationHeaderValue(
-                        splitAuthorizationHeaderValue[0],
-                        splitAuthorizationHeaderValue[1]);
-                }
+                AuthenticationHeaderValue.TryParse(authorizationHeader[0], out authenticationHeaderValue);
             }
 
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();

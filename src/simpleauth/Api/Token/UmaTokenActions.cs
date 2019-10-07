@@ -44,7 +44,10 @@ namespace SimpleAuth.Api.Token
         {
             _ticketStore = ticketStore;
             _configurationService = configurationService;
-            _authorizationPolicyValidator = new AuthorizationPolicyValidator(clientStore, resourceSetRepository, eventPublisher);
+            _authorizationPolicyValidator = new AuthorizationPolicyValidator(
+                clientStore,
+                resourceSetRepository,
+                eventPublisher);
             _authenticateClient = new AuthenticateClient(clientStore);
             _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore);
             _tokenStore = tokenStore;
@@ -60,18 +63,14 @@ namespace SimpleAuth.Api.Token
         {
             if (string.IsNullOrWhiteSpace(parameter.Ticket))
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
-                    string.Format(
-                        ErrorDescriptions.TheParameterNeedsToBeSpecified,
-                        "ticket"));
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "ticket"));
             }
 
-            // 2. Try to authenticate the client.
-            var instruction =
-                authenticationHeaderValue.GetAuthenticateInstruction(
-                    parameter,
-                    certificate);
-            var authResult = await _authenticateClient.Authenticate(instruction, issuerName, cancellationToken).ConfigureAwait(false);
+            var instruction = authenticationHeaderValue.GetAuthenticateInstruction(parameter, certificate);
+            var authResult = await _authenticateClient.Authenticate(instruction, issuerName, cancellationToken)
+                .ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {
@@ -80,28 +79,31 @@ namespace SimpleAuth.Api.Token
 
             if (client.GrantTypes == null || client.GrantTypes.All(x => x != GrantTypes.UmaTicket))
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidGrant,
-                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantTypes.UmaTicket));
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidGrant,
+                    string.Format(
+                        ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                        client.ClientId,
+                        GrantTypes.UmaTicket));
             }
 
-            // 3. Retrieve the ticket.
             var ticket = await _ticketStore.Get(parameter.Ticket, cancellationToken).ConfigureAwait(false);
             if (ticket == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidTicket,
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidTicket,
                     string.Format(ErrorDescriptions.TheTicketDoesntExist, parameter.Ticket));
             }
 
             // 4. Check the ticket.
-            if (ticket.ExpirationDateTime < DateTime.UtcNow)
+            if (ticket.ExpirationDateTime < DateTimeOffset.UtcNow)
             {
                 throw new SimpleAuthException(ErrorCodes.ExpiredTicket, ErrorDescriptions.TheTicketIsExpired);
             }
 
             var claimTokenParameter = new ClaimTokenParameter
             {
-                Token = parameter.ClaimToken,
-                Format = parameter.ClaimTokenFormat
+                Token = parameter.ClaimToken, Format = parameter.ClaimTokenFormat
             };
 
             // 4. Check the authorization.
@@ -110,13 +112,11 @@ namespace SimpleAuth.Api.Token
                 .ConfigureAwait(false);
             if (authorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
-                await _eventPublisher.Publish(new UmaRequestNotAuthorized(
-                        Id.Create(),
-                        parameter.Ticket,
-                        parameter.ClientId,
-                        DateTime.UtcNow))
+                await _eventPublisher.Publish(
+                        new UmaRequestNotAuthorized(Id.Create(), parameter.Ticket, parameter.ClientId, DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
-                throw new SimpleAuthException(ErrorCodes.InvalidGrant,
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidGrant,
                     ErrorDescriptions.TheAuthorizationPolicyIsNotSatisfied);
             }
 
@@ -134,7 +134,8 @@ namespace SimpleAuth.Api.Token
             string issuerName)
         {
             var expiresIn = _configurationService.RptLifeTime; // 1. Retrieve the expiration time of the granted token.
-            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName).ConfigureAwait(false);
+            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName)
+                .ConfigureAwait(false);
             // 2. Construct the JWT token (client).
             var jArr = new JArray();
             foreach (var ticketLine in ticketLines)
@@ -156,9 +157,9 @@ namespace SimpleAuth.Api.Token
             {
                 AccessToken = accessToken,
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
-                ExpiresIn = (int)expiresIn.TotalSeconds,
+                ExpiresIn = (int) expiresIn.TotalSeconds,
                 TokenType = CoreConstants.StandardTokenTypes._bearer,
-                CreateDateTime = DateTime.UtcNow,
+                CreateDateTime = DateTimeOffset.UtcNow,
                 Scope = scope,
                 ClientId = client.ClientId
             };

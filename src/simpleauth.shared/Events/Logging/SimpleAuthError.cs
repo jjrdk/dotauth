@@ -17,7 +17,8 @@
         /// <param name="description">The description.</param>
         /// <param name="state">The state.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public SimpleAuthError(string id, string code, string description, string state, DateTime timestamp) : base(id, timestamp)
+        public SimpleAuthError(string id, string code, string description, string state, DateTimeOffset timestamp)
+            : base(id, timestamp)
         {
             Code = code;
             Description = description;

@@ -29,7 +29,7 @@ namespace SimpleAuth.Shared.Events.Openid
         /// <param name="scopes">The rejected scopes.</param>
         /// <param name="timestamp">The timestamp.</param>
         /// <param name="clientId">The rejected client.</param>
-        public ConsentRejected(string id, string clientId, string[] scopes, DateTime timestamp)
+        public ConsentRejected(string id, string clientId, string[] scopes, DateTimeOffset timestamp)
             : base(id, timestamp)
         {
             ClientId = clientId;

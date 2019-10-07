@@ -109,7 +109,7 @@ namespace SimpleAuth.Api.Token.Actions
                             result.AuthCode.ClientId,
                             result.AuthCode.Scopes,
                             GrantTypes.AuthorizationCode,
-                            DateTime.UtcNow))
+                            DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
                 // Fill-in the id-token
                 if (grantedToken.IdTokenPayLoad != null)
@@ -211,7 +211,7 @@ namespace SimpleAuth.Api.Token.Actions
             // 5. Ensure the authorization code is still valid.
             var authCodeValidity = _configurationService.AuthorizationCodeValidityPeriod;
             var expirationDateTime = authorizationCode.CreateDateTime.Add(authCodeValidity);
-            var currentDateTime = DateTime.UtcNow;
+            var currentDateTime = DateTimeOffset.UtcNow;
             if (currentDateTime > expirationDateTime)
             {
                 throw new SimpleAuthException(

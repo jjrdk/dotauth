@@ -33,7 +33,7 @@ namespace SimpleAuth.Extensions
             }
 
             var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
-            var tokenIsExpired = DateTime.UtcNow > expirationDateTime;
+            var tokenIsExpired = DateTimeOffset.UtcNow > expirationDateTime;
             if (tokenIsExpired)
             {
                 return new GrantedTokenValidationResult

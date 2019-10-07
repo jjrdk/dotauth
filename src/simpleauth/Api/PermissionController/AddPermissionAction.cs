@@ -17,14 +17,12 @@ namespace SimpleAuth.Api.PermissionController
     using Shared;
     using Shared.Models;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
-    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     internal class AddPermissionAction
     {
@@ -63,9 +61,9 @@ namespace SimpleAuth.Api.PermissionController
             {
                 Id = Id.Create(),
                 ClientId = clientId,
-                CreateDateTime = DateTime.UtcNow,
-                ExpiresIn = (int) ticketLifetimeInSeconds.TotalSeconds,
-                ExpirationDateTime = DateTime.UtcNow.Add(ticketLifetimeInSeconds)
+                CreateDateTime = DateTimeOffset.UtcNow,
+                ExpiresIn = (int)ticketLifetimeInSeconds.TotalSeconds,
+                ExpirationDateTime = DateTimeOffset.UtcNow.Add(ticketLifetimeInSeconds)
             };
             // TH : ONE TICKET FOR MULTIPLE PERMISSIONS.
             var ticketLines = addPermissionParameters.Select(
@@ -90,23 +88,10 @@ namespace SimpleAuth.Api.PermissionController
             PostPermission[] addPermissionParameters,
             CancellationToken cancellationToken)
         {
-            // 1. Get resource sets.
-
-            IEnumerable<ResourceSet> resourceSets;
-            try
-            {
-                resourceSets = await _resourceSetRepository.Get(
+            var resourceSets = await _resourceSetRepository.Get(
                         cancellationToken,
                         addPermissionParameters.Select(p => p.ResourceSetId).ToArray())
                     .ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InternalError,
-                    ErrorDescriptions.TheResourceSetsCannotBeRetrieved,
-                    ex);
-            }
 
             // 2. Check parameters & scope exist.
             foreach (var addPermissionParameter in addPermissionParameters)

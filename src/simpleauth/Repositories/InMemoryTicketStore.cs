@@ -11,53 +11,91 @@
     /// <summary>
     /// Defines the in-memory ticket store.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.ITicketStore" />
+    /// <seealso cref="ITicketStore" />
     public sealed class InMemoryTicketStore : ITicketStore
     {
-        private readonly List<Ticket> _tickets;
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private readonly Dictionary<string, Ticket> _tickets;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryTicketStore"/> class.
         /// </summary>
         public InMemoryTicketStore()
         {
-            _tickets = new List<Ticket>();
+            _tickets = new Dictionary<string, Ticket>();
         }
 
         /// <inheritdoc />
-        public Task<bool> Add(Ticket ticket, CancellationToken cancellationToken)
+        public async Task<bool> Add(Ticket ticket, CancellationToken cancellationToken)
         {
-            _tickets.Add(ticket);
-            return Task.FromResult(true);
-        }
-
-        /// <inheritdoc />
-        public Task<Ticket> Get(string ticketId, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrWhiteSpace(ticketId))
+            try
             {
-                throw new ArgumentNullException(nameof(ticketId));
+                await _semaphore.WaitAsync(cancellationToken);
+                _tickets.Add(ticket.Id, ticket);
+                return true;
             }
-
-            return Task.FromResult(_tickets.FirstOrDefault(t => t.Id == ticketId));
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         /// <inheritdoc />
-        public Task<bool> Remove(string ticketId, CancellationToken cancellationToken)
+        public async Task<Ticket> Get(string ticketId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(ticketId))
             {
                 throw new ArgumentNullException(nameof(ticketId));
             }
 
-            var ticket = _tickets.FirstOrDefault(t => t.Id == ticketId);
-            if (ticket == null)
+            try
             {
-                return Task.FromResult(false);
+                await _semaphore.WaitAsync(cancellationToken);
+                _tickets.TryGetValue(ticketId, out var ticket);
+                return ticket;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> Remove(string ticketId, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(ticketId))
+            {
+                throw new ArgumentNullException(nameof(ticketId));
             }
 
-            _tickets.Remove(ticket);
-            return Task.FromResult(true);
+            try
+            {
+                await _semaphore.WaitAsync(cancellationToken);
+                return _tickets.Remove(ticketId);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task Clean(CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _semaphore.WaitAsync(cancellationToken);
+                var toRemove = _tickets
+                    .Where(x => x.Value.ExpirationDateTime >= DateTimeOffset.UtcNow)
+                    .Select(x => x.Key);
+                foreach (var id in toRemove)
+                {
+                    _tickets.Remove(id);
+                }
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
     }
 }

@@ -46,21 +46,8 @@ namespace SimpleAuth.Api.PolicyController
                 return false;
             }
 
-            Policy policy;
-            try
-            {
-                policy = await _policyRepository.Get(addResourceSetParameter.PolicyId, cancellationToken)
-                    .ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InternalError,
-                    string.Format(
-                        ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved,
-                        addResourceSetParameter.PolicyId),
-                    ex);
-            }
+            var policy = await _policyRepository.Get(addResourceSetParameter.PolicyId, cancellationToken)
+                .ConfigureAwait(false);
 
             if (policy == null)
             {
@@ -69,18 +56,7 @@ namespace SimpleAuth.Api.PolicyController
 
             foreach (var resourceSetId in addResourceSetParameter.ResourceSets)
             {
-                ResourceSet resourceSet;
-                try
-                {
-                    resourceSet = await _resourceSetRepository.Get(resourceSetId, cancellationToken).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    throw new SimpleAuthException(
-                        ErrorCodes.InternalError,
-                        string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId),
-                        ex);
-                }
+                var resourceSet = await _resourceSetRepository.Get(resourceSetId, cancellationToken).ConfigureAwait(false);
 
                 if (resourceSet == null)
                 {

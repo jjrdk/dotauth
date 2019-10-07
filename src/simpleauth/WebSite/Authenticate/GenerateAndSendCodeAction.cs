@@ -64,7 +64,7 @@ namespace SimpleAuth.WebSite.Authenticate
             var confirmationCode = new ConfirmationCode
             {
                 Value = await GetCode(cancellationToken).ConfigureAwait(false),
-                IssueAt = DateTime.UtcNow,
+                IssueAt = DateTimeOffset.UtcNow,
                 ExpiresIn = 300
             };
 

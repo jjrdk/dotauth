@@ -14,7 +14,7 @@
         /// </summary>
         /// <param name="clientId">The client identifier.</param>
         /// <param name="scopes">The scopes.</param>
-        /// <param name="isAuthorizedByRo">if set to <c>true</c> [is authorized by ro].</param>
+        /// <param name="isAuthorizedByRo">if set to <c>true</c> [is authorized by resource owner].</param>
         public TicketLineParameter(string clientId, IEnumerable<string> scopes = null, bool isAuthorizedByRo = false)
         {
             ClientId = clientId;

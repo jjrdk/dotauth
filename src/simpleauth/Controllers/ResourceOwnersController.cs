@@ -186,7 +186,7 @@ namespace SimpleAuth.Controllers
                         Id.Create(),
                         resourceOwner.Subject,
                         resourceOwner.Claims.Select(x => new PostClaim { Type = x.Type, Value = x.Value }).ToArray(),
-                        DateTime.UtcNow))
+                        DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
                 return Ok();
             }
@@ -231,7 +231,7 @@ namespace SimpleAuth.Controllers
                     string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Subject));
             }
 
-            //resourceOwner.UpdateDateTime = DateTime.UtcNow;
+            //resourceOwner.UpdateDateTime = DateTimeOffset.UtcNow;
             var claims = request.Claims.Select(claim => new Claim(claim.Type, claim.Value)).ToList();
             var resourceOwnerClaims = resourceOwner.Claims
                 .Where(c => !claims.Exists(x => x.Type == c.Type))
@@ -241,7 +241,7 @@ namespace SimpleAuth.Controllers
                 .Concat(new[]
                 {
                     new Claim(OpenIdClaimTypes.Subject, request.Subject),
-                    new Claim(OpenIdClaimTypes.UpdatedAt, DateTime.UtcNow.ConvertToUnixTimestamp().ToString())
+                    new Claim(OpenIdClaimTypes.UpdatedAt, DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString())
                 });
 
             resourceOwner.Claims = resourceOwnerClaims.ToArray();
@@ -357,7 +357,7 @@ namespace SimpleAuth.Controllers
                         Type = claim.Type,
                         Value = claim.Value
                     }).ToArray(),
-                DateTime.UtcNow)).ConfigureAwait(false);
+                DateTimeOffset.UtcNow)).ConfigureAwait(false);
 
             return result
                 ? new JsonResult(new GrantedTokenResponse

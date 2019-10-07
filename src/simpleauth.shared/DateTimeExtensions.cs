@@ -18,7 +18,7 @@ namespace SimpleAuth.Shared
 
     internal static class DateTimeExtensions
     {
-        private static readonly DateTime UnixStart;
+        private static readonly DateTimeOffset UnixStart;
         private const long TicksFactor = 10000000L;
 
         static DateTimeExtensions()
@@ -37,10 +37,10 @@ namespace SimpleAuth.Shared
             return (long)Math.Floor(diff.TotalSeconds);
         }
 
-        public static DateTime ConvertFromUnixTimestamp(this string timestamp)
+        public static DateTimeOffset ConvertFromUnixTimestamp(this string timestamp)
         {
             return !long.TryParse(timestamp, out var value)
-                ? DateTime.MinValue
+                ? DateTimeOffset.MinValue
                 : UnixStart.AddTicks(value * TicksFactor);
         }
     }

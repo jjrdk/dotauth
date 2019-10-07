@@ -116,7 +116,7 @@
                     },
                     Password = "password".ToSha256Hash(),
                     IsLocalAccount = true,
-                    CreateDateTime = DateTime.UtcNow,
+                    CreateDateTime = DateTimeOffset.UtcNow,
                 }
             };
         }

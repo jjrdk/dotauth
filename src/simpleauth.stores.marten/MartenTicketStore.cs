@@ -56,5 +56,14 @@
                 return ticket;
             }
         }
+
+        public async Task Clean(CancellationToken cancellationToken)
+        {
+            using (var session = _sessionFactory())
+            {
+                session.DeleteWhere<Ticket>(t => t.ExpirationDateTime >= DateTimeOffset.UtcNow);
+                await session.SaveChangesAsync(cancellationToken);
+            }
+        }
     }
 }

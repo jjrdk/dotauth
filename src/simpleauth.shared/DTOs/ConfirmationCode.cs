@@ -29,7 +29,7 @@
         /// <value>
         /// The issue at.
         /// </value>
-        public DateTime IssueAt { get; set; }
+        public DateTimeOffset IssueAt { get; set; }
 
         /// <summary>
         /// Gets or sets the expires in.

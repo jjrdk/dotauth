@@ -166,12 +166,12 @@ namespace SimpleAuth.Controllers
 
         private void LogConsentAccepted(string subject, string clientId, string scope)
         {
-            _eventPublisher.Publish(new ConsentAccepted(Id.Create(), subject, clientId, scope, DateTime.UtcNow));
+            _eventPublisher.Publish(new ConsentAccepted(Id.Create(), subject, clientId, scope, DateTimeOffset.UtcNow));
         }
 
         private void LogConsentRejected(string clientId, string scope)
         {
-            _eventPublisher.Publish(new ConsentRejected(Id.Create(), clientId, scope.Trim().Split(' '), DateTime.UtcNow));
+            _eventPublisher.Publish(new ConsentRejected(Id.Create(), clientId, scope.Trim().Split(' '), DateTimeOffset.UtcNow));
         }
     }
 }

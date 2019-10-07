@@ -21,7 +21,7 @@
             var resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             var subjectBuilderStub = new Mock<ISubjectBuilder>();
             subjectBuilderStub.Setup(x => x.BuildSubject(It.IsAny<IEnumerable<Claim>>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(DateTime.UtcNow.Ticks.ToString);
+                .ReturnsAsync(DateTimeOffset.UtcNow.Ticks.ToString);
             _smsAuthenticationOperation = new SmsAuthenticationOperation(
                 new RuntimeSettings(),
                 null,
