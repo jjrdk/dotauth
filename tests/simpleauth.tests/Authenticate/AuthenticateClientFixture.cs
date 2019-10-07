@@ -7,6 +7,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Errors;
     using Xunit;
 
@@ -18,7 +19,7 @@
         public AuthenticateClientFixture()
         {
             _clientRepositoryStub = new Mock<IClientStore>();
-            _authenticateClient = new AuthenticateClient(_clientRepositoryStub.Object);
+            _authenticateClient = new AuthenticateClient(_clientRepositoryStub.Object, new InMemoryJwksRepository());
         }
 
         [Fact]
@@ -47,7 +48,7 @@
         {
             var authenticationInstruction = new AuthenticateInstruction();
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((Client) null));
+                .Returns(() => Task.FromResult((Client)null));
 
             var result = await _authenticateClient.Authenticate(authenticationInstruction, null, CancellationToken.None)
                 .ConfigureAwait(false);
@@ -64,11 +65,12 @@
             const string secret = "secret";
             var authenticationInstruction = new AuthenticateInstruction
             {
-                ClientIdFromAuthorizationHeader = clientId, ClientSecretFromAuthorizationHeader = secret
+                ClientIdFromAuthorizationHeader = clientId,
+                ClientSecretFromAuthorizationHeader = secret
             };
             var client = new Client
             {
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = secret}},
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = secret } },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretBasic,
                 ClientId = clientId
             };
@@ -87,10 +89,11 @@
             When_Trying_To_Authenticate_The_Client_Via_Secret_Basic_But_Operation_Failed_Then_Event_Is_Not_Logged_And_Null_Is_Returned()
         {
             const string clientId = "clientId";
-            var authenticationInstruction = new AuthenticateInstruction {ClientIdFromAuthorizationHeader = clientId};
+            var authenticationInstruction = new AuthenticateInstruction { ClientIdFromAuthorizationHeader = clientId };
             var client = new Client
             {
-                TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretBasic, ClientId = clientId
+                TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretBasic,
+                ClientId = clientId
             };
 
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))

@@ -11,6 +11,7 @@
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Errors;
     using Xunit;
 
@@ -61,7 +62,9 @@
         public ClientAssertionAuthenticationFixture()
         {
             _clientRepositoryStub = new Mock<IClientStore>();
-            _clientAssertionAuthentication = new ClientAssertionAuthentication(_clientRepositoryStub.Object);
+            _clientAssertionAuthentication = new ClientAssertionAuthentication(
+                _clientRepositoryStub.Object,
+                new InMemoryJwksRepository());
         }
 
         [Fact]

@@ -15,6 +15,7 @@
 namespace SimpleAuth.Api.PolicyController
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
@@ -24,6 +25,7 @@ namespace SimpleAuth.Api.PolicyController
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using ResourceSet = System.Resources.ResourceSet;
 
     internal class AddAuthorizationPolicyAction
     {
@@ -54,7 +56,8 @@ namespace SimpleAuth.Api.PolicyController
                         UmaConstants.AddPolicyParameterNames.Rules));
             }
 
-            foreach (var resourceSetId in addPolicyParameter.ResourceSetIds)
+            var resourceSets = new Dictionary<string, SimpleAuth.Shared.Models.ResourceSet>();
+            foreach (var resourceSetId in addPolicyParameter.ResourceSetIds.Distinct())
             {
                 var resourceSet = await _resourceSetRepository.Get(resourceSetId, cancellationToken).ConfigureAwait(false);
 
@@ -70,6 +73,8 @@ namespace SimpleAuth.Api.PolicyController
                     throw new SimpleAuthException(ErrorCodes.InvalidScope,
                         ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
                 }
+
+                resourceSets.Add(resourceSet.Id, resourceSet);
             }
 
             var rules = addPolicyParameter.Rules.Select(
@@ -98,6 +103,15 @@ namespace SimpleAuth.Api.PolicyController
             try
             {
                 var result = await _policyRepository.Add(policy, cancellationToken).ConfigureAwait(false);
+                foreach (var resourceSetId in addPolicyParameter.ResourceSetIds)
+                {
+                    var resourceSet = resourceSets[resourceSetId];
+                    var policyIds = new[] { policy.Id };
+                    resourceSet.AuthorizationPolicyIds = resourceSet.AuthorizationPolicyIds == null
+                        ? policyIds
+                        : resourceSet.AuthorizationPolicyIds.Concat(policyIds).Distinct().ToArray();
+                    await _resourceSetRepository.Update(resourceSet, cancellationToken);
+                }
                 return result ? policy.Id : null;
             }
             catch (Exception ex)

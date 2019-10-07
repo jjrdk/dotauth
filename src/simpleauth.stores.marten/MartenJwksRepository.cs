@@ -66,6 +66,30 @@
             }
         }
 
+        public async Task<SecurityKey> GetEncryptionKey(string alg, CancellationToken cancellationToken = default)
+        {
+            using (var session = _sessionFactory())
+            {
+                var webKeys = await session.Query<JsonWebKey>()
+                    .Where(
+                        x => x.Alg == alg && x.Use == JsonWebKeyUseNames.Enc)
+                    .ToListAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                var webKey = webKeys.First(x => x.KeyOps.Contains(KeyOperations.Encrypt));
+
+                if (webKey.X5c != null)
+                {
+                    foreach (var certString in webKey.X5c)
+                    {
+                        return new X509SecurityKey(new X509Certificate2(Convert.FromBase64String(certString)));
+                    }
+                }
+
+                return webKey;
+            }
+        }
+
         /// <inheritdoc />
         public async Task<SigningCredentials> GetDefaultSigningKey(CancellationToken cancellationToken = default)
         {

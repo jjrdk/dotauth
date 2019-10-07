@@ -14,6 +14,8 @@
 
 namespace SimpleAuth.Shared.Models
 {
+    using System;
+
     /// <summary>
     /// Defines the resource set content.
     /// </summary>
@@ -65,7 +67,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The scopes.
         /// </value>
-        public string[] Scopes { get; set; }
+        public string[] Scopes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the authorization policy ids.
@@ -73,7 +75,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The authorization policy ids.
         /// </value>
-        public string[] AuthorizationPolicyIds { get; set; }
+        public string[] AuthorizationPolicyIds { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the policies.
@@ -81,6 +83,6 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The policies.
         /// </value>
-        public Policy[] Policies { get; set; }
+        public Policy[] Policies { get; set; } = Array.Empty<Policy>();
     }
 }

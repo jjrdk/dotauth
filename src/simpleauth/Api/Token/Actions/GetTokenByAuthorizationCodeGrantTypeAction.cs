@@ -58,7 +58,7 @@ namespace SimpleAuth.Api.Token.Actions
         {
             _authorizationCodeStore = authorizationCodeStore;
             _configurationService = configurationService;
-            _authenticateClient = new AuthenticateClient(clientStore);
+            _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
             _jwksStore = jwksStore;

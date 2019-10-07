@@ -41,9 +41,9 @@ namespace SimpleAuth.Controllers
         /// </summary>
         /// <param name="clientStore">The client store.</param>
         /// <param name="tokenStore">The token store.</param>
-        public IntrospectionController(IClientStore clientStore, ITokenStore tokenStore)
+        public IntrospectionController(IClientStore clientStore, ITokenStore tokenStore, IJwksStore jwksStore)
         {
-            _introspectionActions = new PostIntrospectionAction(clientStore, tokenStore);
+            _introspectionActions = new PostIntrospectionAction(clientStore, tokenStore, jwksStore);
         }
 
         /// <summary>

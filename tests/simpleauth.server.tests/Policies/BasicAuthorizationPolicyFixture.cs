@@ -23,6 +23,7 @@ namespace SimpleAuth.Server.Tests.Policies
     using Moq;
     using SimpleAuth.Parameters;
     using SimpleAuth.Policies;
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Responses;
@@ -34,7 +35,7 @@ namespace SimpleAuth.Server.Tests.Policies
 
         public BasicAuthorizationPolicyFixture()
         {
-            _basicAuthorizationPolicy = new BasicAuthorizationPolicy(new Mock<IClientStore>().Object);
+            _basicAuthorizationPolicy = new BasicAuthorizationPolicy(new Mock<IClientStore>().Object, new InMemoryJwksRepository());
         }
 
         [Fact]
@@ -61,9 +62,9 @@ namespace SimpleAuth.Server.Tests.Policies
         [Fact]
         public async Task When_Does_Not_have_Permission_To_Access_To_Scope_Then_NotAuthorized_Is_Returned()
         {
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
-            var authorizationPolicy = new Policy {Rules = new[] {new PolicyRule {Scopes = new[] {"read"}}}};
+            var authorizationPolicy = new Policy { Rules = new[] { new PolicyRule { Scopes = new[] { "read" } } } };
 
             var result = await _basicAuthorizationPolicy
                 .Execute(ticket, authorizationPolicy, null, CancellationToken.None)
@@ -75,7 +76,7 @@ namespace SimpleAuth.Server.Tests.Policies
         [Fact]
         public async Task When_Client_Is_Not_Allowed_Then_NotAuthorized_Is_Returned()
         {
-            var ticket = new TicketLineParameter("invalid_client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("invalid_client_id") { Scopes = new[] { "read", "create", "update" } };
 
             var authorizationPolicy = new Policy
             {
@@ -99,7 +100,7 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_There_Is_No_Access_Token_Passed_Then_NeedInfo_Is_Returned()
         {
             const string configurationUrl = "http://localhost/configuration";
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
             var authorizationPolicy = new Policy
             {
@@ -114,7 +115,7 @@ namespace SimpleAuth.Server.Tests.Policies
                     }
                 }
             };
-            var claimTokenParameter = new ClaimTokenParameter {Format = "bad_format", Token = "token"};
+            var claimTokenParameter = new ClaimTokenParameter { Format = "bad_format", Token = "token" };
 
             var result = await _basicAuthorizationPolicy.Execute(
                     ticket,
@@ -156,7 +157,7 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_JwsPayload_Cannot_Be_Extracted_Then_NotAuthorized_Is_Returned()
         {
             const string configurationUrl = "http://localhost/configuration";
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
             var authorizationPolicy = new Policy
             {
@@ -173,7 +174,8 @@ namespace SimpleAuth.Server.Tests.Policies
             };
             var claimTokenParameters = new ClaimTokenParameter
             {
-                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken", Token = "token"
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
 
             var result = await _basicAuthorizationPolicy.Execute(
@@ -190,7 +192,7 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_Role_Is_Not_Correct_Then_NotAuthorized_Is_Returned()
         {
             const string configurationUrl = "http://localhost/configuration";
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
             var authorizationPolicy = new Policy
             {
@@ -207,7 +209,8 @@ namespace SimpleAuth.Server.Tests.Policies
             };
             var claimTokenParameter = new ClaimTokenParameter
             {
-                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken", Token = "token"
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
 
             var result = await _basicAuthorizationPolicy.Execute(
@@ -224,7 +227,7 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_There_Is_No_Role_Then_NotAuthorized_Is_Returned()
         {
             const string configurationUrl = "http://localhost/configuration";
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
             var authorizationPolicy = new Policy
             {
@@ -241,7 +244,8 @@ namespace SimpleAuth.Server.Tests.Policies
             };
             var claimTokenParameters = new ClaimTokenParameter
             {
-                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken", Token = "token"
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
 
             var result = await _basicAuthorizationPolicy.Execute(
@@ -258,7 +262,7 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_Passing_Not_Valid_Roles_In_JArray_Then_NotAuthorized_Is_Returned()
         {
             const string configurationUrl = "http://localhost/configuration";
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
             var authorizationPolicy = new Policy
             {
@@ -275,7 +279,8 @@ namespace SimpleAuth.Server.Tests.Policies
             };
             var claimTokenParameters = new ClaimTokenParameter
             {
-                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken", Token = "token"
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
 
             var result = await _basicAuthorizationPolicy.Execute(
@@ -292,7 +297,7 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_Passing_Not_Valid_Roles_InStringArray_Then_NotAuthorized_Is_Returned()
         {
             const string configurationUrl = "http://localhost/configuration";
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
             var authorizationPolicy = new Policy
             {
@@ -309,7 +314,8 @@ namespace SimpleAuth.Server.Tests.Policies
             };
             var claimTokenParameter = new ClaimTokenParameter
             {
-                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken", Token = "token"
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
 
             var result = await _basicAuthorizationPolicy.Execute(
@@ -326,7 +332,7 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_Claims_Are_Not_Corred_Then_NotAuthorized_Is_Returned()
         {
             const string configurationUrl = "http://localhost/configuration";
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
             var authorizationPolicy = new Policy
             {
@@ -343,7 +349,8 @@ namespace SimpleAuth.Server.Tests.Policies
             };
             var claimTokenParameter = new ClaimTokenParameter
             {
-                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken", Token = "token"
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
 
             var result = await _basicAuthorizationPolicy.Execute(
@@ -361,7 +368,8 @@ namespace SimpleAuth.Server.Tests.Policies
         {
             var ticket = new TicketLineParameter("client_id")
             {
-                IsAuthorizedByRo = false, Scopes = new[] {"read", "create", "update"}
+                IsAuthorizedByRo = false,
+                Scopes = new[] { "read", "create", "update" }
             };
 
             var authorizationPolicy = new Policy
@@ -387,7 +395,7 @@ namespace SimpleAuth.Server.Tests.Policies
         [Fact]
         public async Task When_AuthorizationPassed_Then_Authorization_Is_Returned()
         {
-            var ticket = new TicketLineParameter("client_id") {IsAuthorizedByRo = true, Scopes = new[] {"create"}};
+            var ticket = new TicketLineParameter("client_id") { IsAuthorizedByRo = true, Scopes = new[] { "create" } };
 
             var authorizationPolicy = new Policy
             {

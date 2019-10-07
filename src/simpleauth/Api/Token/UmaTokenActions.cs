@@ -39,6 +39,7 @@ namespace SimpleAuth.Api.Token
             IScopeRepository scopeRepository,
             ITokenStore tokenStore,
             IResourceSetRepository resourceSetRepository,
+            IPolicyRepository policyRepository,
             IJwksStore jwksStore,
             IEventPublisher eventPublisher)
         {
@@ -46,9 +47,11 @@ namespace SimpleAuth.Api.Token
             _configurationService = configurationService;
             _authorizationPolicyValidator = new AuthorizationPolicyValidator(
                 clientStore,
+                jwksStore,
+                policyRepository,
                 resourceSetRepository,
                 eventPublisher);
-            _authenticateClient = new AuthenticateClient(clientStore);
+            _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
             _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore);
             _tokenStore = tokenStore;
             _eventPublisher = eventPublisher;
@@ -103,7 +106,8 @@ namespace SimpleAuth.Api.Token
 
             var claimTokenParameter = new ClaimTokenParameter
             {
-                Token = parameter.ClaimToken, Format = parameter.ClaimTokenFormat
+                Token = parameter.ClaimToken,
+                Format = parameter.ClaimTokenFormat
             };
 
             // 4. Check the authorization.
@@ -157,7 +161,7 @@ namespace SimpleAuth.Api.Token
             {
                 AccessToken = accessToken,
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
-                ExpiresIn = (int) expiresIn.TotalSeconds,
+                ExpiresIn = (int)expiresIn.TotalSeconds,
                 TokenType = CoreConstants.StandardTokenTypes._bearer,
                 CreateDateTime = DateTimeOffset.UtcNow,
                 Scope = scope,

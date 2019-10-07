@@ -33,9 +33,9 @@ namespace SimpleAuth.Api.Introspection
         private readonly AuthenticateClient _authenticateClient;
         private readonly ITokenStore _tokenStore;
 
-        public PostIntrospectionAction(IClientStore clientStore, ITokenStore tokenStore)
+        public PostIntrospectionAction(IClientStore clientStore, ITokenStore tokenStore, IJwksStore jwksStore)
         {
-            _authenticateClient = new AuthenticateClient(clientStore);
+            _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
             _tokenStore = tokenStore;
         }
 

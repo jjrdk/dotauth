@@ -24,20 +24,26 @@ namespace SimpleAuth.Policies
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
+    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     internal class AuthorizationPolicyValidator
     {
         private readonly IBasicAuthorizationPolicy _basicAuthorizationPolicy;
+        private readonly IPolicyRepository _policyRepository;
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly IEventPublisher _eventPublisher;
 
         public AuthorizationPolicyValidator(
             IClientStore clientStore,
+            IJwksStore jwksStore,
+            IPolicyRepository policyRepository,
             IResourceSetRepository resourceSetRepository,
             IEventPublisher eventPublisher)
         {
-            _basicAuthorizationPolicy = new BasicAuthorizationPolicy(clientStore);
+            _basicAuthorizationPolicy = new BasicAuthorizationPolicy(clientStore, jwksStore);
+            _policyRepository = policyRepository;
             _resourceSetRepository = resourceSetRepository;
             _eventPublisher = eventPublisher;
         }
@@ -54,7 +60,7 @@ namespace SimpleAuth.Policies
             }
 
             var resourceIds = validTicket.Lines.Select(l => l.ResourceSetId).ToArray();
-            ResourceSet[] resources = await _resourceSetRepository.Get(cancellationToken, resourceIds).ConfigureAwait(false);
+            var resources = await _resourceSetRepository.Get(cancellationToken, resourceIds).ConfigureAwait(false);
             if (resources == null || !resources.Any() || resources.Length != resourceIds.Length)
             {
                 throw new SimpleAuthException(ErrorCodes.InternalError, ErrorDescriptions.SomeResourcesDontExist);
@@ -89,12 +95,9 @@ namespace SimpleAuth.Policies
             ClaimTokenParameter claimTokenParameter,
             CancellationToken cancellationToken)
         {
-            if (resource.Policies == null || !resource.Policies.Any())
-            {
-                return new AuthorizationPolicyResult { Type = AuthorizationPolicyResultEnum.Authorized };
-            }
+            var policies = await Task.WhenAll(resource.AuthorizationPolicyIds.Select(x => _policyRepository.Get(x, cancellationToken)));
 
-            foreach (var authorizationPolicy in resource.Policies)
+            foreach (var authorizationPolicy in resource.Policies.Concat(policies))
             {
                 var result = await _basicAuthorizationPolicy.Execute(
                         ticketLineParameter,

@@ -42,7 +42,7 @@ namespace SimpleAuth.Api.Authorization
             IJwksStore jwksStore,
             IEventPublisher eventPublisher)
         {
-            _processAuthorizationRequest = new ProcessAuthorizationRequest(clientStore, consentRepository);
+            _processAuthorizationRequest = new ProcessAuthorizationRequest(clientStore, consentRepository, jwksStore);
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
                 authorizationCodeStore,
                 tokenStore,

@@ -76,8 +76,8 @@ namespace SimpleAuth.Api.Token
                 jwksStore,
                 resourceOwnerRepository,
                 clientStore);
-            _authenticateClient = new AuthenticateClient(clientStore);
-            _revokeTokenAction = new RevokeTokenAction(clientStore, tokenStore);
+            _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
+            _revokeTokenAction = new RevokeTokenAction(clientStore, tokenStore, jwksStore);
             _jwksStore = jwksStore;
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;

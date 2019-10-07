@@ -34,11 +34,13 @@ namespace SimpleAuth.Api.Authorization
     {
         private readonly IClientStore _clientStore;
         private readonly IConsentRepository _consentRepository;
+        private readonly IJwksStore _jwksStore;
 
-        public ProcessAuthorizationRequest(IClientStore clientStore, IConsentRepository consentRepository)
+        public ProcessAuthorizationRequest(IClientStore clientStore, IConsentRepository consentRepository, IJwksStore jwksStore)
         {
             _clientStore = clientStore;
             _consentRepository = consentRepository;
+            _jwksStore = jwksStore;
         }
 
         public async Task<EndpointResult> Process(
@@ -181,7 +183,8 @@ namespace SimpleAuth.Api.Authorization
 
                 var client = await _clientStore.GetById(authorizationParameter.ClientId, cancellationToken)
                     .ConfigureAwait(false);
-                handler.ValidateToken(token, client.CreateValidationParameters(issuerName), out var securityToken);
+                var validationParameters = await client.CreateValidationParameters(_jwksStore, issuerName);
+                handler.ValidateToken(token, validationParameters, out var securityToken);
                 var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
 
                 if (jwsPayload?.Aud == null || !jwsPayload.Aud.Contains(issuerName))

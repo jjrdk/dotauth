@@ -50,7 +50,7 @@ namespace SimpleAuth.Api.Token.Actions
             IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
             IEventPublisher eventPublisher)
         {
-            _authenticateClient = new AuthenticateClient(clientStore);
+            _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
             _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore);
             _tokenStore = tokenStore;
             _jwksStore = jwksStore;

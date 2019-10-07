@@ -58,7 +58,7 @@ namespace SimpleAuth.Api.Token.Actions
             _resourceOwnerRepository = resourceOwnerRepository;
             _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksRepository);
             _clientStore = clientStore;
-            _authenticateClient = new AuthenticateClient(clientStore);
+            _authenticateClient = new AuthenticateClient(clientStore, jwksRepository);
         }
 
         public async Task<GrantedToken> Execute(

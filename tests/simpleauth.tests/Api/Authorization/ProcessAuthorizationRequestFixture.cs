@@ -5,6 +5,7 @@
     using Shared.Repositories;
     using SimpleAuth.Api.Authorization;
     using System;
+    using SimpleAuth.Repositories;
     using Xunit;
 
     public sealed class ProcessAuthorizationRequestFixture
@@ -23,11 +24,14 @@
                 {
                     var authorizationParameter = new AuthorizationParameter
                     {
-                        ClientId = clientId, Prompt = "login", State = state, RedirectUrl = new Uri(redirectUrl)
+                        ClientId = clientId,
+                        Prompt = "login",
+                        State = state,
+                        RedirectUrl = new Uri(redirectUrl)
                     };
                 });
         }
-        
+
         /*
         #region TEST VALID SCENARIOS
 
@@ -227,7 +231,8 @@
 
             _processAuthorizationRequest = new ProcessAuthorizationRequest(
                 clientStore.Object,
-                consentRepository.Object);
+                consentRepository.Object,
+                new InMemoryJwksRepository());
         }
     }
 }

@@ -42,6 +42,7 @@ namespace SimpleAuth.Controllers
     {
         private readonly HttpClient _httpClient;
         private readonly IClientStore _clientStore;
+        private readonly IJwksStore _jwksStore;
         private readonly AuthorizationActions _authorizationActions;
         private readonly IDataProtector _dataProtector;
         private readonly IAuthenticationService _authenticationService;
@@ -76,6 +77,7 @@ namespace SimpleAuth.Controllers
         {
             _httpClient = httpClient;
             _clientStore = clientStore;
+            _jwksStore = jwksStore;
             _authorizationActions = new AuthorizationActions(
                 authorizationCodeStore,
                 clientStore,
@@ -170,7 +172,8 @@ namespace SimpleAuth.Controllers
             CancellationToken cancellationToken)
         {
             var client = await _clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
-            _handler.ValidateToken(token, client.CreateValidationParameters(), out var securityToken);
+            var validationParameters = await client.CreateValidationParameters(_jwksStore);
+            _handler.ValidateToken(token, validationParameters, out var securityToken);
 
             return (securityToken as JwtSecurityToken)?.Payload?.ToAuthorizationRequest();
         }

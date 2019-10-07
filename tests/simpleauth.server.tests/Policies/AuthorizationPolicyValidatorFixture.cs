@@ -19,6 +19,7 @@ namespace SimpleAuth.Server.Tests.Policies
     using System.Threading.Tasks;
     using Moq;
     using SimpleAuth.Policies;
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
@@ -36,6 +37,8 @@ namespace SimpleAuth.Server.Tests.Policies
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
             _authorizationPolicyValidator = new AuthorizationPolicyValidator(
                 new Mock<IClientStore>().Object,
+                new InMemoryJwksRepository(),
+                new Mock<IPolicyRepository>().Object,
                 _resourceSetRepositoryStub.Object,
                 new Mock<IEventPublisher>().Object);
         }
@@ -60,9 +63,9 @@ namespace SimpleAuth.Server.Tests.Policies
         [Fact]
         public async Task When_ResourceSet_Does_Not_Exist_Then_Exception_Is_Thrown()
         {
-            var ticket = new Ticket {Lines = new [] {new TicketLine {ResourceSetId = "resource_set_id"}}};
+            var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "resource_set_id" } } };
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((ResourceSet) null));
+                .Returns(() => Task.FromResult((ResourceSet)null));
 
             var exception = await Assert
                 .ThrowsAsync<SimpleAuthException>(
@@ -75,8 +78,8 @@ namespace SimpleAuth.Server.Tests.Policies
         [Fact]
         public async Task When_Policy_Does_Not_Exist_Then_Authorized_Is_Returned()
         {
-            var ticket = new Ticket {Lines = new [] {new TicketLine {ResourceSetId = "1"}}};
-            var resourceSet = new [] {new ResourceSet {Id = "1"}};
+            var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "1" } } };
+            var resourceSet = new[] { new ResourceSet { Id = "1" } };
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(resourceSet);
 
@@ -89,8 +92,8 @@ namespace SimpleAuth.Server.Tests.Policies
         [Fact]
         public async Task When_AuthorizationPolicy_Is_Correct_Then_Authorized_Is_Returned()
         {
-            var ticket = new Ticket {Lines = new [] {new TicketLine {ResourceSetId = "1"}}};
-            var resourceSet = new []
+            var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "1" } } };
+            var resourceSet = new[]
             {
                 new ResourceSet
                 {

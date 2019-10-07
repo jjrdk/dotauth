@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,10 +26,12 @@ namespace SimpleAuth.Authenticate
     {
         private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
         private readonly IClientStore _clientRepository;
+        private readonly IJwksStore _jwksStore;
 
-        public ClientAssertionAuthentication(IClientStore clientRepository)
+        public ClientAssertionAuthentication(IClientStore clientRepository, IJwksStore jwksStore)
         {
             _clientRepository = clientRepository;
+            _jwksStore = jwksStore;
         }
 
         /// <summary>
@@ -88,9 +90,10 @@ namespace SimpleAuth.Authenticate
 
             try
             {
+                var validationParameters = await client.CreateValidationParameters(_jwksStore, expectedIssuer, clientId);
                 _handler.ValidateToken(
                     instruction.ClientAssertion,
-                    client.CreateValidationParameters(expectedIssuer, clientId),
+                    validationParameters,
                     out var securityToken);
                 var payload = (securityToken as JwtSecurityToken)?.Payload;
                 return payload == null
@@ -122,7 +125,7 @@ namespace SimpleAuth.Authenticate
             var jwe = instruction.ClientAssertion;
             var clientId = instruction.ClientIdFromHttpRequestBody;
             var client = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
-            var validationParameters = client.CreateValidationParameters();
+            var validationParameters = await client.CreateValidationParameters(_jwksStore);
             _handler.ValidateToken(jwe, validationParameters, out var securityToken);
             var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
 

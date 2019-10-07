@@ -259,7 +259,6 @@ namespace SimpleAuth.AcceptanceTests
                     AllowedScopes = new[] {"api1", "uma_protection"},
                     GrantTypes = new[] {GrantTypes.ClientCredentials, GrantTypes.Password, GrantTypes.UmaTicket},
                     ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.IdToken},
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
                 },

@@ -30,9 +30,9 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly AuthenticateClient _authenticateClient;
         private readonly ITokenStore _tokenStore;
 
-        public RevokeTokenAction(IClientStore clientStore, ITokenStore tokenStore)
+        public RevokeTokenAction(IClientStore clientStore, ITokenStore tokenStore, IJwksStore jwksStore)
         {
-            _authenticateClient = new AuthenticateClient(clientStore);
+            _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
             _tokenStore = tokenStore;
         }
 

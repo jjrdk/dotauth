@@ -52,6 +52,7 @@
             ITicketStore ticketStore,
             IJwksStore jwksStore,
             IResourceSetRepository resourceSetRepository,
+            IPolicyRepository policyRepository,
             IEventPublisher eventPublisher)
         {
             _tokenActions = new TokenActions(
@@ -71,6 +72,7 @@
                 scopeRepository,
                 tokenStore,
                 resourceSetRepository,
+                policyRepository,
                 jwksStore,
                 eventPublisher);
         }
