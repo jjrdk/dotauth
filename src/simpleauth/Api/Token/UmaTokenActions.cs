@@ -125,6 +125,7 @@ namespace SimpleAuth.Api.Token
             }
 
             // 5. Generate a granted token.
+            //var grantedToken = await GenerateToken(client, ticket.Lines, "openid", issuerName).ConfigureAwait(false);
             var grantedToken = await GenerateToken(client, ticket.Lines, "openid", issuerName).ConfigureAwait(false);
             await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
             await _ticketStore.Remove(ticket.Id, cancellationToken).ConfigureAwait(false);

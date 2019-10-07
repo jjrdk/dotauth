@@ -99,7 +99,8 @@ namespace SimpleAuth.JwtToken
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
 
-            var key = await _jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg, cancellationToken).ConfigureAwait(false);
+            var key = await _jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg, cancellationToken).ConfigureAwait(false)
+                ?? await _jwksStore.GetDefaultSigningKey(cancellationToken);
             //client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First();
 
             var jwtHeader = new JwtHeader(key);

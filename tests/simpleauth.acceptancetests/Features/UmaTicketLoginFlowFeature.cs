@@ -2,6 +2,9 @@
 {
     using System;
     using System.IdentityModel.Tokens.Jwt;
+    using System.Net;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
     using SimpleAuth.Shared.DTOs;
@@ -14,6 +17,7 @@
         [Scenario(DisplayName = "Successful ticket authentication")]
         public void SuccessfulTicketAuthentication()
         {
+            GrantedTokenResponse umaToken = null;
             AddResourceSetResponse resourceSetResponse = null;
             UmaClient umaClient = null;
             TokenClient client = null;
@@ -117,10 +121,24 @@
                 {
                     var response = await client.GetToken(TokenRequest.FromTicketId(ticketId, result.IdToken))
                         .ConfigureAwait(false);
-                    var umaToken = response.Content;
+                    umaToken = response.Content;
 
                     Assert.Null(response.Error);
                     Assert.NotNull(umaToken.AccessToken);
+                });
+
+            "then can call endpoint".x(
+                async () =>
+                {
+                    var request = new HttpRequestMessage
+                    {
+                        Method = HttpMethod.Get,
+                        RequestUri = new Uri("http://localhost/test")
+                    };
+                    request.Headers.Authorization = new AuthenticationHeaderValue(umaToken.TokenType, umaToken.AccessToken);
+                    var response = await _fixture.Client.SendAsync(request);
+
+                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 });
         }
     }

@@ -40,6 +40,7 @@
         /// <param name="ticketStore">The ticket store.</param>
         /// <param name="jwksStore"></param>
         /// <param name="resourceSetRepository">The resource set repository.</param>
+        /// <param name="policyRepository">The policy repository.</param>
         /// <param name="eventPublisher">The event publisher.</param>
         public TokenController(
             RuntimeSettings settings,

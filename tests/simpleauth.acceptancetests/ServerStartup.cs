@@ -87,6 +87,7 @@
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
+                        cfg.IncludeErrorDetails = true;
                         cfg.BackchannelHttpHandler = _context.Handler;
                         cfg.RequireHttpsMetadata = false;
                         cfg.Authority = _context.Client.BaseAddress.AbsoluteUri;
