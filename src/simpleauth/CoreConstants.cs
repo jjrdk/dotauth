@@ -159,7 +159,7 @@ namespace SimpleAuth
 
         public static class StandardTokenTypes
         {
-            public static string _bearer = "JwtConstants.BearerScheme";
+            public static string _bearer = "Bearer";
         }
 
         public static class StandardClaimParameterValueNames

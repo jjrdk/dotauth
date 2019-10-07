@@ -92,7 +92,7 @@ namespace SimpleAuth.Client
             else
             {
                 request.Method = HttpMethod.Get;
-                request.Headers.Authorization = new AuthenticationHeaderValue("JwtConstants.BearerScheme", accessToken);
+                request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, accessToken);
             }
 
             var serializedContent = await _client.SendAsync(request).ConfigureAwait(false);

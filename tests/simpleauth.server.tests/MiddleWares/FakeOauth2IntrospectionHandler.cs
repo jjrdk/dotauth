@@ -8,6 +8,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net.Http.Headers;
     using System.Security.Claims;
     using System.Text.Encodings.Web;
     using System.Threading.Tasks;
@@ -31,13 +32,7 @@
                 return AuthenticateResult.NoResult();
             }
 
-            string token = null;
-            if (authorization.StartsWith("JwtConstants.BearerScheme ", StringComparison.OrdinalIgnoreCase))
-            {
-                token = authorization.Substring("JwtConstants.BearerScheme ".Length).Trim();
-            }
-
-            if (string.IsNullOrEmpty(token))
+            if (!AuthenticationHeaderValue.TryParse(authorization, out var token))
             {
                 return AuthenticateResult.NoResult();
             }
@@ -50,7 +45,7 @@
                         new Uri(Options.WellKnownConfigurationUrl))
                     .ConfigureAwait(false);
                 var introspectionResult = await introspectionClient.Introspect(
-                        IntrospectionRequest.Create(token, TokenTypes.AccessToken))
+                        IntrospectionRequest.Create(token.Parameter, TokenTypes.AccessToken))
                     .ConfigureAwait(false);
                 if (introspectionResult.ContainsError || !introspectionResult.Content.Active)
                 {

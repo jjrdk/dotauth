@@ -232,7 +232,7 @@
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue(
-                    "JwtConstants.BearerScheme",
+                    JwtBearerConstants.BearerScheme,
                     authorizationHeaderValue);
             }
 

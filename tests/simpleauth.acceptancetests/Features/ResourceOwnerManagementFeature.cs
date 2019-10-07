@@ -104,7 +104,7 @@
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
                     request.Headers.Authorization = new AuthenticationHeaderValue(
-                        "JwtConstants.BearerScheme",
+                        "Bearer",
                         _administratorToken.AccessToken);
                     response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
                 });
@@ -160,7 +160,7 @@
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
                     request.Headers.Authorization = new AuthenticationHeaderValue(
-                        "JwtConstants.BearerScheme",
+                        "Bearer",
                         _administratorToken.AccessToken);
                     response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
                 });
@@ -235,7 +235,7 @@
                         Method = HttpMethod.Post,
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
-                    request.Headers.Authorization = new AuthenticationHeaderValue("JwtConstants.BearerScheme", _administratorToken.AccessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
                     response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
                 });
 
@@ -270,7 +270,7 @@
                         Method = HttpMethod.Delete,
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims?type=acceptance_test")
                     };
-                    request.Headers.Authorization = new AuthenticationHeaderValue("JwtConstants.BearerScheme", _administratorToken.AccessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
                     response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
                 });
 
@@ -306,7 +306,7 @@
                         Method = HttpMethod.Delete,
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims?type=some_other_claim")
                     };
-                    request.Headers.Authorization = new AuthenticationHeaderValue("JwtConstants.BearerScheme", _administratorToken.AccessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
                     response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
                 });
 
@@ -352,7 +352,7 @@
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
                     request.Headers.Authorization =
-                        new AuthenticationHeaderValue("JwtConstants.BearerScheme", _administratorToken.AccessToken);
+                        new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
                     response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
                 });
 
@@ -382,7 +382,7 @@
                     RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                 };
                 request.Headers.Authorization =
-                    new AuthenticationHeaderValue("JwtConstants.BearerScheme", _administratorToken.AccessToken);
+                    new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
                 response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
             });
 
@@ -412,7 +412,7 @@
                         Method = HttpMethod.Post,
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
-                    request.Headers.Authorization = new AuthenticationHeaderValue("JwtConstants.BearerScheme", _administratorToken.AccessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
                     response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
                 });
 
@@ -435,7 +435,7 @@
                     Method = HttpMethod.Delete,
                     RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners")
                 };
-                request.Headers.Authorization = new AuthenticationHeaderValue("JwtConstants.BearerScheme", _administratorToken.AccessToken);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
                 response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
             });
 
@@ -470,7 +470,7 @@
                         Method = HttpMethod.Put,
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
-                    request.Headers.Authorization = new AuthenticationHeaderValue("JwtConstants.BearerScheme", _administratorToken.AccessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
                     response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
                 });
 

@@ -181,7 +181,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Content = new StringContent(fakeJson, Encoding.UTF8, "application/json")
             };
 
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("JwtConstants.BearerScheme", grantedToken.Content.AccessToken);
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", grantedToken.Content.AccessToken);
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
