@@ -37,12 +37,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		build.ps1 = build.ps1
 		build.sh = build.sh
 		cakebuild.ps1 = cakebuild.ps1
-		Dockerfile = Dockerfile
+		docker-compose.yml = docker-compose.yml
+		DockerfileInMemory = DockerfileInMemory
+		DockerfilePostgres = DockerfilePostgres
 		README.md = README.md
 		shared.proj = shared.proj
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.stores.marten.acceptancetests", "tests\simpleauth.stores.marten.acceptancetests\simpleauth.stores.marten.acceptancetests.csproj", "{816CBA5B-357C-4D00-9A9B-F06A33F93B10}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.authserverpg", "src\simpleauth.authserverpg\simpleauth.authserverpg.csproj", "{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,6 +102,10 @@ Global
 		{816CBA5B-357C-4D00-9A9B-F06A33F93B10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{816CBA5B-357C-4D00-9A9B-F06A33F93B10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{816CBA5B-357C-4D00-9A9B-F06A33F93B10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -105,16 +113,13 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{FCB0F13A-B412-4340-B077-D3E7A60A9DD7} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{0F285AB3-E812-4AE0-9CEC-D118D10C3557} = {BFFECB1F-3326-4B55-9180-58674B3FF5D0}
-		{C23BD3A1-78CE-4531-9649-19BB87C93F53} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
-		{7AD38A3E-4A8A-42D2-9D1C-975676036F52} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{7E02195C-5656-43F4-AFC0-DADD6AFC9214} = {BFFECB1F-3326-4B55-9180-58674B3FF5D0}
 		{E0B564B2-D240-4371-98B3-31D11B818F90} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
-		{4B6809E0-D49A-492A-8B2D-260D46791926} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{C77BE523-DC6C-4BC8-BCE6-63B3F8D11D65} = {BFFECB1F-3326-4B55-9180-58674B3FF5D0}
 		{C05030A0-23DC-4B48-891C-791BCAEB96AF} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{A068C8CC-6F6E-4239-A4A5-5835580D9FF2} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
-		{D850CA90-E757-4328-B371-7D8957901D65} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{816CBA5B-357C-4D00-9A9B-F06A33F93B10} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
+		{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}

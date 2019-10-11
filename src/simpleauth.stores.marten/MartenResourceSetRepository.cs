@@ -5,6 +5,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using global::Marten;
+    using global::Marten.Pagination;
+
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -33,20 +35,19 @@
         {
             using (var session = _sessionFactory())
             {
+                parameter.StartIndex++;
                 parameter.Ids = parameter.Ids ?? Array.Empty<string>();
                 parameter.Names = parameter.Names ?? Array.Empty<string>();
                 var results = await session.Query<ResourceSet>()
                     .Where(x => x.Name.IsOneOf(parameter.Ids) && x.Type.IsOneOf(parameter.Names))
-                    .Skip(parameter.StartIndex)
-                    .Take(parameter.TotalResults)
-                    .ToListAsync(cancellationToken)
+                    .ToPagedListAsync(parameter.StartIndex, parameter.TotalResults, cancellationToken)
                     .ConfigureAwait(false);
 
                 return new GenericResult<ResourceSet>
                 {
                     Content = results.ToArray(),
                     StartIndex = parameter.StartIndex,
-                    TotalResults = results.Count
+                    TotalResults = results.TotalItemCount
                 };
             }
         }

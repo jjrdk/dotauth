@@ -212,6 +212,10 @@ FakesAssemblies/
 SimpleIdentityServer/VNEXT/src/SimpleIdentityServer.Host/wwwroot/lib/*
 
 log-*.txt
+secrets.json
 appsettings.json
+launchSettings.json
 simpleauth.authserver.exe
+/src/simpleauth.authserver/simpleauth.authserver
+docker-compose.yml
 .vscode

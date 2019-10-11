@@ -36,7 +36,14 @@ namespace SimpleAuth.Shared.Events.Openid
             Scopes = scopes;
         }
 
+        /// <summary>
+        /// Get the rejected client id.
+        /// </summary>
         public string ClientId { get; }
+
+        /// <summary>
+        /// Gets the rejected scopes.
+        /// </summary>
         public string[] Scopes { get; }
     }
 }

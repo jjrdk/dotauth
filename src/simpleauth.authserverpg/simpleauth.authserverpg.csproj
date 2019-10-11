@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <AssemblyName>simpleauth.authserverpg</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <StartupObject>SimpleAuth.AuthServerPg.Program</StartupObject>
+    <RootNamespace>SimpleAuth.AuthServerPg</RootNamespace>
+    <UserSecretsId>simpleauth-authserver</UserSecretsId>
+  </PropertyGroup>
+  <Import Project="..\..\shared.proj" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\simpleauth.stores.marten\simpleauth.stores.marten.csproj" />
+    <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
+  </ItemGroup>
+
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties Properties_4launchSettings_1json__JSONSchema="http://json.schemastore.org/phraseapp" />
+    </VisualStudio>
+  </ProjectExtensions>
+
+</Project>

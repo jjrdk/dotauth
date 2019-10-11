@@ -1,5 +1,5 @@
-#tool nuget:?package=GitVersion.CommandLine&version=4.0.0
-#addin nuget:?package=Cake.Docker&version=0.9.9
+#tool nuget:?package=GitVersion.CommandLine&version=5.0.1
+#addin nuget:?package=Cake.Docker&version=0.10.1
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -14,6 +14,7 @@ var configuration = Argument("configuration", "Release");
 
 // Define directories.
 var buildDir = "."; //+ Directory(configuration);
+string buildVersion = "";
 
 //////////////////////////////////////////////////////////////////////
 // Version
@@ -66,11 +67,13 @@ Task("Build")
     .IsDependentOn("Restore-NuGet-Packages")
     .Does(() =>
 {
-    var buildVersion = versionInfo.FullSemVer;
+    buildVersion = versionInfo.MajorMinorPatch + "-" + versionInfo.BranchName.Replace("features/", "") + "." + versionInfo.CommitsSinceVersionSource;
+	Information("Build version: " + buildVersion);
     var informationalVersion = versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded;
+	Information("CommitsSinceVersionSourcePadded: " + versionInfo.CommitsSinceVersionSourcePadded);
     if(versionInfo.BranchName == "master")
     {
-        buildVersion = informationalVersion;
+        buildVersion = versionInfo.MajorMinorPatch;
     }
     var buildSettings = new DotNetCoreMSBuildSettings()
         .SetConfiguration(configuration)
@@ -117,14 +120,7 @@ Task("Pack")
     .IsDependentOn("Tests")
     .Does(()=>
     {
-        var nugetVersion = versionInfo.MajorMinorPatch + "-" + versionInfo.BranchName + versionInfo.CommitsSinceVersionSourcePadded;
-        Information(versionInfo.CommitsSinceVersionSourcePadded);
-        if(versionInfo.BranchName == "master")
-        {
-            nugetVersion = versionInfo.MajorMinorPatch;
-        }
-
-        Information("Package version: " + nugetVersion);
+        Information("Package version: " + buildVersion);
 
         var packSettings = new DotNetCorePackSettings
         {
@@ -133,7 +129,7 @@ Task("Pack")
             NoRestore = true,
             OutputDirectory = "./artifacts/packages",
             IncludeSymbols = true,
-            MSBuildSettings = new DotNetCoreMSBuildSettings().SetConfiguration(configuration).SetVersion(nugetVersion)
+            MSBuildSettings = new DotNetCoreMSBuildSettings().SetConfiguration(configuration).SetVersion(buildVersion)
         };
 
         DotNetCorePack("./src/simpleauth.shared/simpleauth.shared.csproj", packSettings);
@@ -148,7 +144,43 @@ Task("Pack")
 Task("Docker-Build")
 .IsDependentOn("Pack")
 .Does(() => {
-    var settings = new DockerImageBuildSettings { Tag = new[] {"jjrdk/simpleauth:" + versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded }};
+
+	var publishSettings = new DotNetCorePublishSettings
+    {
+        Configuration = configuration,
+        OutputDirectory = "./artifacts/publish/inmemory/"
+    };
+
+    DotNetCorePublish("./src/simpleauth.authserver/simpleauth.authserver.csproj", publishSettings);
+    var settings = new DockerImageBuildSettings {
+        Compress = true,
+        File = "./DockerfileInMemory",
+        ForceRm = true,
+        Rm = true,
+		Tag = new[] {
+			"jjrdk/simpleauth:inmemory",
+			"jjrdk/simpleauth:" + buildVersion + "-inmemory"
+		}
+	};
+    DockerBuild(settings, "./");
+
+	publishSettings = new DotNetCorePublishSettings
+    {
+        Configuration = configuration,
+        OutputDirectory = "./artifacts/publish/postgres/"
+    };
+
+    DotNetCorePublish("./src/simpleauth.authserverpg/simpleauth.authserverpg.csproj", publishSettings);
+    settings = new DockerImageBuildSettings {
+        Compress = true,
+        File = "./DockerfilePostgres",
+        ForceRm = true,
+        Rm = true,
+		Tag = new[] {
+			"jjrdk/simpleauth:postgres",
+			"jjrdk/simpleauth:" + buildVersion + "-postgres"
+		}
+	};
     DockerBuild(settings, "./");
 });
 
@@ -180,7 +212,7 @@ Task("Warp")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Pack");
+    .IsDependentOn("Docker-Build");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION

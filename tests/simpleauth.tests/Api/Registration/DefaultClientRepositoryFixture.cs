@@ -29,6 +29,8 @@ namespace SimpleAuth.Tests.Api.Registration
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    using Moq;
     using Xunit;
 
     public sealed class DefaultClientRepositoryFixture : IDisposable
@@ -42,6 +44,7 @@ namespace SimpleAuth.Tests.Api.Registration
             _clientRepositoryFake = new InMemoryClientRepository(
                 _httpClient,
                 new InMemoryScopeRepository(new[] {new Scope {Name = "scope"}}),
+                new Mock<ILogger<InMemoryClientRepository>>().Object,
                 new Client[0]);
         }
 

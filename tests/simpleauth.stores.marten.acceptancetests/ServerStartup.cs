@@ -32,7 +32,7 @@
                     JsonConvert.DeserializeObject<Uri[]>),
                 JsonWebKeys = sp =>
                 {
-                    var keyset = new[] {context.SignatureKey, context.EncryptionKey}.ToJwks();
+                    var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
                     return new InMemoryJwksRepository(keyset, keyset);
                 },
                 Scopes = sp => new MartenScopeRepository(sp.GetService<Func<IDocumentSession>>()),
@@ -41,15 +41,14 @@
             };
             _context = context;
             _connectionString = connectionString;
-            var builder = new NpgsqlConnectionStringBuilder {ConnectionString = _connectionString};
+            var builder = new NpgsqlConnectionStringBuilder { ConnectionString = _connectionString };
             _schemaName = builder.SearchPath ?? "public";
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-
             services.AddSingleton<IDocumentStore>(
-                provider => new DocumentStore(new SimpleAuthMartenOptions(_connectionString, _schemaName)));
+                provider => new DocumentStore(new SimpleAuthMartenOptions(_connectionString, new NulloMartenLogger(), _schemaName)));
             services.AddTransient<Func<IDocumentSession>>(
                 sp =>
                 {
@@ -60,10 +59,8 @@
             services.AddCors(
                 options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
             // 2. Configure server
-            services.AddSimpleAuth(_martenOptions)
-                .AddLogging()
-                .AddAccountFilter()
-                .AddSingleton(sp => _context.Client);
+            services.AddSimpleAuth(_martenOptions, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme });
+            services.AddLogging().AddAccountFilter().AddSingleton(sp => _context.Client);
             services.AddAuthentication(
                     cfg =>
                     {
@@ -79,20 +76,13 @@
                         cfg.RequireHttpsMetadata = false;
                         cfg.TokenValidationParameters = new NoOpTokenValidationParameters(_context);
                     });
-            services.AddAuthorization(
-                opt => { opt.AddAuthPolicies(DefaultSchema, JwtBearerDefaults.AuthenticationScheme); });
-            // 3. Configure MVC
-            var mvc = services.AddMvc();
 
             return services.BuildServiceProvider();
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseAuthentication()
-                .UseCors("AllowAll")
-                .UseSimpleAuthExceptionHandler()
-                .UseMvcWithDefaultRoute();
+            app.UseSimpleAuthMvc();
         }
     }
 }

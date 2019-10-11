@@ -48,8 +48,7 @@
 
             Assert.True(result.ContainsError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
-            Assert.Equal($"Value cannot be null.{Environment.NewLine}Parameter name: value", result.Error.Detail);
-//            Assert.Equal($"The parameter login is missing{Environment.NewLine}Parameter name: id", result.Error.Detail);
+            Assert.Equal($"Value cannot be null. (Parameter 'value')", result.Error.Detail);
         }
 
         [Fact]
@@ -82,7 +81,7 @@
 
             Assert.True(result.ContainsError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
-            Assert.Equal($"The parameter login is missing{Environment.NewLine}Parameter name: id", result.Error.Detail);
+            Assert.Equal("The parameter login is missing (Parameter 'id')", result.Error.Detail);
         }
 
         [Fact]
@@ -105,7 +104,7 @@
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
-            Assert.Equal($"The parameter login is missing{Environment.NewLine}Parameter name: id", result.Error.Detail);
+            Assert.Equal($"The parameter login is missing (Parameter 'id')", result.Error.Detail);
         }
 
         [Fact]

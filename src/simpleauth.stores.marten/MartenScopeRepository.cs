@@ -9,6 +9,8 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using global::Marten.Pagination;
+
     /// <summary>
     /// Defines the Marten based scope repository.
     /// </summary>
@@ -36,18 +38,17 @@
 
             using (var session = _sessionFactory())
             {
+                parameter.StartIndex++;
                 var results = await session.Query<Scope>()
                     .Where(x => x.Name.IsOneOf(parameter.ScopeNames) && x.Type.IsOneOf(parameter.ScopeTypes))
-                    .Skip(parameter.StartIndex)
-                    .Take(parameter.NbResults)
-                    .ToListAsync(cancellationToken)
+                    .ToPagedListAsync(parameter.StartIndex, parameter.NbResults, cancellationToken)
                     .ConfigureAwait(false);
 
                 return new GenericResult<Scope>
                 {
                     Content = results.ToArray(),
                     StartIndex = parameter.StartIndex,
-                    TotalResults = results.Count
+                    TotalResults = results.TotalItemCount
                 };
             }
         }

@@ -16,12 +16,10 @@ namespace SimpleAuth.Shared.Models
 {
     using System;
     using System.IdentityModel.Tokens.Jwt;
-    using System.Runtime.Serialization;
 
     /// <summary>
     /// Defines the granted token.
     /// </summary>
-    [DataContract]
     public class GrantedToken
     {
         /// <summary>
@@ -30,7 +28,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The identifier.
         /// </value>
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the access token.
@@ -118,6 +116,6 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The parent token identifier.
         /// </value>
-        public string ParentTokenId { get; set; }
+        public Guid ParentTokenId { get; set; }
     }
 }

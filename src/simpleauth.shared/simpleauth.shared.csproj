@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>SimpleAuth Shared Library</Description>
     <Title>SimpleAuth Shared</Title>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>simpleauth.shared</AssemblyName>
     <PackageId>simpleauth.shared</PackageId>
     <RootNamespace>SimpleAuth.Shared</RootNamespace>
@@ -16,9 +16,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>
-  <Import Project="../../shared.proj" />
+  <Import Project="..\..\shared.proj" />
 
   <ItemGroup>
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.5.0" />
   </ItemGroup>
 </Project>

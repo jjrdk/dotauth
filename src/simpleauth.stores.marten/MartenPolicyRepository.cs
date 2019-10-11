@@ -9,6 +9,8 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using global::Marten.Pagination;
+
     /// <summary>
     /// Defines the Marten based policy repository.
     /// </summary>
@@ -33,16 +35,14 @@
         {
             using (var session = _sessionFactory())
             {
+                parameter.StartIndex++;
                 var results = await session.Query<Policy>()
-                    .Where(
-                        x => x.Id.IsOneOf(parameter.Ids) || x.ResourceSetIds.Any(r => r.IsOneOf(parameter.ResourceIds)))
-                    .Skip(parameter.StartIndex)
-                    .Take(parameter.TotalResults)
-                    .ToListAsync(cancellationToken)
+                    .Where(x => x.Id.IsOneOf(parameter.Ids) || x.ResourceSetIds.Any(r => r.IsOneOf(parameter.ResourceIds)))
+                    .ToPagedListAsync(parameter.StartIndex, parameter.TotalResults, cancellationToken)
                     .ConfigureAwait(false);
                 return new GenericResult<Policy>
                 {
-                    Content = results.ToArray(), StartIndex = parameter.StartIndex, TotalResults = results.Count
+                    Content = results.ToArray(), StartIndex = parameter.StartIndex, TotalResults = results.TotalItemCount
                 };
             }
         }

@@ -16,17 +16,24 @@
         /// Initializes a new instance of the <see cref="SimpleAuthMartenOptions"/> class.
         /// </summary>
         /// <param name="connectionString">The connection string</param>
+        /// <param name="logger">The logger.</param>
         /// <param name="searchPath">The schema name</param>
         /// <param name="autoCreate">Schema creation options</param>
-        public SimpleAuthMartenOptions(string connectionString, string searchPath = null, AutoCreate autoCreate = AutoCreate.All)
+        public SimpleAuthMartenOptions(
+            string connectionString,
+            IMartenLogger logger,
+            string searchPath = null,
+            AutoCreate autoCreate = AutoCreate.CreateOrUpdate)
         {
             Serializer<CustomJsonSerializer>();
             Connection(connectionString);
+            Logger(logger);
             Schema.Include<SimpleAuthRegistry>();
             if (!string.IsNullOrWhiteSpace(searchPath))
             {
                 DatabaseSchemaName = searchPath;
             }
+
             AutoCreateSchemaObjects = autoCreate;
         }
 
@@ -118,6 +125,7 @@
 
             public EnumStorage EnumStorage { get; } = EnumStorage.AsString;
             public Casing Casing { get; } = Casing.CamelCase;
+            public CollectionStorage CollectionStorage { get; } = CollectionStorage.AsArray;
         }
     }
 }

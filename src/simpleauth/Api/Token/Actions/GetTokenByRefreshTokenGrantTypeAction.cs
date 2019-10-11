@@ -21,7 +21,6 @@ namespace SimpleAuth.Api.Token.Actions
     using Shared.Models;
     using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Linq;

@@ -14,21 +14,19 @@
 
 namespace SimpleAuth.AuthServer
 {
+    using System;
     using Controllers;
     using Extensions;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.HttpOverrides;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Logging;
     using SimpleAuth;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Repositories;
     using System.IO.Compression;
+    using System.Linq;
     using System.Net.Http;
     using System.Reflection;
     using System.Security.Claims;
@@ -38,24 +36,27 @@ namespace SimpleAuth.AuthServer
 
     public class Startup
     {
+        private static readonly string DefaultGoogleScopes = "openid,profile,email";
         private readonly IConfiguration _configuration;
         private readonly SimpleAuthOptions _options;
-        private readonly Assembly _assembly = typeof(HomeController).Assembly;
 
         public Startup(IConfiguration configuration)
         {
+            var client = new HttpClient();
             _configuration = configuration;
             _options = new SimpleAuthOptions
             {
-                ApplicationName = _configuration["ApplicationName"],
+                ApplicationName = _configuration["ApplicationName"] ?? "SimpleAuth",
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultConfiguration.GetUsers()),
                 Clients =
                     sp => new InMemoryClientRepository(
                         sp.GetService<HttpClient>(),
                         sp.GetService<IScopeStore>(),
+                        sp.GetService<ILogger<InMemoryClientRepository>>(),
                         DefaultConfiguration.GetClients()),
                 Scopes = sp => new InMemoryScopeRepository(DefaultConfiguration.GetScopes()),
-                EventPublisher = sp => new TraceEventPublisher(),
+                EventPublisher = sp => new LogEventPublisher(sp.GetService<ILogger<LogEventPublisher>>()),
+                HttpClientFactory = () => client,
                 ClaimsIncludedInUserCreation = new[]
                 {
                     ClaimTypes.Name,
@@ -99,60 +100,45 @@ namespace SimpleAuth.AuthServer
                     options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
                 .AddLogging(log => { log.AddConsole(); });
             services.AddAuthentication(CookieNames.CookieName)
-                .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; });
-            services.AddAuthentication(CookieNames.ExternalCookieName)
-                .AddCookie(CookieNames.ExternalCookieName)
-                .AddGoogle(
-                    opts =>
-                    {
-                        opts.AccessType = "offline";
-                        opts.ClientId = _configuration["Google:ClientId"];
-                        opts.ClientSecret = _configuration["Google:ClientSecret"];
-                        opts.SignInScheme = CookieNames.ExternalCookieName;
-                        opts.Scope.Add("openid");
-                        opts.Scope.Add("profile");
-                        opts.Scope.Add("email");
-                    })
-                .AddJwtBearer(
-                    JwtBearerDefaults.AuthenticationScheme,
+                .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        cfg.RequireHttpsMetadata = true;
-                        cfg.Authority = _configuration["Endpoint"];
-                        cfg.TokenValidationParameters = new TokenValidationParameters { ValidateAudience = false };
-                    }); ;
-            services.AddAuthorization(opts => { opts.AddAuthPolicies(CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme); })
-                .AddMvc(options => { })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddApplicationPart(_assembly);
-            services.AddSimpleAuth(_options)
-            .AddHttpsRedirection(
-                options =>
-                {
-                    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-                    options.HttpsPort = 5001;
-                });
+                        //cfg.Authority = _configuration.TokenService;
+                        cfg.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateAudience = false,
+                            //ValidIssuers = _configuration.ValidIssuers
+                        };
+                        cfg.RequireHttpsMetadata = false;
+                    });
+            if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
+            {
+                services.AddAuthentication(CookieNames.ExternalCookieName)
+                    .AddCookie(CookieNames.ExternalCookieName)
+                    .AddGoogle(
+                        opts =>
+                        {
+                            opts.AccessType = "offline";
+                            opts.ClientId = _configuration["Google:ClientId"];
+                            opts.ClientSecret = _configuration["Google:ClientSecret"];
+                            opts.SignInScheme = CookieNames.ExternalCookieName;
+                            var scopes = _configuration["Google:Scopes"] ?? DefaultGoogleScopes;
+                            foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()))
+                            {
+                                opts.Scope.Add(scope);
+                            }
+                        });
+            }
+
+            services.AddSimpleAuth(
+                _options,
+                new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme});
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All })
-                .UseHttpsRedirection()
-                .UseHsts()
-                .UseAuthentication()
-                .UseCors("AllowAll")
-                .UseStaticFiles(
-                    new StaticFileOptions
-                    {
-                        FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot"),
-                        OnPrepareResponse = context =>
-                        {
-                            context.Context.Response.Headers["Cache-Control"] = _configuration["StaticFiles:Headers:Cache-Control"];
-                        }
-                    })
-                .UseSimpleAuthExceptionHandler()
-                .UseResponseCompression()
-                .UseSimpleAuthMvc();
+            app.UseResponseCompression().UseSimpleAuthMvc();
         }
     }
 }

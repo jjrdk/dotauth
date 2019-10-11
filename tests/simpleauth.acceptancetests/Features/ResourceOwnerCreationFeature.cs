@@ -24,7 +24,7 @@
                     },
                     _administratorToken.AccessToken).ConfigureAwait(false);
 
-                Assert.Equal("{\"subject\":\"tester\"}", created.Content);
+                Assert.Equal("tester", created.Content);
             });
 
             "and user logs in".x(async () =>

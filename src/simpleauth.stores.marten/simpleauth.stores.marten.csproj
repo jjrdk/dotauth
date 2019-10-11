@@ -11,11 +11,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
   </PropertyGroup>
-  <Import Project="../../shared.proj" />
+  <Import Project="..\..\shared.proj" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.0.0" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="marten" Version="3.5.0" />
+    <PackageReference Include="marten" Version="3.8.1" />
   </ItemGroup>
 </Project>

@@ -10,6 +10,8 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using global::Marten.Pagination;
+
     /// <summary>
     /// Defines the marten based client store.
     /// </summary>
@@ -63,19 +65,18 @@
         {
             using (var session = _sessionFactory())
             {
+                parameter.StartIndex++;
                 var take = parameter.NbResults == 0 ? int.MaxValue : parameter.NbResults;
                 var results = await session.Query<Client>()
                     .Where(x => x.ClientId.IsOneOf(parameter.ClientIds))
-                    .Skip(parameter.StartIndex)
-                    .Take(take)
-                    .ToListAsync(token: cancellationToken)
+                    .ToPagedListAsync(parameter.StartIndex, take, cancellationToken)
                     .ConfigureAwait(false);
 
                 return new GenericResult<Client>
                 {
                     Content = results.ToArray(),
                     StartIndex = parameter.StartIndex,
-                    TotalResults = results.Count
+                    TotalResults = results.TotalItemCount
                 };
             }
         }

@@ -2,11 +2,15 @@
 {
     using System;
     using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
+    using System.Threading;
     using Newtonsoft.Json;
+    using Shared.Models;
+    using Shared.Repositories;
     using SimpleAuth.Client;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
@@ -113,7 +117,7 @@
 
             "and has new token".x(async () =>
             {
-                var updatedToken = await response.Content.ReadAsStringAsync();
+                var updatedToken = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 Assert.NotNull(updatedToken);
             });
 
@@ -128,6 +132,84 @@
                     var handler = new JwtSecurityTokenHandler();
                     var token = handler.ReadToken(result.Content.AccessToken) as JwtSecurityToken;
                     Assert.Contains(token.Claims, c => c.Type == "added_claim_test" && c.Value == "something");
+                });
+        }
+
+        [Scenario]
+        public void CanUpdateOwnClaimsAndLogInAgain()
+        {
+            HttpResponseMessage response = null;
+            GrantedTokenResponse updatedToken = null;
+            GrantedTokenResponse newToken = null;
+
+            "When updating user claims".x(
+                async () =>
+                {
+                    var updateRequest = new UpdateResourceOwnerClaimsRequest
+                    {
+                        Subject = "administrator",
+                        Claims = new[] { new PostClaim { Type = "added_claim_test", Value = "something" } }
+                    };
+
+                    var json = JsonConvert.SerializeObject(updateRequest);
+
+                    var request = new HttpRequestMessage
+                    {
+                        Content = new StringContent(json, Encoding.UTF8, "application/json"),
+                        Method = HttpMethod.Post,
+                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                    };
+                    request.Headers.Authorization = new AuthenticationHeaderValue(
+                        "Bearer",
+                        _administratorToken.AccessToken);
+                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                });
+
+            "Then is ok request".x(
+                () =>
+                {
+                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                });
+
+            "and has new token".x(async () =>
+            {
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                updatedToken = JsonConvert.DeserializeObject<GrantedTokenResponse>(json);
+
+                Assert.NotNull(updatedToken);
+            });
+
+            "When logging out".x(
+                async () =>
+                {
+                    var result = await _tokenClient.RevokeToken(RevokeTokenRequest.Create(updatedToken))
+                        .ConfigureAwait(false);
+                    Assert.False(result.ContainsError);
+                });
+
+            "and logging in again".x(
+                async () =>
+                {
+                    var result = await _tokenClient
+                        .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager" }))
+                        .ConfigureAwait(false);
+
+                    Assert.NotNull(result.Content);
+
+                    newToken = result.Content;
+                });
+
+            "then gets updated claim in token".x(
+                () =>
+                {
+                    var handler = new JwtSecurityTokenHandler();
+                    var updatedJwt = handler.ReadJwtToken(updatedToken.AccessToken);
+                    var newJwt = handler.ReadJwtToken(newToken.AccessToken);
+
+                    Assert.Equal(
+                        updatedJwt.Claims.First(x => x.Type == "added_claim_test").Value,
+                        newJwt.Claims.First(x => x.Type == "added_claim_test").Value);
                 });
         }
 
@@ -176,6 +258,78 @@
         }
 
         [Scenario]
+        public void CanDeleteOwnClaims()
+        {
+            HttpResponseMessage response = null;
+
+            "When deleting user claims".x(
+                async () =>
+                {
+                    var request = new HttpRequestMessage
+                    {
+                        Method = HttpMethod.Delete,
+                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims?type=acceptance_test")
+                    };
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
+                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                });
+
+            "Then is ok request".x(
+                () =>
+                {
+                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                });
+
+            "Then resource owner no longer has claim".x(
+                async () =>
+                {
+                    var result = await _tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager" })).ConfigureAwait(false);
+                    Assert.NotNull(result.Content);
+
+                    var handler = new JwtSecurityTokenHandler();
+                    var token = (JwtSecurityToken)handler.ReadToken(result.Content.AccessToken);
+                    Assert.DoesNotContain(token.Claims, c => c.Type == "acceptance_test");
+                });
+        }
+
+        [Scenario]
+        public void CannotDeleteClaimsNotPartOfScope()
+        {
+            HttpResponseMessage response = null;
+            ResourceOwner resourceOwner = null;
+
+            "When deleting user claims not in scope".x(
+                async () =>
+                {
+                    var request = new HttpRequestMessage
+                    {
+                        Method = HttpMethod.Delete,
+                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims?type=some_other_claim")
+                    };
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
+                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                });
+
+            "Then is ok request".x(
+                () =>
+                {
+                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                });
+
+            "And when getting resource owner from store".x(async () =>
+            {
+                var store = (IResourceOwnerStore)_fixture.Server.Host.Services.GetService(typeof(IResourceOwnerStore));
+                resourceOwner = await store.Get("administrator", CancellationToken.None).ConfigureAwait(false);
+            });
+
+            "Then resource owner still has claim".x(
+                () =>
+                {
+                    Assert.Contains(resourceOwner.Claims, c => c.Type == "some_other_claim");
+                });
+        }
+
+        [Scenario]
         public void CanUpdateOwnClaimsTwoTimes()
         {
             HttpResponseMessage response = null;
@@ -205,7 +359,7 @@
             "Then is ok response".x(
                 async () =>
                 {
-                    var json = await response.Content.ReadAsStringAsync();
+                    var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     _administratorToken = JsonConvert.DeserializeObject<GrantedTokenResponse>(json);
 
                     Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -267,6 +421,25 @@
                 {
                     Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
                 });
+        }
+
+        [Scenario]
+        public void CanDeleteOwnAccount()
+        {
+            HttpResponseMessage response = null;
+
+            "When deleting own account".x(async () =>
+            {
+                var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Delete,
+                    RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners")
+                };
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
+                response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+            });
+
+            "Then response is OK".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
         }
 
         [Scenario]

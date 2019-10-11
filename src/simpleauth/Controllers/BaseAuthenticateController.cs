@@ -147,6 +147,7 @@ namespace SimpleAuth.Controllers
         /// Logouts this instance.
         /// </summary>
         /// <returns></returns>
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             HttpContext.Response.Cookies.Delete(CoreConstants.SessionId);
@@ -155,7 +156,7 @@ namespace SimpleAuth.Controllers
                     CookieNames.CookieName,
                     new AuthenticationProperties())
                 .ConfigureAwait(false);
-            return RedirectToAction("Index", "Authenticate", new { area = "pwd" });
+            return Redirect("/");
         }
 
         /// <summary>
@@ -461,7 +462,6 @@ namespace SimpleAuth.Controllers
 
             // 1. Persist the request code into a cookie & fix the space problems
             var cookieValue = Id.Create();
-            ;
             var cookieName = string.Format(ExternalAuthenticateCookieName, cookieValue);
             Response.Cookies.Append(cookieName, code, new CookieOptions { Expires = DateTime.UtcNow.AddMinutes(5) });
 
@@ -539,7 +539,8 @@ namespace SimpleAuth.Controllers
             // 5. Rerieve the claims & insert the resource owner if needed.
             //var claimsIdentity = authenticatedUser.Identity as ClaimsIdentity;
             var claims = authenticatedUser.Claims.ToArray();
-            var resourceOwner = await _resourceOwnerRepository.Get(authenticatedUser.GetSubject(), cancellationToken)
+            var resourceOwner = await _resourceOwnerRepository.Get(new ExternalAccountLink { Issuer = authenticatedUser.Identity.AuthenticationType, Subject = authenticatedUser.GetSubject() }, cancellationToken)
+                //authenticatedUser.GetSubject(), cancellationToken)
                 .ConfigureAwait(false);
             var sub = string.Empty;
             if (resourceOwner == null)
@@ -551,6 +552,7 @@ namespace SimpleAuth.Controllers
                 }
 
                 sub = s;
+                resourceOwner = await _resourceOwnerRepository.Get(s, cancellationToken).ConfigureAwait(false);
             }
 
             if (resourceOwner != null)

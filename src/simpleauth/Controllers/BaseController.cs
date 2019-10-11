@@ -9,7 +9,7 @@
     /// <summary>
     /// Defines the abstract base controller.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="Controller" />
     public abstract class BaseController : Controller
     {
         /// <summary>

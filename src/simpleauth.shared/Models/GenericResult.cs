@@ -15,7 +15,7 @@
         /// The total results.
         /// </value>
         [DataMember(Name = "count")]
-        public int TotalResults { get; set; }
+        public long TotalResults { get; set; }
 
         /// <summary>
         /// Gets or sets the start index.

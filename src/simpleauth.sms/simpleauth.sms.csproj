@@ -3,20 +3,19 @@
   <PropertyGroup>
     <Description>SimpleAuth SMS Authentication Library</Description>
     <Title>SimpleAuth SMS Authentication</Title>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <AssemblyName>simpleauth.sms</AssemblyName>
     <PackageId>simpleauth.sms</PackageId>
     <RootNamespace>SimpleAuth.Sms</RootNamespace>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <EnableDefaultRazorGenerateItems>true</EnableDefaultRazorGenerateItems>
-    <WarningsAsErrors />
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.0|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
   </PropertyGroup>
 
-  <Import Project="../../shared.proj" />
+  <Import Project="..\..\shared.proj" />
   <ItemGroup>
     <None Remove="Areas\**\*.cshtml" />
   </ItemGroup>
@@ -25,13 +24,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.Extensions" Version="2.2.0" />
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.3.101.8" />
-    <!--<PackageReference Include="microsoft.extensions.fileproviders.embedded" Version="2.2.0" />-->
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.3.101.69" />
   </ItemGroup>
 </Project>

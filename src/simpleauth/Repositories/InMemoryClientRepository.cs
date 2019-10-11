@@ -5,11 +5,11 @@
     using SimpleAuth.Shared.Requests;
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Defines the in-memory client repository.
@@ -17,6 +17,7 @@
     /// <seealso cref="SimpleAuth.Shared.Repositories.IClientRepository" />
     public sealed class InMemoryClientRepository : IClientRepository
     {
+        private readonly ILogger<InMemoryClientRepository> _logger;
         private readonly List<Client> _clients;
         private readonly ClientFactory _clientFactory;
 
@@ -25,12 +26,15 @@
         /// </summary>
         /// <param name="httpClient">The HTTP client.</param>
         /// <param name="scopeStore">The scope store.</param>
+        /// <param name="logger">The logger.</param>
         /// <param name="clients">The clients.</param>
         public InMemoryClientRepository(
             HttpClient httpClient,
             IScopeStore scopeStore,
+            ILogger<InMemoryClientRepository> logger,
             IReadOnlyCollection<Client> clients = null)
         {
+            _logger = logger;
             _clientFactory = new ClientFactory(httpClient, scopeStore, s => s.DeserializeWithJavascript<Uri[]>());
             _clients = clients == null
                 ? new List<Client>()
@@ -117,8 +121,7 @@
             {
                 var clientTypes = newClient.ClientTypes.Select(t => t);
                 result = result.Where(c => clientTypes.Contains(c.ApplicationType))
-                    .OrderBy(c => c.ClientName)
-                    .ToArray();
+                    .OrderBy(c => c.ClientName);
             }
 
             var nbResult = result.Count();
@@ -158,7 +161,7 @@
                     x => x.ClientId == newClient.ClientId || x.ClientName == newClient.ClientName);
                 if (removed != 1)
                 {
-                    Trace.TraceError("");
+                    _logger.LogError($"Client {newClient.ClientId} not properly updated.");
                 }
 
                 _clients.Add(newClient);

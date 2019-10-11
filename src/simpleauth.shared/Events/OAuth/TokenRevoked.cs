@@ -16,13 +16,6 @@ namespace SimpleAuth.Shared.Events.OAuth
 {
     using System;
 
-    public class ClaimsUpdated: Event {
-        public ClaimsUpdated(string id, DateTime timestamp)
-            : base(id, timestamp)
-        {
-        }
-    }
-
     /// <summary>
     /// Defines the token revoked event.
     /// </summary>

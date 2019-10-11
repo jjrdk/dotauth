@@ -22,7 +22,7 @@ namespace SimpleAuth.AuthServer
 
     public class Program
     {
-        public static async Task Main(params string[] args)
+        public static async Task Main()
         {
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new ConsoleTraceListener { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
@@ -33,12 +33,7 @@ namespace SimpleAuth.AuthServer
                         o.AddServerHeader = false;
                         o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2);
                     })
-                .ConfigureAppConfiguration(
-                    c => c.AddUserSecrets<Startup>()
-                        .AddCommandLine(args)
-                        .AddJsonFile("appsettings.json")
-                        .AddEnvironmentVariables())
-                .UseUrls("http://*:5000", "https://*:5001")
+                .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
                 .UseStartup<Startup>()
                 .Build()
                 .RunAsync()

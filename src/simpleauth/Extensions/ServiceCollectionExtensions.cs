@@ -23,12 +23,18 @@ namespace SimpleAuth.Extensions
     using SimpleAuth.Repositories;
     using SimpleAuth.Services;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Linq;
     using System.Net.Http;
+    using Microsoft.AspNetCore.HttpOverrides;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.FileProviders;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Newtonsoft.Json;
+    using SimpleAuth.MiddleWare;
     using SimpleAuth.Shared.Events;
 
     /// <summary>
@@ -203,41 +209,61 @@ namespace SimpleAuth.Extensions
         }
 
         /// <summary>
-        /// Adds SimpleAuth.
+        /// Adds SimpleAuth type registrations.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="configuration">The configuration.</param>
         /// <param name="requestThrottle">The rate limiter.</param>
-        /// <returns></returns>
-        public static IServiceCollection AddSimpleAuth(
+        /// <param name="authPolicies"></param>
+        /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
+        public static IMvcBuilder AddSimpleAuth(
             this IServiceCollection services,
             Action<SimpleAuthOptions> configuration,
+            string[] authPolicies,
             IRequestThrottle requestThrottle = null)
         {
             var options = new SimpleAuthOptions();
             configuration(options);
 
-            return AddSimpleAuth(services, options);
+            return AddSimpleAuth(services, options, authPolicies, requestThrottle);
         }
 
         /// <summary>
-        /// Adds the SimpleAuth.
+        /// Adds SimpleAuth type registrations.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="options">The options.</param>
-        /// <returns></returns>
+        /// <param name="requestThrottle">The rate limiter.</param>
+        /// <param name="authPolicies"></param>
+        /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
         /// <exception cref="ArgumentNullException">options</exception>
-        public static IServiceCollection AddSimpleAuth(this IServiceCollection services, SimpleAuthOptions options, IRequestThrottle requestThrottle = null)
+        public static IMvcBuilder AddSimpleAuth(
+            this IServiceCollection services,
+            SimpleAuthOptions options,
+            string[] authPolicies,
+            IRequestThrottle requestThrottle = null)
         {
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            Globals.ApplicationName = options.ApplicationName ?? string.Empty;
+            var mvcBuilder = services
+                     .AddControllersWithViews()
+                     .AddApplicationPart(typeof(ServiceCollectionExtensions).Assembly)
+                     .AddRazorRuntimeCompilation()
+                     .AddNewtonsoftJson()
+                     .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            services.AddRazorPages();
+            Globals.ApplicationName = options.ApplicationName ?? "SimpleAuth";
             var runtimeConfig = GetRuntimeConfig(options);
+            services.AddAuthentication();
+            var policies = authPolicies?.Length > 0 ? authPolicies : new[] { CookieNames.CookieName };
+            services.AddAuthorization(opts => { opts.AddAuthPolicies(policies); });
+
             var s = services.AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>()
                 .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
+                .AddTransient<IConfigureOptions<MvcNewtonsoftJsonOptions>, ConfigureMvcNewtonsoftJsonOptions>()
                 .AddSingleton(runtimeConfig)
                 .AddSingleton(requestThrottle ?? NoopThrottle.Default)
                 .AddSingleton(options.HttpClientFactory?.Invoke() ?? new HttpClient())
@@ -247,7 +273,10 @@ namespace SimpleAuth.Extensions
                 .AddSingleton<IJwksStore>(sp => sp.GetService<IJwksRepository>())
                 .AddSingleton(
                     sp => options.Clients?.Invoke(sp)
-                          ?? new InMemoryClientRepository(sp.GetService<HttpClient>(), sp.GetService<IScopeStore>()))
+                          ?? new InMemoryClientRepository(
+                              sp.GetService<HttpClient>(),
+                              sp.GetService<IScopeStore>(),
+                              sp.GetService<ILogger<InMemoryClientRepository>>()))
                 .AddSingleton<IClientStore>(sp => sp.GetService<IClientRepository>())
                 .AddSingleton(sp => options.Consents?.Invoke(sp) ?? new InMemoryConsentRepository())
                 .AddSingleton<IConsentStore>(sp => sp.GetService<IConsentRepository>())
@@ -265,8 +294,8 @@ namespace SimpleAuth.Extensions
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
                 .AddTransient<IBasicAuthorizationPolicy, BasicAuthorizationPolicy>();
-            services.AddDataProtection();
-            return s;
+            s.AddDataProtection();
+            return mvcBuilder;
         }
 
         /// <summary>
@@ -276,14 +305,31 @@ namespace SimpleAuth.Extensions
         /// <returns></returns>
         public static IApplicationBuilder UseSimpleAuthMvc(this IApplicationBuilder app)
         {
-            return app.UseMvc(
-                routes =>
-                {
-                    routes.MapRoute("areaexists", "{area:exists}/{controller=Authenticate}/{action=Index}");
-                    routes.MapRoute("pwdauth", "pwd/{controller=Authenticate}/{action=Index}");
-                    //routes.MapRoute("areaauth", "{area=pwd}/{controller=Authenticate}/{action=Index}");
-                    routes.MapRoute("default", "{controller=Authenticate}/{action=Index}");
-                });
+            var publisher = app.ApplicationServices.GetService(typeof(IEventPublisher)) ?? new NoOpPublisher();
+            return app.UseMiddleware<ExceptionHandlerMiddleware>(publisher)
+                //.UseResponseCompression()
+                .UseStaticFiles(
+                    new StaticFileOptions
+                    {
+                        FileProvider = new EmbeddedFileProvider(
+                            typeof(ServiceCollectionExtensions).Assembly,
+                            "SimpleAuth.wwwroot")
+                    })
+                .UseRouting()
+                .UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All })
+                .UseAuthentication()
+                .UseAuthorization()
+                .UseCors("AllowAll")
+                .UseEndpoints(
+                    endpoint =>
+                    {
+                        endpoint.MapRazorPages();
+                        endpoint.MapControllerRoute(
+                            "areaexists",
+                            "{area:exists}/{controller=Authenticate}/{action=Index}");
+                        endpoint.MapControllerRoute("pwdauth", "pwd/{controller=Authenticate}/{action=Index}");
+                        endpoint.MapControllerRoute("default", "{controller=Authenticate}/{action=Index}");
+                    });
         }
 
         private static RuntimeSettings GetRuntimeConfig(SimpleAuthOptions options)
@@ -294,6 +340,19 @@ namespace SimpleAuth.Extensions
                 claimsIncludedInUserCreation: options.ClaimsIncludedInUserCreation,
                 rptLifeTime: options.RptLifeTime,
                 ticketLifeTime: options.TicketLifeTime);
+        }
+    }
+
+    internal class ConfigureMvcNewtonsoftJsonOptions : IConfigureOptions<MvcNewtonsoftJsonOptions>
+    {
+        public void Configure(MvcNewtonsoftJsonOptions options)
+        {
+            var settings = options.SerializerSettings;
+            settings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
+            settings.DefaultValueHandling = DefaultValueHandling.Ignore;
+            settings.MissingMemberHandling = MissingMemberHandling.Ignore;
+            settings.NullValueHandling = NullValueHandling.Include;
+            settings.MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead;
         }
     }
 }

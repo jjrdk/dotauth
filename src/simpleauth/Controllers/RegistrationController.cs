@@ -26,7 +26,7 @@ namespace SimpleAuth.Controllers
     /// <summary>
     /// Defines the registration controller
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="ControllerBase" />
     [Route(CoreConstants.EndPoints.Registration)]
     [Authorize(Policy = "registration")]
     public class RegistrationController : ControllerBase

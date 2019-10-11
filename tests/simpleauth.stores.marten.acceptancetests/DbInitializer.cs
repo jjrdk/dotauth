@@ -30,7 +30,7 @@
                     await connection.OpenAsync().ConfigureAwait(false);
                     var schema = $"test_{DateTime.UtcNow.Ticks.ToString()}";
                     var cmd = connection.CreateCommand();
-                    cmd.CommandText = $"CREATE SCHEMA {schema} AUTHORIZATION ithemba; ";
+                    cmd.CommandText = $"CREATE SCHEMA {schema} AUTHORIZATION simpleauth; ";
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                     builder.SearchPath = schema;
 
@@ -52,7 +52,7 @@
             IEnumerable<Client> clients,
             IEnumerable<Scope> scopes)
         {
-            using (var store = new DocumentStore(new SimpleAuthMartenOptions(connectionString, searchPath)))
+            using (var store = new DocumentStore(new SimpleAuthMartenOptions(connectionString, new NulloMartenLogger(), searchPath)))
             {
                 using (var session = store.LightweightSession())
                 {

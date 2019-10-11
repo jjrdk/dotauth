@@ -24,7 +24,6 @@ namespace SimpleAuth.WebSite.Consent.Actions
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.Shared.Requests;
     using System;
     using System.Collections.Generic;
