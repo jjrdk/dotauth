@@ -49,16 +49,16 @@ namespace SimpleAuth.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<UmaConfigurationResponse>> GetConfiguration()
+        public async Task<ActionResult<UmaConfiguration>> GetConfiguration()
         {
             var result = (await GetConfiguration(Request).ConfigureAwait(false));//.ToResponse();
             return new OkObjectResult(result);
         }
 
-        private Task<UmaConfigurationResponse> GetConfiguration(HttpRequest request)
+        private Task<UmaConfiguration> GetConfiguration(HttpRequest request)
         {
             var absoluteUriWithVirtualPath = request.GetAbsoluteUriWithVirtualPath();
-            var result = new UmaConfigurationResponse
+            var result = new UmaConfiguration
             {
                 ClaimTokenProfilesSupported = new List<string>(),
                 UmaProfilesSupported = _umaProfilesSupported,

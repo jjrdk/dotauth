@@ -56,9 +56,9 @@
                 });
 
             "given a uma client".x(
-                async () =>
+                () =>
                 {
-                    umaClient = await UmaClient.Create(
+                    umaClient = new UmaClient(
                         _fixture.Client,
                         new Uri("https://localhost/.well-known/uma2-configuration"));
                 });

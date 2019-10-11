@@ -33,7 +33,7 @@ namespace SimpleAuth.Shared
         /// <summary>
         /// UMA Ticket
         /// </summary>
-        public const string UmaTicket = "uma_ticket";
+        public const string UmaTicket = "urn:ietf:params:oauth:grant-type:uma-ticket"; //"uma_ticket";
 
         /// <summary>
         /// Implicit

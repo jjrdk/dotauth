@@ -42,25 +42,14 @@
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             string authorization = Request.Headers["Authorization"];
-            if (string.IsNullOrWhiteSpace(authorization))
-            {
-                return AuthenticateResult.NoResult();
-            }
-
-            string token = null;
-            if (authorization.StartsWith(Bearer, StringComparison.OrdinalIgnoreCase))
-            {
-                token = authorization.Substring(StartIndex).Trim();
-            }
-
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrWhiteSpace(authorization) || !AuthenticationHeaderValue.TryParse(authorization, out var header))
             {
                 return AuthenticateResult.NoResult();
             }
 
             try
             {
-                var introspectionResult = await _userInfoClient.Get(token).ConfigureAwait(false);
+                var introspectionResult = await _userInfoClient.Get(header.Parameter).ConfigureAwait(false);
                 if (introspectionResult == null || introspectionResult.ContainsError)
                 {
                     return AuthenticateResult.NoResult();

@@ -25,7 +25,7 @@ namespace SimpleAuth.Policies
     using System.Threading;
     using System.Threading.Tasks;
 
-    internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy
+    internal class BasicAuthorizationPolicy : IAuthorizationPolicy
     {
         private readonly IClientStore _clientStore;
         private readonly IJwksStore _jwksStore;

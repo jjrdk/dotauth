@@ -31,11 +31,11 @@ namespace SimpleAuth.Server.Tests.Policies
 
     public class BasicAuthorizationPolicyFixture
     {
-        private readonly IBasicAuthorizationPolicy _basicAuthorizationPolicy;
+        private readonly IAuthorizationPolicy _authorizationPolicy;
 
         public BasicAuthorizationPolicyFixture()
         {
-            _basicAuthorizationPolicy = new BasicAuthorizationPolicy(new Mock<IClientStore>().Object, new InMemoryJwksRepository());
+            _authorizationPolicy = new BasicAuthorizationPolicy(new Mock<IClientStore>().Object, new InMemoryJwksRepository());
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace SimpleAuth.Server.Tests.Policies
         {
             await Assert
                 .ThrowsAsync<NullReferenceException>(
-                    () => _basicAuthorizationPolicy.Execute(null, null, null, CancellationToken.None))
+                    () => _authorizationPolicy.Execute(null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
@@ -51,7 +51,7 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task WhenPassingNullPolicyParameterThenExceptionsAreThrown()
         {
             await Assert.ThrowsAsync<NullReferenceException>(
-                    () => _basicAuthorizationPolicy.Execute(
+                    () => _authorizationPolicy.Execute(
                         new TicketLineParameter("client_id"),
                         null,
                         null,
@@ -66,7 +66,7 @@ namespace SimpleAuth.Server.Tests.Policies
 
             var authorizationPolicy = new Policy { Rules = new[] { new PolicyRule { Scopes = new[] { "read" } } } };
 
-            var result = await _basicAuthorizationPolicy
+            var result = await _authorizationPolicy
                 .Execute(ticket, authorizationPolicy, null, CancellationToken.None)
                 .ConfigureAwait(false);
 
@@ -89,7 +89,7 @@ namespace SimpleAuth.Server.Tests.Policies
                 }
             };
 
-            var result = await _basicAuthorizationPolicy
+            var result = await _authorizationPolicy
                 .Execute(ticket, authorizationPolicy, null, CancellationToken.None)
                 .ConfigureAwait(false);
 
@@ -117,7 +117,7 @@ namespace SimpleAuth.Server.Tests.Policies
             };
             var claimTokenParameter = new ClaimTokenParameter { Format = "bad_format", Token = "token" };
 
-            var result = await _basicAuthorizationPolicy.Execute(
+            var result = await _authorizationPolicy.Execute(
                     ticket,
                     authorizationPolicy,
                     claimTokenParameter,
@@ -178,7 +178,7 @@ namespace SimpleAuth.Server.Tests.Policies
                 Token = "token"
             };
 
-            var result = await _basicAuthorizationPolicy.Execute(
+            var result = await _authorizationPolicy.Execute(
                     ticket,
                     authorizationPolicy,
                     claimTokenParameters,
@@ -213,7 +213,7 @@ namespace SimpleAuth.Server.Tests.Policies
                 Token = "token"
             };
 
-            var result = await _basicAuthorizationPolicy.Execute(
+            var result = await _authorizationPolicy.Execute(
                     ticket,
                     authorizationPolicy,
                     claimTokenParameter,
@@ -248,7 +248,7 @@ namespace SimpleAuth.Server.Tests.Policies
                 Token = "token"
             };
 
-            var result = await _basicAuthorizationPolicy.Execute(
+            var result = await _authorizationPolicy.Execute(
                     ticket,
                     authorizationPolicy,
                     claimTokenParameters,
@@ -283,7 +283,7 @@ namespace SimpleAuth.Server.Tests.Policies
                 Token = "token"
             };
 
-            var result = await _basicAuthorizationPolicy.Execute(
+            var result = await _authorizationPolicy.Execute(
                     ticket,
                     authorizationPolicy,
                     claimTokenParameters,
@@ -318,7 +318,7 @@ namespace SimpleAuth.Server.Tests.Policies
                 Token = "token"
             };
 
-            var result = await _basicAuthorizationPolicy.Execute(
+            var result = await _authorizationPolicy.Execute(
                     ticket,
                     authorizationPolicy,
                     claimTokenParameter,
@@ -353,7 +353,7 @@ namespace SimpleAuth.Server.Tests.Policies
                 Token = "token"
             };
 
-            var result = await _basicAuthorizationPolicy.Execute(
+            var result = await _authorizationPolicy.Execute(
                     ticket,
                     authorizationPolicy,
                     claimTokenParameter,
@@ -385,7 +385,7 @@ namespace SimpleAuth.Server.Tests.Policies
                 }
             };
 
-            var result = await _basicAuthorizationPolicy
+            var result = await _authorizationPolicy
                 .Execute(ticket, authorizationPolicy, null, CancellationToken.None)
                 .ConfigureAwait(false);
 
@@ -410,7 +410,7 @@ namespace SimpleAuth.Server.Tests.Policies
                 }
             };
 
-            var result = await _basicAuthorizationPolicy
+            var result = await _authorizationPolicy
                 .Execute(ticket, authorizationPolicy, null, CancellationToken.None)
                 .ConfigureAwait(false);
 

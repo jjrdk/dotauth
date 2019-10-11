@@ -30,7 +30,7 @@ namespace SimpleAuth.Policies
 
     internal class AuthorizationPolicyValidator
     {
-        private readonly IBasicAuthorizationPolicy _basicAuthorizationPolicy;
+        private readonly IAuthorizationPolicy _authorizationPolicy;
         private readonly IPolicyRepository _policyRepository;
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly IEventPublisher _eventPublisher;
@@ -42,7 +42,7 @@ namespace SimpleAuth.Policies
             IResourceSetRepository resourceSetRepository,
             IEventPublisher eventPublisher)
         {
-            _basicAuthorizationPolicy = new BasicAuthorizationPolicy(clientStore, jwksStore);
+            _authorizationPolicy = new BasicAuthorizationPolicy(clientStore, jwksStore);
             _policyRepository = policyRepository;
             _resourceSetRepository = resourceSetRepository;
             _eventPublisher = eventPublisher;
@@ -99,7 +99,7 @@ namespace SimpleAuth.Policies
 
             foreach (var authorizationPolicy in resource.Policies.Concat(policies))
             {
-                var result = await _basicAuthorizationPolicy.Execute(
+                var result = await _authorizationPolicy.Execute(
                         ticketLineParameter,
                         authorizationPolicy,
                         claimTokenParameter,

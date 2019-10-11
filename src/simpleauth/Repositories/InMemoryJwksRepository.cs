@@ -50,17 +50,16 @@
 
         public Task<SigningCredentials> GetSigningKey(string alg, CancellationToken cancellationToken = default)
         {
-            var signingKey = _publicKeySet.GetSigningCredentials(alg).FirstOrDefault();
+            var signingKey = _privateKeySet.GetSigningCredentials(alg).FirstOrDefault();
 
             return Task.FromResult(signingKey);
         }
 
         public Task<SecurityKey> GetEncryptionKey(string alg, CancellationToken cancellationToken = default)
         {
-            var signingKey = _publicKeySet.GetEncryptionKeys().FirstOrDefault();
+            var signingKey = _privateKeySet.GetEncryptionKeys().FirstOrDefault();
 
             return Task.FromResult(signingKey);
-            
         }
 
         public Task<SigningCredentials> GetDefaultSigningKey(CancellationToken cancellationToken = default)

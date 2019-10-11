@@ -52,7 +52,7 @@
                     .ToListAsync(cancellationToken)
                     .ConfigureAwait(false);
 
-                var webKey = webKeys.First(x => x.KeyOps.Contains(KeyOperations.Sign));
+                var webKey = webKeys.First(x => x.HasPrivateKey && x.KeyOps.Contains(KeyOperations.Sign));
 
                 if (webKey.X5c != null)
                 {
@@ -72,7 +72,7 @@
             {
                 var webKeys = await session.Query<JsonWebKey>()
                     .Where(
-                        x => x.Alg == alg && x.Use == JsonWebKeyUseNames.Enc)
+                        x => x.HasPrivateKey && x.Alg == alg && x.Use == JsonWebKeyUseNames.Enc)
                     .ToListAsync(cancellationToken)
                     .ConfigureAwait(false);
 
