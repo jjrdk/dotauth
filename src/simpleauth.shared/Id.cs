@@ -6,7 +6,7 @@
     {
         public static string Create()
         {
-            return Guid.NewGuid().ToString("N");
+            return BitConverter.ToString(Guid.NewGuid().ToByteArray()).Replace("-", string.Empty);
         }
     }
 }

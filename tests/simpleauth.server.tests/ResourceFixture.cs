@@ -33,7 +33,7 @@ namespace SimpleAuth.Server.Tests
         public ResourceFixture()
         {
             _server = new TestUmaServerFixture();
-            _umaClient = UmaClient.Create(_server.Client, new Uri(BaseUrl + WellKnownUma2Configuration)).Result;
+            _umaClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownUma2Configuration));
         }
 
         [Fact]

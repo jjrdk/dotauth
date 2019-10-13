@@ -54,16 +54,16 @@ namespace SimpleAuth.Controllers
         /// <summary>
         /// Adds the permission.
         /// </summary>
-        /// <param name="postPermission">The post permission.</param>
+        /// <param name="permissionRequest">The post permission.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> PostPermission(
-            [FromBody] PostPermission postPermission,
+            [FromBody] PermissionRequest permissionRequest,
             CancellationToken cancellationToken)
         {
-            if (postPermission == null)
+            if (permissionRequest == null)
             {
                 return BuildError(
                     ErrorCodes.InvalidRequestCode,
@@ -80,9 +80,9 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var ticketId = await _addPermission.Execute(clientId, cancellationToken, postPermission)
+            var ticketId = await _addPermission.Execute(clientId, cancellationToken, permissionRequest)
                 .ConfigureAwait(false);
-            var result = new AddPermissionResponse {TicketId = ticketId};
+            var result = new PermissionResponse {TicketId = ticketId};
             return new ObjectResult(result) {StatusCode = (int) HttpStatusCode.Created};
         }
 
@@ -95,7 +95,7 @@ namespace SimpleAuth.Controllers
         [HttpPost("bulk")]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> PostPermissions(
-            [FromBody] PostPermission[] postPermissions,
+            [FromBody] PermissionRequest[] postPermissions,
             CancellationToken cancellationToken)
         {
             if (postPermissions == null)
@@ -118,7 +118,7 @@ namespace SimpleAuth.Controllers
 
             var ticketId = await _addPermission.Execute(clientId, cancellationToken, parameters)
                 .ConfigureAwait(false);
-            var result = new AddPermissionResponse {TicketId = ticketId};
+            var result = new PermissionResponse {TicketId = ticketId};
             return new ObjectResult(result) {StatusCode = (int) HttpStatusCode.Created};
         }
 

@@ -85,7 +85,6 @@ namespace SimpleAuth.Api.PolicyController
             policy.Rules = updatePolicyParameter.Rules.Select(
                     ruleParameter => new PolicyRule
                     {
-                        Id = ruleParameter.Id,
                         ClientIdsAllowed = ruleParameter.ClientIdsAllowed,
                         IsResourceOwnerConsentNeeded = ruleParameter.IsResourceOwnerConsentNeeded,
                         Scopes = ruleParameter.Scopes,

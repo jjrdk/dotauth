@@ -72,7 +72,6 @@ namespace SimpleAuth.Extensions
                 : policyRule.Claims.ToArray();
             return new PolicyRuleResponse
             {
-                Id = policyRule.Id,
                 Claims = claims,
                 ClientIdsAllowed = policyRule.ClientIdsAllowed,
                 IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
@@ -233,8 +232,8 @@ namespace SimpleAuth.Extensions
                 result.Claims = claimsParameter;
 
                 var obj = JObject.Parse(request.claims);
-                var idToken = obj.GetValue(CoreConstants.StandardClaimParameterNames._idTokenName);
-                var userInfo = obj.GetValue(CoreConstants.StandardClaimParameterNames._userInfoName);
+                var idToken = obj.GetValue(CoreConstants.StandardClaimParameterNames.IdTokenName);
+                var userInfo = obj.GetValue(CoreConstants.StandardClaimParameterNames.UserInfoName);
                 if (idToken != null)
                 {
                     claimsParameter.IdToken = new List<ClaimParameter>();

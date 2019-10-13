@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>SimpleAuth support for UMA resource server </Description>
+    <Title>SimpleAuth Resource Server</Title>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <AssemblyName>simpleauth.resourceserver</AssemblyName>
+    <PackageId>simpleauth.resourceserver</PackageId>
+    <RootNamespace>SimpleAuth.ResourceServer</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
+  </PropertyGroup>
+
+  <Import Project="..\..\shared.proj" />
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\simpleauth.client\simpleauth.client.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.0.0" />
+  </ItemGroup>
+
+</Project>

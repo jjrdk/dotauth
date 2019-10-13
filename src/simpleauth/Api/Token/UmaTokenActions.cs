@@ -68,7 +68,7 @@ namespace SimpleAuth.Api.Token
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "ticket"));
+                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.RptClaims.Ticket));
             }
 
             var instruction = authenticationHeaderValue.GetAuthenticateInstruction(parameter, certificate);
@@ -120,7 +120,7 @@ namespace SimpleAuth.Api.Token
                         new UmaRequestNotAuthorized(Id.Create(), parameter.Ticket, parameter.ClientId, DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
                 throw new SimpleAuthException(
-                    ErrorCodes.InvalidGrant,
+                    ErrorCodes.AwaitingAuthorization,
                     ErrorDescriptions.TheAuthorizationPolicyIsNotSatisfied);
             }
 
@@ -134,36 +134,25 @@ namespace SimpleAuth.Api.Token
 
         private async Task<GrantedToken> GenerateToken(
             Client client,
-            IEnumerable<TicketLine> ticketLines,
+            TicketLine[] ticketLines,
             string scope,
             string issuerName)
         {
             var expiresIn = _configurationService.RptLifeTime; // 1. Retrieve the expiration time of the granted token.
             var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName)
                 .ConfigureAwait(false);
-            // 2. Construct the JWT token (client).
-            var jArr = new JArray();
-            foreach (var ticketLine in ticketLines)
-            {
-                var jObj = new JObject
-                {
-                    {UmaConstants.RptClaims.ResourceSetId, ticketLine.ResourceSetId},
-                    {UmaConstants.RptClaims.Scopes, string.Join(" ", ticketLine.Scopes)}
-                };
-                jArr.Add(jObj);
-            }
 
-            jwsPayload.Payload.Add(UmaConstants.RptClaims.Ticket, jArr);
+            // 2. Construct the JWT token (client).
+            jwsPayload.Payload.Add(UmaConstants.RptClaims.Ticket, ticketLines);
             var handler = new JwtSecurityTokenHandler();
             var accessToken = handler.WriteToken(jwsPayload);
-            var refreshTokenId = Encoding.UTF8.GetBytes(Id.Create());
-            // 3. Construct the refresh token.
+
             return new GrantedToken
             {
                 AccessToken = accessToken,
-                RefreshToken = Convert.ToBase64String(refreshTokenId),
+                RefreshToken = Id.Create(),
                 ExpiresIn = (int)expiresIn.TotalSeconds,
-                TokenType = CoreConstants.StandardTokenTypes._bearer,
+                TokenType = CoreConstants.StandardTokenTypes.Bearer,
                 CreateDateTime = DateTimeOffset.UtcNow,
                 Scope = scope,
                 ClientId = client.ClientId

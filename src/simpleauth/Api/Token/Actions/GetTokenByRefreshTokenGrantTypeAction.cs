@@ -102,7 +102,7 @@ namespace SimpleAuth.Api.Token.Actions
             }
 
             var sub = grantedToken.UserInfoPayLoad?.Sub;
-            Claim[] additionalClaims = Array.Empty<Claim>();
+            var additionalClaims = Array.Empty<Claim>();
             if (sub != null)
             {
                 var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);

@@ -49,7 +49,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     () => _addPermissionAction.Execute("client_id", CancellationToken.None, null))
                 .ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _addPermissionAction.Execute(null, CancellationToken.None, (PostPermission)null))
+                    () => _addPermissionAction.Execute(null, CancellationToken.None, (PermissionRequest)null))
                 .ConfigureAwait(false);
         }
 
@@ -58,7 +58,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             const string clientId = "client_id";
             InitializeFakeObjects(Array.Empty<ResourceSet>());
-            var addPermissionParameter = new PostPermission();
+            var addPermissionParameter = new PermissionRequest();
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _addPermissionAction.Execute(clientId, CancellationToken.None, addPermissionParameter))
@@ -76,7 +76,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             const string clientId = "client_id";
             InitializeFakeObjects(Array.Empty<ResourceSet>());
-            var addPermissionParameter = new PostPermission { ResourceSetId = "resource_set_id" };
+            var addPermissionParameter = new PermissionRequest { ResourceSetId = "resource_set_id" };
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _addPermissionAction.Execute(clientId, CancellationToken.None, addPermissionParameter))
@@ -93,7 +93,7 @@ namespace SimpleAuth.Server.Tests.Apis
             const string clientId = "client_id";
             const string resourceSetId = "resource_set_id";
             InitializeFakeObjects(Array.Empty<ResourceSet>());
-            var addPermissionParameter = new PostPermission { ResourceSetId = resourceSetId, Scopes = new[] { "scope" } };
+            var addPermissionParameter = new PermissionRequest { ResourceSetId = resourceSetId, Scopes = new[] { "scope" } };
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _addPermissionAction.Execute(clientId, CancellationToken.None, addPermissionParameter))
@@ -107,7 +107,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             const string clientId = "client_id";
             const string resourceSetId = "resource_set_id";
-            var addPermissionParameter = new PostPermission
+            var addPermissionParameter = new PermissionRequest
             {
                 ResourceSetId = resourceSetId,
                 Scopes = new[] { "invalid_scope" }
@@ -127,7 +127,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             const string clientId = "client_id";
             const string resourceSetId = "resource_set_id";
-            var addPermissionParameter = new PostPermission { ResourceSetId = resourceSetId, Scopes = new[] { "scope" } };
+            var addPermissionParameter = new PermissionRequest { ResourceSetId = resourceSetId, Scopes = new[] { "scope" } };
             var resources = new[] { new ResourceSet { Id = resourceSetId, Scopes = new[] { "scope" } } };
             InitializeFakeObjects(resources);
             _ticketStoreStub.Setup(r => r.Add(It.IsAny<Ticket>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);

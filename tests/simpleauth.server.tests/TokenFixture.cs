@@ -21,7 +21,7 @@
         {
             IdentityModelEventSource.ShowPII = true;
             _server = new TestUmaServerFixture();
-            _umaClient = UmaClient.Create(_server.Client, new Uri(BaseUrl + WellKnownUma2Configuration)).Result;
+            _umaClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownUma2Configuration));
         }
 
         [Fact]
@@ -87,8 +87,8 @@
                     result.Content.AccessToken)
                 .ConfigureAwait(false);
 
-            var ticket = await _umaClient.AddPermission(
-                    new PostPermission // Add permission & retrieve a ticket id.
+            var ticket = await _umaClient.RequestPermission(
+                    new PermissionRequest // Add permission & retrieve a ticket id.
                     {
                         ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}
                     },

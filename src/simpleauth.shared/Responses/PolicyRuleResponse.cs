@@ -10,15 +10,6 @@
     public class PolicyRuleResponse
     {
         /// <summary>
-        /// Gets or sets the identifier.
-        /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
-        [DataMember(Name = "id")]
-        public string Id { get; set; }
-
-        /// <summary>
         /// Gets or sets the client ids allowed.
         /// </summary>
         /// <value>

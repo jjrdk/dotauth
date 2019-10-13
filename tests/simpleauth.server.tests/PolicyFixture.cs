@@ -32,7 +32,7 @@ namespace SimpleAuth.Server.Tests
         public PolicyFixture()
         {
             _server = new TestUmaServerFixture();
-            _umaClient = UmaClient.Create(_server.Client, new Uri(BaseUrl + WellKnownUma2Configuration)).Result;
+            _umaClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownUma2Configuration));
         }
 
         [Fact]
@@ -492,7 +492,6 @@ namespace SimpleAuth.Server.Tests
                         {
                             new PutPolicyRule
                             {
-                                Id = firstInfo.Content.Rules.First().Id,
                                 Claims = new[]
                                 {
                                     new PostClaim {Type = "role", Value = "administrator"},

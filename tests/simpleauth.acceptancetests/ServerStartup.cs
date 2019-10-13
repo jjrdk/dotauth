@@ -16,6 +16,7 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.ResourceServer;
     using SimpleAuth.Shared.Repositories;
 
     public class ServerStartup : IStartup
@@ -71,7 +72,7 @@
 
             services.AddCors(
                 options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
-            services.AddSimpleAuth(_options, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme })
+            services.AddSimpleAuth(_options, new[] {DefaultSchema, JwtBearerDefaults.AuthenticationScheme})
                 .AddSmsAuthentication(mockSmsClient.Object);
             services.AddLogging().AddAccountFilter();
             services.AddAuthentication(
@@ -93,13 +94,16 @@
                         cfg.Authority = _context.Client.BaseAddress.AbsoluteUri;
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
-                            ValidateAudience = false,
-                            ValidIssuer = "https://localhost"
+                            ValidateAudience = false, ValidIssuer = "https://localhost"
                         };
                     });
 
             services.AddAuthorization(
-                opt => { opt.AddAuthPolicies(DefaultSchema, JwtBearerDefaults.AuthenticationScheme); });
+                opt =>
+                {
+                    opt.AddAuthPolicies(DefaultSchema, JwtBearerDefaults.AuthenticationScheme)
+                        .AddPolicy("uma_ticket", builder => builder.RequireUmaTicket());
+                });
 
             return services.BuildServiceProvider();
         }

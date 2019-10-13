@@ -43,7 +43,7 @@ namespace SimpleAuth.Api.PermissionController
         public async Task<string> Execute(
             string clientId,
             CancellationToken cancellationToken,
-            params PostPermission[] addPermissionParameters)
+            params PermissionRequest[] addPermissionParameters)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -69,7 +69,6 @@ namespace SimpleAuth.Api.PermissionController
             var ticketLines = addPermissionParameters.Select(
                     addPermissionParameter => new TicketLine
                     {
-                        Id = Id.Create(),
                         Scopes = addPermissionParameter.Scopes,
                         ResourceSetId = addPermissionParameter.ResourceSetId
                     })
@@ -85,7 +84,7 @@ namespace SimpleAuth.Api.PermissionController
         }
 
         private async Task CheckAddPermissionParameter(
-            PostPermission[] addPermissionParameters,
+            PermissionRequest[] addPermissionParameters,
             CancellationToken cancellationToken)
         {
             var resourceSets = await _resourceSetRepository.Get(

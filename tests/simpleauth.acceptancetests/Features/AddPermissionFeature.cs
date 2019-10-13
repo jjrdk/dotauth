@@ -58,10 +58,9 @@
                 });
 
             "and a properly configured uma client".x(
-                async () => client = await UmaClient.Create(
+                async () => client = new UmaClient(
                         fixture.Client,
-                        new Uri(WellKnownUmaConfiguration))
-                    .ConfigureAwait(false));
+                        new Uri(WellKnownUmaConfiguration)));
 
             "when registering resource".x(
                 async () =>
@@ -76,8 +75,8 @@
             "and adding permission".x(
                 async () =>
                 {
-                    var response = await client.AddPermission(
-                            new PostPermission { ResourceSetId = resourceId, Scopes = new[] { "read" } },
+                    var response = await client.RequestPermission(
+                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } },
                             grantedToken.AccessToken)
                         .ConfigureAwait(false);
 
@@ -116,10 +115,9 @@
                 });
 
             "and a properly configured uma client".x(
-                async () => client = await UmaClient.Create(
+                async () => client = new UmaClient(
                         fixture.Client,
-                        new Uri(WellKnownUmaConfiguration))
-                    .ConfigureAwait(false));
+                        new Uri(WellKnownUmaConfiguration)));
 
             "when registering resource".x(
                 async () =>
@@ -134,10 +132,10 @@
             "and adding permission".x(
                 async () =>
                 {
-                    var response = await client.AddPermissions(
+                    var response = await client.RequestPermissions(
                             grantedToken.AccessToken,
-                            new PostPermission { ResourceSetId = resourceId, Scopes = new[] { "write" } },
-                            new PostPermission { ResourceSetId = resourceId, Scopes = new[] { "read" } })
+                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "write" } },
+                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
                         .ConfigureAwait(false);
 
                     Assert.False(response.ContainsError);

@@ -12,23 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Responses
+namespace SimpleAuth.Shared.DTOs
 {
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Defines the add permission response.
+    /// Defines the add permission request.
     /// </summary>
     [DataContract]
-    public class AddPermissionResponse
+    public class PermissionRequest
     {
         /// <summary>
-        /// Gets or sets the ticket identifier.
+        /// Gets or sets the resource set identifier.
         /// </summary>
         /// <value>
-        /// The ticket identifier.
+        /// The resource set identifier.
         /// </value>
-        [DataMember(Name = AddPermissionResponseNames.TicketId)]
-        public string TicketId { get; set; }
+        [DataMember(Name = "resource_set_id")]
+        public string ResourceSetId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the scopes.
+        /// </summary>
+        /// <value>
+        /// The scopes.
+        /// </value>
+        [DataMember(Name = "scopes")]
+        public string[] Scopes { get; set; }
     }
 }

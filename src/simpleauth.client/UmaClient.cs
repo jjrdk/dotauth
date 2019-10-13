@@ -39,7 +39,7 @@ namespace SimpleAuth.Client
         /// or
         /// token
         /// </exception>
-        Task<GenericResponse<AddPermissionResponse>> AddPermission(PostPermission request, string token);
+        Task<GenericResponse<PermissionResponse>> RequestPermission(PermissionRequest request, string token);
 
         /// <summary>
         /// Adds the permissions.
@@ -52,9 +52,9 @@ namespace SimpleAuth.Client
         /// or
         /// token
         /// </exception>
-        Task<GenericResponse<AddPermissionResponse>> AddPermissions(
+        Task<GenericResponse<PermissionResponse>> RequestPermissions(
             string token,
-            params PostPermission[] requests);
+            params PermissionRequest[] requests);
     }
 
     public interface IPolicyClient
@@ -145,7 +145,7 @@ namespace SimpleAuth.Client
         private const string JsonMimeType = "application/json";
         private readonly HttpClient _client;
         private readonly Uri _configurationUri;
-        private UmaConfiguration _configuration;
+        private UmaConfiguration _umaConfiguration;
 
         public UmaClient(HttpClient client, Uri configurationUri)
         {
@@ -155,13 +155,13 @@ namespace SimpleAuth.Client
 
         public async Task<UmaConfiguration> GetUmaConfiguration()
         {
-            if (_configuration == null)
+            if (_umaConfiguration == null)
             {
                 var result = await _client.GetStringAsync(_configurationUri).ConfigureAwait(false);
-                _configuration = JsonConvert.DeserializeObject<UmaConfiguration>(result);
+                _umaConfiguration = JsonConvert.DeserializeObject<UmaConfiguration>(result);
             }
 
-            return _configuration;
+            return _umaConfiguration;
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace SimpleAuth.Client
         /// or
         /// token
         /// </exception>
-        public async Task<GenericResponse<AddPermissionResponse>> AddPermission(PostPermission request, string token)
+        public async Task<GenericResponse<PermissionResponse>> RequestPermission(PermissionRequest request, string token)
         {
             if (request == null)
             {
@@ -189,18 +189,19 @@ namespace SimpleAuth.Client
 
             var serializedPostPermission = JsonConvert.SerializeObject(request);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
+            var configuration = await GetUmaConfiguration();
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 Content = body,
-                RequestUri = new Uri(_configuration.PermissionEndpoint)
+                RequestUri = new Uri(configuration.PermissionEndpoint)
             };
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
             var result = await _client.SendAsync(httpRequest).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!result.IsSuccessStatusCode)
             {
-                return new GenericResponse<AddPermissionResponse>
+                return new GenericResponse<PermissionResponse>
                 {
                     ContainsError = true,
                     HttpStatus = result.StatusCode,
@@ -208,9 +209,9 @@ namespace SimpleAuth.Client
                 };
             }
 
-            return new GenericResponse<AddPermissionResponse>
+            return new GenericResponse<PermissionResponse>
             {
-                Content = JsonConvert.DeserializeObject<AddPermissionResponse>(content)
+                Content = JsonConvert.DeserializeObject<PermissionResponse>(content)
             };
         }
 
@@ -225,9 +226,9 @@ namespace SimpleAuth.Client
         /// or
         /// token
         /// </exception>
-        public async Task<GenericResponse<AddPermissionResponse>> AddPermissions(
+        public async Task<GenericResponse<PermissionResponse>> RequestPermissions(
             string token,
-            params PostPermission[] requests)
+            params PermissionRequest[] requests)
         {
             if (requests == null)
             {
@@ -239,7 +240,8 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(token));
             }
 
-            var url = _configuration.PermissionEndpoint;
+            var configuration = await GetUmaConfiguration();
+            var url = configuration.PermissionEndpoint;
 
             url += url.EndsWith("/") ? "bulk" : "/bulk";
 
@@ -256,7 +258,7 @@ namespace SimpleAuth.Client
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!result.IsSuccessStatusCode)
             {
-                return new GenericResponse<AddPermissionResponse>
+                return new GenericResponse<PermissionResponse>
                 {
                     ContainsError = true,
                     HttpStatus = result.StatusCode,
@@ -264,9 +266,9 @@ namespace SimpleAuth.Client
                 };
             }
 
-            return new GenericResponse<AddPermissionResponse>
+            return new GenericResponse<PermissionResponse>
             {
-                Content = JsonConvert.DeserializeObject<AddPermissionResponse>(content)
+                Content = JsonConvert.DeserializeObject<PermissionResponse>(content)
             };
         }
 
@@ -295,13 +297,14 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
+            var configuration = await GetUmaConfiguration();
             var serializedPostResourceSet = Serializer.Default.Serialize(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
             var httpRequest = new HttpRequestMessage
             {
                 Content = body,
                 Method = HttpMethod.Post,
-                RequestUri = new Uri(_configuration.PoliciesEndpoint)
+                RequestUri = new Uri(configuration.PoliciesEndpoint)
             };
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(
                 JwtBearerConstants.BearerScheme,
@@ -347,7 +350,8 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(token));
             }
 
-            var url = _configuration.PoliciesEndpoint;
+            var configuration = await GetUmaConfiguration();
+            var url = configuration.PoliciesEndpoint;
 
             url += url.EndsWith("/") ? id : "/" + id;
 
@@ -384,10 +388,11 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(token));
             }
 
+            var configuration = await GetUmaConfiguration();
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri(_configuration.PoliciesEndpoint)
+                RequestUri = new Uri(configuration.PoliciesEndpoint)
             };
             request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
             var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
@@ -428,8 +433,8 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(token));
             }
 
-            var url = _configuration.PoliciesEndpoint;
-
+            var configuration = await GetUmaConfiguration();
+            var url = configuration.PoliciesEndpoint;
             url += url.EndsWith("/") ? id : "/" + id;
 
             var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(url) };
@@ -472,13 +477,14 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(token));
             }
 
+            var configuration = await GetUmaConfiguration();
             var serializedPostResourceSet = JsonConvert.SerializeObject(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
             var httpRequest = new HttpRequestMessage
             {
                 Content = body,
                 Method = HttpMethod.Put,
-                RequestUri = new Uri(_configuration.PoliciesEndpoint)
+                RequestUri = new Uri(configuration.PoliciesEndpoint)
             };
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
             var httpResult = await _client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -505,7 +511,8 @@ namespace SimpleAuth.Client
         /// <returns></returns>
         public async Task<GenericResponse<object>> AddResource(string policyId, AddResourceSet request, string token)
         {
-            var url = _configuration.PoliciesEndpoint;
+            var configuration = await GetUmaConfiguration();
+            var url = configuration.PoliciesEndpoint;
             url += url.EndsWith("/") ? $"{policyId}/resources" : $"/{policyId}/resources";
 
             var serializedPostResourceSet = JsonConvert.SerializeObject(request);
@@ -564,7 +571,8 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(token));
             }
 
-            var url = _configuration.PoliciesEndpoint;
+            var configuration = await GetUmaConfiguration();
+            var url = configuration.PoliciesEndpoint;
             url += url.EndsWith("/") ? id + "/resources/" + resourceId : "/" + id + "/resources/" + resourceId;
 
             var httpRequest = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(url) };
@@ -607,7 +615,8 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(authorizationHeaderValue));
             }
 
-            var resourceSetUrl = _configuration.ResourceRegistrationEndpoint;
+            var configuration = await GetUmaConfiguration();
+            var resourceSetUrl = configuration.ResourceRegistrationEndpoint;
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
             var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl) };
@@ -638,7 +647,8 @@ namespace SimpleAuth.Client
             SearchAuthPolicies parameter,
             string authorizationHeaderValue = null)
         {
-            var url = _configuration.PoliciesEndpoint + "/.search";
+            var configuration = await GetUmaConfiguration();
+            var url = configuration.PoliciesEndpoint + "/.search";
             var serializedPostPermission = JsonConvert.SerializeObject(parameter);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
             var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body };
@@ -690,13 +700,14 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(token));
             }
 
+            var configuration = await GetUmaConfiguration();
             var serializedPostResourceSet = JsonConvert.SerializeObject(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
             var httpRequest = new HttpRequestMessage
             {
                 Content = body,
                 Method = HttpMethod.Put,
-                RequestUri = new Uri(_configuration.ResourceRegistrationEndpoint)
+                RequestUri = new Uri(configuration.ResourceRegistrationEndpoint)
             };
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
             var httpResult = await _client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -742,11 +753,12 @@ namespace SimpleAuth.Client
 
             var serializedPostResourceSet = JsonConvert.SerializeObject(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
+            var umaConfiguration = await GetUmaConfiguration();
             var httpRequest = new HttpRequestMessage
             {
                 Content = body,
                 Method = HttpMethod.Post,
-                RequestUri = new Uri(_configuration.ResourceRegistrationEndpoint)
+                RequestUri = new Uri(umaConfiguration.ResourceRegistrationEndpoint)
             };
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
 
@@ -781,10 +793,11 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(authorizationHeaderValue));
             }
 
+            var configuration = await GetUmaConfiguration();
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri(_configuration.ResourceRegistrationEndpoint)
+                RequestUri = new Uri(configuration.ResourceRegistrationEndpoint)
             };
             request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, authorizationHeaderValue);
             var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
@@ -827,7 +840,8 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(authorizationHeaderValue));
             }
 
-            var resourceSetUrl = _configuration.ResourceRegistrationEndpoint;
+            var configuration = await GetUmaConfiguration();
+            var resourceSetUrl = configuration.ResourceRegistrationEndpoint;
 
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
@@ -861,7 +875,8 @@ namespace SimpleAuth.Client
             SearchResourceSet parameter,
             string authorizationHeaderValue = null)
         {
-            var url = _configuration.ResourceRegistrationEndpoint + "/.search";
+            var configuration = await GetUmaConfiguration();
+            var url = configuration.ResourceRegistrationEndpoint + "/.search";
 
             var serializedPostPermission = JsonConvert.SerializeObject(parameter);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
