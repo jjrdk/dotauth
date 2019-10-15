@@ -120,7 +120,7 @@ namespace SimpleAuth.Api.Token
                         new UmaRequestNotAuthorized(Id.Create(), parameter.Ticket, parameter.ClientId, DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
                 throw new SimpleAuthException(
-                    ErrorCodes.AwaitingAuthorization,
+                    ErrorCodes.RequestSubmitted,
                     ErrorDescriptions.TheAuthorizationPolicyIsNotSatisfied);
             }
 

@@ -44,11 +44,10 @@
             "and a valid UMA token".x(
                 async () =>
                 {
-                    var tokenClient = await TokenClient.Create(
-                            TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                            fixture.Client,
-                            new Uri(WellKnownUmaConfiguration))
-                        .ConfigureAwait(false);
+                    var tokenClient = new TokenClient(
+                        TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+                        fixture.Client,
+                        new Uri(WellKnownUmaConfiguration));
                     var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
                         .ConfigureAwait(false);
                     var handler = new JwtSecurityTokenHandler();
@@ -58,15 +57,13 @@
                 });
 
             "and a properly configured uma client".x(
-                async () => client = new UmaClient(
-                        fixture.Client,
-                        new Uri(WellKnownUmaConfiguration)));
+                () => client = new UmaClient(fixture.Client, new Uri(WellKnownUmaConfiguration)));
 
             "when registering resource".x(
                 async () =>
                 {
                     var resource = await client.AddResource(
-                            new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
+                            new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                             grantedToken.AccessToken)
                         .ConfigureAwait(false);
                     resourceId = resource.Content.Id;
@@ -76,7 +73,7 @@
                 async () =>
                 {
                     var response = await client.RequestPermission(
-                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } },
+                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}},
                             grantedToken.AccessToken)
                         .ConfigureAwait(false);
 
@@ -104,26 +101,23 @@
             "and a valid UMA token".x(
                 async () =>
                 {
-                    var tokenClient = await TokenClient.Create(
-                            TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                            fixture.Client,
-                            new Uri(WellKnownUmaConfiguration))
-                        .ConfigureAwait(false);
+                    var tokenClient = new TokenClient(
+                        TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+                        fixture.Client,
+                        new Uri(WellKnownUmaConfiguration));
                     var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
                         .ConfigureAwait(false);
                     grantedToken = token.Content;
                 });
 
             "and a properly configured uma client".x(
-                async () => client = new UmaClient(
-                        fixture.Client,
-                        new Uri(WellKnownUmaConfiguration)));
+                () => client = new UmaClient(fixture.Client, new Uri(WellKnownUmaConfiguration)));
 
             "when registering resource".x(
                 async () =>
                 {
                     var resource = await client.AddResource(
-                            new ResourceSet { Name = "picture", Scopes = new[] { "read", "write" } },
+                            new ResourceSet {Name = "picture", Scopes = new[] {"read", "write"}},
                             grantedToken.AccessToken)
                         .ConfigureAwait(false);
                     resourceId = resource.Content.Id;
@@ -134,8 +128,8 @@
                 {
                     var response = await client.RequestPermissions(
                             grantedToken.AccessToken,
-                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "write" } },
-                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
+                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"write"}},
+                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
                         .ConfigureAwait(false);
 
                     Assert.False(response.ContainsError);

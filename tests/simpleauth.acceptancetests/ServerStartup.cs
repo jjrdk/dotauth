@@ -11,17 +11,20 @@
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Sms;
     using System;
+    using System.Text.RegularExpressions;
     using System.Threading;
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.ResourceServer;
+    using SimpleAuth.ResourceServer.Authentication;
     using SimpleAuth.Shared.Repositories;
 
     public class ServerStartup : IStartup
     {
-        private const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
+        //private const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
         private readonly SimpleAuthOptions _options;
         private readonly SharedContext _context;
 
@@ -60,7 +63,7 @@
                 Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents()),
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultStores.Users()),
                 ClaimsIncludedInUserCreation = new[] { "acceptance_test" },
-                HttpClientFactory = () => _context.Client
+                HttpClientFactory = () => context.Client
             };
             _context = context;
         }
@@ -72,7 +75,14 @@
 
             services.AddCors(
                 options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
-            services.AddSimpleAuth(_options, new[] {DefaultSchema, JwtBearerDefaults.AuthenticationScheme})
+            services.AddSimpleAuth(
+                    _options,
+                    new[]
+                    {
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        JwtBearerDefaults.AuthenticationScheme,
+                        UmaAuthenticationDefaults.AuthenticationScheme
+                    })
                 .AddSmsAuthentication(mockSmsClient.Object);
             services.AddLogging().AddAccountFilter();
             services.AddAuthentication(
@@ -83,27 +93,44 @@
                         cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                         cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                     })
-                .AddCookie(DefaultSchema)
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddUmaTicket(
+                    configureOptions: cfg =>
+                    {
+                        cfg.UmaResourcePaths = new[] { new Regex("/data/.+", RegexOptions.Compiled), };
+                        cfg.Authority = "http://localhost";
+                        cfg.BackchannelHttpHandler = _context.Handler;
+                        cfg.RequireHttpsMetadata = false;
+                        cfg.DiscoveryDocumentUri = new Uri("http://localhost/.well-known/openid-configuration");
+                        cfg.ClientId = "clientCredentials";
+                        cfg.ClientSecret = "clientCredentials";
+                        cfg.TokenValidationParameters = new NoOpTokenValidationParameters(_context);
+                    })
                 .AddJwtBearer(
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
+                        cfg.Events = new JwtBearerEvents
+                        {
+                            OnAuthenticationFailed = f => Task.CompletedTask,
+                            OnForbidden = f => Task.CompletedTask,
+                            OnChallenge = f => Task.CompletedTask,
+                            OnMessageReceived = f => Task.CompletedTask
+                        };
+
                         cfg.IncludeErrorDetails = true;
                         cfg.BackchannelHttpHandler = _context.Handler;
                         cfg.RequireHttpsMetadata = false;
                         cfg.Authority = _context.Client.BaseAddress.AbsoluteUri;
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
-                            ValidateAudience = false, ValidIssuer = "https://localhost"
+                            ValidateAudience = false,
+                            ValidIssuer = "https://localhost"
                         };
                     });
 
-            services.AddAuthorization(
-                opt =>
-                {
-                    opt.AddAuthPolicies(DefaultSchema, JwtBearerDefaults.AuthenticationScheme)
-                        .AddPolicy("uma_ticket", builder => builder.RequireUmaTicket());
-                });
+            services.AddUmaClient(new Uri("http://localhost/.well-known/uma2-configuration"));
+            services.AddAuthorization(opt => { opt.AddPolicy("uma_ticket", builder => builder.RequireUmaTicket()); });
 
             return services.BuildServiceProvider();
         }

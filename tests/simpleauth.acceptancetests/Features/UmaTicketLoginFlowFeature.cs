@@ -2,10 +2,13 @@
 {
     using System;
     using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
+    using System.Text.RegularExpressions;
     using Microsoft.IdentityModel.Tokens;
+    using Microsoft.Net.Http.Headers;
     using SimpleAuth.Client;
     using SimpleAuth.Client.Results;
     using SimpleAuth.Shared.DTOs;
@@ -26,11 +29,10 @@
             string ticketId = null;
 
             "and a properly configured token client".x(
-                async () => client = await TokenClient.Create(
-                        TokenCredentials.FromClientCredentials("post_client", "post_client"),
-                        _fixture.Client,
-                        new Uri(WellKnownOpenidConfiguration))
-                    .ConfigureAwait(false));
+                () => client = new TokenClient(
+                    TokenCredentials.FromClientCredentials("post_client", "post_client"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting token".x(
                 async () =>
@@ -102,19 +104,31 @@
                     Assert.False(policyResponse.ContainsError);
 
                     await umaClient.AddResource(
-                                            policyResponse.Content.PolicyId,
-                                            new AddResourceSet { ResourceSets = new[] { resourceSetResponse.Id } },
-                                            result.AccessToken);
+                        policyResponse.Content.PolicyId,
+                        new AddResourceSet { ResourceSets = new[] { resourceSetResponse.Id } },
+                        result.AccessToken);
                 });
 
-            "and requesting permission".x(
+            "then can get redirection".x(
                 async () =>
                 {
-                    var permission = new PermissionRequest { ResourceSetId = resourceSetResponse.Id, Scopes = new[] { "api1" } };
-                    var permissionResponse = await umaClient.RequestPermission(permission, result.AccessToken);
-                    ticketId = permissionResponse.Content.TicketId;
+                    var request = new HttpRequestMessage
+                    {
+                        Method = HttpMethod.Get,
+                        RequestUri = new Uri("http://localhost/data/" + resourceSetResponse.Id)
+                    };
 
-                    Assert.Null(permissionResponse.Error);
+                    var response = await _fixture.Client.SendAsync(request);
+
+                    Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+                    var httpHeaderValueCollection = response.Headers.WwwAuthenticate;
+                    Assert.True(httpHeaderValueCollection != null);
+
+                    var match = Regex.Match(
+                        httpHeaderValueCollection.First().Parameter,
+                        ".+ticket=\"(.+)\".*",
+                        RegexOptions.Compiled);
+                    ticketId = match.Groups[1].Value;
                 });
 
             "when requesting token".x(
@@ -128,18 +142,20 @@
                     Assert.NotNull(umaToken.AccessToken);
                 });
 
-            "then can call endpoint".x(
+            "then can get resource with token".x(
                 async () =>
                 {
                     var request = new HttpRequestMessage
                     {
                         Method = HttpMethod.Get,
-                        RequestUri = new Uri("http://localhost/data")
+                        RequestUri = new Uri("http://localhost/data/" + resourceSetResponse.Id)
                     };
                     request.Headers.Authorization = new AuthenticationHeaderValue(umaToken.TokenType, umaToken.AccessToken);
                     var response = await _fixture.Client.SendAsync(request);
+                    var content = await response.Content.ReadAsStringAsync();
 
                     Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                    Assert.Equal("Hello", content);
                 });
         }
 
@@ -154,11 +170,10 @@
             string ticketId = null;
 
             "and a properly configured token client".x(
-                async () => client = await TokenClient.Create(
-                        TokenCredentials.FromClientCredentials("post_client", "post_client"),
-                        _fixture.Client,
-                        new Uri(WellKnownOpenidConfiguration))
-                    .ConfigureAwait(false));
+                () => client = new TokenClient(
+                    TokenCredentials.FromClientCredentials("post_client", "post_client"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting token".x(
                 async () =>
@@ -238,7 +253,8 @@
             "and requesting permission".x(
                 async () =>
                 {
-                    var permission = new PermissionRequest { ResourceSetId = resourceSetResponse.Id, Scopes = new[] { "api1" } };
+                    var permission =
+                        new PermissionRequest { ResourceSetId = resourceSetResponse.Id, Scopes = new[] { "api1" } };
                     var permissionResponse = await umaClient.RequestPermission(permission, result.AccessToken);
                     ticketId = permissionResponse.Content.TicketId;
 
@@ -252,11 +268,12 @@
                         .ConfigureAwait(false);
                 });
 
-            "then has error".x(() =>
-            {
-                Assert.NotNull(ticketResponse.Error);
-                Assert.Null(ticketResponse.Content);
-            });
+            "then has error".x(
+                () =>
+                {
+                    Assert.NotNull(ticketResponse.Error);
+                    Assert.Null(ticketResponse.Content);
+                });
         }
     }
 }

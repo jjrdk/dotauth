@@ -95,7 +95,7 @@ namespace SimpleAuth.Server.Tests.Apis
             const string policyId = "policy_id";
             const string resourceId = "invalid_resource_id";
             var policy = new Policy { ResourceSetIds = new[] { "resource_id" } };
-            InitializeFakeObjects(policy, new ResourceSet());
+            InitializeFakeObjects(policy, new ResourceSetModel());
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _deleteResourcePolicyAction.Execute(policyId, resourceId, CancellationToken.None))
@@ -124,7 +124,7 @@ namespace SimpleAuth.Server.Tests.Apis
             const string resourceId = "resource_id";
 
             var policy = new Policy { ResourceSetIds = new[] { resourceId } };
-            InitializeFakeObjects(policy, new ResourceSet());
+            InitializeFakeObjects(policy, new ResourceSetModel());
 
             _policyRepositoryStub.Setup(p => p.Update(It.IsAny<Policy>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
@@ -135,7 +135,7 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.True(result);
         }
 
-        private void InitializeFakeObjects(Policy policy = null, ResourceSet resourceSet = null)
+        private void InitializeFakeObjects(Policy policy = null, ResourceSetModel resourceSet = null)
         {
             _policyRepositoryStub = new Mock<IPolicyRepository>();
             _policyRepositoryStub.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))

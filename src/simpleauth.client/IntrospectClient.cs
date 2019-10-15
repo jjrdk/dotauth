@@ -92,7 +92,7 @@ namespace SimpleAuth.Client
             {
                 return new BaseSidContentResult<IntrospectionResponse>
                 {
-                    ContainsError = true,
+                    HasError = true,
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(json),
                     Status = result.StatusCode
                 };
@@ -100,7 +100,7 @@ namespace SimpleAuth.Client
 
             return new BaseSidContentResult<IntrospectionResponse>
             {
-                ContainsError = false,
+                HasError = false,
                 Content = JsonConvert.DeserializeObject<IntrospectionResponse>(json)
             };
         }

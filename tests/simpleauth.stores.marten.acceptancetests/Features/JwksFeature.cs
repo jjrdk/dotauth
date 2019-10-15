@@ -41,14 +41,13 @@
             "And a valid token".x(
                 async () =>
                 {
-                    var tokenClient = await TokenClient.Create(
-                            TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                            _fixture.Client,
-                            new Uri(WellKnownOpenidConfiguration))
-                        .ConfigureAwait(false);
+                    var tokenClient = new TokenClient(
+                        TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+                        _fixture.Client,
+                        new Uri(WellKnownOpenidConfiguration));
                     var response = await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
 
                     tokenResponse = response.Content;
                 });
@@ -68,7 +67,9 @@
                 {
                     var validationParameters = new TokenValidationParameters
                     {
-                        IssuerSigningKeys = jwks.Keys, ValidIssuer = "https://localhost", ValidAudience = "clientCredentials"
+                        IssuerSigningKeys = jwks.Keys,
+                        ValidIssuer = "https://localhost",
+                        ValidAudience = "clientCredentials"
                     };
 
                     var handler = new JwtSecurityTokenHandler();

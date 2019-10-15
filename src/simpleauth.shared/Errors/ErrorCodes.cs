@@ -25,7 +25,8 @@ namespace SimpleAuth.Shared.Errors
         //public const string InvalidId = "invalid_id";
         public const string InvalidTicket = "invalid_ticket";
         public const string ExpiredTicket = "expired_ticket";
-        public const string AwaitingAuthorization = "awaiting_authorization";
+        public const string RequestSubmitted = "request_submitted";
+        public const string RequestDenied = "request_denied";
         //public const string InvalidRpt = "invalid_rpt";
         //openid
         public const string UnhandledExceptionCode = "unhandled_error";

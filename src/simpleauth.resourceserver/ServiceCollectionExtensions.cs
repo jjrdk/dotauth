@@ -1,4 +1,18 @@
-﻿namespace SimpleAuth.ResourceServer
+﻿// Copyright © 2016 Habart Thierry, © 2018 Jacob Reimers
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+namespace SimpleAuth.ResourceServer
 {
     using System;
     using System.Net.Http;
@@ -7,11 +21,12 @@
 
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddUma(this IServiceCollection serviceCollection, Uri configurationUri)
+        public static IServiceCollection AddUmaClient(this IServiceCollection serviceCollection, Uri configurationUri)
         {
-            serviceCollection.AddSingleton(
-                sp => new UmaClient(sp.GetService<HttpClient>(), configurationUri));
+            serviceCollection.AddSingleton(sp => new UmaClient(sp.GetService<HttpClient>(), configurationUri));
             serviceCollection.AddTransient<IProvideUmaConfiguration, UmaClient>(sp => sp.GetService<UmaClient>());
+            serviceCollection.AddTransient<IUmaPermissionClient, UmaClient>(sp => sp.GetService<UmaClient>());
+            serviceCollection.AddTransient<IPolicyClient, UmaClient>(sp => sp.GetService<UmaClient>());
 
             return serviceCollection;
         }

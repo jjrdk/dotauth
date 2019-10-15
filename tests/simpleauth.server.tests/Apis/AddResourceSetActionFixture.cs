@@ -53,7 +53,7 @@ namespace SimpleAuth.Server.Tests.Apis
             {
                 Name = "name", Scopes = new[] {"scope"}, IconUri = "http://localhost", Uri = "http://localhost"
             };
-            _resourceSetRepositoryStub.Setup(r => r.Add(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
+            _resourceSetRepositoryStub.Setup(r => r.Add(It.IsAny<ResourceSetModel>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(false));
 
             var exception = await Assert
@@ -71,7 +71,7 @@ namespace SimpleAuth.Server.Tests.Apis
             {
                 Name = "name", Scopes = new[] {"scope"}, IconUri = "http://localhost", Uri = "http://localhost"
             };
-            _resourceSetRepositoryStub.Setup(r => r.Add(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
+            _resourceSetRepositoryStub.Setup(r => r.Add(It.IsAny<ResourceSetModel>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
             var result = await _addResourceSetAction.Execute(addResourceParameter, CancellationToken.None)

@@ -56,7 +56,7 @@ namespace SimpleAuth.Api.PolicyController
                 return false;
             }
 
-            ResourceSet resourceSet;
+            ResourceSetModel resourceSet;
             try
             {
                 resourceSet = await _resourceSetRepository.Get(resourceId, cancellationToken).ConfigureAwait(false);

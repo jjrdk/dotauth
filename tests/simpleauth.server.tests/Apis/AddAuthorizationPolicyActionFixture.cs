@@ -25,7 +25,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using Xunit;
-    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     public class AddAuthorizationPolicyActionFixture
     {
@@ -120,7 +119,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     }
                 }
             };
-            var resourceSet = new ResourceSet { Scopes = new[] { "scope" } };
+            var resourceSet = new ResourceSetModel { Scopes = new[] { "scope" } };
 
             InitializeFakeObjects(resourceSet);
             var exception = await Assert
@@ -148,7 +147,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     }
                 }
             };
-            var resourceSet = new ResourceSet { Scopes = new[] { "scope" } };
+            var resourceSet = new ResourceSetModel { Scopes = new[] { "scope" } };
 
             InitializeFakeObjects(resourceSet);
 
@@ -157,7 +156,7 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.NotNull(result);
         }
 
-        private void InitializeFakeObjects(ResourceSet resourceSet = null)
+        private void InitializeFakeObjects(ResourceSetModel resourceSet = null)
         {
             _policyRepositoryStub = new Mock<IPolicyRepository>();
             _policyRepositoryStub.Setup(x => x.Add(It.IsAny<Policy>(), It.IsAny<CancellationToken>()))

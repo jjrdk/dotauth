@@ -24,7 +24,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Threading;
     using System.Threading.Tasks;
     using Xunit;
-    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     public class UpdatePolicyActionFixture
     {
@@ -94,7 +93,7 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects(policy);
 
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ResourceSet { Scopes = new[] { "scope" } });
+                .ReturnsAsync(new ResourceSetModel { Scopes = new[] { "scope" } });
 
             var result = await Assert
                 .ThrowsAsync<SimpleAuthException>(
@@ -124,7 +123,7 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects(policy);
 
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ResourceSet { Scopes = new[] { "scope" } });
+                .ReturnsAsync(new ResourceSetModel { Scopes = new[] { "scope" } });
 
             var result = await _updatePolicyAction.Execute(updatePolicyParameter, CancellationToken.None)
                 .ConfigureAwait(false);

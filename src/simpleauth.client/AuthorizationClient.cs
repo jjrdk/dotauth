@@ -70,11 +70,11 @@ namespace SimpleAuth.Client
             var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             if ((int)response.StatusCode < 400)
             {
-                return new GetAuthorizationResult { ContainsError = false, Location = response.Headers.Location };
+                return new GetAuthorizationResult { HasError = false, Location = response.Headers.Location };
             }
             return new GetAuthorizationResult
             {
-                ContainsError = true,
+                HasError = true,
                 Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                 Status = response.StatusCode
             };

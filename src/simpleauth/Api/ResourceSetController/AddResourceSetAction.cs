@@ -23,7 +23,6 @@ namespace SimpleAuth.Api.ResourceSetController
     using Dto = SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
-    using Models = SimpleAuth.Shared.Models;
 
     internal class AddResourceSetAction
     {
@@ -36,7 +35,7 @@ namespace SimpleAuth.Api.ResourceSetController
 
         public async Task<string> Execute(Dto.ResourceSet addResourceSetParameter, CancellationToken cancellationToken)
         {
-            var resourceSet = new Models.ResourceSet
+            var resourceSet = new ResourceSetModel
             {
                 Id = Id.Create(),
                 Name = addResourceSetParameter.Name,
@@ -57,7 +56,7 @@ namespace SimpleAuth.Api.ResourceSetController
             return resourceSet.Id;
         }
 
-        private void CheckResourceSetParameter(ResourceSet resourceSet)
+        private void CheckResourceSetParameter(ResourceSetModel resourceSet)
         {
             if (string.IsNullOrWhiteSpace(resourceSet.Name))
             {

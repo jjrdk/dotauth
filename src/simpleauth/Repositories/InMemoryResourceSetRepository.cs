@@ -16,15 +16,15 @@
     /// <seealso cref="IResourceSetRepository" />
     public sealed class InMemoryResourceSetRepository : IResourceSetRepository
     {
-        private readonly ICollection<Models.ResourceSet> _resources;
+        private readonly ICollection<Models.ResourceSetModel> _resources;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryResourceSetRepository"/> class.
         /// </summary>
         /// <param name="resources">The resources.</param>
-        public InMemoryResourceSetRepository(IReadOnlyCollection<Models.ResourceSet> resources = null)
+        public InMemoryResourceSetRepository(IReadOnlyCollection<Models.ResourceSetModel> resources = null)
         {
-            _resources = resources?.ToList() ?? new List<Models.ResourceSet>();
+            _resources = resources?.ToList() ?? new List<Models.ResourceSetModel>();
         }
 
         /// <inheritdoc />
@@ -46,7 +46,7 @@
         }
 
         /// <inheritdoc />
-        public Task<Models.ResourceSet> Get(string id, CancellationToken cancellationToken)
+        public Task<Models.ResourceSetModel> Get(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -56,14 +56,14 @@
             var rec = _resources.FirstOrDefault(p => p.Id == id);
             if (rec == null)
             {
-                return Task.FromResult((Models.ResourceSet) null);
+                return Task.FromResult((Models.ResourceSetModel) null);
             }
 
             return Task.FromResult(rec);
         }
 
         /// <inheritdoc />
-        public Task<Models.ResourceSet[]> Get(CancellationToken cancellationToken, params string[] ids)
+        public Task<Models.ResourceSetModel[]> Get(CancellationToken cancellationToken, params string[] ids)
         {
             if (ids == null)
             {
@@ -76,14 +76,14 @@
 
         /// <param name="cancellationToken"></param>
         /// <inheritdoc />
-        public Task<Models.ResourceSet[]> GetAll(CancellationToken cancellationToken)
+        public Task<Models.ResourceSetModel[]> GetAll(CancellationToken cancellationToken)
         {
             var result = _resources.ToArray();
             return Task.FromResult(result);
         }
 
         /// <inheritdoc />
-        public Task<bool> Add(Models.ResourceSet resourceSet, CancellationToken cancellationToken)
+        public Task<bool> Add(Models.ResourceSetModel resourceSet, CancellationToken cancellationToken)
         {
             if (resourceSet == null)
             {
@@ -95,7 +95,7 @@
         }
 
         /// <inheritdoc />
-        public Task<GenericResult<Models.ResourceSet>> Search(
+        public Task<GenericResult<Models.ResourceSetModel>> Search(
             SearchResourceSet parameter,
             CancellationToken cancellationToken)
         {
@@ -104,7 +104,7 @@
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            IEnumerable<Models.ResourceSet> result = _resources;
+            IEnumerable<Models.ResourceSetModel> result = _resources;
             if (parameter.Ids != null && parameter.Ids.Any())
             {
                 result = result.Where(r => parameter.Ids.Contains(r.Id));
@@ -128,14 +128,14 @@
             }
 
             return Task.FromResult(
-                new GenericResult<Models.ResourceSet>
+                new GenericResult<Models.ResourceSetModel>
                 {
                     Content = result.ToArray(), StartIndex = parameter.StartIndex, TotalResults = nbResult
                 });
         }
 
         /// <inheritdoc />
-        public Task<bool> Update(Models.ResourceSet resourceSet, CancellationToken cancellationToken)
+        public Task<bool> Update(Models.ResourceSetModel resourceSet, CancellationToken cancellationToken)
         {
             if (resourceSet == null)
             {

@@ -17,13 +17,14 @@
             TokenClient client = null;
             GrantedTokenResponse token = null;
 
-            "Given a token client".x(async () =>
-            {
-                client = await TokenClient.Create(
-                    TokenCredentials.FromClientCredentials("no_key", "no_key"),
-                    _fixture.Client,
-                    new Uri(WellKnownOpenidConfiguration)).ConfigureAwait(false);
-            });
+            "Given a token client".x(
+                () =>
+                {
+                    client = new TokenClient(
+                        TokenCredentials.FromClientCredentials("no_key", "no_key"),
+                        _fixture.Client,
+                        new Uri(WellKnownOpenidConfiguration));
+                });
 
             "When getting token".x(async () =>
             {

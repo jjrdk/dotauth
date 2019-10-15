@@ -25,12 +25,11 @@ namespace SimpleAuth.Server.Tests.Introspection
         [Fact]
         public async Task When_Introspect_Identity_Token_Then_Claims_Are_Returned()
         {
-            var client = await TokenClient.Create(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .ConfigureAwait(false);
-            var result = await client.GetToken(TokenRequest.FromPassword("superuser", "password", new[] { "role" }))
+            var client = new TokenClient(
+                TokenCredentials.FromClientCredentials("client", "client"),
+                _server.Client,
+                new Uri(BaseUrl + WellKnownOpenidConfiguration));
+            var result = await client.GetToken(TokenRequest.FromPassword("superuser", "password", new[] {"role"}))
                 .ConfigureAwait(false);
 
             var authResult = await new UserInfoIntrospectionHandler(
@@ -38,8 +37,7 @@ namespace SimpleAuth.Server.Tests.Introspection
                     new Mock<IOptionsMonitor<AuthenticationSchemeOptions>>().Object,
                     new Mock<ILoggerFactory>().Object,
                     new UrlTestEncoder(),
-                    new Mock<ISystemClock>().Object)
-                .AuthenticateAsync()
+                    new Mock<ISystemClock>().Object).AuthenticateAsync()
                 .ConfigureAwait(false);
 
             Assert.True(authResult.Succeeded);

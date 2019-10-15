@@ -101,7 +101,7 @@ namespace SimpleAuth.Client
             {
                 return new GetUserInfoResult
                 {
-                    ContainsError = true,
+                    HasError = true,
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(json),
                     Status = serializedContent.StatusCode
                 };
@@ -112,7 +112,7 @@ namespace SimpleAuth.Client
             {
                 return new GetUserInfoResult
                 {
-                    ContainsError = false,
+                    HasError = false,
                     JwtToken = json
                 };
             }
@@ -121,13 +121,13 @@ namespace SimpleAuth.Client
             {
                 return new GetUserInfoResult
                 {
-                    ContainsError = false,
+                    HasError = false,
                     Content = string.IsNullOrWhiteSpace(json) ? null : JsonConvert.DeserializeObject<JwtPayload>(json)
                 };
             }
             return new GetUserInfoResult
             {
-                ContainsError = true,
+                HasError = true,
                 Error = new ErrorDetails
                 {
                     Title = "invalid_token",

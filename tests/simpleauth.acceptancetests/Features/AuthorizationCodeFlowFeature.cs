@@ -34,7 +34,7 @@
                                 "abc"))
                         .ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
 
                     result = response.Location;
                 });

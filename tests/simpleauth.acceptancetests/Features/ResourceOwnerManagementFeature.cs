@@ -185,7 +185,7 @@
                 {
                     var result = await _tokenClient.RevokeToken(RevokeTokenRequest.Create(updatedToken))
                         .ConfigureAwait(false);
-                    Assert.False(result.ContainsError);
+                    Assert.False(result.HasError);
                 });
 
             "and logging in again".x(

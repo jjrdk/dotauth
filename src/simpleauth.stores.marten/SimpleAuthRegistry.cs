@@ -5,7 +5,6 @@
     using NpgsqlTypes;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
-    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     /// <summary>
     /// Defines the default marten registry for stored SimpleAuth types.
@@ -44,7 +43,7 @@
                 .Index(x => x.ResponseTypes, configure: idx => { idx.IsConcurrent = true; })
                 .Index(x => x.Claims, configure: idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
-            For<ResourceSet>()
+            For<ResourceSetModel>()
                 .Duplicate(x => x.Name)
                 .Duplicate(x => x.Type)
                 .GinIndexJsonData();

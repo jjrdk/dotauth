@@ -36,7 +36,7 @@ namespace SimpleAuth.Api.ResourceSetController
 
         public async Task<bool> Execute(ResourceSet udpateResourceSetParameter, CancellationToken cancellationToken)
         {
-            var resourceSet = new Shared.Models.ResourceSet
+            var resourceSet = new Shared.Models.ResourceSetModel
             {
                 Id = udpateResourceSetParameter.Id,
                 Name = udpateResourceSetParameter.Name,
@@ -70,7 +70,7 @@ namespace SimpleAuth.Api.ResourceSetController
             return true;
         }
 
-        private void CheckResourceSetParameter(Shared.Models.ResourceSet resourceSet)
+        private void CheckResourceSetParameter(Shared.Models.ResourceSetModel resourceSet)
         {
             if (resourceSet == null)
             {

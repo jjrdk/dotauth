@@ -43,7 +43,8 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, RequestUri = new Uri($"{BaseUrl}/introspect")
+                Method = HttpMethod.Post,
+                RequestUri = new Uri($"{BaseUrl}/introspect")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -65,7 +66,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/introspect")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/introspect")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -88,7 +91,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 .Introspect(IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
-            Assert.True(introspection.ContainsError);
+            Assert.True(introspection.HasError);
             Assert.Equal("invalid_client", introspection.Error.Title);
             Assert.Equal("the client doesn't exist", introspection.Error.Detail);
         }
@@ -105,7 +108,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
-            Assert.True(introspection.ContainsError);
+            Assert.True(introspection.HasError);
             Assert.Equal("invalid_token", introspection.Error.Title);
             Assert.Equal("the token is not valid", introspection.Error.Detail);
         }
@@ -113,13 +116,12 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Introspecting_AccessToken_Then_Information_Are_Returned()
         {
-            var tokenClient = await TokenClient.Create(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .ConfigureAwait(false);
+            var tokenClient = new TokenClient(
+                TokenCredentials.FromClientCredentials("client", "client"),
+                _server.Client,
+                new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient.GetToken(
-                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
             var introspectionClient = await IntrospectClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),
@@ -137,13 +139,12 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Introspecting_RefreshToken_Then_Information_Are_Returned()
         {
-            var tokenClient = await TokenClient.Create(
+            var tokenClient = new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .ConfigureAwait(false);
+                    new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient.GetToken(
-                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
             var introspectionClient = await IntrospectClient.Create(
                     TokenCredentials.FromClientCredentials("client", "client"),

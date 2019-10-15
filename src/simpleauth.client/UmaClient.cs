@@ -24,118 +24,6 @@ namespace SimpleAuth.Client
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Responses;
-    using ResourceSet = SimpleAuth.Shared.DTOs.ResourceSet;
-
-    public interface IUmaPermissionClient
-    {
-        /// <summary>
-        /// Adds the permission.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <param name="token">The token.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// request
-        /// or
-        /// token
-        /// </exception>
-        Task<GenericResponse<PermissionResponse>> RequestPermission(PermissionRequest request, string token);
-
-        /// <summary>
-        /// Adds the permissions.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <param name="requests">The requests.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// requests
-        /// or
-        /// token
-        /// </exception>
-        Task<GenericResponse<PermissionResponse>> RequestPermissions(
-            string token,
-            params PermissionRequest[] requests);
-    }
-
-    public interface IPolicyClient
-    {
-        /// <summary>
-        /// Adds the policy.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <param name="accessToken">The authorization header value.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// request
-        /// or
-        /// authorizationHeaderValue
-        /// </exception>
-        Task<GenericResponse<AddPolicyResponse>> AddPolicy(
-            PostPolicy request,
-            string accessToken);
-
-        /// <summary>
-        /// Gets the policy.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="token">The token.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// id
-        /// or
-        /// token
-        /// </exception>
-        Task<GenericResponse<PolicyResponse>> GetPolicy(string id, string token);
-
-        /// <summary>
-        /// Gets all policies.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">token</exception>
-        Task<GenericResponse<string[]>> GetAllPolicies(string token);
-
-        /// <summary>
-        /// Deletes the policy.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="token">The token.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// id
-        /// or
-        /// token
-        /// </exception>
-        Task<GenericResponse<object>> DeletePolicy(string id, string token);
-
-        /// <summary>
-        /// Updates the policy.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <param name="token">The token.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// request
-        /// or
-        /// token
-        /// </exception>
-        Task<GenericResponse<object>> UpdatePolicy(PutPolicy request, string token);
-
-        /// <summary>
-        /// Searches the policies.
-        /// </summary>
-        /// <param name="parameter">The parameter.</param>
-        /// <param name="authorizationHeaderValue">The authorization header value.</param>
-        /// <returns></returns>
-        Task<GenericResponse<SearchAuthPoliciesResponse>> SearchPolicies(
-            SearchAuthPolicies parameter,
-            string authorizationHeaderValue = null);
-    }
-
-    public interface IProvideUmaConfiguration
-    {
-        Task<UmaConfiguration> GetUmaConfiguration();
-    }
 
     /// <summary>
     /// Defines the UMA client.
@@ -871,7 +759,7 @@ namespace SimpleAuth.Client
         /// <param name="parameter">The parameter.</param>
         /// <param name="authorizationHeaderValue">The authorization header value.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<GenericResult<Shared.Models.ResourceSet>>> SearchResources(
+        public async Task<GenericResponse<GenericResult<ResourceSet>>> SearchResources(
             SearchResourceSet parameter,
             string authorizationHeaderValue = null)
         {
@@ -890,7 +778,7 @@ namespace SimpleAuth.Client
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!httpResult.IsSuccessStatusCode)
             {
-                return new GenericResponse<GenericResult<Shared.Models.ResourceSet>>()
+                return new GenericResponse<GenericResult<ResourceSet>>()
                 {
                     ContainsError = true,
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
@@ -898,9 +786,9 @@ namespace SimpleAuth.Client
                 };
             }
 
-            return new GenericResponse<GenericResult<Shared.Models.ResourceSet>>
+            return new GenericResponse<GenericResult<ResourceSet>>
             {
-                Content = JsonConvert.DeserializeObject<GenericResult<Shared.Models.ResourceSet>>(content)
+                Content = JsonConvert.DeserializeObject<GenericResult<ResourceSet>>(content)
             };
         }
     }

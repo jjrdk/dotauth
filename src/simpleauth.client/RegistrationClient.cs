@@ -69,7 +69,7 @@ namespace SimpleAuth.Client
             {
                 return new BaseSidContentResult<Client>
                 {
-                    ContainsError = true,
+                    HasError = true,
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     Status = result.StatusCode
                 };
@@ -77,7 +77,7 @@ namespace SimpleAuth.Client
 
             return new BaseSidContentResult<Client>
             {
-                ContainsError = false,
+                HasError = false,
                 Content = JsonConvert.DeserializeObject<Client>(content)
             };
         }

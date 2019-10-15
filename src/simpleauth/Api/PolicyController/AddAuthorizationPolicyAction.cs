@@ -56,7 +56,7 @@ namespace SimpleAuth.Api.PolicyController
                         UmaConstants.AddPolicyParameterNames.Rules));
             }
 
-            var resourceSets = new Dictionary<string, SimpleAuth.Shared.Models.ResourceSet>();
+            var resourceSets = new Dictionary<string, SimpleAuth.Shared.Models.ResourceSetModel>();
             foreach (var resourceSetId in addPolicyParameter.ResourceSetIds.Distinct())
             {
                 var resourceSet = await _resourceSetRepository.Get(resourceSetId, cancellationToken).ConfigureAwait(false);

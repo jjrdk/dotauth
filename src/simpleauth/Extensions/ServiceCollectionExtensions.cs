@@ -245,10 +245,11 @@ namespace SimpleAuth.Extensions
 
             var s = services.AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>()
                 .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
-                .AddTransient<IConfigureOptions<MvcNewtonsoftJsonOptions>, ConfigureMvcNewtonsoftJsonOptions>()
+                .ConfigureOptions<ConfigureMvcNewtonsoftJsonOptions>()
                 .AddSingleton(runtimeConfig)
                 .AddSingleton(requestThrottle ?? NoopThrottle.Default)
-                .AddSingleton(options.HttpClientFactory?.Invoke() ?? new HttpClient())
+                //.AddSingleton(options.HttpClientFactory?.Invoke() ?? new HttpClient())
+                .AddTransient(sp=>options.HttpClientFactory.Invoke())
                 .AddSingleton(sp => options.EventPublisher?.Invoke(sp) ?? new NoopEventPublisher())
                 .AddSingleton(sp => options.SubjectBuilder?.Invoke(sp) ?? new DefaultSubjectBuilder())
                 .AddSingleton(sp => options.JsonWebKeys?.Invoke(sp) ?? new InMemoryJwksRepository())

@@ -27,15 +27,14 @@
         [Fact]
         public async Task When_Ticket_Id_Does_Not_Exist_Then_Error_Is_Returned()
         {
-            var tokenClient = await TokenClient.Create(
-                    TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownUma2Configuration))
-                .ConfigureAwait(false);
+            var tokenClient = new TokenClient(
+                TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
+                _server.Client,
+                new Uri(BaseUrl + WellKnownUma2Configuration));
             // Try to get the access token via "ticket_id" grant-type.
             var token = await tokenClient.GetToken(TokenRequest.FromTicketId("ticket_id", "")).ConfigureAwait(false);
 
-            Assert.True(token.ContainsError);
+            Assert.True(token.HasError);
             Assert.Equal("invalid_ticket", token.Error.Title);
             Assert.Equal("the ticket ticket_id doesn't exist", token.Error.Detail);
         }
@@ -43,11 +42,10 @@
         [Fact]
         public async Task When_Using_ClientCredentials_Grant_Type_Then_AccessToken_Is_Returned()
         {
-            var tokenClient = await TokenClient.Create(
-                    TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownUma2Configuration))
-                .ConfigureAwait(false);
+            var tokenClient = new TokenClient(
+                TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
+                _server.Client,
+                new Uri(BaseUrl + WellKnownUma2Configuration));
             var result = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection", "uma_authorization"))
                 .ConfigureAwait(false);
 
@@ -74,11 +72,10 @@
             var securityToken = new JwtSecurityToken(header, jwsPayload);
             var jwt = handler.WriteToken(securityToken);
 
-            var tc = await TokenClient.Create(
-                    TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownUma2Configuration))
-                .ConfigureAwait(false);
+            var tc = new TokenClient(
+                TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
+                _server.Client,
+                new Uri(BaseUrl + WellKnownUma2Configuration));
             // Get PAT.
             var result = await tc.GetToken(TokenRequest.FromScopes("uma_protection", "uma_authorization"))
                 .ConfigureAwait(false);
@@ -97,11 +94,10 @@
 
             Assert.NotNull(ticket.Content);
 
-            var tokenClient = await TokenClient.Create(
-                    TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownUma2Configuration))
-                .ConfigureAwait(false);
+            var tokenClient = new TokenClient(
+                TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
+                _server.Client,
+                new Uri(BaseUrl + WellKnownUma2Configuration));
             var token = await tokenClient.GetToken(TokenRequest.FromTicketId(ticket.Content.TicketId, jwt))
                 .ConfigureAwait(false);
 

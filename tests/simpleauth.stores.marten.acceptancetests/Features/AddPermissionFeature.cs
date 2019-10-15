@@ -39,11 +39,10 @@
             "and a valid UMA token".x(
                 async () =>
                 {
-                    var tokenClient = await TokenClient.Create(
-                            TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                            _fixture.Client,
-                            new Uri(WellKnownUmaConfiguration))
-                        .ConfigureAwait(false);
+                    var tokenClient = new TokenClient(
+                        TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+                        _fixture.Client,
+                        new Uri(WellKnownUmaConfiguration));
                     var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
                         .ConfigureAwait(false);
                     grantedToken = token.Content;
@@ -90,11 +89,10 @@
             "and a valid UMA token".x(
                 async () =>
                 {
-                    var tokenClient = await TokenClient.Create(
-                            TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                            _fixture.Client,
-                            new Uri(WellKnownUmaConfiguration))
-                        .ConfigureAwait(false);
+                    var tokenClient = new TokenClient(
+                        TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+                        _fixture.Client,
+                        new Uri(WellKnownUmaConfiguration));
                     var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
                         .ConfigureAwait(false);
                     grantedToken = token.Content;

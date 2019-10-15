@@ -35,7 +35,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public UpdateResourceSetActionFixture()
         {
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _resourceSetRepositoryStub.Setup(x => x.Update(It.IsAny<Shared.Models.ResourceSet>(), It.IsAny<CancellationToken>()))
+            _resourceSetRepositoryStub.Setup(x => x.Update(It.IsAny<Shared.Models.ResourceSetModel>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
             _updateResourceSetAction = new UpdateResourceSetAction(_resourceSetRepositoryStub.Object);
         }
@@ -57,10 +57,10 @@ namespace SimpleAuth.Server.Tests.Apis
             {
                 Id = id, Name = "blah", Scopes = new[] {"scope"}
             };
-            var resourceSet = new Shared.Models.ResourceSet {Id = id};
+            var resourceSet = new Shared.Models.ResourceSetModel {Id = id};
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(resourceSet);
-            _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSet>(), It.IsAny<CancellationToken>()))
+            _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSetModel>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(false));
 
             var exception = await Assert
@@ -81,10 +81,10 @@ namespace SimpleAuth.Server.Tests.Apis
             {
                 Id = id, Name = "blah", Scopes = new[] {"scope"}
             };
-            var resourceSet = new Shared.Models.ResourceSet {Id = id};
+            var resourceSet = new Shared.Models.ResourceSetModel {Id = id};
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(resourceSet);
-            _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSet>(), It.IsAny<CancellationToken>()))
+            _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSetModel>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
             var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None)

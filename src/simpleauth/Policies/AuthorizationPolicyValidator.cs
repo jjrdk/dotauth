@@ -26,7 +26,6 @@ namespace SimpleAuth.Policies
     using System.Threading.Tasks;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
-    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     internal class AuthorizationPolicyValidator
     {
@@ -91,7 +90,7 @@ namespace SimpleAuth.Policies
 
         private async Task<AuthorizationPolicyResult> Validate(
             TicketLineParameter ticketLineParameter,
-            ResourceSet resource,
+            ResourceSetModel resource,
             ClaimTokenParameter claimTokenParameter,
             CancellationToken cancellationToken)
         {

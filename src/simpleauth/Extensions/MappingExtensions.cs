@@ -41,7 +41,7 @@ namespace SimpleAuth.Extensions
             };
         }
 
-        public static SimpleAuth.Shared.DTOs.ResourceSet ToResponse(this ResourceSet resourceSet)
+        public static SimpleAuth.Shared.DTOs.ResourceSet ToResponse(this ResourceSetModel resourceSet)
         {
             return new SimpleAuth.Shared.DTOs.ResourceSet
             {
