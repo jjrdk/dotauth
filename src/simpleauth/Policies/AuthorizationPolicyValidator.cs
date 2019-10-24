@@ -94,7 +94,7 @@ namespace SimpleAuth.Policies
             ClaimTokenParameter claimTokenParameter,
             CancellationToken cancellationToken)
         {
-            var policies = await Task.WhenAll(resource.AuthorizationPolicyIds.Select(x => _policyRepository.Get(x, cancellationToken)));
+            var policies = await Task.WhenAll(resource.AuthorizationPolicyIds.Select(x => _policyRepository.Get(x, cancellationToken))).ConfigureAwait(false);
 
             foreach (var authorizationPolicy in resource.Policies.Concat(policies))
             {

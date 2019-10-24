@@ -12,6 +12,7 @@
     using System.Security.Claims;
     using System.Text.Encodings.Web;
     using System.Threading.Tasks;
+    using Microsoft.Net.Http.Headers;
 
     public class FakeOauth2IntrospectionHandler : AuthenticationHandler<FakeOAuth2IntrospectionOptions>
     {
@@ -26,7 +27,7 @@
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            string authorization = Request.Headers["Authorization"];
+            string authorization = Request.Headers[HeaderNames.Authorization];
             if (string.IsNullOrWhiteSpace(authorization))
             {
                 return AuthenticateResult.NoResult();

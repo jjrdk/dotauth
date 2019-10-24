@@ -29,6 +29,7 @@ namespace SimpleAuth.Server.Tests
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Net.Http.Headers;
     using Moq;
     using SimpleAuth.Server.Tests.MiddleWares;
     using SimpleAuth.Shared;
@@ -75,7 +76,7 @@ namespace SimpleAuth.Server.Tests
                                },
                             OnAuthenticationFailed = ctx =>
                             {
-                                string authorization = ctx.Request.Headers["Authorization"];
+                                string authorization = ctx.Request.Headers[HeaderNames.Authorization];
                                 if (string.IsNullOrWhiteSpace(authorization))
                                 {
                                     ctx.NoResult();

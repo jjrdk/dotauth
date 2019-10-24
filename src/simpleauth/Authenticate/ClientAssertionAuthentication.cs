@@ -20,6 +20,7 @@ namespace SimpleAuth.Authenticate
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.IdentityModel.Logging;
     using SimpleAuth.Shared.Errors;
 
     internal class ClientAssertionAuthentication
@@ -30,6 +31,7 @@ namespace SimpleAuth.Authenticate
 
         public ClientAssertionAuthentication(IClientStore clientRepository, IJwksStore jwksStore)
         {
+            IdentityModelEventSource.ShowPII = true;
             _clientRepository = clientRepository;
             _jwksStore = jwksStore;
         }
@@ -90,7 +92,7 @@ namespace SimpleAuth.Authenticate
 
             try
             {
-                var validationParameters = await client.CreateValidationParameters(_jwksStore, expectedIssuer, clientId);
+                var validationParameters = await client.CreateValidationParameters(_jwksStore, expectedIssuer, clientId).ConfigureAwait(false);
                 _handler.ValidateToken(
                     instruction.ClientAssertion,
                     validationParameters,
@@ -125,7 +127,7 @@ namespace SimpleAuth.Authenticate
             var jwe = instruction.ClientAssertion;
             var clientId = instruction.ClientIdFromHttpRequestBody;
             var client = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
-            var validationParameters = await client.CreateValidationParameters(_jwksStore);
+            var validationParameters = await client.CreateValidationParameters(_jwksStore).ConfigureAwait(false);
             _handler.ValidateToken(jwe, validationParameters, out var securityToken);
             var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
 

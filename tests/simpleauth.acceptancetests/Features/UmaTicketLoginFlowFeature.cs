@@ -77,7 +77,7 @@
                         Type = "url"
                     };
 
-                    var resourceResponse = await umaClient.AddResource(resourceSet, result.AccessToken);
+                    var resourceResponse = await umaClient.AddResource(resourceSet, result.AccessToken).ConfigureAwait(false);
                     resourceSetResponse = resourceResponse.Content;
 
                     Assert.False(resourceResponse.ContainsError);
@@ -100,13 +100,13 @@
                             }
                         }
                     };
-                    var policyResponse = await umaClient.AddPolicy(policy, result.AccessToken);
+                    var policyResponse = await umaClient.AddPolicy(policy, result.AccessToken).ConfigureAwait(false);
                     Assert.False(policyResponse.ContainsError);
 
                     await umaClient.AddResource(
                         policyResponse.Content.PolicyId,
                         new AddResourceSet { ResourceSets = new[] { resourceSetResponse.Id } },
-                        result.AccessToken);
+                        result.AccessToken).ConfigureAwait(false);
                 });
 
             "then can get redirection".x(
@@ -118,7 +118,7 @@
                         RequestUri = new Uri("http://localhost/data/" + resourceSetResponse.Id)
                     };
 
-                    var response = await _fixture.Client.SendAsync(request);
+                    var response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
 
                     Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
                     var httpHeaderValueCollection = response.Headers.WwwAuthenticate;
@@ -151,8 +151,8 @@
                         RequestUri = new Uri("http://localhost/data/" + resourceSetResponse.Id)
                     };
                     request.Headers.Authorization = new AuthenticationHeaderValue(umaToken.TokenType, umaToken.AccessToken);
-                    var response = await _fixture.Client.SendAsync(request);
-                    var content = await response.Content.ReadAsStringAsync();
+                    var response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                     Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                     Assert.Equal("Hello", content);
@@ -218,7 +218,7 @@
                         Type = "url"
                     };
 
-                    var resourceResponse = await umaClient.AddResource(resourceSet, result.AccessToken);
+                    var resourceResponse = await umaClient.AddResource(resourceSet, result.AccessToken).ConfigureAwait(false);
                     resourceSetResponse = resourceResponse.Content;
 
                     Assert.False(resourceResponse.ContainsError);
@@ -255,7 +255,7 @@
                 {
                     var permission =
                         new PermissionRequest { ResourceSetId = resourceSetResponse.Id, Scopes = new[] { "api1" } };
-                    var permissionResponse = await umaClient.RequestPermission(permission, result.AccessToken);
+                    var permissionResponse = await umaClient.RequestPermission(permission, result.AccessToken).ConfigureAwait(false);
                     ticketId = permissionResponse.Content.TicketId;
 
                     Assert.Null(permissionResponse.Error);

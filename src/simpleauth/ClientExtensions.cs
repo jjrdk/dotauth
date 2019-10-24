@@ -16,14 +16,14 @@
             {
                 var keys = await (client.IdTokenSignedResponseAlg == null
                     ? jwksStore.GetDefaultSigningKey()
-                    : jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg));
+                    : jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg)).ConfigureAwait(false);
 
                 signingKeys = new List<SecurityKey> { keys.Key };
             }
             var encryptionKeys = client.JsonWebKeys.GetEncryptionKeys().ToArray();
             if (encryptionKeys.Length == 0 && client.IdTokenEncryptedResponseAlg != null)
             {
-                var key = await jwksStore.GetEncryptionKey(client.IdTokenEncryptedResponseAlg);
+                var key = await jwksStore.GetEncryptionKey(client.IdTokenEncryptedResponseAlg).ConfigureAwait(false);
 
                 encryptionKeys = new[] { key };
             }

@@ -26,6 +26,7 @@ namespace SimpleAuth.Controllers
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Net.Http.Headers;
 
     /// <summary>
     /// Defines the introspection controller.
@@ -66,7 +67,7 @@ namespace SimpleAuth.Controllers
             }
 
             AuthenticationHeaderValue authenticationHeaderValue = null;
-            if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
+            if (Request.Headers.TryGetValue(HeaderNames.Authorization, out var authorizationHeader))
             {
                 authenticationHeaderValue = AuthenticationHeaderValue.Parse(authorizationHeader);
             }

@@ -73,7 +73,7 @@ namespace SimpleAuth.Client
         public async Task<BaseSidContentResult<GrantedTokenResponse>> GetToken(TokenRequest tokenRequest)
         {
             var body = new FormUrlEncodedContent(_form.Concat(tokenRequest));
-            var discoveryInformation = await GetDiscoveryInformation();
+            var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -112,7 +112,7 @@ namespace SimpleAuth.Client
 
         public async Task<JsonWebKeySet> GetJwks()
         {
-            var discoveryDoc = await GetDiscoveryInformation();
+            var discoveryDoc = await GetDiscoveryInformation().ConfigureAwait(false);
             var keyJson = await _client.GetStringAsync(discoveryDoc.JwksUri).ConfigureAwait(false);
             return JsonWebKeySet.Create(keyJson);
         }
@@ -125,7 +125,7 @@ namespace SimpleAuth.Client
         public async Task<GenericResponse<object>> RequestSms(
             ConfirmationCodeRequest request)
         {
-            var discoveryInformation = await GetDiscoveryInformation();
+            var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
             var requestUri = new Uri(discoveryInformation.Issuer + "/code");
 
             var json = JsonConvert.SerializeObject(request);
@@ -164,7 +164,7 @@ namespace SimpleAuth.Client
         public async Task<RevokeTokenResult> RevokeToken(RevokeTokenRequest revokeTokenRequest)
         {
             var body = new FormUrlEncodedContent(_form.Concat(revokeTokenRequest));
-            var discoveryInformation = await GetDiscoveryInformation();
+            var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -200,7 +200,7 @@ namespace SimpleAuth.Client
 
         private async Task<DiscoveryInformation> GetDiscoveryInformation()
         {
-            return _discovery ?? (_discovery = await _discoveryOperation.Execute(_discoveryDocumentationUrl));
+            return _discovery ?? (_discovery = await _discoveryOperation.Execute(_discoveryDocumentationUrl).ConfigureAwait(false));
         }
     }
 }

@@ -62,7 +62,7 @@
             using (var session = _sessionFactory())
             {
                 session.DeleteWhere<Ticket>(t => t.ExpirationDateTime >= DateTimeOffset.UtcNow);
-                await session.SaveChangesAsync(cancellationToken);
+                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
         }
     }

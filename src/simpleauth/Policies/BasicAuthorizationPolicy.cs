@@ -150,7 +150,7 @@ namespace SimpleAuth.Policies
             var client = await _clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
 
             var handler = new JwtSecurityTokenHandler();
-            var validationParameters = await client.CreateValidationParameters(_jwksStore);
+            var validationParameters = await client.CreateValidationParameters(_jwksStore).ConfigureAwait(false);
             handler.ValidateToken(
                 claimTokenParameter.Token,
                 validationParameters,

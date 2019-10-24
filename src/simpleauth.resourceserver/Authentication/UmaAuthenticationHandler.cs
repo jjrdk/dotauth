@@ -108,13 +108,13 @@ namespace SimpleAuth.ResourceServer.Authentication
                 return;
             }
 
-            var tokenResponse = await Options.TokenCache.GetToken("uma_protection");
+            var tokenResponse = await Options.TokenCache.GetToken("uma_protection").ConfigureAwait(false);
             var ticket = await _permissionClient.RequestPermission(
                 new PermissionRequest
                 {
                     ResourceSetId = Request.Path.Value.Replace("/data/", string.Empty), Scopes = new[] {"api1"}
                 },
-                tokenResponse.AccessToken);
+                tokenResponse.AccessToken).ConfigureAwait(false);
 
             if (ticket.ContainsError)
             {

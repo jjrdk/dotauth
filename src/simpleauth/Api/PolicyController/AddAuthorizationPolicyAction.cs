@@ -109,7 +109,7 @@ namespace SimpleAuth.Api.PolicyController
                     resourceSet.AuthorizationPolicyIds = resourceSet.AuthorizationPolicyIds == null
                         ? policyIds
                         : resourceSet.AuthorizationPolicyIds.Concat(policyIds).Distinct().ToArray();
-                    await _resourceSetRepository.Update(resourceSet, cancellationToken);
+                    await _resourceSetRepository.Update(resourceSet, cancellationToken).ConfigureAwait(false);
                 }
                 return result ? policy.Id : null;
             }

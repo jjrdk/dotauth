@@ -24,6 +24,7 @@ namespace SimpleAuth.UserInfoIntrospection
     using System.Security.Claims;
     using System.Text.Encodings.Web;
     using System.Threading.Tasks;
+    using Microsoft.Net.Http.Headers;
 
     public static class UserIntrospectionDefaults
     {
@@ -52,7 +53,7 @@ namespace SimpleAuth.UserInfoIntrospection
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            string authorization = Request.Headers["Authorization"];
+            string authorization = Request.Headers[HeaderNames.Authorization];
             if (string.IsNullOrWhiteSpace(authorization) || !AuthenticationHeaderValue.TryParse(authorization, out var header))
             {
                 return AuthenticateResult.NoResult();

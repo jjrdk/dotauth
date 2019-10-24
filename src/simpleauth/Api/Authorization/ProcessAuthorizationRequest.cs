@@ -183,7 +183,7 @@ namespace SimpleAuth.Api.Authorization
 
                 var client = await _clientStore.GetById(authorizationParameter.ClientId, cancellationToken)
                     .ConfigureAwait(false);
-                var validationParameters = await client.CreateValidationParameters(_jwksStore, issuerName);
+                var validationParameters = await client.CreateValidationParameters(_jwksStore, issuerName).ConfigureAwait(false);
                 handler.ValidateToken(token, validationParameters, out var securityToken);
                 var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
 

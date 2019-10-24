@@ -30,7 +30,7 @@
         {
             try
             {
-                await _semaphore.WaitAsync(cancellationToken);
+                await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
                 _tickets.Add(ticket.Id, ticket);
                 return true;
             }
@@ -50,7 +50,7 @@
 
             try
             {
-                await _semaphore.WaitAsync(cancellationToken);
+                await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
                 _tickets.TryGetValue(ticketId, out var ticket);
                 return ticket;
             }
@@ -70,7 +70,7 @@
 
             try
             {
-                await _semaphore.WaitAsync(cancellationToken);
+                await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
                 return _tickets.Remove(ticketId);
             }
             finally
@@ -83,7 +83,7 @@
         {
             try
             {
-                await _semaphore.WaitAsync(cancellationToken);
+                await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
                 var toRemove = _tickets
                     .Where(x => x.Value.ExpirationDateTime >= DateTimeOffset.UtcNow)
                     .Select(x => x.Key);

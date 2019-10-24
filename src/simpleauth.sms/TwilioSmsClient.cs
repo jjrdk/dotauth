@@ -4,7 +4,9 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Threading.Tasks;
+    using Microsoft.Net.Http.Headers;
 
     /// <summary>
     /// Defines the Twilio SMS client.
@@ -38,7 +40,7 @@
         /// or
         /// message
         /// </exception>
-        public async Task<(bool,string)> SendMessage(string toPhoneNumber, string message)
+        public async Task<(bool, string)> SendMessage(string toPhoneNumber, string message)
         {
             if (string.IsNullOrWhiteSpace(toPhoneNumber))
             {
@@ -60,23 +62,19 @@
             var postUrl = string.Format(CultureInfo.InvariantCulture, TwilioSmsEndpointFormat, _credentials.AccountSid);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
-                Content = content,
-                RequestUri = new Uri(postUrl)
+                Method = HttpMethod.Post, Content = content, RequestUri = new Uri(postUrl)
             };
-            httpRequest.Headers.Add("User-Agent", "twilio-csharp/5.13.4 (.NET Framework 4.5.1+)");
-            httpRequest.Headers.Add("Accept", "application/json");
-            httpRequest.Headers.Add("Accept-Encoding", "utf-8");
-            httpRequest.Headers.Add("Authorization",
-                "Basic " + CreateBasicAuthenticationHeader(_credentials.AccountSid, _credentials.AuthToken));
+            httpRequest.Headers.UserAgent.Add(
+                new ProductInfoHeaderValue("twilio-csharp/5.13.4 (.NET Framework 4.5.1+)"));
+            httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            httpRequest.Headers.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("utf-8"));
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue(
+                "Basic",
+                CreateBasicAuthenticationHeader(_credentials.AccountSid, _credentials.AuthToken));
             var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
-            if (!response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                return (false, json);
-            }
-
-            return (true, response.ReasonPhrase);
+            return !response.IsSuccessStatusCode
+                ? (false, await response.Content.ReadAsStringAsync().ConfigureAwait(false))
+                : (true, response.ReasonPhrase);
         }
 
         private string CreateBasicAuthenticationHeader(string username, string password)

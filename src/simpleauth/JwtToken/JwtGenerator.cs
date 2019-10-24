@@ -100,7 +100,7 @@ namespace SimpleAuth.JwtToken
             var issuedAtTime = timeKeyValuePair.Value;
 
             var key = await _jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg, cancellationToken).ConfigureAwait(false)
-                ?? await _jwksStore.GetDefaultSigningKey(cancellationToken);
+                ?? await _jwksStore.GetDefaultSigningKey(cancellationToken).ConfigureAwait(false);
             //client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First();
 
             var jwtHeader = new JwtHeader(key);

@@ -16,6 +16,7 @@
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Net.Http.Headers;
 
     /// <summary>
     /// Defines the token controller.
@@ -106,7 +107,7 @@
             }
 
             AuthenticationHeaderValue authenticationHeaderValue = null;
-            if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
+            if (Request.Headers.TryGetValue(HeaderNames.Authorization, out var authorizationHeader))
             {
                 AuthenticationHeaderValue.TryParse(authorizationHeader[0], out authenticationHeaderValue);
             }
@@ -206,7 +207,7 @@
         {
             // 1. Fetch the authorization header
             AuthenticationHeaderValue authenticationHeaderValue = null;
-            if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
+            if (Request.Headers.TryGetValue(HeaderNames.Authorization, out var authorizationHeader))
             {
                 var authorizationHeaderValue = authorizationHeader.First();
                 var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');

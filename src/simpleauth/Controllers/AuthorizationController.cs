@@ -172,7 +172,7 @@ namespace SimpleAuth.Controllers
             CancellationToken cancellationToken)
         {
             var client = await _clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
-            var validationParameters = await client.CreateValidationParameters(_jwksStore);
+            var validationParameters = await client.CreateValidationParameters(_jwksStore).ConfigureAwait(false);
             _handler.ValidateToken(token, validationParameters, out var securityToken);
 
             return (securityToken as JwtSecurityToken)?.Payload?.ToAuthorizationRequest();
