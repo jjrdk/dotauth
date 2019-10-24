@@ -18,7 +18,9 @@ namespace SimpleAuth.ResourceServer.Authentication
     using System.Net.Http;
     using System.Text.RegularExpressions;
     using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Responses;
 
     public class UmaAuthenticationOptions : AuthenticationSchemeOptions
@@ -27,7 +29,9 @@ namespace SimpleAuth.ResourceServer.Authentication
 
         public string Realm { get; set; }
 
-        public Regex[] UmaResourcePaths { get; set; }
+        public Regex[] UmaResourcePaths { get; set; } = Array.Empty<Regex>();
+
+        public Func<HttpRequest, PermissionRequest[]> ResourceSetRequest { get; set; } = r => Array.Empty<PermissionRequest>();
 
         public TokenValidationParameters TokenValidationParameters { get; set; } = new TokenValidationParameters();
 

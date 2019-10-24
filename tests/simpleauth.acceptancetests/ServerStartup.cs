@@ -97,6 +97,14 @@
                 .AddUmaTicket(
                     configureOptions: cfg =>
                     {
+                        cfg.ResourceSetRequest = r => new[]
+                        {
+                            new PermissionRequest
+                            {
+                                ResourceSetId = r.Path.Value.Replace("/data/", string.Empty),
+                                Scopes = new[] {"api1"}
+                            }
+                        };
                         cfg.UmaResourcePaths = new[] { new Regex("/data/.+", RegexOptions.Compiled), };
                         cfg.Authority = "http://localhost";
                         cfg.BackchannelHttpHandler = _context.Handler;

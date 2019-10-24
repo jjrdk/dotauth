@@ -8,7 +8,6 @@
     using System.Net.Http.Headers;
     using System.Text.RegularExpressions;
     using Microsoft.IdentityModel.Tokens;
-    using Microsoft.Net.Http.Headers;
     using SimpleAuth.Client;
     using SimpleAuth.Client.Results;
     using SimpleAuth.Shared.DTOs;

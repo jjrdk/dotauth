@@ -26,19 +26,9 @@ namespace SimpleAuth.UserInfoIntrospection
     using System.Threading.Tasks;
     using Microsoft.Net.Http.Headers;
 
-    public static class UserIntrospectionDefaults
-    {
-        /// <summary>
-        /// The authentication scheme
-        /// </summary>
-        public const string AuthenticationScheme = "UserInfoIntrospection";
-    }
-
     internal class UserInfoIntrospectionHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        private const string Bearer = "Bearer";
         private readonly UserInfoClient _userInfoClient;
-        private static readonly int StartIndex = Bearer.Length;
 
         public UserInfoIntrospectionHandler(
             UserInfoClient userInfoClient,
@@ -54,7 +44,8 @@ namespace SimpleAuth.UserInfoIntrospection
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             string authorization = Request.Headers[HeaderNames.Authorization];
-            if (string.IsNullOrWhiteSpace(authorization) || !AuthenticationHeaderValue.TryParse(authorization, out var header))
+            if (string.IsNullOrWhiteSpace(authorization)
+                || !AuthenticationHeaderValue.TryParse(authorization, out var header))
             {
                 return AuthenticateResult.NoResult();
             }

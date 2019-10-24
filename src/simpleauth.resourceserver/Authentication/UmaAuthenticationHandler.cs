@@ -100,21 +100,21 @@ namespace SimpleAuth.ResourceServer.Authentication
 
         protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
         {
-            if (Options.UmaResourcePaths == null || !Options.UmaResourcePaths.Any(r => r.IsMatch(Request.Path)))
+            var permissionRequests = Options.ResourceSetRequest?.Invoke(Request);
+            if (Options.UmaResourcePaths == null
+                || !Options.UmaResourcePaths.Any(r => r.IsMatch(Request.Path))
+                || permissionRequests?.Length == 0)
             {
-                Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                Response.StatusCode = (int) HttpStatusCode.Unauthorized;
                 Response.Headers[HeaderNames.WWWAuthenticate] = "Bearer";
-                //await base.HandleChallengeAsync(properties);
                 return;
             }
 
             var tokenResponse = await Options.TokenCache.GetToken("uma_protection").ConfigureAwait(false);
-            var ticket = await _permissionClient.RequestPermission(
-                new PermissionRequest
-                {
-                    ResourceSetId = Request.Path.Value.Replace("/data/", string.Empty), Scopes = new[] {"api1"}
-                },
-                tokenResponse.AccessToken).ConfigureAwait(false);
+            var ticket = await _permissionClient.RequestPermissions(
+                    tokenResponse.AccessToken,
+                    permissionRequests)
+                .ConfigureAwait(false);
 
             if (ticket.ContainsError)
             {
@@ -124,8 +124,9 @@ namespace SimpleAuth.ResourceServer.Authentication
             else
             {
                 Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                var realm = string.IsNullOrWhiteSpace(Options.Realm) ? string.Empty : "realm=\"{Options.Realm}\", ";
                 Response.Headers[HeaderNames.WWWAuthenticate] =
-                    $"UMA realm=\"{Options.Realm}\", as_uri=\"{Options.Authority}\", ticket=\"{ticket.Content.TicketId}\"";
+                    $"UMA {realm}as_uri=\"{Options.Authority}\", ticket=\"{ticket.Content.TicketId}\"";
             }
         }
     }
