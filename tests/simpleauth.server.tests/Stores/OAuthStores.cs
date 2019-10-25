@@ -16,7 +16,6 @@
                 {
                     Name = "uma_protection",
                     Description = "Access to UMA permission, resource set & token introspection endpoints",
-                    IsOpenIdScope = false,
                     IsDisplayedInConsent = true,
                     Type = ScopeTypes.ProtectedApi
                 },
@@ -24,21 +23,11 @@
                 {
                     Name = "uma_authorization",
                     Description = "Access to the UMA authorization endpoint",
-                    IsOpenIdScope = false,
                     IsDisplayedInConsent = true,
                     Type = ScopeTypes.ProtectedApi
                 }
             };
         }
-
-        //public static List<JsonWebKey> GetJsonWebKeys(SharedUmaContext sharedContext)
-        //{
-        //    return new List<JsonWebKey>
-        //    {
-        //        sharedContext.EncryptionKey,
-        //        sharedContext.SignatureKey
-        //    };
-        //}
 
         public static List<Client> GetClients()
         {
@@ -69,11 +58,10 @@
                     ClientName = "Anonymous",
                     Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "anonymous"}},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                    //LogoUri = null,
                     AllowedScopes = Array.Empty<string>(),
                     GrantTypes = new[] {GrantTypes.ClientCredentials},
                     ResponseTypes = new[] {ResponseTypeNames.Token},
-                    IdTokenSignedResponseAlg = "RS256",
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Native
                 }
             };

@@ -88,7 +88,7 @@ namespace SimpleAuth.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> GetResourceSets(CancellationToken cancellationToken)
         {
             var resourceSets = await _resourceSetRepository.GetAll(cancellationToken).ConfigureAwait(false);
@@ -103,7 +103,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> GetResourceSet(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -190,7 +190,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> DeleteResourceSet(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -203,7 +203,7 @@ namespace SimpleAuth.Controllers
 
             var resourceSetExists = await _removeResourceSet.Execute(id, cancellationToken).ConfigureAwait(false);
             return !resourceSetExists
-                ? (IActionResult)BadRequest(new ErrorDetails { Status = HttpStatusCode.BadRequest })
+                ? (IActionResult) BadRequest(new ErrorDetails {Status = HttpStatusCode.BadRequest})
                 : NoContent();
         }
 

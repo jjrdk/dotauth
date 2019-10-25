@@ -32,6 +32,7 @@ namespace SimpleAuth.AuthServer
     using System.Security.Claims;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.Shared.Events;
 
     public class Startup
     {
@@ -53,7 +54,7 @@ namespace SimpleAuth.AuthServer
                         sp.GetService<IScopeStore>(),
                         sp.GetService<ILogger<InMemoryClientRepository>>(),
                         DefaultConfiguration.GetClients()),
-                Scopes = sp => new InMemoryScopeRepository(),
+                Scopes = sp => new InMemoryScopeRepository(DefaultConfiguration.GetScopes()),
                 EventPublisher = sp => new LogEventPublisher(sp.GetService<ILogger<LogEventPublisher>>()),
                 HttpClientFactory = () => client,
                 ClaimsIncludedInUserCreation = new[]
@@ -89,6 +90,12 @@ namespace SimpleAuth.AuthServer
                                 new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                     })
                 .AddHttpContextAccessor()
+                .AddAntiforgery(options =>
+                {
+                    options.FormFieldName = "XrsfField";
+                    options.HeaderName = "XSRF-TOKEN";
+                    options.SuppressXFrameOptionsHeader = false;
+                })
                 .AddCors(
                     options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
                 .AddLogging(log => { log.AddConsole(); });

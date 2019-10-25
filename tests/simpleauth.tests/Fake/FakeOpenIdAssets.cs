@@ -78,30 +78,28 @@ namespace SimpleAuth.Tests.Fake
                 {
                     Name = "BlogApi",
                     Description = "Access to the blog API",
-                    IsOpenIdScope = false,
+                    Type = ScopeTypes.ProtectedApi,
                     IsDisplayedInConsent = true
                 },
                 new Scope
                 {
                     Name = "BlogApi:AddArticle",
                     Description = "Access to the add article operation",
-                    IsOpenIdScope = false,
+                    Type = ScopeTypes.ProtectedApi,
                     IsDisplayedInConsent = true
                 },
                 new Scope
                 {
                     Name = "openid",
                     IsExposed = true,
-                    IsOpenIdScope = true,
+                    Type = ScopeTypes.ResourceOwner,
                     IsDisplayedInConsent = false,
-                    Description = "openid",
-                    Type = ScopeTypes.ProtectedApi
+                    Description = "openid"
                 },
                 new Scope
                 {
                     Name = "profile",
                     IsExposed = true,
-                    IsOpenIdScope = true,
                     Description = "Access to the profile",
                     Claims = new[]
                     {
@@ -127,7 +125,6 @@ namespace SimpleAuth.Tests.Fake
                 {
                     Name = "email",
                     IsExposed = true,
-                    IsOpenIdScope = true,
                     IsDisplayedInConsent = true,
                     Description = "Access to the email",
                     Claims = new[] {OpenIdClaimTypes.Email, OpenIdClaimTypes.EmailVerified},
@@ -137,7 +134,6 @@ namespace SimpleAuth.Tests.Fake
                 {
                     Name = "address",
                     IsExposed = true,
-                    IsOpenIdScope = true,
                     IsDisplayedInConsent = true,
                     Description = "Access to the address",
                     Claims = new[] {OpenIdClaimTypes.Address},
@@ -147,7 +143,6 @@ namespace SimpleAuth.Tests.Fake
                 {
                     Name = "phone",
                     IsExposed = true,
-                    IsOpenIdScope = true,
                     IsDisplayedInConsent = true,
                     Description = "Access to the phone",
                     Claims = new[] {OpenIdClaimTypes.PhoneNumber, OpenIdClaimTypes.PhoneNumberVerified},
@@ -155,49 +150,5 @@ namespace SimpleAuth.Tests.Fake
                 }
             };
         }
-
-        //public static List<Consent> GetConsents()
-        //{
-        //    return new List<Consent>();
-        //}
-
-        //public static List<JsonWebKey> GetJsonWebKeys()
-        //{
-        //    var serializedRsa = string.Empty;
-        //    using (var provider = new RSACryptoServiceProvider())
-        //    {
-        //        serializedRsa = provider.ToXml(true);
-        //    }
-
-        //    return new List<JsonWebKey>
-        //    {
-        //        new JsonWebKey
-        //        {
-        //            Alg = SecurityAlgorithms.RsaSha256,
-        //            KeyOps = new []
-        //            {
-        //                KeyOperations.Sign,
-        //                KeyOperations.Verify
-        //            },
-        //            Kid = "a3rMUgMFv9tPclLa6yF3zAkfquE",
-        //            Kty = KeyType.RSA,
-        //            Use = Use.Sig,
-        //            SerializedKey = serializedRsa,
-        //        },
-        //        new JsonWebKey
-        //        {
-        //            Alg = SecurityAlgorithms.RsaPKCS1,
-        //            KeyOps = new []
-        //            {
-        //                KeyOperations.Encrypt,
-        //                KeyOperations.Decrypt
-        //            },
-        //            Kid = "3",
-        //            Kty = KeyType.RSA,
-        //            Use = Use.Enc,
-        //            SerializedKey = serializedRsa,
-        //        }
-        //    };
-        //}
     }
 }

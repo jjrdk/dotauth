@@ -31,6 +31,11 @@
         /// <inheritdoc />
         public async Task<GenericResult<Scope>> Search(SearchScopesRequest parameter, CancellationToken cancellationToken = default)
         {
+            if (parameter == null)
+            {
+                return new GenericResult<Scope>();
+            }
+
             using (var session = _sessionFactory())
             {
                 parameter.StartIndex++;
@@ -51,6 +56,11 @@
         /// <inheritdoc />
         public async Task<Scope> Get(string name, CancellationToken cancellationToken = default)
         {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return null;
+            }
+
             using (var session = _sessionFactory())
             {
                 var scope = await session.LoadAsync<Scope>(name, cancellationToken).ConfigureAwait(false);
@@ -62,6 +72,11 @@
         /// <inheritdoc />
         public async Task<Scope[]> SearchByNames(CancellationToken cancellationToken = default, params string[] names)
         {
+            if (names == null)
+            {
+                return Array.Empty<Scope>();
+            }
+
             using (var session = _sessionFactory())
             {
                 var scopes = await session.Query<Scope>()
@@ -89,6 +104,11 @@
         /// <inheritdoc />
         public async Task<bool> Insert(Scope scope, CancellationToken cancellationToken = default)
         {
+            if (scope == null)
+            {
+                return false;
+            }
+
             using (var session = _sessionFactory())
             {
                 session.Store(scope);
@@ -100,6 +120,11 @@
         /// <inheritdoc />
         public async Task<bool> Delete(Scope scope, CancellationToken cancellationToken = default)
         {
+            if (scope == null)
+            {
+                return false;
+            }
+
             using (var session = _sessionFactory())
             {
                 session.Delete(scope.Name);
@@ -111,6 +136,11 @@
         /// <inheritdoc />
         public async Task<bool> Update(Scope scope, CancellationToken cancellationToken = default)
         {
+            if (scope == null)
+            {
+                return false;
+            }
+
             using (var session = _sessionFactory())
             {
                 session.Update(scope);

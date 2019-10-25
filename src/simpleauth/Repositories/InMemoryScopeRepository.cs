@@ -24,17 +24,15 @@
             {
                 Name = "openid",
                 IsExposed = true,
-                IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the OpenId scope.",
-                Type = ScopeTypes.ProtectedApi,
+                Type = ScopeTypes.ResourceOwner,
                 Claims = Array.Empty<string>()
             },
             new Scope
             {
                 Name = "profile",
                 IsExposed = true,
-                IsOpenIdScope = true,
                 Description = "Access to the profile information.",
                 Claims = new[]
                 {
@@ -60,7 +58,6 @@
             {
                 Name = "email",
                 IsExposed = true,
-                IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to email addresses.",
                 Claims = new[] {OpenIdClaimTypes.Email, OpenIdClaimTypes.EmailVerified},
@@ -70,7 +67,6 @@
             {
                 Name = "address",
                 IsExposed = true,
-                IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to address information.",
                 Claims = new[] {OpenIdClaimTypes.Address},
@@ -80,7 +76,6 @@
             {
                 Name = "phone",
                 IsExposed = true,
-                IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to phone information.",
                 Claims = new[] {OpenIdClaimTypes.PhoneNumber, OpenIdClaimTypes.PhoneNumberVerified},
@@ -90,7 +85,6 @@
             {
                 Name = "role",
                 IsExposed = true,
-                IsOpenIdScope = false,
                 IsDisplayedInConsent = true,
                 Description = "Access to your roles.",
                 Claims = new[] {OpenIdClaimTypes.Role},
@@ -101,7 +95,6 @@
                 Claims = new[] {OpenIdClaimTypes.Role},
                 Name = "register_client",
                 IsExposed = false,
-                IsOpenIdScope = false,
                 IsDisplayedInConsent = true,
                 Description = "Register a client",
                 Type = ScopeTypes.ProtectedApi
@@ -111,7 +104,6 @@
                 Claims = new[] {OpenIdClaimTypes.Role},
                 Name = "manage_profile",
                 IsExposed = false,
-                IsOpenIdScope = false,
                 IsDisplayedInConsent = true,
                 Description = "Manage the user's profiles",
                 Type = ScopeTypes.ProtectedApi
@@ -121,7 +113,6 @@
                 Claims = new[] {OpenIdClaimTypes.Role},
                 Name = "manage_account_filtering",
                 IsExposed = false,
-                IsOpenIdScope = false,
                 IsDisplayedInConsent = true,
                 Description = "Manage the account filtering.",
                 Type = ScopeTypes.ProtectedApi
@@ -133,7 +124,6 @@
                 IsDisplayedInConsent = true,
                 IsExposed = true,
                 Name = "manager",
-                IsOpenIdScope = false,
                 Type = ScopeTypes.ProtectedApi
             }
         };
@@ -142,9 +132,14 @@
         /// Initializes a new instance of the <see cref="InMemoryScopeRepository"/> class.
         /// </summary>
         /// <param name="scopes">The scopes.</param>
-        public InMemoryScopeRepository(IReadOnlyCollection<Scope> scopes = null)
+        /// <param name="includeDefaultScopes">Include default scope definitions during instantiation.</param>
+        public InMemoryScopeRepository(IReadOnlyCollection<Scope> scopes = null, bool includeDefaultScopes = true)
         {
-            _scopes = scopes == null || scopes.Count == 0 ? _defaultScopes : scopes.ToList();
+            _scopes = scopes == null || scopes.Count == 0
+                ? _defaultScopes
+                : scopes.Concat(includeDefaultScopes ? _defaultScopes.AsEnumerable() : Array.Empty<Scope>())
+                    .Distinct()
+                    .ToList();
         }
 
         /// <inheritdoc />
@@ -190,7 +185,7 @@
         {
             if (scope == null)
             {
-                throw new ArgumentNullException(nameof(scope));
+                return Task.FromResult(false);
             }
 
             if (_scopes.Any(x => x.Name == scope.Name))
@@ -210,7 +205,7 @@
         {
             if (parameter == null)
             {
-                throw new ArgumentNullException(nameof(parameter));
+                return null;
             }
 
             IEnumerable<Scope> result = _scopes;
@@ -225,7 +220,6 @@
                 result = result.Where(s => scopeTypes.Contains(s.Type));
             }
 
-            var nbResult = result.Count();
             result = parameter.Descending
                 ? result.OrderByDescending(c => c.UpdateDateTime)
                 : result.OrderBy(c => c.UpdateDateTime);
@@ -235,10 +229,15 @@
                 result = result.Skip(parameter.StartIndex).Take(parameter.NbResults);
             }
 
+            var content = result.ToArray();
+            var nbResult = content.Length;
+
             return Task.FromResult(
                 new GenericResult<Scope>
                 {
-                    Content = result.ToArray(), StartIndex = parameter.StartIndex, TotalResults = nbResult
+                    Content = content,
+                    StartIndex = parameter.StartIndex,
+                    TotalResults = nbResult
                 });
         }
 
@@ -259,7 +258,7 @@
         {
             if (scope == null)
             {
-                throw new ArgumentNullException(nameof(scope));
+                return Task.FromResult(false);
             }
 
             var sc = _scopes.FirstOrDefault(s => s.Name == scope.Name);
@@ -272,7 +271,6 @@
             sc.Description = scope.Description;
             sc.IsDisplayedInConsent = scope.IsDisplayedInConsent;
             sc.IsExposed = scope.IsExposed;
-            sc.IsOpenIdScope = scope.IsOpenIdScope;
             sc.Type = scope.Type;
             sc.UpdateDateTime = DateTimeOffset.UtcNow;
             return Task.FromResult(true);

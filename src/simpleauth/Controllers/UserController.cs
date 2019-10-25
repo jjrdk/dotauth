@@ -298,7 +298,7 @@
             await SetUser().ConfigureAwait(false);
             var authenticationType = ((ClaimsIdentity) externalClaims.Identity).AuthenticationType;
             var viewModel = new LinkProfileConfirmationViewModel(authenticationType);
-            return View("Index", viewModel);
+            return View("LinkProfileConfirmation", viewModel);
         }
 
         /// <summary>

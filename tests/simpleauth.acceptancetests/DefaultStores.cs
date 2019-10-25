@@ -531,7 +531,6 @@ namespace SimpleAuth.AcceptanceTests
                     Description = "test scope",
                     IsDisplayedInConsent = true,
                     IsExposed = true,
-                    IsOpenIdScope = false,
                     Name = "test",
                     Type = ScopeTypes.ProtectedApi,
                     UpdateDateTime = DateTimeOffset.UtcNow

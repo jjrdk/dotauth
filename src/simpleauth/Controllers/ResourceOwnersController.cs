@@ -57,6 +57,7 @@ namespace SimpleAuth.Controllers
         /// <param name="settings"></param>
         /// <param name="subjectBuilder"></param>
         /// <param name="resourceOwnerRepository">The resource owner repository.</param>
+        /// <param name="tokenStore">The token cache</param>
         /// <param name="clientRepository"></param>
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="eventPublisher">The event publisher.</param>
@@ -95,7 +96,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
             var resourceOwners = (await _resourceOwnerRepository.GetAll(cancellationToken).ConfigureAwait(false));
@@ -110,7 +111,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         /// <exception cref="SimpleAuthException"></exception>
         [HttpGet("{id}")]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> Get(string id, CancellationToken cancellationToken)
         {
             var resourceOwner = await _resourceOwnerRepository.Get(id, cancellationToken).ConfigureAwait(false);
@@ -135,7 +136,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> Delete(string id, CancellationToken cancellationToken)
         {
             if (!await _resourceOwnerRepository.Delete(id, cancellationToken).ConfigureAwait(false))
@@ -208,18 +209,20 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         /// <exception cref="SimpleAuthException"></exception>
         [HttpPut("claims")]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> UpdateClaims(
             [FromBody] UpdateResourceOwnerClaimsRequest request,
             CancellationToken cancellationToken)
         {
             if (request == null)
             {
-                return BuildError(
-                    ErrorCodes.InvalidRequestCode,
-                    "no parameter in body request",
-                    HttpStatusCode.BadRequest);
-
+                return BadRequest(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequestCode,
+                        Detail = "Parameter in request body not valid",
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
 
             var resourceOwner =
@@ -380,7 +383,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         /// <exception cref="SimpleAuthException"></exception>
         [HttpPut("password")]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> UpdatePassword(
             [FromBody] UpdateResourceOwnerPasswordRequest request,
             CancellationToken cancellationToken)
@@ -390,7 +393,8 @@ namespace SimpleAuth.Controllers
                 return BadRequest("Parameter in request body not valid");
             }
 
-            var resourceOwner = await _resourceOwnerRepository.Get(request.Subject, cancellationToken).ConfigureAwait(false);
+            var resourceOwner =
+                await _resourceOwnerRepository.Get(request.Subject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new SimpleAuthException(
@@ -398,7 +402,9 @@ namespace SimpleAuth.Controllers
                     string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Subject));
             }
 
-            var result = await _resourceOwnerRepository.SetPassword(request.Subject, request.Password, cancellationToken).ConfigureAwait(false);
+            var result = await _resourceOwnerRepository
+                .SetPassword(request.Subject, request.Password, cancellationToken)
+                .ConfigureAwait(false);
             if (!result)
             {
                 return BadRequest(ErrorDescriptions.ThePasswordCannotBeUpdated);
@@ -414,7 +420,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> Add(
             [FromBody] AddResourceOwnerRequest addResourceOwnerRequest,
             CancellationToken cancellationToken)
@@ -430,10 +436,8 @@ namespace SimpleAuth.Controllers
                 Password = addResourceOwnerRequest.Password,
                 IsLocalAccount = true,
             };
-            var (success, subject) = await _addUserOperation.Execute(
-                    resourceOwner,
-                    cancellationToken)
-                .ConfigureAwait(false);
+            var (success, subject) =
+                await _addUserOperation.Execute(resourceOwner, cancellationToken).ConfigureAwait(false);
             if (success)
             {
                 return Ok(new { subject = subject });
@@ -455,28 +459,20 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost(".search")]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> Search(
             [FromBody] SearchResourceOwnersRequest searchResourceOwnersRequest,
             CancellationToken cancellationToken)
         {
             if (searchResourceOwnersRequest == null)
             {
-                return BuildError(
-                    ErrorCodes.InvalidRequestCode,
-                    "Parameter in request body not valid",
-                    HttpStatusCode.BadRequest);
+                searchResourceOwnersRequest = new SearchResourceOwnersRequest { Descending = true, NbResults = 50, StartIndex = 0 };
+                //return BadRequest(new ErrorDetails {Title = ErrorCodes.InvalidRequestCode, Detail = "Parameter in request body not valid", Status = HttpStatusCode.BadRequest});
             }
 
             var result = await _resourceOwnerRepository.Search(searchResourceOwnersRequest, cancellationToken)
                 .ConfigureAwait(false);
-            return new OkObjectResult(result.ToDto());
-        }
-
-        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
-        {
-            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
-            return new JsonResult(error) { StatusCode = (int)statusCode };
+            return Ok(result);
         }
     }
 }

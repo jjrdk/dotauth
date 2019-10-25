@@ -58,7 +58,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> PostPermission(
             [FromBody] PermissionRequest permissionRequest,
             CancellationToken cancellationToken)
@@ -93,7 +93,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost("bulk")]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> PostPermissions(
             [FromBody] PermissionRequest[] postPermissions,
             CancellationToken cancellationToken)

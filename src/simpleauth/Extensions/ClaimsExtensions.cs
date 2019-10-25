@@ -38,5 +38,15 @@
                         : claim)
                 .ToArray();
         }
+
+        public static bool HasClaimValue(this Claim claim, string value, char separator = ' ')
+        {
+            return HasClaimValue(claim, value, new[] {separator});
+        }
+
+        public static bool HasClaimValue(this Claim claim, string value, params char[] separators)
+        {
+            return claim.Value.Split(separators).Any(v => v == value);
+        }
     }
 }

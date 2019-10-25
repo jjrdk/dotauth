@@ -45,7 +45,7 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> Add(JsonWebKey jsonWebKey, CancellationToken cancellationToken)
         {
             var result = await _jwksStore.Add(jsonWebKey, cancellationToken).ConfigureAwait(false);
@@ -60,7 +60,7 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPut]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> Rotate(JsonWebKeySet jsonWebKeySet, CancellationToken cancellationToken)
         {
             var result = await _jwksStore.Rotate(jsonWebKeySet, cancellationToken).ConfigureAwait(false);

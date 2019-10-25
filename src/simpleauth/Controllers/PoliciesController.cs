@@ -65,7 +65,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost(".search")]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> SearchPolicies(
             [FromBody] SearchAuthPolicies searchAuthPolicies,
             CancellationToken cancellationToken)
@@ -89,7 +89,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> GetPolicy(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -116,7 +116,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> GetPolicies(CancellationToken cancellationToken)
         {
             var policies = await _policyRepository.GetAll(cancellationToken).ConfigureAwait(false);
@@ -131,7 +131,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPut]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> PutPolicy([FromBody] PutPolicy putPolicy, CancellationToken cancellationToken)
         {
             if (putPolicy == null)
@@ -159,7 +159,7 @@ namespace SimpleAuth.Controllers
             }
 
             var isPolicyExists = await _updatePolicy.Execute(putPolicy, cancellationToken).ConfigureAwait(false);
-            return !isPolicyExists ? GetNotFoundPolicy() : new StatusCodeResult((int)HttpStatusCode.NoContent);
+            return !isPolicyExists ? GetNotFoundPolicy() : new StatusCodeResult((int) HttpStatusCode.NoContent);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost("{id}/resources")]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> SetResourceSetPolicy(
             string id,
             [FromBody] AddResourceSet addResourceSet,
@@ -209,7 +209,7 @@ namespace SimpleAuth.Controllers
                 return GetNotFoundPolicy();
             }
 
-            return new StatusCodeResult((int)HttpStatusCode.NoContent);
+            return new StatusCodeResult((int) HttpStatusCode.NoContent);
         }
 
         /// <summary>
@@ -220,8 +220,11 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpDelete("{id}/resources/{resourceId}")]
-        [Authorize("UmaProtection")]
-        public async Task<IActionResult> DeleteResourceSet(string id, string resourceId, CancellationToken cancellationToken)
+        [Authorize(Policy = "UmaProtection")]
+        public async Task<IActionResult> DeleteResourceSet(
+            string id,
+            string resourceId,
+            CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -239,13 +242,14 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var isPolicyExists = await _deleteResourceSet.Execute(id, resourceId, cancellationToken).ConfigureAwait(false);
+            var isPolicyExists =
+                await _deleteResourceSet.Execute(id, resourceId, cancellationToken).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
             }
 
-            return new StatusCodeResult((int)HttpStatusCode.NoContent);
+            return new StatusCodeResult((int) HttpStatusCode.NoContent);
         }
 
         /// <summary>
@@ -255,7 +259,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> PostPolicy(
             [FromBody] PostPolicy postPolicy,
             CancellationToken cancellationToken)
@@ -269,9 +273,9 @@ namespace SimpleAuth.Controllers
             }
 
             var policyId = await _addpolicy.Execute(postPolicy, cancellationToken).ConfigureAwait(false);
-            var content = new AddPolicyResponse { PolicyId = policyId };
+            var content = new AddPolicyResponse {PolicyId = policyId};
 
-            return new ObjectResult(content) { StatusCode = (int)HttpStatusCode.Created };
+            return new ObjectResult(content) {StatusCode = (int) HttpStatusCode.Created};
         }
 
         /// <summary>
@@ -281,7 +285,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> DeletePolicy(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -298,20 +302,20 @@ namespace SimpleAuth.Controllers
                 return GetNotFoundPolicy();
             }
 
-            return new StatusCodeResult((int)HttpStatusCode.NoContent);
+            return new StatusCodeResult((int) HttpStatusCode.NoContent);
         }
 
         private static ActionResult GetNotFoundPolicy()
         {
-            var errorResponse = new ErrorDetails { Title = "not_found", Detail = "policy cannot be found" };
+            var errorResponse = new ErrorDetails {Title = "not_found", Detail = "policy cannot be found"};
 
-            return new ObjectResult(errorResponse) { StatusCode = (int)HttpStatusCode.NotFound };
+            return new ObjectResult(errorResponse) {StatusCode = (int) HttpStatusCode.NotFound};
         }
 
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
-            return new JsonResult(error) { StatusCode = (int)statusCode };
+            var error = new ErrorDetails {Title = code, Detail = message, Status = statusCode};
+            return new JsonResult(error) {StatusCode = (int) statusCode};
         }
     }
 }

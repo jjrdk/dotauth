@@ -57,7 +57,13 @@ namespace SimpleAuth.Extensions
             {
                 throw new ArgumentNullException(nameof(options));
             }
-
+            options.AddPolicy(
+                "authenticated",
+                policy =>
+                {
+                    policy.AddAuthenticationSchemes(authenticationSchemes);
+                    policy.RequireAuthenticatedUser();
+                });
             options.AddPolicy(
                 "UmaProtection",
                 policy =>
@@ -77,7 +83,7 @@ namespace SimpleAuth.Extensions
                         });
                 });
             options.AddPolicy(
-                "authenticated",
+                "manager",
                 policy =>
                 {
                     policy.AddAuthenticationSchemes(authenticationSchemes);
@@ -97,9 +103,9 @@ namespace SimpleAuth.Extensions
                                 return false;
                             }
 
-                            var claimsScope = p.User.Claims.Where(c => c.Type == "scope");
+                            var result = p.User?.Claims?.Where(c => c.Type == "scope").Any(c => c.HasClaimValue("manager"));
 
-                            return claimsScope.SelectMany(c => c.Value.Split(' ')).Any(v => v == "manager");
+                            return result == true;
                         });
                 });
 
@@ -120,6 +126,18 @@ namespace SimpleAuth.Extensions
                             var claimsScopes = p.User.Claims.Where(c => c.Type == "scope");
 
                             return claimsScopes.SelectMany(c => c.Value.Split(' ')).Any(v => v == "register_client");
+                        });
+                    policy.RequireAssertion(
+                        p =>
+                        {
+                            if (p.User?.Identity?.IsAuthenticated != true)
+                            {
+                                return false;
+                            }
+
+                            var result = p.User?.Claims?.Where(c => c.Type == "scope").Any(c => c.Value == "register_client");
+
+                            return result == true;
                         });
                 });
             options.AddPolicy(

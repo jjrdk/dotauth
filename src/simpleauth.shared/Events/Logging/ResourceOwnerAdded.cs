@@ -6,6 +6,7 @@
     /// <summary>
     /// Defines the resource owner added event.
     /// </summary>
+    /// <seealso cref="Event" />
     public class ResourceOwnerAdded : Event
     {
         /// <summary>
