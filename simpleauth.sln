@@ -48,7 +48,28 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.stores.marten.ac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.authserverpg", "src\simpleauth.authserverpg\simpleauth.authserverpg.csproj", "{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simpleauth.resourceserver", "src\simpleauth.resourceserver\simpleauth.resourceserver.csproj", "{D8825706-0FC0-499A-B409-C60F575DF248}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.resourceserver", "src\simpleauth.resourceserver\simpleauth.resourceserver.csproj", "{D8825706-0FC0-499A-B409-C60F575DF248}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "simpleauth.admin", "src\simpleauth.admin\", "{195DFF68-8EB2-4120-AB6B-4E88C397932D}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_50302"
+		Debug.AspNetCompiler.PhysicalPath = "src\simpleauth.admin\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_50302\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_50302"
+		Release.AspNetCompiler.PhysicalPath = "src\simpleauth.admin\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_50302\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "50302"
+		SlnRelativePath = "src\simpleauth.admin\"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -112,6 +133,10 @@ Global
 		{D8825706-0FC0-499A-B409-C60F575DF248}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8825706-0FC0-499A-B409-C60F575DF248}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8825706-0FC0-499A-B409-C60F575DF248}.Release|Any CPU.Build.0 = Release|Any CPU
+		{195DFF68-8EB2-4120-AB6B-4E88C397932D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{195DFF68-8EB2-4120-AB6B-4E88C397932D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{195DFF68-8EB2-4120-AB6B-4E88C397932D}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{195DFF68-8EB2-4120-AB6B-4E88C397932D}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

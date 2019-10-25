@@ -72,7 +72,7 @@
                 {
                     ClientId = "web",
                     ClientName = "web",
-                    AllowedScopes = new[] {"openid", "role", "manager"},
+                    AllowedScopes = new[] {"openid", "role", "manager", "uma_protection"},
                     ApplicationType = ApplicationTypes.Web,
                     GrantTypes =
                         new[]

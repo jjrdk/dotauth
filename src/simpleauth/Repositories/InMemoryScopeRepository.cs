@@ -125,6 +125,15 @@
                 IsExposed = true,
                 Name = "manager",
                 Type = ScopeTypes.ProtectedApi
+            },
+            new Scope
+            {
+                Claims = new[] {OpenIdClaimTypes.Subject},
+                Description = "Manage user managed resources and policies.",
+                IsDisplayedInConsent = true,
+                IsExposed = true,
+                Name = "uma_protection",
+                Type = ScopeTypes.ProtectedApi
             }
         };
 
@@ -235,9 +244,7 @@
             return Task.FromResult(
                 new GenericResult<Scope>
                 {
-                    Content = content,
-                    StartIndex = parameter.StartIndex,
-                    TotalResults = nbResult
+                    Content = content, StartIndex = parameter.StartIndex, TotalResults = nbResult
                 });
         }
 
