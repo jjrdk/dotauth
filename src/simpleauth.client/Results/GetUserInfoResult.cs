@@ -15,7 +15,6 @@
 namespace SimpleAuth.Client.Results
 {
     using System.IdentityModel.Tokens.Jwt;
-    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Defines the get user info result.

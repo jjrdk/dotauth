@@ -27,7 +27,6 @@ namespace SimpleAuth.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using ResourceSet = SimpleAuth.Shared.DTOs.ResourceSet;
 
     /// <summary>
     /// Defines the resource set controller.
@@ -61,16 +60,20 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpPost(".search")]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult<GenericResult<ResourceSet>>> SearchResourceSets([FromBody] SearchResourceSet searchResourceSet, CancellationToken cancellationToken)
+        public async Task<ActionResult<GenericResult<ResourceSet>>> SearchResourceSets(
+            [FromBody] SearchResourceSet searchResourceSet,
+            CancellationToken cancellationToken)
         {
             if (searchResourceSet == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode,
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
 
-            var result = await _resourceSetRepository.Search(searchResourceSet, cancellationToken).ConfigureAwait(false);
+            var result = await _resourceSetRepository.Search(searchResourceSet, cancellationToken)
+                .ConfigureAwait(false);
             return new OkObjectResult(
                 new GenericResult<ResourceSet>
                 {
@@ -114,7 +117,7 @@ namespace SimpleAuth.Controllers
             var result = await _resourceSetRepository.Get(id, cancellationToken).ConfigureAwait(false);
             if (result == null)
             {
-                return GetNotFoundResourceSet();
+                return GetNotUpdatedResourceSet();
             }
 
             var content = result.ToResponse();
@@ -129,24 +132,22 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> AddResourceSet([FromBody] ResourceSet postResourceSet, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddResourceSet(
+            [FromBody] ResourceSet postResourceSet,
+            CancellationToken cancellationToken)
         {
             if (postResourceSet == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode,
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
 
-            var result = await _addResourceSet.Execute(postResourceSet, cancellationToken).ConfigureAwait(false);
-            var response = new AddResourceSetResponse
-            {
-                Id = result
-            };
-            return new ObjectResult(response)
-            {
-                StatusCode = (int)HttpStatusCode.Created
-            };
+            var owner = User.GetSubject();
+            var result = await _addResourceSet.Execute(owner, postResourceSet, cancellationToken).ConfigureAwait(false);
+            var response = new AddResourceSetResponse { Id = result };
+            return new ObjectResult(response) { StatusCode = (int)HttpStatusCode.Created };
         }
 
         /// <summary>
@@ -157,25 +158,27 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpPut]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> UpdateResourceSet([FromBody] ResourceSet resourceSet, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateResourceSet(
+            [FromBody] ResourceSet resourceSet,
+            CancellationToken cancellationToken)
         {
             if (resourceSet == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode,
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
 
-            var resourceSetExists = await _updateResourceSet.Execute(resourceSet, cancellationToken).ConfigureAwait(false);
-            if (!resourceSetExists)
+            var owner = User.GetSubject();
+            var resourceSetUpdated =
+                await _updateResourceSet.Execute(owner, resourceSet, cancellationToken).ConfigureAwait(false);
+            if (!resourceSetUpdated)
             {
-                return GetNotFoundResourceSet();
+                return GetNotUpdatedResourceSet();
             }
 
-            var response = new UpdateResourceSetResponse
-            {
-                Id = resourceSet.Id
-            };
+            var response = new UpdateResourceSetResponse { Id = resourceSet.Id };
 
             return new OkObjectResult(response);
         }
@@ -192,7 +195,8 @@ namespace SimpleAuth.Controllers
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode,
+                return BuildError(
+                    ErrorCodes.InvalidRequestCode,
                     "the identifier must be specified",
                     HttpStatusCode.BadRequest);
             }
@@ -203,33 +207,22 @@ namespace SimpleAuth.Controllers
                 : NoContent();
         }
 
-        private static ActionResult GetNotFoundResourceSet()
+        private static ActionResult GetNotUpdatedResourceSet()
         {
             var errorResponse = new ErrorDetails
             {
                 Status = HttpStatusCode.NotFound,
-                Title = "not_found",
-                Detail = "resource cannot be found"
+                Title = "not_updated",
+                Detail = "resource cannot be updated"
             };
 
-            return new ObjectResult(errorResponse)
-            {
-                StatusCode = (int)HttpStatusCode.NotFound
-            };
+            return new ObjectResult(errorResponse) { StatusCode = (int)HttpStatusCode.NotFound };
         }
 
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorDetails
-            {
-                Title = code,
-                Detail = message,
-                Status = statusCode
-            };
-            return new JsonResult(error)
-            {
-                StatusCode = (int)statusCode
-            };
+            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
+            return new JsonResult(error) { StatusCode = (int)statusCode };
         }
     }
 }

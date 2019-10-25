@@ -30,6 +30,11 @@ namespace SimpleAuth.Shared.Models
         public string Id { get; set; }
 
         /// <summary>
+        /// Gets or sets the owner of the resource set.
+        /// </summary>
+        public string Owner { get; set; }
+
+        /// <summary>
         /// Gets or sets the name.
         /// </summary>
         /// <value>
@@ -38,11 +43,9 @@ namespace SimpleAuth.Shared.Models
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the URI.
+        /// Gets or sets the URI of the protected resource.
         /// </summary>
-        /// <value>
-        /// The URI.
-        /// </value>
+        /// <value>The protected resource URI.</value>
         public string Uri { get; set; }
 
         /// <summary>

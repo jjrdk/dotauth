@@ -45,7 +45,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             await Assert
                 .ThrowsAsync<NullReferenceException>(
-                    () => _updateResourceSetAction.Execute(null, CancellationToken.None))
+                    () => _updateResourceSetAction.Execute("owner", null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
@@ -55,9 +55,11 @@ namespace SimpleAuth.Server.Tests.Apis
             const string id = "id";
             var udpateResourceSetParameter = new ResourceSet
             {
-                Id = id, Name = "blah", Scopes = new[] {"scope"}
+                Id = id,
+                Name = "blah",
+                Scopes = new[] { "scope" }
             };
-            var resourceSet = new Shared.Models.ResourceSetModel {Id = id};
+            var resourceSet = new Shared.Models.ResourceSetModel { Id = id };
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(resourceSet);
             _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSetModel>(), It.IsAny<CancellationToken>()))
@@ -65,7 +67,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var exception = await Assert
                 .ThrowsAsync<SimpleAuthException>(
-                    () => _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None))
+                    () => _updateResourceSetAction.Execute("owner", udpateResourceSetParameter, CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InternalError, exception.Code);
             Assert.Equal(
@@ -79,15 +81,17 @@ namespace SimpleAuth.Server.Tests.Apis
             const string id = "id";
             var udpateResourceSetParameter = new ResourceSet
             {
-                Id = id, Name = "blah", Scopes = new[] {"scope"}
+                Id = id,
+                Name = "blah",
+                Scopes = new[] { "scope" }
             };
-            var resourceSet = new Shared.Models.ResourceSetModel {Id = id};
+            var resourceSet = new Shared.Models.ResourceSetModel { Id = id };
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(resourceSet);
             _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSetModel>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
-            var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None)
+            var result = await _updateResourceSetAction.Execute("owner", udpateResourceSetParameter, CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.True(result);

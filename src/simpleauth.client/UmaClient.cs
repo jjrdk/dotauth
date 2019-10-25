@@ -397,7 +397,7 @@ namespace SimpleAuth.Client
         /// <param name="request">The request.</param>
         /// <param name="token">The token.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<object>> AddResource(string policyId, AddResourceSet request, string token)
+        public async Task<GenericResponse<object>> SetResourceSetPolicy(string policyId, AddResourceSet request, string token)
         {
             var configuration = await GetUmaConfiguration().ConfigureAwait(false);
             var url = configuration.PoliciesEndpoint;

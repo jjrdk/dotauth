@@ -102,7 +102,7 @@
                     var policyResponse = await umaClient.AddPolicy(policy, result.AccessToken).ConfigureAwait(false);
                     Assert.False(policyResponse.ContainsError);
 
-                    await umaClient.AddResource(
+                    await umaClient.SetResourceSetPolicy(
                         policyResponse.Content.PolicyId,
                         new AddResourceSet { ResourceSets = new[] { resourceSetResponse.Id } },
                         result.AccessToken).ConfigureAwait(false);

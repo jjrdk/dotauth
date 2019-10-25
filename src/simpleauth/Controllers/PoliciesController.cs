@@ -171,7 +171,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpPost("{id}/resources")]
         [Authorize("UmaProtection")]
-        public async Task<IActionResult> PostAddResourceSet(
+        public async Task<IActionResult> SetResourceSetPolicy(
             string id,
             [FromBody] AddResourceSet addResourceSet,
             CancellationToken cancellationToken)
@@ -200,11 +200,11 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var isPolicyExists = await _addResourceSet.Execute(
+            var addResult = await _addResourceSet.Execute(
                     new AddResourceSetParameter { PolicyId = id, ResourceSets = addResourceSet.ResourceSets },
                     cancellationToken)
                 .ConfigureAwait(false);
-            if (!isPolicyExists)
+            if (!addResult)
             {
                 return GetNotFoundPolicy();
             }

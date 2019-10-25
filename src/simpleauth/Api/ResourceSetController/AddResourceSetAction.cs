@@ -33,11 +33,12 @@ namespace SimpleAuth.Api.ResourceSetController
             _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<string> Execute(Dto.ResourceSet addResourceSetParameter, CancellationToken cancellationToken)
+        public async Task<string> Execute(string owner, Dto.ResourceSet addResourceSetParameter, CancellationToken cancellationToken)
         {
             var resourceSet = new ResourceSetModel
             {
                 Id = Id.Create(),
+                Owner = owner,
                 Name = addResourceSetParameter.Name,
                 Uri = addResourceSetParameter.Uri,
                 Type = addResourceSetParameter.Type,

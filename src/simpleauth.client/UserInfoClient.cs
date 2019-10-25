@@ -15,7 +15,6 @@
 namespace SimpleAuth.Client
 {
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using Results;
     using System;
     using System.Collections.Generic;
@@ -25,7 +24,6 @@ namespace SimpleAuth.Client
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Responses;
 
     /// <summary>
     /// Defines the user info client.
@@ -45,6 +43,7 @@ namespace SimpleAuth.Client
         /// Initializes a new instance of the <see cref="UserInfoClient"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
+        /// <param name="configurationUrl">The configuration URL.</param>
         public static async Task<UserInfoClient> Create(HttpClient client, Uri configurationUrl)
         {
             var operation = new GetDiscoveryOperation(client);
@@ -56,7 +55,6 @@ namespace SimpleAuth.Client
         /// <summary>
         /// Gets the specified user info based on the configuration URL and access token.
         /// </summary>
-        /// <param name="configurationUrl">The configuration URL.</param>
         /// <param name="accessToken">The access token.</param>
         /// <param name="inBody">if set to <c>true</c> [in body].</param>
         /// <returns></returns>

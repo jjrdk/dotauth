@@ -34,40 +34,28 @@ namespace SimpleAuth.Api.ResourceSetController
             _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<bool> Execute(ResourceSet udpateResourceSetParameter, CancellationToken cancellationToken)
+        public async Task<bool> Execute(string owner, ResourceSet updateResourceSetParameter, CancellationToken cancellationToken)
         {
-            var resourceSet = new Shared.Models.ResourceSetModel
-            {
-                Id = udpateResourceSetParameter.Id,
-                Name = udpateResourceSetParameter.Name,
-                Uri = udpateResourceSetParameter.Uri,
-                Type = udpateResourceSetParameter.Type,
-                Scopes = udpateResourceSetParameter.Scopes,
-                IconUri = udpateResourceSetParameter.IconUri
-            };
-
-            if (string.IsNullOrWhiteSpace(udpateResourceSetParameter.Id))
+            if (string.IsNullOrWhiteSpace(updateResourceSetParameter.Id))
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
             }
 
+            var resourceSet = new ResourceSetModel
+            {
+                Id = updateResourceSetParameter.Id,
+                Owner = owner,
+                Name = updateResourceSetParameter.Name,
+                Uri = updateResourceSetParameter.Uri,
+                Type = updateResourceSetParameter.Type,
+                Scopes = updateResourceSetParameter.Scopes,
+                IconUri = updateResourceSetParameter.IconUri
+            };
+
             CheckResourceSetParameter(resourceSet);
-            if (await _resourceSetRepository.Get(udpateResourceSetParameter.Id, cancellationToken).ConfigureAwait(false)
-                == null)
-            {
-                return false;
-            }
-
-            if (!await _resourceSetRepository.Update(resourceSet, cancellationToken).ConfigureAwait(false))
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InternalError,
-                    string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, resourceSet.Id));
-            }
-
-            return true;
+            return await _resourceSetRepository.Update(resourceSet, cancellationToken).ConfigureAwait(false);
         }
 
         private void CheckResourceSetParameter(Shared.Models.ResourceSetModel resourceSet)

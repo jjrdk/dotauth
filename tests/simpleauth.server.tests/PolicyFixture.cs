@@ -187,7 +187,7 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Add_Resource_And_Pass_No_Resources_Then_Error_Is_Returned()
         {
-            var response = await _umaClient.AddResource("id", new AddResourceSet {ResourceSets = null}, "header")
+            var response = await _umaClient.SetResourceSetPolicy("id", new AddResourceSet {ResourceSets = null}, "header")
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
@@ -198,7 +198,7 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Add_Resource_And_Pass_Unknown_Policy_Then_Error_Is_Returned()
         {
-            var response = await _umaClient.AddResource(
+            var response = await _umaClient.SetResourceSetPolicy(
                     "id",
                     new AddResourceSet {ResourceSets = new[] {"resource"}},
                     "header")
@@ -228,7 +228,7 @@ namespace SimpleAuth.Server.Tests
                     "header")
                 .ConfigureAwait(false);
 
-            var response = await _umaClient.AddResource(
+            var response = await _umaClient.SetResourceSetPolicy(
                     addPolicy.Content.PolicyId,
                     new AddResourceSet {ResourceSets = new[] {"resource"}},
                     "header")
@@ -399,7 +399,7 @@ namespace SimpleAuth.Server.Tests
                     "header")
                 .ConfigureAwait(false);
 
-            var isUpdated = await _umaClient.AddResource(
+            var isUpdated = await _umaClient.SetResourceSetPolicy(
                     addPolicy.Content.PolicyId,
                     new AddResourceSet {ResourceSets = new[] {secondResource.Content.Id}},
                     "header")

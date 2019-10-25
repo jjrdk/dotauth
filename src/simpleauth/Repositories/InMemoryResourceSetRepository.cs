@@ -56,7 +56,7 @@
             var rec = _resources.FirstOrDefault(p => p.Id == id);
             if (rec == null)
             {
-                return Task.FromResult((Models.ResourceSetModel) null);
+                return Task.FromResult((Models.ResourceSetModel)null);
             }
 
             return Task.FromResult(rec);
@@ -130,19 +130,21 @@
             return Task.FromResult(
                 new GenericResult<Models.ResourceSetModel>
                 {
-                    Content = result.ToArray(), StartIndex = parameter.StartIndex, TotalResults = nbResult
+                    Content = result.ToArray(),
+                    StartIndex = parameter.StartIndex,
+                    TotalResults = nbResult
                 });
         }
 
         /// <inheritdoc />
-        public Task<bool> Update(Models.ResourceSetModel resourceSet, CancellationToken cancellationToken)
+        public Task<bool> Update(ResourceSetModel resourceSet, CancellationToken cancellationToken)
         {
             if (resourceSet == null)
             {
                 throw new ArgumentNullException(nameof(resourceSet));
             }
 
-            var rec = _resources.FirstOrDefault(p => p.Id == resourceSet.Id);
+            var rec = _resources.FirstOrDefault(p => p.Id == resourceSet.Id && p.Owner == resourceSet.Owner);
             if (rec == null)
             {
                 return Task.FromResult(false);

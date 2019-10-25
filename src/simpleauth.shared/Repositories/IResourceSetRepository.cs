@@ -18,7 +18,6 @@ namespace SimpleAuth.Shared.Repositories
     using System.Threading.Tasks;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
-    using Models = SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the resource set repository interface.
@@ -31,7 +30,7 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="parameter">The parameter.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<GenericResult<Models.ResourceSetModel>> Search(
+        Task<GenericResult<ResourceSetModel>> Search(
             SearchResourceSet parameter,
             CancellationToken cancellationToken);
 
@@ -41,7 +40,7 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="resourceSet">The resource set.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<bool> Add(Models.ResourceSetModel resourceSet, CancellationToken cancellationToken);
+        Task<bool> Add(ResourceSetModel resourceSet, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the specified identifier.
@@ -49,7 +48,7 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="id">The identifier.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<Models.ResourceSetModel> Get(string id, CancellationToken cancellationToken);
+        Task<ResourceSetModel> Get(string id, CancellationToken cancellationToken);
 
         /// <summary>
         /// Updates the specified resource set.
@@ -57,14 +56,14 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="resourceSet">The resource set.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<bool> Update(Models.ResourceSetModel resourceSet, CancellationToken cancellationToken);
+        Task<bool> Update(ResourceSetModel resourceSet, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets all.
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<Models.ResourceSetModel[]> GetAll(CancellationToken cancellationToken);
+        Task<ResourceSetModel[]> GetAll(CancellationToken cancellationToken);
 
         /// <summary>
         /// Deletes the specified identifier.
@@ -80,6 +79,6 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="ids">The ids.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<Models.ResourceSetModel[]> Get(CancellationToken cancellationToken, params string[] ids);
+        Task<ResourceSetModel[]> Get(CancellationToken cancellationToken, params string[] ids);
     }
 }
