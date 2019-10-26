@@ -26,6 +26,7 @@ namespace SimpleAuth.Extensions
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Claims;
+    using SimpleAuth.Shared.DTOs;
 
     internal static class MappingExtensions
     {
@@ -41,16 +42,17 @@ namespace SimpleAuth.Extensions
             };
         }
 
-        public static SimpleAuth.Shared.DTOs.ResourceSet ToResponse(this ResourceSetModel resourceSet)
+        public static ResourceSet ToResponse(this ResourceSetModel resourceSet)
         {
-            return new SimpleAuth.Shared.DTOs.ResourceSet
+            return new ResourceSet
             {
                 Id = resourceSet.Id,
                 IconUri = resourceSet.IconUri,
                 Name = resourceSet.Name,
-                Scopes = resourceSet.Scopes,
+                Scopes = resourceSet.Scopes ?? Array.Empty<string>(),
                 Type = resourceSet.Type,
-                Uri = resourceSet.Uri
+                Uri = resourceSet.Uri,
+                AuthorizationPolicies = resourceSet.AuthorizationPolicyIds ?? Array.Empty<string>()
             };
         }
 

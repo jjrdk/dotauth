@@ -104,7 +104,8 @@ namespace SimpleAuth.Common
                             issuerName,
                             userInformationPayload,
                             idTokenPayload,
-                            cancellationToken: cancellationToken)
+                            cancellationToken: cancellationToken,
+                            claimsPrincipal.Claims.Where(c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type))).ToArray())
                         .ConfigureAwait(false);
                     newAccessTokenGranted = true;
                 }

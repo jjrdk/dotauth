@@ -45,6 +45,7 @@
                 .GinIndexJsonData();
             For<ResourceSetModel>()
                 .Duplicate(x => x.Name)
+                .Duplicate(x => x.Owner)
                 .Duplicate(x => x.Type)
                 .GinIndexJsonData();
             For<Ticket>().GinIndexJsonData();

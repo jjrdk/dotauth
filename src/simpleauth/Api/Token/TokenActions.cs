@@ -229,7 +229,12 @@ namespace SimpleAuth.Api.Token
                 .ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await client.GenerateToken(_jwksStore, allowedTokenScopes, issuerName, cancellationToken: cancellationToken)
+                grantedToken = await client.GenerateToken(
+                        _jwksStore,
+                        allowedTokenScopes,
+                        issuerName,
+                        cancellationToken: cancellationToken,
+                        additionalClaims: client.Claims.Where(c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type))).ToArray())
                     .ConfigureAwait(false);
                 await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
                 await _eventPublisher.Publish(

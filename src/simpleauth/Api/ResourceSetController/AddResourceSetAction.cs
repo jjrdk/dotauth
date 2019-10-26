@@ -42,8 +42,9 @@ namespace SimpleAuth.Api.ResourceSetController
                 Name = addResourceSetParameter.Name,
                 Uri = addResourceSetParameter.Uri,
                 Type = addResourceSetParameter.Type,
-                Scopes = addResourceSetParameter.Scopes,
-                IconUri = addResourceSetParameter.IconUri
+                Scopes = addResourceSetParameter.Scopes ?? Array.Empty<string>(),
+                IconUri = addResourceSetParameter.IconUri,
+                AuthorizationPolicyIds = addResourceSetParameter.AuthorizationPolicies ?? Array.Empty<string>()
             };
 
             CheckResourceSetParameter(resourceSet);

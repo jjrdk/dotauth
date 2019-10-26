@@ -75,5 +75,11 @@ namespace SimpleAuth.Shared.DTOs
         /// </value>
         [DataMember(Name = "icon_uri")]
         public string IconUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the authorization policies for the resource.
+        /// </summary>
+        [DataMember(Name= "authorization_policies")]
+        public string[] AuthorizationPolicies { get; set; }
     }
 }

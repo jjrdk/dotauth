@@ -101,10 +101,11 @@ namespace SimpleAuth.AuthServer
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
+                        cfg.Authority = "https://localhost:5001";
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            //ValidIssuers = _configuration.ValidIssuers
+                            ValidIssuers = new[] { "http://localhost:5000", "https://localhost:5001" }
                         };
                         cfg.RequireHttpsMetadata = false;
                     });
@@ -129,7 +130,7 @@ namespace SimpleAuth.AuthServer
 
             services.AddSimpleAuth(
                 _options,
-                new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme});
+                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme });
         }
 
         public void Configure(IApplicationBuilder app)

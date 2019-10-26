@@ -40,7 +40,7 @@ namespace SimpleAuth.Shared
         public static DateTimeOffset ConvertFromUnixTimestamp(this string timestamp)
         {
             return !long.TryParse(timestamp, out var value)
-                ? DateTimeOffset.MinValue
+                ? UnixStart
                 : UnixStart.AddTicks(value * TicksFactor);
         }
     }

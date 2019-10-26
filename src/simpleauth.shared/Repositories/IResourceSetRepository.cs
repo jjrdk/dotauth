@@ -61,9 +61,10 @@ namespace SimpleAuth.Shared.Repositories
         /// <summary>
         /// Gets all.
         /// </summary>
+        /// <param name="owner"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ResourceSetModel[]> GetAll(CancellationToken cancellationToken);
+        Task<ResourceSetModel[]> GetAll(string owner, CancellationToken cancellationToken);
 
         /// <summary>
         /// Deletes the specified identifier.

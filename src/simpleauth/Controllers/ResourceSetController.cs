@@ -35,6 +35,7 @@ namespace SimpleAuth.Controllers
     [Route(UmaConstants.RouteValues.ResourceSet)]
     public class ResourceSetController : ControllerBase
     {
+        private const string NoParameterInBodyRequest = "no parameter in body request";
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly AddResourceSetAction _addResourceSet;
         private readonly UpdateResourceSetAction _updateResourceSet;
@@ -68,7 +69,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequestCode,
-                    "no parameter in body request",
+                    NoParameterInBodyRequest,
                     HttpStatusCode.BadRequest);
             }
 
@@ -91,9 +92,13 @@ namespace SimpleAuth.Controllers
         [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> GetResourceSets(CancellationToken cancellationToken)
         {
-            var resourceSets = await _resourceSetRepository.GetAll(cancellationToken).ConfigureAwait(false);
-            var resourceSetIds = resourceSets.Select(x => x.Id).ToArray();
-            return new OkObjectResult(resourceSetIds);
+            var owner = User.GetSubject();
+            if (string.IsNullOrWhiteSpace(owner))
+            {
+                return BadRequest();
+            }
+            var resourceSets = await _resourceSetRepository.GetAll(owner, cancellationToken).ConfigureAwait(false);
+            return new OkObjectResult(resourceSets.Select(x=>x.ToResponse()).ToArray());
         }
 
         /// <summary>
@@ -115,9 +120,9 @@ namespace SimpleAuth.Controllers
             }
 
             var result = await _resourceSetRepository.Get(id, cancellationToken).ConfigureAwait(false);
-            if (result == null)
+            if (result == null || result.Owner != User.GetSubject())
             {
-                return GetNotUpdatedResourceSet();
+                return BadRequest();
             }
 
             var content = result.ToResponse();
@@ -140,7 +145,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequestCode,
-                    "no parameter in body request",
+                    NoParameterInBodyRequest,
                     HttpStatusCode.BadRequest);
             }
 
@@ -166,7 +171,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequestCode,
-                    "no parameter in body request",
+                    NoParameterInBodyRequest,
                     HttpStatusCode.BadRequest);
             }
 
@@ -203,7 +208,7 @@ namespace SimpleAuth.Controllers
 
             var resourceSetExists = await _removeResourceSet.Execute(id, cancellationToken).ConfigureAwait(false);
             return !resourceSetExists
-                ? (IActionResult) BadRequest(new ErrorDetails {Status = HttpStatusCode.BadRequest})
+                ? (IActionResult)BadRequest(new ErrorDetails { Status = HttpStatusCode.BadRequest })
                 : NoContent();
         }
 

@@ -21,6 +21,10 @@ namespace SimpleAuth.Shared.Models
     /// </summary>
     public class ResourceSetModel
     {
+        public ResourceSetModel()
+        {
+            
+        }
         /// <summary>
         /// Gets or sets the identifier.
         /// </summary>

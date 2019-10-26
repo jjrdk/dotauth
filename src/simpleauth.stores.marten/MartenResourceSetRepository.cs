@@ -86,11 +86,12 @@
         }
 
         /// <inheritdoc />
-        public async Task<ResourceSetModel[]> GetAll(CancellationToken cancellationToken)
+        public async Task<ResourceSetModel[]> GetAll(string owner, CancellationToken cancellationToken)
         {
             using (var session = _sessionFactory())
             {
                 var resourceSets = await session.Query<ResourceSetModel>()
+                    .Where(x => x.Owner == owner)
                     .ToListAsync(cancellationToken)
                     .ConfigureAwait(false);
 
